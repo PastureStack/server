@@ -1,66 +1,75 @@
-# Rancher
+# PastureStack Server
 
-Rancher is an open source project that provides a complete platform for operating Docker in production. It provides infrastructure services such as multi-host networking, global and local load balancing, and volume snapshots. It integrates native Docker management capabilities such as Docker Machine and Docker Swarm. It offers a rich user experience that enables devops admins to operate Docker in production at large scale.
+Server assembles the compatible control-platform runtime, orchestration engine, web console, node agent, authentication, proxy, catalog, and database components into a deployable source package.
 
-## Latest Release
+PastureStack is an independent community effort to preserve, audit, and modernize the Rancher 1.6 ecosystem. It is not affiliated with or endorsed by Rancher Labs or SUSE.
 
-* Beta - v1.6.29 - `rancher/server:latest` - Read the full release [notes](https://github.com/rancher/rancher/releases/tag/v1.6.29).
+**Upstream:** [`rancher/rancher`](https://github.com/rancher/rancher). This GitHub fork preserves upstream history, authorship, dates, tags, licenses, and copyright notices. PastureStack maintenance is consolidated into one commit after the preserved upstream boundary.
 
-* Stable - v1.6.28 - `rancher/server:stable` - Read the full release [notes](https://github.com/rancher/rancher/releases/tag/v1.6.28).
+## Project status
 
-To get automated notifications of our latest release, you can watch the announcements category in our [forums](http://forums.rancher.com/c/announcements), or subscribe to the RSS feed `https://forums.rancher.com/c/announcements.rss`.
+This is a compatibility-focused modernization project. Existing Ubuntu 26.04, Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity, authentication, WebSocket, backup/restore, and test work is retained. Passing the documented compatibility gates does not by itself make a deployment production-ready.
 
-## Installation
+## GitHub distribution model
 
-Rancher is deployed as a set of Docker containers.  Running Rancher is as simple as launching two containers.  One container as the management server and another container on a node as an agent.  You can install the containers in following approaches.
+PastureStack is designed not to require operators to host a separate download site, container registry, or catalog server. Reviewed container images are published through the public GitHub Container Registry and consumed by digest. Versioned binary and web assets are published as flat attachments to the matching `PastureStack/server` GitHub Release. Catalog templates are read directly from the public [`PastureStack/catalog-templates`](https://github.com/PastureStack/catalog-templates) Git repository and must be verified against a full pinned commit SHA.
 
-* [Manually](#launching-management-server)
-* [Terraform](https://github.com/rancher/terraform-modules)
-* [Puppet](https://github.com/nickschuch/puppet-rancher) (Thanks @nickschuch)
-* [Ansible](https://github.com/joshuacox/ansibleplaybook-rancher)
-* [SaltStack](https://github.com/komljen/rancher-salt)
+Catalog stack definitions, their documentation, and referenced public images must remain usable directly from GitHub and GHCR. Catalog entries pin images by digest and may not require an operator-maintained HTTP mirror, GitHub Pages site, catalog service, or private registry. GitHub Release assets are reserved for immutable Runtime payloads; the catalog itself remains a commit-pinned Git source so stack discovery and version history stay auditable.
 
-### Requirements
+Version coordinates are available only when the matching GitHub Release and public GHCR package both exist. Each release is held until its assets, checksums, SBOM, license records, anonymous downloads, and isolated-VM gates pass.
 
-* [Supported Docker version](http://rancher.com/docs/rancher/v1.6/en/hosts/#supported-docker-versions)
-* Any modern Linux distribution with a [supported Docker version](http://rancher.com/docs/rancher/v1.6/en/hosts/#supported-docker-versions). (Ubuntu, RHEL/CentOS 7 are more heavily tested.) Rancher also works with [RancherOS](https://github.com/rancher/os).
-* RAM: 1GB+
+## Quick start
 
-### Launching Management Server
+The versioned image is public and does not require a registry login:
 
-    docker run -d --restart=unless-stopped -p 8080:8080 rancher/server
+```sh
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.270
+```
 
-The UI and API are available on the exposed port `8080`.
+Use the immutable image digest recorded in the matching GitHub Release when pinning a production-like deployment. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
 
-### Using Rancher
+The versioned Windows node-agent ZIP is an artifact candidate only. Windows host support remains unavailable until its replacement bootstrap runtime and privileged Windows VM validation have passed; artifact validation alone must not be represented as working Windows host support.
 
-To learn more about using Rancher, please refer to our [Rancher Documentation](http://docs.rancher.com/).
+The machine-management dependency is supplied by the independently maintained `PastureStack/machine-driver-bundle` artifact. Its two licensed upstream executables, full license texts, source coordinates, deterministic archive, and provider-plugin handshake are verified before assembly. Real provider provisioning, deletion, upgrade, and rollback remain release gates.
 
-## Source Code
+The vSphere command-line dependency is supplied by the independently maintained `PastureStack/vsphere-cli-bundle` artifact. The recipe builds `govc` from the exact Apache-2.0 upstream commit with Go 1.26.5, verifies the injected version metadata, and carries complete source and license records. Offline command checks do not prove authenticated vSphere inventory, clone, power, delete, upgrade, rollback, or failure recovery; those remain isolated-VM release gates.
 
-This repo is a meta-repo used for packaging.  The source code for Rancher is in other repos in the rancher organization.  The majority of the code is in https://github.com/rancher/cattle.
+Secret encryption and rewrap operations are supplied by the `PastureStack/secret-delivery-api` GitHub fork. The artifact preserves the official `v0.2.2` history, carries complete Apache-2.0 and third-party license text, rejects malformed keys and path-like key names, and passes a loopback local-key API smoke test. Server installs the neutral executable and exposes the historical `secrets-api` filename only as an internal compatibility symlink; database key continuity, restart persistence, backup restore, and Vault integration remain isolated-VM release gates.
 
-## Support, Discussion, and Community
-If you need any help with Rancher or RancherOS, please join us at either our [Rancher forums](http://forums.rancher.com/), [#rancher IRC channel](http://webchat.freenode.net/?channels=rancher) or [Slack](https://slack.rancher.io/) where most of our team hangs out at.
+Optional aggregate usage reporting is supplied by the true fork `PastureStack/usage-telemetry-agent`. The standard-library-only artifact carries its Apache-2.0, source, third-party, and privacy records; Server verifies both archive and executable digests, installs the neutral executable, and retains `telemetry` only as an internal launcher symlink. Publishing is disabled without a new explicit HTTPS target and never inherits the retired destination.
 
-Please submit any **Rancher** bugs, issues, and feature requests to [rancher/rancher](//github.com/rancher/rancher/issues). 
+Webhook-driven service scaling, host scaling, service upgrades, and controlled forwarding are supplied by the true fork `PastureStack/webhook-automation-service`. Server verifies the deterministic archive and static executable digests, installs the neutral executable, moves its license and source records into the PastureStack license tree, and retains the historical filename only as an internal compatibility link. The launcher no longer exposes the control-plane private key to this child process.
 
-Please submit any **RancherOS** bugs, issues, and feature requests to [rancher/os](//github.com/rancher/os/issues).
+Metrics mapping uses the unchanged official Prometheus Graphite Exporter `v0.2.0` Linux AMD64 release asset. Server pins the archive, executable, source commit, license, and notice digests; installs the executable from the official archive layout; and retains its Apache-2.0 license and notice under `/usr/share/licenses/graphite-exporter`. PastureStack does not claim authorship of this external component.
 
-For security issues, please email security@rancher.com instead of posting a public issue in GitHub.  You may (but are not required to) use the GPG key located on [Keybase](https://keybase.io/rancher).
+Process supervision uses the unchanged official s6-overlay `v1.19.1.1` AMD64 release asset. The build pins its archive digest and source commit, validates the required init and supervision entries, and carries the upstream ISC license in the Runtime license bundle. The public filename adds only a version suffix; the archive bytes remain identical to the upstream GitHub Release asset.
 
-# License
+Binary-only compatibility archives are accompanied by the deterministic `pasturestack-runtime-licenses-1.6.270.tar.xz` release asset. It maps every flat Runtime asset to an exact public source commit, preserves tracked license, notice, patent, privacy, and origin files, includes legal files already embedded in archives, and carries its own internal checksum list. The Server image verifies and installs this bundle under `/usr/share/licenses/pasturestack-runtime`.
 
-Copyright (c) 2014-2016 [Rancher Labs, Inc.](http://rancher.com), portions Copyright © 2017 [Rancher Labs, Inc.](http://rancher.com) and HNA Ecological Technology Group Co., Ltd. See [copyright details.](COPYRIGHT_DETAILS.md)
+CI/CD remains disabled. Release and package publication are manual, gated operations, and publication is not a production-readiness claim.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+## Build and validation
 
-[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+The repository is a packaging layer. Build inputs must be pinned to reviewed source commits and verified artifacts. Run source and shell checks locally before any container build:
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+```sh
+bash scripts/test
+bash scripts/check-server-source-gates.sh
+```
+
+Full startup, database migration, node registration, web console, backup/restore, upgrade, and rollback checks require isolated VMs. See [COMPATIBILITY.md](COMPATIBILITY.md), [SECURITY.md](SECURITY.md), and [ORIGIN.md](ORIGIN.md).
+
+## Language support
+
+The assembled web console provides English, German, Persian, Filipino, French,
+Hungarian, Japanese, Korean, Brazilian Portuguese, Russian, Ukrainian,
+Simplified Chinese, and Traditional Chinese for Taiwan. The console owns its
+complete message contract, regional date formatting, and right-to-left layout.
+
+New server bootstrap messages use `PASTURESTACK_LOCALE=en-US` or `zh-TW`;
+protocol fields, persisted identifiers, and third-party output are not
+translated.
+
+## License and attribution
+
+The inherited project remains licensed under [Apache License 2.0](LICENSE), with additional attribution in [COPYRIGHT_DETAILS.md](COPYRIGHT_DETAILS.md). Bundled components retain their own licenses and notices. PastureStack contributors claim authorship only for their own changes.

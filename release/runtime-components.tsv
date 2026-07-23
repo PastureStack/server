@@ -1,0 +1,22 @@
+asset	component	repository	commit	license_summary
+api-explorer-1.1.14.tar.gz	api-explorer	https://github.com/PastureStack/api-explorer	c3a6fbd68e22d6a73915435b5da8f27a87b45ad2	Apache-2.0 plus bundled dependency terms
+authentication-service-0.1.7-linux-amd64.tar.xz	authentication-service	https://github.com/PastureStack/authentication-service	382f0c3209b12ea203ca391797a57b113f97d538	Apache-2.0 plus bundled dependency terms
+catalog-service-0.20.6.tar.xz	catalog-service	https://github.com/PastureStack/catalog-service	d488af42a9d5dbdfd9a794946717f045d6858040	Apache-2.0 plus bundled dependency terms
+compose-executor-0.14.30-linux-amd64.gz	compose-cli	https://github.com/PastureStack/compose-cli	d8ddd3e7a752e6cc749dd47dedbde7c94cc2e8b8	Apache-2.0 plus bundled dependency terms
+graphite_exporter-0.2.0.linux-amd64.tar.gz	graphite-exporter	https://github.com/prometheus/graphite_exporter	e76b500729ba944f7370d58c43f431632da339e5	Apache-2.0
+host-api-0.38.4.tar.gz	host-api	https://github.com/PastureStack/host-api	301025de31c07073cc03efa17e1ab8efa423d508	Apache-2.0 plus bundled dependency terms
+host-provisioner-0.39.4-linux-amd64.tar.xz	host-provisioner	https://github.com/PastureStack/host-provisioner	e8ec8e77775439ed6aeb7784d4c3a7da357970f2	Apache-2.0 plus bundled dependency terms
+machine-driver-bundle-0.14.0-linux-amd64.tar.xz	machine-driver-bundle	https://github.com/PastureStack/machine-driver-bundle	a7f7b26e625d06b57fc59884818be31dfe17e928	Apache-2.0 and BSD-3-Clause; packaging recipe MIT
+node-agent-0.13.21-windows-amd64.zip	node-agent	https://github.com/PastureStack/node-agent	c9ad64cdc0ca175a35ee53157188227536584966	Apache-2.0 plus bundled dependency terms
+node-agent-0.13.21.tar.gz	node-agent	https://github.com/PastureStack/node-agent	c9ad64cdc0ca175a35ee53157188227536584966	Apache-2.0 plus bundled dependency terms
+orchestration-engine-0.183.269.jar	orchestration-engine	https://github.com/PastureStack/orchestration-engine	f965eca2d8bc0c07593373f165d5ec4c55f59895	Apache-2.0 plus bundled dependency terms
+orchestration-engine-auth-logic-0.183.269.jar	orchestration-engine	https://github.com/PastureStack/orchestration-engine	f965eca2d8bc0c07593373f165d5ec4c55f59895	Apache-2.0 plus bundled dependency terms
+per-host-subnet-0.2.4-linux-amd64.tar.xz	per-host-subnet	https://github.com/PastureStack/per-host-subnet	babe7d7f2b7f67a18883b9ed99d17483c8854315	Apache-2.0 plus bundled BSD-style dependency terms
+per-host-subnet-0.2.4-windows-amd64.zip	per-host-subnet	https://github.com/PastureStack/per-host-subnet	babe7d7f2b7f67a18883b9ed99d17483c8854315	Apache-2.0 plus bundled BSD-style dependency terms
+s6-overlay-amd64-v1.19.1.1.tar.gz	s6-overlay	https://github.com/just-containers/s6-overlay	b8e0312a7d888448d2a5d5d092a1bfbfe388522a	ISC plus bundled component terms
+secret-delivery-api-0.2.2-linux-amd64.tar.xz	secret-delivery-api	https://github.com/PastureStack/secret-delivery-api	227aaa22a0daa54e15ca600e9ea903d3b7194fc1	Apache-2.0 plus bundled MIT, BSD-style, and MPL-2.0 terms
+usage-telemetry-agent-0.4.0-pasturestack.1-linux-amd64.tar.xz	usage-telemetry-agent	https://github.com/PastureStack/usage-telemetry-agent	d0dfbb148bc738bda5b396ee9e7d64f40aa567f5	Apache-2.0
+vsphere-cli-bundle-0.54.1-linux-amd64.tar.xz	vsphere-cli-bundle	https://github.com/PastureStack/vsphere-cli-bundle	a9a08fb4d3c0f342100d5b5fc676562dacbffab1	Apache-2.0 artifact; packaging recipe MIT
+web-console-1.6.56.tar.gz	web-console	https://github.com/PastureStack/web-console	d2798062caf71bc610df7c95acbfb938ee57dde0	Apache-2.0 plus bundled dependency terms
+webhook-automation-service-0.9.15-pasturestack.1-linux-amd64.tar.xz	webhook-automation-service	https://github.com/PastureStack/webhook-automation-service	905f7a41ba86d300ba53ea9700b7b74d9e6ff239	Apache-2.0 plus bundled dependency terms
+websocket-proxy-0.23.12-linux-amd64.tar.xz	websocket-proxy	https://github.com/PastureStack/websocket-proxy	75d974b1a2570b05eb301d12f07062d7961bc0dd	Apache-2.0 plus bundled dependency terms
