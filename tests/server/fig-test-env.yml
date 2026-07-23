@@ -1,42 +1,47 @@
-h2dbcattle:
-  image: rancher/server:dev
-  ports:
-    - "8080:8080"
-  environment:
-    CATTLE_DB_CATTLE_DATABASE: h2
-mysqllink:
-  image: mysql:5.6
-  environment:
-    MYSQL_ROOT_PASSWORD: password
-    MYSQL_USER: cattle
-    MYSQL_PASSWORD: cattle
-    MYSQL_DATABASE: cattle
-mysqllinkscattle:
-  image: rancher/server:dev
-  ports:
-    - "8081:8080"
-  links:
-    - mysqllink:mysql
-localmysqlcattle:
-  image: rancher/server:dev
-  ports:
-    - "8082:8080"
-mysqlmanual:
-  image: mysql:5.6
-  ports:
-    - "13306:3306"
-  environment:
-    MYSQL_ROOT_PASSWORD: 'password'
-    MYSQL_USER: 'cattle1'
-    MYSQL_PASSWORD: 'cattle1'
-    MYSQL_DATABASE: 'cattle1'
-mysqlmanualcattle:
-  image: rancher/server:dev
-  environment:
-    CATTLE_DB_CATTLE_MYSQL_HOST:
-    CATTLE_DB_CATTLE_MYSQL_PORT: '13306'
-    CATTLE_DB_CATTLE_USERNAME: 'cattle1'
-    CATTLE_DB_CATTLE_PASSWORD: 'cattle1'
-    CATTLE_DB_CATTLE_MYSQL_NAME: 'cattle1'
-  ports:
-    - "8083:8080"
+services:
+  h2dbcattle:
+    image: rancher/server:dev
+    container_name: server_h2dbcattle_1
+    ports:
+      - "8080:8080"
+    environment:
+      CATTLE_DB_CATTLE_DATABASE: h2
+  mysqllink:
+    image: mariadb:11.8
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: cattle
+      MYSQL_PASSWORD: cattle
+      MYSQL_DATABASE: cattle
+  mysqllinkscattle:
+    image: rancher/server:dev
+    container_name: server_mysqllinkcattle_1
+    ports:
+      - "8081:8080"
+    links:
+      - mysqllink:mysql
+  localmysqlcattle:
+    image: rancher/server:dev
+    container_name: server_localmysqlcattle_1
+    ports:
+      - "8082:8080"
+  mysqlmanual:
+    image: mariadb:11.8
+    ports:
+      - "13306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_USER: 'cattle1'
+      MYSQL_PASSWORD: 'cattle1'
+      MYSQL_DATABASE: 'cattle1'
+  mysqlmanualcattle:
+    image: rancher/server:dev
+    container_name: server_mysqlmanualcattle_1
+    environment:
+      CATTLE_DB_CATTLE_MYSQL_HOST:
+      CATTLE_DB_CATTLE_MYSQL_PORT: '13306'
+      CATTLE_DB_CATTLE_USERNAME: 'cattle1'
+      CATTLE_DB_CATTLE_PASSWORD: 'cattle1'
+      CATTLE_DB_CATTLE_MYSQL_NAME: 'cattle1'
+    ports:
+      - "8083:8080"

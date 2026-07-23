@@ -1,8 +1,29 @@
 #!/bin/bash
 
-set -e
+set -eo pipefail
 
 DATADIR='/var/lib/mysql'
+MYSQL_SOCKET='/var/run/mysqld/mysqld.sock'
+
+mysql_bin()
+{
+    command -v mariadb || command -v mysql
+}
+
+mysqladmin_bin()
+{
+    command -v mariadb-admin || command -v mysqladmin
+}
+
+mysqld_bin()
+{
+    command -v mariadbd || command -v mysqld
+}
+
+tzinfo_to_sql_bin()
+{
+    command -v mariadb-tzinfo-to-sql || command -v mysql_tzinfo_to_sql
+}
 
 check_mysql_action()
 {
@@ -18,7 +39,7 @@ check_mysql_action()
     set +e
     for ((i=0;i<60;i++))
     do
-        if mysqladmin status 2> /dev/null; then
+        if "$(mysqladmin_bin)" --protocol=socket --socket="${MYSQL_SOCKET}" status 2> /dev/null; then
             ${cmd1}
         else
             if [ "$i" -eq "59" ]; then
@@ -34,17 +55,26 @@ check_mysql_action()
 init_new_data_dir()
 {
     local pidfile="${DATADIR}/mysql.pid"
+    local install_db
+    local install_db_rpm=""
+
+    mkdir -p /var/run/mysqld /var/log/mysql
+    chown -R mysql:mysql /var/run/mysqld /var/log/mysql "${DATADIR}"
 
     # If a blank directory is bind mounted, configure it.
     echo "Running mysql_install_db..."
-    mysql_install_db --user=mysql --datadir="${DATADIR}" --rpm --basedir=/usr
+    install_db="$(command -v mariadb-install-db || command -v mysql_install_db)"
+    if "${install_db}" --help 2>&1 | grep -q -- '--rpm'; then
+        install_db_rpm="--rpm"
+    fi
+    "${install_db}" --user=mysql --datadir="${DATADIR}" ${install_db_rpm} --basedir=/usr
 
     echo "Starting MySQL to initialize..."
-    mysqld --user=mysql --datadir="${DATADIR}" --skip-networking --basedir=/usr --socket=/var/run/mysqld/mysqld.sock --pid-file="${pidfile}" &
+    "$(mysqld_bin)" --user=mysql --datadir="${DATADIR}" --skip-networking --basedir=/usr --socket="${MYSQL_SOCKET}" --pid-file="${pidfile}" &
     echo "Waiting for mysql to start"
     check_mysql_action start
 
-    mysql_tzinfo_to_sql /usr/share/zoneinfo |mysql --protocol=socket -uroot mysql
+    "$(tzinfo_to_sql_bin)" /usr/share/zoneinfo | "$(mysql_bin)" --protocol=socket --socket="${MYSQL_SOCKET}" -uroot mysql
 
     kill $(<"${pidfile}")
     check_mysql_action stop
@@ -54,15 +84,17 @@ init_new_data_dir()
 
 config_mysql()
 {
-    sed -i 's/^\(bind-address.*\)$/#\1/' /etc/mysql/my.cnf
-    sed -i 's/^#\(max_connections.*\)/\1/;s/100$/1000/' /etc/mysql/my.cnf
-    sed -i 's/^key_buffer[[:space:]]/key_buffer_size/' /etc/mysql/my.cnf
-    sed -i 's/^\(expire_logs_days.*\)/\1/;s/10$/2/' /etc/mysql/my.cnf
-    sed -i '/^max_connections.*$/a sql_mode = ONLY_FULL_GROUP_BY' /etc/mysql/my.cnf
-
-    if [ ! "$(grep innodb_file_per_table /etc/mysql/my.cnf)" ]; then
-        sed -i '/^# \* InnoDB.*$/a innodb_file_per_table = 1' /etc/mysql/my.cnf
-    fi
+    mkdir -p /etc/mysql/mariadb.conf.d /var/run/mysqld /var/log/mysql
+    chown -R mysql:mysql /var/run/mysqld /var/log/mysql
+    cat > /etc/mysql/mariadb.conf.d/99-pasturestack.cnf << EOF
+[mysqld]
+bind-address = 0.0.0.0
+max_connections = 1000
+expire_logs_days = 2
+innodb_file_per_table = 1
+innodb_snapshot_isolation = OFF
+sql_mode = ONLY_FULL_GROUP_BY
+EOF
 }
 
 
@@ -80,15 +112,15 @@ setup_cattle_db()
     local db_name=$CATTLE_DB_CATTLE_MYSQL_NAME
 
     echo "Setting up database"
-    mysql -uroot<< EOF
+    "$(mysql_bin)" --protocol=socket --socket="${MYSQL_SOCKET}" -uroot<< EOF
 CREATE DATABASE IF NOT EXISTS ${db_name} COLLATE = 'utf8_general_ci' CHARACTER SET = 'utf8';
 GRANT ALL ON ${db_name}.* TO "${db_user}"@'%' IDENTIFIED BY "${db_pass}";
 GRANT ALL ON ${db_name}.* TO "${db_user}"@'localhost' IDENTIFIED BY "${db_pass}";
 EOF
 
-    if ! echo 'show tables' | mysql -uroot $db_name | grep -iq account; then
+    if ! echo 'show tables' | "$(mysql_bin)" --protocol=socket --socket="${MYSQL_SOCKET}" -uroot $db_name | grep -iq account; then
         echo "Importing schema"
-        mysql -uroot $db_name < /usr/share/cattle/mysql-dump.sql
+        "$(mysql_bin)" --protocol=socket --socket="${MYSQL_SOCKET}" -uroot $db_name < /usr/share/cattle/mysql-dump.sql
     fi
 
 }

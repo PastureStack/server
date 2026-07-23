@@ -1,0 +1,10 @@
+# syntax=docker/dockerfile:1.7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.273
+FROM ${BASE_IMAGE}
+
+COPY bin/entry /usr/bin/entry
+RUN chmod 0755 /usr/bin/entry
+
+ENV PASTURESTACK_SERVER_MODE=externaldb
+USER 10001:10001
+CMD ["/usr/share/cattle/cattle.sh"]
