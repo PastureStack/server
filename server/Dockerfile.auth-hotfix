@@ -1,0 +1,151 @@
+# syntax=docker/dockerfile:1.7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.271
+FROM ${BASE_IMAGE}
+
+ARG CATALOG_SERVICE_VERSION=0.20.6
+ARG CATALOG_SERVICE_ARTIFACT_SHA256=5099bf0c69aad625dcd4c857b573496c88243c068891699293c99771859a414d
+ARG AUTHENTICATION_SERVICE_VERSION=0.1.7
+ARG AUTHENTICATION_SERVICE_ARTIFACT_SHA256=093ab5f5c7e733e56a7e5af5795bf49b4339234e2235ded36c5b854bc8b103bb
+ARG WINDOWS_AGENT_VERSION=0.13.21
+ARG WINDOWS_AGENT_ARTIFACT_SHA256=f511a41c0eb410473e1a223b70f7e8046b38f99e64b5b01167a4ca8c09a496e7
+ARG PER_HOST_SUBNET_VERSION=0.2.4
+ARG PER_HOST_SUBNET_WINDOWS_ARTIFACT_SHA256=2521cb61c0e001f2d6b4c16e920d2f62180a1bdf63e62f70544e2abdc24f9e2b
+
+RUN --mount=type=secret,id=rc16_artifact_base_url \
+    set -eu; \
+    artifact_base="$(cat /run/secrets/rc16_artifact_base_url)"; \
+    artifact_base="${artifact_base%/}"; \
+    auth_logic_target="$(find /usr/share/cattle/war/WEB-INF/lib -maxdepth 1 -type f -name 'cattle-iaas-auth-logic-*.jar' -print -quit)"; \
+    test -n "${auth_logic_target}"; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 -o /tmp/orchestration-engine-auth-logic.jar "${artifact_base}/orchestration-engine-auth-logic-${CATTLE_CATTLE_VERSION#v}.jar"; \
+    bash /usr/share/cattle/verify_release_asset /usr/share/cattle/release-SHA256SUMS /tmp/orchestration-engine-auth-logic.jar "orchestration-engine-auth-logic-${CATTLE_CATTLE_VERSION#v}.jar"; \
+    install -m 0644 /tmp/orchestration-engine-auth-logic.jar "${auth_logic_target}"; \
+    rm -f /tmp/orchestration-engine-auth-logic.jar
+
+COPY patches/service-auth.json /tmp/rc16-patches/schema/service/service-auth.json
+COPY patches/bootstrap.sh /tmp/rc16-patches/config-content/bootstrap/bootstrap.sh
+COPY patches/db/core-060.xml /tmp/rc16-patches/db/core-060.xml
+COPY patches/db/core-124.xml /tmp/rc16-patches/db/core-124.xml
+
+RUN set -eux; \
+    cd /tmp/rc16-patches; \
+    resources_jar="$(find /usr/share/cattle/war/WEB-INF/lib -maxdepth 1 -type f -name 'cattle-resources-*.jar' -print -quit)"; \
+    test -n "${resources_jar}"; \
+    jar uf "${resources_jar}" schema/service/service-auth.json config-content/bootstrap/bootstrap.sh db/core-060.xml db/core-124.xml; \
+    rm -rf /tmp/rc16-patches
+
+COPY patches/PatchV1GlobalSubscribe.java /tmp/rc16-patches/PatchV1GlobalSubscribe.java
+
+RUN set -eux; \
+    mkdir -p /tmp/rc16-patches/schema/v1; \
+    cd /tmp/rc16-patches; \
+    resources_jar="$(find /usr/share/cattle/war/WEB-INF/lib -maxdepth 1 -type f -name 'cattle-resources-*.jar' -print -quit)"; \
+    test -n "${resources_jar}"; \
+    jar xf "${resources_jar}" schema/v1/admin.ser schema/v1/project.ser schema/v1/service.ser; \
+    javac -cp "/usr/share/cattle/war/WEB-INF/lib/*" PatchV1GlobalSubscribe.java; \
+    java -cp ".:/usr/share/cattle/war/WEB-INF/lib/*" PatchV1GlobalSubscribe; \
+    jar uf "${resources_jar}" schema/v1/admin.ser schema/v1/service.ser; \
+    rm -rf /tmp/rc16-patches
+
+COPY patches/websocket-proxy-wrapper.sh /tmp/rc16-patches/websocket-proxy-wrapper.sh
+
+RUN set -eux; \
+    install_service_wrapper() { \
+        canonical="$1"; \
+        legacy="${2:-}"; \
+        if [ -x "/usr/bin/${canonical}" ]; then \
+            if ! grep -F 'RC16_WRAPPER_REAL_DIR' "/usr/bin/${canonical}" >/dev/null 2>&1; then \
+                mv -Tf "/usr/bin/${canonical}" "/usr/bin/${canonical}.real"; \
+            fi; \
+            cp /tmp/rc16-patches/websocket-proxy-wrapper.sh "/usr/bin/${canonical}"; \
+            chmod 0755 "/usr/bin/${canonical}" "/usr/bin/${canonical}.real"; \
+            if [ -n "${legacy}" ]; then \
+                rm -f "/usr/bin/${legacy}" "/usr/bin/${legacy}.real"; \
+                ln -sfn "${canonical}" "/usr/bin/${legacy}"; \
+            fi; \
+        fi; \
+    }; \
+    install_service_wrapper websocket-proxy; \
+    install_service_wrapper compose-executor rancher-compose-executor; \
+    install_service_wrapper host-provisioner go-machine-service; \
+    rm -rf /tmp/rc16-patches
+
+RUN --mount=type=secret,id=rc16_artifact_base_url \
+    set -eu; \
+    artifact_base="$(cat /run/secrets/rc16_artifact_base_url)"; \
+    artifact_base="${artifact_base%/}"; \
+    tmp_dir="$(mktemp -d)"; \
+    catalog_archive="${tmp_dir}/catalog-service-${CATALOG_SERVICE_VERSION}.tar.xz"; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 -o "${catalog_archive}" "${artifact_base}/catalog-service-${CATALOG_SERVICE_VERSION}.tar.xz"; \
+    bash /usr/share/cattle/verify_release_asset /usr/share/cattle/release-SHA256SUMS "${catalog_archive}"; \
+    echo "${CATALOG_SERVICE_ARTIFACT_SHA256}  ${catalog_archive}" | sha256sum -c -; \
+    tar -xJf "${catalog_archive}" -C "${tmp_dir}"; \
+    install -m 0755 "${tmp_dir}/catalog-service" /usr/bin/catalog-service; \
+    install -m 0755 "${tmp_dir}/catalog-service-sqlite" /usr/bin/catalog-service-sqlite; \
+    ln -sfn catalog-service /usr/bin/rancher-catalog-service; \
+    ln -sfn catalog-service-sqlite /usr/bin/rancher-catalog-service-sqlite; \
+    auth_archive="${tmp_dir}/authentication-service-${AUTHENTICATION_SERVICE_VERSION}-linux-amd64.tar.xz"; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 -o "${auth_archive}" "${artifact_base}/authentication-service-${AUTHENTICATION_SERVICE_VERSION}-linux-amd64.tar.xz"; \
+    bash /usr/share/cattle/verify_release_asset /usr/share/cattle/release-SHA256SUMS "${auth_archive}"; \
+    echo "${AUTHENTICATION_SERVICE_ARTIFACT_SHA256}  ${auth_archive}" | sha256sum -c -; \
+    tar -xJf "${auth_archive}" -C "${tmp_dir}"; \
+    install -m 0755 "${tmp_dir}/authentication-service" /usr/bin/authentication-service; \
+    ln -sfn authentication-service /usr/bin/rancher-auth-service; \
+    rm -rf "${tmp_dir}"; \
+    chmod 0755 /usr/bin/catalog-service /usr/bin/catalog-service-sqlite /usr/bin/authentication-service; \
+    sha256sum /usr/bin/catalog-service /usr/bin/catalog-service-sqlite /usr/bin/authentication-service
+
+COPY patches/websocket-proxy-wrapper.sh /tmp/rc16-patches/websocket-proxy-wrapper.sh
+
+RUN set -eux; \
+    install_service_wrapper() { \
+        canonical="$1"; \
+        legacy="$2"; \
+        if [ -x "/usr/bin/${canonical}" ]; then \
+            if ! grep -F 'RC16_WRAPPER_REAL_DIR' "/usr/bin/${canonical}" >/dev/null 2>&1; then \
+                mv -Tf "/usr/bin/${canonical}" "/usr/bin/${canonical}.real"; \
+            fi; \
+            cp /tmp/rc16-patches/websocket-proxy-wrapper.sh "/usr/bin/${canonical}"; \
+            chmod 0755 "/usr/bin/${canonical}" "/usr/bin/${canonical}.real"; \
+            rm -f "/usr/bin/${legacy}" "/usr/bin/${legacy}.real"; \
+            ln -sfn "${canonical}" "/usr/bin/${legacy}"; \
+        fi; \
+    }; \
+    install_service_wrapper catalog-service rancher-catalog-service; \
+    install_service_wrapper authentication-service rancher-auth-service; \
+    rm -rf /tmp/rc16-patches
+
+RUN --mount=type=secret,id=rc16_artifact_base_url \
+    set -eu; \
+    artifact_base="$(cat /run/secrets/rc16_artifact_base_url)"; \
+    artifact_base="${artifact_base%/}"; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 -o /usr/share/cattle/artifacts/node-agent-0.13.21.tar.gz "${artifact_base}/node-agent-0.13.21.tar.gz"; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 -o "/usr/share/cattle/artifacts/node-agent-${WINDOWS_AGENT_VERSION}-windows-amd64.zip" "${artifact_base}/node-agent-${WINDOWS_AGENT_VERSION}-windows-amd64.zip"; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 -o /usr/share/cattle/artifacts/host-api-0.38.4.tar.gz "${artifact_base}/host-api-0.38.4.tar.gz"; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 -o "/usr/share/cattle/artifacts/per-host-subnet-${PER_HOST_SUBNET_VERSION}-windows-amd64.zip" "${artifact_base}/per-host-subnet-${PER_HOST_SUBNET_VERSION}-windows-amd64.zip"; \
+    bash /usr/share/cattle/verify_release_asset /usr/share/cattle/release-SHA256SUMS /usr/share/cattle/artifacts/node-agent-0.13.21.tar.gz; \
+    bash /usr/share/cattle/verify_release_asset /usr/share/cattle/release-SHA256SUMS "/usr/share/cattle/artifacts/node-agent-${WINDOWS_AGENT_VERSION}-windows-amd64.zip"; \
+    bash /usr/share/cattle/verify_release_asset /usr/share/cattle/release-SHA256SUMS /usr/share/cattle/artifacts/host-api-0.38.4.tar.gz; \
+    bash /usr/share/cattle/verify_release_asset /usr/share/cattle/release-SHA256SUMS "/usr/share/cattle/artifacts/per-host-subnet-${PER_HOST_SUBNET_VERSION}-windows-amd64.zip"; \
+    echo "${WINDOWS_AGENT_ARTIFACT_SHA256}  /usr/share/cattle/artifacts/node-agent-${WINDOWS_AGENT_VERSION}-windows-amd64.zip" | sha256sum -c -; \
+    echo "${PER_HOST_SUBNET_WINDOWS_ARTIFACT_SHA256}  /usr/share/cattle/artifacts/per-host-subnet-${PER_HOST_SUBNET_VERSION}-windows-amd64.zip" | sha256sum -c -; \
+    ln -sf node-agent-0.13.21.tar.gz /usr/share/cattle/artifacts/go-agent.tar.gz; \
+    ln -sf host-api-0.38.4.tar.gz /usr/share/cattle/artifacts/host-api.tar.gz; \
+    { \
+        echo "# Autopopulated by cattle_binary_pull"; \
+        echo "export CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL=/usr/share/cattle/artifacts/node-agent-0.13.21.tar.gz"; \
+        echo "export CATTLE_AGENT_PACKAGE_HOST_API_URL=/usr/share/cattle/artifacts/host-api-0.38.4.tar.gz"; \
+        echo "export CATTLE_AGENT_PACKAGE_WINDOWS_AGENT_URL=/usr/share/cattle/artifacts/node-agent-${WINDOWS_AGENT_VERSION}-windows-amd64.zip"; \
+        echo "export CATTLE_AGENT_PACKAGE_PER_HOST_SUBNET_URL=/usr/share/cattle/artifacts/per-host-subnet-${PER_HOST_SUBNET_VERSION}-windows-amd64.zip"; \
+    } > /usr/share/cattle/env_vars; \
+    sha256sum /usr/share/cattle/artifacts/node-agent-0.13.21.tar.gz "/usr/share/cattle/artifacts/node-agent-${WINDOWS_AGENT_VERSION}-windows-amd64.zip" /usr/share/cattle/artifacts/host-api-0.38.4.tar.gz "/usr/share/cattle/artifacts/per-host-subnet-${PER_HOST_SUBNET_VERSION}-windows-amd64.zip"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.271
+ENV CATTLE_CATTLE_VERSION=v0.183.269
+ENV DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.30@sha256:5310b748fc52bcd87fdeaa2285f424a07ec13c9b41639692eef96bda53ac8277
+ENV CATTLE_RANCHER_SERVER_IMAGE=ghcr.io/pasturestack/server
+ENV PASTURESTACK_RELEASE_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.271
+ENV RC16_ARTIFACT_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.271
+ENV PASTURESTACK_CATALOG_COMMIT=c2fecf2c884cef394a79f041f9081908c1bbe55e
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"c2fecf2c884cef394a79f041f9081908c1bbe55e"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"c2fecf2c884cef394a79f041f9081908c1bbe55e"}}}'

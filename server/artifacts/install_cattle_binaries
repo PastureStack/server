@@ -1,26 +1,146 @@
 #!/bin/bash
 
-set -e 
+set -e
 
 mkdir -p /tmp/extracted_cattle
 cd /tmp/extracted_cattle
 
-install_build_tools()
+: "${RC16_ARTIFACT_BASE_URL:?set RC16_ARTIFACT_BASE_URL before running install_cattle_binaries}"
+RC16_ARTIFACT_BASE_URL="${RC16_ARTIFACT_BASE_URL%/}"
+RC16_GO_AGENT_VERSION="${RC16_GO_AGENT_VERSION:-0.13.21}"
+RC16_WINDOWS_AGENT_VERSION="${RC16_WINDOWS_AGENT_VERSION:-0.13.21}"
+RC16_HOST_API_VERSION="${RC16_HOST_API_VERSION:-0.38.4}"
+RC16_CATALOG_SERVICE_VERSION="${RC16_CATALOG_SERVICE_VERSION:-0.20.6}"
+RC16_AUTHENTICATION_SERVICE_VERSION="${RC16_AUTHENTICATION_SERVICE_VERSION:-0.1.7}"
+RC16_WEBSOCKET_PROXY_VERSION="${RC16_WEBSOCKET_PROXY_VERSION:-0.23.12}"
+RC16_COMPOSE_EXECUTOR_VERSION="${RC16_COMPOSE_EXECUTOR_VERSION:-0.14.30}"
+RC16_HOST_PROVISIONER_VERSION="${RC16_HOST_PROVISIONER_VERSION:-0.39.4}"
+RC16_PER_HOST_SUBNET_VERSION="${RC16_PER_HOST_SUBNET_VERSION:-0.2.4}"
+RC16_MACHINE_DRIVER_BUNDLE_VERSION="${RC16_MACHINE_DRIVER_BUNDLE_VERSION:-0.14.0}"
+RC16_VSPHERE_CLI_BUNDLE_VERSION="${RC16_VSPHERE_CLI_BUNDLE_VERSION:-0.54.1}"
+RC16_SECRET_DELIVERY_API_VERSION="${RC16_SECRET_DELIVERY_API_VERSION:-0.2.2}"
+RC16_USAGE_TELEMETRY_AGENT_VERSION="${RC16_USAGE_TELEMETRY_AGENT_VERSION:-0.4.0-pasturestack.1}"
+RC16_WEBHOOK_AUTOMATION_SERVICE_VERSION="${RC16_WEBHOOK_AUTOMATION_SERVICE_VERSION:-0.9.15-pasturestack.1}"
+RC16_ARTIFACT_SHA256_FILE="${RC16_ARTIFACT_SHA256_FILE:-/usr/share/cattle/release-SHA256SUMS}"
+RC16_VERIFY_RELEASE_ASSETS="${RC16_VERIFY_RELEASE_ASSETS:-1}"
+
+normalize_url()
 {
-    BUILD_TOOLS_VERSION="0.3.1"
-    tmpdir=$(mktemp -d)
-    pushd $tmpdir
-    curl -sSL -o build-tools.tar.gz https://github.com/rancherio/build-tools/archive/v${BUILD_TOOLS_VERSION}.tar.gz
-    tar -xzvf build-tools.tar.gz && cp ./build-tools-${BUILD_TOOLS_VERSION}/bin/* /usr/bin
-    popd
-    rm -rf ${tmpdir}
+    case "$1" in
+        //*) echo "https:$1" ;;
+        *) echo "$1" ;;
+    esac
+}
+
+download_file()
+{
+    local src
+    src=$(normalize_url "$1")
+    local file
+    file=$(basename "${src%%\?*}")
+    local connect_timeout="${RC16_INSTALL_BINARIES_CONNECT_TIMEOUT:-10}"
+    local max_time="${RC16_INSTALL_BINARIES_MAX_TIME:-300}"
+
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout "$connect_timeout" --max-time "$max_time" -o "${file}" "${src}"
+    if [ "${RC16_VERIFY_RELEASE_ASSETS}" != "0" ]; then
+        bash /usr/share/cattle/verify_release_asset "${RC16_ARTIFACT_SHA256_FILE}" "${file}" >/dev/null
+    fi
+    echo "${file}"
+}
+
+install_binary()
+{
+    local src="$1"
+    local dest="$2"
+    local binary="${3:-}"
+    local file
+
+    pushd /tmp >/dev/null
+    file=$(download_file "${src}") || exit 1
+    if [ -z "${binary}" ]; then
+        binary=$(echo "${file}" | cut -d'.' -f1)
+    fi
+
+    case "${file}" in
+        *.tar.xz)
+            tar -xpJf "${file}" -C "${dest}"
+            ;;
+        *.tar.gz)
+            tar -xzvf "${file}" -C "${dest}"
+            ;;
+        *.xz)
+            xz -c -d "${file}" > "${dest}/${binary}"
+            ;;
+        *.gz)
+            gzip -dcf "${file}" > "${dest}/${binary}"
+            ;;
+        *.tar)
+            tar -xvf "${file}" -C "${dest}"
+            ;;
+        *)
+            cp "${file}" "${dest}/${binary}"
+            ;;
+    esac
+
+    chmod +x "${dest}/${binary}"
+    rm -f "${file}"
+    popd >/dev/null
+}
+
+copy_agent()
+{
+    local src="$1"
+    local dest="$2"
+
+    pushd "${dest}" >/dev/null
+    download_file "${src}" >/dev/null || exit 1
+    popd >/dev/null
+}
+
+cattle_binary_pull()
+{
+    local property_file="${1}"
+    local dest="${2}"
+    local packages="${3:-service}"
+
+    if [ ! -f "${property_file}" ]; then
+        return 0
+    fi
+
+    grep "${packages}\.package\..*\.url" "${property_file}" | while IFS='=' read -r _ value; do
+        value="${value%$'\r'}"
+        local src="${value%%,*}"
+        local binary=""
+        if [ "${value}" != "${src}" ]; then
+            binary="${value#*,}"
+        fi
+
+        if [ "${packages}" = "agent" ]; then
+            copy_agent "${src}" "${dest}"
+        else
+            install_binary "${src}" "${dest}" "${binary}"
+        fi
+    done
 }
 
 unpack_jar()
 {
     unzip /usr/share/cattle/cattle.jar
     mkdir -p res && cd res
-    unpack200 ../WEB-INF/lib/cattle-resources-*.jar.pack resources.jar
+    if ls ../WEB-INF/lib/cattle-resources-*.jar.pack >/dev/null 2>&1; then
+        echo "Pack200 cattle resources are not supported by the rc16 JDK25 server image; rebuild cattle without .pack entries" >&2
+        exit 1
+    elif ls ../WEB-INF/lib/cattle-resources-*.jar >/dev/null 2>&1; then
+        cp ../WEB-INF/lib/cattle-resources-*.jar resources.jar
+    elif [ -f ../resources.jar ]; then
+        tmpdir=$(mktemp -d)
+        unzip -q ../resources.jar 'WEB-INF/lib/cattle-resources-*.jar' -d "${tmpdir}"
+        cp "${tmpdir}"/WEB-INF/lib/cattle-resources-*.jar resources.jar
+        rm -rf "${tmpdir}"
+    else
+        echo "Failed to locate cattle-resources jar in cattle bundle" >&2
+        exit 1
+    fi
     unzip resources.jar
 }
 
@@ -37,18 +157,83 @@ local_agents()
     for i in $(grep agent\.package ./cattle-global.properties); do
         env_var_name=$(echo $i | cut -d'=' -f1 | sed 's/^\(.*\)/CATTLE_\1/;s/\./_/g' | tr [a-z] [A-Z])
         url=$(echo $i| cut -d'=' -f2)
-        file_name=$(echo ${url##*/})
+        url="${url%$'\r'}"
+        url=$(normalize_url "$url")
+        file_name=$(basename "${url%%\?*}")
         echo export ${env_var_name}=/usr/share/cattle/artifacts/${file_name} >> /usr/share/cattle/env_vars
     done
 }
 
-trap clean_up EXIT SIGINT SIGTERM
+normalize_cattle_global_urls()
+{
+    if [ -f ./cattle-global.properties ]; then
+        local placeholder_base
+        placeholder_base="$(printf 'https://%s%s/%s' 'artifacts' '.invalid' 'rc16')"
+        local legacy_release_base
+        legacy_release_base="$(printf 'https://%s.%s.%s' 'releases' 'rancher' 'com')"
+        local ui_version="${CATTLE_UI_VERSION:-1.6.56}"
+        local api_ui_version="${CATTLE_API_UI_VERSION:-1.1.14}"
+        sed -i -E 's#=(//[^[:space:]]+)#=https:\1#g' ./cattle-global.properties
+        sed -i -E \
+            -e "s|${placeholder_base}|${RC16_ARTIFACT_BASE_URL}|g" \
+            -e "s|${legacy_release_base}/ui/stable|${RC16_ARTIFACT_BASE_URL}/web-console-${ui_version}.tar.gz|g" \
+            -e "s|${legacy_release_base}/ui/1\.6\.[0-9]+|${RC16_ARTIFACT_BASE_URL}/web-console-${ui_version}.tar.gz|g" \
+            -e "s|${legacy_release_base}/api-ui/1\.0\.[0-9]+|${RC16_ARTIFACT_BASE_URL}/api-explorer-${api_ui_version}.tar.gz|g" \
+            -e "s|https://github.com/rancher/agent/releases/download/v0\.13\.11/go-agent\.tar\.gz|${RC16_ARTIFACT_BASE_URL}/node-agent-${RC16_GO_AGENT_VERSION}.tar.gz|g" \
+            -e "s|https://github.com/rancher/host-api/releases/download/v0\.38\.1/host-api\.tar\.gz|${RC16_ARTIFACT_BASE_URL}/host-api-${RC16_HOST_API_VERSION}.tar.gz|g" \
+            -e "s|https?://[^,[:space:]]*/go-agent-v0\.13\.[0-9]+\.tar\.gz|${RC16_ARTIFACT_BASE_URL}/node-agent-${RC16_GO_AGENT_VERSION}.tar.gz|g" \
+            -e "s#https?://[^,[:space:]]*/(go-agent-v|node-agent-)0\.13\.[0-9]+\.tar\.gz#${RC16_ARTIFACT_BASE_URL}/node-agent-${RC16_GO_AGENT_VERSION}.tar.gz#g" \
+            -e "s|https?://[^,[:space:]]*/host-api-v?0\.38\.[0-9]+\.tar\.gz|${RC16_ARTIFACT_BASE_URL}/host-api-${RC16_HOST_API_VERSION}.tar.gz|g" \
+            -e "s|${RC16_ARTIFACT_BASE_URL}/host-api-v?0\.38\.[0-9]+\.tar\.gz|${RC16_ARTIFACT_BASE_URL}/host-api-${RC16_HOST_API_VERSION}.tar.gz|g" \
+            -e "s|https://github.com/rancher/agent/releases/download/v0\.13\.3/go-agent\.zip|${RC16_ARTIFACT_BASE_URL}/node-agent-${RC16_WINDOWS_AGENT_VERSION}-windows-amd64.zip|g" \
+            -e "s|https?://[^,[:space:]]*/go-agent-v0\.13\.[0-9]+\.zip|${RC16_ARTIFACT_BASE_URL}/node-agent-${RC16_WINDOWS_AGENT_VERSION}-windows-amd64.zip|g" \
+            -e "s#https?://[^,[:space:]]*/node-agent-0\.13\.[0-9]+(-windows-amd64)?\.zip#${RC16_ARTIFACT_BASE_URL}/node-agent-${RC16_WINDOWS_AGENT_VERSION}-windows-amd64.zip#g" \
+            -e "s|https://github.com/rancher/per-host-subnet/releases/download/v0\.2\.4/rancher-per-host-subnet\.zip|${RC16_ARTIFACT_BASE_URL}/per-host-subnet-${RC16_PER_HOST_SUBNET_VERSION}-windows-amd64.zip|g" \
+            -e "s|https?://[^,[:space:]]*/rancher-per-host-subnet-v?0\.2\.[0-9]+\.zip|${RC16_ARTIFACT_BASE_URL}/per-host-subnet-${RC16_PER_HOST_SUBNET_VERSION}-windows-amd64.zip|g" \
+            -e "s|https?://[^,[:space:]]*/per-host-subnet-?v?0\.2\.[0-9]+(-windows-amd64)?\.zip|${RC16_ARTIFACT_BASE_URL}/per-host-subnet-${RC16_PER_HOST_SUBNET_VERSION}-windows-amd64.zip|g" \
+            -e "s|https://github.com/rancher/rancher-compose/releases/download/v0\.1\.0/rancher-compose_linux-amd64|${RC16_ARTIFACT_BASE_URL}/rancher-compose_linux-amd64-v0.1.0|g" \
+            -e "s|https://github.com/rancher/rancher-compose/releases/download/v0\.1\.0/rancher-compose_darwin-amd64|${RC16_ARTIFACT_BASE_URL}/rancher-compose_darwin-amd64-v0.1.0|g" \
+            -e "s|https://github.com/rancher/rancher-compose/releases/download/v0\.1\.0/rancher-compose_windows-386.exe|${RC16_ARTIFACT_BASE_URL}/rancher-compose_windows-386-v0.1.0.exe|g" \
+            -e "s|https://github.com/rancher/catalog-service/releases/download/v0\.19\.10/rancher-catalog-service\.tar\.xz|${RC16_ARTIFACT_BASE_URL}/catalog-service-${RC16_CATALOG_SERVICE_VERSION}.tar.xz,catalog-service|g" \
+            -e "s|https?://[^,[:space:]]*/rancher-catalog-service-rc16-v0\.[0-9.]+\.tar\.xz(,rancher-catalog-service)?|${RC16_ARTIFACT_BASE_URL}/catalog-service-${RC16_CATALOG_SERVICE_VERSION}.tar.xz,catalog-service|g" \
+            -e "s|https?://[^,[:space:]]*/catalog-service-v?0\.[0-9.]+\.tar\.xz(,(rancher-)?catalog-service)?|${RC16_ARTIFACT_BASE_URL}/catalog-service-${RC16_CATALOG_SERVICE_VERSION}.tar.xz,catalog-service|g" \
+            -e "s|https://github.com/rancher/rancher-compose-executor/releases/download/v0\.14\.30/rancher-compose\.gz,rancher-compose-executor|${RC16_ARTIFACT_BASE_URL}/compose-executor-${RC16_COMPOSE_EXECUTOR_VERSION}-linux-amd64.gz,compose-executor|g" \
+            -e "s|https?://[^,[:space:]]*/rancher-compose-executor-v?0\.[0-9.]+\.gz(,rancher-compose-executor)?|${RC16_ARTIFACT_BASE_URL}/compose-executor-${RC16_COMPOSE_EXECUTOR_VERSION}-linux-amd64.gz,compose-executor|g" \
+            -e "s|https?://[^,[:space:]]*/compose-cli-v?0\.[0-9.]+\.gz(,rancher-compose-executor)?|${RC16_ARTIFACT_BASE_URL}/compose-executor-${RC16_COMPOSE_EXECUTOR_VERSION}-linux-amd64.gz,compose-executor|g" \
+            -e "s|https?://[^,[:space:]]*/compose-executor-0\.[0-9.]+-linux-amd64\.gz(,(rancher-)?compose-executor)?|${RC16_ARTIFACT_BASE_URL}/compose-executor-${RC16_COMPOSE_EXECUTOR_VERSION}-linux-amd64.gz,compose-executor|g" \
+            -e "s|https://github.com/rancher/websocket-proxy/releases/download/v0\.23\.12/websocket-proxy\.tar\.xz|${RC16_ARTIFACT_BASE_URL}/websocket-proxy-${RC16_WEBSOCKET_PROXY_VERSION}-linux-amd64.tar.xz,websocket-proxy|g" \
+            -e "s|https?://[^,[:space:]]*/websocket-proxy-v?0\.[0-9.]+(-linux-amd64)?\.tar\.xz(,websocket-proxy)?|${RC16_ARTIFACT_BASE_URL}/websocket-proxy-${RC16_WEBSOCKET_PROXY_VERSION}-linux-amd64.tar.xz,websocket-proxy|g" \
+            -e "s|https://github.com/rancher/go-machine-service/releases/download/v0\.39\.4/go-machine-service\.tar\.xz|${RC16_ARTIFACT_BASE_URL}/host-provisioner-${RC16_HOST_PROVISIONER_VERSION}-linux-amd64.tar.xz,host-provisioner|g" \
+            -e "s|https?://[^,[:space:]]*/go-machine-service-v?0\.39\.[0-9]+\.tar\.xz(,go-machine-service)?|${RC16_ARTIFACT_BASE_URL}/host-provisioner-${RC16_HOST_PROVISIONER_VERSION}-linux-amd64.tar.xz,host-provisioner|g" \
+            -e "s#https?://[^,[:space:]]*/host-provisioner-v?0\.39\.[0-9]+(-linux-amd64)?\.tar\.xz(,(go-machine-service|host-provisioner))?#${RC16_ARTIFACT_BASE_URL}/host-provisioner-${RC16_HOST_PROVISIONER_VERSION}-linux-amd64.tar.xz,host-provisioner#g" \
+            -e "s|https://github.com/rancher/machine-package/releases/download/v0\.14\.0/docker-machine\.tar\.gz|${RC16_ARTIFACT_BASE_URL}/machine-driver-bundle-${RC16_MACHINE_DRIVER_BUNDLE_VERSION}-linux-amd64.tar.xz,docker-machine|g" \
+            -e "s#https?://[^,[:space:]]*/(docker-machine|machine-package)-?v?0\.14\.[0-9]+\.(tar\.gz|tar\.xz)(,docker-machine)?#${RC16_ARTIFACT_BASE_URL}/machine-driver-bundle-${RC16_MACHINE_DRIVER_BUNDLE_VERSION}-linux-amd64.tar.xz,docker-machine#g" \
+            -e "s|https?://[^,[:space:]]*/machine-driver-bundle-0\.14\.[0-9]+(-linux-amd64)?\.tar\.xz(,docker-machine)?|${RC16_ARTIFACT_BASE_URL}/machine-driver-bundle-${RC16_MACHINE_DRIVER_BUNDLE_VERSION}-linux-amd64.tar.xz,docker-machine|g" \
+            -e "s|https://github.com/rancher/telemetry/releases/download/v0\.4\.0/telemetry\.tar\.xz|${RC16_ARTIFACT_BASE_URL}/usage-telemetry-agent-${RC16_USAGE_TELEMETRY_AGENT_VERSION}-linux-amd64.tar.xz,usage-telemetry-agent|g" \
+            -e "s#https?://[^,[:space:]]*/telemetry(-v)?0\.4\.[0-9]+\.tar\.xz(,telemetry)?#${RC16_ARTIFACT_BASE_URL}/usage-telemetry-agent-${RC16_USAGE_TELEMETRY_AGENT_VERSION}-linux-amd64.tar.xz,usage-telemetry-agent#g" \
+            -e "s#https?://[^,[:space:]]*/usage-telemetry-agent-0\.4\.0-pasturestack\.[0-9]+-linux-amd64\.tar\.xz(,(telemetry|usage-telemetry-agent))?#${RC16_ARTIFACT_BASE_URL}/usage-telemetry-agent-${RC16_USAGE_TELEMETRY_AGENT_VERSION}-linux-amd64.tar.xz,usage-telemetry-agent#g" \
+            -e "s|https://github.com/rancher/rancher-auth-service/releases/download/v0\.4\.33/rancher-auth-service\.tar\.xz|${RC16_ARTIFACT_BASE_URL}/authentication-service-${RC16_AUTHENTICATION_SERVICE_VERSION}-linux-amd64.tar.xz,authentication-service|g" \
+            -e "s|https?://[^,[:space:]]*/rancher-auth-service-rc16-v0\.[0-9.]+(,rancher-auth-service)?|${RC16_ARTIFACT_BASE_URL}/authentication-service-${RC16_AUTHENTICATION_SERVICE_VERSION}-linux-amd64.tar.xz,authentication-service|g" \
+            -e "s#https?://[^,[:space:]]*/authentication-service-?v?0\.[0-9.]+(-linux-amd64)?(\.tar\.xz)?(,(rancher-auth-service|authentication-service))?#${RC16_ARTIFACT_BASE_URL}/authentication-service-${RC16_AUTHENTICATION_SERVICE_VERSION}-linux-amd64.tar.xz,authentication-service#g" \
+            -e "s#https://github.com/rancher/webhook-service/releases/download/v0\.9\.15/webhook-service\.tar\.xz(,webhook-service)?#${RC16_ARTIFACT_BASE_URL}/webhook-automation-service-${RC16_WEBHOOK_AUTOMATION_SERVICE_VERSION}-linux-amd64.tar.xz,webhook-automation-service#g" \
+            -e "s#https?://[^,[:space:]]*/webhook-service-?v?0\.9\.[0-9]+\.tar\.xz(,webhook-service)?#${RC16_ARTIFACT_BASE_URL}/webhook-automation-service-${RC16_WEBHOOK_AUTOMATION_SERVICE_VERSION}-linux-amd64.tar.xz,webhook-automation-service#g" \
+            -e "s#https?://[^,[:space:]]*/webhook-automation-service-0\.9\.15-pasturestack\.[0-9]+-linux-amd64\.tar\.xz(,(webhook-service|webhook-automation-service))?#${RC16_ARTIFACT_BASE_URL}/webhook-automation-service-${RC16_WEBHOOK_AUTOMATION_SERVICE_VERSION}-linux-amd64.tar.xz,webhook-automation-service#g" \
+            -e "s|https://github.com/rancher/secrets-api/releases/download/v0\.2\.2/secrets-api|${RC16_ARTIFACT_BASE_URL}/secret-delivery-api-${RC16_SECRET_DELIVERY_API_VERSION}-linux-amd64.tar.xz,secret-delivery-api|g" \
+            -e "s|https?://[^,[:space:]]*/secrets-api-v?0\.2\.[0-9]+(,secrets-api)?|${RC16_ARTIFACT_BASE_URL}/secret-delivery-api-${RC16_SECRET_DELIVERY_API_VERSION}-linux-amd64.tar.xz,secret-delivery-api|g" \
+            -e "s#https?://[^,[:space:]]*/secret-delivery-api-0\.2\.[0-9]+-linux-amd64\.tar\.xz(,(secrets-api|secret-delivery-api))?#${RC16_ARTIFACT_BASE_URL}/secret-delivery-api-${RC16_SECRET_DELIVERY_API_VERSION}-linux-amd64.tar.xz,secret-delivery-api#g" \
+            -e "s|https://github.com/vmware/govmomi/releases/download/v0\.2\.0/govc_linux_amd64\.gz(,govc)?|${RC16_ARTIFACT_BASE_URL}/vsphere-cli-bundle-${RC16_VSPHERE_CLI_BUNDLE_VERSION}-linux-amd64.tar.xz,govc|g" \
+            -e "s|https?://[^,[:space:]]*/govc-v0\.[0-9]+\.[0-9]+(-go[0-9]+)?-linux-amd64\.tar\.gz(,govc)?|${RC16_ARTIFACT_BASE_URL}/vsphere-cli-bundle-${RC16_VSPHERE_CLI_BUNDLE_VERSION}-linux-amd64.tar.xz,govc|g" \
+            -e "s|https?://[^,[:space:]]*/vsphere-cli-bundle-0\.[0-9]+\.[0-9]+-linux-amd64\.tar\.xz(,govc)?|${RC16_ARTIFACT_BASE_URL}/vsphere-cli-bundle-${RC16_VSPHERE_CLI_BUNDLE_VERSION}-linux-amd64.tar.xz,govc|g" \
+            ./cattle-global.properties
+    fi
+}
 
-install_build_tools
+trap clean_up EXIT SIGINT SIGTERM
 
 if [ -f "/usr/share/cattle/cattle.jar" ]; then
     unpack_jar
-    /usr/bin/cattle-binary-pull ./cattle-global.properties /usr/bin
+    normalize_cattle_global_urls
+    cattle_binary_pull ./cattle-global.properties /usr/bin
     local_agents
-    /usr/bin/cattle-binary-pull ./cattle-global.properties /usr/share/cattle/artifacts agent
+    cattle_binary_pull ./cattle-global.properties /usr/share/cattle/artifacts agent
 fi

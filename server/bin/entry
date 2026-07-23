@@ -3,9 +3,120 @@
 set -e
 
 export STRICT_ENFORCING=false
+PASTURESTACK_LOCALE="${PASTURESTACK_LOCALE:-en-US}"
+
+is_zh_tw()
+{
+    case "$PASTURESTACK_LOCALE" in
+        zh-TW|zh-tw|zh_Hant_TW) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+entry_error()
+{
+    local english="$1"
+    local traditional_chinese="$2"
+    if is_zh_tw; then
+        echo "$traditional_chinese" >&2
+    else
+        echo "$english" >&2
+    fi
+}
+
+
+is_default_server_command()
+{
+    if [ "$#" = 0 ]; then
+        return 0
+    fi
+
+    if [ "$#" = 1 ] && [ "$1" = "/usr/share/cattle/cattle.sh" ]; then
+        return 0
+    fi
+
+    if [ "$#" = 2 ] && [ "$1" = "/usr/bin/s6-svscan" ] && [ "$2" = "/service" ]; then
+        return 0
+    fi
+
+    return 1
+}
+
+require_external_db_for_externaldb_mode()
+{
+    if [ -n "${CATTLE_DB_CATTLE_MYSQL_HOST:-}" ] || [ -n "${MYSQL_PORT_3306_TCP_ADDR:-}" ]; then
+        return 0
+    fi
+
+    entry_error \
+        "PastureStack Server external-DB non-root mode requires --db-host or CATTLE_DB_CATTLE_MYSQL_HOST" \
+        "PastureStack Server 外部資料庫非 root 模式需要 --db-host 或 CATTLE_DB_CATTLE_MYSQL_HOST"
+    exit 1
+}
+
+fetch_advertise_address()
+{
+    local source_name="$1"
+    local url="$2"
+    local connect_timeout="${PASTURESTACK_ADVERTISE_ADDRESS_CONNECT_TIMEOUT:-${RC16_ADVERTISE_ADDRESS_CONNECT_TIMEOUT:-2}}"
+    local max_time="${PASTURESTACK_ADVERTISE_ADDRESS_MAX_TIME:-${RC16_ADVERTISE_ADDRESS_MAX_TIME:-10}}"
+    local value
+
+    value=$(curl -fsS --connect-timeout "$connect_timeout" --max-time "$max_time" "$url")
+    if [ -z "$value" ]; then
+        entry_error \
+            "Failed to resolve a non-empty advertise address from ${source_name}" \
+            "無法從 ${source_name} 取得非空白的對外位址"
+        exit 1
+    fi
+
+    printf '%s\n' "$value"
+}
+
+fetch_interface_advertise_address()
+{
+    local interface_name="$1"
+    local ip_output
+    local value
+
+    ip_output=$(ip addr show dev "$interface_name")
+    value=$(printf '%s\n' "$ip_output" | awk '$1 == "inet" { split($2, addr, "/"); print addr[1]; exit }')
+    if [ -z "$value" ]; then
+        entry_error \
+            "Failed to resolve a non-empty advertise address from interface ${interface_name}" \
+            "無法從網路介面 ${interface_name} 取得非空白的對外位址"
+        exit 1
+    fi
+
+    printf '%s\n' "$value"
+}
 
 usage()
 {
+    if is_zh_tw; then
+        cat << EOF
+範例：
+  # 單一容器（非高可用性）
+  $ docker run -d --restart=unless-stopped -p 8080:8080 ${CATTLE_RANCHER_SERVER_IMAGE}:${CATTLE_RANCHER_SERVER_VERSION}
+
+  # 使用外部資料庫
+  $ docker run -d --restart=unless-stopped -p 8080:8080 ${CATTLE_RANCHER_SERVER_IMAGE}:${CATTLE_RANCHER_SERVER_VERSION} --db-host db.example.com --db-user cattle --db-pass secret
+
+用法：docker run -d -p 8080:8080 ${CATTLE_RANCHER_SERVER_IMAGE}:${CATTLE_RANCHER_SERVER_VERSION} [選項]
+
+選項：
+   --db-host               MySQL 伺服器的 IP 或主機名稱
+   --db-port               MySQL 連接埠（預設：3306）
+   --db-user               MySQL 使用者名稱（預設：cattle，相容性名稱）
+   --db-pass               MySQL 密碼
+   --db-name               MySQL 資料庫名稱（預設：cattle，相容性名稱）
+   --db-strict-enforcing   預先建立含主鍵的 DATABASECHANGELOG 資料表
+   --advertise-address     高可用性節點使用的對外位址、介面、awslocal 或 ipify
+   --advertise-http-port   其他伺服器連線使用的已發布 HTTP 連接埠
+EOF
+        exit 0
+    fi
+
     cat << EOF
 Example:
   # Single container (non-HA)
@@ -37,7 +148,7 @@ Clustering Options:
                            a network interface (eg: eth0), or an ip address itself (eg: 172.10.11.12)
    --advertise-http-port   The published HTTP port on which other servers can connect to this one.
                            This should be the published port of the Docker container and not the port
-                           of the load balancer in front of Rancher. (default: 8080)
+                           of the load balancer in front of PastureStack. (default: 8080)
 EOF
     exit 0
 }
@@ -81,14 +192,17 @@ while [ "$#" -gt 0 ]; do
             export CATTLE_MODULE_PROFILE_HAZELCAST_EVENTING=true
             export SPRING_PROFILES_ACTIVE="hazelcast.eventing,hazelcast.lock,hazelcast.config.basic"
             export DEFAULT_CATTLE_TRAEFIK_EXECUTE=true
-            if [ -e "/sys/class/net/$1" ]; then
-                export CATTLE_CLUSTER_ADVERTISE_ADDRESS=$(ip addr show dev $1 | grep -w inet | awk '{print $2}' | cut -f1 -d/)
+            if [ -e "${PASTURESTACK_SYS_CLASS_NET:-${RC16_SYS_CLASS_NET:-/sys/class/net}}/$1" ]; then
+                CATTLE_CLUSTER_ADVERTISE_ADDRESS=$(fetch_interface_advertise_address "$1")
+                export CATTLE_CLUSTER_ADVERTISE_ADDRESS
             elif [ "$1" = "awslocal" ]; then
-                export CATTLE_CLUSTER_ADVERTISE_ADDRESS=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
+                CATTLE_CLUSTER_ADVERTISE_ADDRESS=$(fetch_advertise_address awslocal "${PASTURESTACK_AWSLOCAL_METADATA_URL:-${RC16_AWSLOCAL_METADATA_URL:-http://169.254.169.254/latest/meta-data/local-ipv4}}")
+                export CATTLE_CLUSTER_ADVERTISE_ADDRESS
             elif [ "$1" = "ipify" ]; then
-                export CATTLE_CLUSTER_ADVERTISE_ADDRESS=$(curl -s https://api.ipify.org)
+                CATTLE_CLUSTER_ADVERTISE_ADDRESS=$(fetch_advertise_address ipify "${PASTURESTACK_IPIFY_URL:-${RC16_IPIFY_URL:-https://api.ipify.org}}")
+                export CATTLE_CLUSTER_ADVERTISE_ADDRESS
             else
-                export CATTLE_CLUSTER_ADVERTISE_ADDRESS=$1
+                export CATTLE_CLUSTER_ADVERTISE_ADDRESS="$1"
             fi
             ;;
         --advertise-http-port)
@@ -110,6 +224,16 @@ done
 
 if [ "${STRICT_ENFORCING}" = "true" ];then
    mysql-strict-sql-setup.sh
+fi
+
+if [ "${PASTURESTACK_SERVER_MODE:-${RC16_SERVER_MODE:-}}" = "externaldb" ] && is_default_server_command "$@"; then
+    if [ "${CATTLE_DB_CATTLE_DATABASE:-mysql}" = "mysql" ]; then
+        require_external_db_for_externaldb_mode
+    fi
+
+    # The public external-DB image is intentionally single-process and non-root.
+    # The legacy embedded-DB image keeps s6/MariaDB for old volume migrations.
+    exec /usr/share/cattle/cattle.sh
 fi
 
 if [ "$#" = 0 ]; then
