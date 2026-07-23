@@ -1,20 +1,14 @@
-$IMAGE=$(get-item env:IMAGE -ErrorAction Ignore)
+Write-Error @"
+PastureStack does not publish or build Windows agent images.
 
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-Invoke-WebRequest -Uri "https://github.com/rancher/windows-binaries/releases/download/v0.0.1/devcon.exe" -OutFile "tools/devcon.exe"
-$byteArray=(Invoke-WebRequest -Uri "https://github.com/rancher/windows-binaries/releases/download/v0.0.1/MD5SUM").Content
-$tarMD5=[System.Text.Encoding]::ASCII.GetString($byteArray).ToUpper()
-$fileHash=(Get-FileHash -Path "tools/devcon.exe" -Algorithm MD5).Hash
-if("$fileHash" -ne "$tarMD5"){
-    Write-Host "MD5SUM of devcon.exe mismatch between local and remote storage."
-    Exit 1
-}
+The original build path depended on an EOL Nano Server 2016 base image and
+historical upstream Windows helper artifacts. That path is intentionally disabled so
+source-public scans do not mistake it for a maintained image.
 
-if($IMAGE -eq $null){
-    $IMAGE=(Get-Content ./Dockerfile | Select-String RANCHER_AGENT_WINDOWS_IMAGE).line.split(" ")[2]
-}
+Linux hosts are maintained through PastureStack node-agent and system-service
+images. Windows agent support requires a separate Windows Server test matrix,
+modern Windows base image selection, signed driver/tool artifact ownership, and
+legacy protocol validation before it can be reintroduced.
+"@
 
-write-host "Building $IMAGE"
-docker build -t ${IMAGE} .
-
-remove-item -Path "$pwd/tools/devcon.exe"
+exit 1

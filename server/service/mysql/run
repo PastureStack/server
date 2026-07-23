@@ -1,4 +1,7 @@
 #!/bin/bash
 
 exec 2>&1
-exec /usr/sbin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --user=mysql --log-error=/var/log/mysql/error.log --pid-file=/var/run/mysqld/mysqld.pid --socket=/var/run/mysqld/mysqld.sock --port=3306
+MYSQLD_BIN="$(command -v mariadbd || command -v mysqld)"
+PLUGIN_DIR="$(mysql_config --plugindir 2>/dev/null || echo /usr/lib/mysql/plugin)"
+
+exec "${MYSQLD_BIN}" --basedir=/usr --datadir=/var/lib/mysql --plugin-dir="${PLUGIN_DIR}" --user=mysql --log-error=/var/log/mysql/error.log --pid-file=/var/run/mysqld/mysqld.pid --socket=/var/run/mysqld/mysqld.sock --port=3306

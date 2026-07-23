@@ -29,9 +29,90 @@ error()
 }
 
 export CATTLE_HOME=${CATTLE_HOME:-/var/lib/cattle}
+export PASTURESTACK_AGENT_CONTAINER_NAME=${PASTURESTACK_AGENT_CONTAINER_NAME:-pasturestack-node-agent}
+export PASTURESTACK_AGENT_UPGRADE_CONTAINER_NAME=${PASTURESTACK_AGENT_UPGRADE_CONTAINER_NAME:-pasturestack-node-agent-upgrade}
+export PASTURESTACK_AGENT_STATE_VOLUME=${PASTURESTACK_AGENT_STATE_VOLUME:-pasturestack-node-agent-state}
+LEGACY_AGENT_CONTAINER_NAME=${LEGACY_AGENT_CONTAINER_NAME:-rancher-agent}
+LEGACY_AGENT_UPGRADE_CONTAINER_NAME=${LEGACY_AGENT_UPGRADE_CONTAINER_NAME:-rancher-agent-upgrade}
+LEGACY_AGENT_STATE_VOLUME=${LEGACY_AGENT_STATE_VOLUME:-rancher-agent-state}
 # End copy
 
 check_debug
+
+agent_curl()
+{
+    local retry_all_errors=()
+    if curl --retry-all-errors --version >/dev/null 2>&1; then
+        retry_all_errors=(--retry-all-errors)
+    fi
+
+    curl --retry 5 "${retry_all_errors[@]}" --retry-delay 2 \
+        --connect-timeout "${RC16_AGENT_CURL_CONNECT_TIMEOUT:-10}" \
+        --max-time "${RC16_AGENT_CURL_MAX_TIME:-300}" \
+        "$@"
+}
+
+trim_agent_env_line()
+{
+    local value="$1"
+    value="${value#"${value%%[![:space:]]*}"}"
+    value="${value%"${value##*[![:space:]]}"}"
+    printf '%s' "$value"
+}
+
+apply_agent_env_line()
+{
+    local line
+    line="$(trim_agent_env_line "$1")"
+
+    [ -z "$line" ] && return 0
+    [ "$line" = "#!/bin/sh" ] && return 0
+    [[ "$line" == \#* ]] && return 0
+
+    if [[ "$line" == INFO:\ env* ]]; then
+        line="$(trim_agent_env_line "${line#INFO: env}")"
+    fi
+
+    if [[ "$line" =~ ^export[[:space:]]+(.+)$ ]]; then
+        line="$(trim_agent_env_line "${BASH_REMATCH[1]}")"
+    fi
+
+    if [[ "$line" =~ ^\"(.*)\"$ || "$line" =~ ^\'(.*)\'$ ]]; then
+        line="${BASH_REMATCH[1]}"
+    fi
+
+    if [[ ! "$line" =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
+        error "Invalid agent environment assignment: $line"
+        return 1
+    fi
+
+    local key="${BASH_REMATCH[1]}"
+    local value="${BASH_REMATCH[2]}"
+
+    if [[ "$value" =~ ^\"(.*)\"$ || "$value" =~ ^\'(.*)\'$ ]]; then
+        value="${BASH_REMATCH[1]}"
+    fi
+
+    export "$key=$value"
+}
+
+apply_agent_env_output()
+{
+    local line
+    while IFS= read -r line; do
+        apply_agent_env_line "$line"
+    done <<< "$1"
+}
+
+apply_agent_info_env_output()
+{
+    local line
+    while IFS= read -r line; do
+        if [[ "$line" == INFO:\ env* ]]; then
+            apply_agent_env_line "$line"
+        fi
+    done <<< "$1"
+}
 
 MODULES="ansi_cprng
 drbg
@@ -43,13 +124,35 @@ xt_mark
 xt_nat
 vxlan"
 
+agent_container_name()
+{
+    if docker inspect "${PASTURESTACK_AGENT_CONTAINER_NAME}" >/dev/null 2>&1; then
+        printf '%s\n' "${PASTURESTACK_AGENT_CONTAINER_NAME}"
+    elif docker inspect "${LEGACY_AGENT_CONTAINER_NAME}" >/dev/null 2>&1; then
+        printf '%s\n' "${LEGACY_AGENT_CONTAINER_NAME}"
+    else
+        printf '%s\n' "${PASTURESTACK_AGENT_CONTAINER_NAME}"
+    fi
+}
+
+agent_state_volume_name()
+{
+    if docker volume inspect "${PASTURESTACK_AGENT_STATE_VOLUME}" >/dev/null 2>&1; then
+        printf '%s\n' "${PASTURESTACK_AGENT_STATE_VOLUME}"
+    elif docker volume inspect "${LEGACY_AGENT_STATE_VOLUME}" >/dev/null 2>&1; then
+        printf '%s\n' "${LEGACY_AGENT_STATE_VOLUME}"
+    else
+        printf '%s\n' "${PASTURESTACK_AGENT_STATE_VOLUME}"
+    fi
+}
+
 CONTAINER="$(hostname)"
 if [ "$1" = "run" ]; then
-    CONTAINER="rancher-agent"
+    CONTAINER="$(agent_container_name)"
 fi
 
 if [[ "$1" != "inspect-host" && $1 != "--" && "$1" != "state" ]]; then
-    RUNNING_IMAGE="$(docker inspect -f '{{.Config.Image}}' ${CONTAINER})"
+    RUNNING_IMAGE="$(docker inspect -f '{{.Config.Image}}' "${CONTAINER}")"
 fi
 
 if [[ -n ${RUNNING_IMAGE} && ${RUNNING_IMAGE} != ${RANCHER_AGENT_IMAGE} ]]; then
@@ -67,7 +170,7 @@ check_and_add_conf()
 
 print_url()
 {
-    local url=$(echo "$1"| sed -e 's!/v1.*/scripts.*!/v1!')
+    local url=$(echo "$1" | sed -E -e 's!/(v1|v2-beta)(/.*)?/scripts.*!/\1!')
     echo $url
 }
 
@@ -94,14 +197,16 @@ setup_custom_ca_bundle()
 
 setup_self_signed()
 {
-    if [[ -n "${CA_FINGERPRINT}" && $1 =~ https://.* ]]; then
+    local url="$1"
+
+    if [[ -n "${CA_FINGERPRINT}" && $url =~ https://.* ]]; then
         # Check if curl works
-        if curl -sLf $1 >/dev/null 2>&1; then
+        if agent_curl -fsSL "$url" >/dev/null 2>&1; then
             return
         fi
 
-        CERT="$(print_url $1)/scripts/ca.crt"
-        if ! curl --insecure -sLf "$CERT" > /tmp/ca.crt; then
+        local cert="$(print_url "$url")/scripts/ca.crt"
+        if ! agent_curl --insecure -fsSL -o /tmp/ca.crt "$cert"; then
             return
         fi
 
@@ -113,8 +218,8 @@ setup_self_signed()
             return
         fi
 
-        mkdir -p $(dirname $CA_CERT_FILE)
-        cp /tmp/ca.crt.clean $CA_CERT_FILE
+        mkdir -p "$(dirname "$CA_CERT_FILE")"
+        cp /tmp/ca.crt.clean "$CA_CERT_FILE"
         setup_custom_ca_bundle
     fi
 }
@@ -129,29 +234,43 @@ if [ -e "${AGENT_CONF_FILE}" ]; then
     source "${AGENT_CONF_FILE}"
 fi
 
+docker_cgroupns_args()
+{
+    if docker run --help 2>/dev/null | grep -q -- '--cgroupns'; then
+        echo "--cgroupns=host"
+    fi
+}
+
 inspect_host()
 {
-    docker run --rm --privileged -v /run:/run -v /var/run:/var/run -v /var/lib:/var/lib ${RANCHER_AGENT_IMAGE} inspect-host
+    local cgroupns_opt="$(docker_cgroupns_args)"
+
+    docker run --rm --privileged ${cgroupns_opt} -v /run:/run -v /var/run:/var/run -v /var/lib:/var/lib ${RANCHER_AGENT_IMAGE} inspect-host
 }
 
 launch_agent()
 {
+    local state_volume
+
     if [ -n "$NO_PROXY" ]; then
         export no_proxy=$NO_PROXY
     fi
 
+    state_volume="$(agent_state_volume_name)"
     if [ "${CATTLE_VAR_LIB_WRITABLE}" = "true" ]; then
         opts="-v /var/lib/rancher:/var/lib/rancher"
     else
-        opts="-v rancher-agent-state:/var/lib/rancher"
+        opts="-v ${state_volume}:/var/lib/rancher"
     fi
+    local cgroupns_opt="$(docker_cgroupns_args)"
 
     docker run \
         -d \
-        --name rancher-agent \
+        --name "${PASTURESTACK_AGENT_CONTAINER_NAME}" \
         --restart=always \
         --net=host \
         --pid=host \
+        ${cgroupns_opt} \
         --privileged \
         --oom-score-adj="-500" \
         -e CATTLE_AGENT_PIDNS=host \
@@ -186,7 +305,7 @@ launch_agent()
         -v /proc:/host/proc \
         -v /dev:/host/dev \
         -v rancher-cni:/.r \
-        -v rancher-agent-state:/var/lib/cattle \
+        -v "${state_volume}:/var/lib/cattle" \
         ${opts} "${RANCHER_AGENT_IMAGE}" "$@"
 }
 
@@ -200,12 +319,14 @@ delete_container()
 
 cleanup_agent()
 {
-    delete_container rancher-agent
+    delete_container "${PASTURESTACK_AGENT_CONTAINER_NAME}"
+    delete_container "${LEGACY_AGENT_CONTAINER_NAME}"
 }
 
 cleanup_upgrade()
 {
-    delete_container rancher-agent-upgrade
+    delete_container "${PASTURESTACK_AGENT_UPGRADE_CONTAINER_NAME}"
+    delete_container "${LEGACY_AGENT_UPGRADE_CONTAINER_NAME}"
 }
 
 setup_state()
@@ -214,8 +335,9 @@ setup_state()
 
     export CATTLE_STATE_DIR=/var/lib/rancher/state
     export CATTLE_AGENT_LOG_FILE=/var/log/rancher/agent.log
+    local cgroupns_opt="$(docker_cgroupns_args)"
 
-    docker run --privileged --net host --pid host -v /:/host --rm $RANCHER_AGENT_IMAGE -- /usr/bin/share-mnt /var/lib/rancher/volumes /var/lib/kubelet -- norun
+    docker run --privileged --net host --pid host ${cgroupns_opt} -v /:/host --rm $RANCHER_AGENT_IMAGE -- /usr/bin/share-mnt /var/lib/rancher/volumes /var/lib/kubelet -- norun
 
     cp -f /usr/bin/r /.r/r || true
 
@@ -226,10 +348,16 @@ setup_state()
 
 load()
 {
-    local content=$(curl -sL $1)
+    local url="$1"
+    local content
+
+    if ! content=$(agent_curl -fsSL "$url"); then
+        error Failed to load registration env from "$(print_url "$url")"
+        return 1
+    fi
 
     if [[ "$content" =~ .!/bin/sh.* ]]; then
-        eval "$content"
+        apply_agent_env_output "$content"
         if [ -n "$CATTLE_URL_OVERRIDE" ]; then
             CATTLE_URL=$CATTLE_URL_OVERRIDE
         fi
@@ -262,8 +390,9 @@ print_token()
 
 register()
 {
-    ENV=$(./register.py $TOKEN)
-    eval "$ENV"
+    local env
+    env=$(./register.py "$TOKEN")
+    apply_agent_env_output "$env"
 }
 
 run_bootstrap()
@@ -276,26 +405,32 @@ run_bootstrap()
     export CATTLE_STORAGE_URL="${CATTLE_STORAGE_URL:-${CATTLE_URL}}"
 
     # Sanity check that these credentials are valid
-    if curl -u ${CATTLE_ACCESS_KEY}:${CATTLE_SECRET_KEY} -s ${CATTLE_URL}/schemas/configcontent >test.json 2>&1; then
-        if cat test.json | jq -r .id >/dev/null 2>&1 && [ "$(cat test.json | jq -r .id)" != "configContent" ]; then
+    if agent_curl -fsS -u "${CATTLE_ACCESS_KEY}:${CATTLE_SECRET_KEY}" -o test.json "${CATTLE_URL}/schemas/configcontent" 2>/dev/null; then
+        # Some legacy-compatible API builds return a normal API error object for this
+        # schema lookup while still accepting the same agent key for bootstrap.
+        # Treat only a successful non-error schema mismatch as an invalid key.
+        if cat test.json | jq -r .id >/dev/null 2>&1 && \
+           [ "$(cat test.json | jq -r .type)" != "error" ] && \
+           [ "$(cat test.json | jq -r .id)" != "configContent" ]; then
             error Credentials are no longer valid, please re-register this agent
             return 1
         fi
     fi
 
-    curl -u ${CATTLE_ACCESS_KEY}:${CATTLE_SECRET_KEY} -s ${CATTLE_URL}/scripts/bootstrap > $SCRIPT 
+    agent_curl -fsSL -u "${CATTLE_ACCESS_KEY}:${CATTLE_SECRET_KEY}" -o "$SCRIPT" "${CATTLE_URL}/scripts/bootstrap"
 
-    # Sanity check if this account is really being authenticated as an agent account or the default admin auth
-    if curl -f -u ${CATTLE_ACCESS_KEY}:${CATTLE_SECRET_KEY} -s ${CATTLE_URL}/schemas/account >/dev/null 2>&1; then
-        error Please re-register this agent
-        exit 1
+    # Sanity check if this account is really being authenticated as an agent account or the default admin auth.
+    # A legacy-compatible server without an auth provider exposes admin schemas even when the
+    # supplied basic-auth key is an agent key, so this must not be fatal.
+    if agent_curl -fsS -u "${CATTLE_ACCESS_KEY}:${CATTLE_SECRET_KEY}" -o /dev/null "${CATTLE_URL}/schemas/account" >/dev/null 2>&1; then
+        info "Account schema is accessible; continuing because the server may be running without an auth provider"
     fi
 
     info "Starting agent for ${CATTLE_ACCESS_KEY}"
     if [ "$CATTLE_EXEC_AGENT" = "true" ]; then
-        exec bash $SCRIPT "$@"
+        exec bash "$SCRIPT" "$@"
     else
-        bash $SCRIPT "$@"
+        bash "$SCRIPT" "$@"
     fi
 }
 
@@ -308,23 +443,33 @@ run()
     done
 }
 
-read_rancher_agent_env()
+read_node_agent_env()
 {
-    info Reading environment from rancher-agent
+    local container
+
+    container="$(agent_container_name)"
+    info "Reading environment from ${container}"
     local save=$RANCHER_AGENT_IMAGE
-    eval $(docker inspect rancher-agent | jq -r '"export \"" + .[0].Config.Env[] + "\""')
-    RANCHER_AGENT_IMAGE=$save
+    local line
+    while IFS= read -r line; do
+        apply_agent_env_line "$line"
+    done < <(docker inspect "${container}" | jq -r '.[0].Config.Env[]?')
+    export RANCHER_AGENT_IMAGE=$save
 }
 
 check_url()
 {
+    local err_file
     local err
-    err=$(curl -f -L -sS --connect-timeout 15 -o /dev/null --stderr - $1 | head -n1 ; exit ${PIPESTATUS[0]})
-    if [ $? -eq 0 ]
-    then
+    err_file=$(mktemp "${TMPDIR:-/tmp}/rc16-agent-check-url.XXXXXX")
+
+    if agent_curl -f -L -sS --connect-timeout 15 -o /dev/null --stderr "$err_file" "$1"; then
+        rm -f "$err_file"
         echo ""
     else
-        echo ${err} | sed -e 's/^curl: ([0-9]\+) //'
+        err=$(sed -n '1{s/^curl: ([0-9][0-9]*) //;p;q;}' "$err_file")
+        rm -f "$err_file"
+        echo "$err"
     fi
 }
 
@@ -387,7 +532,7 @@ setup_env()
     local content=$(inspect_host)
 
     echo "$content" | grep -v 'INFO: env' || true
-    eval $(echo "$content" | grep 'INFO: env' | sed 's/INFO: env//g')
+    apply_agent_info_env_output "$content"
 
     info Boot2Docker: ${CATTLE_BOOT2DOCKER}
     info Host writable: ${CATTLE_VAR_LIB_WRITABLE}
@@ -403,7 +548,7 @@ setup_env()
     info Printing Environment
     env | sort | while read LINE; do
         if [[ $LINE =~ RANCHER.* || $LINE =~ CATTLE.* ]]; then
-            info "ENV:" $(echo $LINE | sed 's/\(SECRET.*=\).*/\1xxxxxxx/g')
+            info "ENV:" $(echo $LINE | sed -E 's/((SECRET|ACCESS_KEY|TOKEN|PASSWORD)[^=]*=).*/\1xxxxxxx/g')
         fi
     done
 }
@@ -417,7 +562,7 @@ setup_cattle_url()
         fi
         CATTLE_URL="$RANCHER_URL"
     elif [ "$1" = "upgrade" ]; then
-        read_rancher_agent_env
+        read_node_agent_env
     else
         CATTLE_URL="$1"
     fi
@@ -470,11 +615,11 @@ if [[ $1 =~ http.* || $1 = "register" || $1 = "upgrade" ]]; then
     setup_env $1
     cleanup_agent
     ID=$(launch_agent run)
-    info Launched Rancher Agent: $ID
+    info Launched PastureStack node agent: $ID
 elif [ "$1" = "inspect-host" ]; then
     inspect
 elif [ "$1" = "state" ]; then
-    echo Rancher State
+    echo PastureStack State
 elif [ "$1" = "run" ]; then
     cleanup_upgrade
     setup_state
