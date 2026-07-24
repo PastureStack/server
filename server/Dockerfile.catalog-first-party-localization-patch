@@ -1,0 +1,79 @@
+# syntax=docker/dockerfile:1.7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.293
+FROM ${BASE_IMAGE}
+
+ARG PASTURESTACK_SERVER_REVISION
+ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.8
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.8.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=68194af9637ad0cfa3308f1a506ed06af23471fcbb2c8d0de20dc17a358b1dce
+
+RUN set -eu; \
+    archive=/tmp/web-console.tar.gz; \
+    manifest=/tmp/web-console-files.txt; \
+    curl -fsSL \
+        --retry 5 \
+        --retry-all-errors \
+        --retry-delay 2 \
+        --connect-timeout 10 \
+        --max-time 300 \
+        -o "${archive}" \
+        "https://github.com/PastureStack/web-console/releases/download/${WEB_CONSOLE_RELEASE_TAG}/${WEB_CONSOLE_ARTIFACT}"; \
+    echo "${WEB_CONSOLE_ARTIFACT_SHA256}  ${archive}" | sha256sum -c -; \
+    tar -tzf "${archive}" >"${manifest}"; \
+    test "$(grep -Ec '^1\.6\.56/index\.html$' "${manifest}")" -eq 1; \
+    test "$(grep -Ec '^1\.6\.56/translations/zh-tw\.json$' "${manifest}")" -eq 1; \
+    test "$(grep -Ec '^1\.6\.56/assets/ui[^/]*\.js$' "${manifest}")" -eq 1; \
+    if grep -Eq '(^/|(^|/)\.\.(/|$)|\.map$)' "${manifest}"; then \
+        echo "Unsafe or unpublished Web Console path" >&2; \
+        exit 1; \
+    fi; \
+    find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        -name 'ui-*.js' \
+        -delete; \
+    tar -xzf "${archive}" \
+        -C /usr/share/cattle/war \
+        --strip-components=1; \
+    test -f /usr/share/cattle/war/index.html; \
+    test -f /usr/share/cattle/war/translations/zh-tw.json; \
+    test "$(find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        -name 'ui-*.js' \
+        | wc -l)" -eq 1; \
+    ui_entry="$(find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        -name 'ui-*.js' \
+        -print -quit)"; \
+    grep -F 'io.pasturestack.catalog.origin' "${ui_entry}" >/dev/null; \
+    grep -F 'upstream-first-party' "${ui_entry}" >/dev/null; \
+    grep -F '1.6.56-pasturestack.8' \
+        /usr/share/cattle/war/index.html >/dev/null; \
+    grep -F '"upstreamFirstParty":"上游第一方範本"' \
+        /usr/share/cattle/war/translations/zh-tw.json >/dev/null; \
+    grep -F '"currentMaintenance":"目前維護："' \
+        /usr/share/cattle/war/translations/zh-tw.json >/dev/null; \
+    if ! perl -CSD -Mutf8 -0777 -e \
+        '$$text = <>; exit($$text =~ /[·•・･]/ ? 1 : 0)' \
+        /usr/share/cattle/war/translations/zh-tw.json; then \
+        echo "Stray middle-dot punctuation in Taiwan localization" >&2; \
+        exit 1; \
+    fi; \
+    rm -f "${archive}" "${manifest}"
+
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server compatibility image with upstream first-party Catalog provenance and complete localized configuration." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.295" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.293"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.295
+ENV PASTURESTACK_WEB_CONSOLE_COMMIT=864a73e73b77ef0c060d1b9bbed872478d379538
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.8
+ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=68194af9637ad0cfa3308f1a506ed06af23471fcbb2c8d0de20dc17a358b1dce
+ENV PASTURESTACK_CATALOG_COMMIT=8806a61a58c41edbaab22b440b5e2fdbbd16d0b7
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"8806a61a58c41edbaab22b440b5e2fdbbd16d0b7"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"8806a61a58c41edbaab22b440b5e2fdbbd16d0b7"}}}'

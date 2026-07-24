@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <property name="mediumtext" value="TEXT" dbms="postgresql" />
+    <property name="mediumtext" value="MEDIUMTEXT" />
+    <property name="mediumtext" value="varchar" dbms="H2" />
+    <changeSet author="kinara (generated)" id="dump1">
+        <createIndex indexName="idx_container_event_host_id_state" tableName="container_event" unique="false">
+            <column name="host_id"/>
+            <column name="state"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="kinara (generated)" id="dump2">
+        <createIndex indexName="idx_host_physical_host_id_id" tableName="host" unique="false">
+            <column name="physical_host_id"/>
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="PastureStack" id="pasturestack-catalog-table-order-guard">
+        <preConditions onFail="HALT">
+            <tableExists tableName="catalog"/>
+        </preConditions>
+        <sql>SELECT 1;</sql>
+    </changeSet>
+    <changeSet dbms="mysql,mariadb" author="PastureStack" id="pasturestack-catalog-pinned-commit">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'catalog' AND column_name = 'pinned_commit'</sqlCheck>
+        </preConditions>
+        <addColumn tableName="catalog">
+            <column name="pinned_commit" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet dbms="h2,postgresql" author="PastureStack" id="pasturestack-catalog-pinned-commit-portable">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="catalog" columnName="pinned_commit"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="catalog">
+            <column name="pinned_commit" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
