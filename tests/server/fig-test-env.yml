@@ -1,6 +1,6 @@
 services:
   h2dbcattle:
-    image: rancher/server:dev
+    image: pasturestack/server:dev
     container_name: server_h2dbcattle_1
     ports:
       - "8080:8080"
@@ -14,14 +14,14 @@ services:
       MYSQL_PASSWORD: cattle
       MYSQL_DATABASE: cattle
   mysqllinkscattle:
-    image: rancher/server:dev
+    image: pasturestack/server:dev
     container_name: server_mysqllinkcattle_1
     ports:
       - "8081:8080"
     links:
       - mysqllink:mysql
   localmysqlcattle:
-    image: rancher/server:dev
+    image: pasturestack/server:dev
     container_name: server_localmysqlcattle_1
     ports:
       - "8082:8080"
@@ -35,7 +35,7 @@ services:
       MYSQL_PASSWORD: 'cattle1'
       MYSQL_DATABASE: 'cattle1'
   mysqlmanualcattle:
-    image: rancher/server:dev
+    image: pasturestack/server:dev
     container_name: server_mysqlmanualcattle_1
     environment:
       CATTLE_DB_CATTLE_MYSQL_HOST:

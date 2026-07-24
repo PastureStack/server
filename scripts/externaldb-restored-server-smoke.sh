@@ -11,7 +11,7 @@ repo_root=$(cd "$(dirname "$0")/.." && pwd)
 cd "$repo_root"
 
 backup_dir="${BACKUP_DIR:-}"
-server_image="${SERVER_IMAGE:-ghcr.io/pasturestack/server-externaldb:v1.6.274}"
+server_image="${SERVER_IMAGE:-ghcr.io/pasturestack/server-externaldb:v1.6.275}"
 client_image="${CLIENT_IMAGE:-mariadb:11.8}"
 db_image="${DB_IMAGE:-mariadb:11.8}"
 http_port="${HTTP_PORT:-}"
@@ -28,7 +28,7 @@ Usage:
 
 Options:
   --backup-dir DIR       Backup directory created by externaldb-backup-restore.sh.
-  --server-image IMAGE   External-DB PastureStack Server image. Default ghcr.io/pasturestack/server-externaldb:v1.6.274.
+  --server-image IMAGE   External-DB PastureStack Server image. Default ghcr.io/pasturestack/server-externaldb:v1.6.275.
   --client-image IMAGE   MariaDB client image. Default mariadb:11.8.
   --db-image IMAGE       Temporary MariaDB server image. Default mariadb:11.8.
   --http-port PORT       Host port for the temporary PastureStack Server. Default: first free port from 18094.

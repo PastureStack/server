@@ -1,16 +1,18 @@
 #!/bin/bash
+set -e
 
-
-cd $(dirname $0)
+cd "$(dirname "$0")"
 
 TAG=$(<../version)
+IMAGE_PREFIX=${IMAGE_PREFIX:-ghcr.io/pasturestack}
 
 mkdir -p ../dist
 > ../dist/images
 
 for i in agent server; do
     cd ../$i
-    docker build -t rancher/${i}:$TAG .
-    echo Created rancher/${i}:$TAG
-    echo rancher/${i}:$TAG >> ../dist/images
+    image="${IMAGE_PREFIX}/${i}:${TAG}"
+    docker build -t "$image" .
+    echo "Created ${image}"
+    echo "$image" >> ../dist/images
 done

@@ -32,7 +32,7 @@ require_marker 'duplicate allowlisted setting names' DUPLICATE_SETTING_GUARD_MIS
 require_marker 'ghcr.io/pasturestack/node-agent:v1.2.31@sha256:89a1703d236fb2ba34d568faef1cf0a41f91a2a5a7e6b8052415ba5a12f2d0e1' AGENT_DIGEST_MISSING
 require_marker "UPDATE setting SET value='\${APPROVED_AGENT_IMAGE}' WHERE name='agent.image';" AGENT_IMAGE_MIGRATION_MISSING
 require_marker 'expected 13 approved persisted coordinates' APPROVED_SETTING_COUNT_NOT_UPDATED
-require_marker 'ghcr.io/pasturestack/load-balancer-service:v0.9.23@sha256:3139b2a54688e4e34b24df943a36a2ed1eecc26d53c0ab329bf7ffcb62cdb893' LOAD_BALANCER_DIGEST_MISSING
+require_marker 'ghcr.io/pasturestack/load-balancer-service:v0.9.25@sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24' LOAD_BALANCER_DIGEST_MISSING
 require_marker 'https://github.com/PastureStack/catalog-templates.git' CATALOG_URL_MISSING
 require_marker '91f5910a44cb181051be2adc4c14f0e6ec7842ef' CATALOG_PIN_MISSING
 require_marker "pinned_commit='\${APPROVED_CATALOG_COMMIT}'" CATALOG_PINNED_COMMIT_MIGRATION_MISSING

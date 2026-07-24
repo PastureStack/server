@@ -82,7 +82,7 @@ ENV CATTLE_HOST_API_PROXY_MODE=embedded
 
 
 # Environment variables commonly updated when performing a release
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.274
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.275
 ENV CATTLE_CATTLE_VERSION=v0.183.269
 ENV CATTLE_RANCHER_CLI_VERSION=v0.6.14
 ENV CATTLE_RANCHER_COMPOSE_VERSION=v0.14.31
@@ -122,12 +122,12 @@ ARG PASTURESTACK_SERVER_REVISION=unknown
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server compatibility image." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.274" \
+      org.opencontainers.image.version="v1.6.275" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}"
 ENV DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.31@sha256:89a1703d236fb2ba34d568faef1cf0a41f91a2a5a7e6b8052415ba5a12f2d0e1
 ENV DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.31@sha256:89a1703d236fb2ba34d568faef1cf0a41f91a2a5a7e6b8052415ba5a12f2d0e1
-ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.23@sha256:3139b2a54688e4e34b24df943a36a2ed1eecc26d53c0ab329bf7ffcb62cdb893
-ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.23@sha256:3139b2a54688e4e34b24df943a36a2ed1eecc26d53c0ab329bf7ffcb62cdb893
+ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.25@sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24
+ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.25@sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24
 ENV PASTURESTACK_CATALOG_COMMIT=91f5910a44cb181051be2adc4c14f0e6ec7842ef
 ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"91f5910a44cb181051be2adc4c14f0e6ec7842ef"}}}'
 
@@ -417,8 +417,8 @@ RUN set -eux; \
 
 VOLUME /var/lib/mysql /var/log/mysql /var/lib/cattle
 
-ENV PASTURESTACK_RELEASE_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.274
-ENV RC16_ARTIFACT_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.274
+ENV PASTURESTACK_RELEASE_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.275
+ENV RC16_ARTIFACT_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.275
 ENV CATTLE_API_UI_URL=
 ENV DEFAULT_CATTLE_API_UI_INDEX=local
 ENV DEFAULT_CATTLE_API_UI_JS_URL=/api-ui/ui.min.js

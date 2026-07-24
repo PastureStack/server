@@ -29,7 +29,7 @@ Version coordinates are available only when the matching GitHub Release and publ
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.274
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.275
 ```
 
 Use the immutable image digest recorded in the matching GitHub Release when pinning a production-like deployment. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.

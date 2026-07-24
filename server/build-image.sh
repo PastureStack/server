@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-: "${PASTURESTACK_RELEASE_BASE_URL:=https://github.com/PastureStack/server/releases/download/v1.6.274}"
+: "${PASTURESTACK_RELEASE_BASE_URL:=https://github.com/PastureStack/server/releases/download/v1.6.275}"
 : "${PASTURESTACK_ARTIFACT_BASE_URL:=${RC16_ARTIFACT_BASE_URL:-${PASTURESTACK_RELEASE_BASE_URL}}}"
 ARTIFACT_BASE="${PASTURESTACK_ARTIFACT_BASE_URL}"
 ARTIFACT_BASE="${ARTIFACT_BASE%/}"

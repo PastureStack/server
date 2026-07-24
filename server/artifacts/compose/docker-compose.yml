@@ -1,5 +1,5 @@
 cattle:
-  image: rancher/none
+  image: pasturestack/placeholder
   labels:
     io.rancher.service.selector.container: "io.rancher.ha.service.name in (cattle, parent)"
   links:
@@ -14,21 +14,21 @@ cattle:
     response_timeout: 1000
 
 redis:
-  image: rancher/none
+  image: pasturestack/placeholder
   labels:
     io.rancher.service.selector.container: "io.rancher.ha.service.name=redis"
   links:
   - tunnel
 
 zookeeper:
-  image: rancher/none
+  image: pasturestack/placeholder
   labels:
     io.rancher.service.selector.container: "io.rancher.ha.service.name=zk"
   links:
   - tunnel
 
 tunnel:
-  image: rancher/none
+  image: pasturestack/placeholder
   labels:
     io.rancher.service.selector.container: "io.rancher.ha.service.tunnel"
   links:
@@ -118,7 +118,7 @@ load-balancer-swarm:
   - ${CATTLE_HA_PORT_SWARM}:8443/tcp
   labels:
     io.rancher.scheduler.global: 'true'
-  image: rancher/load-balancer-service
+  image: ghcr.io/pasturestack/load-balancer-service:v0.9.25@sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24
   links:
   - websocket-proxy-ssl
 
@@ -134,7 +134,7 @@ load-balancer:
     io.rancher.loadbalancer.proxy-protocol.ports: ${CATTLE_HA_PORT_PP_HTTPS},${CATTLE_HA_PORT_PP_HTTP}
     io.rancher.loadbalancer.target.websocket-proxy: /r,/v1/connectbackend,/v1/logs,/v1/stats,/v1/exec,/v1/console,/v1/dockersocket,/v1/hoststats,/v1/containerstats
     io.rancher.loadbalancer.target.cattle: ${CATTLE_HA_PORT_HTTP}=8080,${CATTLE_HA_PORT_HTTPS}=8080,${CATTLE_HA_PORT_PP_HTTP}=8080,${CATTLE_HA_PORT_PP_HTTPS}=8080
-  image: rancher/load-balancer-service
+  image: ghcr.io/pasturestack/load-balancer-service:v0.9.25@sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24
   default_cert: system-ssl
   links:
   - websocket-proxy

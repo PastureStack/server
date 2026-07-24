@@ -1,0 +1,19 @@
+# syntax=docker/dockerfile:1.7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.274@sha256:c4078ba5fb9be968f05021d3a2ad31411f6ac70c09fb24e96b33d8cc5e38fbed
+FROM ${BASE_IMAGE}
+
+ARG PASTURESTACK_SERVER_REVISION
+
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server compatibility image." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.275" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.274" \
+      org.opencontainers.image.base.digest="sha256:c4078ba5fb9be968f05021d3a2ad31411f6ac70c09fb24e96b33d8cc5e38fbed"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.275
+ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.25@sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24
+ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.25@sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24
+ENV PASTURESTACK_RELEASE_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.275
+ENV RC16_ARTIFACT_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.275

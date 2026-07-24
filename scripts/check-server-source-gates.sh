@@ -45,6 +45,7 @@ run_gate db_sanity_check scripts/check-database-sanity-check.sh
 run_gate local_auth_rollback scripts/check-enable-local-auth-with-rollback.sh
 run_gate migration_local_http scripts/check-migration-local-http.sh
 run_gate approved_runtime_coordinate_migration scripts/check-migrate-approved-runtime-coordinates.sh
+run_gate runtime_image_references scripts/check-server-runtime-image-references.sh
 run_gate pack200_free scripts/check-server-pack200-free.sh
 run_gate strong_artifact_hash scripts/check-server-strong-artifact-hash.sh
 run_gate release_asset_integrity scripts/check-server-release-asset-integrity.sh
