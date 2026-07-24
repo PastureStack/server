@@ -1,0 +1,8 @@
+.gitattributes text eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+Dockerfile* text eol=lf
+**/Dockerfile* text eol=lf
+scripts/** text eol=lf
+server/bin/** text eol=lf
+server/service/** text eol=lf
