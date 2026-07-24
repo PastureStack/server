@@ -1,0 +1,112 @@
+# syntax=docker/dockerfile:1.7
+ARG GO_IMAGE=golang:1.24-bookworm
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.297
+FROM ${GO_IMAGE} AS console-broker-build
+
+WORKDIR /src
+COPY console-broker/go.mod console-broker/go.sum ./
+RUN /usr/local/go/bin/go mod download
+COPY console-broker/*.go ./
+RUN set -eux; \
+    /usr/local/go/bin/go test ./...; \
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+      /usr/local/go/bin/go build \
+        -trimpath \
+        -ldflags='-s -w -buildid=' \
+        -o /out/pasturestack-console-broker .
+
+FROM ${BASE_IMAGE}
+
+ARG PASTURESTACK_SERVER_REVISION
+ARG WEB_CONSOLE_RELEASE_TAG
+ARG WEB_CONSOLE_ARTIFACT
+ARG WEB_CONSOLE_ARTIFACT_SHA256
+ARG WEB_CONSOLE_COMMIT
+
+COPY --from=console-broker-build /out/pasturestack-console-broker /usr/bin/pasturestack-console-broker
+COPY --from=console-broker-build /go/pkg/mod/github.com/gorilla/websocket@v1.5.3/LICENSE /usr/share/licenses/pasturestack-console-broker/gorilla-websocket-LICENSE
+COPY console-broker/THIRD-PARTY-NOTICES.md /usr/share/licenses/pasturestack-console-broker/THIRD-PARTY-NOTICES.md
+COPY console-broker/service/ /service/console-broker/
+COPY patches/websocket-proxy-wrapper.sh /usr/bin/websocket-proxy
+
+RUN set -eux; \
+    chmod 0755 \
+      /usr/bin/pasturestack-console-broker \
+      /usr/bin/websocket-proxy \
+      /service/console-broker/run \
+      /service/console-broker/finish; \
+    test -x /usr/bin/pasturestack-console-broker; \
+    test -f /usr/share/licenses/pasturestack-console-broker/gorilla-websocket-LICENSE; \
+    test -f /usr/share/licenses/pasturestack-console-broker/THIRD-PARTY-NOTICES.md
+
+RUN set -eu; \
+    archive=/tmp/web-console.tar.gz; \
+    manifest=/tmp/web-console-files.txt; \
+    curl -fsSL \
+        --retry 5 \
+        --retry-all-errors \
+        --retry-delay 2 \
+        --connect-timeout 10 \
+        --max-time 300 \
+        -o "${archive}" \
+        "https://github.com/PastureStack/web-console/releases/download/${WEB_CONSOLE_RELEASE_TAG}/${WEB_CONSOLE_ARTIFACT}"; \
+    echo "${WEB_CONSOLE_ARTIFACT_SHA256}  ${archive}" | sha256sum -c -; \
+    tar -tzf "${archive}" >"${manifest}"; \
+    test "$(grep -Ec '^1\.6\.56/index\.html$' "${manifest}")" -eq 1; \
+    test "$(grep -Ec '^1\.6\.56/translations/zh-tw\.json$' "${manifest}")" -eq 1; \
+    test "$(grep -Ec '^1\.6\.56/assets/ui[^/]*\.js$' "${manifest}")" -eq 1; \
+    if grep -Eq '(^/|(^|/)\.\.(/|$)|\.map$)' "${manifest}"; then \
+        echo "Unsafe or unpublished Web Console path" >&2; \
+        exit 1; \
+    fi; \
+    find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        -name 'ui-*.js' \
+        -delete; \
+    tar -xzf "${archive}" \
+        -C /usr/share/cattle/war \
+        --strip-components=1; \
+    test -f /usr/share/cattle/war/index.html; \
+    test -f /usr/share/cattle/war/translations/zh-tw.json; \
+    test "$(find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        -name 'ui-*.js' \
+        | wc -l)" -eq 1; \
+    ui_entry="$(find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        -name 'ui-*.js' \
+        -print -quit)"; \
+    grep -F 'pasturestack.consoleWorkspace.sessions.v1.' "${ui_entry}" >/dev/null; \
+    grep -F 'pasturestack.consoleWorkspace.client.v1' "${ui_entry}" >/dev/null; \
+    grep -F 'client-probe' "${ui_entry}" >/dev/null; \
+    grep -F 'catalogDisplayName' "${ui_entry}" >/dev/null; \
+    grep -F '/v1/exec/sessions/' "${ui_entry}" >/dev/null; \
+    grep -F '"childSidekicks":"相關容器"' \
+        /usr/share/cattle/war/translations/zh-tw.json >/dev/null; \
+    rm -f "${archive}" "${manifest}"
+
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server compatibility image with persistent, multi-window browser console sessions." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.301" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.297" \
+      org.opencontainers.image.base.digest="sha256:e36c3af6924c879b2ce3744adc39b2b2e8d59bbb6379515252b6df1e8eb8f7a1"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.301
+ENV CATTLE_HTTP_PORT=8080
+ENV PASTURESTACK_CONSOLE_LISTEN_ADDRESS=:8080
+ENV PASTURESTACK_CONSOLE_UPSTREAM_URL=http://127.0.0.1:8083
+ENV PASTURESTACK_CONSOLE_PROXY_LISTEN_ADDRESS=:8083
+ENV PASTURESTACK_CONSOLE_APPLICATION_ADDRESS=127.0.0.1:8081
+ENV PASTURESTACK_CONSOLE_SESSION_DIAL_URL=http://127.0.0.1:8080
+ENV PASTURESTACK_CONSOLE_MAX_SESSIONS=24
+ENV PASTURESTACK_CONSOLE_REPLAY_BYTES=2097152
+ENV PASTURESTACK_CONSOLE_ACTIVE_TTL=72h
+ENV PASTURESTACK_CONSOLE_HISTORY_TTL=24h
+ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.13
+ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
