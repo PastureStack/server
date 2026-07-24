@@ -13,6 +13,7 @@ PastureStack Server `v1.6.278` makes semantic version tags the only operational 
 ## Network stack recovery
 
 - The Catalog is pinned to commit `025742e579efebb28d7ead2dc5e573138658d13e`.
+- The reviewed Catalog set contains one native project template and four first-party infrastructure templates.
 - The IPsec overlay template separates the `cni-driver` and `overlay-network` services so a clean replacement cannot retain duplicate network drivers.
 - Every IPsec component uses `ghcr.io/pasturestack/ipsec-vxlan-overlay-network:v0.14.26`.
 - Release validation checks the Catalog template content, not only the number of indexed entries.

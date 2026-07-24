@@ -208,7 +208,7 @@ wait_for_catalog()
     if curl -fsS --connect-timeout 2 --max-time 10 \
       "http://127.0.0.1:${port}/v1-catalog/templates?limit=-1" \
       -o "$response" 2>/dev/null &&
-      jq -e '(.data // []) | length == 6' "$response" >/dev/null &&
+      jq -e '(.data // []) | length == 5' "$response" >/dev/null &&
       curl --globoff -fsS --connect-timeout 2 --max-time 10 \
         "http://127.0.0.1:${port}/v1-catalog/templates/pasturestack:infra*ipsec-overlay:1" \
         -o "$ipsec_response" 2>/dev/null &&
@@ -396,7 +396,7 @@ jq -Sn \
       anonymousFreshStartup: true,
       anonymousRestart: true,
       catalogPinnedCommit: $catalogCommit,
-      catalogTemplateCount: 6,
+      catalogTemplateCount: 5,
       catalogService: {
         release: $catalogServiceRelease,
         commit: $catalogServiceCommit,
@@ -453,7 +453,7 @@ docker run -d \\
 
 - All 41 Server source gates passed.
 - Two clean focused builds produced the same image digest.
-- Fresh startup, six-template Catalog availability, tag-only IPsec topology, restart recovery, anonymous public pull, and a second fresh startup all passed.
+- Fresh startup, five-template Catalog availability, tag-only IPsec topology, restart recovery, anonymous public pull, and a second fresh startup all passed.
 - Catalog, Compose, API, and web-console image fields use semantic version tags; the digest above is verification evidence only.
 - Actionable High/Critical vulnerabilities: 0.
 - Detected secrets: 0.
@@ -496,5 +496,5 @@ curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
 printf '%s  %s\n' "$catalog_artifact_sha256" "$work_root/public-catalog.tar.xz" |
   sha256sum --check
 
-printf 'SERVER_GITHUB_RELEASE_OK release=%s source=%s image=%s assets=39 catalog_templates=6\n' \
+printf 'SERVER_GITHUB_RELEASE_OK release=%s source=%s image=%s assets=39 catalog_templates=5\n' \
   "$release_tag" "$source_sha" "$image_digest"

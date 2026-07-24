@@ -30,6 +30,7 @@ expected_api_ui_version="${RC16_EXPECTED_API_UI_VERSION:-1.1.14}"
 expected_agent_image="${RC16_EXPECTED_AGENT_IMAGE:-ghcr.io/pasturestack/node-agent:v1.2.31}"
 expected_lb_image="${RC16_EXPECTED_LB_IMAGE:-ghcr.io/pasturestack/load-balancer-service:v0.9.25}"
 expected_catalog_commit="${PASTURESTACK_EXPECTED_CATALOG_COMMIT:-025742e579efebb28d7ead2dc5e573138658d13e}"
+expected_catalog_template_count="${PASTURESTACK_EXPECTED_CATALOG_TEMPLATE_COUNT:-5}"
 expected_catalog_service_version="${PASTURESTACK_EXPECTED_CATALOG_SERVICE_VERSION:-0.20.7}"
 expected_catalog_service_sha256="${PASTURESTACK_EXPECTED_CATALOG_SERVICE_SHA256:-b195dd7f54fecc58e4af6942cd537b7deaaa7c659cfa97b3869e998e6b75fde3}"
 expected_authentication_service_version="${PASTURESTACK_EXPECTED_AUTHENTICATION_SERVICE_VERSION:-0.1.7}"
@@ -105,6 +106,8 @@ require_marker server/Dockerfile "ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=${expecte
 require_marker server/Dockerfile "ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:${expected_lb_image}" SERVER_LB_IMAGE_UUID_NOT_CURRENT
 require_marker scripts/migrate-server-mysql55-to-mariadb118.sh "RC16_LB_INSTANCE_IMAGE=\"\${RC16_LB_INSTANCE_IMAGE:-${expected_lb_image}}\"" SERVER_MIGRATION_LB_IMAGE_DEFAULT_NOT_CURRENT
 require_marker scripts/migrate-server-mysql55-to-mariadb118.sh "\"pinnedCommit\":\"${expected_catalog_commit}\"" SERVER_MIGRATION_CATALOG_PIN_MISSING
+require_marker scripts/release-server-on-github.sh "jq -e '(.data // []) | length == ${expected_catalog_template_count}'" SERVER_RELEASE_CATALOG_TEMPLATE_COUNT_GATE_MISMATCH
+require_marker scripts/release-server-on-github.sh "catalogTemplateCount: ${expected_catalog_template_count}," SERVER_RELEASE_MANIFEST_CATALOG_TEMPLATE_COUNT_MISMATCH
 require_marker server/Dockerfile 'web-console-${CATTLE_UI_VERSION}.tar.gz' SERVER_UI_ARTIFACT_NOT_PARAMETERIZED
 require_marker server/Dockerfile 'api-explorer-${CATTLE_API_UI_VERSION}.tar.gz' SERVER_API_UI_ARTIFACT_NOT_PARAMETERIZED
 require_marker server/Dockerfile 'curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 -o /tmp/web-console.tar.gz "${artifact_base}/web-console-${CATTLE_UI_VERSION}.tar.gz"' SERVER_UI_ARTIFACT_DOWNLOAD_NOT_FAIL_CLOSED
@@ -307,5 +310,5 @@ fi
 
 printf 'failure_count=%s\n' "$failures"
 [ "$failures" -eq 0 ]
-printf 'SERVER_UI_ARTIFACT_VERSION_OK server=%s cattle=%s ui=%s api_ui=%s artifact_download_fail_closed=1 oci_labels=1 externaldb_base=1 auth_hotfix_base=1 promotion_defaults=%s helper_artifacts=1 catalog_sqlite_binary=1 vsphere_cli_bundle=1 usage_telemetry_agent=1 webhook_automation_service=1 govc_compatibility_rewrite=1 reproducible_epoch=1 zulu8_path=0 mariadb_tzinfo_tool=1 mariadb_tzdata=1 mariadb_snapshot_isolation_compatibility=1\n' \
-  "$expected_server_version" "$expected_cattle_version" "$expected_ui_version" "$expected_api_ui_version" "$require_promotion_defaults"
+printf 'SERVER_UI_ARTIFACT_VERSION_OK server=%s cattle=%s ui=%s api_ui=%s catalog_templates=%s artifact_download_fail_closed=1 oci_labels=1 externaldb_base=1 auth_hotfix_base=1 promotion_defaults=%s helper_artifacts=1 catalog_sqlite_binary=1 vsphere_cli_bundle=1 usage_telemetry_agent=1 webhook_automation_service=1 govc_compatibility_rewrite=1 reproducible_epoch=1 zulu8_path=0 mariadb_tzinfo_tool=1 mariadb_tzdata=1 mariadb_snapshot_isolation_compatibility=1\n' \
+  "$expected_server_version" "$expected_cattle_version" "$expected_ui_version" "$expected_api_ui_version" "$expected_catalog_template_count" "$require_promotion_defaults"
