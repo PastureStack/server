@@ -56,6 +56,11 @@ grep -Fq -- '--secret id=rc16_artifact_base_url,env=PASTURESTACK_ARTIFACT_BASE_U
     echo SERVER_RUNTIME_HOTFIX_ARTIFACT_SECRET_MISSING >&2
     exit 1
 }
+grep -Fq -- '--network=host' \
+    server/build-runtime-hotfix-image.sh || {
+    echo SERVER_RUNTIME_HOTFIX_LOCAL_ARTIFACT_NETWORK_MISSING >&2
+    exit 1
+}
 
 test_image_count=$(grep -Fxc '    image: pasturestack/server:dev' \
     tests/server/fig-test-env.yml)

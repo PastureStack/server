@@ -31,6 +31,7 @@ image=${IMAGE:-pasturestack-validation/server:v1.6.277}
 docker buildx build \
     --provenance=false \
     --load \
+    --network=host \
     --build-arg "PASTURESTACK_SERVER_REVISION=${revision}" \
     --build-arg "SOURCE_DATE_EPOCH=${source_date_epoch}" \
     --secret id=rc16_artifact_base_url,env=PASTURESTACK_ARTIFACT_BASE_URL \
