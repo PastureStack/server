@@ -81,6 +81,13 @@ apply_agent_env_line()
         line="${BASH_REMATCH[1]}"
     fi
 
+    # Older Docker releases can preserve `docker run -e NAME` entries as a
+    # bare variable name when NAME was unset on the host.  Those entries do
+    # not carry a value and must not abort an otherwise valid agent upgrade.
+    if [[ "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+        return 0
+    fi
+
     if [[ ! "$line" =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
         error "Invalid agent environment assignment: $line"
         return 1

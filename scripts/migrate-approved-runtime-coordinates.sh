@@ -20,7 +20,7 @@ NETWORK_CHECKS=true
 READY_TIMEOUT="${PASTURESTACK_READY_TIMEOUT:-240}"
 RELEASE_TAG="${PASTURESTACK_RELEASE_TAG:-}"
 
-APPROVED_AGENT_IMAGE="ghcr.io/pasturestack/node-agent:v1.2.30@sha256:5310b748fc52bcd87fdeaa2285f424a07ec13c9b41639692eef96bda53ac8277"
+APPROVED_AGENT_IMAGE="ghcr.io/pasturestack/node-agent:v1.2.31@sha256:89a1703d236fb2ba34d568faef1cf0a41f91a2a5a7e6b8052415ba5a12f2d0e1"
 APPROVED_LB_IMAGE="ghcr.io/pasturestack/load-balancer-service:v0.9.23@sha256:3139b2a54688e4e34b24df943a36a2ed1eecc26d53c0ab329bf7ffcb62cdb893"
 APPROVED_LB_IMAGE_UUID="docker:${APPROVED_LB_IMAGE}"
 APPROVED_CATALOG_URL="https://github.com/PastureStack/catalog-templates.git"
@@ -275,6 +275,7 @@ audit_database() {
             WHEN url='${APPROVED_CATALOG_URL}'
              AND branch='${APPROVED_CATALOG_BRANCH}'
              AND commit='${APPROVED_CATALOG_COMMIT}'
+             AND pinned_commit='${APPROVED_CATALOG_COMMIT}'
               THEN 'approved'
             ELSE 'migration_required'
           END
@@ -294,6 +295,7 @@ AND NOT (
   AND url='${APPROVED_CATALOG_URL}'
   AND branch='${APPROVED_CATALOG_BRANCH}'
   AND commit='${APPROVED_CATALOG_COMMIT}'
+  AND pinned_commit='${APPROVED_CATALOG_COMMIT}'
 )
 EOF
 }
@@ -342,6 +344,7 @@ create_rollback_bundle() {
           IFNULL(HEX(url),'NULL'),
           IFNULL(HEX(branch),'NULL'),
           IFNULL(HEX(commit),'NULL'),
+          IFNULL(HEX(pinned_commit),'NULL'),
           IFNULL(HEX(type),'NULL'),
           IFNULL(HEX(kind),'NULL')
         FROM catalog
@@ -367,9 +370,9 @@ create_rollback_bundle() {
                 "$APPROVED_CATALOG_URL"
         fi
 
-        while IFS=$'\t' read -r id created updated environment name url branch commit type kind; do
+        while IFS=$'\t' read -r id created updated environment name url branch commit pinned_commit type kind; do
             [ -n "$id" ] || continue
-            for field in created updated environment name url branch commit type kind; do
+            for field in created updated environment name url branch commit pinned_commit type kind; do
                 value="${!field}"
                 if [ "$value" = NULL ]; then
                     printf -v "$field" '%s' NULL
@@ -377,8 +380,8 @@ create_rollback_bundle() {
                     printf -v "$field" "UNHEX('%s')" "$value"
                 fi
             done
-            printf 'INSERT INTO catalog (id,created_at,updated_at,environment_id,name,url,branch,commit,type,kind) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);\n' \
-                "$id" "$created" "$updated" "$environment" "$name" "$url" "$branch" "$commit" "$type" "$kind"
+            printf 'INSERT INTO catalog (id,created_at,updated_at,environment_id,name,url,branch,commit,pinned_commit,type,kind) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);\n' \
+                "$id" "$created" "$updated" "$environment" "$name" "$url" "$branch" "$commit" "$pinned_commit" "$type" "$kind"
         done < "${BACKUP_DIR}/catalog-before.tsv"
         printf 'COMMIT;\n'
     } > "${BACKUP_DIR}/rollback.sql"
@@ -487,13 +490,15 @@ apply_database_changes() {
               url='${APPROVED_CATALOG_URL}',
               branch='${APPROVED_CATALOG_BRANCH}',
               commit='${APPROVED_CATALOG_COMMIT}',
+              pinned_commit='${APPROVED_CATALOG_COMMIT}',
               updated_at=UTC_TIMESTAMP()
           WHERE ${catalog_predicate};
 
-        INSERT INTO catalog (created_at,updated_at,name,url,branch,commit)
+        INSERT INTO catalog (created_at,updated_at,name,url,branch,commit,pinned_commit)
           SELECT UTC_TIMESTAMP(),UTC_TIMESTAMP(),'pasturestack',
                  '${APPROVED_CATALOG_URL}',
                  '${APPROVED_CATALOG_BRANCH}',
+                 '${APPROVED_CATALOG_COMMIT}',
                  '${APPROVED_CATALOG_COMMIT}'
           WHERE NOT EXISTS (
             SELECT 1 FROM catalog
@@ -501,13 +506,14 @@ apply_database_changes() {
               AND url='${APPROVED_CATALOG_URL}'
               AND branch='${APPROVED_CATALOG_BRANCH}'
               AND commit='${APPROVED_CATALOG_COMMIT}'
+              AND pinned_commit='${APPROVED_CATALOG_COMMIT}'
           );
 
         COMMIT;"
 }
 
 verify_database() {
-    local approved_settings invalid_repair_values approved_catalogs
+    local approved_settings invalid_repair_values approved_catalogs catalog_wait_seconds
     approved_settings="$(db_scalar "
         SELECT COUNT(*) FROM setting WHERE
           (name='agent.image' AND value='${APPROVED_AGENT_IMAGE}') OR
@@ -538,17 +544,24 @@ verify_database() {
     [ "$invalid_repair_values" = 0 ] ||
         die "known non-coordinate settings still contain image references"
 
-    approved_catalogs="$(db_scalar "
-        SELECT COUNT(*) FROM catalog
-        WHERE name='pasturestack'
-          AND url='${APPROVED_CATALOG_URL}'
-          AND branch='${APPROVED_CATALOG_BRANCH}'
-          AND commit='${APPROVED_CATALOG_COMMIT}';")"
+    approved_catalogs=0
+    catalog_wait_seconds=0
+    for catalog_wait_seconds in $(seq 0 60); do
+        approved_catalogs="$(db_scalar "
+            SELECT COUNT(*) FROM catalog
+            WHERE name='pasturestack'
+              AND url='${APPROVED_CATALOG_URL}'
+              AND branch='${APPROVED_CATALOG_BRANCH}'
+              AND commit='${APPROVED_CATALOG_COMMIT}'
+              AND pinned_commit='${APPROVED_CATALOG_COMMIT}';")"
+        [ "$approved_catalogs" = 1 ] && break
+        [ "$catalog_wait_seconds" -eq 60 ] || sleep 1
+    done
     [ "$approved_catalogs" = 1 ] ||
         die "expected exactly one pinned PastureStack Catalog row, found $approved_catalogs"
 
-    printf 'DATABASE_VERIFY_OK approved_settings=%s repaired_invalid_values=0 approved_catalogs=%s\n' \
-        "$approved_settings" "$approved_catalogs"
+    printf 'DATABASE_VERIFY_OK approved_settings=%s repaired_invalid_values=0 approved_catalogs=%s catalog_wait_seconds=%s\n' \
+        "$approved_settings" "$approved_catalogs" "$catalog_wait_seconds"
 }
 
 verify_public_resources() {

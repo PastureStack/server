@@ -58,8 +58,8 @@ require_marker agent-base/build-image.sh 'cp "$R_BIN" "$tmpdir/r"' AGENT_BASE_BU
 require_marker agent-base/build-image.sh 'cp ../server/bin/update-platform-ssl "$tmpdir/update-platform-ssl"' AGENT_BASE_BUILD_SSL_SCRIPT_CONTEXT_COPY_MISSING
 
 require_marker agent/Dockerfile 'FROM ghcr.io/pasturestack/node-agent-base:v0.3.5@sha256:250c8121a5e7f3291947a352aa8642c6e51e474359eea196ea0ab2e41e0ba3ec' AGENT_DOCKERFILE_BASE_NOT_UPDATED
-require_marker agent/Dockerfile 'org.opencontainers.image.version="v1.2.30"' AGENT_DOCKERFILE_VERSION_NOT_ROLLED_FORWARD
-require_marker agent/Dockerfile 'ENV RANCHER_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.30' AGENT_DOCKERFILE_SELF_IMAGE_NOT_ROLLED_FORWARD
+require_marker agent/Dockerfile 'org.opencontainers.image.version="v1.2.31"' AGENT_DOCKERFILE_VERSION_NOT_ROLLED_FORWARD
+require_marker agent/Dockerfile 'ENV RANCHER_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.31' AGENT_DOCKERFILE_SELF_IMAGE_NOT_ROLLED_FORWARD
 require_marker agent/Dockerfile 'io.pasturestack.container.system="node-agent"' AGENT_DOCKERFILE_PASTURESTACK_SYSTEM_LABEL_MISSING
 require_marker agent/Dockerfile 'COPY loglevel /usr/bin/loglevel' AGENT_DOCKERFILE_LOGLEVEL_NOT_CONTEXT_BACKED
 require_marker agent/Dockerfile 'RUN test -s /usr/bin/share-mnt && \' AGENT_DOCKERFILE_BASE_SHARE_MNT_NONEMPTY_CHECK_MISSING
@@ -78,6 +78,7 @@ reject_marker agent/build-image.sh 'SHARE_MNT_BIN=' AGENT_BUILD_EXTERNAL_SHARE_M
 reject_marker agent/build-image.sh 'LOGLEVEL_BIN=' AGENT_BUILD_EXTERNAL_LOGLEVEL_INPUT
 reject_marker agent/Dockerfile 'org.opencontainers.image.version="v1.2.29"' AGENT_DOCKERFILE_SUPERSEDED_VERSION_STILL_PRESENT
 reject_marker agent/Dockerfile 'ENV RANCHER_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.29' AGENT_DOCKERFILE_SUPERSEDED_SELF_IMAGE_STILL_PRESENT
+reject_marker agent/Dockerfile 'ENV RANCHER_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.30' AGENT_DOCKERFILE_SUPERSEDED_SELF_IMAGE_STILL_PRESENT
 reject_marker agent/Dockerfile 'org.opencontainers.image.version="v1.2.28"' AGENT_DOCKERFILE_SUPERSEDED_VERSION_STILL_PRESENT
 reject_marker agent/Dockerfile 'ENV RANCHER_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.28' AGENT_DOCKERFILE_SUPERSEDED_SELF_IMAGE_STILL_PRESENT
 reject_marker agent/Dockerfile 'org.opencontainers.image.version="v1.2.27"' AGENT_DOCKERFILE_FAILED_VERSION_STILL_PRESENT
@@ -90,4 +91,4 @@ if [ "$failure_count" -ne 0 ]; then
   exit 1
 fi
 
-printf 'AGENT_BASE_DOWNLOADS_OK base=v0.3.5 agent=v1.2.30 base_share_mnt_nonempty=1 tracked_loglevel=1 docker_cli=29.5.3 python_sha=1 docker_sha=1 remote_legacy_helpers=0\n'
+printf 'AGENT_BASE_DOWNLOADS_OK base=v0.3.5 agent=v1.2.31 base_share_mnt_nonempty=1 tracked_loglevel=1 docker_cli=29.5.3 python_sha=1 docker_sha=1 remote_legacy_helpers=0\n'

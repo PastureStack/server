@@ -38,6 +38,7 @@ fi
 require_marker agent/run.sh 'apply_agent_env_line()' AGENT_RUN_ENV_HELPER_MISSING
 require_marker agent/run.sh 'trim_agent_env_line()' AGENT_RUN_ENV_TRIM_HELPER_MISSING
 require_marker agent/run.sh 'export "$key=$value"' AGENT_RUN_ENV_LITERAL_EXPORT_MISSING
+require_marker agent/run.sh 'if [[ "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then' AGENT_RUN_BARE_DOCKER_ENV_COMPATIBILITY_MISSING
 require_marker agent/run.sh 'apply_agent_env_output "$content"' AGENT_RUN_REGISTRATION_SCRIPT_PARSER_NOT_USED
 require_marker agent/run.sh 'apply_agent_env_output "$env"' AGENT_RUN_REGISTER_ENV_PARSER_NOT_USED
 require_marker agent/run.sh "jq -r '.[0].Config.Env[]?'" AGENT_RUN_DOCKER_ENV_RAW_JQ_MISSING
@@ -101,6 +102,8 @@ set -euo pipefail
 printf 'JQ_ARGS=%s\n' "$*" >>"$RC16_AGENT_ENV_JQ_LOG"
 cat >/dev/null
 printf '%s\n' 'RANCHER_AGENT_IMAGE=from-container'
+printf '%s\n' 'http_proxy'
+printf '%s\n' 'CATTLE_SCHEDULER_IPS'
 printf '%s\n' 'CATTLE_DOCKER_UUID=docker uuid with spaces'
 printf '%s\n' 'CATTLE_MEMORY_OVERRIDE=4096'
 STUB
@@ -163,6 +166,12 @@ jq_log="$sample_run/jq.log"
   apply_agent_env_line "CATTLE_SECRET_KEY=\$(touch $marker)"
   printf 'LITERAL_SECRET=%s\n' "${CATTLE_SECRET_KEY:-}"
 
+  if apply_agent_env_line 'http_proxy'; then
+    printf '%s\n' 'BARE_ENV_IGNORED=1'
+  else
+    printf '%s\n' 'BARE_ENV_IGNORED=0'
+  fi
+
   if apply_agent_env_line 'BAD-NAME=value' 2>/dev/null; then
     printf '%s\n' 'INVALID_KEY_ACCEPTED=1'
   else
@@ -186,6 +195,7 @@ for expected in \
   'DOCKER_UUID=docker uuid with spaces' \
   'MEMORY_OVERRIDE=4096' \
   "LITERAL_SECRET=\$(touch $marker)" \
+  'BARE_ENV_IGNORED=1' \
   'INVALID_KEY_REJECTED=1'; do
   if ! grep -F -- "$expected" "$sample_output" >/dev/null; then
     fail "AGENT_RUN_ENV_SAMPLE_MISSING expected=$expected"
