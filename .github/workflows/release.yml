@@ -1,0 +1,43 @@
+name: Release Server
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Immutable Server release tag
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: server-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.repository == 'PastureStack/server' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      RELEASE_TAG: ${{ inputs.release_tag }}
+      SOURCE_SHA: ${{ github.sha }}
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Check out immutable Server source
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git clone --filter=blob:none \
+            "https://github.com/${GITHUB_REPOSITORY}.git" source
+          git -C source checkout --detach "$SOURCE_SHA"
+          test "$(git -C source rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git -C source status --short)"
+
+      - name: Build, validate, and publish
+        shell: bash
+        working-directory: source
+        run: bash scripts/release-server-on-github.sh

@@ -1,7 +1,7 @@
 asset	component	repository	commit	license_summary
 api-explorer-1.1.14.tar.gz	api-explorer	https://github.com/PastureStack/api-explorer	c3a6fbd68e22d6a73915435b5da8f27a87b45ad2	Apache-2.0 plus bundled dependency terms
 authentication-service-0.1.7-linux-amd64.tar.xz	authentication-service	https://github.com/PastureStack/authentication-service	382f0c3209b12ea203ca391797a57b113f97d538	Apache-2.0 plus bundled dependency terms
-catalog-service-0.20.6.tar.xz	catalog-service	https://github.com/PastureStack/catalog-service	d488af42a9d5dbdfd9a794946717f045d6858040	Apache-2.0 plus bundled dependency terms
+catalog-service-0.20.7.tar.xz	catalog-service	https://github.com/PastureStack/catalog-service	26bf62b24b4bf7893821f7a3f744f2e1d919411f	Apache-2.0 plus bundled dependency terms
 compose-executor-0.14.31-linux-amd64.gz	compose-cli	https://github.com/PastureStack/compose-cli	70392e1fb7a40945ccb7e9db5774ed7d99df3284	Apache-2.0 plus bundled dependency terms
 graphite_exporter-0.2.0.linux-amd64.tar.gz	graphite-exporter	https://github.com/prometheus/graphite_exporter	e76b500729ba944f7370d58c43f431632da339e5	Apache-2.0
 host-api-0.38.4.tar.gz	host-api	https://github.com/PastureStack/host-api	301025de31c07073cc03efa17e1ab8efa423d508	Apache-2.0 plus bundled dependency terms

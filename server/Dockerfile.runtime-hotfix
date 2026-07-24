@@ -1,19 +1,65 @@
 # syntax=docker/dockerfile:1.7
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.274@sha256:c4078ba5fb9be968f05021d3a2ad31411f6ac70c09fb24e96b33d8cc5e38fbed
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.276@sha256:09a599bc6c01ab4b5a8eca6c245752a7669f4c8c396171814da9186190053ec8
 FROM ${BASE_IMAGE}
 
 ARG PASTURESTACK_SERVER_REVISION
+ARG SOURCE_DATE_EPOCH
+ARG CATALOG_SERVICE_VERSION=0.20.7
+ARG CATALOG_SERVICE_SOURCE_COMMIT=26bf62b24b4bf7893821f7a3f744f2e1d919411f
+ARG CATALOG_SERVICE_ARTIFACT_SHA256=b195dd7f54fecc58e4af6942cd537b7deaaa7c659cfa97b3869e998e6b75fde3
+ARG RUNTIME_LICENSE_BUNDLE_VERSION=1.6.277
+ARG RUNTIME_LICENSE_BUNDLE_SHA256=99627ecd427ebe71e17497d2506cede00f16c0b733bc33f69347e9eff59ef37a
+
+RUN --mount=type=secret,id=rc16_artifact_base_url \
+    set -eu; \
+    artifact_base="$(cat /run/secrets/rc16_artifact_base_url)"; \
+    artifact_base="${artifact_base%/}"; \
+    checksum_file=/usr/share/cattle/release-SHA256SUMS; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 \
+        -o "${checksum_file}.tmp" "${artifact_base}/SHA256SUMS"; \
+    mv "${checksum_file}.tmp" "${checksum_file}"; \
+    tmp_dir="$(mktemp -d)"; \
+    catalog_asset="catalog-service-${CATALOG_SERVICE_VERSION}.tar.xz"; \
+    catalog_archive="${tmp_dir}/${catalog_asset}"; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 \
+        -o "${catalog_archive}" "${artifact_base}/${catalog_asset}"; \
+    bash /usr/share/cattle/verify_release_asset "${checksum_file}" "${catalog_archive}" "${catalog_asset}"; \
+    echo "${CATALOG_SERVICE_ARTIFACT_SHA256}  ${catalog_archive}" | sha256sum -c -; \
+    tar -xJf "${catalog_archive}" -C "${tmp_dir}"; \
+    test -x /usr/bin/catalog-service; \
+    test -x /usr/bin/catalog-service.real; \
+    install -m 0755 "${tmp_dir}/catalog-service" /usr/bin/catalog-service.real; \
+    install -m 0755 "${tmp_dir}/catalog-service-sqlite" /usr/bin/catalog-service-sqlite; \
+    test "$(readlink /usr/bin/rancher-catalog-service)" = catalog-service; \
+    test "$(readlink /usr/bin/rancher-catalog-service-sqlite)" = catalog-service-sqlite; \
+    license_asset="pasturestack-runtime-licenses-${RUNTIME_LICENSE_BUNDLE_VERSION}.tar.xz"; \
+    license_archive="${tmp_dir}/${license_asset}"; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 \
+        -o "${license_archive}" "${artifact_base}/${license_asset}"; \
+    bash /usr/share/cattle/verify_release_asset "${checksum_file}" "${license_archive}" "${license_asset}"; \
+    echo "${RUNTIME_LICENSE_BUNDLE_SHA256}  ${license_archive}" | sha256sum -c -; \
+    rm -rf /usr/share/licenses/pasturestack-runtime; \
+    mkdir -p /usr/share/licenses/pasturestack-runtime; \
+    tar -xJf "${license_archive}" \
+        -C /usr/share/licenses/pasturestack-runtime --strip-components=1; \
+    (cd /usr/share/licenses/pasturestack-runtime && sha256sum -c FILES.sha256 >/dev/null); \
+    awk -F '\t' -v commit="${CATALOG_SERVICE_SOURCE_COMMIT}" \
+        '$2 == "catalog-service" && $4 == commit { found = 1 } END { exit !found }' \
+        /usr/share/licenses/pasturestack-runtime/SOURCES.tsv; \
+    rm -rf "${tmp_dir}"; \
+    test -x /usr/bin/catalog-service.real; \
+    test -x /usr/bin/catalog-service-sqlite
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server compatibility image." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.276" \
+      org.opencontainers.image.version="v1.6.277" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
-      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.274" \
-      org.opencontainers.image.base.digest="sha256:c4078ba5fb9be968f05021d3a2ad31411f6ac70c09fb24e96b33d8cc5e38fbed"
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.276" \
+      org.opencontainers.image.base.digest="sha256:09a599bc6c01ab4b5a8eca6c245752a7669f4c8c396171814da9186190053ec8"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.276
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.277
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.25@sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.25@sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24
-ENV PASTURESTACK_RELEASE_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.276
-ENV RC16_ARTIFACT_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.276
+ENV PASTURESTACK_RELEASE_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.277
+ENV RC16_ARTIFACT_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.277

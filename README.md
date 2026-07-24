@@ -29,7 +29,7 @@ Version coordinates are available only when the matching GitHub Release and publ
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.276
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.277
 ```
 
 Use the immutable image digest recorded in the matching GitHub Release when pinning a production-like deployment. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
@@ -59,7 +59,7 @@ Metrics mapping uses the unchanged official Prometheus Graphite Exporter `v0.2.0
 
 Process supervision uses the unchanged official s6-overlay `v1.19.1.1` AMD64 release asset. The build pins its archive digest and source commit, validates the required init and supervision entries, and carries the upstream ISC license in the Runtime license bundle. The public filename adds only a version suffix; the archive bytes remain identical to the upstream GitHub Release asset.
 
-Binary-only compatibility archives are accompanied by the deterministic `pasturestack-runtime-licenses-1.6.274.tar.xz` release asset. It maps every flat Runtime asset to an exact public source commit, preserves tracked license, notice, patent, privacy, and origin files, includes legal files already embedded in archives, and carries its own internal checksum list. The Server image verifies and installs this bundle under `/usr/share/licenses/pasturestack-runtime`.
+Binary-only compatibility archives are accompanied by the deterministic `pasturestack-runtime-licenses-1.6.277.tar.xz` release asset. It maps every flat Runtime asset to an exact public source commit, preserves tracked license, notice, patent, privacy, and origin files, includes legal files already embedded in archives, and carries its own internal checksum list. The Server image verifies and installs this bundle under `/usr/share/licenses/pasturestack-runtime`.
 
 Automatic CI/CD triggers remain disabled. Release preparation and publication use manually dispatched, gated GitHub workflows so public runners carry the build load without running on every push. Publication is not a production-readiness claim.
 

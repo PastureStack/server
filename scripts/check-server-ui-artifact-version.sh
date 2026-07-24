@@ -30,8 +30,8 @@ expected_api_ui_version="${RC16_EXPECTED_API_UI_VERSION:-1.1.14}"
 expected_agent_image="${RC16_EXPECTED_AGENT_IMAGE:-ghcr.io/pasturestack/node-agent:v1.2.31@sha256:89a1703d236fb2ba34d568faef1cf0a41f91a2a5a7e6b8052415ba5a12f2d0e1}"
 expected_lb_image="${RC16_EXPECTED_LB_IMAGE:-ghcr.io/pasturestack/load-balancer-service:v0.9.25@sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24}"
 expected_catalog_commit="${PASTURESTACK_EXPECTED_CATALOG_COMMIT:-91f5910a44cb181051be2adc4c14f0e6ec7842ef}"
-expected_catalog_service_version="${PASTURESTACK_EXPECTED_CATALOG_SERVICE_VERSION:-0.20.6}"
-expected_catalog_service_sha256="${PASTURESTACK_EXPECTED_CATALOG_SERVICE_SHA256:-5099bf0c69aad625dcd4c857b573496c88243c068891699293c99771859a414d}"
+expected_catalog_service_version="${PASTURESTACK_EXPECTED_CATALOG_SERVICE_VERSION:-0.20.7}"
+expected_catalog_service_sha256="${PASTURESTACK_EXPECTED_CATALOG_SERVICE_SHA256:-b195dd7f54fecc58e4af6942cd537b7deaaa7c659cfa97b3869e998e6b75fde3}"
 expected_authentication_service_version="${PASTURESTACK_EXPECTED_AUTHENTICATION_SERVICE_VERSION:-0.1.7}"
 expected_authentication_service_sha256="${PASTURESTACK_EXPECTED_AUTHENTICATION_SERVICE_SHA256:-093ab5f5c7e733e56a7e5af5795bf49b4339234e2235ded36c5b854bc8b103bb}"
 expected_websocket_proxy_version="${PASTURESTACK_EXPECTED_WEBSOCKET_PROXY_VERSION:-0.23.12}"
@@ -55,8 +55,8 @@ expected_windows_agent_artifact_sha256="${PASTURESTACK_EXPECTED_WINDOWS_AGENT_AR
 expected_graphite_exporter_version="${PASTURESTACK_EXPECTED_GRAPHITE_EXPORTER_VERSION:-0.2.0}"
 expected_graphite_exporter_artifact_sha256="${PASTURESTACK_EXPECTED_GRAPHITE_EXPORTER_ARTIFACT_SHA256:-1058b72a73f568adc24191f74e972ed6be0d932b9a80f43a7043e4e3d0501388}"
 expected_graphite_exporter_binary_sha256="${PASTURESTACK_EXPECTED_GRAPHITE_EXPORTER_BINARY_SHA256:-a27df929e213a3e87adf057f3af2f9bb6d4b8c92d49c1795e6a79bd117f0e5d9}"
-expected_runtime_license_bundle_version="${PASTURESTACK_EXPECTED_RUNTIME_LICENSE_BUNDLE_VERSION:-1.6.274}"
-expected_runtime_license_bundle_sha256="${PASTURESTACK_EXPECTED_RUNTIME_LICENSE_BUNDLE_SHA256:-b854af190ed6c3519a8425b5d35ea8d2e734edc84cba711f5c284e7060064641}"
+expected_runtime_license_bundle_version="${PASTURESTACK_EXPECTED_RUNTIME_LICENSE_BUNDLE_VERSION:-1.6.277}"
+expected_runtime_license_bundle_sha256="${PASTURESTACK_EXPECTED_RUNTIME_LICENSE_BUNDLE_SHA256:-99627ecd427ebe71e17497d2506cede00f16c0b733bc33f69347e9eff59ef37a}"
 expected_s6_overlay_version="${PASTURESTACK_EXPECTED_S6_OVERLAY_VERSION:-1.19.1.1}"
 expected_s6_overlay_artifact_sha256="${PASTURESTACK_EXPECTED_S6_OVERLAY_ARTIFACT_SHA256:-b5d360383dd519a33bd39651c43c49b4cf0e95344a94ba65dd8628eefd9ee5cb}"
 require_promotion_defaults="${RC16_REQUIRE_PROMOTION_DEFAULTS:-false}"
@@ -126,10 +126,13 @@ require_marker server/Dockerfile 'test -x /usr/bin/graphite_exporter' SERVER_GRA
 reject_marker server/Dockerfile 'tar -xzf /tmp/graphite_exporter.tar.gz -C /usr/bin/ graphite_exporter' SERVER_GRAPHITE_EXPORTER_OFFICIAL_LAYOUT_IGNORED
 require_marker server/Dockerfile "ARG RUNTIME_LICENSE_BUNDLE_VERSION=${expected_runtime_license_bundle_version}" SERVER_RUNTIME_LICENSE_BUNDLE_VERSION_NOT_PINNED
 require_marker server/Dockerfile "ARG RUNTIME_LICENSE_BUNDLE_SHA256=${expected_runtime_license_bundle_sha256}" SERVER_RUNTIME_LICENSE_BUNDLE_SHA256_NOT_PINNED
+require_marker server/Dockerfile.runtime-hotfix "ARG RUNTIME_LICENSE_BUNDLE_VERSION=${expected_runtime_license_bundle_version}" SERVER_RUNTIME_HOTFIX_LICENSE_BUNDLE_VERSION_NOT_PINNED
+require_marker server/Dockerfile.runtime-hotfix "ARG RUNTIME_LICENSE_BUNDLE_SHA256=${expected_runtime_license_bundle_sha256}" SERVER_RUNTIME_HOTFIX_LICENSE_BUNDLE_SHA256_NOT_PINNED
 require_marker server/Dockerfile 'pasturestack-runtime-licenses-${RUNTIME_LICENSE_BUNDLE_VERSION}.tar.xz' SERVER_RUNTIME_LICENSE_BUNDLE_DOWNLOAD_MISSING
 require_marker server/Dockerfile 'tar -xJf /tmp/runtime-licenses.tar.xz -C /usr/share/licenses/pasturestack-runtime --strip-components=1' SERVER_RUNTIME_LICENSE_BUNDLE_INSTALL_MISSING
 require_marker server/Dockerfile '(cd /usr/share/licenses/pasturestack-runtime && sha256sum -c FILES.sha256 >/dev/null)' SERVER_RUNTIME_LICENSE_BUNDLE_INTERNAL_HASH_CHECK_MISSING
 require_marker server/Dockerfile 'test -f /usr/share/licenses/pasturestack-runtime/source-legal/server/LICENSE' SERVER_RUNTIME_LICENSE_BUNDLE_SERVER_LICENSE_MISSING
+require_marker server/Dockerfile.runtime-hotfix '(cd /usr/share/licenses/pasturestack-runtime && sha256sum -c FILES.sha256 >/dev/null)' SERVER_RUNTIME_HOTFIX_LICENSE_BUNDLE_INTERNAL_HASH_CHECK_MISSING
 require_marker server/Dockerfile 'rm -f /tmp/web-console.tar.gz /tmp/api-explorer.tar.gz /tmp/graphite_exporter.tar.gz /tmp/runtime-licenses.tar.xz' SERVER_ARTIFACT_DOWNLOAD_TMP_CLEANUP_MISSING
 require_marker server/Dockerfile 'ARG SOURCE_DATE_EPOCH=1784851922' SERVER_DOCKERFILE_SOURCE_DATE_EPOCH_MISSING
 require_marker server/Dockerfile '/var/lib/mariadb \' SERVER_UNUSED_MARIADB_PACKAGE_DATADIR_NOT_REMOVED
@@ -163,8 +166,12 @@ require_marker server/Dockerfile "org.opencontainers.image.version=\"${expected_
 require_marker server/Dockerfile 'org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}"' SERVER_OCI_REVISION_LABEL_MISSING
 require_marker server/Dockerfile "ARG CATALOG_SERVICE_VERSION=${expected_catalog_service_version}" SERVER_CATALOG_HELPER_VERSION_NOT_CURRENT
 require_marker server/Dockerfile "ARG CATALOG_SERVICE_ARTIFACT_SHA256=${expected_catalog_service_sha256}" SERVER_CATALOG_HELPER_SHA256_NOT_CURRENT
+require_marker server/Dockerfile.runtime-hotfix "ARG CATALOG_SERVICE_VERSION=${expected_catalog_service_version}" SERVER_RUNTIME_HOTFIX_CATALOG_HELPER_VERSION_NOT_CURRENT
+require_marker server/Dockerfile.runtime-hotfix "ARG CATALOG_SERVICE_ARTIFACT_SHA256=${expected_catalog_service_sha256}" SERVER_RUNTIME_HOTFIX_CATALOG_HELPER_SHA256_NOT_CURRENT
 require_marker server/Dockerfile 'catalog-service-${CATALOG_SERVICE_VERSION}.tar.xz' SERVER_CATALOG_HELPER_PACKAGE_NOT_CURRENT
 require_marker server/Dockerfile 'install -m 0755 "${tmp_dir}/catalog-service-sqlite" /usr/bin/catalog-service-sqlite' SERVER_CATALOG_SQLITE_BINARY_NOT_PRESERVED
+require_marker server/Dockerfile.runtime-hotfix 'install -m 0755 "${tmp_dir}/catalog-service" /usr/bin/catalog-service.real' SERVER_RUNTIME_HOTFIX_CATALOG_REAL_BINARY_NOT_REPLACED
+require_marker server/Dockerfile.runtime-hotfix 'install -m 0755 "${tmp_dir}/catalog-service-sqlite" /usr/bin/catalog-service-sqlite' SERVER_RUNTIME_HOTFIX_CATALOG_SQLITE_BINARY_NOT_REPLACED
 require_marker server/Dockerfile 'catalog-service-sqlite --sqlite --validate --config repo.json; \' SERVER_CATALOG_SQLITE_VALIDATE_NOT_FAIL_CLOSED
 reject_marker server/Dockerfile 'catalog-service-sqlite --sqlite --validate --config repo.json && \' SERVER_CATALOG_SQLITE_VALIDATE_CAN_BE_MASKED
 require_marker server/Dockerfile 'ln -sfn catalog-service /usr/bin/rancher-catalog-service' SERVER_CATALOG_COMPATIBILITY_ALIAS_MISSING

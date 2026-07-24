@@ -41,7 +41,7 @@ grep -Fq "ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=${approved_balancer}" \
     exit 1
 }
 grep -Fq \
-    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.274@sha256:c4078ba5fb9be968f05021d3a2ad31411f6ac70c09fb24e96b33d8cc5e38fbed' \
+    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.276@sha256:09a599bc6c01ab4b5a8eca6c245752a7669f4c8c396171814da9186190053ec8' \
     server/Dockerfile.runtime-hotfix || {
     echo SERVER_RUNTIME_HOTFIX_BASE_DIGEST_MISSING >&2
     exit 1
@@ -49,6 +49,11 @@ grep -Fq \
 grep -Fq 'Refusing to build a release image from tracked, uncommitted changes' \
     server/build-runtime-hotfix-image.sh || {
     echo SERVER_RUNTIME_HOTFIX_CLEAN_SOURCE_GATE_MISSING >&2
+    exit 1
+}
+grep -Fq -- '--secret id=rc16_artifact_base_url,env=PASTURESTACK_ARTIFACT_BASE_URL' \
+    server/build-runtime-hotfix-image.sh || {
+    echo SERVER_RUNTIME_HOTFIX_ARTIFACT_SECRET_MISSING >&2
     exit 1
 }
 

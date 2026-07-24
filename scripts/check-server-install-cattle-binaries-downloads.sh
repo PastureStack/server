@@ -113,20 +113,20 @@ agent.package.per-host-subnet-placeholder.url=https://artifacts.invalid/rc16/per
 agent.package.windows-agent-upstream.url=https://github.com/rancher/agent/releases/download/v0.13.3/go-agent.zip
 agent.package.windows-agent-prior.url=https://artifacts.invalid/rc16/go-agent-v0.13.3.zip
 agent.package.windows-agent-placeholder.url=https://artifacts.invalid/rc16/node-agent-0.13.3.zip
-agent.package.host-api-current.url=https://github.com/PastureStack/server/releases/download/v1.6.276/host-api-0.38.4.tar.gz
-agent.package.python-agent-current.url=https://github.com/PastureStack/server/releases/download/v1.6.276/node-agent-0.13.21.tar.gz
-agent.package.windows-agent-current.url=https://github.com/PastureStack/server/releases/download/v1.6.276/node-agent-0.13.21-windows-amd64.zip
-agent.package.per-host-subnet-current.url=https://github.com/PastureStack/server/releases/download/v1.6.276/per-host-subnet-0.2.4-windows-amd64.zip
-service.package.catalog-current.url=https://github.com/PastureStack/server/releases/download/v1.6.276/catalog-service-0.20.6.tar.xz,catalog-service
-service.package.authentication-current.url=https://github.com/PastureStack/server/releases/download/v1.6.276/authentication-service-0.1.7-linux-amd64.tar.xz,authentication-service
-service.package.compose-current.url=https://github.com/PastureStack/server/releases/download/v1.6.276/compose-executor-0.14.31-linux-amd64.gz,compose-executor
-service.package.machine-bundle-current.url=https://github.com/PastureStack/server/releases/download/v1.6.276/machine-driver-bundle-0.14.0-linux-amd64.tar.xz,docker-machine
-service.package.host-provisioner-current.url=https://github.com/PastureStack/server/releases/download/v1.6.276/host-provisioner-0.39.4-linux-amd64.tar.xz,host-provisioner
-service.package.vsphere-cli-current.url=https://github.com/PastureStack/server/releases/download/v1.6.276/vsphere-cli-bundle-0.54.1-linux-amd64.tar.xz,govc
-service.package.secret-delivery-current.url=https://github.com/PastureStack/server/releases/download/v1.6.276/secret-delivery-api-0.2.2-linux-amd64.tar.xz,secret-delivery-api
-service.package.usage-telemetry-current.url=https://github.com/PastureStack/server/releases/download/v1.6.276/usage-telemetry-agent-0.4.0-pasturestack.1-linux-amd64.tar.xz,usage-telemetry-agent
-service.package.webhook-automation-current.url=https://github.com/PastureStack/server/releases/download/v1.6.276/webhook-automation-service-0.9.15-pasturestack.1-linux-amd64.tar.xz,webhook-automation-service
-service.package.websocket-current.url=https://github.com/PastureStack/server/releases/download/v1.6.276/websocket-proxy-0.23.12-linux-amd64.tar.xz,websocket-proxy
+agent.package.host-api-current.url=https://github.com/PastureStack/server/releases/download/v1.6.277/host-api-0.38.4.tar.gz
+agent.package.python-agent-current.url=https://github.com/PastureStack/server/releases/download/v1.6.277/node-agent-0.13.21.tar.gz
+agent.package.windows-agent-current.url=https://github.com/PastureStack/server/releases/download/v1.6.277/node-agent-0.13.21-windows-amd64.zip
+agent.package.per-host-subnet-current.url=https://github.com/PastureStack/server/releases/download/v1.6.277/per-host-subnet-0.2.4-windows-amd64.zip
+service.package.catalog-current.url=https://github.com/PastureStack/server/releases/download/v1.6.277/catalog-service-0.20.7.tar.xz,catalog-service
+service.package.authentication-current.url=https://github.com/PastureStack/server/releases/download/v1.6.277/authentication-service-0.1.7-linux-amd64.tar.xz,authentication-service
+service.package.compose-current.url=https://github.com/PastureStack/server/releases/download/v1.6.277/compose-executor-0.14.31-linux-amd64.gz,compose-executor
+service.package.machine-bundle-current.url=https://github.com/PastureStack/server/releases/download/v1.6.277/machine-driver-bundle-0.14.0-linux-amd64.tar.xz,docker-machine
+service.package.host-provisioner-current.url=https://github.com/PastureStack/server/releases/download/v1.6.277/host-provisioner-0.39.4-linux-amd64.tar.xz,host-provisioner
+service.package.vsphere-cli-current.url=https://github.com/PastureStack/server/releases/download/v1.6.277/vsphere-cli-bundle-0.54.1-linux-amd64.tar.xz,govc
+service.package.secret-delivery-current.url=https://github.com/PastureStack/server/releases/download/v1.6.277/secret-delivery-api-0.2.2-linux-amd64.tar.xz,secret-delivery-api
+service.package.usage-telemetry-current.url=https://github.com/PastureStack/server/releases/download/v1.6.277/usage-telemetry-agent-0.4.0-pasturestack.1-linux-amd64.tar.xz,usage-telemetry-agent
+service.package.webhook-automation-current.url=https://github.com/PastureStack/server/releases/download/v1.6.277/webhook-automation-service-0.9.15-pasturestack.1-linux-amd64.tar.xz,webhook-automation-service
+service.package.websocket-current.url=https://github.com/PastureStack/server/releases/download/v1.6.277/websocket-proxy-0.23.12-linux-amd64.tar.xz,websocket-proxy
 EOF
 (
   export RC16_ARTIFACT_BASE_URL=https://artifacts.invalid/rc16
@@ -141,7 +141,7 @@ agent.package.host-api-current.url=https://artifacts.invalid/rc16/host-api-0.38.
 agent.package.python-agent-current.url=https://artifacts.invalid/rc16/node-agent-0.13.21.tar.gz
 agent.package.windows-agent-current.url=https://artifacts.invalid/rc16/node-agent-0.13.21-windows-amd64.zip
 agent.package.per-host-subnet-current.url=https://artifacts.invalid/rc16/per-host-subnet-0.2.4-windows-amd64.zip
-service.package.catalog-current.url=https://artifacts.invalid/rc16/catalog-service-0.20.6.tar.xz,catalog-service
+service.package.catalog-current.url=https://artifacts.invalid/rc16/catalog-service-0.20.7.tar.xz,catalog-service
 service.package.authentication-current.url=https://artifacts.invalid/rc16/authentication-service-0.1.7-linux-amd64.tar.xz,authentication-service
 service.package.compose-current.url=https://artifacts.invalid/rc16/compose-executor-0.14.31-linux-amd64.gz,compose-executor
 service.package.machine-bundle-current.url=https://artifacts.invalid/rc16/machine-driver-bundle-0.14.0-linux-amd64.tar.xz,docker-machine
@@ -158,10 +158,10 @@ while IFS= read -r expected_current; do
   fi
 done <"$sample_run/current-release-expected.txt"
 
-if ! grep -Fx 'service.package.catalog.url=https://artifacts.invalid/rc16/catalog-service-0.20.6.tar.xz,catalog-service' "$sample_run/cattle-global.properties" >/dev/null; then
+if ! grep -Fx 'service.package.catalog.url=https://artifacts.invalid/rc16/catalog-service-0.20.7.tar.xz,catalog-service' "$sample_run/cattle-global.properties" >/dev/null; then
   fail "SERVER_INSTALL_CATTLE_BINARIES_CATALOG_NEUTRAL_PACKAGE_MISMATCH"
 fi
-if ! grep -Fx 'service.package.catalog-placeholder.url=https://artifacts.invalid/rc16/catalog-service-0.20.6.tar.xz,catalog-service' "$sample_run/cattle-global.properties" >/dev/null; then
+if ! grep -Fx 'service.package.catalog-placeholder.url=https://artifacts.invalid/rc16/catalog-service-0.20.7.tar.xz,catalog-service' "$sample_run/cattle-global.properties" >/dev/null; then
   fail "SERVER_INSTALL_CATTLE_BINARIES_CATALOG_PLACEHOLDER_NEUTRAL_PACKAGE_MISMATCH"
 fi
 if ! grep -Fx 'service.package.authentication.url=https://artifacts.invalid/rc16/authentication-service-0.1.7-linux-amd64.tar.xz,authentication-service' "$sample_run/cattle-global.properties" >/dev/null; then

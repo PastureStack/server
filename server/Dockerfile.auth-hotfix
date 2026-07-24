@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1.7
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.276
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.277
 FROM ${BASE_IMAGE}
 
-ARG CATALOG_SERVICE_VERSION=0.20.6
-ARG CATALOG_SERVICE_ARTIFACT_SHA256=5099bf0c69aad625dcd4c857b573496c88243c068891699293c99771859a414d
+ARG CATALOG_SERVICE_VERSION=0.20.7
+ARG CATALOG_SERVICE_ARTIFACT_SHA256=b195dd7f54fecc58e4af6942cd537b7deaaa7c659cfa97b3869e998e6b75fde3
 ARG AUTHENTICATION_SERVICE_VERSION=0.1.7
 ARG AUTHENTICATION_SERVICE_ARTIFACT_SHA256=093ab5f5c7e733e56a7e5af5795bf49b4339234e2235ded36c5b854bc8b103bb
 ARG WINDOWS_AGENT_VERSION=0.13.21
@@ -140,13 +140,13 @@ RUN --mount=type=secret,id=rc16_artifact_base_url \
     } > /usr/share/cattle/env_vars; \
     sha256sum /usr/share/cattle/artifacts/node-agent-0.13.21.tar.gz "/usr/share/cattle/artifacts/node-agent-${WINDOWS_AGENT_VERSION}-windows-amd64.zip" /usr/share/cattle/artifacts/host-api-0.38.4.tar.gz "/usr/share/cattle/artifacts/per-host-subnet-${PER_HOST_SUBNET_VERSION}-windows-amd64.zip"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.276
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.277
 ENV CATTLE_CATTLE_VERSION=v0.183.269
 ENV DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.31@sha256:89a1703d236fb2ba34d568faef1cf0a41f91a2a5a7e6b8052415ba5a12f2d0e1
 ENV DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.31@sha256:89a1703d236fb2ba34d568faef1cf0a41f91a2a5a7e6b8052415ba5a12f2d0e1
 ENV CATTLE_RANCHER_SERVER_IMAGE=ghcr.io/pasturestack/server
-ENV PASTURESTACK_RELEASE_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.276
-ENV RC16_ARTIFACT_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.276
+ENV PASTURESTACK_RELEASE_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.277
+ENV RC16_ARTIFACT_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.277
 ENV PASTURESTACK_CATALOG_COMMIT=91f5910a44cb181051be2adc4c14f0e6ec7842ef
 ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"91f5910a44cb181051be2adc4c14f0e6ec7842ef"}}}'
 ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"91f5910a44cb181051be2adc4c14f0e6ec7842ef"}}}'
