@@ -16,7 +16,7 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The `v1.6.275` assembly consumes Orchestration Engine `v0.183.269`, Web Console `1.6.56`, API Explorer `1.1.14`, Compose Executor `v0.14.31`, Node Agent `v1.2.31`, Load Balancer Service `v0.9.25`, and the Catalog at commit `91f5910a44cb181051be2adc4c14f0e6ec7842ef`. Web Console packaging must retain its fingerprinted `/assets/ui*.js` entry, and API Explorer must retain `/api-ui/ui.min.js` and `/api-ui/ui.min.css`.
+The `v1.6.276` assembly consumes Orchestration Engine `v0.183.269`, Web Console `1.6.56`, API Explorer `1.1.14`, Compose Executor `v0.14.31`, Node Agent `v1.2.31`, Load Balancer Service `v0.9.25`, and the Catalog at commit `91f5910a44cb181051be2adc4c14f0e6ec7842ef`. Web Console packaging must retain its fingerprinted `/assets/ui*.js` entry, and API Explorer must retain `/api-ui/ui.min.js` and `/api-ui/ui.min.css`.
 
 Native MariaDB validation must override both `CATTLE_DB_CATTLE_MYSQL_URL` and `CATTLE_DB_LIQUIBASE_MYSQL_URL`; the application and migration pools are configured independently. The default compatibility path intentionally uses a MySQL JDBC scheme with the MariaDB driver compatibility options.
 

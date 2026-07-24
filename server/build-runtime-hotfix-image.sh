@@ -16,7 +16,7 @@ if [[ ! "$revision" =~ ^[0-9a-f]{40}$ ]]; then
     exit 1
 fi
 
-image=${IMAGE:-pasturestack-validation/server:v1.6.275}
+image=${IMAGE:-pasturestack-validation/server:v1.6.276}
 
 docker buildx build \
     --provenance=false \
@@ -26,7 +26,7 @@ docker buildx build \
     --file server/Dockerfile.runtime-hotfix \
     server
 
-test "$(docker image inspect "$image" --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = v1.6.275
+test "$(docker image inspect "$image" --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = v1.6.276
 test "$(docker image inspect "$image" --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = "$revision"
 
 printf 'SERVER_RUNTIME_HOTFIX_IMAGE_OK image=%s revision=%s\n' "$image" "$revision"

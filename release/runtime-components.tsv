@@ -17,6 +17,6 @@ s6-overlay-amd64-v1.19.1.1.tar.gz	s6-overlay	https://github.com/just-containers/
 secret-delivery-api-0.2.2-linux-amd64.tar.xz	secret-delivery-api	https://github.com/PastureStack/secret-delivery-api	227aaa22a0daa54e15ca600e9ea903d3b7194fc1	Apache-2.0 plus bundled MIT, BSD-style, and MPL-2.0 terms
 usage-telemetry-agent-0.4.0-pasturestack.1-linux-amd64.tar.xz	usage-telemetry-agent	https://github.com/PastureStack/usage-telemetry-agent	d0dfbb148bc738bda5b396ee9e7d64f40aa567f5	Apache-2.0
 vsphere-cli-bundle-0.54.1-linux-amd64.tar.xz	vsphere-cli-bundle	https://github.com/PastureStack/vsphere-cli-bundle	a9a08fb4d3c0f342100d5b5fc676562dacbffab1	Apache-2.0 artifact; packaging recipe MIT
-web-console-1.6.56.tar.gz	web-console	https://github.com/PastureStack/web-console	d2798062caf71bc610df7c95acbfb938ee57dde0	Apache-2.0 plus bundled dependency terms
+web-console-1.6.56.tar.gz	web-console	https://github.com/PastureStack/web-console	9fa1a8712f7b2d72a83268376d4e6fcfdd46efaf	Apache-2.0 plus bundled dependency terms
 webhook-automation-service-0.9.15-pasturestack.1-linux-amd64.tar.xz	webhook-automation-service	https://github.com/PastureStack/webhook-automation-service	905f7a41ba86d300ba53ea9700b7b74d9e6ff239	Apache-2.0 plus bundled dependency terms
 websocket-proxy-0.23.12-linux-amd64.tar.xz	websocket-proxy	https://github.com/PastureStack/websocket-proxy	75d974b1a2570b05eb301d12f07062d7961bc0dd	Apache-2.0 plus bundled dependency terms
