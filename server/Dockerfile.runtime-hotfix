@@ -1,0 +1,70 @@
+# syntax=docker/dockerfile:1.7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.277@sha256:075739b5ddf25805781a45cce10d183db2f31319ee53ec7e8fb781f5503e8b2e
+FROM ${BASE_IMAGE}
+
+ARG PASTURESTACK_SERVER_REVISION
+ARG SOURCE_DATE_EPOCH
+ARG CATALOG_SERVICE_VERSION=0.20.7
+ARG CATALOG_SERVICE_SOURCE_COMMIT=26bf62b24b4bf7893821f7a3f744f2e1d919411f
+ARG CATALOG_SERVICE_ARTIFACT_SHA256=b195dd7f54fecc58e4af6942cd537b7deaaa7c659cfa97b3869e998e6b75fde3
+ARG RUNTIME_LICENSE_BUNDLE_VERSION=1.6.278
+ARG RUNTIME_LICENSE_BUNDLE_SHA256=317823d94aacb233fcc1827531bd45a4d0de54de0e75e53139bfdd7047c266e7
+
+RUN --mount=type=secret,id=rc16_artifact_base_url \
+    set -eu; \
+    artifact_base="$(cat /run/secrets/rc16_artifact_base_url)"; \
+    artifact_base="${artifact_base%/}"; \
+    checksum_file=/usr/share/cattle/release-SHA256SUMS; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 \
+        -o "${checksum_file}.tmp" "${artifact_base}/SHA256SUMS"; \
+    mv "${checksum_file}.tmp" "${checksum_file}"; \
+    tmp_dir="$(mktemp -d)"; \
+    catalog_asset="catalog-service-${CATALOG_SERVICE_VERSION}.tar.xz"; \
+    catalog_archive="${tmp_dir}/${catalog_asset}"; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 \
+        -o "${catalog_archive}" "${artifact_base}/${catalog_asset}"; \
+    bash /usr/share/cattle/verify_release_asset "${checksum_file}" "${catalog_archive}" "${catalog_asset}"; \
+    echo "${CATALOG_SERVICE_ARTIFACT_SHA256}  ${catalog_archive}" | sha256sum -c -; \
+    tar -xJf "${catalog_archive}" -C "${tmp_dir}"; \
+    test -x /usr/bin/catalog-service; \
+    test -x /usr/bin/catalog-service.real; \
+    install -m 0755 "${tmp_dir}/catalog-service" /usr/bin/catalog-service.real; \
+    install -m 0755 "${tmp_dir}/catalog-service-sqlite" /usr/bin/catalog-service-sqlite; \
+    test "$(readlink /usr/bin/rancher-catalog-service)" = catalog-service; \
+    test "$(readlink /usr/bin/rancher-catalog-service-sqlite)" = catalog-service-sqlite; \
+    license_asset="pasturestack-runtime-licenses-${RUNTIME_LICENSE_BUNDLE_VERSION}.tar.xz"; \
+    license_archive="${tmp_dir}/${license_asset}"; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 \
+        -o "${license_archive}" "${artifact_base}/${license_asset}"; \
+    bash /usr/share/cattle/verify_release_asset "${checksum_file}" "${license_archive}" "${license_asset}"; \
+    echo "${RUNTIME_LICENSE_BUNDLE_SHA256}  ${license_archive}" | sha256sum -c -; \
+    rm -rf /usr/share/licenses/pasturestack-runtime; \
+    mkdir -p /usr/share/licenses/pasturestack-runtime; \
+    tar -xJf "${license_archive}" \
+        -C /usr/share/licenses/pasturestack-runtime --strip-components=1; \
+    (cd /usr/share/licenses/pasturestack-runtime && sha256sum -c FILES.sha256 >/dev/null); \
+    awk -F '\t' -v commit="${CATALOG_SERVICE_SOURCE_COMMIT}" \
+        '$2 == "catalog-service" && $4 == commit { found = 1 } END { exit !found }' \
+        /usr/share/licenses/pasturestack-runtime/SOURCES.tsv; \
+    rm -rf "${tmp_dir}"; \
+    test -x /usr/bin/catalog-service.real; \
+    test -x /usr/bin/catalog-service-sqlite
+
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server compatibility image." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.278" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.277" \
+      org.opencontainers.image.base.digest="sha256:075739b5ddf25805781a45cce10d183db2f31319ee53ec7e8fb781f5503e8b2e"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.278
+ENV DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.31
+ENV DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.31
+ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.25
+ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.25
+ENV PASTURESTACK_CATALOG_COMMIT=025742e579efebb28d7ead2dc5e573138658d13e
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"025742e579efebb28d7ead2dc5e573138658d13e"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"025742e579efebb28d7ead2dc5e573138658d13e"}}}'
+ENV PASTURESTACK_RELEASE_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.278
+ENV RC16_ARTIFACT_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.278
