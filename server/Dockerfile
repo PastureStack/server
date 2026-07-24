@@ -6,7 +6,7 @@ RUN rm -f /usr/bin/pebble
 ENV DEBIAN_FRONTEND=noninteractive
 ARG TEMURIN_JDK25_URL="https://api.adoptium.net/v3/binary/latest/25/ga/linux/x64/jdk/hotspot/normal/eclipse?project=jdk"
 ARG UBUNTU_APT_MIRROR="http://tw.archive.ubuntu.com/ubuntu"
-ARG SOURCE_DATE_EPOCH=1784791898
+ARG SOURCE_DATE_EPOCH=1784851922
 ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH=${JAVA_HOME}/bin:${PATH}
 
@@ -82,7 +82,7 @@ ENV CATTLE_HOST_API_PROXY_MODE=embedded
 
 
 # Environment variables commonly updated when performing a release
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.273
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.274
 ENV CATTLE_CATTLE_VERSION=v0.183.269
 ENV CATTLE_RANCHER_CLI_VERSION=v0.6.14
 ENV CATTLE_RANCHER_COMPOSE_VERSION=v0.14.31
@@ -116,13 +116,13 @@ ARG PER_HOST_SUBNET_WINDOWS_ARTIFACT_SHA256=2521cb61c0e001f2d6b4c16e920d2f62180a
 ARG GRAPHITE_EXPORTER_VERSION=0.2.0
 ARG GRAPHITE_EXPORTER_ARTIFACT_SHA256=1058b72a73f568adc24191f74e972ed6be0d932b9a80f43a7043e4e3d0501388
 ARG GRAPHITE_EXPORTER_BINARY_SHA256=a27df929e213a3e87adf057f3af2f9bb6d4b8c92d49c1795e6a79bd117f0e5d9
-ARG RUNTIME_LICENSE_BUNDLE_VERSION=1.6.273
-ARG RUNTIME_LICENSE_BUNDLE_SHA256=336af1936c3b0c90f87a2dd348792f79672eddc45a22b26e5fee35c10fa54fba
+ARG RUNTIME_LICENSE_BUNDLE_VERSION=1.6.274
+ARG RUNTIME_LICENSE_BUNDLE_SHA256=b854af190ed6c3519a8425b5d35ea8d2e734edc84cba711f5c284e7060064641
 ARG PASTURESTACK_SERVER_REVISION=unknown
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server compatibility image." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.273" \
+      org.opencontainers.image.version="v1.6.274" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}"
 ENV DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.31@sha256:89a1703d236fb2ba34d568faef1cf0a41f91a2a5a7e6b8052415ba5a12f2d0e1
 ENV DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.31@sha256:89a1703d236fb2ba34d568faef1cf0a41f91a2a5a7e6b8052415ba5a12f2d0e1
@@ -417,8 +417,8 @@ RUN set -eux; \
 
 VOLUME /var/lib/mysql /var/log/mysql /var/lib/cattle
 
-ENV PASTURESTACK_RELEASE_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.273
-ENV RC16_ARTIFACT_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.273
+ENV PASTURESTACK_RELEASE_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.274
+ENV RC16_ARTIFACT_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.274
 ENV CATTLE_API_UI_URL=
 ENV DEFAULT_CATTLE_API_UI_INDEX=local
 ENV DEFAULT_CATTLE_API_UI_JS_URL=/api-ui/ui.min.js

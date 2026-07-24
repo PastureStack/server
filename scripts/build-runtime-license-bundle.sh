@@ -5,7 +5,7 @@ repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 component_file="$repo_root/release/runtime-components.tsv"
 artifact_dir=${1:-}
 output_dir=${2:-"$repo_root/dist/release"}
-release_version="${PASTURESTACK_RELEASE_VERSION:-1.6.273}"
+release_version="${PASTURESTACK_RELEASE_VERSION:-1.6.274}"
 source_date_epoch="${SOURCE_DATE_EPOCH:-}"
 
 if [ -z "$artifact_dir" ] || [ ! -d "$artifact_dir" ]; then

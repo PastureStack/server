@@ -55,8 +55,8 @@ expected_windows_agent_artifact_sha256="${PASTURESTACK_EXPECTED_WINDOWS_AGENT_AR
 expected_graphite_exporter_version="${PASTURESTACK_EXPECTED_GRAPHITE_EXPORTER_VERSION:-0.2.0}"
 expected_graphite_exporter_artifact_sha256="${PASTURESTACK_EXPECTED_GRAPHITE_EXPORTER_ARTIFACT_SHA256:-1058b72a73f568adc24191f74e972ed6be0d932b9a80f43a7043e4e3d0501388}"
 expected_graphite_exporter_binary_sha256="${PASTURESTACK_EXPECTED_GRAPHITE_EXPORTER_BINARY_SHA256:-a27df929e213a3e87adf057f3af2f9bb6d4b8c92d49c1795e6a79bd117f0e5d9}"
-expected_runtime_license_bundle_version="${PASTURESTACK_EXPECTED_RUNTIME_LICENSE_BUNDLE_VERSION:-1.6.273}"
-expected_runtime_license_bundle_sha256="${PASTURESTACK_EXPECTED_RUNTIME_LICENSE_BUNDLE_SHA256:-336af1936c3b0c90f87a2dd348792f79672eddc45a22b26e5fee35c10fa54fba}"
+expected_runtime_license_bundle_version="${PASTURESTACK_EXPECTED_RUNTIME_LICENSE_BUNDLE_VERSION:-1.6.274}"
+expected_runtime_license_bundle_sha256="${PASTURESTACK_EXPECTED_RUNTIME_LICENSE_BUNDLE_SHA256:-b854af190ed6c3519a8425b5d35ea8d2e734edc84cba711f5c284e7060064641}"
 expected_s6_overlay_version="${PASTURESTACK_EXPECTED_S6_OVERLAY_VERSION:-1.19.1.1}"
 expected_s6_overlay_artifact_sha256="${PASTURESTACK_EXPECTED_S6_OVERLAY_ARTIFACT_SHA256:-b5d360383dd519a33bd39651c43c49b4cf0e95344a94ba65dd8628eefd9ee5cb}"
 require_promotion_defaults="${RC16_REQUIRE_PROMOTION_DEFAULTS:-false}"
@@ -131,7 +131,7 @@ require_marker server/Dockerfile 'tar -xJf /tmp/runtime-licenses.tar.xz -C /usr/
 require_marker server/Dockerfile '(cd /usr/share/licenses/pasturestack-runtime && sha256sum -c FILES.sha256 >/dev/null)' SERVER_RUNTIME_LICENSE_BUNDLE_INTERNAL_HASH_CHECK_MISSING
 require_marker server/Dockerfile 'test -f /usr/share/licenses/pasturestack-runtime/source-legal/server/LICENSE' SERVER_RUNTIME_LICENSE_BUNDLE_SERVER_LICENSE_MISSING
 require_marker server/Dockerfile 'rm -f /tmp/web-console.tar.gz /tmp/api-explorer.tar.gz /tmp/graphite_exporter.tar.gz /tmp/runtime-licenses.tar.xz' SERVER_ARTIFACT_DOWNLOAD_TMP_CLEANUP_MISSING
-require_marker server/Dockerfile 'ARG SOURCE_DATE_EPOCH=1784791898' SERVER_DOCKERFILE_SOURCE_DATE_EPOCH_MISSING
+require_marker server/Dockerfile 'ARG SOURCE_DATE_EPOCH=1784851922' SERVER_DOCKERFILE_SOURCE_DATE_EPOCH_MISSING
 require_marker server/Dockerfile '/var/lib/mariadb \' SERVER_UNUSED_MARIADB_PACKAGE_DATADIR_NOT_REMOVED
 require_marker server/Dockerfile '/var/cache/fontconfig/* \' SERVER_NONDETERMINISTIC_FONT_CACHE_NOT_REMOVED
 require_marker server/Dockerfile '&& : > /etc/machine-id' SERVER_NONDETERMINISTIC_MACHINE_ID_NOT_CLEARED
