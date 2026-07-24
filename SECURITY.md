@@ -2,7 +2,7 @@
 
 ## Supported state
 
-This repository is under migration review and is not release-ready.
+The latest PastureStack release and the current `main` branch receive security fixes. Historical upstream tags are retained for provenance and are not supported by PastureStack.
 
 ## Security boundaries
 

@@ -61,7 +61,7 @@ Process supervision uses the unchanged official s6-overlay `v1.19.1.1` AMD64 rel
 
 Binary-only compatibility archives are accompanied by the deterministic `pasturestack-runtime-licenses-1.6.274.tar.xz` release asset. It maps every flat Runtime asset to an exact public source commit, preserves tracked license, notice, patent, privacy, and origin files, includes legal files already embedded in archives, and carries its own internal checksum list. The Server image verifies and installs this bundle under `/usr/share/licenses/pasturestack-runtime`.
 
-CI/CD remains disabled. Release and package publication are manual, gated operations, and publication is not a production-readiness claim.
+Automatic CI/CD triggers remain disabled. Release preparation and publication use manually dispatched, gated GitHub workflows so public runners carry the build load without running on every push. Publication is not a production-readiness claim.
 
 ## Build and validation
 
