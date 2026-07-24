@@ -1,0 +1,17 @@
+# syntax=docker/dockerfile:1.7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.279
+FROM ${BASE_IMAGE}
+
+ARG PASTURESTACK_SERVER_REVISION
+
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server compatibility image with the reviewed VXLAN Catalog entry." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.280" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.279"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.280
+ENV PASTURESTACK_CATALOG_COMMIT=23ee314045ccbd2445748c90567dbe24b6ab801e
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"23ee314045ccbd2445748c90567dbe24b6ab801e"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"23ee314045ccbd2445748c90567dbe24b6ab801e"}}}'
