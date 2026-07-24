@@ -16,7 +16,7 @@ if [[ ! "$revision" =~ ^[0-9a-f]{40}$ ]]; then
     exit 1
 fi
 
-: "${PASTURESTACK_ARTIFACT_BASE_URL:=https://github.com/PastureStack/server/releases/download/v1.6.277}"
+: "${PASTURESTACK_ARTIFACT_BASE_URL:=https://github.com/PastureStack/server/releases/download/v1.6.278}"
 export PASTURESTACK_ARTIFACT_BASE_URL
 
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct "$revision")}
@@ -26,7 +26,7 @@ if [[ ! "$source_date_epoch" =~ ^[0-9]+$ ]]; then
 fi
 export SOURCE_DATE_EPOCH="$source_date_epoch"
 
-image=${IMAGE:-pasturestack-validation/server:v1.6.277}
+image=${IMAGE:-pasturestack-validation/server:v1.6.278}
 
 docker buildx build \
     --provenance=false \
@@ -39,7 +39,7 @@ docker buildx build \
     --file server/Dockerfile.runtime-hotfix \
     server
 
-test "$(docker image inspect "$image" --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = v1.6.277
+test "$(docker image inspect "$image" --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = v1.6.278
 test "$(docker image inspect "$image" --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = "$revision"
 
 printf 'SERVER_RUNTIME_HOTFIX_IMAGE_OK image=%s revision=%s source_date_epoch=%s\n' \

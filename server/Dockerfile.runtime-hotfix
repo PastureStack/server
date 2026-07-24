@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.276@sha256:09a599bc6c01ab4b5a8eca6c245752a7669f4c8c396171814da9186190053ec8
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.277@sha256:075739b5ddf25805781a45cce10d183db2f31319ee53ec7e8fb781f5503e8b2e
 FROM ${BASE_IMAGE}
 
 ARG PASTURESTACK_SERVER_REVISION
@@ -7,8 +7,8 @@ ARG SOURCE_DATE_EPOCH
 ARG CATALOG_SERVICE_VERSION=0.20.7
 ARG CATALOG_SERVICE_SOURCE_COMMIT=26bf62b24b4bf7893821f7a3f744f2e1d919411f
 ARG CATALOG_SERVICE_ARTIFACT_SHA256=b195dd7f54fecc58e4af6942cd537b7deaaa7c659cfa97b3869e998e6b75fde3
-ARG RUNTIME_LICENSE_BUNDLE_VERSION=1.6.277
-ARG RUNTIME_LICENSE_BUNDLE_SHA256=99627ecd427ebe71e17497d2506cede00f16c0b733bc33f69347e9eff59ef37a
+ARG RUNTIME_LICENSE_BUNDLE_VERSION=1.6.278
+ARG RUNTIME_LICENSE_BUNDLE_SHA256=317823d94aacb233fcc1827531bd45a4d0de54de0e75e53139bfdd7047c266e7
 
 RUN --mount=type=secret,id=rc16_artifact_base_url \
     set -eu; \
@@ -53,13 +53,18 @@ RUN --mount=type=secret,id=rc16_artifact_base_url \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server compatibility image." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.277" \
+      org.opencontainers.image.version="v1.6.278" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
-      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.276" \
-      org.opencontainers.image.base.digest="sha256:09a599bc6c01ab4b5a8eca6c245752a7669f4c8c396171814da9186190053ec8"
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.277" \
+      org.opencontainers.image.base.digest="sha256:075739b5ddf25805781a45cce10d183db2f31319ee53ec7e8fb781f5503e8b2e"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.277
-ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.25@sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24
-ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.25@sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24
-ENV PASTURESTACK_RELEASE_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.277
-ENV RC16_ARTIFACT_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.277
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.278
+ENV DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.31
+ENV DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.31
+ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.25
+ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.25
+ENV PASTURESTACK_CATALOG_COMMIT=025742e579efebb28d7ead2dc5e573138658d13e
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"025742e579efebb28d7ead2dc5e573138658d13e"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"025742e579efebb28d7ead2dc5e573138658d13e"}}}'
+ENV PASTURESTACK_RELEASE_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.278
+ENV RC16_ARTIFACT_BASE_URL=https://github.com/PastureStack/server/releases/download/v1.6.278

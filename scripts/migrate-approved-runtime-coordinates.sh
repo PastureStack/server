@@ -20,12 +20,14 @@ NETWORK_CHECKS=true
 READY_TIMEOUT="${PASTURESTACK_READY_TIMEOUT:-240}"
 RELEASE_TAG="${PASTURESTACK_RELEASE_TAG:-}"
 
-APPROVED_AGENT_IMAGE="ghcr.io/pasturestack/node-agent:v1.2.31@sha256:89a1703d236fb2ba34d568faef1cf0a41f91a2a5a7e6b8052415ba5a12f2d0e1"
-APPROVED_LB_IMAGE="ghcr.io/pasturestack/load-balancer-service:v0.9.25@sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24"
+APPROVED_AGENT_IMAGE="ghcr.io/pasturestack/node-agent:v1.2.31"
+APPROVED_AGENT_DIGEST="sha256:89a1703d236fb2ba34d568faef1cf0a41f91a2a5a7e6b8052415ba5a12f2d0e1"
+APPROVED_LB_IMAGE="ghcr.io/pasturestack/load-balancer-service:v0.9.25"
+APPROVED_LB_DIGEST="sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24"
 APPROVED_LB_IMAGE_UUID="docker:${APPROVED_LB_IMAGE}"
 APPROVED_CATALOG_URL="https://github.com/PastureStack/catalog-templates.git"
 APPROVED_CATALOG_BRANCH="main"
-APPROVED_CATALOG_COMMIT="91f5910a44cb181051be2adc4c14f0e6ec7842ef"
+APPROVED_CATALOG_COMMIT="025742e579efebb28d7ead2dc5e573138658d13e"
 APPROVED_CATALOG_JSON="{\"catalogs\":{\"pasturestack\":{\"url\":\"${APPROVED_CATALOG_URL}\",\"branch\":\"${APPROVED_CATALOG_BRANCH}\",\"pinnedCommit\":\"${APPROVED_CATALOG_COMMIT}\"}}}"
 
 usage() {
@@ -586,12 +588,21 @@ verify_public_resources() {
             --range 0-0 -o /dev/null "$url"
     done
 
-    local image expected_digest observed_digest
-    for image in "$APPROVED_AGENT_IMAGE" "$APPROVED_LB_IMAGE"; do
-        expected_digest="${image##*@}"
+    local image expected_digest observed_digest index
+    local -a images=(
+        "$APPROVED_AGENT_IMAGE"
+        "$APPROVED_LB_IMAGE"
+    )
+    local -a expected_digests=(
+        "$APPROVED_AGENT_DIGEST"
+        "$APPROVED_LB_DIGEST"
+    )
+    for index in "${!images[@]}"; do
+        image="${images[$index]}"
+        expected_digest="${expected_digests[$index]}"
         observed_digest="$(docker buildx imagetools inspect "$image" --format '{{.Manifest.Digest}}')"
         [ "$observed_digest" = "$expected_digest" ] ||
-            die "image manifest digest mismatch for ${image%%@*}"
+            die "image manifest digest mismatch for $image"
     done
 
     local catalog_tmp fetched_commit

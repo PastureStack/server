@@ -5,8 +5,8 @@ repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$repo_root"
 
 artifact="${PASTURESTACK_RUNTIME_LICENSE_BUNDLE:-}"
-expected_version="${PASTURESTACK_EXPECTED_RUNTIME_LICENSE_BUNDLE_VERSION:-1.6.277}"
-expected_sha256="${PASTURESTACK_EXPECTED_RUNTIME_LICENSE_BUNDLE_SHA256:-99627ecd427ebe71e17497d2506cede00f16c0b733bc33f69347e9eff59ef37a}"
+expected_version="${PASTURESTACK_EXPECTED_RUNTIME_LICENSE_BUNDLE_VERSION:-1.6.278}"
+expected_sha256="${PASTURESTACK_EXPECTED_RUNTIME_LICENSE_BUNDLE_SHA256:-317823d94aacb233fcc1827531bd45a4d0de54de0e75e53139bfdd7047c266e7}"
 expected_name="pasturestack-runtime-licenses-${expected_version}.tar.xz"
 expected_root="pasturestack-runtime-licenses-${expected_version}"
 

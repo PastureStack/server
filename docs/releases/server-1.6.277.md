@@ -32,6 +32,6 @@ docker run -d \
   ghcr.io/pasturestack/server:v1.6.277
 ```
 
-Use the immutable digest in the matching GitHub Release for production-like pinning.
+Keep the operational image reference in semantic version-tag form. The matching GitHub Release retains the resolved digest as verification evidence.
 
 PastureStack is an independent community effort to preserve, audit, and modernize the Rancher 1.6 ecosystem. It is not affiliated with or endorsed by Rancher Labs or SUSE.

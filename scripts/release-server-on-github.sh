@@ -7,16 +7,16 @@ repository=${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}
 run_id=${GITHUB_RUN_ID:?GITHUB_RUN_ID is required}
 runner_temp=${RUNNER_TEMP:?RUNNER_TEMP is required}
 
-expected_release_tag=v1.6.277
-base_release_tag=v1.6.276
-base_image_digest=sha256:09a599bc6c01ab4b5a8eca6c245752a7669f4c8c396171814da9186190053ec8
+expected_release_tag=v1.6.278
+base_release_tag=v1.6.277
+base_image_digest=sha256:075739b5ddf25805781a45cce10d183db2f31319ee53ec7e8fb781f5503e8b2e
 catalog_release_tag=v0.20.7
 catalog_version=0.20.7
 catalog_source_commit=26bf62b24b4bf7893821f7a3f744f2e1d919411f
 catalog_artifact_sha256=b195dd7f54fecc58e4af6942cd537b7deaaa7c659cfa97b3869e998e6b75fde3
-runtime_license_version=1.6.277
-runtime_license_sha256=99627ecd427ebe71e17497d2506cede00f16c0b733bc33f69347e9eff59ef37a
-catalog_commit=91f5910a44cb181051be2adc4c14f0e6ec7842ef
+runtime_license_version=1.6.278
+runtime_license_sha256=317823d94aacb233fcc1827531bd45a4d0de54de0e75e53139bfdd7047c266e7
+catalog_commit=025742e579efebb28d7ead2dc5e573138658d13e
 trivy_version=0.72.0
 trivy_archive_sha256=bbb64b9695866ce4a7a8f5c9592002c5961cab378577fa3f8a040df362b9b2ea
 
@@ -94,8 +94,8 @@ curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
   -o "$work_root/base-SHA256SUMS" "${base_url}/SHA256SUMS"
 test "$(wc -l <"$work_root/base-allowlist.txt")" -eq 34
 
-old_catalog_asset=catalog-service-0.20.6.tar.xz
-old_license_asset=pasturestack-runtime-licenses-1.6.274.tar.xz
+old_catalog_asset=catalog-service-0.20.7.tar.xz
+old_license_asset=pasturestack-runtime-licenses-1.6.277.tar.xz
 while IFS= read -r asset; do
   test -n "$asset"
   case "$asset" in
@@ -181,7 +181,7 @@ base_catalog_sha="$(docker run --rm --entrypoint sha256sum \
   /usr/bin/catalog-service.real | awk '{print $1}')"
 new_catalog_sha="$(docker run --rm --entrypoint sha256sum "$image_a" \
   /usr/bin/catalog-service.real | awk '{print $1}')"
-test "$base_catalog_sha" != "$new_catalog_sha"
+test "$base_catalog_sha" = "$new_catalog_sha"
 
 wait_for_server()
 {
@@ -203,16 +203,31 @@ wait_for_catalog()
   local port=$1
   local container=$2
   local response="$work_root/catalog-${container}.json"
+  local ipsec_response="$work_root/catalog-ipsec-${container}.json"
   for _ in $(seq 1 180); do
     if curl -fsS --connect-timeout 2 --max-time 10 \
       "http://127.0.0.1:${port}/v1-catalog/templates?limit=-1" \
       -o "$response" 2>/dev/null &&
-      jq -e '(.data // []) | length == 6' "$response" >/dev/null; then
+      jq -e '(.data // []) | length == 6' "$response" >/dev/null &&
+      curl --globoff -fsS --connect-timeout 2 --max-time 10 \
+        "http://127.0.0.1:${port}/v1-catalog/templates/pasturestack:infra*ipsec-overlay:1" \
+        -o "$ipsec_response" 2>/dev/null &&
+      jq -e '
+        .id == "pasturestack:infra*ipsec-overlay:1" and
+        (.files["docker-compose.yml.tpl"] // "") as $compose |
+        ($compose | contains(
+          "ghcr.io/pasturestack/ipsec-vxlan-overlay-network:v0.14.26"
+        )) and
+        ($compose | contains("  overlay-network:")) and
+        ($compose | contains("  cni-driver:")) and
+        (($compose | contains("@sha256:")) | not)
+      ' "$ipsec_response" >/dev/null; then
       return 0
     fi
     sleep 1
   done
   test -f "$response" && cat "$response" >&2
+  test -f "$ipsec_response" && cat "$ipsec_response" >&2
   docker logs --tail 300 "$container" >&2 || true
   return 1
 }
@@ -350,7 +365,7 @@ jq -Sn \
     created: $created,
     supersedes: {
       release: $baseRelease,
-      reason: "repairs empty Catalog index recovery"
+      reason: "enforces semantic version tags for operational images and updates the IPsec Catalog topology"
     },
     source: {
       repository: "https://github.com/PastureStack/server",
@@ -413,13 +428,14 @@ release_notes="$work_root/release-notes.md"
 cat >"$release_notes" <<EOF_NOTES
 # PastureStack Server ${release_tag}
 
-This release repairs Catalog recovery when the recorded Git commit is current but the local template index is empty.
+This release removes digest-qualified operational image references and updates the reviewed IPsec Catalog topology.
 
 ## Immutable coordinates
 
 - Server source: \`${source_sha}\`
 - Server image: \`ghcr.io/pasturestack/server:${release_tag}\`
-- Server digest: \`${image_digest}\`
+- Verification digest: \`${image_digest}\`
+- Catalog templates: \`${catalog_commit}\`
 - Catalog Service: \`${catalog_release_tag}\` @ \`${catalog_source_commit}\`
 - Catalog Service artifact SHA-256: \`${catalog_artifact_sha256}\`
 
@@ -430,14 +446,15 @@ docker run -d \\
   --name pasturestack-server \\
   --restart unless-stopped \\
   -p 8080:8080 \\
-  ghcr.io/pasturestack/server:${release_tag}@${image_digest}
+  ghcr.io/pasturestack/server:${release_tag}
 \`\`\`
 
 ## Validation
 
 - All 41 Server source gates passed.
 - Two clean focused builds produced the same image digest.
-- Fresh startup, six-template Catalog availability, restart recovery, anonymous public pull, and a second fresh startup all passed.
+- Fresh startup, six-template Catalog availability, tag-only IPsec topology, restart recovery, anonymous public pull, and a second fresh startup all passed.
+- Catalog, Compose, API, and web-console image fields use semantic version tags; the digest above is verification evidence only.
 - Actionable High/Critical vulnerabilities: 0.
 - Detected secrets: 0.
 - The exact SPDX SBOM, checksums, source coordinates, Runtime license bundle, and third-party notices are attached.

@@ -29,12 +29,14 @@ require_marker 'START TRANSACTION;' TRANSACTION_MISSING
 require_marker 'rollback.sql' ROLLBACK_BUNDLE_MISSING
 require_marker 'sha256sum -c SHA256SUMS' ROLLBACK_CHECKSUM_VERIFY_MISSING
 require_marker 'duplicate allowlisted setting names' DUPLICATE_SETTING_GUARD_MISSING
-require_marker 'ghcr.io/pasturestack/node-agent:v1.2.31@sha256:89a1703d236fb2ba34d568faef1cf0a41f91a2a5a7e6b8052415ba5a12f2d0e1' AGENT_DIGEST_MISSING
+require_marker 'APPROVED_AGENT_IMAGE="ghcr.io/pasturestack/node-agent:v1.2.31"' AGENT_VERSION_TAG_MISSING
+require_marker 'APPROVED_AGENT_DIGEST="sha256:89a1703d236fb2ba34d568faef1cf0a41f91a2a5a7e6b8052415ba5a12f2d0e1"' AGENT_VERIFICATION_DIGEST_MISSING
 require_marker "UPDATE setting SET value='\${APPROVED_AGENT_IMAGE}' WHERE name='agent.image';" AGENT_IMAGE_MIGRATION_MISSING
 require_marker 'expected 13 approved persisted coordinates' APPROVED_SETTING_COUNT_NOT_UPDATED
-require_marker 'ghcr.io/pasturestack/load-balancer-service:v0.9.25@sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24' LOAD_BALANCER_DIGEST_MISSING
+require_marker 'APPROVED_LB_IMAGE="ghcr.io/pasturestack/load-balancer-service:v0.9.25"' LOAD_BALANCER_VERSION_TAG_MISSING
+require_marker 'APPROVED_LB_DIGEST="sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24"' LOAD_BALANCER_VERIFICATION_DIGEST_MISSING
 require_marker 'https://github.com/PastureStack/catalog-templates.git' CATALOG_URL_MISSING
-require_marker '91f5910a44cb181051be2adc4c14f0e6ec7842ef' CATALOG_PIN_MISSING
+require_marker '025742e579efebb28d7ead2dc5e573138658d13e' CATALOG_PIN_MISSING
 require_marker "pinned_commit='\${APPROVED_CATALOG_COMMIT}'" CATALOG_PINNED_COMMIT_MIGRATION_MISSING
 require_marker "IFNULL(HEX(pinned_commit),'NULL')" CATALOG_PINNED_COMMIT_BACKUP_MISSING
 require_marker 'commit,pinned_commit,type,kind' CATALOG_PINNED_COMMIT_ROLLBACK_MISSING
@@ -45,6 +47,11 @@ require_marker 'repaired_invalid_values=0' CORRUPTED_SETTING_REPAIR_VERIFY_MISSI
 require_marker 'docker buildx imagetools inspect' PLATFORM_MANIFEST_VERIFY_MISSING
 require_marker 'git -C "$catalog_tmp" fetch -q --depth=1 "$APPROVED_CATALOG_URL" "$APPROVED_CATALOG_COMMIT"' PINNED_CATALOG_FETCH_VERIFY_MISSING
 require_marker 'fetched Catalog commit does not match the approved commit' PINNED_CATALOG_CONTENT_ADDRESS_VERIFY_MISSING
+
+if grep -Eq '^APPROVED_(AGENT|LB)_IMAGE=.*@sha256:' "$script"; then
+    echo OPERATIONAL_IMAGE_DIGEST_REFERENCE_FOUND >&2
+    exit 1
+fi
 
 if grep -Eqi 'chen[0-9]+|@[A-Za-z0-9._%+-]+\.com|10\.0\.0\.[0-9]+' "$script"; then
     echo PUBLIC_IDENTITY_OR_PRIVATE_ADDRESS_FOUND >&2

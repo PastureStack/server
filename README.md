@@ -18,9 +18,9 @@ same compatibility setting.
 
 ## GitHub distribution model
 
-PastureStack is designed not to require operators to host a separate download site, container registry, or catalog server. Reviewed container images are published through the public GitHub Container Registry and consumed by digest. Versioned binary and web assets are published as flat attachments to the matching `PastureStack/server` GitHub Release. Catalog templates are read directly from the public [`PastureStack/catalog-templates`](https://github.com/PastureStack/catalog-templates) Git repository and must be verified against a full pinned commit SHA.
+PastureStack is designed not to require operators to host a separate download site, container registry, or catalog server. Reviewed container images are published through the public GitHub Container Registry and operational references use semantic version tags. Digests remain release-verification evidence and are never written into Catalog, Compose, API, or web-console image fields. Versioned binary and web assets are published as flat attachments to the matching `PastureStack/server` GitHub Release. Catalog templates are read directly from the public [`PastureStack/catalog-templates`](https://github.com/PastureStack/catalog-templates) Git repository and must be verified against a full pinned commit SHA.
 
-Catalog stack definitions, their documentation, and referenced public images must remain usable directly from GitHub and GHCR. Catalog entries pin images by digest and may not require an operator-maintained HTTP mirror, GitHub Pages site, catalog service, or private registry. GitHub Release assets are reserved for immutable Runtime payloads; the catalog itself remains a commit-pinned Git source so stack discovery and version history stay auditable.
+Catalog stack definitions, their documentation, and referenced public images must remain usable directly from GitHub and GHCR. Catalog entries pin images by semantic version tag and may not require an operator-maintained HTTP mirror, GitHub Pages site, catalog service, or private registry. GitHub Release assets are reserved for immutable Runtime payloads; the catalog itself remains a commit-pinned Git source so stack discovery and version history stay auditable.
 
 Version coordinates are available only when the matching GitHub Release and public GHCR package both exist. Each release is held until its assets, checksums, SBOM, license records, anonymous downloads, and isolated-VM gates pass.
 
@@ -29,10 +29,10 @@ Version coordinates are available only when the matching GitHub Release and publ
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.277
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.278
 ```
 
-Use the immutable image digest recorded in the matching GitHub Release when pinning a production-like deployment. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
+Keep operational image references in semantic `vMAJOR.MINOR.PATCH` form. The matching GitHub Release records the resolved digest for verification without exposing digest-qualified strings to the platform UI. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
 
 Existing databases can retain old image, download, and Catalog coordinates even
 when the new image contains correct defaults. Audit and migrate only the
@@ -59,7 +59,7 @@ Metrics mapping uses the unchanged official Prometheus Graphite Exporter `v0.2.0
 
 Process supervision uses the unchanged official s6-overlay `v1.19.1.1` AMD64 release asset. The build pins its archive digest and source commit, validates the required init and supervision entries, and carries the upstream ISC license in the Runtime license bundle. The public filename adds only a version suffix; the archive bytes remain identical to the upstream GitHub Release asset.
 
-Binary-only compatibility archives are accompanied by the deterministic `pasturestack-runtime-licenses-1.6.277.tar.xz` release asset. It maps every flat Runtime asset to an exact public source commit, preserves tracked license, notice, patent, privacy, and origin files, includes legal files already embedded in archives, and carries its own internal checksum list. The Server image verifies and installs this bundle under `/usr/share/licenses/pasturestack-runtime`.
+Binary-only compatibility archives are accompanied by the deterministic `pasturestack-runtime-licenses-1.6.278.tar.xz` release asset. It maps every flat Runtime asset to an exact public source commit, preserves tracked license, notice, patent, privacy, and origin files, includes legal files already embedded in archives, and carries its own internal checksum list. The Server image verifies and installs this bundle under `/usr/share/licenses/pasturestack-runtime`.
 
 Automatic CI/CD triggers remain disabled. Release preparation and publication use manually dispatched, gated GitHub workflows so public runners carry the build load without running on every push. Publication is not a production-readiness claim.
 

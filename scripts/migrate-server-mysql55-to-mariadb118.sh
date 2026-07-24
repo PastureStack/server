@@ -40,7 +40,7 @@ default_backup_root() {
 
 OLD_CONTAINER="${OLD_CONTAINER:-pasturestack-server}"
 NEW_CONTAINER="${NEW_CONTAINER:-pasturestack-server}"
-NEW_IMAGE="${NEW_IMAGE:-ghcr.io/pasturestack/server:v1.6.277}"
+NEW_IMAGE="${NEW_IMAGE:-ghcr.io/pasturestack/server:v1.6.278}"
 HOST_HTTP_PORT="${HOST_HTTP_PORT:-8080}"
 PREP_HTTP_PORT="${PREP_HTTP_PORT:-18093}"
 MIGRATION_CURL_CONNECT_TIMEOUT="${RC16_MIGRATION_CURL_CONNECT_TIMEOUT:-5}"
@@ -49,10 +49,10 @@ BACKUP_ROOT="${BACKUP_ROOT:-$(default_backup_root)}"
 WORKDIR="${WORKDIR:-/var/tmp/pasturestack-server-migration}"
 SOURCE_BIND="${SOURCE_BIND:-}"
 CATALOG_JSON="${CATALOG_JSON:-}"
-RC16_AGENT_IMAGE="${RC16_AGENT_IMAGE:-ghcr.io/pasturestack/node-agent:v1.2.31@sha256:89a1703d236fb2ba34d568faef1cf0a41f91a2a5a7e6b8052415ba5a12f2d0e1}"
-RC16_LB_INSTANCE_IMAGE="${RC16_LB_INSTANCE_IMAGE:-ghcr.io/pasturestack/load-balancer-service:v0.9.25@sha256:7a41ff94e6d6f2e8e08e5cd078243861bc74442ade4630f5d940c46a89a12f24}"
+RC16_AGENT_IMAGE="${RC16_AGENT_IMAGE:-ghcr.io/pasturestack/node-agent:v1.2.31}"
+RC16_LB_INSTANCE_IMAGE="${RC16_LB_INSTANCE_IMAGE:-ghcr.io/pasturestack/load-balancer-service:v0.9.25}"
 RC16_LB_INSTANCE_IMAGE_UUID="${RC16_LB_INSTANCE_IMAGE_UUID:-docker:${RC16_LB_INSTANCE_IMAGE}}"
-RC16_ARTIFACT_BASE_URL="${RC16_ARTIFACT_BASE_URL:-https://github.com/PastureStack/server/releases/download/v1.6.277}"
+RC16_ARTIFACT_BASE_URL="${RC16_ARTIFACT_BASE_URL:-https://github.com/PastureStack/server/releases/download/v1.6.278}"
 RC16_GO_AGENT_URL="${RC16_GO_AGENT_URL:-}"
 RC16_HOST_API_URL="${RC16_HOST_API_URL:-}"
 RC16_RANCHER_API_KEY_FILE="${RC16_RANCHER_API_KEY_FILE:-}"
@@ -288,6 +288,20 @@ die() {
     exit 1
 }
 
+require_operational_version_tag() {
+    local label="$1"
+    local reference="$2"
+
+    case "$reference" in
+        *@sha256:*)
+            die "${label} must use a semantic version tag; digest-qualified operational references are not allowed"
+            ;;
+    esac
+    if ! [[ "$reference" =~ ^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)+:v[0-9]+\.[0-9]+\.[0-9]+([._-][A-Za-z0-9._-]+)?$ ]]; then
+        die "${label} must be an image reference with a semantic vMAJOR.MINOR.PATCH tag"
+    fi
+}
+
 normalize_artifact_settings() {
     if [ -n "$RC16_ARTIFACT_BASE_URL" ]; then
         RC16_ARTIFACT_BASE_URL="${RC16_ARTIFACT_BASE_URL%/}"
@@ -425,7 +439,7 @@ resolve_catalog_json() {
         return 0
     fi
 
-    CATALOG_JSON='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"91f5910a44cb181051be2adc4c14f0e6ec7842ef"}}}'
+    CATALOG_JSON='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"025742e579efebb28d7ead2dc5e573138658d13e"}}}'
     validate_catalog_json
     log "catalog_json_source=pinned-pasturestack-github-default"
 }
@@ -852,6 +866,11 @@ write_runtime_metadata() {
 
 preflight() {
     log "PREFLIGHT_START old_container=${OLD_CONTAINER} new_image=${NEW_IMAGE}"
+    require_operational_version_tag NEW_IMAGE "$NEW_IMAGE"
+    require_operational_version_tag RC16_AGENT_IMAGE "$RC16_AGENT_IMAGE"
+    require_operational_version_tag RC16_LB_INSTANCE_IMAGE "$RC16_LB_INSTANCE_IMAGE"
+    [ "$RC16_LB_INSTANCE_IMAGE_UUID" = "docker:${RC16_LB_INSTANCE_IMAGE}" ] ||
+        die "RC16_LB_INSTANCE_IMAGE_UUID must equal docker:RC16_LB_INSTANCE_IMAGE"
     require_command docker
     require_command curl
     require_command sha256sum
