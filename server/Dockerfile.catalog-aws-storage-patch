@@ -1,0 +1,21 @@
+# syntax=docker/dockerfile:1.7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.285
+FROM ${BASE_IMAGE}
+
+ARG PASTURESTACK_SERVER_REVISION
+
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server compatibility image pinned to the reviewed AWS storage Catalog release." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.286" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.285"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.286
+ENV PASTURESTACK_CATALOG_COMMIT=faa122271462c52cc6c6c7a461d9e649e232e9fa
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"faa122271462c52cc6c6c7a461d9e649e232e9fa"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"faa122271462c52cc6c6c7a461d9e649e232e9fa"}}}'
+
+RUN set -eux; \
+    bash -n /usr/bin/catalog-service; \
+    test -x /usr/local/lib/pasturestack/service-wrapper
