@@ -1,0 +1,172 @@
+# syntax=docker/dockerfile:1.7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.310
+FROM ${BASE_IMAGE}
+
+ARG PASTURESTACK_SERVER_REVISION
+ARG WEB_CONSOLE_RELEASE_TAG
+ARG WEB_CONSOLE_ARTIFACT
+ARG WEB_CONSOLE_ARTIFACT_SHA256
+ARG WEB_CONSOLE_COMMIT
+
+RUN set -eu; \
+    archive=/tmp/web-console.tar.gz; \
+    manifest=/tmp/web-console-files.txt; \
+    curl -fsSL \
+        --retry 5 \
+        --retry-all-errors \
+        --retry-delay 2 \
+        --connect-timeout 10 \
+        --max-time 300 \
+        -o "${archive}" \
+        "https://github.com/PastureStack/web-console/releases/download/${WEB_CONSOLE_RELEASE_TAG}/${WEB_CONSOLE_ARTIFACT}"; \
+    echo "${WEB_CONSOLE_ARTIFACT_SHA256}  ${archive}" | sha256sum -c -; \
+    tar -tzf "${archive}" >"${manifest}"; \
+    test "$(grep -Ec '^1\.6\.56/index\.html$' "${manifest}")" -eq 1; \
+    test "$(grep -Ec '^1\.6\.56/translations/zh-tw\.json$' "${manifest}")" -eq 1; \
+    test "$(grep -Ec '^1\.6\.56/assets/ui[^/]*\.js$' "${manifest}")" -eq 1; \
+    test "$(grep -Ec '^1\.6\.56/assets/vendor[^/]*\.js$' "${manifest}")" -eq 1; \
+    if grep -Eq '(^/|(^|/)\.\.(/|$)|\.map$)' "${manifest}"; then \
+        echo "Unsafe or unpublished Web Console path" >&2; \
+        exit 1; \
+    fi; \
+    find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        \( -name 'ui-*.js' -o -name 'vendor-*.js' \) \
+        -delete; \
+    rm -rf /usr/share/cattle/war/translations; \
+    mkdir -p /usr/share/cattle/war/translations; \
+    tar -xzf "${archive}" \
+        -C /usr/share/cattle/war \
+        --strip-components=1; \
+    test -f /usr/share/cattle/war/index.html; \
+    test -f /usr/share/cattle/war/translations/zh-tw.json; \
+    test "$(find /usr/share/cattle/war/translations \
+        -maxdepth 1 \
+        -type f \
+        -name '*.json' \
+        | wc -l)" -eq 13; \
+    test "$(find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        -name 'ui-*.js' \
+        | wc -l)" -eq 1; \
+    test "$(find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        -name 'vendor-*.js' \
+        | wc -l)" -eq 1; \
+    ui_entry="$(find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        -name 'ui-*.js' \
+        -print -quit)"; \
+    vendor_entry="$(find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        -name 'vendor-*.js' \
+        -print -quit)"; \
+    for marker in \
+        statsTableCount \
+        statsSortRevision \
+        setVisibleStatsInstances \
+        HOST_CONTAINER_COLUMNS \
+        hostContainerColumnsV2 \
+        serviceContainerColumnsV2 \
+        columnSelector \
+        showImageColumn \
+        showCommandColumn \
+        cpuRms \
+        memoryRms \
+        networkRms \
+        storageRms \
+        storageTableCount \
+        selectedVolumeCount \
+        confirm-remove-selected-volumes \
+        filterVolumesByState \
+        isBulkRemovableVolume \
+        runWithConcurrency; do \
+        grep -F "${marker}" "${ui_entry}" >/dev/null; \
+    done; \
+    test "$(grep -Fo 'translationKey:"containersPage.table.image",columnRole:"image",defaultHidden:!0' "${ui_entry}" | wc -l)" -eq 2; \
+    test "$(grep -Fo 'translationKey:"containersPage.table.command",columnRole:"command",defaultHidden:!0' "${ui_entry}" | wc -l)" -eq 2; \
+    grep -F 'createTextNode(" / ")' "${ui_entry}" >/dev/null; \
+    column_selector_offset="$(grep -Fbo 'sortable-table-column-selector' "${vendor_entry}" | head -n 1 | cut -d: -f1)"; \
+    page_size_offset="$(grep -Fbo 'sortable-table-page-size' "${vendor_entry}" | head -n 1 | cut -d: -f1)"; \
+    search_offset="$(grep -Fbo 'sortable-table-search' "${vendor_entry}" | head -n 1 | cut -d: -f1)"; \
+    test "${column_selector_offset}" -lt "${page_size_offset}"; \
+    test "${page_size_offset}" -lt "${search_offset}"; \
+    grep -F '.sortable-table-filter-controls' \
+        /usr/share/cattle/war/assets/ui-light.css >/dev/null; \
+    grep -F '.sortable-table-page-size' \
+        /usr/share/cattle/war/assets/ui-light.css >/dev/null; \
+    grep -F '.sortable-table-column-selector' \
+        /usr/share/cattle/war/assets/ui-light.css >/dev/null; \
+    grep -F '.console-workspace-dock-item:focus-visible' \
+        /usr/share/cattle/war/assets/ui-light.css >/dev/null; \
+    grep -F '.console-workspace-dock-item.active{color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.32);box-shadow:none;transform:none}' \
+        /usr/share/cattle/war/assets/ui-light.css >/dev/null; \
+    for marker in \
+        selectionFilter \
+        selectionChanged \
+        selectablePagedContent \
+        allPageSizeValue; do \
+        grep -F "${marker}" "${vendor_entry}" >/dev/null; \
+    done; \
+    grep -F '.storage-bulk-toolbar' \
+        /usr/share/cattle/war/assets/ui-light.css >/dev/null; \
+    grep -F '.storage-state-filter' \
+        /usr/share/cattle/war/assets/ui-light.css >/dev/null; \
+    grep -F '.volume-bulk-remove-modal' \
+        /usr/share/cattle/war/assets/ui-light.css >/dev/null; \
+    for marker in \
+        '"cpuRms":"CPU"' \
+        '"memoryRms":"RAM"' \
+        '"networkRms":"網路"' \
+        '"storageRms":"儲存"' \
+        '"image":"容器映像"' \
+        '"ipAddress":"IP 位址"' \
+        '"command":"命令"' \
+        '"rowsPerPage":"每頁顯示"' \
+        '"label":"篩選"' \
+        '"removable":"可勾選移除"' \
+        '"selected":"已選 {count} 個"' \
+        '"action":"移除所選項目（{count}）"' \
+        '"title":"移除所選儲存項目"' \
+        '"selectableHint":"只有已卸離、沒有作用中掛載且系統提供移除操作的項目可以勾選。"'; do \
+        grep -F "${marker}" \
+            /usr/share/cattle/war/translations/zh-tw.json >/dev/null; \
+    done; \
+    for forbidden in \
+        confirm-clean-unused-volumes \
+        cleanupClassification \
+        promptCleanup \
+        '沒有可安全清理的項目'; do \
+        if grep -R -F "${forbidden}" \
+            /usr/share/cattle/war >/dev/null; then \
+            echo "Retired inferred storage-cleanup marker present: ${forbidden}" >&2; \
+            exit 1; \
+        fi; \
+    done; \
+    combined_zh='映像''（命令）'; \
+    combined_en='Image ''(Command)'; \
+    if grep -R -F "${combined_zh}" \
+        /usr/share/cattle/war/translations >/dev/null || \
+       grep -R -F "${combined_en}" \
+        /usr/share/cattle/war/translations >/dev/null; then \
+        echo "Combined image and command translation is forbidden" >&2; \
+        exit 1; \
+    fi; \
+    rm -f "${archive}" "${manifest}"
+
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server compatibility image with operator-selected storage bulk removal." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.311" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.310"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.311
+ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.22
+ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
