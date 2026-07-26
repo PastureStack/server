@@ -1,0 +1,149 @@
+name: Prepare Runtime License Coordinate
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: Numeric Server release version, for example 1.6.277
+        required: true
+        type: string
+      base_release_tag:
+        description: Existing Server release that supplies unchanged assets
+        required: true
+        type: string
+      catalog_release_tag:
+        description: Catalog Service release that supplies the replacement asset
+        required: true
+        type: string
+      catalog_source_commit:
+        description: Full Catalog Service source commit
+        required: true
+        type: string
+      catalog_artifact_sha256:
+        description: SHA-256 of the Catalog Service archive
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: server-runtime-license-coordinate
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: github.repository == 'PastureStack/server' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      RELEASE_VERSION: ${{ inputs.release_version }}
+      BASE_RELEASE_TAG: ${{ inputs.base_release_tag }}
+      CATALOG_RELEASE_TAG: ${{ inputs.catalog_release_tag }}
+      CATALOG_SOURCE_COMMIT: ${{ inputs.catalog_source_commit }}
+      CATALOG_ARTIFACT_SHA256: ${{ inputs.catalog_artifact_sha256 }}
+      SOURCE_SHA: ${{ github.sha }}
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Validate immutable coordinates
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          [[ "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$BASE_RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$CATALOG_RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$CATALOG_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$CATALOG_ARTIFACT_SHA256" =~ ^[0-9a-f]{64}$ ]]
+
+          observed_commit="$(gh api \
+            "repos/PastureStack/catalog-service/git/ref/tags/${CATALOG_RELEASE_TAG}" \
+            --jq '.object.sha')"
+          test "$observed_commit" = "$CATALOG_SOURCE_COMMIT"
+
+          observed_digest="$(gh release view "$CATALOG_RELEASE_TAG" \
+            --repo PastureStack/catalog-service \
+            --json assets \
+            --jq '.assets[] | select(.name == "catalog-service-'${CATALOG_RELEASE_TAG#v}'.tar.xz") | .digest')"
+          test "$observed_digest" = "sha256:${CATALOG_ARTIFACT_SHA256}"
+
+      - name: Check out immutable Server source
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git clone --filter=blob:none \
+            "https://github.com/${GITHUB_REPOSITORY}.git" source
+          git -C source checkout --detach "$SOURCE_SHA"
+          test "$(git -C source rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git -C source status --short)"
+
+      - name: Stage verified runtime assets
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          catalog_asset="catalog-service-${CATALOG_RELEASE_TAG#v}.tar.xz"
+          awk -F '\t' -v OFS='\t' \
+            -v asset="$catalog_asset" \
+            -v commit="$CATALOG_SOURCE_COMMIT" \
+            '$2 == "catalog-service" { $1 = asset; $4 = commit } { print }' \
+            source/release/runtime-components.tsv \
+            >source/release/runtime-components.tsv.next
+          mv source/release/runtime-components.tsv.next \
+            source/release/runtime-components.tsv
+
+          mkdir artifacts
+          base_url="https://github.com/PastureStack/server/releases/download/${BASE_RELEASE_TAG}"
+          catalog_url="https://github.com/PastureStack/catalog-service/releases/download/${CATALOG_RELEASE_TAG}"
+          curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
+            -o base-SHA256SUMS "${base_url}/SHA256SUMS"
+
+          while IFS=$'\t' read -r asset component repository commit license_summary; do
+            if [ "$asset" = asset ]; then
+              continue
+            fi
+            if [ "$component" = catalog-service ]; then
+              curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
+                -o "artifacts/${asset}" "${catalog_url}/${asset}"
+              printf '%s  %s\n' "$CATALOG_ARTIFACT_SHA256" "artifacts/${asset}" |
+                sha256sum --check
+            else
+              expected="$(awk -v name="$asset" '$2 == name { print $1 }' base-SHA256SUMS)"
+              test -n "$expected"
+              curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
+                -o "artifacts/${asset}" "${base_url}/${asset}"
+              printf '%s  %s\n' "$expected" "artifacts/${asset}" |
+                sha256sum --check
+            fi
+          done <source/release/runtime-components.tsv
+
+      - name: Build deterministic license coordinate
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          catalog_date="$(gh api \
+            "repos/PastureStack/catalog-service/git/commits/${CATALOG_SOURCE_COMMIT}" \
+            --jq '.committer.date')"
+          source_epoch="$(date --date "$catalog_date" +%s)"
+
+          SOURCE_DATE_EPOCH="$source_epoch" \
+          PASTURESTACK_RELEASE_VERSION="$RELEASE_VERSION" \
+            source/scripts/build-runtime-license-bundle.sh \
+              artifacts output
+
+          bundle="output/pasturestack-runtime-licenses-${RELEASE_VERSION}.tar.xz"
+          test -s "$bundle"
+          bundle_sha="$(sha256sum "$bundle" | awk '{print $1}')"
+          test "$(tar -xJOf "$bundle" \
+            "pasturestack-runtime-licenses-${RELEASE_VERSION}/SOURCES.tsv" |
+            awk -F '\t' '$2 == "catalog-service" { print $4 }')" = \
+            "$CATALOG_SOURCE_COMMIT"
+
+          printf 'RUNTIME_LICENSE_BUNDLE=%s\n' "$(basename "$bundle")"
+          printf 'RUNTIME_LICENSE_SHA256=%s\n' "$bundle_sha"
+          {
+            printf '## Runtime license coordinate\n\n'
+            printf -- '- Asset: `%s`\n' "$(basename "$bundle")"
+            printf -- '- SHA-256: `%s`\n' "$bundle_sha"
+            printf -- '- Catalog Service: `%s` @ `%s`\n' \
+              "$CATALOG_RELEASE_TAG" "$CATALOG_SOURCE_COMMIT"
+          } >>"$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,21 @@
+# syntax=docker/dockerfile:1.7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.284
+FROM ${BASE_IMAGE}
+
+ARG PASTURESTACK_SERVER_REVISION
+
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server compatibility image pinned to the reviewed Route 53 DNS Sync Catalog release." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.285" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.284"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.285
+ENV PASTURESTACK_CATALOG_COMMIT=9b5115c068d2e6dbfa1cc8ffebb01eaf0e90f171
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"9b5115c068d2e6dbfa1cc8ffebb01eaf0e90f171"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"9b5115c068d2e6dbfa1cc8ffebb01eaf0e90f171"}}}'
+
+RUN set -eux; \
+    bash -n /usr/bin/catalog-service; \
+    test -x /usr/local/lib/pasturestack/service-wrapper
