@@ -1,0 +1,64 @@
+# syntax=docker/dockerfile:1.7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.304
+FROM ${BASE_IMAGE}
+
+ARG PASTURESTACK_SERVER_REVISION
+ARG SOURCE_DATE_EPOCH
+ARG SUPPORTED_DOCKER_RANGE="~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || v29.4.1 || v29.6.2"
+ARG NEWEST_DOCKER_VERSION=v29.6.2
+
+RUN set -eux; \
+    app_config_jar="$(find /usr/share/cattle/war/WEB-INF/lib \
+        -maxdepth 1 \
+        -type f \
+        -name 'cattle-app-config-*.jar' \
+        -print -quit)"; \
+    test -n "${app_config_jar}"; \
+    work_dir="$(mktemp -d)"; \
+    cd "${work_dir}"; \
+    jar xf "${app_config_jar}" META-INF/cattle/api-server/defaults.properties; \
+    defaults=META-INF/cattle/api-server/defaults.properties; \
+    test -s "${defaults}"; \
+    awk \
+        -v supported="${SUPPORTED_DOCKER_RANGE}" \
+        -v newest="${NEWEST_DOCKER_VERSION}" \
+        'BEGIN { supported_count = 0; newest_count = 0 } \
+         /^supported[.]docker[.]range=/ { \
+             print "supported.docker.range=" supported; \
+             supported_count++; \
+             next \
+         } \
+         /^newest[.]docker[.]version=/ { \
+             print "newest.docker.version=" newest; \
+             newest_count++; \
+             next \
+         } \
+         { print } \
+         END { \
+             if (supported_count != 1 || newest_count != 1) { \
+                 exit 42 \
+             } \
+         }' "${defaults}" >"${defaults}.new"; \
+    mv "${defaults}.new" "${defaults}"; \
+    grep -Fx "supported.docker.range=${SUPPORTED_DOCKER_RANGE}" "${defaults}"; \
+    grep -Fx "newest.docker.version=${NEWEST_DOCKER_VERSION}" "${defaults}"; \
+    source_date_iso="$(date -u -d "@${SOURCE_DATE_EPOCH}" '+%Y-%m-%dT%H:%M:%SZ')"; \
+    jar --update \
+        --file "${app_config_jar}" \
+        --date="${source_date_iso}" \
+        META-INF/cattle/api-server/defaults.properties; \
+    rm -rf "${work_dir}"; \
+    unzip -p "${app_config_jar}" META-INF/cattle/api-server/defaults.properties \
+        | grep -Fx "supported.docker.range=${SUPPORTED_DOCKER_RANGE}"; \
+    unzip -p "${app_config_jar}" META-INF/cattle/api-server/defaults.properties \
+        | grep -Fx "newest.docker.version=${NEWEST_DOCKER_VERSION}"
+
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server compatibility image with an evidence-backed Docker host support policy." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.305" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.304"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.305
+ENV PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-07-27
