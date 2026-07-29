@@ -1,0 +1,124 @@
+# syntax=docker/dockerfile:1.7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.292
+FROM ${BASE_IMAGE}
+
+ARG PASTURESTACK_SERVER_REVISION
+ARG ORCHESTRATION_COMMIT=e9fe2a2c1d328f547a4d5bb34f370515e5e5e572
+ARG ORCHESTRATION_INDEX_FILE_SHA256=b24146f48decb06bec52b6319ea938ec8d9d95b86e8ee90cb2526e5f6c751cbb
+ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.7
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.7.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=5cd0ae2e703dda24ccd6e63ecce17e62c69c8f8c6b2e973d0779c8a0f853ee0d
+
+RUN set -eu; \
+    patch_dir=/tmp/pasturestack-cache-patch; \
+    mkdir -p "${patch_dir}"; \
+    curl -fsSL \
+        --retry 5 \
+        --retry-all-errors \
+        --retry-delay 2 \
+        --connect-timeout 10 \
+        --max-time 300 \
+        -o "${patch_dir}/IndexFile.java" \
+        "https://raw.githubusercontent.com/PastureStack/orchestration-engine/${ORCHESTRATION_COMMIT}/code/framework/api/src/main/java/io/cattle/platform/api/servlet/IndexFile.java"; \
+    echo "${ORCHESTRATION_INDEX_FILE_SHA256}  ${patch_dir}/IndexFile.java" \
+        | sha256sum -c -; \
+    api_jar="$(find /usr/share/cattle/war/WEB-INF/lib \
+        -maxdepth 1 \
+        -type f \
+        -name 'cattle-framework-api-[0-9]*.jar' \
+        -print -quit)"; \
+    test -n "${api_jar}"; \
+    classes=/tmp/pasturestack-cache-patch/classes; \
+    mkdir -p "${classes}"; \
+    javac \
+        -Xlint:deprecation \
+        -Werror \
+        -cp '/usr/share/cattle/war/WEB-INF/lib/*:/usr/share/cattle/war/WEB-INF/jetty/*' \
+        -d "${classes}" \
+        "${patch_dir}/IndexFile.java"; \
+    test -f "${classes}/io/cattle/platform/api/servlet/IndexFile.class"; \
+    grep -aF \
+        'no-store, no-cache, must-revalidate, max-age=0' \
+        "${classes}/io/cattle/platform/api/servlet/IndexFile.class" >/dev/null; \
+    jar uf "${api_jar}" \
+        -C "${classes}" \
+        io/cattle/platform/api/servlet; \
+    javap \
+        -classpath '/usr/share/cattle/war/WEB-INF/lib/*' \
+        -private \
+        io.cattle.platform.api.servlet.IndexFile \
+        | grep -F 'disableIndexCaching' >/dev/null; \
+    rm -rf /tmp/pasturestack-cache-patch
+
+RUN set -eu; \
+    archive=/tmp/web-console.tar.gz; \
+    manifest=/tmp/web-console-files.txt; \
+    curl -fsSL \
+        --retry 5 \
+        --retry-all-errors \
+        --retry-delay 2 \
+        --connect-timeout 10 \
+        --max-time 300 \
+        -o "${archive}" \
+        "https://github.com/PastureStack/web-console/releases/download/${WEB_CONSOLE_RELEASE_TAG}/${WEB_CONSOLE_ARTIFACT}"; \
+    echo "${WEB_CONSOLE_ARTIFACT_SHA256}  ${archive}" | sha256sum -c -; \
+    tar -tzf "${archive}" >"${manifest}"; \
+    test "$(grep -Ec '^1\.6\.56/index\.html$' "${manifest}")" -eq 1; \
+    test "$(grep -Ec '^1\.6\.56/translations/zh-tw\.json$' "${manifest}")" -eq 1; \
+    test "$(grep -Ec '^1\.6\.56/assets/ui[^/]*\.js$' "${manifest}")" -eq 1; \
+    if grep -Eq '(^/|(^|/)\.\.(/|$)|\.map$)' "${manifest}"; then \
+        echo "Unsafe or unpublished Web Console path" >&2; \
+        exit 1; \
+    fi; \
+    find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        -name 'ui-*.js' \
+        -delete; \
+    tar -xzf "${archive}" \
+        -C /usr/share/cattle/war \
+        --strip-components=1; \
+    test -f /usr/share/cattle/war/index.html; \
+    test -f /usr/share/cattle/war/translations/zh-tw.json; \
+    test "$(find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        -name 'ui-*.js' \
+        | wc -l)" -eq 1; \
+    ui_entry="$(find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        -name 'ui-*.js' \
+        -print -quit)"; \
+    grep -F 'io.pasturestack.catalog.' "${ui_entry}" >/dev/null; \
+    grep -F 'question.' "${ui_entry}" >/dev/null; \
+    grep -F 'readme.' "${ui_entry}" >/dev/null; \
+    grep -F 'max-height:145px' \
+        /usr/share/cattle/war/assets/ui-light.css >/dev/null; \
+    grep -F '1.6.56-pasturestack.7' \
+        /usr/share/cattle/war/index.html >/dev/null; \
+    grep -F '"service":"服務"' \
+        /usr/share/cattle/war/translations/zh-tw.json >/dev/null; \
+    if ! perl -CSD -Mutf8 -0777 -e \
+        '$$text = <>; exit($$text =~ /[·•・･]/ ? 1 : 0)' \
+        /usr/share/cattle/war/translations/zh-tw.json; then \
+        echo "Stray middle-dot punctuation in Taiwan localization" >&2; \
+        exit 1; \
+    fi; \
+    rm -f "${archive}" "${manifest}"
+
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server compatibility image with the complete platform Catalog and durable Web Console cache controls." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.293" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.292"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.293
+ENV PASTURESTACK_ORCHESTRATION_COMMIT=e9fe2a2c1d328f547a4d5bb34f370515e5e5e572
+ENV PASTURESTACK_WEB_CONSOLE_COMMIT=bce877cc526774dbbd11c4856aac43275868ed10
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.7
+ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=5cd0ae2e703dda24ccd6e63ecce17e62c69c8f8c6b2e973d0779c8a0f853ee0d
+ENV PASTURESTACK_CATALOG_COMMIT=30caa02cfef52e26dc65cfceba5c36b3150283f2
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"30caa02cfef52e26dc65cfceba5c36b3150283f2"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"30caa02cfef52e26dc65cfceba5c36b3150283f2"}}}'
