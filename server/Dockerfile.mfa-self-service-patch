@@ -1,0 +1,452 @@
+# syntax=docker/dockerfile:1.7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.318
+FROM ${BASE_IMAGE}
+
+ARG SOURCE_DATE_EPOCH
+ARG PASTURESTACK_SERVER_REVISION
+
+ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
+ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.272
+ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.272.jar
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256
+ARG ORCHESTRATION_ENGINE_COMMIT
+
+ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
+ARG AUTHENTICATION_SERVICE_RELEASE_TAG=v0.2.5
+ARG AUTHENTICATION_SERVICE_ARTIFACT=authentication-service-0.2.5-linux-amd64.tar.xz
+ARG AUTHENTICATION_SERVICE_ARTIFACT_SHA256
+ARG AUTHENTICATION_SERVICE_COMMIT
+
+ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
+ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.31
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.31.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256
+ARG WEB_CONSOLE_COMMIT
+
+COPY patches/service-auth.json /tmp/pasturestack-server-overlays/schema/service/service-auth.json
+COPY patches/bootstrap.sh /tmp/pasturestack-server-overlays/config-content/bootstrap/bootstrap.sh
+COPY patches/db/core-060.xml /tmp/pasturestack-server-overlays/db/core-060.xml
+COPY patches/db/core-124.xml /tmp/pasturestack-server-overlays/db/core-124.xml
+COPY patches/PatchV1GlobalSubscribe.java /tmp/pasturestack-server-overlays/PatchV1GlobalSubscribe.java
+
+RUN set -eu; \
+    archive=/tmp/orchestration-engine.jar; \
+    listing=/tmp/orchestration-engine-files.txt; \
+    curl -fsSL \
+        --retry 5 \
+        --retry-all-errors \
+        --retry-delay 2 \
+        --connect-timeout 10 \
+        --max-time 600 \
+        -o "${archive}" \
+        "${ORCHESTRATION_ENGINE_RELEASE_BASE_URL%/}/${ORCHESTRATION_ENGINE_RELEASE_TAG}/${ORCHESTRATION_ENGINE_ARTIFACT}"; \
+    echo "${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}  ${archive}" | sha256sum -c -; \
+    jar tf "${archive}" >"${listing}"; \
+    if grep -Eq '(^/|(^|/)\.\.(/|$))' "${listing}"; then \
+        echo "Unsafe Orchestration Engine archive path" >&2; \
+        exit 1; \
+    fi; \
+    test "$(grep -Fxc 'WEB-INF/web.xml' "${listing}")" -eq 1; \
+    test "$(grep -Fxc 'io/cattle/platform/launcher/Main.class' "${listing}")" -eq 1; \
+    test "$(grep -Ec '^WEB-INF/lib/cattle-iaas-auth-logic-0\.183\.272\.jar$' "${listing}")" -eq 1; \
+    test "$(grep -Ec '^WEB-INF/lib/cattle-resources-0\.183\.272\.jar$' "${listing}")" -eq 1; \
+    old_web_root="$(readlink -f /usr/share/cattle/war)"; \
+    case "${old_web_root}" in \
+        /usr/share/cattle/*) ;; \
+        *) echo "Unsafe existing document root" >&2; exit 1 ;; \
+    esac; \
+    test -L /usr/share/cattle/war; \
+    test -d "${old_web_root}/api-ui"; \
+    cp -a "${old_web_root}/api-ui" /tmp/pasturestack-api-ui; \
+    install -m 0644 "${archive}" /usr/share/cattle/cattle.jar; \
+    engine_hash="$(sha256sum /usr/share/cattle/cattle.jar | awk '{print $1}')"; \
+    new_web_root="/usr/share/cattle/${engine_hash}"; \
+    test "${new_web_root}" != "${old_web_root}"; \
+    rm /usr/share/cattle/war; \
+    rm -rf "${old_web_root}" "${new_web_root}"; \
+    mkdir -p "${new_web_root}"; \
+    ln -s "${engine_hash}" /usr/share/cattle/war; \
+    cd "${new_web_root}"; \
+    unzip -q ../cattle.jar; \
+    if [ -f resources.jar ]; then \
+        unzip -oq resources.jar; \
+        rm -f resources.jar; \
+    fi; \
+    resources_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
+        -name 'cattle-resources-0.183.272.jar' -print -quit)"; \
+    test -n "${resources_jar}"; \
+    source_date_iso="$(date -u -d "@${SOURCE_DATE_EPOCH}" '+%Y-%m-%dT%H:%M:%SZ')"; \
+    cd /tmp/pasturestack-server-overlays; \
+    jar --update --file "${resources_jar}" --date="${source_date_iso}" \
+        schema/service/service-auth.json \
+        config-content/bootstrap/bootstrap.sh \
+        db/core-060.xml \
+        db/core-124.xml; \
+    mkdir -p schema/v1; \
+    jar xf "${resources_jar}" \
+        schema/v1/admin.ser \
+        schema/v1/base.ser \
+        schema/v1/member.ser \
+        schema/v1/owner.ser \
+        schema/v1/project.ser \
+        schema/v1/projectadmin.ser \
+        schema/v1/readAdmin.ser \
+        schema/v1/readonly.ser \
+        schema/v1/restricted.ser \
+        schema/v1/service.ser \
+        schema/v1/superadmin.ser \
+        schema/v1/user.ser; \
+    javac -cp "${new_web_root}/WEB-INF/lib/*" PatchV1GlobalSubscribe.java; \
+    java -cp ".:${new_web_root}/WEB-INF/lib/*" PatchV1GlobalSubscribe; \
+    java -cp ".:${new_web_root}/WEB-INF/lib/*" PatchV1GlobalSubscribe verify; \
+    jar --update --file "${resources_jar}" --date="${source_date_iso}" \
+        schema/v1/admin.ser \
+        schema/v1/service.ser; \
+    unzip -p "${resources_jar}" db/core-124.xml \
+        | grep -F 'pasturestack-catalog-pinned-commit' >/dev/null; \
+    unzip -p "${resources_jar}" db/changelog.xml \
+        | grep -F 'db/core-125.xml' >/dev/null; \
+    unzip -p "${resources_jar}" db/core-125.xml \
+        | grep -F 'pasturestack-credential-secret-value-mediumtext' >/dev/null; \
+    unzip -p "${resources_jar}" db/core-125.xml \
+        | grep -F 'MEDIUMTEXT(16777215)' >/dev/null; \
+    unzip -p "${resources_jar}" schema/service/service-auth.json \
+        | grep -F '"subscribe": "cr"' >/dev/null; \
+    cd "${new_web_root}"; \
+    rm -rf /tmp/pasturestack-server-overlays; \
+    rm -rf api-ui; \
+    mv /tmp/pasturestack-api-ui api-ui; \
+    auth_logic="$(find WEB-INF/lib -maxdepth 1 -type f \
+        -name 'cattle-iaas-auth-logic-0.183.272.jar' -print -quit)"; \
+    test -n "${auth_logic}"; \
+    for class_name in \
+        io/cattle/platform/iaas/api/auth/identity/AuthIdentityLinkResourceManager.class \
+        io/cattle/platform/iaas/api/auth/integration/local/LocalAuthConstants.class \
+        io/cattle/platform/iaas/api/auth/mfa/MfaAttemptService.class \
+        io/cattle/platform/iaas/api/auth/mfa/MfaPolicyService.class \
+        io/cattle/platform/iaas/api/auth/identity/ProviderSwitchTokenService.class \
+        io/cattle/platform/iaas/api/auth/identity/ProviderSwitchTicketService.class \
+        io/cattle/platform/iaas/api/auth/identity/Token.class \
+        io/cattle/platform/iaas/api/auth/mfa/MfaResourceManager.class \
+        io/cattle/platform/iaas/api/auth/mfa/MfaService.class \
+        io/cattle/platform/iaas/api/auth/mfa/MfaSettingsResourceManager.class \
+        io/cattle/platform/iaas/api/auth/mfa/WebAuthnService.class; do \
+        test "$(unzip -Z1 "${auth_logic}" | grep -Fxc "${class_name}")" -eq 1; \
+    done; \
+    unzip -p "${auth_logic}" \
+        io/cattle/platform/iaas/api/auth/mfa/MfaResourceManager.class \
+        | grep -aF 'MfaAccountHolderRequired' >/dev/null; \
+    for marker in \
+        MfaTemporarilyLocked \
+        federatedMfa; do \
+        unzip -p "${auth_logic}" \
+            io/cattle/platform/iaas/api/auth/mfa/MfaService.class \
+            io/cattle/platform/iaas/api/auth/mfa/MfaAttemptService.class \
+            | grep -aF "${marker}" >/dev/null; \
+    done; \
+    for marker in \
+        beginSecurityConfirmation \
+        finishSecurityConfirmation \
+        consumeSecurityConfirmation; do \
+        unzip -p "${auth_logic}" \
+            io/cattle/platform/iaas/api/auth/mfa/MfaService.class \
+            | grep -aF "${marker}" >/dev/null; \
+    done; \
+    unzip -p "${auth_logic}" \
+        io/cattle/platform/iaas/api/auth/mfa/MfaResourceManager.class \
+        | grep -aF 'securityConfirmation' >/dev/null; \
+    for marker in switchToLocal discardPermissions transferPermissions; do \
+        unzip -p "${auth_logic}" \
+            io/cattle/platform/iaas/api/auth/identity/AuthIdentityLinkResourceManager.class \
+            | grep -aF "${marker}" >/dev/null; \
+    done; \
+    unzip -p "${auth_logic}" \
+        io/cattle/platform/iaas/api/auth/identity/AuthIdentityLinkResourceManager.class \
+        | grep -aF 'makeSingularStringIfCan' >/dev/null; \
+    unzip -p "${auth_logic}" \
+        io/cattle/platform/iaas/api/auth/identity/AuthIdentityLinkResourceManager.class \
+        | grep -aF 'LocalAdministratorMfaRequired' >/dev/null; \
+    unzip -p "${auth_logic}" \
+        io/cattle/platform/iaas/api/auth/integration/local/LocalAuthConstants.class \
+        | grep -aF 'api.auth.local.recovery.mfa.ready' >/dev/null; \
+    for marker in recoveryIdentities providerSwitchRecovery; do \
+        unzip -p "${auth_logic}" \
+            io/cattle/platform/iaas/api/auth/identity/ProviderSwitchTokenService.class \
+            | grep -aF "${marker}" >/dev/null; \
+    done; \
+    unzip -p "${auth_logic}" \
+        io/cattle/platform/iaas/api/auth/AbstractTokenUtil.class \
+        | grep -aF 'linkMatchesProvider' >/dev/null; \
+    for marker in \
+        federatedAuthenticatedAt \
+        federatedAuthenticationContext \
+        federatedAuthenticationIssuer \
+        federatedAuthenticationMethods; do \
+        unzip -p "${auth_logic}" \
+            io/cattle/platform/iaas/api/auth/identity/Token.class \
+            | grep -aF "${marker}" >/dev/null; \
+    done; \
+    auditing="$(find WEB-INF/lib -maxdepth 1 -type f \
+        -name 'cattle-framework-auditing-0.183.272.jar' -print -quit)"; \
+    test -n "${auditing}"; \
+    test "$(unzip -Z1 "${auditing}" \
+        | grep -Fxc 'io/cattle/platform/iaas/api/auditing/AuditServiceImpl.class')" -eq 1; \
+    unzip -p "${auditing}" \
+        io/cattle/platform/iaas/api/auditing/AuditServiceImpl.class \
+        | grep -aF 'auditIdentity' >/dev/null; \
+    for schema_name in authIdentityLink mfaFactor mfaStatus; do \
+        unzip -p "${resources_jar}" "schema/base/${schema_name}.json" \
+            | grep -F '"collectionFilters"' >/dev/null; \
+        unzip -p "${resources_jar}" "schema/base/${schema_name}.json" \
+            | grep -F '"accountId"' >/dev/null; \
+    done; \
+    unzip -p "${resources_jar}" schema/base/mfaStatus.json \
+        | grep -F '"recoveryEmailEnrollmentAvailable"' >/dev/null; \
+    for marker in \
+        federatedMfaMode \
+        lockoutSeconds \
+        localAdministratorRecoveryConfigured \
+        localAdministratorRecoveryEnabled \
+        localAdministratorRecoveryMfaReady \
+        localAdministratorRecoveryRequired \
+        localAdministratorRecoveryStatus \
+        maximumFederatedAuthenticationAgeSeconds \
+        maximumFailedAttempts \
+        passkeyCounterPolicy \
+        securityConfirmation \
+        securityConfirmationTtlSeconds \
+        securityEmailLocale \
+        trustedAuthenticationContexts \
+        trustedAuthenticationMethods; do \
+        unzip -p "${resources_jar}" schema/base/mfaSettings.json \
+            | grep -F "\"${marker}\"" >/dev/null; \
+    done; \
+    unzip -p "${resources_jar}" schema/base/mfaSettings.json \
+        | grep -F '"collectionMethods": [ "GET" ]' >/dev/null; \
+    unzip -p "${resources_jar}" schema/base/mfaSettings.json \
+        | grep -F '"resourceMethods": [ "GET", "PUT" ]' >/dev/null; \
+    for marker in \
+        beginSecurityConfirmation \
+        confirmSecurityConfirmation \
+        method \
+        methods \
+        recoveryCode \
+        securityConfirmation \
+        webAuthnOptions; do \
+        unzip -p "${resources_jar}" schema/base/mfaOperation.json \
+            | grep -F "\"${marker}\"" >/dev/null; \
+    done; \
+    for marker in \
+        authIdentityLink \
+        authIdentityOperation \
+        identityProof \
+        localPassword \
+        mfaFactor \
+        mfaOperation \
+        mfaSettings \
+        mfaStatus \
+        providerSwitchCode \
+        smtpClearPassword \
+        smtpPassword \
+        webAuthnResponse; do \
+        unzip -p "${resources_jar}" schema/v1/admin.ser \
+            | grep -aF "${marker}" >/dev/null; \
+    done; \
+    for marker in \
+        challengeId \
+        emailCode \
+        mfaFactor \
+        mfaOperation \
+        mfaStatus \
+        verificationCode \
+        webAuthnResponse; do \
+        unzip -p "${resources_jar}" schema/v1/user.ser \
+            | grep -aF "${marker}" >/dev/null; \
+    done; \
+    for marker in \
+        authProvider \
+        emailCode \
+        localRecoveryEnabled \
+        loginMethod \
+        mfaChallengeId \
+        mfaCode \
+        mfaMethods \
+        mfaRequired \
+        providerSwitchCode \
+        recoveryCode \
+        webAuthnResponse; do \
+        unzip -p "${resources_jar}" schema/v1/token.ser \
+            | grep -aF "${marker}" >/dev/null; \
+    done; \
+    test "$(find WEB-INF/lib -maxdepth 1 -type f \
+        -name 'webauthn4j-core-0.31.8.RELEASE.jar' | wc -l)" -eq 1; \
+    test "$(find WEB-INF/lib -maxdepth 1 -type f \
+        -name 'jakarta.mail-api-2.1.5.jar' | wc -l)" -eq 1; \
+    test "$(find WEB-INF/lib -maxdepth 1 -type f \
+        -name 'angus-mail-2.0.5.jar' | wc -l)" -eq 1; \
+    touch -h -d "@${SOURCE_DATE_EPOCH}" \
+        /usr/share/cattle/cattle.jar \
+        /usr/share/cattle/war \
+        "${new_web_root}" \
+        "${new_web_root}/api-ui" \
+        /tmp; \
+    rm -f "${archive}" "${listing}"
+
+RUN set -eu; \
+    archive=/tmp/authentication-service.tar.xz; \
+    package_dir="$(mktemp -d)"; \
+    curl -fsSL \
+        --retry 5 \
+        --retry-all-errors \
+        --retry-delay 2 \
+        --connect-timeout 10 \
+        --max-time 300 \
+        -o "${archive}" \
+        "${AUTHENTICATION_SERVICE_RELEASE_BASE_URL%/}/${AUTHENTICATION_SERVICE_RELEASE_TAG}/${AUTHENTICATION_SERVICE_ARTIFACT}"; \
+    echo "${AUTHENTICATION_SERVICE_ARTIFACT_SHA256}  ${archive}" | sha256sum -c -; \
+    tar -tJf "${archive}" | grep -qx 'authentication-service'; \
+    test "$(tar -tJf "${archive}" | wc -l)" -eq 1; \
+    tar -xJf "${archive}" -C "${package_dir}"; \
+    test -x "${package_dir}/authentication-service"; \
+    authentication_target=/usr/bin/authentication-service.real; \
+    test -x /usr/bin/authentication-service; \
+    grep -F 'RC16_WRAPPER_REAL_DIR' /usr/bin/authentication-service >/dev/null; \
+    install -p -m 0755 "${package_dir}/authentication-service" "${authentication_target}"; \
+    "${authentication_target}" --version | grep -F '0.2.5' >/dev/null; \
+    grep -aF 'go1.26.5' "${authentication_target}" >/dev/null; \
+    for marker in \
+        authenticated_at \
+        authentication_context \
+        authentication_issuer \
+        authentication_methods; do \
+        grep -aF "${marker}" "${authentication_target}" >/dev/null; \
+    done; \
+    rm -rf "${archive}" "${package_dir}"; \
+    touch -h -d "@${SOURCE_DATE_EPOCH}" \
+        "${authentication_target}" \
+        "$(dirname "${authentication_target}")" \
+        /tmp
+
+RUN set -eu; \
+    archive=/tmp/web-console.tar.gz; \
+    manifest=/tmp/web-console-files.txt; \
+    curl -fsSL \
+        --retry 5 \
+        --retry-all-errors \
+        --retry-delay 2 \
+        --connect-timeout 10 \
+        --max-time 300 \
+        -o "${archive}" \
+        "${WEB_CONSOLE_RELEASE_BASE_URL%/}/${WEB_CONSOLE_RELEASE_TAG}/${WEB_CONSOLE_ARTIFACT}"; \
+    echo "${WEB_CONSOLE_ARTIFACT_SHA256}  ${archive}" | sha256sum -c -; \
+    tar -tzf "${archive}" >"${manifest}"; \
+    test "$(grep -Ec '^1\.6\.56/index\.html$' "${manifest}")" -eq 1; \
+    test "$(grep -Ec '^1\.6\.56/translations/zh-tw\.json$' "${manifest}")" -eq 1; \
+    test "$(grep -Ec '^1\.6\.56/assets/ui[^/]*\.js$' "${manifest}")" -eq 1; \
+    test "$(grep -Ec '^1\.6\.56/assets/vendor[^/]*\.js$' "${manifest}")" -eq 1; \
+    if grep -Eq '(^/|(^|/)\.\.(/|$)|\.map$)' "${manifest}"; then \
+        echo "Unsafe or unpublished Web Console path" >&2; \
+        exit 1; \
+    fi; \
+    mkdir -p /usr/share/cattle/war/assets; \
+    find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        \( -name 'ui-*.js' -o -name 'vendor-*.js' \) \
+        -delete; \
+    rm -rf /usr/share/cattle/war/translations; \
+    mkdir -p /usr/share/cattle/war/translations; \
+    tar -xzf "${archive}" \
+        -C /usr/share/cattle/war \
+        --strip-components=1; \
+    test -f /usr/share/cattle/war/index.html; \
+    test -f /usr/share/cattle/war/translations/zh-tw.json; \
+    test "$(find /usr/share/cattle/war/translations \
+        -maxdepth 1 \
+        -type f \
+        -name '*.json' \
+        | wc -l)" -eq 13; \
+    test "$(find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        -name 'ui-*.js' \
+        | wc -l)" -eq 1; \
+    test "$(find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        -name 'vendor-*.js' \
+        | wc -l)" -eq 1; \
+    ui_entry="$(find /usr/share/cattle/war/assets \
+        -maxdepth 1 \
+        -type f \
+        -name 'ui-*.js' \
+        -print -quit)"; \
+    for marker in \
+        account-security \
+        activateWithCodeFlow \
+        authIdentityOperation \
+        discardPermissions \
+        mfaSettings \
+        mfa-system-settings \
+        mfa-self-service-summary \
+        recoveryMfaMethods \
+        showMfaRecoveryOptions \
+        providerSwitchCode \
+        recoveryCode \
+        smtpEnabled \
+        switchToLocal \
+        transferPermissions \
+        webauthn; do \
+        grep -F "${marker}" "${ui_entry}" >/dev/null; \
+    done; \
+    for marker in \
+        '"navigation":"登入安全性"' \
+        '"manageMine":"管理我的登入安全性"' \
+        '"header":"帳號復原"' \
+        '"show":"無法使用驗證器或通行金鑰？"' \
+        '"systemManaged":"SMTP 寄信服務由系統管理員集中設定，全系統共用。您的帳號不會儲存 SMTP 伺服器、寄件者或密碼。"' \
+        '"navigation":"多重要素驗證"' \
+        '"passkeys":"通行金鑰"' \
+        '"discard":"移除直接權限、停用帳號並撤銷其工作階段"' \
+        '"action":"驗證並切換至本機帳號"'; do \
+        grep -F "${marker}" \
+            /usr/share/cattle/war/translations/zh-tw.json >/dev/null; \
+    done; \
+    while IFS= read -r entry; do \
+        case "${entry}" in \
+            1.6.56/) continue ;; \
+            1.6.56/*) \
+                relative="${entry#1.6.56/}"; \
+                relative="${relative%/}"; \
+                touch -h -d "@${SOURCE_DATE_EPOCH}" \
+                    "/usr/share/cattle/war/${relative}"; \
+                ;; \
+        esac; \
+    done <"${manifest}"; \
+    rm -f "${archive}" "${manifest}"; \
+    web_root="$(readlink -f /usr/share/cattle/war)"; \
+    case "${web_root}" in \
+        /usr/share/cattle/*) ;; \
+        *) echo "Unsafe Web Console document root" >&2; exit 1 ;; \
+    esac; \
+    touch -d "@${SOURCE_DATE_EPOCH}" \
+        "${web_root}" \
+        /tmp
+
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server compatibility image with stable accounts, safe provider switching, and account-holder MFA self-service." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.319" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.318"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.319
+ENV CATTLE_CATTLE_VERSION=v0.183.272
+ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}
+ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}
+ENV PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.2.5
+ENV PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT=${AUTHENTICATION_SERVICE_COMMIT}
+ENV PASTURESTACK_AUTHENTICATION_SERVICE_ARTIFACT_SHA256=${AUTHENTICATION_SERVICE_ARTIFACT_SHA256}
+ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.31
+ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
