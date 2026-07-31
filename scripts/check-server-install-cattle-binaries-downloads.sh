@@ -122,7 +122,7 @@ service.package.authentication-current.url=https://github.com/PastureStack/serve
 service.package.compose-current.url=https://github.com/PastureStack/server/releases/download/v1.6.278/compose-executor-0.14.31-linux-amd64.gz,compose-executor
 service.package.machine-bundle-current.url=https://github.com/PastureStack/server/releases/download/v1.6.278/machine-driver-bundle-0.14.0-linux-amd64.tar.xz,docker-machine
 service.package.host-provisioner-current.url=https://github.com/PastureStack/server/releases/download/v1.6.278/host-provisioner-0.39.4-linux-amd64.tar.xz,host-provisioner
-service.package.vsphere-cli-current.url=https://github.com/PastureStack/server/releases/download/v1.6.278/vsphere-cli-bundle-0.54.1-linux-amd64.tar.xz,govc
+service.package.vsphere-cli-current.url=https://github.com/PastureStack/server/releases/download/v1.6.278/vsphere-cli-bundle-0.55.1-pasturestack.1-linux-amd64.tar.xz,govc
 service.package.secret-delivery-current.url=https://github.com/PastureStack/server/releases/download/v1.6.278/secret-delivery-api-0.2.2-linux-amd64.tar.xz,secret-delivery-api
 service.package.usage-telemetry-current.url=https://github.com/PastureStack/server/releases/download/v1.6.278/usage-telemetry-agent-0.4.0-pasturestack.1-linux-amd64.tar.xz,usage-telemetry-agent
 service.package.webhook-automation-current.url=https://github.com/PastureStack/server/releases/download/v1.6.278/webhook-automation-service-0.9.15-pasturestack.1-linux-amd64.tar.xz,webhook-automation-service
@@ -146,7 +146,7 @@ service.package.authentication-current.url=https://artifacts.invalid/rc16/authen
 service.package.compose-current.url=https://artifacts.invalid/rc16/compose-executor-0.14.31-linux-amd64.gz,compose-executor
 service.package.machine-bundle-current.url=https://artifacts.invalid/rc16/machine-driver-bundle-0.14.0-linux-amd64.tar.xz,docker-machine
 service.package.host-provisioner-current.url=https://artifacts.invalid/rc16/host-provisioner-0.39.4-linux-amd64.tar.xz,host-provisioner
-service.package.vsphere-cli-current.url=https://artifacts.invalid/rc16/vsphere-cli-bundle-0.54.1-linux-amd64.tar.xz,govc
+service.package.vsphere-cli-current.url=https://artifacts.invalid/rc16/vsphere-cli-bundle-0.55.1-pasturestack.1-linux-amd64.tar.xz,govc
 service.package.secret-delivery-current.url=https://artifacts.invalid/rc16/secret-delivery-api-0.2.2-linux-amd64.tar.xz,secret-delivery-api
 service.package.usage-telemetry-current.url=https://artifacts.invalid/rc16/usage-telemetry-agent-0.4.0-pasturestack.1-linux-amd64.tar.xz,usage-telemetry-agent
 service.package.webhook-automation-current.url=https://artifacts.invalid/rc16/webhook-automation-service-0.9.15-pasturestack.1-linux-amd64.tar.xz,webhook-automation-service
@@ -197,7 +197,7 @@ for package_key in upstream prior placeholder; do
   fi
 done
 for package_key in upstream prior placeholder; do
-  if ! grep -Fx "service.package.vsphere-cli-${package_key}.url=https://artifacts.invalid/rc16/vsphere-cli-bundle-0.54.1-linux-amd64.tar.xz,govc" "$sample_run/cattle-global.properties" >/dev/null; then
+  if ! grep -Fx "service.package.vsphere-cli-${package_key}.url=https://artifacts.invalid/rc16/vsphere-cli-bundle-0.55.1-pasturestack.1-linux-amd64.tar.xz,govc" "$sample_run/cattle-global.properties" >/dev/null; then
     fail "SERVER_INSTALL_CATTLE_BINARIES_VSPHERE_CLI_BUNDLE_NEUTRAL_PACKAGE_MISMATCH key=${package_key}"
   fi
 done

@@ -2,10 +2,10 @@
 set -euo pipefail
 
 artifact="${PASTURESTACK_VSPHERE_CLI_BUNDLE_ARTIFACT:-}"
-expected_version="${PASTURESTACK_EXPECTED_VSPHERE_CLI_BUNDLE_VERSION:-0.54.1}"
-expected_artifact_sha256="${PASTURESTACK_EXPECTED_VSPHERE_CLI_BUNDLE_ARTIFACT_SHA256:-010e5166afe5e17c98e15cc4528a9003f09caa4a3ef3ccee9c751e7b3ef2e0e5}"
-expected_binary_sha256="${PASTURESTACK_EXPECTED_GOVC_BINARY_SHA256:-115af2599f9c9939ee44cbd8218e5fe70e42d7957fd66f1ecad4148a1b980e2a}"
-expected_source_commit="${PASTURESTACK_EXPECTED_GOVMOMI_COMMIT:-e6cfff79a15f1c7e7a59187985132ee1685b8233}"
+expected_version="${PASTURESTACK_EXPECTED_VSPHERE_CLI_BUNDLE_VERSION:-0.55.1-pasturestack.1}"
+expected_artifact_sha256="${PASTURESTACK_EXPECTED_VSPHERE_CLI_BUNDLE_ARTIFACT_SHA256:-64a2cdf22aa8762c52808315726f19e2970cd1deb86172ca5d611b2943fd2788}"
+expected_binary_sha256="${PASTURESTACK_EXPECTED_GOVC_BINARY_SHA256:-4a4766667d710148cdab058f2aba65c5ff3e886758bb4a0cd021e05034b96fb2}"
+expected_source_commit="${PASTURESTACK_EXPECTED_GOVMOMI_COMMIT:-a668d9c60399552ea96782b8751c956720a0b8fb}"
 expected_license_sha256="${PASTURESTACK_EXPECTED_GOVMOMI_LICENSE_SHA256:-cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30}"
 expected_name="vsphere-cli-bundle-${expected_version}-linux-amd64.tar.xz"
 
@@ -60,8 +60,8 @@ test "$("$binary" version)" = "govc ${expected_version}"
 "$binary" version -require "$expected_version" >/dev/null
 version_long=$("$binary" version -l)
 printf '%s\n' "$version_long" | grep -Fx "Build Version: v${expected_version}" >/dev/null
-printf '%s\n' "$version_long" | grep -Fx 'Build Commit: e6cfff79a15f' >/dev/null
-printf '%s\n' "$version_long" | grep -Fx 'Build Date: 2026-05-29T18:14:11Z' >/dev/null
+printf '%s\n' "$version_long" | grep -Fx 'Build Commit: a668d9c60399' >/dev/null
+printf '%s\n' "$version_long" | grep -Fx 'Build Date: 2026-07-07T14:02:15Z' >/dev/null
 "$binary" about -h >/dev/null
 
 licenses="$workdir/vsphere-cli-bundle-LICENSES.txt"
@@ -69,7 +69,8 @@ sources="$workdir/vsphere-cli-bundle-SOURCES.txt"
 notices="$workdir/vsphere-cli-bundle-THIRD-PARTY-NOTICES.txt"
 grep -F 'MIT License' "$licenses" >/dev/null
 grep -F 'Apache License' "$licenses" >/dev/null
-grep -F "Commit: ${expected_source_commit}" "$sources" >/dev/null
+grep -F "Pinned source commit: ${expected_source_commit}" "$sources" >/dev/null
+grep -F 'Security dependency: golang.org/x/text v0.39.0' "$sources" >/dev/null
 grep -F "License SHA-256: ${expected_license_sha256}" "$sources" >/dev/null
 grep -F "Binary SHA-256: ${expected_binary_sha256}" "$sources" >/dev/null
 grep -F 'does not claim' "$notices" >/dev/null

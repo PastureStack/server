@@ -103,8 +103,8 @@ ARG HOST_PROVISIONER_BINARY_SHA256=dba5fd4d423a49f35a443951ac274ea680305a5a7a594
 ARG MACHINE_DRIVER_BUNDLE_VERSION=0.14.0
 ARG MACHINE_MANAGER_BINARY_SHA256=a4c69bffb78d3cfe103b89dae61c3ea11cc2d1a91c4ff86e630c9ae88244db02
 ARG PACKET_DRIVER_BINARY_SHA256=e77c635969a76f498d7088904acd375f25b79a81632b87fa9e5cc5b8e2e72184
-ARG VSPHERE_CLI_BUNDLE_VERSION=0.54.1
-ARG GOVC_BINARY_SHA256=115af2599f9c9939ee44cbd8218e5fe70e42d7957fd66f1ecad4148a1b980e2a
+ARG VSPHERE_CLI_BUNDLE_VERSION=0.55.1-pasturestack.1
+ARG GOVC_BINARY_SHA256=4a4766667d710148cdab058f2aba65c5ff3e886758bb4a0cd021e05034b96fb2
 ARG SECRET_DELIVERY_API_VERSION=0.2.2
 ARG SECRET_DELIVERY_API_BINARY_SHA256=e62141d968cc5323bc53ad0cdc3630239b9e27e7ab5a212bf40a321c48e5dd1a
 ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.0-pasturestack.1
@@ -212,13 +212,16 @@ RUN --mount=type=secret,id=rc16_artifact_base_url \
     test -x /usr/bin/govc; \
     echo "${GOVC_BINARY_SHA256}  /usr/bin/govc" | sha256sum -c -; \
     test "$(/usr/bin/govc version)" = "govc ${VSPHERE_CLI_BUNDLE_VERSION}"; \
-    /usr/bin/govc version -l | grep -Fx 'Build Commit: e6cfff79a15f' >/dev/null; \
+    /usr/bin/govc version -l | grep -Fx 'Build Commit: a668d9c60399' >/dev/null; \
+    /usr/bin/govc version -l | grep -Fx 'Build Date: 2026-07-07T14:02:15Z' >/dev/null; \
     vsphere_license_dir=/usr/share/licenses/pasturestack/vsphere-cli-bundle; \
     mkdir -p "${vsphere_license_dir}"; \
     for name in vsphere-cli-bundle-LICENSES.txt vsphere-cli-bundle-SOURCES.txt vsphere-cli-bundle-THIRD-PARTY-NOTICES.txt; do \
         test -f "/usr/bin/${name}"; \
         mv "/usr/bin/${name}" "${vsphere_license_dir}/${name}"; \
     done; \
+    grep -F 'Pinned source commit: a668d9c60399552ea96782b8751c956720a0b8fb' "${vsphere_license_dir}/vsphere-cli-bundle-SOURCES.txt" >/dev/null; \
+    grep -F 'Security dependency: golang.org/x/text v0.39.0' "${vsphere_license_dir}/vsphere-cli-bundle-SOURCES.txt" >/dev/null; \
     test -x /usr/bin/secret-delivery-api; \
     echo "${SECRET_DELIVERY_API_BINARY_SHA256}  /usr/bin/secret-delivery-api" | sha256sum -c -; \
     /usr/bin/secret-delivery-api --version | grep -F "v${SECRET_DELIVERY_API_VERSION}" >/dev/null; \

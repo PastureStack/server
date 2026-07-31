@@ -14,10 +14,18 @@ revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
-orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.272}
-orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.272.jar}
+orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.273}
+orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.273.jar}
 orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:?ORCHESTRATION_ENGINE_ARTIFACT_SHA256 is required}
 orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:?ORCHESTRATION_ENGINE_COMMIT is required}
+
+vsphere_cli_bundle_release_base_url=${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL:-https://github.com/PastureStack/vsphere-cli-bundle/releases/download}
+vsphere_cli_bundle_release_tag=${VSPHERE_CLI_BUNDLE_RELEASE_TAG:-v0.55.1-pasturestack.1}
+vsphere_cli_bundle_artifact=${VSPHERE_CLI_BUNDLE_ARTIFACT:-vsphere-cli-bundle-0.55.1-pasturestack.1-linux-amd64.tar.xz}
+vsphere_cli_bundle_artifact_sha256=${VSPHERE_CLI_BUNDLE_ARTIFACT_SHA256:?VSPHERE_CLI_BUNDLE_ARTIFACT_SHA256 is required}
+vsphere_cli_bundle_commit=${VSPHERE_CLI_BUNDLE_COMMIT:?VSPHERE_CLI_BUNDLE_COMMIT is required}
+govmomi_source_commit=${GOVMOMI_SOURCE_COMMIT:-a668d9c60399552ea96782b8751c956720a0b8fb}
+govc_binary_sha256=${GOVC_BINARY_SHA256:-4a4766667d710148cdab058f2aba65c5ff3e886758bb4a0cd021e05034b96fb2}
 
 authentication_service_release_base_url=${AUTHENTICATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/authentication-service/releases/download}
 authentication_service_release_tag=${AUTHENTICATION_SERVICE_RELEASE_TAG:-v0.2.5}
@@ -41,6 +49,8 @@ if [[ ! "$revision" =~ ^[0-9a-f]{40}$ ]] ||
 fi
 for commit in \
     "$orchestration_engine_commit" \
+    "$vsphere_cli_bundle_commit" \
+    "$govmomi_source_commit" \
     "$authentication_service_commit" \
     "$web_console_commit"; do
     [[ "$commit" =~ ^[0-9a-f]{40}$ ]] || {
@@ -50,6 +60,8 @@ for commit in \
 done
 for digest in \
     "$orchestration_engine_artifact_sha256" \
+    "$vsphere_cli_bundle_artifact_sha256" \
+    "$govc_binary_sha256" \
     "$authentication_service_artifact_sha256" \
     "$web_console_artifact_sha256"; do
     [[ "$digest" =~ ^[0-9a-f]{64}$ ]] || {
@@ -59,6 +71,7 @@ for digest in \
 done
 for tag in \
     "$orchestration_engine_release_tag" \
+    "$vsphere_cli_bundle_release_tag" \
     "$authentication_service_release_tag" \
     "$web_console_release_tag"; do
     [[ "$tag" =~ ^v[0-9][0-9A-Za-z.-]*$ ]] || {
@@ -68,6 +81,7 @@ for tag in \
 done
 for artifact in \
     "$orchestration_engine_artifact" \
+    "$vsphere_cli_bundle_artifact" \
     "$authentication_service_artifact" \
     "$web_console_artifact"; do
     [[ "$artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]] || {
@@ -77,6 +91,7 @@ for artifact in \
 done
 for base_url in \
     "$orchestration_engine_release_base_url" \
+    "$vsphere_cli_bundle_release_base_url" \
     "$authentication_service_release_base_url" \
     "$web_console_release_base_url"; do
     case "$base_url" in
@@ -109,6 +124,13 @@ docker buildx build \
     --build-arg "ORCHESTRATION_ENGINE_ARTIFACT=${orchestration_engine_artifact}" \
     --build-arg "ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${orchestration_engine_artifact_sha256}" \
     --build-arg "ORCHESTRATION_ENGINE_COMMIT=${orchestration_engine_commit}" \
+    --build-arg "VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL=${vsphere_cli_bundle_release_base_url}" \
+    --build-arg "VSPHERE_CLI_BUNDLE_RELEASE_TAG=${vsphere_cli_bundle_release_tag}" \
+    --build-arg "VSPHERE_CLI_BUNDLE_ARTIFACT=${vsphere_cli_bundle_artifact}" \
+    --build-arg "VSPHERE_CLI_BUNDLE_ARTIFACT_SHA256=${vsphere_cli_bundle_artifact_sha256}" \
+    --build-arg "VSPHERE_CLI_BUNDLE_COMMIT=${vsphere_cli_bundle_commit}" \
+    --build-arg "GOVMOMI_SOURCE_COMMIT=${govmomi_source_commit}" \
+    --build-arg "GOVC_BINARY_SHA256=${govc_binary_sha256}" \
     --build-arg "AUTHENTICATION_SERVICE_RELEASE_BASE_URL=${authentication_service_release_base_url}" \
     --build-arg "AUTHENTICATION_SERVICE_RELEASE_TAG=${authentication_service_release_tag}" \
     --build-arg "AUTHENTICATION_SERVICE_ARTIFACT=${authentication_service_artifact}" \
@@ -137,9 +159,14 @@ image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
     CATTLE_RANCHER_SERVER_VERSION=v1.6.322 \
-    CATTLE_CATTLE_VERSION=v0.183.272 \
+    CATTLE_CATTLE_VERSION=v0.183.273 \
     PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT="${orchestration_engine_commit}" \
     PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256="${orchestration_engine_artifact_sha256}" \
+    PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=0.55.1-pasturestack.1 \
+    PASTURESTACK_VSPHERE_CLI_BUNDLE_COMMIT="${vsphere_cli_bundle_commit}" \
+    PASTURESTACK_VSPHERE_CLI_BUNDLE_ARTIFACT_SHA256="${vsphere_cli_bundle_artifact_sha256}" \
+    PASTURESTACK_GOVMOMI_SOURCE_COMMIT="${govmomi_source_commit}" \
+    PASTURESTACK_GOVC_BINARY_SHA256="${govc_binary_sha256}" \
     PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.2.5 \
     PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT="${authentication_service_commit}" \
     PASTURESTACK_AUTHENTICATION_SERVICE_ARTIFACT_SHA256="${authentication_service_artifact_sha256}" \
@@ -155,9 +182,9 @@ docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     unzip -p /usr/share/cattle/cattle.jar META-INF/MANIFEST.MF |
       tr -d "\r" |
-      grep -Fx "Implementation-Version: 0.183.272" >/dev/null
+      grep -Fx "Implementation-Version: 0.183.273" >/dev/null
     auth_logic=$(find /usr/share/cattle/war/WEB-INF/lib \
-      -maxdepth 1 -type f -name "cattle-iaas-auth-logic-0.183.272.jar" -print -quit)
+      -maxdepth 1 -type f -name "cattle-iaas-auth-logic-0.183.273.jar" -print -quit)
     test -n "${auth_logic}"
     unzip -p "${auth_logic}" \
       io/cattle/platform/iaas/api/auth/mfa/MfaResourceManager.class |
@@ -172,7 +199,7 @@ docker run --rm --entrypoint bash "$image" -lc '
       io/cattle/platform/iaas/api/auth/integration/local/LocalAuthConstants.class |
       grep -aF "api.auth.local.recovery.mfa.ready" >/dev/null
     resources_jar=$(find /usr/share/cattle/war/WEB-INF/lib \
-      -maxdepth 1 -type f -name "cattle-resources-0.183.272.jar" -print -quit)
+      -maxdepth 1 -type f -name "cattle-resources-0.183.273.jar" -print -quit)
     test -n "${resources_jar}"
     unzip -p "${resources_jar}" schema/base/mfaStatus.json |
       grep -F "\"recoveryEmailEnrollmentAvailable\"" >/dev/null
@@ -195,6 +222,15 @@ docker run --rm --entrypoint bash "$image" -lc '
       unzip -p "${resources_jar}" schema/base/mfaSettings.json |
         grep -F "\"${marker}\"" >/dev/null
     done
+    test "$(/usr/bin/govc version)" = "govc 0.55.1-pasturestack.1"
+    /usr/bin/govc version -l | grep -Fx "Build Commit: a668d9c60399" >/dev/null
+    /usr/bin/govc version -l | grep -Fx "Build Date: 2026-07-07T14:02:15Z" >/dev/null
+    echo "4a4766667d710148cdab058f2aba65c5ff3e886758bb4a0cd021e05034b96fb2  /usr/bin/govc" |
+      sha256sum -c -
+    grep -F "Pinned source commit: a668d9c60399552ea96782b8751c956720a0b8fb" \
+      /usr/share/licenses/pasturestack/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null
+    grep -F "Security dependency: golang.org/x/text v0.39.0" \
+      /usr/share/licenses/pasturestack/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null
     unzip -p "${resources_jar}" schema/base/mfaSettings.json |
       grep -F "\"collectionMethods\": [ \"GET\" ]" >/dev/null
     unzip -p "${resources_jar}" schema/base/mfaSettings.json |
@@ -268,6 +304,6 @@ docker run --rm --entrypoint bash "$image" -lc '
       /usr/share/cattle/war/translations/zh-tw.json >/dev/null
 '
 
-printf 'SERVER_MFA_SELF_SERVICE_PATCH_IMAGE_OK image=%s revision=%s engine_commit=%s authentication_service_commit=%s web_console_commit=%s\n' \
+printf 'SERVER_MFA_SELF_SERVICE_PATCH_IMAGE_OK image=%s revision=%s engine_commit=%s vsphere_cli_bundle_commit=%s authentication_service_commit=%s web_console_commit=%s\n' \
     "$image" "$revision" "$orchestration_engine_commit" \
-    "$authentication_service_commit" "$web_console_commit"
+    "$vsphere_cli_bundle_commit" "$authentication_service_commit" "$web_console_commit"

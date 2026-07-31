@@ -43,8 +43,8 @@ expected_host_provisioner_binary_sha256="${PASTURESTACK_EXPECTED_HOST_PROVISIONE
 expected_machine_driver_bundle_version="${PASTURESTACK_EXPECTED_MACHINE_DRIVER_BUNDLE_VERSION:-0.14.0}"
 expected_machine_manager_binary_sha256="${PASTURESTACK_EXPECTED_MACHINE_MANAGER_BINARY_SHA256:-a4c69bffb78d3cfe103b89dae61c3ea11cc2d1a91c4ff86e630c9ae88244db02}"
 expected_packet_driver_binary_sha256="${PASTURESTACK_EXPECTED_PACKET_DRIVER_BINARY_SHA256:-e77c635969a76f498d7088904acd375f25b79a81632b87fa9e5cc5b8e2e72184}"
-expected_vsphere_cli_bundle_version="${PASTURESTACK_EXPECTED_VSPHERE_CLI_BUNDLE_VERSION:-0.54.1}"
-expected_govc_binary_sha256="${PASTURESTACK_EXPECTED_GOVC_BINARY_SHA256:-115af2599f9c9939ee44cbd8218e5fe70e42d7957fd66f1ecad4148a1b980e2a}"
+expected_vsphere_cli_bundle_version="${PASTURESTACK_EXPECTED_VSPHERE_CLI_BUNDLE_VERSION:-0.55.1-pasturestack.1}"
+expected_govc_binary_sha256="${PASTURESTACK_EXPECTED_GOVC_BINARY_SHA256:-4a4766667d710148cdab058f2aba65c5ff3e886758bb4a0cd021e05034b96fb2}"
 expected_secret_delivery_api_version="${PASTURESTACK_EXPECTED_SECRET_DELIVERY_API_VERSION:-0.2.2}"
 expected_secret_delivery_api_binary_sha256="${PASTURESTACK_EXPECTED_SECRET_DELIVERY_API_BINARY_SHA256:-e62141d968cc5323bc53ad0cdc3630239b9e27e7ab5a212bf40a321c48e5dd1a}"
 expected_usage_telemetry_agent_version="${PASTURESTACK_EXPECTED_USAGE_TELEMETRY_AGENT_VERSION:-0.4.0-pasturestack.1}"
@@ -310,7 +310,7 @@ reject_marker server/artifacts/install_cattle_binaries '${RC16_ARTIFACT_BASE_URL
 require_marker server/artifacts/install_cattle_binaries "RC16_VSPHERE_CLI_BUNDLE_VERSION=\"\${RC16_VSPHERE_CLI_BUNDLE_VERSION:-${expected_vsphere_cli_bundle_version}}\"" SERVER_INSTALLER_VSPHERE_CLI_BUNDLE_VERSION_NOT_CURRENT
 require_marker server/artifacts/install_cattle_binaries 'vsphere-cli-bundle-${RC16_VSPHERE_CLI_BUNDLE_VERSION}-linux-amd64.tar.xz,govc' SERVER_INSTALLER_VSPHERE_CLI_BUNDLE_PACKAGE_NOT_CURRENT
 require_marker server/artifacts/install_cattle_binaries 'https?://[^,[:space:]]*/govc-v0\.[0-9]+\.[0-9]+(-go[0-9]+)?-linux-amd64\.tar\.gz(,govc)?' SERVER_INSTALLER_GOVC_COMPATIBILITY_REWRITE_MISSING
-require_marker server/artifacts/install_cattle_binaries 'https?://[^,[:space:]]*/vsphere-cli-bundle-0\.[0-9]+\.[0-9]+-linux-amd64\.tar\.xz(,govc)?' SERVER_INSTALLER_VSPHERE_CLI_CANONICAL_REWRITE_MISSING
+require_marker server/artifacts/install_cattle_binaries 'https?://[^,[:space:]]*/vsphere-cli-bundle-0\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?-linux-amd64\.tar\.xz(,govc)?' SERVER_INSTALLER_VSPHERE_CLI_CANONICAL_REWRITE_MISSING
 reject_marker server/artifacts/install_cattle_binaries '${RC16_ARTIFACT_BASE_URL}/govc-v0.54.1-go1264-linux-amd64.tar.gz' SERVER_INSTALLER_OLD_GOVC_ASSET_PRESENT
 require_marker server/artifacts/install_cattle_binaries "RC16_SECRET_DELIVERY_API_VERSION=\"\${RC16_SECRET_DELIVERY_API_VERSION:-${expected_secret_delivery_api_version}}\"" SERVER_INSTALLER_SECRET_DELIVERY_API_VERSION_NOT_CURRENT
 require_marker server/artifacts/install_cattle_binaries 'secret-delivery-api-${RC16_SECRET_DELIVERY_API_VERSION}-linux-amd64.tar.xz,secret-delivery-api' SERVER_INSTALLER_SECRET_DELIVERY_API_PACKAGE_NOT_CURRENT

@@ -30,7 +30,7 @@ require_marker "$dockerfile" \
     'org.opencontainers.image.version="v1.6.322"' \
     SERVER_MFA_SELF_SERVICE_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_CATTLE_VERSION=v0.183.272' \
+    'ENV CATTLE_CATTLE_VERSION=v0.183.273' \
     SERVER_MFA_SELF_SERVICE_ENGINE_VERSION_MISSING
 require_marker "$dockerfile" \
     'ENV PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.2.5' \
@@ -53,7 +53,7 @@ require_marker "$dockerfile" 'makeSingularStringIfCan' \
     SERVER_MFA_SELF_SERVICE_ACCOUNT_FILTER_PARSER_MISSING
 require_marker "$dockerfile" '"collectionFilters"' \
     SERVER_MFA_SELF_SERVICE_ACCOUNT_FILTER_SCHEMA_MISSING
-require_marker "$dockerfile" 'cattle-framework-auditing-0.183.272.jar' \
+require_marker "$dockerfile" 'cattle-framework-auditing-0.183.273.jar' \
     SERVER_MFA_SELF_SERVICE_AUDITING_ARCHIVE_MISSING
 require_marker "$dockerfile" 'auditIdentity' \
     SERVER_MFA_SELF_SERVICE_AUDIT_IDENTITY_BOUNDARY_MISSING
@@ -153,6 +153,12 @@ require_marker "$build_script" \
     'ORCHESTRATION_ENGINE_ARTIFACT_SHA256 is required' \
     SERVER_MFA_SELF_SERVICE_ENGINE_HASH_REQUIRED_MISSING
 require_marker "$build_script" \
+    'VSPHERE_CLI_BUNDLE_ARTIFACT_SHA256 is required' \
+    SERVER_MFA_SELF_SERVICE_VSPHERE_BUNDLE_HASH_REQUIRED_MISSING
+require_marker "$build_script" \
+    'VSPHERE_CLI_BUNDLE_COMMIT is required' \
+    SERVER_MFA_SELF_SERVICE_VSPHERE_BUNDLE_SOURCE_REQUIRED_MISSING
+require_marker "$build_script" \
     'AUTHENTICATION_SERVICE_ARTIFACT_SHA256 is required' \
     SERVER_MFA_SELF_SERVICE_AUTH_HASH_REQUIRED_MISSING
 require_marker "$build_script" \
@@ -184,6 +190,10 @@ require_marker "$build_script" 'pasturestack-credential-secret-value-mediumtext'
     SERVER_MFA_IMAGE_CREDENTIAL_SECRET_MIGRATION_GATE_MISSING
 require_marker "$build_script" 'showMfaRecoveryOptions' \
     SERVER_MFA_IMAGE_RECOVERY_UI_GATE_MISSING
+require_marker "$build_script" 'govc 0.55.1-pasturestack.1' \
+    SERVER_MFA_IMAGE_GOVC_VERSION_GATE_MISSING
+require_marker "$build_script" 'golang.org/x/text v0.39.0' \
+    SERVER_MFA_IMAGE_GOVC_SECURITY_DEPENDENCY_GATE_MISSING
 require_marker "$release_doc" \
     'stable authorization principal' \
     SERVER_MFA_SELF_SERVICE_ACCOUNT_MODEL_MISSING
@@ -230,11 +240,23 @@ require_marker "$release_doc" \
     'Cannot use your authenticator or passkey?' \
     SERVER_MFA_RECOVERY_UI_DOCUMENTATION_MISSING
 require_marker "$release_doc" \
-    '336d48b1104593d4fc28311944824b9b421fe4dd' \
+    '4d4fabd48a8f4e765159376a574d82564111bc69' \
     SERVER_MFA_ENGINE_SOURCE_COORDINATE_MISSING
 require_marker "$release_doc" \
-    '95073ce4ed95c0d23c675e012fc6c62b6889a09cd449c5db5a79bd8c42aea388' \
+    'a1df27686239a7251b205f5d7419ccb277f760f6b2b62b920ba23fe20028ad43' \
     SERVER_MFA_ENGINE_ARTIFACT_COORDINATE_MISSING
+require_marker "$release_doc" \
+    'b819a7eec35bb8c157547c0d541d271908661109' \
+    SERVER_MFA_VSPHERE_BUNDLE_SOURCE_COORDINATE_MISSING
+require_marker "$release_doc" \
+    '64a2cdf22aa8762c52808315726f19e2970cd1deb86172ca5d611b2943fd2788' \
+    SERVER_MFA_VSPHERE_BUNDLE_ARTIFACT_COORDINATE_MISSING
+require_marker "$release_doc" \
+    'a668d9c60399552ea96782b8751c956720a0b8fb' \
+    SERVER_MFA_GOVMOMI_SOURCE_COORDINATE_MISSING
+require_marker "$release_doc" \
+    '4a4766667d710148cdab058f2aba65c5ff3e886758bb4a0cd021e05034b96fb2' \
+    SERVER_MFA_GOVC_BINARY_COORDINATE_MISSING
 require_marker "$release_doc" \
     '62726c0b03b64848ff9d0e1d8ff5e965007efe61' \
     SERVER_MFA_AUTH_SOURCE_COORDINATE_MISSING
@@ -248,11 +270,11 @@ require_marker "$release_doc" \
     'f001ce909cdf1e9d9ec155f3a6215c7ec4a6b0600b3420a5dc42534640131ca9' \
     SERVER_MFA_WEB_ARTIFACT_COORDINATE_MISSING
 
-test "$(grep -Fc 'curl -fsSL' "$dockerfile")" -eq 3
-test "$(grep -Fc -- '--retry 5' "$dockerfile")" -eq 3
-test "$(grep -Fc -- '--retry-all-errors' "$dockerfile")" -eq 3
-test "$(grep -Fc -- '--retry-delay 2' "$dockerfile")" -eq 3
-test "$(grep -Fc -- '--connect-timeout 10' "$dockerfile")" -eq 3
+test "$(grep -Fc 'curl -fsSL' "$dockerfile")" -eq 4
+test "$(grep -Fc -- '--retry 5' "$dockerfile")" -eq 4
+test "$(grep -Fc -- '--retry-all-errors' "$dockerfile")" -eq 4
+test "$(grep -Fc -- '--retry-delay 2' "$dockerfile")" -eq 4
+test "$(grep -Fc -- '--connect-timeout 10' "$dockerfile")" -eq 4
 
 digest_coordinate='@''sha256:'
 if grep -Fq "$digest_coordinate" "$dockerfile" "$build_script"; then
@@ -267,4 +289,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_MFA_SELF_SERVICE_PATCH_OK release=v1.6.322 engine=0.183.272 authentication_service=0.2.5 web_console=1.6.56-pasturestack.34 base=v1.6.319 locales=13 runtime_digest_coordinates=0\n'
+printf 'SERVER_MFA_SELF_SERVICE_PATCH_OK release=v1.6.322 engine=0.183.273 vsphere_cli_bundle=0.55.1-pasturestack.1 authentication_service=0.2.5 web_console=1.6.56-pasturestack.34 base=v1.6.319 locales=13 runtime_digest_coordinates=0\n'
