@@ -24,6 +24,10 @@ lazy-loading contract used by immediate language switching and includes
 Traditional Chinese. The development-only `none` locale and all source maps are
 excluded from the public artifact.
 
+When the base image already contains the reviewed Orchestration Engine,
+assembly uses a revision-qualified document root instead of deleting and
+recreating the same hash-named path.
+
 The exact release source passed 265 Chromium tests. Two clean production builds
 produced byte-identical packages, and every emitted locale file exactly matched
 its canonical YAML source.

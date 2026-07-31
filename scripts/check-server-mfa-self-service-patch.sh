@@ -95,6 +95,12 @@ require_marker "$dockerfile" \
     'web_root="$(readlink -f /usr/share/cattle/war)"' \
     SERVER_MFA_SELF_SERVICE_DOCUMENT_ROOT_NORMALIZATION_MISSING
 require_marker "$dockerfile" \
+    'new_web_root_name="${engine_hash}-${PASTURESTACK_SERVER_REVISION}"' \
+    SERVER_MFA_SELF_SERVICE_SAME_ENGINE_ROOT_ISOLATION_MISSING
+require_marker "$dockerfile" \
+    'ln -s "${new_web_root_name}" /usr/share/cattle/war' \
+    SERVER_MFA_SELF_SERVICE_REVISION_ROOT_LINK_MISSING
+require_marker "$dockerfile" \
     'mkdir -p /usr/share/cattle/war/assets;' \
     SERVER_MFA_SELF_SERVICE_ASSET_DIRECTORY_BOOTSTRAP_MISSING
 require_marker "$dockerfile" \
