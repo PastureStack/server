@@ -26,12 +26,12 @@ authentication_service_artifact_sha256=${AUTHENTICATION_SERVICE_ARTIFACT_SHA256:
 authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:?AUTHENTICATION_SERVICE_COMMIT is required}
 
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.31}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.31.tar.gz}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.32}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.32.tar.gz}
 web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:?WEB_CONSOLE_ARTIFACT_SHA256 is required}
 web_console_commit=${WEB_CONSOLE_COMMIT:?WEB_CONSOLE_COMMIT is required}
 
-image=${IMAGE:-pasturestack-validation/server:v1.6.319}
+image=${IMAGE:-pasturestack-validation/server:v1.6.320}
 build_options=()
 
 if [[ ! "$revision" =~ ^[0-9a-f]{40}$ ]] ||
@@ -125,18 +125,18 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.319
+    v1.6.320
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.base.name"}}')" = \
-    ghcr.io/pasturestack/server:v1.6.318
+    ghcr.io/pasturestack/server:v1.6.319
 
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.319 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.320 \
     CATTLE_CATTLE_VERSION=v0.183.272 \
     PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT="${orchestration_engine_commit}" \
     PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256="${orchestration_engine_artifact_sha256}" \
@@ -144,7 +144,7 @@ for marker in \
     PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT="${authentication_service_commit}" \
     PASTURESTACK_AUTHENTICATION_SERVICE_ARTIFACT_SHA256="${authentication_service_artifact_sha256}" \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.31 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.32 \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
     PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-07-27 \
     PASTURESTACK_CATALOG_COMMIT=c3a8e9876a74dbf98ce16ae504b947c5d80582c1; do

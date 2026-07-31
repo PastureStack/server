@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.318
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.319
 FROM ${BASE_IMAGE}
 
 ARG SOURCE_DATE_EPOCH
@@ -18,8 +18,8 @@ ARG AUTHENTICATION_SERVICE_ARTIFACT_SHA256
 ARG AUTHENTICATION_SERVICE_COMMIT
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.31
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.31.tar.gz
+ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.32
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.32.tar.gz
 ARG WEB_CONSOLE_ARTIFACT_SHA256
 ARG WEB_CONSOLE_COMMIT
 
@@ -436,11 +436,11 @@ RUN set -eu; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server compatibility image with stable accounts, safe provider switching, and account-holder MFA self-service." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.319" \
+      org.opencontainers.image.version="v1.6.320" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
-      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.318"
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.319"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.319
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.320
 ENV CATTLE_CATTLE_VERSION=v0.183.272
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}
@@ -448,5 +448,5 @@ ENV PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.2.5
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT=${AUTHENTICATION_SERVICE_COMMIT}
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_ARTIFACT_SHA256=${AUTHENTICATION_SERVICE_ARTIFACT_SHA256}
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
-ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.31
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.32
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}

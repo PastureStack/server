@@ -6,7 +6,7 @@ cd "$repo_root"
 
 dockerfile=server/Dockerfile.mfa-self-service-patch
 build_script=server/build-mfa-self-service-patch-image.sh
-release_doc=docs/releases/server-1.6.319.md
+release_doc=docs/releases/server-1.6.320.md
 
 for path in "$dockerfile" "$build_script" "$release_doc"; do
     test -f "$path"
@@ -24,10 +24,10 @@ require_marker()
 }
 
 require_marker "$dockerfile" \
-    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.318' \
+    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.319' \
     SERVER_MFA_SELF_SERVICE_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.319"' \
+    'org.opencontainers.image.version="v1.6.320"' \
     SERVER_MFA_SELF_SERVICE_VERSION_MISSING
 require_marker "$dockerfile" \
     'ENV CATTLE_CATTLE_VERSION=v0.183.272' \
@@ -39,7 +39,7 @@ require_marker "$dockerfile" \
     "grep -aF 'go1.26.5'" \
     SERVER_MFA_SELF_SERVICE_AUTH_TOOLCHAIN_GATE_MISSING
 require_marker "$dockerfile" \
-    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.31' \
+    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.32' \
     SERVER_MFA_SELF_SERVICE_WEB_VERSION_MISSING
 require_marker "$dockerfile" 'AuthIdentityLinkResourceManager.class' \
     SERVER_MFA_SELF_SERVICE_ACCOUNT_LINK_MISSING
@@ -233,10 +233,10 @@ require_marker "$release_doc" \
     '109e293092260d788acb3d7fcf4d78cccdf72c268d1728f263efc4075a69241c' \
     SERVER_MFA_AUTH_ARTIFACT_COORDINATE_MISSING
 require_marker "$release_doc" \
-    'c4dcfecd8c821044e85d53b661225b656cc64625' \
+    'd7c6293865a9b723be345024e442a74b2412d9c1' \
     SERVER_MFA_WEB_SOURCE_COORDINATE_MISSING
 require_marker "$release_doc" \
-    '0ccf8baa15a91850670030256f3ee005abe35e08874b067c80d59e873e12f7c0' \
+    '56e2d089da5c52573c4fd458542ba110f558cb25b18d3846a5e3c8cdef8572e2' \
     SERVER_MFA_WEB_ARTIFACT_COORDINATE_MISSING
 
 test "$(grep -Fc 'curl -fsSL' "$dockerfile")" -eq 3
@@ -258,4 +258,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_MFA_SELF_SERVICE_PATCH_OK release=v1.6.319 engine=0.183.272 authentication_service=0.2.5 web_console=1.6.56-pasturestack.31 base=v1.6.318 locales=13 runtime_digest_coordinates=0\n'
+printf 'SERVER_MFA_SELF_SERVICE_PATCH_OK release=v1.6.320 engine=0.183.272 authentication_service=0.2.5 web_console=1.6.56-pasturestack.32 base=v1.6.319 locales=13 runtime_digest_coordinates=0\n'
