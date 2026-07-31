@@ -45,6 +45,8 @@ require_marker "$dockerfile" 'test -s /usr/share/cattle/war/favicon.ico' \
     SERVER_MFA_SELF_SERVICE_FAVICON_ASSET_GATE_MISSING
 require_marker "$dockerfile" 'href="/favicon.ico"' \
     SERVER_MFA_SELF_SERVICE_FAVICON_LINK_GATE_MISSING
+require_marker "$build_script" 'grep -F "href=\"/favicon.ico\""' \
+    SERVER_MFA_SELF_SERVICE_IMAGE_FAVICON_LINK_GATE_MISSING
 require_marker "$dockerfile" 'AuthIdentityLinkResourceManager.class' \
     SERVER_MFA_SELF_SERVICE_ACCOUNT_LINK_MISSING
 require_marker "$dockerfile" 'switchToLocal' \

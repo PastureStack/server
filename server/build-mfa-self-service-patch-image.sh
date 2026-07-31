@@ -265,7 +265,7 @@ docker run --rm --entrypoint bash "$image" -lc '
       grep -aF "${marker}" /usr/bin/authentication-service.real >/dev/null
     done
     test -s /usr/share/cattle/war/favicon.ico
-    grep -F 'href="/favicon.ico"' /usr/share/cattle/war/index.html >/dev/null
+    grep -F "href=\"/favicon.ico\"" /usr/share/cattle/war/index.html >/dev/null
     grep -F 'pasturestack-favicon.svg' /usr/share/cattle/war/index.html >/dev/null
     ui_entry=$(find /usr/share/cattle/war/assets \
       -maxdepth 1 -type f -name "ui-*.js" -print -quit)
