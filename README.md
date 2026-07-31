@@ -8,7 +8,7 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 
 ## Project status
 
-This is a compatibility-focused modernization project. Existing Ubuntu 26.04, Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity, authentication, WebSocket, backup/restore, and test work is retained. Server `v1.6.320` includes stable account-to-login-identity links, transactional provider switching, explicit permission reassignment, administrator-controlled MFA policy, account-level verification throttling, short-lived step-up confirmation, trusted federated-MFA claims, MFA-protected local administrator recovery, TOTP, WebAuthn passkeys, recovery codes, verified email account recovery, and all 13 reviewed production locale assets. SMTP delivery is configured once per installation by a system administrator; individual accounts store only their own verified recovery destination address. Passing the documented compatibility gates does not by itself make a deployment production-ready.
+This is a compatibility-focused modernization project. Existing Ubuntu 26.04, Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity, authentication, WebSocket, backup/restore, and test work is retained. Server `v1.6.321` includes stable account-to-login-identity links, transactional provider switching, explicit permission reassignment, administrator-controlled MFA policy, account-level verification throttling, short-lived step-up confirmation, trusted federated-MFA claims, MFA-protected local administrator recovery, TOTP, WebAuthn passkeys, recovery codes, verified email account recovery, and all 13 reviewed production locale assets. SMTP delivery is configured once per installation by a system administrator; individual accounts store only their own verified recovery destination address. Passing the documented compatibility gates does not by itself make a deployment production-ready.
 
 The embedded MariaDB configuration keeps the established transaction behavior
 by disabling MariaDB 11.8 snapshot isolation. This avoids error 1020 during
@@ -29,7 +29,7 @@ Version coordinates are available only when the matching GitHub Release and publ
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.320
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.321
 ```
 
 Keep operational image references in semantic `vMAJOR.MINOR.PATCH` form. The matching GitHub Release records the resolved digest for verification without exposing digest-qualified strings to the platform UI. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
