@@ -60,16 +60,14 @@ RUN set -eu; \
     cp -a "${old_web_root}/api-ui" /tmp/pasturestack-api-ui; \
     install -m 0644 "${archive}" /usr/share/cattle/cattle.jar; \
     engine_hash="$(sha256sum /usr/share/cattle/cattle.jar | awk '{print $1}')"; \
-    new_web_root_name="${engine_hash}"; \
-    if [ "/usr/share/cattle/${new_web_root_name}" = "${old_web_root}" ]; then \
-        new_web_root_name="${engine_hash}-${PASTURESTACK_SERVER_REVISION}"; \
+    new_web_root="/usr/share/cattle/${engine_hash}"; \
+    if [ "${new_web_root}" = "${old_web_root}" ]; then \
+        test "$(basename "${old_web_root}")" = "${engine_hash}"; \
     fi; \
-    new_web_root="/usr/share/cattle/${new_web_root_name}"; \
-    test "${new_web_root}" != "${old_web_root}"; \
     rm /usr/share/cattle/war; \
     rm -rf "${old_web_root}" "${new_web_root}"; \
     mkdir -p "${new_web_root}"; \
-    ln -s "${new_web_root_name}" /usr/share/cattle/war; \
+    ln -s "${engine_hash}" /usr/share/cattle/war; \
     cd "${new_web_root}"; \
     unzip -q ../cattle.jar; \
     if [ -f resources.jar ]; then \
