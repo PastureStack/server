@@ -34,12 +34,12 @@ authentication_service_artifact_sha256=${AUTHENTICATION_SERVICE_ARTIFACT_SHA256:
 authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:?AUTHENTICATION_SERVICE_COMMIT is required}
 
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.34}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.34.tar.gz}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.35}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.35.tar.gz}
 web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:?WEB_CONSOLE_ARTIFACT_SHA256 is required}
 web_console_commit=${WEB_CONSOLE_COMMIT:?WEB_CONSOLE_COMMIT is required}
 
-image=${IMAGE:-pasturestack-validation/server:v1.6.322}
+image=${IMAGE:-pasturestack-validation/server:v1.6.323}
 build_options=()
 
 if [[ ! "$revision" =~ ^[0-9a-f]{40}$ ]] ||
@@ -147,7 +147,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.322
+    v1.6.323
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -158,7 +158,7 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.322 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.323 \
     CATTLE_CATTLE_VERSION=v0.183.273 \
     PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT="${orchestration_engine_commit}" \
     PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256="${orchestration_engine_artifact_sha256}" \
@@ -171,7 +171,7 @@ for marker in \
     PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT="${authentication_service_commit}" \
     PASTURESTACK_AUTHENTICATION_SERVICE_ARTIFACT_SHA256="${authentication_service_artifact_sha256}" \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.34 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.35 \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
     PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-07-27 \
     PASTURESTACK_CATALOG_COMMIT=c3a8e9876a74dbf98ce16ae504b947c5d80582c1; do
@@ -264,6 +264,9 @@ docker run --rm --entrypoint bash "$image" -lc '
       authentication_methods; do
       grep -aF "${marker}" /usr/bin/authentication-service.real >/dev/null
     done
+    test -s /usr/share/cattle/war/favicon.ico
+    grep -F 'href="/favicon.ico"' /usr/share/cattle/war/index.html >/dev/null
+    grep -F 'pasturestack-favicon.svg' /usr/share/cattle/war/index.html >/dev/null
     ui_entry=$(find /usr/share/cattle/war/assets \
       -maxdepth 1 -type f -name "ui-*.js" -print -quit)
     test -n "${ui_entry}"

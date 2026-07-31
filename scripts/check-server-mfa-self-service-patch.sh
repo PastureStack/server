@@ -6,7 +6,7 @@ cd "$repo_root"
 
 dockerfile=server/Dockerfile.mfa-self-service-patch
 build_script=server/build-mfa-self-service-patch-image.sh
-release_doc=docs/releases/server-1.6.322.md
+release_doc=docs/releases/server-1.6.323.md
 
 for path in "$dockerfile" "$build_script" "$release_doc"; do
     test -f "$path"
@@ -27,7 +27,7 @@ require_marker "$dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.319' \
     SERVER_MFA_SELF_SERVICE_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.322"' \
+    'org.opencontainers.image.version="v1.6.323"' \
     SERVER_MFA_SELF_SERVICE_VERSION_MISSING
 require_marker "$dockerfile" \
     'ENV CATTLE_CATTLE_VERSION=v0.183.273' \
@@ -39,8 +39,12 @@ require_marker "$dockerfile" \
     "grep -aF 'go1.26.5'" \
     SERVER_MFA_SELF_SERVICE_AUTH_TOOLCHAIN_GATE_MISSING
 require_marker "$dockerfile" \
-    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.34' \
+    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.35' \
     SERVER_MFA_SELF_SERVICE_WEB_VERSION_MISSING
+require_marker "$dockerfile" 'test -s /usr/share/cattle/war/favicon.ico' \
+    SERVER_MFA_SELF_SERVICE_FAVICON_ASSET_GATE_MISSING
+require_marker "$dockerfile" 'href="/favicon.ico"' \
+    SERVER_MFA_SELF_SERVICE_FAVICON_LINK_GATE_MISSING
 require_marker "$dockerfile" 'AuthIdentityLinkResourceManager.class' \
     SERVER_MFA_SELF_SERVICE_ACCOUNT_LINK_MISSING
 require_marker "$dockerfile" 'switchToLocal' \
@@ -264,10 +268,10 @@ require_marker "$release_doc" \
     '109e293092260d788acb3d7fcf4d78cccdf72c268d1728f263efc4075a69241c' \
     SERVER_MFA_AUTH_ARTIFACT_COORDINATE_MISSING
 require_marker "$release_doc" \
-    '629f9935f2544583f0768115f60306039dadd0b2' \
+    'c737a65882c4cad5f515a42cedb186679c29b05d' \
     SERVER_MFA_WEB_SOURCE_COORDINATE_MISSING
 require_marker "$release_doc" \
-    'f001ce909cdf1e9d9ec155f3a6215c7ec4a6b0600b3420a5dc42534640131ca9' \
+    '33c9bf0425d104f7fb8f88b25c1c13153ae283a32d5291a07346a247bf056564' \
     SERVER_MFA_WEB_ARTIFACT_COORDINATE_MISSING
 
 test "$(grep -Fc 'curl -fsSL' "$dockerfile")" -eq 4
@@ -289,4 +293,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_MFA_SELF_SERVICE_PATCH_OK release=v1.6.322 engine=0.183.273 vsphere_cli_bundle=0.55.1-pasturestack.1 authentication_service=0.2.5 web_console=1.6.56-pasturestack.34 base=v1.6.319 locales=13 runtime_digest_coordinates=0\n'
+printf 'SERVER_MFA_SELF_SERVICE_PATCH_OK release=v1.6.323 engine=0.183.273 vsphere_cli_bundle=0.55.1-pasturestack.1 authentication_service=0.2.5 web_console=1.6.56-pasturestack.35 base=v1.6.319 locales=13 runtime_digest_coordinates=0 favicon=1\n'
