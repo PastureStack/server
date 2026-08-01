@@ -1,4 +1,4 @@
-# PastureStack Server v1.6.327
+# PastureStack Server v1.6.328
 
 This release retains the complete `v1.6.325` database, authentication,
 authorization, orchestration, host-agent, API Explorer, and workload behavior.
@@ -8,11 +8,11 @@ Catalog snapshot without changing persisted workload definitions.
 ## Runtime coordinates
 
 - Base image: `ghcr.io/pasturestack/server:v1.6.325`
-- Runtime image: `ghcr.io/pasturestack/server:v1.6.327`
-- Web Console: `1.6.56-pasturestack.38`
-- Web Console source: `21e53a5427a1099af026e72fdee8675d8ed5e55f`
+- Runtime image: `ghcr.io/pasturestack/server:v1.6.328`
+- Web Console: `1.6.56-pasturestack.39`
+- Web Console source: `ee079c3f51887958a7afb3902e71e1878e7feaa3`
 - Web Console artifact SHA-256:
-  `572d33673d939240077876a12cc546ab74c2f3525dd86f860ebe1d45344e0438`
+  `eb06c53e4007fa7c0a51be67d3eb69c0e6334d7b74c932cf28a7f5ab7a411989`
 - Catalog snapshot: `57707ddf891e36066a144d7821adc458dbf8da9c`
 
 Operational image coordinates use semantic version tags. Hashes are integrity
@@ -27,6 +27,10 @@ component templates, and query-parameter normalization. The bridge uses public
 runtime APIs wherever available and confines the one required private target
 fallback to an isolated compatibility shim.
 
+The classic action shim distinguishes caller-supplied closure actions from
+native component prototype event methods. Text input therefore updates its
+bound value without recursively re-entering the same `input` handler.
+
 Project-subscription reconnects retain one socket owner. A disconnect callback
 may replace the active socket without leaving a competing reconnect timer, and
 a delayed close event from an older socket cannot clear a newer connection.
@@ -34,7 +38,7 @@ Interactive terminal sessions remain intentionally single-use: an expired
 session identifier is not reconnected and a new terminal creates a new
 authenticated session.
 
-The exact source passed all 291 Chrome tests. Two clean production builds were
+The exact source passed all 292 Chrome tests. Two clean production builds were
 byte-identical. The packaged archive contains 13 production locale files, no
 pseudo-locale, no source maps, and the verified upstream license and provenance
 files required by the Server image assembly gate.
