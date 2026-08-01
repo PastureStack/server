@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+cd "$repo_root"
+
+dockerfile=server/Dockerfile.web-console-runtime-patch
+build_script=server/build-web-console-runtime-patch-image.sh
+
+for path in "$dockerfile" "$build_script"; do
+    test -f "$path"
+done
+
+require_marker()
+{
+    local file=$1
+    local marker=$2
+    local code=$3
+    if ! grep -Fq -- "$marker" "$file"; then
+        printf '%s file=%s marker=%s\n' "$code" "$file" "$marker" >&2
+        exit 1
+    fi
+}
+
+require_marker "$dockerfile" \
+    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.325' \
+    SERVER_WEB_CONSOLE_PATCH_BASE_NOT_CURRENT
+require_marker "$dockerfile" \
+    'org.opencontainers.image.version="v1.6.326"' \
+    SERVER_WEB_CONSOLE_PATCH_VERSION_MISSING
+require_marker "$dockerfile" \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.326' \
+    SERVER_WEB_CONSOLE_PATCH_RUNTIME_VERSION_MISSING
+require_marker "$dockerfile" \
+    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.37' \
+    SERVER_WEB_CONSOLE_PATCH_PACKAGE_MISSING
+require_marker "$dockerfile" \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=f0966f47f70987ee67b658a6ed3618e2a47c502e2edd63653fa7af526c6995f9' \
+    SERVER_WEB_CONSOLE_PATCH_HASH_MISSING
+require_marker "$dockerfile" \
+    'ARG WEB_CONSOLE_COMMIT=d6a08d34469258ce6f9288cbc8d857f795f6a641' \
+    SERVER_WEB_CONSOLE_PATCH_COMMIT_MISSING
+require_marker "$dockerfile" \
+    'tar --no-same-owner --no-same-permissions -xzf' \
+    SERVER_WEB_CONSOLE_PATCH_SAFE_EXTRACTION_MISSING
+require_marker "$dockerfile" \
+    'test ! -e "${package_root}/translations/none.json"' \
+    SERVER_WEB_CONSOLE_PATCH_PSEUDO_LOCALE_REJECTION_MISSING
+require_marker "$dockerfile" \
+    "Private migration marker found in Web Console artifact" \
+    SERVER_WEB_CONSOLE_PATCH_PRIVACY_GATE_MISSING
+require_marker "$dockerfile" \
+    'licenses/ember/LICENSE' \
+    SERVER_WEB_CONSOLE_PATCH_EMBER_LICENSE_MISSING
+require_marker "$dockerfile" \
+    '84e97eb6663fa5fa07f36661e6040ab8a557b165c13860e2e72c1a692ca3c2a0' \
+    SERVER_WEB_CONSOLE_PATCH_EMBER_LICENSE_HASH_MISSING
+for theme_asset in ui-light.css ui-light.rtl.css ui-dark.css ui-dark.rtl.css; do
+    require_marker "$dockerfile" \
+        "assets/${theme_asset}" \
+        SERVER_WEB_CONSOLE_PATCH_THEME_ASSET_MISSING
+    require_marker "$build_script" \
+        "assets/${theme_asset}" \
+        SERVER_WEB_CONSOLE_PATCH_IMAGE_THEME_ASSET_GATE_MISSING
+done
+for legal_path in \
+    licenses/ember-fetch/LICENSE.md \
+    licenses/ember-power-select/LICENSE.md \
+    licenses/ember-basic-dropdown/LICENSE.md \
+    licenses/runtime/ember-power-select/LICENSE.md \
+    licenses/runtime/ember-basic-dropdown/LICENSE.md \
+    licenses/runtime/ember-concurrency/LICENSE.md \
+    licenses/runtime/ember-modifier/LICENSE.md; do
+    require_marker "$dockerfile" \
+        "$legal_path" \
+        SERVER_WEB_CONSOLE_PATCH_DEPENDENCY_LICENSE_MISSING
+    require_marker "$build_script" \
+        "$legal_path" \
+        SERVER_WEB_CONSOLE_PATCH_IMAGE_DEPENDENCY_LICENSE_GATE_MISSING
+done
+for legal_hash in \
+    bae5cb45df11b4fa8e894ae3b9b13595e154ade61ee6c57d5cfcd422771153a7 \
+    0c454de6bb0a94445b9fe315cdad6830e317ca6aa9fb04d0b84fe000d04a5c90 \
+    c3cd4817d1568725ab93dced4bd46f0dceaeace8c6badb9d12e2239fced7e810 \
+    fee7ff7079edfdbac1c78d0329da16ae9b6ef73405cec197ed6136ddf1d70117 \
+    c7543891093cb613eeb5a90c16a18fa25b8708a0c7c1c67691202384ff9b6567 \
+    0390d452d98169895ab1ca8c14d35471642759366d51e1cfd014ded8bb10c51d; do
+    require_marker "$dockerfile" \
+        "$legal_hash" \
+        SERVER_WEB_CONSOLE_PATCH_DEPENDENCY_LICENSE_HASH_MISSING
+    require_marker "$build_script" \
+        "$legal_hash" \
+        SERVER_WEB_CONSOLE_PATCH_IMAGE_DEPENDENCY_LICENSE_HASH_GATE_MISSING
+done
+require_marker "$build_script" \
+    'api_explorer_unchanged=1' \
+    SERVER_WEB_CONSOLE_PATCH_API_EXPLORER_REGRESSION_GATE_MISSING
+require_marker "$build_script" \
+    'critical_runtime_unchanged=1' \
+    SERVER_WEB_CONSOLE_PATCH_CRITICAL_REGRESSION_GATE_MISSING
+require_marker "$build_script" \
+    'websocket_reconnect=single_owner' \
+    SERVER_WEB_CONSOLE_PATCH_WEBSOCKET_GATE_MISSING
+require_marker "$build_script" \
+    'theme_css=4' \
+    SERVER_WEB_CONSOLE_PATCH_THEME_COUNT_GATE_MISSING
+
+digest_coordinate='@''sha256:'
+if grep -Fq "$digest_coordinate" "$dockerfile" "$build_script"; then
+    echo 'SERVER_WEB_CONSOLE_PATCH_DIGEST_QUALIFIED_RUNTIME_COORDINATE' >&2
+    exit 1
+fi
+
+if grep -RInE '(^|[^[:alnum:]])[A-Za-z]:\\Users\\|/home/[^/[:space:]]+/|(^|[^[:digit:]])10[.][[:digit:]]{1,3}[.][[:digit:]]{1,3}[.][[:digit:]]{1,3}([^[:digit:]]|$)|[[:alnum:]._%+-]+@[[:alnum:].-]+[.][[:alpha:]]{2,}' \
+    "$dockerfile" "$build_script"; then
+    echo 'SERVER_WEB_CONSOLE_PATCH_PRIVATE_MARKER' >&2
+    exit 1
+fi
+
+bash -n "$build_script"
+
+printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_OK release=v1.6.326 base=v1.6.325 web_console=1.6.56-pasturestack.37 ember_lts=6.12 websocket_reconnect=single_owner theme_css=4 legal_sources=8 runtime_digest_coordinates=0\n'

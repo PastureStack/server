@@ -1,0 +1,205 @@
+# syntax=docker/dockerfile:1.7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.325
+FROM ${BASE_IMAGE}
+
+ARG SOURCE_DATE_EPOCH
+ARG PASTURESTACK_SERVER_REVISION
+ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
+ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.37
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.37.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=f0966f47f70987ee67b658a6ed3618e2a47c502e2edd63653fa7af526c6995f9
+ARG WEB_CONSOLE_COMMIT=d6a08d34469258ce6f9288cbc8d857f795f6a641
+
+RUN set -eu; \
+    archive=/tmp/web-console.tar.gz; \
+    listing=/tmp/web-console-files.txt; \
+    stage=/tmp/pasturestack-web-console; \
+    curl -fsSL \
+        --retry 5 \
+        --retry-all-errors \
+        --retry-delay 2 \
+        --connect-timeout 10 \
+        --max-time 300 \
+        -o "${archive}" \
+        "${WEB_CONSOLE_RELEASE_BASE_URL%/}/${WEB_CONSOLE_RELEASE_TAG}/${WEB_CONSOLE_ARTIFACT}"; \
+    echo "${WEB_CONSOLE_ARTIFACT_SHA256}  ${archive}" | sha256sum -c -; \
+    tar -tzf "${archive}" >"${listing}"; \
+    if grep -Eq '(^/|(^|/)\.\.(/|$))' "${listing}"; then \
+        echo "Unsafe Web Console archive path" >&2; \
+        exit 1; \
+    fi; \
+    if sort "${listing}" | uniq -d | grep -q .; then \
+        echo "Duplicate Web Console archive path" >&2; \
+        exit 1; \
+    fi; \
+    if tar -tvzf "${archive}" | grep -Eq '^[lh]'; then \
+        echo "Web Console archive may not contain links" >&2; \
+        exit 1; \
+    fi; \
+    while IFS= read -r member; do \
+        clean="${member#./}"; \
+        case "${clean}" in \
+            1.6.56/|1.6.56/*) ;; \
+            *) echo "Unexpected Web Console archive member: ${member}" >&2; exit 1 ;; \
+        esac; \
+    done <"${listing}"; \
+    rm -rf "${stage}"; \
+    mkdir -p "${stage}"; \
+    tar --no-same-owner --no-same-permissions -xzf "${archive}" -C "${stage}"; \
+    test -z "$(find "${stage}" -type l -print -quit)"; \
+    package_root="${stage}/1.6.56"; \
+    for required in \
+        VERSION.txt \
+        favicon.ico \
+        index.html \
+        humans.txt \
+        robots.txt \
+        assets \
+        assets/ui-light.css \
+        assets/ui-light.rtl.css \
+        assets/ui-dark.css \
+        assets/ui-dark.rtl.css \
+        ember-fetch \
+        licenses \
+        licenses/ember/LICENSE \
+        licenses/ember/UPSTREAM.md \
+        licenses/ember-fetch/LICENSE.md \
+        licenses/ember-fetch/UPSTREAM.md \
+        licenses/ember-power-select/LICENSE.md \
+        licenses/ember-power-select/UPSTREAM.md \
+        licenses/ember-basic-dropdown/LICENSE.md \
+        licenses/ember-basic-dropdown/UPSTREAM.md \
+        licenses/runtime/ember-power-select/LICENSE.md \
+        licenses/runtime/ember-power-select/UPSTREAM.md \
+        licenses/runtime/ember-basic-dropdown/LICENSE.md \
+        licenses/runtime/ember-basic-dropdown/UPSTREAM.md \
+        licenses/runtime/ember-concurrency/LICENSE.md \
+        licenses/runtime/ember-concurrency/UPSTREAM.md \
+        licenses/runtime/ember-modifier/LICENSE.md \
+        licenses/runtime/ember-modifier/UPSTREAM.md \
+        translations \
+        translations/zh-tw.json; do \
+        test -e "${package_root}/${required}"; \
+    done; \
+    for required_file in \
+        assets/ui-light.css \
+        assets/ui-light.rtl.css \
+        assets/ui-dark.css \
+        assets/ui-dark.rtl.css \
+        licenses/ember-fetch/LICENSE.md \
+        licenses/ember-fetch/UPSTREAM.md \
+        licenses/ember-power-select/LICENSE.md \
+        licenses/ember-power-select/UPSTREAM.md \
+        licenses/ember-basic-dropdown/LICENSE.md \
+        licenses/ember-basic-dropdown/UPSTREAM.md \
+        licenses/runtime/ember-power-select/LICENSE.md \
+        licenses/runtime/ember-power-select/UPSTREAM.md \
+        licenses/runtime/ember-basic-dropdown/LICENSE.md \
+        licenses/runtime/ember-basic-dropdown/UPSTREAM.md \
+        licenses/runtime/ember-concurrency/LICENSE.md \
+        licenses/runtime/ember-concurrency/UPSTREAM.md \
+        licenses/runtime/ember-modifier/LICENSE.md \
+        licenses/runtime/ember-modifier/UPSTREAM.md; do \
+        test -s "${package_root}/${required_file}"; \
+    done; \
+    test "$(cat "${package_root}/VERSION.txt")" = "1.6.56"; \
+    test "$(find "${package_root}/translations" -maxdepth 1 -type f -name '*.json' | wc -l)" -eq 13; \
+    test ! -e "${package_root}/translations/none.json"; \
+    test "$(find "${package_root}" -type f -name '*.map' | wc -l)" -eq 0; \
+    echo "84e97eb6663fa5fa07f36661e6040ab8a557b165c13860e2e72c1a692ca3c2a0  ${package_root}/licenses/ember/LICENSE" \
+        | sha256sum -c -; \
+    grep -Fx -- '- Distribution: `ember-source@6.12.0`' \
+        "${package_root}/licenses/ember/UPSTREAM.md" >/dev/null; \
+    echo "bae5cb45df11b4fa8e894ae3b9b13595e154ade61ee6c57d5cfcd422771153a7  ${package_root}/licenses/ember-fetch/LICENSE.md" \
+        | sha256sum -c -; \
+    grep -F -- '- Upstream version: `5.1.3`' \
+        "${package_root}/licenses/ember-fetch/UPSTREAM.md" >/dev/null; \
+    echo "0c454de6bb0a94445b9fe315cdad6830e317ca6aa9fb04d0b84fe000d04a5c90  ${package_root}/licenses/ember-power-select/LICENSE.md" \
+        | sha256sum -c -; \
+    grep -F -- '- Upstream version: `1.0.0-beta.19`' \
+        "${package_root}/licenses/ember-power-select/UPSTREAM.md" >/dev/null; \
+    echo "c3cd4817d1568725ab93dced4bd46f0dceaeace8c6badb9d12e2239fced7e810  ${package_root}/licenses/ember-basic-dropdown/LICENSE.md" \
+        | sha256sum -c -; \
+    grep -F -- '- Upstream version: `0.16.0-beta.4`' \
+        "${package_root}/licenses/ember-basic-dropdown/UPSTREAM.md" >/dev/null; \
+    echo "fee7ff7079edfdbac1c78d0329da16ae9b6ef73405cec197ed6136ddf1d70117  ${package_root}/licenses/runtime/ember-power-select/LICENSE.md" \
+        | sha256sum -c -; \
+    grep -F -- '- Upstream version: `9.0.2`' \
+        "${package_root}/licenses/runtime/ember-power-select/UPSTREAM.md" >/dev/null; \
+    echo "fee7ff7079edfdbac1c78d0329da16ae9b6ef73405cec197ed6136ddf1d70117  ${package_root}/licenses/runtime/ember-basic-dropdown/LICENSE.md" \
+        | sha256sum -c -; \
+    grep -F -- '- Upstream version: `9.0.0`' \
+        "${package_root}/licenses/runtime/ember-basic-dropdown/UPSTREAM.md" >/dev/null; \
+    echo "c7543891093cb613eeb5a90c16a18fa25b8708a0c7c1c67691202384ff9b6567  ${package_root}/licenses/runtime/ember-concurrency/LICENSE.md" \
+        | sha256sum -c -; \
+    grep -F -- '- Upstream version: `5.2.0`' \
+        "${package_root}/licenses/runtime/ember-concurrency/UPSTREAM.md" >/dev/null; \
+    echo "0390d452d98169895ab1ca8c14d35471642759366d51e1cfd014ded8bb10c51d  ${package_root}/licenses/runtime/ember-modifier/LICENSE.md" \
+        | sha256sum -c -; \
+    grep -F -- '- Upstream version: `4.3.0`' \
+        "${package_root}/licenses/runtime/ember-modifier/UPSTREAM.md" >/dev/null; \
+    ui_entry="$(find "${package_root}/assets" -maxdepth 1 -type f -name 'ui-*.js' -print -quit)"; \
+    vendor_entry="$(find "${package_root}/assets" -maxdepth 1 -type f -name 'vendor-*.js' -print -quit)"; \
+    test -n "${ui_entry}"; \
+    test -n "${vendor_entry}"; \
+    grep -aF 'Subscribe disconnected' "${ui_entry}" >/dev/null; \
+    grep -aF 'bs.collapse' "${vendor_entry}" >/dev/null; \
+    grep -aF 'bs.dropdown' "${vendor_entry}" >/dev/null; \
+    if grep -aEq 'bs\.(button|tooltip|popover)|data-loading-text' "${vendor_entry}"; then \
+        echo "Rejected Bootstrap runtime plugin found in Web Console" >&2; \
+        exit 1; \
+    fi; \
+    grep -F 'href="/favicon.ico"' "${package_root}/index.html" >/dev/null; \
+    grep -F 'pasturestack-favicon.svg' "${package_root}/index.html" >/dev/null; \
+    grep -F '"systemManaged":"SMTP 寄信服務由系統管理員集中設定，全系統共用。您的帳號不會儲存 SMTP 伺服器、寄件者或密碼。"' \
+        "${package_root}/translations/zh-tw.json" >/dev/null; \
+    if grep -RIlE '(^|[^[:alnum:]])[A-Za-z]:\\Users\\' \
+        "${package_root}" | grep -q .; then \
+        echo "Private migration marker found in Web Console artifact" >&2; \
+        exit 1; \
+    fi; \
+    web_root="$(readlink -f /usr/share/cattle/war)"; \
+    case "${web_root}" in \
+        /usr/share/cattle/*) ;; \
+        *) echo "Unsafe Web Console document root: ${web_root}" >&2; exit 1 ;; \
+    esac; \
+    rm -rf \
+        "${web_root}/assets" \
+        "${web_root}/ember-fetch" \
+        "${web_root}/licenses" \
+        "${web_root}/translations"; \
+    rm -f \
+        "${web_root}/VERSION.txt" \
+        "${web_root}/favicon.ico" \
+        "${web_root}/humans.txt" \
+        "${web_root}/index.html" \
+        "${web_root}/robots.txt"; \
+    cp -a "${package_root}/." "${web_root}/"; \
+    for path in \
+        "${web_root}/assets" \
+        "${web_root}/ember-fetch" \
+        "${web_root}/licenses" \
+        "${web_root}/translations"; do \
+        find "${path}" -exec touch -h -d "@${SOURCE_DATE_EPOCH}" {} +; \
+    done; \
+    touch -d "@${SOURCE_DATE_EPOCH}" \
+        "${web_root}/VERSION.txt" \
+        "${web_root}/favicon.ico" \
+        "${web_root}/humans.txt" \
+        "${web_root}/index.html" \
+        "${web_root}/robots.txt" \
+        "${web_root}" \
+        /tmp; \
+    rm -rf "${archive}" "${listing}" "${stage}"
+
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server compatibility image with the reviewed Ember 6.12 LTS Web Console runtime and single-owner WebSocket reconnect behavior." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.326" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.325"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.326
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.37
+ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
+ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}

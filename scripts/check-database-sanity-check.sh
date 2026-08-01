@@ -42,6 +42,8 @@ require_marker scripts/database-sanity-check.sh 'curl_max_time="${RC16_DB_SANITY
 require_marker scripts/database-sanity-check.sh 'sanity_curl()' DB_SANITY_CHECK_CURL_HELPER_MISSING
 require_marker scripts/database-sanity-check.sh 'curl -sS --connect-timeout "$curl_connect_timeout" --max-time "$curl_max_time" "$@"' DB_SANITY_CHECK_CURL_NOT_BOUNDED
 require_marker scripts/database-sanity-check.sh 'http_code=$(sanity_curl -o "$auth_tmp" -w' DB_SANITY_CHECK_TOKEN_NOT_HELPER_BACKED
+require_marker scripts/database-sanity-check.sh '[a]uthentication-service[.]real' DB_SANITY_CHECK_NEUTRAL_AUTH_PROCESS_MISSING
+require_marker scripts/database-sanity-check.sh '[c]atalog-service[.]real' DB_SANITY_CHECK_NEUTRAL_CATALOG_PROCESS_MISSING
 require_marker server/patches/db/core-124.xml '<changeSet author="PastureStack" id="pasturestack-catalog-table-order-guard">' DB_CATALOG_TABLE_ORDER_GUARD_MISSING
 require_marker server/patches/db/core-124.xml '<preConditions onFail="HALT">' DB_CATALOG_TABLE_ORDER_HALT_MISSING
 require_marker server/patches/db/core-124.xml '<tableExists tableName="catalog"/>' DB_CATALOG_TABLE_ORDER_PRECONDITION_MISSING

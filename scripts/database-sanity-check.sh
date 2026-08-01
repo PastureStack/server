@@ -90,7 +90,11 @@ if [ "$security_enabled" = true ]; then
   done
   if [ "$missing" -eq 0 ]; then
     pass "local-auth legacy runtime service credential env vars are present"
-  elif docker exec "$container" sh -lc 'test -s /var/lib/cattle/authConfigFile.txt && ps -ef | grep -q "[r]ancher-auth-service" && ps -ef | grep -q "[r]ancher-catalog-service"' >/dev/null 2>&1; then
+  elif docker exec "$container" sh -lc '
+    test -s /var/lib/cattle/authConfigFile.txt &&
+    ps -ef | grep -Eq "[r]ancher-auth-service|[a]uthentication-service[.]real" &&
+    ps -ef | grep -Eq "[r]ancher-catalog-service|[c]atalog-service[.]real"
+  ' >/dev/null 2>&1; then
     pass "local-auth file-backed service config and embedded auth/catalog processes are present"
     warn "legacy service credential env vars are absent; current image is using file-backed embedded service config"
   else
