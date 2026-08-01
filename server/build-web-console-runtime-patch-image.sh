@@ -14,11 +14,11 @@ revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.325}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.37}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.37.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-f0966f47f70987ee67b658a6ed3618e2a47c502e2edd63653fa7af526c6995f9}
-web_console_commit=${WEB_CONSOLE_COMMIT:-d6a08d34469258ce6f9288cbc8d857f795f6a641}
-image=${IMAGE:-pasturestack-validation/server:v1.6.326}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.38}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.38.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-572d33673d939240077876a12cc546ab74c2f3525dd86f860ebe1d45344e0438}
+web_console_commit=${WEB_CONSOLE_COMMIT:-21e53a5427a1099af026e72fdee8675d8ed5e55f}
+image=${IMAGE:-pasturestack-validation/server:v1.6.327}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -61,7 +61,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.326
+    v1.6.327
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -71,18 +71,21 @@ test "$(docker image inspect "$image" \
 
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
+catalog_json='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"57707ddf891e36066a144d7821adc458dbf8da9c"}}}'
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.326 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.327 \
     CATTLE_API_UI_VERSION=1.1.15 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15 \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.37 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.38 \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
     CATTLE_CATTLE_VERSION=v0.183.273 \
     PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.2.5 \
     PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=0.55.1-pasturestack.1 \
     PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-07-27 \
-    PASTURESTACK_CATALOG_COMMIT=c3a8e9876a74dbf98ce16ae504b947c5d80582c1; do
+    PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c \
+    "DEFAULT_CATTLE_CATALOG_URL=${catalog_json}" \
+    "CATTLE_CATALOG_URL=${catalog_json}"; do
     test "$(grep -Fxc "$marker" <<<"$image_environment")" = 1
 done
 
@@ -222,6 +225,6 @@ docker run --rm --entrypoint bash "$image" -lc '
     /usr/bin/authentication-service.real --version | grep -F "0.2.5" >/dev/null
 '
 
-printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s web_console_commit=%s artifact_sha256=%s api_explorer_unchanged=1 critical_runtime_unchanged=1 websocket_reconnect=single_owner theme_css=4 legal_sources=8\n' \
+printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s web_console_commit=%s artifact_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c api_explorer_unchanged=1 critical_runtime_unchanged=1 websocket_reconnect=single_owner legacy_catalog_versions=retained theme_css=4 legal_sources=8\n' \
     "$image" "$revision" "$base_image" "$web_console_commit" \
     "$web_console_artifact_sha256"
