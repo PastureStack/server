@@ -6,7 +6,7 @@ cd "$repo_root"
 
 dockerfile=server/Dockerfile.mfa-self-service-patch
 build_script=server/build-mfa-self-service-patch-image.sh
-release_doc=docs/releases/server-1.6.323.md
+release_doc=docs/releases/server-1.6.324.md
 
 for path in "$dockerfile" "$build_script" "$release_doc"; do
     test -f "$path"
@@ -27,7 +27,7 @@ require_marker "$dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.319' \
     SERVER_MFA_SELF_SERVICE_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.323"' \
+    'org.opencontainers.image.version="v1.6.324"' \
     SERVER_MFA_SELF_SERVICE_VERSION_MISSING
 require_marker "$dockerfile" \
     'ENV CATTLE_CATTLE_VERSION=v0.183.273' \
@@ -39,7 +39,7 @@ require_marker "$dockerfile" \
     "grep -aF 'go1.26.5'" \
     SERVER_MFA_SELF_SERVICE_AUTH_TOOLCHAIN_GATE_MISSING
 require_marker "$dockerfile" \
-    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.35' \
+    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.36' \
     SERVER_MFA_SELF_SERVICE_WEB_VERSION_MISSING
 require_marker "$dockerfile" 'test -s /usr/share/cattle/war/favicon.ico' \
     SERVER_MFA_SELF_SERVICE_FAVICON_ASSET_GATE_MISSING
@@ -200,6 +200,14 @@ require_marker "$build_script" 'govc 0.55.1-pasturestack.1' \
     SERVER_MFA_IMAGE_GOVC_VERSION_GATE_MISSING
 require_marker "$build_script" 'golang.org/x/text v0.39.0' \
     SERVER_MFA_IMAGE_GOVC_SECURITY_DEPENDENCY_GATE_MISSING
+require_marker "$dockerfile" "grep -aF 'bs.collapse'" \
+    SERVER_WEB_CONSOLE_BOOTSTRAP_COLLAPSE_GATE_MISSING
+require_marker "$dockerfile" "grep -aF 'bs.dropdown'" \
+    SERVER_WEB_CONSOLE_BOOTSTRAP_DROPDOWN_GATE_MISSING
+require_marker "$dockerfile" "bs\\.(button|tooltip|popover)|data-loading-text" \
+    SERVER_WEB_CONSOLE_BOOTSTRAP_VULNERABLE_PLUGIN_GATE_MISSING
+require_marker "$build_script" 'Vulnerable Bootstrap runtime plugin found in Server image' \
+    SERVER_IMAGE_BOOTSTRAP_VULNERABLE_PLUGIN_GATE_MISSING
 require_marker "$release_doc" \
     'stable authorization principal' \
     SERVER_MFA_SELF_SERVICE_ACCOUNT_MODEL_MISSING
@@ -270,11 +278,17 @@ require_marker "$release_doc" \
     '109e293092260d788acb3d7fcf4d78cccdf72c268d1728f263efc4075a69241c' \
     SERVER_MFA_AUTH_ARTIFACT_COORDINATE_MISSING
 require_marker "$release_doc" \
-    'c737a65882c4cad5f515a42cedb186679c29b05d' \
+    'b17901d02b51df462dfd55810193fdb595af5106' \
     SERVER_MFA_WEB_SOURCE_COORDINATE_MISSING
 require_marker "$release_doc" \
-    '33c9bf0425d104f7fb8f88b25c1c13153ae283a32d5291a07346a247bf056564' \
+    'bab18039ee378d9afc63421db33f52bc685ff993e0c5dbddd21b4526752347f1' \
     SERVER_MFA_WEB_ARTIFACT_COORDINATE_MISSING
+require_marker "$release_doc" \
+    '261 Web Console browser tests' \
+    SERVER_WEB_CONSOLE_BOOTSTRAP_BROWSER_ACCEPTANCE_MISSING
+require_marker "$release_doc" \
+    'Bootstrap-derived Sass remains' \
+    SERVER_WEB_CONSOLE_BOOTSTRAP_STYLE_DEBT_DISCLOSURE_MISSING
 
 test "$(grep -Fc 'curl -fsSL' "$dockerfile")" -eq 4
 test "$(grep -Fc -- '--retry 5' "$dockerfile")" -eq 4
@@ -295,4 +309,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_MFA_SELF_SERVICE_PATCH_OK release=v1.6.323 engine=0.183.273 vsphere_cli_bundle=0.55.1-pasturestack.1 authentication_service=0.2.5 web_console=1.6.56-pasturestack.35 base=v1.6.319 locales=13 runtime_digest_coordinates=0 favicon=1\n'
+printf 'SERVER_MFA_SELF_SERVICE_PATCH_OK release=v1.6.324 engine=0.183.273 vsphere_cli_bundle=0.55.1-pasturestack.1 authentication_service=0.2.5 web_console=1.6.56-pasturestack.36 base=v1.6.319 locales=13 runtime_digest_coordinates=0 favicon=1 bootstrap_runtime=restricted\n'
