@@ -1,0 +1,106 @@
+# syntax=docker/dockerfile:1.7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.324
+FROM ${BASE_IMAGE}
+
+ARG SOURCE_DATE_EPOCH
+ARG PASTURESTACK_SERVER_REVISION
+ARG API_EXPLORER_RELEASE_BASE_URL=https://github.com/PastureStack/api-explorer/releases/download
+ARG API_EXPLORER_RELEASE_TAG=v1.1.15
+ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.15.tar.gz
+ARG API_EXPLORER_ARTIFACT_SHA256=3b061a7f4332f330c3fc1c9c85182fd2e0ad2507df069aea857123e6f0d9e334
+ARG API_EXPLORER_COMMIT=1cae0d841981735798bf7b3e5d93ae79cefe8fe5
+
+RUN set -eu; \
+    archive=/tmp/api-explorer.tar.gz; \
+    listing=/tmp/api-explorer-files.txt; \
+    stage=/tmp/pasturestack-api-explorer; \
+    curl -fsSL \
+        --retry 5 \
+        --retry-all-errors \
+        --retry-delay 2 \
+        --connect-timeout 10 \
+        --max-time 300 \
+        -o "${archive}" \
+        "${API_EXPLORER_RELEASE_BASE_URL%/}/${API_EXPLORER_RELEASE_TAG}/${API_EXPLORER_ARTIFACT}"; \
+    echo "${API_EXPLORER_ARTIFACT_SHA256}  ${archive}" | sha256sum -c -; \
+    tar -tzf "${archive}" >"${listing}"; \
+    if grep -Eq '(^/|(^|/)\.\.(/|$))' "${listing}"; then \
+        echo "Unsafe API Explorer archive path" >&2; \
+        exit 1; \
+    fi; \
+    if sort "${listing}" | uniq -d | grep -q .; then \
+        echo "Duplicate API Explorer archive path" >&2; \
+        exit 1; \
+    fi; \
+    if tar -tvzf "${archive}" | grep -Eq '^[lh]'; then \
+        echo "API Explorer archive may not contain links" >&2; \
+        exit 1; \
+    fi; \
+    while IFS= read -r member; do \
+        clean="${member#./}"; \
+        case "${clean}" in \
+            ''|fonts/|fonts/*|licenses/|licenses/*|ui.css|ui.js|ui.min.css|ui.min.js|version.json) ;; \
+            *) echo "Unexpected API Explorer archive member: ${member}" >&2; exit 1 ;; \
+        esac; \
+    done <"${listing}"; \
+    rm -rf "${stage}"; \
+    mkdir -p "${stage}"; \
+    tar --no-same-owner --no-same-permissions -xzf "${archive}" -C "${stage}"; \
+    test -z "$(find "${stage}" -type l -print -quit)"; \
+    for required in \
+        ui.css \
+        ui.js \
+        ui.min.css \
+        ui.min.js \
+        version.json \
+        fonts/glyphicons-halflings-regular.woff2 \
+        licenses/LICENSE.txt \
+        licenses/THIRD-PARTY-NOTICES.md \
+        licenses/bootstrap-3.4.1/LICENSE \
+        licenses/bootstrap-3.4.1/NORMALIZE-LICENSE \
+        licenses/jquery-3.7.1/LICENSE.txt \
+        licenses/handlebars-4.7.9/LICENSE \
+        licenses/inherited-vendor/LICENSE-async-0.9.0 \
+        licenses/inherited-vendor/LICENSE-jquery-scrollintoview-1.8 \
+        licenses/inherited-vendor/LICENSE-jsonformatter-2009 \
+        licenses/inherited-vendor/NOTICE-json2; do \
+        test -s "${stage}/${required}"; \
+    done; \
+    test ! -e "${stage}/js/bootstrap.js"; \
+    grep -F '"version": "1.1.15"' "${stage}/version.json" >/dev/null; \
+    grep -F '"commit": "1cae0d8"' "${stage}/version.json" >/dev/null; \
+    grep -aF 'PastureStackUi' "${stage}/ui.js" >/dev/null; \
+    grep -aF 'pasturestack:modal:shown' "${stage}/ui.js" >/dev/null; \
+    grep -aF 'data-pasturestack-toggle' "${stage}/ui.js" >/dev/null; \
+    grep -F 'Bootstrap v3.4.1' "${stage}/ui.css" >/dev/null; \
+    grep -F 'url("./fonts/glyphicons-halflings-regular.woff2")' "${stage}/ui.css" >/dev/null; \
+    if grep -aEq 'Bootstrap v3\.4\.1|bs\.(button|tooltip|popover|modal|dropdown)|data-loading-text|data-toggle="dropdown"' \
+        "${stage}/ui.js"; then \
+        echo "Rejected Bootstrap executable surface found in API Explorer" >&2; \
+        exit 1; \
+    fi; \
+    web_root="$(readlink -f /usr/share/cattle/war)"; \
+    api_dir="${web_root}/api-ui"; \
+    case "${api_dir}" in \
+        /usr/share/cattle/*/api-ui) ;; \
+        *) echo "Unsafe API Explorer destination: ${api_dir}" >&2; exit 1 ;; \
+    esac; \
+    rm -rf "${api_dir}"; \
+    mkdir -p "${api_dir}"; \
+    cp -a "${stage}/." "${api_dir}/"; \
+    find "${api_dir}" -exec touch -h -d "@${SOURCE_DATE_EPOCH}" {} +; \
+    rm -rf "${archive}" "${listing}" "${stage}"; \
+    touch -d "@${SOURCE_DATE_EPOCH}" "${web_root}" /tmp
+
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server compatibility image with a reviewed first-party API Explorer interaction layer." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.325" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.324"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.325
+ENV CATTLE_API_UI_VERSION=1.1.15
+ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15
+ENV PASTURESTACK_API_EXPLORER_COMMIT=${API_EXPLORER_COMMIT}
+ENV PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256=${API_EXPLORER_ARTIFACT_SHA256}

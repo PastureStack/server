@@ -74,6 +74,7 @@ run_gate oidc_api_host_patch scripts/check-server-oidc-api-host-patch.sh
 run_gate oidc_recovery_patch scripts/check-server-oidc-recovery-patch.sh
 run_gate identity_security_patch scripts/check-server-identity-security-patch.sh
 run_gate mfa_self_service_patch scripts/check-server-mfa-self-service-patch.sh
+run_gate api_explorer_patch scripts/check-server-api-explorer-patch.sh
 
 printf 'failure_count=%s\n' "$failure_count"
 if [ "$failure_count" -ne 0 ]; then
