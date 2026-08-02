@@ -32,10 +32,10 @@ FROM ${BASE_IMAGE}
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.41
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.41.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=b89584ae644bb4f1ee3d1919bb194e8cf212f1eae9e8b923168ef16f4e6f9976
-ARG WEB_CONSOLE_COMMIT=c6e3cef5bd0376087543df2fbf6db68715ebaa6c
+ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.42
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.42.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=cb8359166822e77247f06fe103691c6f7297042c2da79269af54086a78913584
+ARG WEB_CONSOLE_COMMIT=25f9e4af353ec11cb452b67d9b30c00dee5e2b14
 
 COPY --from=console-broker-build /out/rootfs/ /
 
@@ -180,6 +180,9 @@ RUN set -eu; \
     grep -aF 'ui/models/oidcconfig' "${ui_entry}" >/dev/null; \
     grep -aF 'X-PastureStack-Session-Secret' "${ui_entry}" >/dev/null; \
     grep -aF '"missing"===t?"create"' "${ui_entry}" >/dev/null; \
+    grep -aF 'catalog-version-options' "${ui_entry}" >/dev/null; \
+    grep -aF 'upgradeVersionLinks' "${ui_entry}" >/dev/null; \
+    grep -aF ' (current)' "${ui_entry}" >/dev/null; \
     resize_rule="$(sed -n '/^\.console-workspace-resize-handle {/,/^}/p' "${package_root}/assets/ui-light.css")"; \
     printf '%s\n' "${resize_rule}" | grep -Fx '  width: 11px;' >/dev/null; \
     printf '%s\n' "${resize_rule}" | grep -Fx '  height: 11px;' >/dev/null; \
@@ -233,14 +236,14 @@ RUN set -eu; \
     rm -rf "${archive}" "${listing}" "${stage}"
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
-      org.opencontainers.image.description="PastureStack server compatibility image with the reviewed Ember 6.12 LTS Web Console runtime, writable OpenID Connect provider configuration, and broker-aware terminal recovery." \
+      org.opencontainers.image.description="PastureStack server compatibility image with the reviewed Ember 6.12 LTS Web Console runtime, reactive Catalog upgrade version selection, writable OpenID Connect provider configuration, and broker-aware terminal recovery." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.330" \
+      org.opencontainers.image.version="v1.6.331" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.325"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.330
-ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.41
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.331
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.42
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
 ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c
