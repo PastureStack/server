@@ -382,7 +382,9 @@ func (b *broker) attachSession(writer http.ResponseWriter, request *http.Request
 func (b *broker) sessionStatus(writer http.ResponseWriter, request *http.Request, sessionID string) {
 	session := b.lookupSession(sessionID)
 	if session == nil {
-		writeJSONError(writer, http.StatusNotFound, "session_not_found", "Console session was not found")
+		writer.Header().Set("Content-Type", "application/json")
+		writer.Header().Set("Cache-Control", "no-store")
+		_ = json.NewEncoder(writer).Encode(map[string]string{"status": "missing"})
 		return
 	}
 	secretHash := sha256.Sum256([]byte(sessionSecret(request)))

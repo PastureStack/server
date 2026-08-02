@@ -1,14 +1,43 @@
 # syntax=docker/dockerfile:1.7
+ARG GO_IMAGE=golang:1.26.5-bookworm
 ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.325
+FROM ${GO_IMAGE} AS console-broker-build
+
+WORKDIR /src
+COPY console-broker/go.mod console-broker/go.sum ./
+RUN /usr/local/go/bin/go mod download
+COPY console-broker/*.go ./
+RUN set -eux; \
+    /usr/local/go/bin/go test ./...; \
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+      /usr/local/go/bin/go build \
+        -trimpath \
+        -ldflags='-s -w -buildid=' \
+        -o /out/pasturestack-console-broker .
+
 FROM ${BASE_IMAGE}
 
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.40
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.40.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=aa36e3f3d051ab69fafa54ff0a2bd450d34969b31bf38ef2744e416fa447690c
-ARG WEB_CONSOLE_COMMIT=16bd7b1e4415e38bd468117b4e1defb04cb4b3aa
+ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.41
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.41.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=b89584ae644bb4f1ee3d1919bb194e8cf212f1eae9e8b923168ef16f4e6f9976
+ARG WEB_CONSOLE_COMMIT=c6e3cef5bd0376087543df2fbf6db68715ebaa6c
+
+COPY --from=console-broker-build /out/pasturestack-console-broker /usr/bin/pasturestack-console-broker
+COPY --from=console-broker-build /go/pkg/mod/github.com/gorilla/websocket@v1.5.3/LICENSE /usr/share/licenses/pasturestack-console-broker/gorilla-websocket-LICENSE
+COPY console-broker/THIRD-PARTY-NOTICES.md /usr/share/licenses/pasturestack-console-broker/THIRD-PARTY-NOTICES.md
+
+RUN set -eux; \
+    chmod 0755 /usr/bin/pasturestack-console-broker; \
+    test -x /usr/bin/pasturestack-console-broker; \
+    test -s /usr/share/licenses/pasturestack-console-broker/gorilla-websocket-LICENSE; \
+    test -s /usr/share/licenses/pasturestack-console-broker/THIRD-PARTY-NOTICES.md; \
+    touch -d "@${SOURCE_DATE_EPOCH}" \
+      /usr/bin/pasturestack-console-broker \
+      /usr/share/licenses/pasturestack-console-broker/gorilla-websocket-LICENSE \
+      /usr/share/licenses/pasturestack-console-broker/THIRD-PARTY-NOTICES.md
 
 RUN set -eu; \
     archive=/tmp/web-console.tar.gz; \
@@ -145,6 +174,10 @@ RUN set -eu; \
     grep -aF 'Subscribe disconnected' "${ui_entry}" >/dev/null; \
     grep -aF 'ui/models/oidcconfig' "${ui_entry}" >/dev/null; \
     grep -aF 'X-PastureStack-Session-Secret' "${ui_entry}" >/dev/null; \
+    grep -aF '"missing"===t?"create"' "${ui_entry}" >/dev/null; \
+    resize_rule="$(sed -n '/^\.console-workspace-resize-handle {/,/^}/p' "${package_root}/assets/ui-light.css")"; \
+    printf '%s\n' "${resize_rule}" | grep -Fx '  width: 11px;' >/dev/null; \
+    printf '%s\n' "${resize_rule}" | grep -Fx '  height: 11px;' >/dev/null; \
     grep -aF 'bs.collapse' "${vendor_entry}" >/dev/null; \
     grep -aF 'bs.dropdown' "${vendor_entry}" >/dev/null; \
     if grep -aEq 'bs\.(button|tooltip|popover)|data-loading-text' "${vendor_entry}"; then \
@@ -197,12 +230,12 @@ RUN set -eu; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server compatibility image with the reviewed Ember 6.12 LTS Web Console runtime, writable OpenID Connect provider configuration, and broker-aware terminal recovery." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.329" \
+      org.opencontainers.image.version="v1.6.330" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.325"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.329
-ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.40
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.330
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.41
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
 ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c

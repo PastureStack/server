@@ -26,19 +26,25 @@ require_marker "$dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.325' \
     SERVER_WEB_CONSOLE_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.329"' \
+    'ARG GO_IMAGE=golang:1.26.5-bookworm' \
+    SERVER_WEB_CONSOLE_PATCH_GO_IMAGE_MISSING
+require_marker "$dockerfile" \
+    'COPY --from=console-broker-build /out/pasturestack-console-broker /usr/bin/pasturestack-console-broker' \
+    SERVER_WEB_CONSOLE_PATCH_BROKER_BUILD_MISSING
+require_marker "$dockerfile" \
+    'org.opencontainers.image.version="v1.6.330"' \
     SERVER_WEB_CONSOLE_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.329' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.330' \
     SERVER_WEB_CONSOLE_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.40' \
+    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.41' \
     SERVER_WEB_CONSOLE_PATCH_PACKAGE_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=aa36e3f3d051ab69fafa54ff0a2bd450d34969b31bf38ef2744e416fa447690c' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=b89584ae644bb4f1ee3d1919bb194e8cf212f1eae9e8b923168ef16f4e6f9976' \
     SERVER_WEB_CONSOLE_PATCH_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=16bd7b1e4415e38bd468117b4e1defb04cb4b3aa' \
+    'ARG WEB_CONSOLE_COMMIT=c6e3cef5bd0376087543df2fbf6db68715ebaa6c' \
     SERVER_WEB_CONSOLE_PATCH_COMMIT_MISSING
 require_marker "$dockerfile" \
     'ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c' \
@@ -116,9 +122,21 @@ require_marker "$build_script" \
 require_marker "$dockerfile" \
     'X-PastureStack-Session-Secret' \
     SERVER_WEB_CONSOLE_PATCH_TERMINAL_PROBE_GATE_MISSING
+require_marker "$dockerfile" \
+    '"missing"===t?"create"' \
+    SERVER_WEB_CONSOLE_PATCH_MISSING_SESSION_RECOVERY_GATE_MISSING
+require_marker "$dockerfile" \
+    "grep -Fx '  width: 11px;'" \
+    SERVER_WEB_CONSOLE_PATCH_RESIZE_HANDLE_WIDTH_GATE_MISSING
+require_marker "$dockerfile" \
+    "grep -Fx '  height: 11px;'" \
+    SERVER_WEB_CONSOLE_PATCH_RESIZE_HANDLE_HEIGHT_GATE_MISSING
 require_marker "$build_script" \
     'terminal_recovery=broker_probe' \
     SERVER_WEB_CONSOLE_PATCH_TERMINAL_IMAGE_GATE_MISSING
+require_marker "$build_script" \
+    'console_broker=recoverable_missing_status' \
+    SERVER_WEB_CONSOLE_PATCH_BROKER_MISSING_STATUS_GATE_MISSING
 require_marker "$build_script" \
     'legacy_catalog_versions=retained' \
     SERVER_WEB_CONSOLE_PATCH_CATALOG_VERSION_GATE_MISSING
@@ -140,4 +158,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_OK release=v1.6.329 base=v1.6.325 web_console=1.6.56-pasturestack.40 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained theme_css=4 legal_sources=8 runtime_digest_coordinates=0\n'
+printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_OK release=v1.6.330 base=v1.6.325 web_console=1.6.56-pasturestack.41 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained theme_css=4 legal_sources=8 runtime_digest_coordinates=0\n'

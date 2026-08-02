@@ -390,6 +390,40 @@ func TestStatusAndTerminationAcceptSecretHeader(t *testing.T) {
 	}
 }
 
+func TestMissingSessionStatusIsARecoverableState(t *testing.T) {
+	upstream := newUpstreamRecorder(t)
+	defer upstream.close()
+	_, server := newTestBroker(t, upstream)
+
+	statusRequest, _ := http.NewRequest(
+		http.MethodGet,
+		server.URL+sessionPathPrefix+"psw_abcdefghijklmnopqrstuv99",
+		nil,
+	)
+	statusRequest.Header.Set(
+		"X-PastureStack-Session-Secret",
+		"5123456789abcdefghijklmnopqrstuvwxyzABCDEFGH",
+	)
+	statusResponse, err := http.DefaultClient.Do(statusRequest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer statusResponse.Body.Close()
+	if statusResponse.StatusCode != http.StatusOK {
+		t.Fatalf("missing status returned %d", statusResponse.StatusCode)
+	}
+	if statusResponse.Header.Get("Cache-Control") != "no-store" {
+		t.Fatalf("missing status was cacheable: %q", statusResponse.Header.Get("Cache-Control"))
+	}
+	var response map[string]string
+	if err := json.NewDecoder(statusResponse.Body).Decode(&response); err != nil {
+		t.Fatal(err)
+	}
+	if response["status"] != "missing" {
+		t.Fatalf("unexpected missing status response: %#v", response)
+	}
+}
+
 func TestCreationRejectsCrossOriginRequest(t *testing.T) {
 	upstream := newUpstreamRecorder(t)
 	defer upstream.close()
