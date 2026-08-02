@@ -1,48 +1,14 @@
 # syntax=docker/dockerfile:1.7
-ARG GO_IMAGE=golang:1.26.5-bookworm
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.325
-FROM ${GO_IMAGE} AS console-broker-build
-
-ARG SOURCE_DATE_EPOCH
-WORKDIR /src
-COPY console-broker/go.mod console-broker/go.sum ./
-RUN /usr/local/go/bin/go mod download
-COPY console-broker/*.go ./
-COPY console-broker/THIRD-PARTY-NOTICES.md ./
-RUN set -eux; \
-    /usr/local/go/bin/go test ./...; \
-    mkdir -p \
-      /out/rootfs/usr/bin \
-      /out/rootfs/usr/share/licenses/pasturestack-console-broker; \
-    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-      /usr/local/go/bin/go build \
-        -trimpath \
-        -ldflags='-s -w -buildid=' \
-        -o /out/rootfs/usr/bin/pasturestack-console-broker .; \
-    cp /go/pkg/mod/github.com/gorilla/websocket@v1.5.3/LICENSE \
-      /out/rootfs/usr/share/licenses/pasturestack-console-broker/gorilla-websocket-LICENSE; \
-    cp THIRD-PARTY-NOTICES.md \
-      /out/rootfs/usr/share/licenses/pasturestack-console-broker/THIRD-PARTY-NOTICES.md; \
-    chmod 0755 /out/rootfs/usr/bin/pasturestack-console-broker; \
-    chmod 0644 /out/rootfs/usr/share/licenses/pasturestack-console-broker/*; \
-    find /out/rootfs -exec touch -h -d "@${SOURCE_DATE_EPOCH}" {} +
-
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.331
 FROM ${BASE_IMAGE}
 
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.42
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.42.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=cb8359166822e77247f06fe103691c6f7297042c2da79269af54086a78913584
-ARG WEB_CONSOLE_COMMIT=25f9e4af353ec11cb452b67d9b30c00dee5e2b14
-
-COPY --from=console-broker-build /out/rootfs/ /
-
-RUN set -eux; \
-    test -x /usr/bin/pasturestack-console-broker; \
-    test -s /usr/share/licenses/pasturestack-console-broker/gorilla-websocket-LICENSE; \
-    test -s /usr/share/licenses/pasturestack-console-broker/THIRD-PARTY-NOTICES.md
+ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.43
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.43.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=843e7d308253382b7890f38de1d1cea3f8ce3e2954b368e237c77b0c46e2f82b
+ARG WEB_CONSOLE_COMMIT=7f71f4d93578178b3acc847d8151f57e2a0e9e92
 
 RUN set -eu; \
     archive=/tmp/web-console.tar.gz; \
@@ -183,6 +149,8 @@ RUN set -eu; \
     grep -aF 'catalog-version-options' "${ui_entry}" >/dev/null; \
     grep -aF 'upgradeVersionLinks' "${ui_entry}" >/dev/null; \
     grep -aF ' (current)' "${ui_entry}" >/dev/null; \
+    grep -aF 'ui/components/schema/input-enum/template' "${ui_entry}" >/dev/null; \
+    grep -aF '["choice"]' "${ui_entry}" >/dev/null; \
     resize_rule="$(sed -n '/^\.console-workspace-resize-handle {/,/^}/p' "${package_root}/assets/ui-light.css")"; \
     printf '%s\n' "${resize_rule}" | grep -Fx '  width: 11px;' >/dev/null; \
     printf '%s\n' "${resize_rule}" | grep -Fx '  height: 11px;' >/dev/null; \
@@ -236,14 +204,14 @@ RUN set -eu; \
     rm -rf "${archive}" "${listing}" "${stage}"
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
-      org.opencontainers.image.description="PastureStack server compatibility image with the reviewed Ember 6.12 LTS Web Console runtime, reactive Catalog upgrade version selection, writable OpenID Connect provider configuration, and broker-aware terminal recovery." \
+      org.opencontainers.image.description="PastureStack server compatibility image with reviewed Catalog upgrade versions and native enum choices in the Ember 6.12 LTS Web Console." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.331" \
+      org.opencontainers.image.version="v1.6.332" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
-      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.325"
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.331"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.331
-ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.42
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.332
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.43
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
 ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c

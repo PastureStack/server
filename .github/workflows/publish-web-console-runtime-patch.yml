@@ -1,0 +1,115 @@
+name: Publish Web Console Runtime Patch
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: server-web-console-runtime-patch
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'PastureStack/server' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      RELEASE_TAG: v1.6.332
+      SOURCE_SHA: ${{ github.sha }}
+      TARGET_IMAGE: ghcr.io/pasturestack/server:v1.6.332
+
+    steps:
+      - name: Check out immutable Server source
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git clone --filter=blob:none \
+            "https://github.com/${GITHUB_REPOSITORY}.git" source
+          git -C source checkout --detach "$SOURCE_SHA"
+          test "$(git -C source rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git -C source status --short)"
+
+      - name: Run Server source gates
+        shell: bash
+        working-directory: source
+        run: |
+          set -Eeuo pipefail
+          bash scripts/check-server-source-gates.sh
+
+      - name: Build and compare two clean candidates
+        id: build
+        shell: bash
+        working-directory: source
+        run: |
+          set -Eeuo pipefail
+          candidate_a="pasturestack-validation/server:${RELEASE_TAG#v}-a-${GITHUB_RUN_ID}"
+          candidate_b="pasturestack-validation/server:${RELEASE_TAG#v}-b-${GITHUB_RUN_ID}"
+
+          PASTURESTACK_BUILD_NO_CACHE=1 IMAGE="$candidate_a" \
+            bash server/build-web-console-runtime-patch-image.sh |
+            tee "$RUNNER_TEMP/candidate-a.log"
+          PASTURESTACK_BUILD_NO_CACHE=1 IMAGE="$candidate_b" \
+            bash server/build-web-console-runtime-patch-image.sh |
+            tee "$RUNNER_TEMP/candidate-b.log"
+
+          image_a="$(docker image inspect "$candidate_a" --format '{{.Id}}')"
+          image_b="$(docker image inspect "$candidate_b" --format '{{.Id}}')"
+          test "$image_a" = "$image_b"
+          docker tag "$candidate_a" "$TARGET_IMAGE"
+
+          test "$(docker image inspect "$TARGET_IMAGE" \
+            --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
+            "$RELEASE_TAG"
+          test "$(docker image inspect "$TARGET_IMAGE" \
+            --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
+            "$SOURCE_SHA"
+
+          printf 'SERVER_WEB_CONSOLE_PATCH_REPRODUCIBLE source=%s release=%s image_id=%s\n' \
+            "$SOURCE_SHA" "$RELEASE_TAG" "$image_a" |
+            tee "$RUNNER_TEMP/reproducibility.txt"
+
+      - name: Publish public semantic-version image
+        id: publish
+        shell: bash
+        working-directory: source
+        env:
+          REGISTRY_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          if docker manifest inspect "$TARGET_IMAGE" >/dev/null 2>&1; then
+            echo "Container tag already exists: $TARGET_IMAGE" >&2
+            exit 1
+          fi
+
+          printf '%s' "$REGISTRY_TOKEN" |
+            docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin >/dev/null
+          docker push "$TARGET_IMAGE" | tee "$RUNNER_TEMP/push.log"
+          docker logout ghcr.io >/dev/null
+
+          digest="$(docker buildx imagetools inspect "$TARGET_IMAGE" \
+            --format '{{.Manifest.Digest}}')"
+          [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+          docker buildx imagetools inspect "$TARGET_IMAGE" \
+            >"$RUNNER_TEMP/image-inspect.txt"
+          printf 'SERVER_WEB_CONSOLE_PATCH_PUBLISHED source=%s release=%s reference=%s digest=%s\n' \
+            "$SOURCE_SHA" "$RELEASE_TAG" "$TARGET_IMAGE" "$digest" |
+            tee "$RUNNER_TEMP/published.txt"
+          printf 'digest=%s\n' "$digest" >>"$GITHUB_OUTPUT"
+
+      - name: Retain publication evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: server-${{ env.RELEASE_TAG }}-publication-evidence
+          path: |
+            ${{ runner.temp }}/candidate-a.log
+            ${{ runner.temp }}/candidate-b.log
+            ${{ runner.temp }}/reproducibility.txt
+            ${{ runner.temp }}/push.log
+            ${{ runner.temp }}/image-inspect.txt
+            ${{ runner.temp }}/published.txt
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 9

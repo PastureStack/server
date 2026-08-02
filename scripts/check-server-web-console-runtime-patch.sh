@@ -23,31 +23,22 @@ require_marker()
 }
 
 require_marker "$dockerfile" \
-    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.325' \
+    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.331' \
     SERVER_WEB_CONSOLE_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'ARG GO_IMAGE=golang:1.26.5-bookworm' \
-    SERVER_WEB_CONSOLE_PATCH_GO_IMAGE_MISSING
-require_marker "$dockerfile" \
-    'COPY --from=console-broker-build /out/rootfs/ /' \
-    SERVER_WEB_CONSOLE_PATCH_BROKER_BUILD_MISSING
-require_marker "$dockerfile" \
-    'find /out/rootfs -exec touch -h -d "@${SOURCE_DATE_EPOCH}" {} +' \
-    SERVER_WEB_CONSOLE_PATCH_BROKER_REPRODUCIBLE_TIMESTAMP_MISSING
-require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.331"' \
+    'org.opencontainers.image.version="v1.6.332"' \
     SERVER_WEB_CONSOLE_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.331' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.332' \
     SERVER_WEB_CONSOLE_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.42' \
+    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.43' \
     SERVER_WEB_CONSOLE_PATCH_PACKAGE_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=cb8359166822e77247f06fe103691c6f7297042c2da79269af54086a78913584' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=843e7d308253382b7890f38de1d1cea3f8ce3e2954b368e237c77b0c46e2f82b' \
     SERVER_WEB_CONSOLE_PATCH_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=25f9e4af353ec11cb452b67d9b30c00dee5e2b14' \
+    'ARG WEB_CONSOLE_COMMIT=7f71f4d93578178b3acc847d8151f57e2a0e9e92' \
     SERVER_WEB_CONSOLE_PATCH_COMMIT_MISSING
 require_marker "$dockerfile" \
     'ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c' \
@@ -138,7 +129,7 @@ require_marker "$build_script" \
     'terminal_recovery=broker_probe' \
     SERVER_WEB_CONSOLE_PATCH_TERMINAL_IMAGE_GATE_MISSING
 require_marker "$build_script" \
-    'console_broker=recoverable_missing_status' \
+    'console_broker=unchanged_recoverable_missing_status' \
     SERVER_WEB_CONSOLE_PATCH_BROKER_MISSING_STATUS_GATE_MISSING
 require_marker "$build_script" \
     'legacy_catalog_versions=retained' \
@@ -146,7 +137,9 @@ require_marker "$build_script" \
 for catalog_marker in \
     catalog-version-options \
     upgradeVersionLinks \
-    ' (current)'; do
+    ' (current)' \
+    'ui/components/schema/input-enum/template' \
+    '["choice"]'; do
     require_marker "$dockerfile" \
         "$catalog_marker" \
         SERVER_WEB_CONSOLE_PATCH_CATALOG_SELECTION_ARTIFACT_GATE_MISSING
@@ -158,12 +151,21 @@ require_marker "$build_script" \
     'catalog_version_select=reactive_upgrade_links' \
     SERVER_WEB_CONSOLE_PATCH_CATALOG_SELECTION_RESULT_MISSING
 require_marker "$build_script" \
+    'catalog_enum_options=native' \
+    SERVER_WEB_CONSOLE_PATCH_CATALOG_ENUM_RESULT_MISSING
+require_marker "$build_script" \
     'theme_css=4' \
     SERVER_WEB_CONSOLE_PATCH_THEME_COUNT_GATE_MISSING
 
 digest_coordinate='@''sha256:'
 if grep -Fq "$digest_coordinate" "$dockerfile" "$build_script"; then
     echo 'SERVER_WEB_CONSOLE_PATCH_DIGEST_QUALIFIED_RUNTIME_COORDINATE' >&2
+    exit 1
+fi
+
+if grep -Fq 'console-broker-build' "$dockerfile" || \
+   grep -Fq 'COPY --from=console-broker-build' "$dockerfile"; then
+    echo 'SERVER_WEB_CONSOLE_PATCH_REBUILDS_UNCHANGED_BROKER' >&2
     exit 1
 fi
 
@@ -175,4 +177,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_OK release=v1.6.331 base=v1.6.325 web_console=1.6.56-pasturestack.42 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links theme_css=4 legal_sources=8 runtime_digest_coordinates=0\n'
+printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_OK release=v1.6.332 base=v1.6.331 web_console=1.6.56-pasturestack.43 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native unchanged_broker=1 theme_css=4 legal_sources=8 runtime_digest_coordinates=0\n'

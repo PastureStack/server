@@ -1,5 +1,10 @@
 # PastureStack Server v1.6.331
 
+> This reviewed candidate restored the outer Catalog version selector, but
+> complete NFS form acceptance found an Ember enum-rendering failure. It was
+> superseded by `v1.6.332` before a GitHub Release was published and must not be
+> selected for a new deployment.
+
 This release retains the complete `v1.6.325` database, authentication,
 authorization, orchestration, host-agent, API Explorer, and workload behavior.
 It replaces only the embedded Web Console and the reproducibly rebuilt console

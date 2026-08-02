@@ -12,14 +12,13 @@ fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
-go_image=${GO_IMAGE:-golang:1.26.5-bookworm}
-base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.325}
+base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.331}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.42}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.42.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-cb8359166822e77247f06fe103691c6f7297042c2da79269af54086a78913584}
-web_console_commit=${WEB_CONSOLE_COMMIT:-25f9e4af353ec11cb452b67d9b30c00dee5e2b14}
-image=${IMAGE:-pasturestack-validation/server:v1.6.331}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.43}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.43.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-843e7d308253382b7890f38de1d1cea3f8ce3e2954b368e237c77b0c46e2f82b}
+web_console_commit=${WEB_CONSOLE_COMMIT:-7f71f4d93578178b3acc847d8151f57e2a0e9e92}
+image=${IMAGE:-pasturestack-validation/server:v1.6.332}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -28,8 +27,7 @@ build_options=()
 [[ "$web_console_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$web_console_release_tag" =~ ^v[0-9][0-9A-Za-z.-]*$ ]]
 [[ "$web_console_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
-[[ "$go_image" == golang:1.26.5-bookworm ]]
-[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.325 ]]
+[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.331 ]]
 case "$web_console_release_base_url" in
     https://*) ;;
     http://127.0.0.1:*|http://localhost:*)
@@ -49,7 +47,6 @@ docker buildx build \
     --provenance=false \
     --load \
     --network=host \
-    --build-arg "GO_IMAGE=${go_image}" \
     --build-arg "BASE_IMAGE=${base_image}" \
     --build-arg "SOURCE_DATE_EPOCH=${source_date_epoch}" \
     --build-arg "PASTURESTACK_SERVER_REVISION=${revision}" \
@@ -64,7 +61,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.331
+    v1.6.332
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -76,10 +73,10 @@ image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 catalog_json='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"57707ddf891e36066a144d7821adc458dbf8da9c"}}}'
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.331 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.332 \
     CATTLE_API_UI_VERSION=1.1.15 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15 \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.42 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.43 \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
     CATTLE_CATTLE_VERSION=v0.183.273 \
@@ -109,7 +106,7 @@ base_broker=$(docker run --rm --entrypoint sha256sum "$base_image" \
     /usr/bin/pasturestack-console-broker)
 image_broker=$(docker run --rm --entrypoint sha256sum "$image" \
     /usr/bin/pasturestack-console-broker)
-test "$base_broker" != "$image_broker"
+test "$base_broker" = "$image_broker"
 
 tree_hashes()
 {
@@ -221,6 +218,8 @@ docker run --rm --entrypoint bash "$image" -lc '
     grep -aF "catalog-version-options" "${ui_entry}" >/dev/null
     grep -aF "upgradeVersionLinks" "${ui_entry}" >/dev/null
     grep -aF " (current)" "${ui_entry}" >/dev/null
+    grep -aF "ui/components/schema/input-enum/template" "${ui_entry}" >/dev/null
+    grep -aF '["choice"]' "${ui_entry}" >/dev/null
     resize_rule=$(sed -n "/^\\.console-workspace-resize-handle {/,/^}/p" "${web_root}/assets/ui-light.css")
     grep -Fx "  width: 11px;" <<<"${resize_rule}" >/dev/null
     grep -Fx "  height: 11px;" <<<"${resize_rule}" >/dev/null
@@ -243,6 +242,6 @@ docker run --rm --entrypoint bash "$image" -lc '
     /usr/bin/authentication-service.real --version | grep -F "0.2.5" >/dev/null
 '
 
-printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s web_console_commit=%s artifact_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links theme_css=4 legal_sources=8\n' \
+printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s web_console_commit=%s artifact_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native theme_css=4 legal_sources=8\n' \
     "$image" "$revision" "$base_image" "$web_console_commit" \
     "$web_console_artifact_sha256"
