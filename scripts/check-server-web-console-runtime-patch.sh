@@ -29,8 +29,11 @@ require_marker "$dockerfile" \
     'ARG GO_IMAGE=golang:1.26.5-bookworm' \
     SERVER_WEB_CONSOLE_PATCH_GO_IMAGE_MISSING
 require_marker "$dockerfile" \
-    'COPY --from=console-broker-build /out/pasturestack-console-broker /usr/bin/pasturestack-console-broker' \
+    'COPY --from=console-broker-build /out/rootfs/ /' \
     SERVER_WEB_CONSOLE_PATCH_BROKER_BUILD_MISSING
+require_marker "$dockerfile" \
+    'find /out/rootfs -exec touch -h -d "@${SOURCE_DATE_EPOCH}" {} +' \
+    SERVER_WEB_CONSOLE_PATCH_BROKER_REPRODUCIBLE_TIMESTAMP_MISSING
 require_marker "$dockerfile" \
     'org.opencontainers.image.version="v1.6.330"' \
     SERVER_WEB_CONSOLE_PATCH_VERSION_MISSING
