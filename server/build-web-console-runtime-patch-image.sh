@@ -218,7 +218,7 @@ docker run --rm --entrypoint bash "$image" -lc '
     grep -aF "ui/models/oidcconfig" "${ui_entry}" >/dev/null
     grep -aF "X-PastureStack-Session-Secret" "${ui_entry}" >/dev/null
     grep -aF "\"missing\"===t?\"create\"" "${ui_entry}" >/dev/null
-    resize_rule=$(sed -n '/^\.console-workspace-resize-handle {/,/^}/p' "${web_root}/assets/ui-light.css")
+    resize_rule=$(sed -n "/^\\.console-workspace-resize-handle {/,/^}/p" "${web_root}/assets/ui-light.css")
     grep -Fx "  width: 11px;" <<<"${resize_rule}" >/dev/null
     grep -Fx "  height: 11px;" <<<"${resize_rule}" >/dev/null
     grep -aF "bs.collapse" "${vendor_entry}" >/dev/null
