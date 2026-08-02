@@ -5,10 +5,10 @@ FROM ${BASE_IMAGE}
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.39
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.39.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=eb06c53e4007fa7c0a51be67d3eb69c0e6334d7b74c932cf28a7f5ab7a411989
-ARG WEB_CONSOLE_COMMIT=ee079c3f51887958a7afb3902e71e1878e7feaa3
+ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.40
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.40.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=aa36e3f3d051ab69fafa54ff0a2bd450d34969b31bf38ef2744e416fa447690c
+ARG WEB_CONSOLE_COMMIT=16bd7b1e4415e38bd468117b4e1defb04cb4b3aa
 
 RUN set -eu; \
     archive=/tmp/web-console.tar.gz; \
@@ -143,6 +143,8 @@ RUN set -eu; \
     test -n "${ui_entry}"; \
     test -n "${vendor_entry}"; \
     grep -aF 'Subscribe disconnected' "${ui_entry}" >/dev/null; \
+    grep -aF 'ui/models/oidcconfig' "${ui_entry}" >/dev/null; \
+    grep -aF 'X-PastureStack-Session-Secret' "${ui_entry}" >/dev/null; \
     grep -aF 'bs.collapse' "${vendor_entry}" >/dev/null; \
     grep -aF 'bs.dropdown' "${vendor_entry}" >/dev/null; \
     if grep -aEq 'bs\.(button|tooltip|popover)|data-loading-text' "${vendor_entry}"; then \
@@ -193,14 +195,14 @@ RUN set -eu; \
     rm -rf "${archive}" "${listing}" "${stage}"
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
-      org.opencontainers.image.description="PastureStack server compatibility image with the reviewed Ember 6.12 LTS Web Console runtime, complete classic-template bridge, and single-owner WebSocket reconnect behavior." \
+      org.opencontainers.image.description="PastureStack server compatibility image with the reviewed Ember 6.12 LTS Web Console runtime, writable OpenID Connect provider configuration, and broker-aware terminal recovery." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.328" \
+      org.opencontainers.image.version="v1.6.329" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.325"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.328
-ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.39
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.329
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.40
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
 ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c

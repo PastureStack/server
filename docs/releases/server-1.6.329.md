@@ -1,18 +1,18 @@
-# PastureStack Server v1.6.328
+# PastureStack Server v1.6.329
 
 This release retains the complete `v1.6.325` database, authentication,
 authorization, orchestration, host-agent, API Explorer, and workload behavior.
-It replaces the embedded Web Console and advances the pinned first-party
+It replaces only the embedded Web Console and retains the pinned first-party
 Catalog snapshot without changing persisted workload definitions.
 
 ## Runtime coordinates
 
 - Base image: `ghcr.io/pasturestack/server:v1.6.325`
-- Runtime image: `ghcr.io/pasturestack/server:v1.6.328`
-- Web Console: `1.6.56-pasturestack.39`
-- Web Console source: `ee079c3f51887958a7afb3902e71e1878e7feaa3`
+- Runtime image: `ghcr.io/pasturestack/server:v1.6.329`
+- Web Console: `1.6.56-pasturestack.40`
+- Web Console source: `16bd7b1e4415e38bd468117b4e1defb04cb4b3aa`
 - Web Console artifact SHA-256:
-  `eb06c53e4007fa7c0a51be67d3eb69c0e6334d7b74c932cf28a7f5ab7a411989`
+  `aa36e3f3d051ab69fafa54ff0a2bd450d34969b31bf38ef2744e416fa447690c`
 - Catalog snapshot: `57707ddf891e36066a144d7821adc458dbf8da9c`
 
 Operational image coordinates use semantic version tags. Hashes are integrity
@@ -31,14 +31,17 @@ The classic action shim distinguishes caller-supplied closure actions from
 native component prototype event methods. Text input therefore updates its
 bound value without recursively re-entering the same `input` handler.
 
-Project-subscription reconnects retain one socket owner. A disconnect callback
-may replace the active socket without leaving a competing reconnect timer, and
-a delayed close event from an older socket cannot clear a newer connection.
-Interactive terminal sessions remain intentionally single-use: an expired
-session identifier is not reconnected and a new terminal creates a new
-authenticated session.
+The OpenID Connect provider configuration now has a dedicated writable model,
+so its configured display name no longer collides with the read-only display
+name derived for infrastructure resources during route setup.
 
-The exact source passed all 292 Chrome tests. Two clean production builds were
+Project-subscription reconnects retain one socket owner. A saved terminal now
+probes the same-origin broker before reopening its WebSocket. Missing broker
+state is recreated through the existing container execute action, credential
+conflicts rotate the random browser-side session identity, ended sessions stay
+available as history, and transport retries stop after four attempts.
+
+The exact source passed all 295 Chrome tests and 783 assertions. Two clean production builds were
 byte-identical. The packaged archive contains 13 production locale files, no
 pseudo-locale, no source maps, and the verified upstream license and provenance
 files required by the Server image assembly gate.
@@ -72,9 +75,9 @@ changed by this patch.
 - An isolated candidate preserves the expected API object counts and exposes
   every retained Catalog version route.
 - Browser acceptance covers login failure handling, Traditional Chinese,
-  Catalog, API Explorer, a forced project-subscription reconnect, and a newly
-  created terminal WebSocket session.
-- Formal `8080` cutover keeps the proven `v1.6.325` container stopped as an
+  Catalog, API Explorer, the OpenID Connect settings route, a forced
+  project-subscription reconnect, and recovery of a stale terminal session.
+- Formal `8080` cutover keeps the proven `v1.6.328` image available as an
   exact rollback target until post-deployment acceptance completes.
 
 PastureStack is an independent community effort to preserve, audit, and

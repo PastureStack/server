@@ -26,19 +26,19 @@ require_marker "$dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.325' \
     SERVER_WEB_CONSOLE_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.328"' \
+    'org.opencontainers.image.version="v1.6.329"' \
     SERVER_WEB_CONSOLE_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.328' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.329' \
     SERVER_WEB_CONSOLE_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.39' \
+    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.40' \
     SERVER_WEB_CONSOLE_PATCH_PACKAGE_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=eb06c53e4007fa7c0a51be67d3eb69c0e6334d7b74c932cf28a7f5ab7a411989' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=aa36e3f3d051ab69fafa54ff0a2bd450d34969b31bf38ef2744e416fa447690c' \
     SERVER_WEB_CONSOLE_PATCH_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=ee079c3f51887958a7afb3902e71e1878e7feaa3' \
+    'ARG WEB_CONSOLE_COMMIT=16bd7b1e4415e38bd468117b4e1defb04cb4b3aa' \
     SERVER_WEB_CONSOLE_PATCH_COMMIT_MISSING
 require_marker "$dockerfile" \
     'ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c' \
@@ -107,6 +107,18 @@ require_marker "$build_script" \
 require_marker "$build_script" \
     'websocket_reconnect=single_owner' \
     SERVER_WEB_CONSOLE_PATCH_WEBSOCKET_GATE_MISSING
+require_marker "$dockerfile" \
+    'ui/models/oidcconfig' \
+    SERVER_WEB_CONSOLE_PATCH_OIDC_MODEL_GATE_MISSING
+require_marker "$build_script" \
+    'oidc_writable_model=1' \
+    SERVER_WEB_CONSOLE_PATCH_OIDC_IMAGE_GATE_MISSING
+require_marker "$dockerfile" \
+    'X-PastureStack-Session-Secret' \
+    SERVER_WEB_CONSOLE_PATCH_TERMINAL_PROBE_GATE_MISSING
+require_marker "$build_script" \
+    'terminal_recovery=broker_probe' \
+    SERVER_WEB_CONSOLE_PATCH_TERMINAL_IMAGE_GATE_MISSING
 require_marker "$build_script" \
     'legacy_catalog_versions=retained' \
     SERVER_WEB_CONSOLE_PATCH_CATALOG_VERSION_GATE_MISSING
@@ -128,4 +140,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_OK release=v1.6.328 base=v1.6.325 web_console=1.6.56-pasturestack.39 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c ember_lts=6.12 websocket_reconnect=single_owner legacy_catalog_versions=retained theme_css=4 legal_sources=8 runtime_digest_coordinates=0\n'
+printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_OK release=v1.6.329 base=v1.6.325 web_console=1.6.56-pasturestack.40 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained theme_css=4 legal_sources=8 runtime_digest_coordinates=0\n'
