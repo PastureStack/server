@@ -1,14 +1,14 @@
 # syntax=docker/dockerfile:1.7
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.335
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.336
 FROM ${BASE_IMAGE}
 
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.47
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.47.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=8303af1fd61cfb6b48c79de8eaf68541539c6277386305149247f5eaad2b9277
-ARG WEB_CONSOLE_COMMIT=d22b1e3c50c7b0dceeb38d429cac67442c932c2a
+ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.48
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.48.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=156b46116aa7fa88c33393483afbc1bd120ab96bc8e042b3ec9f67e54faa99ea
+ARG WEB_CONSOLE_COMMIT=2334be807ac06edbee790a72f1f9e5ffdddfd8e4
 
 RUN set -eu; \
     archive=/tmp/web-console.tar.gz; \
@@ -156,6 +156,8 @@ RUN set -eu; \
     grep -aF 'mergeCatalogLocalizationLabels' "${ui_entry}" >/dev/null; \
     grep -aF 'catalogQuestionLocalizationLabels' "${ui_entry}" >/dev/null; \
     grep -aF 'templateRequestSerial' "${ui_entry}" >/dev/null; \
+    grep -aF 'ui/host/containers/route' "${ui_entry}" >/dev/null; \
+    grep -aF 'hostId:e.get' "${ui_entry}" >/dev/null; \
     grep -aF '_filteredShouldChangeContent' "${vendor_entry}" >/dev/null; \
     grep -aF '"body.[]","arranged.[]","sortBy","descending","sortRevision"' "${vendor_entry}" >/dev/null; \
     grep -aF 'run.throttle(this,this._updateFiltered,100,!1)' "${vendor_entry}" >/dev/null; \
@@ -223,14 +225,14 @@ RUN set -eu; \
     rm -rf "${archive}" "${listing}" "${stage}"
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
-      org.opencontainers.image.description="PastureStack server compatibility image with late-bound sortable-table refresh and WCAG AA Catalog code blocks." \
+      org.opencontainers.image.description="PastureStack server compatibility image with filtered host-container preloading and late-bound table refresh." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.336" \
+      org.opencontainers.image.version="v1.6.337" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
-      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.335"
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.336"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.336
-ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.47
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.337
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.48
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
 ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c
