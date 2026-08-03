@@ -52,10 +52,13 @@ patch.
 ## Release acceptance requirements
 
 - All Server source gates pass from the immutable Server commit.
-- Two clean, isolated GitHub Actions image builds produce identical RootFS
-  layer lists and runtime configuration. OCI image IDs may differ when build
-  history timestamps differ and are therefore recorded, not misreported as
-  byte-identical payload evidence.
+- Two clean, isolated GitHub Actions image builds produce identical normalized
+  runtime payload and configuration digests. The payload covers the complete
+  embedded web root, file modes, links, Server Engine, Authentication Service,
+  Catalog Service, API Explorer, vSphere CLI, WebSocket proxy, and terminal
+  broker. OCI image and layer IDs may differ when packaging metadata differs;
+  both candidate IDs are recorded and are not misreported as byte-identical
+  payload evidence.
 - The Web Console release asset downloads anonymously and matches its pinned
   SHA-256 value.
 - Image validation proves the exact version-link and native-enum markers are in

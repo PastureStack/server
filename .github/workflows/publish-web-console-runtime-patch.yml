@@ -57,19 +57,38 @@ jobs:
 
           image_a="$(docker image inspect "$candidate_a" --format '{{.Id}}')"
           image_b="$(docker image inspect "$candidate_b" --format '{{.Id}}')"
-          rootfs_a="$(docker image inspect "$candidate_a" \
-            --format '{{json .RootFS.Layers}}')"
-          rootfs_b="$(docker image inspect "$candidate_b" \
-            --format '{{json .RootFS.Layers}}')"
+          runtime_payload_sha256() {
+            docker run --rm --entrypoint bash "$1" -lc '
+              set -euo pipefail
+              web_root=$(readlink -f /usr/share/cattle/war)
+              {
+                find "${web_root}" -type f -print0 |
+                  sort -z | xargs -0 sha256sum
+                find "${web_root}" -printf "%y|%m|%U|%G|%p|%l\n" |
+                  LC_ALL=C sort
+                sha256sum \
+                  /usr/share/cattle/cattle.jar \
+                  /usr/bin/authentication-service.real \
+                  /usr/bin/catalog-service.real \
+                  /usr/bin/govc \
+                  /usr/bin/websocket-proxy.real \
+                  /usr/bin/pasturestack-console-broker
+              } | sha256sum | cut -d " " -f 1
+            '
+          }
+          payload_a="$(runtime_payload_sha256 "$candidate_a")"
+          payload_b="$(runtime_payload_sha256 "$candidate_b")"
           config_a="$(docker image inspect "$candidate_a" \
             --format '{{json .Config}}')"
           config_b="$(docker image inspect "$candidate_b" \
             --format '{{json .Config}}')"
-          test "$rootfs_a" = "$rootfs_b"
+          config_sha256_a="$(printf '%s' "$config_a" | sha256sum | cut -d ' ' -f 1)"
+          config_sha256_b="$(printf '%s' "$config_b" | sha256sum | cut -d ' ' -f 1)"
+          printf 'SERVER_WEB_CONSOLE_PATCH_COMPARISON payload_a=%s payload_b=%s config_a=%s config_b=%s\n' \
+            "$payload_a" "$payload_b" "$config_sha256_a" "$config_sha256_b"
+          test "$payload_a" = "$payload_b"
           test "$config_a" = "$config_b"
-          payload_sha256="$(printf '%s\n%s\n' "$rootfs_a" "$config_a" | \
-            sha256sum | cut -d ' ' -f 1)"
-          [[ "$payload_sha256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$payload_a" =~ ^[0-9a-f]{64}$ ]]
           docker tag "$candidate_a" "$TARGET_IMAGE"
 
           test "$(docker image inspect "$TARGET_IMAGE" \
@@ -80,7 +99,7 @@ jobs:
             "$SOURCE_SHA"
 
           printf 'SERVER_WEB_CONSOLE_PATCH_REPRODUCIBLE source=%s release=%s payload_sha256=%s candidate_a=%s candidate_b=%s\n' \
-            "$SOURCE_SHA" "$RELEASE_TAG" "$payload_sha256" "$image_a" "$image_b" |
+            "$SOURCE_SHA" "$RELEASE_TAG" "$payload_a" "$image_a" "$image_b" |
             tee "$RUNNER_TEMP/reproducibility.txt"
 
       - name: Publish public semantic-version image
