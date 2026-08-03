@@ -26,11 +26,11 @@ node_agent_windows_artifact=${NODE_AGENT_WINDOWS_ARTIFACT:-node-agent-0.13.22-wi
 node_agent_windows_artifact_sha256=${NODE_AGENT_WINDOWS_ARTIFACT_SHA256:-36230c05845c6895988edc06c1d8094cccd66899c2f268e3eb7644ca1e7b7c39}
 node_agent_commit=${NODE_AGENT_COMMIT:-d370dc6772aea00381a97769b9bf827f35440656}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.53}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.53.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-8c036469d3d5bd02cadb1c10d643475c1ee3651159d69cf4400d3d1fb4caebad}
-web_console_commit=${WEB_CONSOLE_COMMIT:-f1fa37929c134f9adf64e7e8ed4be8f9a7d84bdd}
-image=${IMAGE:-pasturestack-validation/server:v1.6.342}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.55}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.55.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-2aa211fc58dcd5544116d23f56ce25f7a51c8354fb103eac8f1c8426ced94ed0}
+web_console_commit=${WEB_CONSOLE_COMMIT:-b96f433db2cfce1c2c1815f76046f3e707706f2f}
+image=${IMAGE:-pasturestack-validation/server:v1.6.343}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -95,7 +95,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.342
+    v1.6.343
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -107,7 +107,7 @@ image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 catalog_json='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"57707ddf891e36066a144d7821adc458dbf8da9c"}}}'
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.342 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.343 \
     CATTLE_API_UI_VERSION=1.1.15 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15 \
     CATTLE_CATTLE_VERSION=v0.183.274 \
@@ -120,7 +120,7 @@ for marker in \
     PASTURESTACK_NODE_AGENT_COMMIT="${node_agent_commit}" \
     PASTURESTACK_NODE_AGENT_LINUX_ARTIFACT_SHA256="${node_agent_linux_artifact_sha256}" \
     PASTURESTACK_NODE_AGENT_WINDOWS_ARTIFACT_SHA256="${node_agent_windows_artifact_sha256}" \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.53 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.55 \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
     PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.2.5 \
@@ -298,6 +298,9 @@ docker run --rm --entrypoint bash "$image" -lc '
     require_ui_marker "portpreflight"
     require_ui_marker "buildPreflightInput"
     require_ui_marker "preflightChanged"
+    require_ui_marker "invokePassedAction"
+    require_ui_marker "storageTablePerPage:l("
+    require_ui_marker "computed(e,{get(){return o(this.get(e))},set(t,n)"
     require_ui_marker "ui/host/containers/route"
     require_ui_marker "followLink(\"instances\")"
     echo "SERVER_IMAGE_GATE_STAGE=web-console-markers-complete"
@@ -324,7 +327,8 @@ docker run --rm --entrypoint bash "$image" -lc '
     require_vendor_marker "_syncPagedContent(e){let t=this.get(\"pagedContent\")"
     require_vendor_marker "t.get(\"content\")!==e&&t.set(\"content\",e)"
     require_vendor_marker "t.get(\"page\")!==r&&t.set(\"page\",r),t.get(\"perPage\")!==n&&t.set(\"perPage\",n)"
-    require_vendor_marker "this.set(\"filtered\",e),this._syncPagedContent(e)"
+    require_vendor_marker "clampPageToContentLength"
+    require_vendor_marker "this.clampPageToContentLength(e.length),this.set(\"filtered\",e),this._syncPagedContent(e)"
     require_ui_marker "storageTableRevision:0"
     require_ui_marker "_removeSuccessfulVolumes(e)"
     require_ui_marker "onRemoved:e=>"
@@ -387,7 +391,7 @@ docker run --rm --entrypoint bash "$image" -lc '
     echo "SERVER_IMAGE_GATE_STAGE=authentication-service-complete"
 '
 
-printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s engine_commit=%s engine_sha256=%s node_agent_commit=%s node_agent_linux_sha256=%s node_agent_windows_sha256=%s web_console_commit=%s web_console_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c port_preflight=authoritative node_inspection=host.port.check api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_input=read_only storage_bulk_remove_refresh=per_success host_container_relationship=follow_link theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8\n' \
+printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s engine_commit=%s engine_sha256=%s node_agent_commit=%s node_agent_linux_sha256=%s node_agent_windows_sha256=%s web_console_commit=%s web_console_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c port_preflight=authoritative node_inspection=host.port.check port_preflight_closure_actions=direct api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=writable_normalized storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8\n' \
     "$image" "$revision" "$base_image" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "$node_agent_commit" "$node_agent_linux_artifact_sha256" \
