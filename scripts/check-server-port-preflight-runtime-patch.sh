@@ -26,19 +26,19 @@ require_marker "$dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.341' \
     SERVER_PORT_PREFLIGHT_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.343"' \
+    'org.opencontainers.image.version="v1.6.344"' \
     SERVER_PORT_PREFLIGHT_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.343' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.344' \
     SERVER_PORT_PREFLIGHT_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.55' \
+    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.56' \
     SERVER_WEB_CONSOLE_PATCH_PACKAGE_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=2aa211fc58dcd5544116d23f56ce25f7a51c8354fb103eac8f1c8426ced94ed0' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=ed46edb896afc2ac2d5dd887d42bc594e16fad12ca986a7967ef5d5be6160a43' \
     SERVER_WEB_CONSOLE_PATCH_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=b96f433db2cfce1c2c1815f76046f3e707706f2f' \
+    'ARG WEB_CONSOLE_COMMIT=0ed6f5ea8bf96122045ee979f83c44461a4a204a' \
     SERVER_WEB_CONSOLE_PATCH_COMMIT_MISSING
 require_marker "$dockerfile" \
     'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.274' \
@@ -78,7 +78,7 @@ for marker in \
     require_marker "$dockerfile" "$marker" \
         SERVER_PORT_PREFLIGHT_PATCH_NODE_AGENT_ARTIFACT_GATE_MISSING
 done
-for marker in portpreflight buildPreflightInput preflightChanged invokePassedAction 'storageTablePerPage:l(' clampPageToContentLength; do
+for marker in portpreflight buildPreflightInput preflightChanged invokePassedAction setPorts 'storageTablePerPage:l(' clampPageToContentLength; do
     require_marker "$dockerfile" "$marker" \
         SERVER_PORT_PREFLIGHT_PATCH_WEB_CONSOLE_GATE_MISSING
     require_marker "$build_script" "$marker" \
@@ -354,4 +354,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_OK release=v1.6.343 base=v1.6.341 engine=0.183.274 node_agent=0.13.22 web_console=1.6.56-pasturestack.55 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c port_preflight=authoritative node_inspection=host.port.check port_preflight_closure_actions=direct ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=broker_probe console_broker=unchanged_recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=writable_normalized storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'
+printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_OK release=v1.6.344 base=v1.6.341 engine=0.183.274 node_agent=0.13.22 web_console=1.6.56-pasturestack.56 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c port_preflight=authoritative node_inspection=host.port.check port_preflight_closure_actions=direct named_port_callback=1 ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=broker_probe console_broker=unchanged_recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=writable_normalized storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'

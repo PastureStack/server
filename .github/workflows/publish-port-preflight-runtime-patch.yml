@@ -17,9 +17,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
-      RELEASE_TAG: v1.6.343
+      RELEASE_TAG: v1.6.344
       SOURCE_SHA: ${{ github.sha }}
-      TARGET_IMAGE: ghcr.io/pasturestack/server:v1.6.343
+      TARGET_IMAGE: ghcr.io/pasturestack/server:v1.6.344
 
     steps:
       - name: Check out immutable Server source

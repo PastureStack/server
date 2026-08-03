@@ -26,11 +26,11 @@ node_agent_windows_artifact=${NODE_AGENT_WINDOWS_ARTIFACT:-node-agent-0.13.22-wi
 node_agent_windows_artifact_sha256=${NODE_AGENT_WINDOWS_ARTIFACT_SHA256:-36230c05845c6895988edc06c1d8094cccd66899c2f268e3eb7644ca1e7b7c39}
 node_agent_commit=${NODE_AGENT_COMMIT:-d370dc6772aea00381a97769b9bf827f35440656}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.55}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.55.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-2aa211fc58dcd5544116d23f56ce25f7a51c8354fb103eac8f1c8426ced94ed0}
-web_console_commit=${WEB_CONSOLE_COMMIT:-b96f433db2cfce1c2c1815f76046f3e707706f2f}
-image=${IMAGE:-pasturestack-validation/server:v1.6.343}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.56}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.56.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-ed46edb896afc2ac2d5dd887d42bc594e16fad12ca986a7967ef5d5be6160a43}
+web_console_commit=${WEB_CONSOLE_COMMIT:-0ed6f5ea8bf96122045ee979f83c44461a4a204a}
+image=${IMAGE:-pasturestack-validation/server:v1.6.344}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -95,7 +95,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.343
+    v1.6.344
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -107,7 +107,7 @@ image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 catalog_json='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"57707ddf891e36066a144d7821adc458dbf8da9c"}}}'
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.343 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.344 \
     CATTLE_API_UI_VERSION=1.1.15 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15 \
     CATTLE_CATTLE_VERSION=v0.183.274 \
@@ -120,7 +120,7 @@ for marker in \
     PASTURESTACK_NODE_AGENT_COMMIT="${node_agent_commit}" \
     PASTURESTACK_NODE_AGENT_LINUX_ARTIFACT_SHA256="${node_agent_linux_artifact_sha256}" \
     PASTURESTACK_NODE_AGENT_WINDOWS_ARTIFACT_SHA256="${node_agent_windows_artifact_sha256}" \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.55 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.56 \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
     PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.2.5 \
@@ -299,6 +299,7 @@ docker run --rm --entrypoint bash "$image" -lc '
     require_ui_marker "buildPreflightInput"
     require_ui_marker "preflightChanged"
     require_ui_marker "invokePassedAction"
+    require_ui_marker "setPorts"
     require_ui_marker "storageTablePerPage:l("
     require_ui_marker "computed(e,{get(){return o(this.get(e))},set(t,n)"
     require_ui_marker "ui/host/containers/route"
