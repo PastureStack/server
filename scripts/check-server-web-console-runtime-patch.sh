@@ -23,22 +23,22 @@ require_marker()
 }
 
 require_marker "$dockerfile" \
-    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.339' \
+    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.340' \
     SERVER_WEB_CONSOLE_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.340"' \
+    'org.opencontainers.image.version="v1.6.341"' \
     SERVER_WEB_CONSOLE_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.340' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.341' \
     SERVER_WEB_CONSOLE_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.51' \
+    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.52' \
     SERVER_WEB_CONSOLE_PATCH_PACKAGE_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=3676d870f2326f47897f97da9a9fc16173d2edf3daccf0ed62754cac8e590f7a' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=77fa9f75e3803bb82906fa4f327e383ada244bb7aa9feed22e494967b843355b' \
     SERVER_WEB_CONSOLE_PATCH_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=fe7f366d9d976404a0bfb6b2763999cd99e9efa0' \
+    'ARG WEB_CONSOLE_COMMIT=37f6a581aa1318dd575a179677b4b439af6e0b2d' \
     SERVER_WEB_CONSOLE_PATCH_COMMIT_MISSING
 require_marker "$dockerfile" \
     'ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c' \
@@ -176,7 +176,7 @@ require_marker "$build_script" \
 for sortable_marker in \
     _filteredShouldChangeContent \
     'arranged.[]' \
-    'didReceiveAttrs(){this._super(...arguments),this._updateFiltered()}' \
+    'didReceiveAttrs(){this._super(...arguments),this._syncRequestedPageSize(),this._updateFiltered()}' \
     'run.throttle(this,this._updateFiltered,100,!1)' \
     'run.debounce(this,this._updateFiltered,100,!1)'; do
     require_marker "$dockerfile" \
@@ -221,6 +221,41 @@ require_marker "$build_script" \
 require_marker "$build_script" \
     'sortable_table_pagination=explicit_sync' \
     SERVER_WEB_CONSOLE_PATCH_PAGINATION_RESULT_MISSING
+for page_size_marker in \
+    '_syncRequestedPageSize(){let e=this.get("perPage")' \
+    'this._lastRequestedPageSizeInput!==e&&(this._lastRequestedPageSizeInput=e,this._applyRequestedPageSize(e))' \
+    'this.setProperties({page:1,effectivePerPage:0===t?this.get("allPageSizeValue"):t,selectedPageSize:t})'; do
+    require_marker "$dockerfile" \
+        "$page_size_marker" \
+        SERVER_WEB_CONSOLE_PATCH_PAGE_SIZE_ARTIFACT_GATE_MISSING
+    require_marker "$build_script" \
+        "${page_size_marker//\"/\\\"}" \
+        SERVER_WEB_CONSOLE_PATCH_PAGE_SIZE_IMAGE_GATE_MISSING
+done
+require_marker "$dockerfile" \
+    'Rejected caller-owned page-size mutation found in Web Console' \
+    SERVER_WEB_CONSOLE_PATCH_PAGE_SIZE_MUTATION_REJECTION_MISSING
+require_marker "$build_script" \
+    'Rejected caller-owned page-size mutation found in image' \
+    SERVER_WEB_CONSOLE_PATCH_PAGE_SIZE_IMAGE_MUTATION_REJECTION_MISSING
+for storage_marker in \
+    storageTableRevision:0 \
+    '_removeSuccessfulVolumes(e)' \
+    'onRemoved:e=>' \
+    'this.get("opts.onRemoved")'; do
+    require_marker "$dockerfile" \
+        "$storage_marker" \
+        SERVER_WEB_CONSOLE_PATCH_STORAGE_REFRESH_ARTIFACT_GATE_MISSING
+    require_marker "$build_script" \
+        "${storage_marker//\"/\\\"}" \
+        SERVER_WEB_CONSOLE_PATCH_STORAGE_REFRESH_IMAGE_GATE_MISSING
+done
+require_marker "$build_script" \
+    'storage_table_page_size_input=read_only' \
+    SERVER_WEB_CONSOLE_PATCH_PAGE_SIZE_RESULT_MISSING
+require_marker "$build_script" \
+    'storage_bulk_remove_refresh=per_success' \
+    SERVER_WEB_CONSOLE_PATCH_STORAGE_REFRESH_RESULT_MISSING
 require_marker "$dockerfile" \
     'ui/host/containers/route' \
     SERVER_WEB_CONSOLE_PATCH_HOST_CONTAINER_RELATIONSHIP_ARTIFACT_ROUTE_GATE_MISSING
@@ -272,4 +307,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_OK release=v1.6.340 base=v1.6.339 web_console=1.6.56-pasturestack.51 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync host_container_relationship=follow_link unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'
+printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_OK release=v1.6.341 base=v1.6.340 web_console=1.6.56-pasturestack.52 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_input=read_only storage_bulk_remove_refresh=per_success host_container_relationship=follow_link unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'

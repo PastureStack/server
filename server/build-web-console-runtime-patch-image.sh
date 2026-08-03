@@ -12,13 +12,13 @@ fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
-base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.339}
+base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.340}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.51}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.51.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-3676d870f2326f47897f97da9a9fc16173d2edf3daccf0ed62754cac8e590f7a}
-web_console_commit=${WEB_CONSOLE_COMMIT:-fe7f366d9d976404a0bfb6b2763999cd99e9efa0}
-image=${IMAGE:-pasturestack-validation/server:v1.6.340}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.52}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.52.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-77fa9f75e3803bb82906fa4f327e383ada244bb7aa9feed22e494967b843355b}
+web_console_commit=${WEB_CONSOLE_COMMIT:-37f6a581aa1318dd575a179677b4b439af6e0b2d}
+image=${IMAGE:-pasturestack-validation/server:v1.6.341}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -27,7 +27,7 @@ build_options=()
 [[ "$web_console_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$web_console_release_tag" =~ ^v[0-9][0-9A-Za-z.-]*$ ]]
 [[ "$web_console_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
-[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.339 ]]
+[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.340 ]]
 case "$web_console_release_base_url" in
     https://*) ;;
     http://127.0.0.1:*|http://localhost:*)
@@ -61,7 +61,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.340
+    v1.6.341
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -73,10 +73,10 @@ image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 catalog_json='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"57707ddf891e36066a144d7821adc458dbf8da9c"}}}'
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.340 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.341 \
     CATTLE_API_UI_VERSION=1.1.15 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15 \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.51 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.52 \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
     CATTLE_CATTLE_VERSION=v0.183.273 \
@@ -250,12 +250,23 @@ docker run --rm --entrypoint bash "$image" -lc '
     }
     require_vendor_marker "_filteredShouldChangeContent"
     require_vendor_marker "\"body\",\"body.[]\",\"arranged.[]\",\"sortBy\",\"descending\",\"sortRevision\""
-    require_vendor_marker "didReceiveAttrs(){this._super(...arguments),this._updateFiltered()}"
+    require_vendor_marker "didReceiveAttrs(){this._super(...arguments),this._syncRequestedPageSize(),this._updateFiltered()}"
+    require_vendor_marker "_syncRequestedPageSize(){let e=this.get(\"perPage\")"
+    require_vendor_marker "this._lastRequestedPageSizeInput!==e&&(this._lastRequestedPageSizeInput=e,this._applyRequestedPageSize(e))"
+    require_vendor_marker "this.setProperties({page:1,effectivePerPage:0===t?this.get(\"allPageSizeValue\"):t,selectedPageSize:t})"
+    if grep -aF "this.setProperties({page:1,perPage:" "${vendor_entry}"; then
+        echo "Rejected caller-owned page-size mutation found in image" >&2
+        exit 1
+    fi
     require_vendor_marker "_pagedOptionsShouldChange"
     require_vendor_marker "_syncPagedContent(e){let t=this.get(\"pagedContent\")"
     require_vendor_marker "t.get(\"content\")!==e&&t.set(\"content\",e)"
     require_vendor_marker "t.get(\"page\")!==r&&t.set(\"page\",r),t.get(\"perPage\")!==n&&t.set(\"perPage\",n)"
     require_vendor_marker "this.set(\"filtered\",e),this._syncPagedContent(e)"
+    require_ui_marker "storageTableRevision:0"
+    require_ui_marker "_removeSuccessfulVolumes(e)"
+    require_ui_marker "onRemoved:e=>"
+    require_ui_marker "this.get(\"opts.onRemoved\")"
     require_vendor_marker "arranged.[]"
     require_vendor_marker "run.throttle(this,this._updateFiltered,100,!1)"
     require_vendor_marker "run.debounce(this,this._updateFiltered,100,!1)"
@@ -299,6 +310,6 @@ docker run --rm --entrypoint bash "$image" -lc '
     echo "SERVER_IMAGE_GATE_STAGE=authentication-service-complete"
 '
 
-printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s web_console_commit=%s artifact_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync host_container_relationship=follow_link theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8\n' \
+printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s web_console_commit=%s artifact_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_input=read_only storage_bulk_remove_refresh=per_success host_container_relationship=follow_link theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8\n' \
     "$image" "$revision" "$base_image" "$web_console_commit" \
     "$web_console_artifact_sha256"

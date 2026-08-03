@@ -5,6 +5,11 @@ authorization, orchestration, host-agent, API Explorer, terminal broker,
 Catalog snapshot, and workload behavior. It replaces only the embedded Web
 Console to synchronize host-container rows into the rendered page.
 
+> **Superseded:** host storage acceptance later exposed a modern Ember setter
+> failure when the `All` page-size option wrote back through a caller-owned
+> computed value. Server `v1.6.341` keeps that input read-only and refreshes
+> each successfully removed volume in the visible table without a reload.
+
 ## Runtime coordinates
 
 - Base image: `ghcr.io/pasturestack/server:v1.6.339`
