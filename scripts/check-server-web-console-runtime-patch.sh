@@ -23,22 +23,22 @@ require_marker()
 }
 
 require_marker "$dockerfile" \
-    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.333' \
+    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.334' \
     SERVER_WEB_CONSOLE_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.334"' \
+    'org.opencontainers.image.version="v1.6.335"' \
     SERVER_WEB_CONSOLE_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.334' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.335' \
     SERVER_WEB_CONSOLE_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.45' \
+    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.46' \
     SERVER_WEB_CONSOLE_PATCH_PACKAGE_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=44d825c31749490dad5e7262d9e1d4bec1ffbaa94fab3d8e44bb8493ec920b6e' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=2c95ae6999d225b7670d90c4239d2206222b0598c26c4efcd54b4af6f247fb2c' \
     SERVER_WEB_CONSOLE_PATCH_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=7a388418b10168cab56853d4be553f65f1f2c48e' \
+    'ARG WEB_CONSOLE_COMMIT=70fcde1ff0fe541a53eae623ed27354171c536e7' \
     SERVER_WEB_CONSOLE_PATCH_COMMIT_MISSING
 require_marker "$dockerfile" \
     'ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c' \
@@ -176,6 +176,18 @@ require_marker "$build_script" \
 require_marker "$build_script" \
     'theme_css=4' \
     SERVER_WEB_CONSOLE_PATCH_THEME_COUNT_GATE_MISSING
+require_marker "$dockerfile" \
+    '--prism-code-background: #272822;' \
+    SERVER_WEB_CONSOLE_PATCH_CODE_BACKGROUND_GATE_MISSING
+require_marker "$dockerfile" \
+    'background: var(--prism-code-background);' \
+    SERVER_WEB_CONSOLE_PATCH_CODE_SURFACE_GATE_MISSING
+require_marker "$build_script" \
+    'code_block_contrast=wcag_aa' \
+    SERVER_WEB_CONSOLE_PATCH_CODE_CONTRAST_RESULT_MISSING
+require_marker "$build_script" \
+    'code_block_surface=commonmark_pre' \
+    SERVER_WEB_CONSOLE_PATCH_CODE_SURFACE_RESULT_MISSING
 
 digest_coordinate='@''sha256:'
 if grep -Fq "$digest_coordinate" "$dockerfile" "$build_script"; then
@@ -197,4 +209,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_OK release=v1.6.334 base=v1.6.333 web_console=1.6.56-pasturestack.45 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only unchanged_broker=1 theme_css=4 legal_sources=8 runtime_digest_coordinates=0\n'
+printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_OK release=v1.6.335 base=v1.6.334 web_console=1.6.56-pasturestack.46 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'

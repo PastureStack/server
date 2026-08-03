@@ -1,14 +1,14 @@
 # syntax=docker/dockerfile:1.7
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.333
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.334
 FROM ${BASE_IMAGE}
 
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.45
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.45.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=44d825c31749490dad5e7262d9e1d4bec1ffbaa94fab3d8e44bb8493ec920b6e
-ARG WEB_CONSOLE_COMMIT=7a388418b10168cab56853d4be553f65f1f2c48e
+ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.46
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.46.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=2c95ae6999d225b7670d90c4239d2206222b0598c26c4efcd54b4af6f247fb2c
+ARG WEB_CONSOLE_COMMIT=70fcde1ff0fe541a53eae623ed27354171c536e7
 
 RUN set -eu; \
     archive=/tmp/web-console.tar.gz; \
@@ -156,6 +156,16 @@ RUN set -eu; \
     grep -aF 'mergeCatalogLocalizationLabels' "${ui_entry}" >/dev/null; \
     grep -aF 'catalogQuestionLocalizationLabels' "${ui_entry}" >/dev/null; \
     grep -aF 'templateRequestSerial' "${ui_entry}" >/dev/null; \
+    for theme_asset in ui-light.css ui-light.rtl.css ui-dark.css ui-dark.rtl.css; do \
+        theme="${package_root}/assets/${theme_asset}"; \
+        grep -Fx '  --prism-code-foreground: #f8f8f2;' "${theme}" >/dev/null; \
+        grep -Fx '  --prism-code-background: #272822;' "${theme}" >/dev/null; \
+        grep -Fx '  --prism-code-border: #3e3d32;' "${theme}" >/dev/null; \
+        code_surface_rules="$(sed -n '/^pre {/,/^}/p' "${theme}")"; \
+        printf '%s\n' "${code_surface_rules}" | grep -Fx '  background: var(--prism-code-background);' >/dev/null; \
+        printf '%s\n' "${code_surface_rules}" | grep -Fx '  border-color: var(--prism-code-border);' >/dev/null; \
+        printf '%s\n' "${code_surface_rules}" | grep -Fx '  color: var(--prism-code-foreground);' >/dev/null; \
+    done; \
     resize_rule="$(sed -n '/^\.console-workspace-resize-handle {/,/^}/p' "${package_root}/assets/ui-light.css")"; \
     printf '%s\n' "${resize_rule}" | grep -Fx '  width: 11px;' >/dev/null; \
     printf '%s\n' "${resize_rule}" | grep -Fx '  height: 11px;' >/dev/null; \
@@ -209,14 +219,14 @@ RUN set -eu; \
     rm -rf "${archive}" "${listing}" "${stage}"
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
-      org.opencontainers.image.description="PastureStack server compatibility image with reviewed Catalog upgrade version mapping and immutable-revision localization in the Ember 6.12 LTS Web Console." \
+      org.opencontainers.image.description="PastureStack server compatibility image with WCAG AA Catalog code blocks in the Ember 6.12 LTS Web Console." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.334" \
+      org.opencontainers.image.version="v1.6.335" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
-      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.333"
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.334"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.334
-ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.45
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.335
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.46
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
 ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c
