@@ -52,7 +52,10 @@ patch.
 ## Release acceptance requirements
 
 - All Server source gates pass from the immutable Server commit.
-- Two clean, isolated GitHub Actions image builds produce the same image ID.
+- Two clean, isolated GitHub Actions image builds produce identical RootFS
+  layer lists and runtime configuration. OCI image IDs may differ when build
+  history timestamps differ and are therefore recorded, not misreported as
+  byte-identical payload evidence.
 - The Web Console release asset downloads anonymously and matches its pinned
   SHA-256 value.
 - Image validation proves the exact version-link and native-enum markers are in

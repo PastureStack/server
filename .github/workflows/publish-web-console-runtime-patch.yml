@@ -57,7 +57,19 @@ jobs:
 
           image_a="$(docker image inspect "$candidate_a" --format '{{.Id}}')"
           image_b="$(docker image inspect "$candidate_b" --format '{{.Id}}')"
-          test "$image_a" = "$image_b"
+          rootfs_a="$(docker image inspect "$candidate_a" \
+            --format '{{json .RootFS.Layers}}')"
+          rootfs_b="$(docker image inspect "$candidate_b" \
+            --format '{{json .RootFS.Layers}}')"
+          config_a="$(docker image inspect "$candidate_a" \
+            --format '{{json .Config}}')"
+          config_b="$(docker image inspect "$candidate_b" \
+            --format '{{json .Config}}')"
+          test "$rootfs_a" = "$rootfs_b"
+          test "$config_a" = "$config_b"
+          payload_sha256="$(printf '%s\n%s\n' "$rootfs_a" "$config_a" | \
+            sha256sum | cut -d ' ' -f 1)"
+          [[ "$payload_sha256" =~ ^[0-9a-f]{64}$ ]]
           docker tag "$candidate_a" "$TARGET_IMAGE"
 
           test "$(docker image inspect "$TARGET_IMAGE" \
@@ -67,8 +79,8 @@ jobs:
             --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
             "$SOURCE_SHA"
 
-          printf 'SERVER_WEB_CONSOLE_PATCH_REPRODUCIBLE source=%s release=%s image_id=%s\n' \
-            "$SOURCE_SHA" "$RELEASE_TAG" "$image_a" |
+          printf 'SERVER_WEB_CONSOLE_PATCH_REPRODUCIBLE source=%s release=%s payload_sha256=%s candidate_a=%s candidate_b=%s\n' \
+            "$SOURCE_SHA" "$RELEASE_TAG" "$payload_sha256" "$image_a" "$image_b" |
             tee "$RUNNER_TEMP/reproducibility.txt"
 
       - name: Publish public semantic-version image
