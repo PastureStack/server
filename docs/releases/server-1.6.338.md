@@ -5,6 +5,12 @@ authorization, orchestration, host-agent, API Explorer, terminal broker,
 Catalog snapshot, and workload behavior. It replaces only the embedded Web
 Console to restore directly opened host-container lists.
 
+> **Superseded:** authenticated browser acceptance later proved that this
+> release loaded the correct relationship but could still render an empty
+> table when the component replaced its initialization placeholder. Server
+> `v1.6.339` corrects that table lifecycle defect. API row counts alone must
+> not be treated as browser acceptance.
+
 ## Runtime coordinates
 
 - Base image: `ghcr.io/pasturestack/server:v1.6.337`
