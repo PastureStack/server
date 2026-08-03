@@ -12,13 +12,13 @@ fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
-base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.334}
+base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.335}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.46}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.46.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-2c95ae6999d225b7670d90c4239d2206222b0598c26c4efcd54b4af6f247fb2c}
-web_console_commit=${WEB_CONSOLE_COMMIT:-70fcde1ff0fe541a53eae623ed27354171c536e7}
-image=${IMAGE:-pasturestack-validation/server:v1.6.335}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.47}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.47.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-8303af1fd61cfb6b48c79de8eaf68541539c6277386305149247f5eaad2b9277}
+web_console_commit=${WEB_CONSOLE_COMMIT:-d22b1e3c50c7b0dceeb38d429cac67442c932c2a}
+image=${IMAGE:-pasturestack-validation/server:v1.6.336}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -27,7 +27,7 @@ build_options=()
 [[ "$web_console_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$web_console_release_tag" =~ ^v[0-9][0-9A-Za-z.-]*$ ]]
 [[ "$web_console_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
-[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.334 ]]
+[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.335 ]]
 case "$web_console_release_base_url" in
     https://*) ;;
     http://127.0.0.1:*|http://localhost:*)
@@ -61,7 +61,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.335
+    v1.6.336
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -73,10 +73,10 @@ image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 catalog_json='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"57707ddf891e36066a144d7821adc458dbf8da9c"}}}'
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.335 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.336 \
     CATTLE_API_UI_VERSION=1.1.15 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15 \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.46 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.47 \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
     CATTLE_CATTLE_VERSION=v0.183.273 \
@@ -237,6 +237,20 @@ docker run --rm --entrypoint bash "$image" -lc '
     require_ui_marker "catalogQuestionLocalizationLabels"
     require_ui_marker "templateRequestSerial"
     echo "SERVER_IMAGE_GATE_STAGE=web-console-markers-complete"
+    require_vendor_marker()
+    {
+        marker=$1
+        if ! grep -aF "${marker}" "${vendor_entry}" >/dev/null; then
+            echo "SERVER_IMAGE_GATE_FAILED=web-console-vendor-marker marker=${marker}" >&2
+            exit 1
+        fi
+        echo "SERVER_IMAGE_GATE_VENDOR_MARKER_OK=${marker}"
+    }
+    require_vendor_marker "_filteredShouldChangeContent"
+    require_vendor_marker '"body.[]","arranged.[]","sortBy","descending","sortRevision"'
+    require_vendor_marker "run.throttle(this,this._updateFiltered,100,!1)"
+    require_vendor_marker "run.debounce(this,this._updateFiltered,100,!1)"
+    echo "SERVER_IMAGE_GATE_STAGE=sortable-table-refresh-complete"
     for theme_asset in ui-light.css ui-light.rtl.css ui-dark.css ui-dark.rtl.css; do
         theme="${web_root}/assets/${theme_asset}"
         grep -Fx "  --prism-code-foreground: #f8f8f2;" "${theme}" >/dev/null
@@ -276,6 +290,6 @@ docker run --rm --entrypoint bash "$image" -lc '
     echo "SERVER_IMAGE_GATE_STAGE=authentication-service-complete"
 '
 
-printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s web_console_commit=%s artifact_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8\n' \
+printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s web_console_commit=%s artifact_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8\n' \
     "$image" "$revision" "$base_image" "$web_console_commit" \
     "$web_console_artifact_sha256"

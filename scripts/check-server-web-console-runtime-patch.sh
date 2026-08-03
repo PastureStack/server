@@ -23,22 +23,22 @@ require_marker()
 }
 
 require_marker "$dockerfile" \
-    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.334' \
+    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.335' \
     SERVER_WEB_CONSOLE_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.335"' \
+    'org.opencontainers.image.version="v1.6.336"' \
     SERVER_WEB_CONSOLE_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.335' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.336' \
     SERVER_WEB_CONSOLE_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.46' \
+    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.47' \
     SERVER_WEB_CONSOLE_PATCH_PACKAGE_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=2c95ae6999d225b7670d90c4239d2206222b0598c26c4efcd54b4af6f247fb2c' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=8303af1fd61cfb6b48c79de8eaf68541539c6277386305149247f5eaad2b9277' \
     SERVER_WEB_CONSOLE_PATCH_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=70fcde1ff0fe541a53eae623ed27354171c536e7' \
+    'ARG WEB_CONSOLE_COMMIT=d22b1e3c50c7b0dceeb38d429cac67442c932c2a' \
     SERVER_WEB_CONSOLE_PATCH_COMMIT_MISSING
 require_marker "$dockerfile" \
     'ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c' \
@@ -173,6 +173,21 @@ require_marker "$build_script" \
 require_marker "$build_script" \
     'catalog_version_requests=latest_only' \
     SERVER_WEB_CONSOLE_PATCH_CATALOG_VERSION_REQUEST_RESULT_MISSING
+for sortable_marker in \
+    _filteredShouldChangeContent \
+    '"body.[]","arranged.[]","sortBy","descending","sortRevision"' \
+    'run.throttle(this,this._updateFiltered,100,!1)' \
+    'run.debounce(this,this._updateFiltered,100,!1)'; do
+    require_marker "$dockerfile" \
+        "$sortable_marker" \
+        SERVER_WEB_CONSOLE_PATCH_SORTABLE_TABLE_ARTIFACT_GATE_MISSING
+    require_marker "$build_script" \
+        "$sortable_marker" \
+        SERVER_WEB_CONSOLE_PATCH_SORTABLE_TABLE_IMAGE_GATE_MISSING
+done
+require_marker "$build_script" \
+    'sortable_table_late_body=refreshed' \
+    SERVER_WEB_CONSOLE_PATCH_SORTABLE_TABLE_RESULT_MISSING
 require_marker "$build_script" \
     'theme_css=4' \
     SERVER_WEB_CONSOLE_PATCH_THEME_COUNT_GATE_MISSING
@@ -209,4 +224,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_OK release=v1.6.335 base=v1.6.334 web_console=1.6.56-pasturestack.46 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'
+printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_OK release=v1.6.336 base=v1.6.335 web_console=1.6.56-pasturestack.47 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'
