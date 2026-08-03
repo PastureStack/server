@@ -143,9 +143,15 @@ for catalog_marker in \
     require_marker "$dockerfile" \
         "$catalog_marker" \
         SERVER_WEB_CONSOLE_PATCH_CATALOG_SELECTION_ARTIFACT_GATE_MISSING
-    require_marker "$build_script" \
-        "$catalog_marker" \
-        SERVER_WEB_CONSOLE_PATCH_CATALOG_SELECTION_IMAGE_GATE_MISSING
+    if [[ "$catalog_marker" == '["choice"]' ]]; then
+        require_marker "$build_script" \
+            'require_ui_marker "[\"choice\"]"' \
+            SERVER_WEB_CONSOLE_PATCH_CATALOG_SELECTION_IMAGE_GATE_MISSING
+    else
+        require_marker "$build_script" \
+            "$catalog_marker" \
+            SERVER_WEB_CONSOLE_PATCH_CATALOG_SELECTION_IMAGE_GATE_MISSING
+    fi
 done
 require_marker "$build_script" \
     'catalog_version_select=reactive_upgrade_links' \

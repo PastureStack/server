@@ -212,16 +212,25 @@ docker run --rm --entrypoint bash "$image" -lc '
     vendor_entry=$(find "${web_root}/assets" -maxdepth 1 -type f -name "vendor-*.js" -print -quit)
     test -n "${ui_entry}"
     test -n "${vendor_entry}"
-    grep -aF "Subscribe disconnected" "${ui_entry}" >/dev/null
-    grep -aF "Socket refusing to connect while another socket exists" "${ui_entry}" >/dev/null
-    grep -aF "ui/models/oidcconfig" "${ui_entry}" >/dev/null
-    grep -aF "X-PastureStack-Session-Secret" "${ui_entry}" >/dev/null
-    grep -aF "\"missing\"===t?\"create\"" "${ui_entry}" >/dev/null
-    grep -aF "catalog-version-options" "${ui_entry}" >/dev/null
-    grep -aF "upgradeVersionLinks" "${ui_entry}" >/dev/null
-    grep -aF " (current)" "${ui_entry}" >/dev/null
-    grep -aF "ui/components/schema/input-enum/template" "${ui_entry}" >/dev/null
-    grep -aF '["choice"]' "${ui_entry}" >/dev/null
+    require_ui_marker()
+    {
+        marker=$1
+        if ! grep -aF "${marker}" "${ui_entry}" >/dev/null; then
+            echo "SERVER_IMAGE_GATE_FAILED=web-console-marker marker=${marker}" >&2
+            exit 1
+        fi
+        echo "SERVER_IMAGE_GATE_MARKER_OK=${marker}"
+    }
+    require_ui_marker "Subscribe disconnected"
+    require_ui_marker "Socket refusing to connect while another socket exists"
+    require_ui_marker "ui/models/oidcconfig"
+    require_ui_marker "X-PastureStack-Session-Secret"
+    require_ui_marker "\"missing\"===t?\"create\""
+    require_ui_marker "catalog-version-options"
+    require_ui_marker "upgradeVersionLinks"
+    require_ui_marker " (current)"
+    require_ui_marker "ui/components/schema/input-enum/template"
+    require_ui_marker "[\"choice\"]"
     echo "SERVER_IMAGE_GATE_STAGE=web-console-markers-complete"
     resize_rule=$(sed -n "/^\\.console-workspace-resize-handle {/,/^}/p" "${web_root}/assets/ui-light.css")
     grep -Fx "  width: 11px;" <<<"${resize_rule}" >/dev/null
