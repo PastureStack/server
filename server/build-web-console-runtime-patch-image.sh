@@ -12,13 +12,13 @@ fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
-base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.332}
+base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.333}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.44}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.44.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-334ee4e93c2a96213b693839a60e8e8bd8bc3706b84bfb59d2e9ae7c824a5dd1}
-web_console_commit=${WEB_CONSOLE_COMMIT:-32901abe204df613aff1cffde95d4ec0116b6eff}
-image=${IMAGE:-pasturestack-validation/server:v1.6.333}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.45}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.45.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-44d825c31749490dad5e7262d9e1d4bec1ffbaa94fab3d8e44bb8493ec920b6e}
+web_console_commit=${WEB_CONSOLE_COMMIT:-7a388418b10168cab56853d4be553f65f1f2c48e}
+image=${IMAGE:-pasturestack-validation/server:v1.6.334}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -27,7 +27,7 @@ build_options=()
 [[ "$web_console_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$web_console_release_tag" =~ ^v[0-9][0-9A-Za-z.-]*$ ]]
 [[ "$web_console_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
-[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.332 ]]
+[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.333 ]]
 case "$web_console_release_base_url" in
     https://*) ;;
     http://127.0.0.1:*|http://localhost:*)
@@ -61,7 +61,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.333
+    v1.6.334
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -73,10 +73,10 @@ image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 catalog_json='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"57707ddf891e36066a144d7821adc458dbf8da9c"}}}'
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.333 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.334 \
     CATTLE_API_UI_VERSION=1.1.15 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15 \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.44 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.45 \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
     CATTLE_CATTLE_VERSION=v0.183.273 \
@@ -232,6 +232,10 @@ docker run --rm --entrypoint bash "$image" -lc '
     require_ui_marker "ui/components/schema/input-enum/template"
     require_ui_marker "[\"choice\"]"
     require_ui_marker "ui/utils/catalog-question-answer"
+    require_ui_marker "ui/utils/localized-catalog-field"
+    require_ui_marker "mergeCatalogLocalizationLabels"
+    require_ui_marker "catalogQuestionLocalizationLabels"
+    require_ui_marker "templateRequestSerial"
     echo "SERVER_IMAGE_GATE_STAGE=web-console-markers-complete"
     resize_rule=$(sed -n "/^\\.console-workspace-resize-handle {/,/^}/p" "${web_root}/assets/ui-light.css")
     grep -Fx "  width: 11px;" <<<"${resize_rule}" >/dev/null
@@ -262,6 +266,6 @@ docker run --rm --entrypoint bash "$image" -lc '
     echo "SERVER_IMAGE_GATE_STAGE=authentication-service-complete"
 '
 
-printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s web_console_commit=%s artifact_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid theme_css=4 legal_sources=8\n' \
+printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s web_console_commit=%s artifact_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only theme_css=4 legal_sources=8\n' \
     "$image" "$revision" "$base_image" "$web_console_commit" \
     "$web_console_artifact_sha256"

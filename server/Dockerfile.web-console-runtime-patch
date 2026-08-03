@@ -1,14 +1,14 @@
 # syntax=docker/dockerfile:1.7
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.332
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.333
 FROM ${BASE_IMAGE}
 
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.44
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.44.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=334ee4e93c2a96213b693839a60e8e8bd8bc3706b84bfb59d2e9ae7c824a5dd1
-ARG WEB_CONSOLE_COMMIT=32901abe204df613aff1cffde95d4ec0116b6eff
+ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.45
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.45.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=44d825c31749490dad5e7262d9e1d4bec1ffbaa94fab3d8e44bb8493ec920b6e
+ARG WEB_CONSOLE_COMMIT=7a388418b10168cab56853d4be553f65f1f2c48e
 
 RUN set -eu; \
     archive=/tmp/web-console.tar.gz; \
@@ -152,6 +152,10 @@ RUN set -eu; \
     grep -aF 'ui/components/schema/input-enum/template' "${ui_entry}" >/dev/null; \
     grep -aF '["choice"]' "${ui_entry}" >/dev/null; \
     grep -aF 'ui/utils/catalog-question-answer' "${ui_entry}" >/dev/null; \
+    grep -aF 'ui/utils/localized-catalog-field' "${ui_entry}" >/dev/null; \
+    grep -aF 'mergeCatalogLocalizationLabels' "${ui_entry}" >/dev/null; \
+    grep -aF 'catalogQuestionLocalizationLabels' "${ui_entry}" >/dev/null; \
+    grep -aF 'templateRequestSerial' "${ui_entry}" >/dev/null; \
     resize_rule="$(sed -n '/^\.console-workspace-resize-handle {/,/^}/p' "${package_root}/assets/ui-light.css")"; \
     printf '%s\n' "${resize_rule}" | grep -Fx '  width: 11px;' >/dev/null; \
     printf '%s\n' "${resize_rule}" | grep -Fx '  height: 11px;' >/dev/null; \
@@ -205,14 +209,14 @@ RUN set -eu; \
     rm -rf "${archive}" "${listing}" "${stage}"
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
-      org.opencontainers.image.description="PastureStack server compatibility image with reviewed Catalog upgrade versions and required-answer validation in the Ember 6.12 LTS Web Console." \
+      org.opencontainers.image.description="PastureStack server compatibility image with reviewed Catalog upgrade version mapping and immutable-revision localization in the Ember 6.12 LTS Web Console." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.333" \
+      org.opencontainers.image.version="v1.6.334" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
-      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.332"
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.333"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.333
-ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.44
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.334
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.45
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
 ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c
