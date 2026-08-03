@@ -14,10 +14,10 @@ revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.341}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
-orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.274}
-orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.274.jar}
-orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-9280d338fa4e1f2852c40240997f6eec51db1a01a7920708f8e766689037aec8}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-e4bb32f72f409de4fa78079fd28a4eced2dcb681}
+orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.275}
+orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.275.jar}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-c270547c11a63787a690973b37f0cf3c0d22f49940279bd2f055bbf8e590c0d5}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-ebec367ba740652e1d93a8ad9dbc68ea255c58e2}
 node_agent_release_base_url=${NODE_AGENT_RELEASE_BASE_URL:-https://github.com/PastureStack/node-agent/releases/download}
 node_agent_release_tag=${NODE_AGENT_RELEASE_TAG:-v0.13.22}
 node_agent_linux_artifact=${NODE_AGENT_LINUX_ARTIFACT:-node-agent-0.13.22.tar.gz}
@@ -30,7 +30,7 @@ web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.56}
 web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.56.tar.gz}
 web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-ed46edb896afc2ac2d5dd887d42bc594e16fad12ca986a7967ef5d5be6160a43}
 web_console_commit=${WEB_CONSOLE_COMMIT:-0ed6f5ea8bf96122045ee979f83c44461a4a204a}
-image=${IMAGE:-pasturestack-validation/server:v1.6.344}
+image=${IMAGE:-pasturestack-validation/server:v1.6.345}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -95,7 +95,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.344
+    v1.6.345
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -107,10 +107,10 @@ image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 catalog_json='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"57707ddf891e36066a144d7821adc458dbf8da9c"}}}'
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.344 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.345 \
     CATTLE_API_UI_VERSION=1.1.15 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15 \
-    CATTLE_CATTLE_VERSION=v0.183.274 \
+    CATTLE_CATTLE_VERSION=v0.183.275 \
     RC16_GO_AGENT_VERSION=0.13.22 \
     RC16_WINDOWS_AGENT_VERSION=0.13.22 \
     RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-0.13.22.tar.gz \
@@ -369,13 +369,16 @@ docker run --rm --entrypoint bash "$image" -lc '
     echo "SERVER_IMAGE_GATE_STAGE=api-explorer-complete"
     unzip -p /usr/share/cattle/cattle.jar META-INF/MANIFEST.MF |
         tr -d "\r" |
-        grep -Fx "Implementation-Version: 0.183.274" >/dev/null
+        grep -Fx "Implementation-Version: 0.183.275" >/dev/null
     api_logic=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-iaas-api-logic-0.183.274.jar" -print -quit)
+        -name "cattle-iaas-api-logic-0.183.275.jar" -print -quit)
     model=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-iaas-model-0.183.274.jar" -print -quit)
+        -name "cattle-iaas-model-0.183.275.jar" -print -quit)
+    resources=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
+        -name "cattle-resources-0.183.275.jar" -print -quit)
     test -n "${api_logic}"
     test -n "${model}"
+    test -n "${resources}"
     unzip -p "${api_logic}" \
         io/cattle/platform/iaas/api/port/PortPreflightService.class |
         grep -aF "host.port.check" >/dev/null
@@ -385,6 +388,20 @@ docker run --rm --entrypoint bash "$image" -lc '
     unzip -p "${model}" \
         io/cattle/platform/core/util/PortBindingAddress.class |
         grep -aF "normalize" >/dev/null
+    unzip -p "${resources}" schema/user/user-auth.json |
+        grep -F "\"portPreflightInput\" : \"r\"" >/dev/null
+    unzip -p "${resources}" schema/user/user-auth.json |
+        grep -F "\"portPreflightInput.ports\" : \"cr\"" >/dev/null
+    unzip -p "${resources}" schema/user/user-auth.json |
+        grep -F "\"portPreflightResult.conflicts\" : \"r\"" >/dev/null
+    unzip -p "${resources}" schema/project/project-auth.json |
+        grep -F "\"portPreflightInput\" : \"cr\"" >/dev/null
+    unzip -p "${resources}" schema/project/project-auth.json |
+        grep -F "\"portPreflightPort\" : \"cr\"" >/dev/null
+    unzip -p "${resources}" schema/project/project-auth.json |
+        grep -F "\"portPreflightResult\" : \"r\"" >/dev/null
+    unzip -p "${resources}" schema/project/project-auth.json |
+        grep -F "\"portPreflightConflict\" : \"r\"" >/dev/null
     echo "SERVER_IMAGE_GATE_STAGE=server-core-complete"
     test "$(/usr/bin/govc version)" = "govc 0.55.1-pasturestack.1"
     echo "SERVER_IMAGE_GATE_STAGE=vsphere-cli-complete"
@@ -392,7 +409,7 @@ docker run --rm --entrypoint bash "$image" -lc '
     echo "SERVER_IMAGE_GATE_STAGE=authentication-service-complete"
 '
 
-printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s engine_commit=%s engine_sha256=%s node_agent_commit=%s node_agent_linux_sha256=%s node_agent_windows_sha256=%s web_console_commit=%s web_console_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c port_preflight=authoritative node_inspection=host.port.check port_preflight_closure_actions=direct api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=writable_normalized storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8\n' \
+printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s engine_commit=%s engine_sha256=%s node_agent_commit=%s node_agent_linux_sha256=%s node_agent_windows_sha256=%s web_console_commit=%s web_console_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c port_preflight=authoritative port_preflight_schema_auth=project_visible node_inspection=host.port.check port_preflight_closure_actions=direct api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=writable_normalized storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8\n' \
     "$image" "$revision" "$base_image" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "$node_agent_commit" "$node_agent_linux_artifact_sha256" \

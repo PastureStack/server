@@ -26,10 +26,10 @@ require_marker "$dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.341' \
     SERVER_PORT_PREFLIGHT_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.344"' \
+    'org.opencontainers.image.version="v1.6.345"' \
     SERVER_PORT_PREFLIGHT_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.344' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.345' \
     SERVER_PORT_PREFLIGHT_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
     'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.56' \
@@ -41,13 +41,13 @@ require_marker "$dockerfile" \
     'ARG WEB_CONSOLE_COMMIT=0ed6f5ea8bf96122045ee979f83c44461a4a204a' \
     SERVER_WEB_CONSOLE_PATCH_COMMIT_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.274' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.275' \
     SERVER_PORT_PREFLIGHT_PATCH_ENGINE_RELEASE_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=9280d338fa4e1f2852c40240997f6eec51db1a01a7920708f8e766689037aec8' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=c270547c11a63787a690973b37f0cf3c0d22f49940279bd2f055bbf8e590c0d5' \
     SERVER_PORT_PREFLIGHT_PATCH_ENGINE_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=e4bb32f72f409de4fa78079fd28a4eced2dcb681' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=ebec367ba740652e1d93a8ad9dbc68ea255c58e2' \
     SERVER_PORT_PREFLIGHT_PATCH_ENGINE_COMMIT_MISSING
 require_marker "$dockerfile" \
     'ARG NODE_AGENT_RELEASE_TAG=v0.13.22' \
@@ -70,6 +70,28 @@ for marker in \
     require_marker "$dockerfile" "$marker" \
         SERVER_PORT_PREFLIGHT_PATCH_ENGINE_ARTIFACT_GATE_MISSING
 done
+for authorization_marker in \
+    '"portPreflightInput" : "r"' \
+    '"portPreflightInput.ports" : "cr"' \
+    '"portPreflightResult.conflicts" : "r"' \
+    '"portPreflightInput" : "cr"' \
+    '"portPreflightPort" : "cr"' \
+    '"portPreflightResult" : "r"' \
+    '"portPreflightConflict" : "r"'; do
+    require_marker "$dockerfile" "$authorization_marker" \
+        SERVER_PORT_PREFLIGHT_PATCH_SCHEMA_AUTH_GATE_MISSING
+done
+for authorization_field in \
+    portPreflightInput.ports \
+    portPreflightResult.conflicts \
+    portPreflightPort \
+    portPreflightConflict; do
+    require_marker "$build_script" "$authorization_field" \
+        SERVER_PORT_PREFLIGHT_PATCH_SCHEMA_AUTH_IMAGE_GATE_MISSING
+done
+require_marker "$build_script" \
+    'port_preflight_schema_auth=project_visible' \
+    SERVER_PORT_PREFLIGHT_PATCH_SCHEMA_AUTH_RESULT_MISSING
 for marker in \
     'NODE_AGENT_LINUX_ARTIFACT_SHA256' \
     'NODE_AGENT_WINDOWS_ARTIFACT_SHA256' \
@@ -354,4 +376,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_OK release=v1.6.344 base=v1.6.341 engine=0.183.274 node_agent=0.13.22 web_console=1.6.56-pasturestack.56 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c port_preflight=authoritative node_inspection=host.port.check port_preflight_closure_actions=direct named_port_callback=1 ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=broker_probe console_broker=unchanged_recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=writable_normalized storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'
+printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_OK release=v1.6.345 base=v1.6.341 engine=0.183.275 node_agent=0.13.22 web_console=1.6.56-pasturestack.56 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c port_preflight=authoritative port_preflight_schema_auth=project_visible node_inspection=host.port.check port_preflight_closure_actions=direct named_port_callback=1 ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=broker_probe console_broker=unchanged_recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=writable_normalized storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'
