@@ -23,22 +23,22 @@ require_marker()
 }
 
 require_marker "$dockerfile" \
-    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.338' \
+    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.339' \
     SERVER_WEB_CONSOLE_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.339"' \
+    'org.opencontainers.image.version="v1.6.340"' \
     SERVER_WEB_CONSOLE_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.339' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.340' \
     SERVER_WEB_CONSOLE_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.50' \
+    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.51' \
     SERVER_WEB_CONSOLE_PATCH_PACKAGE_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=5839e3b86e5c4d356b187196c90b1e1b52da1d633f61a6fef65c487ee69ea03c' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=3676d870f2326f47897f97da9a9fc16173d2edf3daccf0ed62754cac8e590f7a' \
     SERVER_WEB_CONSOLE_PATCH_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=9c0735900e7443d8d1e0de45299c056983fe744d' \
+    'ARG WEB_CONSOLE_COMMIT=fe7f366d9d976404a0bfb6b2763999cd99e9efa0' \
     SERVER_WEB_CONSOLE_PATCH_COMMIT_MISSING
 require_marker "$dockerfile" \
     'ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c' \
@@ -201,6 +201,26 @@ require_marker "$build_script" \
 require_marker "$build_script" \
     'sortable_table_initial_attrs=refreshed' \
     SERVER_WEB_CONSOLE_PATCH_SORTABLE_TABLE_INITIAL_ATTRS_RESULT_MISSING
+for pagination_marker in \
+    _pagedOptionsShouldChange \
+    '_syncPagedContent(e){let t=this.get' \
+    't.get(\"content\")!==e&&t.set(\"content\",e)' \
+    't.get(\"page\")!==r&&t.set(\"page\",r)' \
+    't.get(\"perPage\")!==n&&t.set(\"perPage\",n)' \
+    'this.set(\"filtered\",e),this._syncPagedContent(e)'; do
+    require_marker "$dockerfile" \
+        "${pagination_marker//\\\"/\"}" \
+        SERVER_WEB_CONSOLE_PATCH_PAGED_CONTENT_ARTIFACT_GATE_MISSING
+    require_marker "$build_script" \
+        "$pagination_marker" \
+        SERVER_WEB_CONSOLE_PATCH_PAGED_CONTENT_IMAGE_GATE_MISSING
+done
+require_marker "$build_script" \
+    'sortable_table_paged_content=explicit_sync' \
+    SERVER_WEB_CONSOLE_PATCH_PAGED_CONTENT_RESULT_MISSING
+require_marker "$build_script" \
+    'sortable_table_pagination=explicit_sync' \
+    SERVER_WEB_CONSOLE_PATCH_PAGINATION_RESULT_MISSING
 require_marker "$dockerfile" \
     'ui/host/containers/route' \
     SERVER_WEB_CONSOLE_PATCH_HOST_CONTAINER_RELATIONSHIP_ARTIFACT_ROUTE_GATE_MISSING
@@ -252,4 +272,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_OK release=v1.6.339 base=v1.6.338 web_console=1.6.56-pasturestack.50 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed host_container_relationship=follow_link unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'
+printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_OK release=v1.6.340 base=v1.6.339 web_console=1.6.56-pasturestack.51 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync host_container_relationship=follow_link unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'

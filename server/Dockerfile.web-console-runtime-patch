@@ -1,14 +1,14 @@
 # syntax=docker/dockerfile:1.7
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.338
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.339
 FROM ${BASE_IMAGE}
 
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.50
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.50.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=5839e3b86e5c4d356b187196c90b1e1b52da1d633f61a6fef65c487ee69ea03c
-ARG WEB_CONSOLE_COMMIT=9c0735900e7443d8d1e0de45299c056983fe744d
+ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.51
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.51.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=3676d870f2326f47897f97da9a9fc16173d2edf3daccf0ed62754cac8e590f7a
+ARG WEB_CONSOLE_COMMIT=fe7f366d9d976404a0bfb6b2763999cd99e9efa0
 
 RUN set -eu; \
     archive=/tmp/web-console.tar.gz; \
@@ -161,6 +161,11 @@ RUN set -eu; \
     grep -aF '_filteredShouldChangeContent' "${vendor_entry}" >/dev/null; \
     grep -aF '"body","body.[]","arranged.[]","sortBy","descending","sortRevision"' "${vendor_entry}" >/dev/null; \
     grep -aF 'didReceiveAttrs(){this._super(...arguments),this._updateFiltered()}' "${vendor_entry}" >/dev/null; \
+    grep -aF '_pagedOptionsShouldChange' "${vendor_entry}" >/dev/null; \
+    grep -aF '_syncPagedContent(e){let t=this.get("pagedContent")' "${vendor_entry}" >/dev/null; \
+    grep -aF 't.get("content")!==e&&t.set("content",e)' "${vendor_entry}" >/dev/null; \
+    grep -aF 't.get("page")!==r&&t.set("page",r),t.get("perPage")!==n&&t.set("perPage",n)' "${vendor_entry}" >/dev/null; \
+    grep -aF 'this.set("filtered",e),this._syncPagedContent(e)' "${vendor_entry}" >/dev/null; \
     grep -aF 'run.throttle(this,this._updateFiltered,100,!1)' "${vendor_entry}" >/dev/null; \
     grep -aF 'run.debounce(this,this._updateFiltered,100,!1)' "${vendor_entry}" >/dev/null; \
     for theme_asset in ui-light.css ui-light.rtl.css ui-dark.css ui-dark.rtl.css; do \
@@ -226,14 +231,14 @@ RUN set -eu; \
     rm -rf "${archive}" "${listing}" "${stage}"
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
-      org.opencontainers.image.description="PastureStack server compatibility image with native host-container relationship loading and replaced-collection table refresh." \
+      org.opencontainers.image.description="PastureStack server compatibility image with native host-container loading and explicit rendered-page synchronization." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.339" \
+      org.opencontainers.image.version="v1.6.340" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
-      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.338"
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.339"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.339
-ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.50
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.340
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.51
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
 ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c

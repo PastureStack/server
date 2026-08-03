@@ -5,6 +5,13 @@ authorization, orchestration, host-agent, API Explorer, terminal broker,
 Catalog snapshot, and workload behavior. It replaces only the embedded Web
 Console to finish restoring directly opened host-container lists.
 
+> **Superseded:** authenticated browser acceptance proved that this release
+> synchronized the filtered relationship but the pagination proxy still held
+> its initialization-time empty content through a retired string-binding
+> mechanism. Server `v1.6.340` explicitly synchronizes rendered page content,
+> page number, and page size. Filtered row counts alone are not browser
+> acceptance.
+
 ## Runtime coordinates
 
 - Base image: `ghcr.io/pasturestack/server:v1.6.338`
