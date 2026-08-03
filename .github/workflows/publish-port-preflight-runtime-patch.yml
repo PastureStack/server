@@ -1,4 +1,4 @@
-name: Publish Web Console Runtime Patch
+name: Publish Port Preflight Runtime Patch
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ permissions:
   packages: write
 
 concurrency:
-  group: server-web-console-runtime-patch
+  group: server-port-preflight-runtime-patch
   cancel-in-progress: false
 
 jobs:
@@ -17,9 +17,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
-      RELEASE_TAG: v1.6.341
+      RELEASE_TAG: v1.6.342
       SOURCE_SHA: ${{ github.sha }}
-      TARGET_IMAGE: ghcr.io/pasturestack/server:v1.6.341
+      TARGET_IMAGE: ghcr.io/pasturestack/server:v1.6.342
 
     steps:
       - name: Check out immutable Server source
@@ -49,10 +49,10 @@ jobs:
           candidate_b="pasturestack-validation/server:${RELEASE_TAG#v}-b-${GITHUB_RUN_ID}"
 
           PASTURESTACK_BUILD_NO_CACHE=1 IMAGE="$candidate_a" \
-            bash server/build-web-console-runtime-patch-image.sh |
+            bash server/build-port-preflight-runtime-patch-image.sh |
             tee "$RUNNER_TEMP/candidate-a.log"
           PASTURESTACK_BUILD_NO_CACHE=1 IMAGE="$candidate_b" \
-            bash server/build-web-console-runtime-patch-image.sh |
+            bash server/build-port-preflight-runtime-patch-image.sh |
             tee "$RUNNER_TEMP/candidate-b.log"
 
           image_a="$(docker image inspect "$candidate_a" --format '{{.Id}}')"
@@ -68,6 +68,9 @@ jobs:
                   LC_ALL=C sort
                 sha256sum \
                   /usr/share/cattle/cattle.jar \
+                  /usr/share/cattle/artifacts/node-agent-0.13.22.tar.gz \
+                  /usr/share/cattle/artifacts/node-agent-0.13.22-windows-amd64.zip \
+                  /usr/share/cattle/env_vars \
                   /usr/bin/authentication-service.real \
                   /usr/bin/catalog-service.real \
                   /usr/bin/govc \
@@ -84,7 +87,7 @@ jobs:
             --format '{{json .Config}}')"
           config_sha256_a="$(printf '%s' "$config_a" | sha256sum | cut -d ' ' -f 1)"
           config_sha256_b="$(printf '%s' "$config_b" | sha256sum | cut -d ' ' -f 1)"
-          printf 'SERVER_WEB_CONSOLE_PATCH_COMPARISON payload_a=%s payload_b=%s config_a=%s config_b=%s\n' \
+          printf 'SERVER_PORT_PREFLIGHT_PATCH_COMPARISON payload_a=%s payload_b=%s config_a=%s config_b=%s\n' \
             "$payload_a" "$payload_b" "$config_sha256_a" "$config_sha256_b"
           test "$payload_a" = "$payload_b"
           test "$config_a" = "$config_b"
@@ -98,7 +101,7 @@ jobs:
             --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
             "$SOURCE_SHA"
 
-          printf 'SERVER_WEB_CONSOLE_PATCH_REPRODUCIBLE source=%s release=%s payload_sha256=%s candidate_a=%s candidate_b=%s\n' \
+          printf 'SERVER_PORT_PREFLIGHT_PATCH_REPRODUCIBLE source=%s release=%s payload_sha256=%s candidate_a=%s candidate_b=%s\n' \
             "$SOURCE_SHA" "$RELEASE_TAG" "$payload_a" "$image_a" "$image_b" |
             tee "$RUNNER_TEMP/reproducibility.txt"
 
@@ -125,7 +128,7 @@ jobs:
           [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
           docker buildx imagetools inspect "$TARGET_IMAGE" \
             >"$RUNNER_TEMP/image-inspect.txt"
-          printf 'SERVER_WEB_CONSOLE_PATCH_PUBLISHED source=%s release=%s reference=%s digest=%s\n' \
+          printf 'SERVER_PORT_PREFLIGHT_PATCH_PUBLISHED source=%s release=%s reference=%s digest=%s\n' \
             "$SOURCE_SHA" "$RELEASE_TAG" "$TARGET_IMAGE" "$digest" |
             tee "$RUNNER_TEMP/published.txt"
           printf 'digest=%s\n' "$digest" >>"$GITHUB_OUTPUT"
