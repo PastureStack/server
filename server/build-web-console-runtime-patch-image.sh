@@ -203,9 +203,11 @@ docker run --rm --entrypoint bash "$image" -lc '
         sha256sum -c -
     grep -F -- "- Upstream version: \`4.3.0\`" \
         "${web_root}/licenses/runtime/ember-modifier/UPSTREAM.md" >/dev/null
+    echo "SERVER_IMAGE_GATE_STAGE=artifact-legal-complete"
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     test ! -e "${web_root}/translations/none.json"
     test "$(find "${web_root}" -type f -name "*.map" | wc -l)" -eq 0
+    echo "SERVER_IMAGE_GATE_STAGE=artifact-layout-complete"
     ui_entry=$(find "${web_root}/assets" -maxdepth 1 -type f -name "ui-*.js" -print -quit)
     vendor_entry=$(find "${web_root}/assets" -maxdepth 1 -type f -name "vendor-*.js" -print -quit)
     test -n "${ui_entry}"
@@ -220,26 +222,34 @@ docker run --rm --entrypoint bash "$image" -lc '
     grep -aF " (current)" "${ui_entry}" >/dev/null
     grep -aF "ui/components/schema/input-enum/template" "${ui_entry}" >/dev/null
     grep -aF '["choice"]' "${ui_entry}" >/dev/null
+    echo "SERVER_IMAGE_GATE_STAGE=web-console-markers-complete"
     resize_rule=$(sed -n "/^\\.console-workspace-resize-handle {/,/^}/p" "${web_root}/assets/ui-light.css")
     grep -Fx "  width: 11px;" <<<"${resize_rule}" >/dev/null
     grep -Fx "  height: 11px;" <<<"${resize_rule}" >/dev/null
+    echo "SERVER_IMAGE_GATE_STAGE=web-console-style-complete"
     grep -aF "bs.collapse" "${vendor_entry}" >/dev/null
     grep -aF "bs.dropdown" "${vendor_entry}" >/dev/null
     if grep -aEq "bs\.(button|tooltip|popover)|data-loading-text" "${vendor_entry}"; then
         echo "Rejected Bootstrap runtime plugin found in Server image" >&2
         exit 1
     fi
+    echo "SERVER_IMAGE_GATE_STAGE=vendor-runtime-complete"
     grep -F "href=\"/favicon.ico\"" "${web_root}/index.html" >/dev/null
     grep -F "pasturestack-favicon.svg" "${web_root}/index.html" >/dev/null
     grep -F \
       "\"systemManaged\":\"SMTP 寄信服務由系統管理員集中設定，全系統共用。您的帳號不會儲存 SMTP 伺服器、寄件者或密碼。\"" \
       "${web_root}/translations/zh-tw.json" >/dev/null
+    echo "SERVER_IMAGE_GATE_STAGE=web-console-content-complete"
     grep -F "\"version\": \"1.1.15\"" "${web_root}/api-ui/version.json" >/dev/null
+    echo "SERVER_IMAGE_GATE_STAGE=api-explorer-complete"
     unzip -p /usr/share/cattle/cattle.jar META-INF/MANIFEST.MF |
         tr -d "\r" |
         grep -Fx "Implementation-Version: 0.183.273" >/dev/null
+    echo "SERVER_IMAGE_GATE_STAGE=server-core-complete"
     test "$(/usr/bin/govc version)" = "govc 0.55.1-pasturestack.1"
+    echo "SERVER_IMAGE_GATE_STAGE=vsphere-cli-complete"
     /usr/bin/authentication-service.real --version | grep -F "0.2.5" >/dev/null
+    echo "SERVER_IMAGE_GATE_STAGE=authentication-service-complete"
 '
 
 printf 'SERVER_WEB_CONSOLE_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s web_console_commit=%s artifact_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native theme_css=4 legal_sources=8\n' \
