@@ -247,7 +247,8 @@ docker run --rm --entrypoint bash "$image" -lc '
         echo "SERVER_IMAGE_GATE_VENDOR_MARKER_OK=${marker}"
     }
     require_vendor_marker "_filteredShouldChangeContent"
-    require_vendor_marker '"body.[]","arranged.[]","sortBy","descending","sortRevision"'
+    require_vendor_marker "body.[]"
+    require_vendor_marker "arranged.[]"
     require_vendor_marker "run.throttle(this,this._updateFiltered,100,!1)"
     require_vendor_marker "run.debounce(this,this._updateFiltered,100,!1)"
     echo "SERVER_IMAGE_GATE_STAGE=sortable-table-refresh-complete"

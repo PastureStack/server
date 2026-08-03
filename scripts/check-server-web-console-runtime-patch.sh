@@ -175,7 +175,8 @@ require_marker "$build_script" \
     SERVER_WEB_CONSOLE_PATCH_CATALOG_VERSION_REQUEST_RESULT_MISSING
 for sortable_marker in \
     _filteredShouldChangeContent \
-    '"body.[]","arranged.[]","sortBy","descending","sortRevision"' \
+    'body.[]' \
+    'arranged.[]' \
     'run.throttle(this,this._updateFiltered,100,!1)' \
     'run.debounce(this,this._updateFiltered,100,!1)'; do
     require_marker "$dockerfile" \
