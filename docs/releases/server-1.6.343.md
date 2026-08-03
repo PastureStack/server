@@ -11,6 +11,12 @@ affected.
 
 - Base image: `ghcr.io/pasturestack/server:v1.6.341`
 - Runtime image: `ghcr.io/pasturestack/server:v1.6.343`
+- Runtime image digest:
+  `sha256:93308c970f4c3451398934aef6af3c75b433944e4f847dc4371b996a932d1f49`
+- Reproducible runtime payload SHA-256:
+  `3372427170570ceca671c4320e5ba03a1221ce7abef15bc23ee529d496fa6e61`
+- Server publication run:
+  `https://github.com/PastureStack/server/actions/runs/30849614748`
 - Orchestration Engine: `0.183.274`
 - Orchestration Engine source:
   `e4bb32f72f409de4fa78079fd28a4eced2dcb681`
