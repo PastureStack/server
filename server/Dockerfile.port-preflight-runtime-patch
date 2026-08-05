@@ -51,7 +51,7 @@ RUN set -eu; \
         iaas-model \
         iaas-service-discovery-api \
         resources; do \
-        test "$(grep -Ec "^WEB-INF/lib/cattle-${module}-0\\.183\\.276\\.jar$" "${listing}")" -eq 1; \
+        test "$(grep -Ec "^WEB-INF/lib/cattle-${module}-0\\.183\\.277\\.jar$" "${listing}")" -eq 1; \
     done; \
     old_web_root="$(readlink -f /usr/share/cattle/war)"; \
     case "${old_web_root}" in \

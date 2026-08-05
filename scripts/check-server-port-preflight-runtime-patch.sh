@@ -50,6 +50,13 @@ require_marker "$dockerfile" \
     'ARG ORCHESTRATION_ENGINE_COMMIT=1e913c88f42c9d4bc43bca94a8bff2ff0cb6b03a' \
     SERVER_PORT_PREFLIGHT_PATCH_ENGINE_COMMIT_MISSING
 require_marker "$dockerfile" \
+    '0\\.183\\.277\\.jar$' \
+    SERVER_PORT_PREFLIGHT_PATCH_ENGINE_ENTRY_VERSION_MISSING
+if grep -Fq '0\\.183\\.276\\.jar$' "$dockerfile"; then
+    echo 'SERVER_PORT_PREFLIGHT_PATCH_STALE_ENGINE_ENTRY_VERSION' >&2
+    exit 1
+fi
+require_marker "$dockerfile" \
     'ARG NODE_AGENT_RELEASE_TAG=v0.13.22' \
     SERVER_PORT_PREFLIGHT_PATCH_NODE_AGENT_RELEASE_MISSING
 require_marker "$dockerfile" \
