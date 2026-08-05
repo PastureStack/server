@@ -6,10 +6,10 @@ ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
 
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
-ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.278
-ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.278.jar
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=b9e2d85575131c78070ba9ea8b9d4757ef3cfbc4e70162c9fcf1797e66634ba8
-ARG ORCHESTRATION_ENGINE_COMMIT=cb212671ccd0a2e91b42c0bf3e0ed62eac862ac6
+ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.279
+ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.279.jar
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=a59d7b8044066fa400d9882ebe6b05832e2b3a5c4d92b966c5b283ffc10cef6e
+ARG ORCHESTRATION_ENGINE_COMMIT=14c2d25323b5a8fe758dfda197283c1c63c04cb5
 
 ARG NODE_AGENT_RELEASE_BASE_URL=https://github.com/PastureStack/node-agent/releases/download
 ARG NODE_AGENT_RELEASE_TAG=v0.13.22
@@ -51,7 +51,7 @@ RUN set -eu; \
         iaas-model \
         iaas-service-discovery-api \
         resources; do \
-        test "$(grep -Ec "^WEB-INF/lib/cattle-${module}-0\\.183\\.278\\.jar$" "${listing}")" -eq 1; \
+        test "$(grep -Ec "^WEB-INF/lib/cattle-${module}-0\\.183\\.279\\.jar$" "${listing}")" -eq 1; \
     done; \
     old_web_root="$(readlink -f /usr/share/cattle/war)"; \
     case "${old_web_root}" in \
@@ -76,7 +76,7 @@ RUN set -eu; \
         rm -f resources.jar; \
     fi; \
     resources_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name 'cattle-resources-0.183.278.jar' -print -quit)"; \
+        -name 'cattle-resources-0.183.279.jar' -print -quit)"; \
     test -n "${resources_jar}"; \
     source_date_iso="$(date -u -d "@${SOURCE_DATE_EPOCH}" '+%Y-%m-%dT%H:%M:%SZ')"; \
     cd /tmp/pasturestack-server-overlays; \
@@ -109,13 +109,13 @@ RUN set -eu; \
     rm -rf api-ui; \
     mv /tmp/pasturestack-api-ui api-ui; \
     api_logic="$(find WEB-INF/lib -maxdepth 1 -type f \
-        -name 'cattle-iaas-api-logic-0.183.278.jar' -print -quit)"; \
+        -name 'cattle-iaas-api-logic-0.183.279.jar' -print -quit)"; \
     model="$(find WEB-INF/lib -maxdepth 1 -type f \
-        -name 'cattle-iaas-model-0.183.278.jar' -print -quit)"; \
+        -name 'cattle-iaas-model-0.183.279.jar' -print -quit)"; \
     app_config="$(find WEB-INF/lib -maxdepth 1 -type f \
-        -name 'cattle-app-config-0.183.278.jar' -print -quit)"; \
+        -name 'cattle-app-config-0.183.279.jar' -print -quit)"; \
     service_discovery="$(find WEB-INF/lib -maxdepth 1 -type f \
-        -name 'cattle-iaas-service-discovery-api-0.183.278.jar' -print -quit)"; \
+        -name 'cattle-iaas-service-discovery-api-0.183.279.jar' -print -quit)"; \
     test -n "${api_logic}"; \
     test -n "${model}"; \
     test -n "${app_config}"; \
@@ -245,10 +245,10 @@ RUN set -eu; \
         "${linux_listing}" "${windows_listing}"
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.59
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.59.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=6f56f23d7f45372ea981e257f5145ec5fc4b0c9e92f721a15441d5a417f0841e
-ARG WEB_CONSOLE_COMMIT=0aad50152499619bcef763a130bbc66cae926929
+ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.60
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.60.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=288b2597526d35fe8db3d31b90d098ff99809ddb7a9b87de19960f0750aa075b
+ARG WEB_CONSOLE_COMMIT=d9e6ad05208ba940304b29312003b0c2849ea686
 
 RUN set -eu; \
     archive=/tmp/web-console.tar.gz; \
@@ -407,6 +407,8 @@ RUN set -eu; \
     grep -aF 'volumePreflightChanged' "${ui_entry}" >/dev/null; \
     grep -aF 'publishPreflightState' "${ui_entry}" >/dev/null; \
     grep -aF 'storageTablePerPage:l(' "${ui_entry}" >/dev/null; \
+    grep -aF 'storagePageSizeChanged' "${ui_entry}" >/dev/null; \
+    grep -aF 'pageSizeChanged' "${ui_entry}" >/dev/null; \
     grep -aF 'computed(e,{get(){return o(this.get(e))},set(t,n)' "${ui_entry}" >/dev/null; \
     grep -aF 'ui/host/containers/route' "${ui_entry}" >/dev/null; \
     grep -aF 'followLink("instances")' "${ui_entry}" >/dev/null; \
@@ -501,12 +503,12 @@ RUN set -eu; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server compatibility image with authoritative port and volume preflight." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.348" \
+      org.opencontainers.image.version="v1.6.349" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.341"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.348
-ENV CATTLE_CATTLE_VERSION=v0.183.278
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.349
+ENV CATTLE_CATTLE_VERSION=v0.183.279
 ENV RC16_GO_AGENT_VERSION=0.13.22
 ENV RC16_WINDOWS_AGENT_VERSION=0.13.22
 ENV RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-0.13.22.tar.gz
@@ -516,7 +518,7 @@ ENV PASTURESTACK_NODE_AGENT_VERSION=0.13.22
 ENV PASTURESTACK_NODE_AGENT_COMMIT=${NODE_AGENT_COMMIT}
 ENV PASTURESTACK_NODE_AGENT_LINUX_ARTIFACT_SHA256=${NODE_AGENT_LINUX_ARTIFACT_SHA256}
 ENV PASTURESTACK_NODE_AGENT_WINDOWS_ARTIFACT_SHA256=${NODE_AGENT_WINDOWS_ARTIFACT_SHA256}
-ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.59
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.60
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
 ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c

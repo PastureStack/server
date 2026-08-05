@@ -6,7 +6,7 @@ cd "$repo_root"
 
 dockerfile=server/Dockerfile.port-preflight-runtime-patch
 build_script=server/build-port-preflight-runtime-patch-image.sh
-release_doc=docs/releases/server-1.6.348.md
+release_doc=docs/releases/server-1.6.349.md
 
 for path in "$dockerfile" "$build_script" "$release_doc"; do
     test -f "$path"
@@ -24,8 +24,8 @@ require_marker()
 }
 
 for marker in \
-    'Orchestration Engine: `0.183.278`' \
-    'Web Console: `1.6.56-pasturestack.59`' \
+    'Orchestration Engine: `0.183.279`' \
+    'Web Console: `1.6.56-pasturestack.60`' \
     '`volumepreflight`' \
     '`pasturestack-nfs` driver requires environment scope, `multiHostRW`' \
     'Every successful selected-volume deletion'; do
@@ -37,33 +37,33 @@ require_marker "$dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.341' \
     SERVER_PORT_PREFLIGHT_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.348"' \
+    'org.opencontainers.image.version="v1.6.349"' \
     SERVER_PORT_PREFLIGHT_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.348' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.349' \
     SERVER_PORT_PREFLIGHT_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.59' \
+    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.60' \
     SERVER_WEB_CONSOLE_PATCH_PACKAGE_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=6f56f23d7f45372ea981e257f5145ec5fc4b0c9e92f721a15441d5a417f0841e' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=288b2597526d35fe8db3d31b90d098ff99809ddb7a9b87de19960f0750aa075b' \
     SERVER_WEB_CONSOLE_PATCH_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=0aad50152499619bcef763a130bbc66cae926929' \
+    'ARG WEB_CONSOLE_COMMIT=d9e6ad05208ba940304b29312003b0c2849ea686' \
     SERVER_WEB_CONSOLE_PATCH_COMMIT_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.278' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.279' \
     SERVER_PORT_PREFLIGHT_PATCH_ENGINE_RELEASE_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=b9e2d85575131c78070ba9ea8b9d4757ef3cfbc4e70162c9fcf1797e66634ba8' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=a59d7b8044066fa400d9882ebe6b05832e2b3a5c4d92b966c5b283ffc10cef6e' \
     SERVER_PORT_PREFLIGHT_PATCH_ENGINE_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=cb212671ccd0a2e91b42c0bf3e0ed62eac862ac6' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=14c2d25323b5a8fe758dfda197283c1c63c04cb5' \
     SERVER_PORT_PREFLIGHT_PATCH_ENGINE_COMMIT_MISSING
 require_marker "$dockerfile" \
-    '0\\.183\\.278\\.jar$' \
+    '0\\.183\\.279\\.jar$' \
     SERVER_PORT_PREFLIGHT_PATCH_ENGINE_ENTRY_VERSION_MISSING
-if grep -Fq '0\\.183\\.277\\.jar$' "$dockerfile"; then
+if grep -Fq '0\\.183\\.278\\.jar$' "$dockerfile"; then
     echo 'SERVER_PORT_PREFLIGHT_PATCH_STALE_ENGINE_ENTRY_VERSION' >&2
     exit 1
 fi
@@ -163,7 +163,7 @@ for marker in \
     require_marker "$dockerfile" "$marker" \
         SERVER_PORT_PREFLIGHT_PATCH_NODE_AGENT_ARTIFACT_GATE_MISSING
 done
-for marker in portpreflight buildPreflightInput preflightChanged invokePassedAction setPorts volumepreflight volume-path-autocomplete pasturestack-nfs volumePreflightChanged publishPreflightState 'storageTablePerPage:l(' clampPageToContentLength; do
+for marker in portpreflight buildPreflightInput preflightChanged invokePassedAction setPorts volumepreflight volume-path-autocomplete pasturestack-nfs volumePreflightChanged publishPreflightState 'storageTablePerPage:l(' storagePageSizeChanged pageSizeChanged clampPageToContentLength; do
     require_marker "$dockerfile" "$marker" \
         SERVER_PORT_PREFLIGHT_PATCH_WEB_CONSOLE_GATE_MISSING
     require_marker "$build_script" "$marker" \
@@ -380,7 +380,7 @@ for storage_marker in \
         SERVER_WEB_CONSOLE_PATCH_STORAGE_REFRESH_IMAGE_GATE_MISSING
 done
 require_marker "$build_script" \
-    'storage_table_page_size_preference=writable_normalized' \
+    'storage_table_page_size_preference=controller_owned_callback' \
     SERVER_WEB_CONSOLE_PATCH_PAGE_SIZE_RESULT_MISSING
 require_marker "$build_script" \
     'storage_table_page_clamp=last_valid' \
@@ -439,4 +439,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_OK release=v1.6.348 base=v1.6.341 engine=0.183.278 node_agent=0.13.22 web_console=1.6.56-pasturestack.59 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c port_preflight=authoritative managed_scope=environment bridge_host_scope=selected_host stopped_owner=warning port_preflight_schema_auth=project_visible volume_preflight=authoritative volume_validation=create_and_upgrade volume_driver=select volume_autocomplete=max8 nfs_contract=environment_multiHostRW node_inspection=host.port.check port_preflight_closure_actions=direct named_port_callback=1 ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=broker_probe console_broker=unchanged_recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=writable_normalized storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'
+printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_OK release=v1.6.349 base=v1.6.341 engine=0.183.279 node_agent=0.13.22 web_console=1.6.56-pasturestack.60 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c port_preflight=authoritative managed_scope=environment bridge_host_scope=selected_host stopped_owner=warning port_preflight_schema_auth=project_visible volume_preflight=authoritative volume_validation=create_and_upgrade volume_driver=select volume_autocomplete=max8 nfs_contract=environment_multiHostRW_complete_coverage node_inspection=host.port.check port_preflight_closure_actions=direct named_port_callback=1 ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=broker_probe console_broker=unchanged_recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=controller_owned_callback storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'

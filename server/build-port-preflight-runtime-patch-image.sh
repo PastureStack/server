@@ -14,10 +14,10 @@ revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.341}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
-orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.278}
-orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.278.jar}
-orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-b9e2d85575131c78070ba9ea8b9d4757ef3cfbc4e70162c9fcf1797e66634ba8}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-cb212671ccd0a2e91b42c0bf3e0ed62eac862ac6}
+orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.279}
+orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.279.jar}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-a59d7b8044066fa400d9882ebe6b05832e2b3a5c4d92b966c5b283ffc10cef6e}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-14c2d25323b5a8fe758dfda197283c1c63c04cb5}
 node_agent_release_base_url=${NODE_AGENT_RELEASE_BASE_URL:-https://github.com/PastureStack/node-agent/releases/download}
 node_agent_release_tag=${NODE_AGENT_RELEASE_TAG:-v0.13.22}
 node_agent_linux_artifact=${NODE_AGENT_LINUX_ARTIFACT:-node-agent-0.13.22.tar.gz}
@@ -26,11 +26,11 @@ node_agent_windows_artifact=${NODE_AGENT_WINDOWS_ARTIFACT:-node-agent-0.13.22-wi
 node_agent_windows_artifact_sha256=${NODE_AGENT_WINDOWS_ARTIFACT_SHA256:-36230c05845c6895988edc06c1d8094cccd66899c2f268e3eb7644ca1e7b7c39}
 node_agent_commit=${NODE_AGENT_COMMIT:-d370dc6772aea00381a97769b9bf827f35440656}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.59}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.59.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-6f56f23d7f45372ea981e257f5145ec5fc4b0c9e92f721a15441d5a417f0841e}
-web_console_commit=${WEB_CONSOLE_COMMIT:-0aad50152499619bcef763a130bbc66cae926929}
-image=${IMAGE:-pasturestack-validation/server:v1.6.348}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.60}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.60.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-288b2597526d35fe8db3d31b90d098ff99809ddb7a9b87de19960f0750aa075b}
+web_console_commit=${WEB_CONSOLE_COMMIT:-d9e6ad05208ba940304b29312003b0c2849ea686}
+image=${IMAGE:-pasturestack-validation/server:v1.6.349}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -95,7 +95,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.348
+    v1.6.349
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -107,10 +107,10 @@ image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 catalog_json='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"57707ddf891e36066a144d7821adc458dbf8da9c"}}}'
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.348 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.349 \
     CATTLE_API_UI_VERSION=1.1.15 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15 \
-    CATTLE_CATTLE_VERSION=v0.183.278 \
+    CATTLE_CATTLE_VERSION=v0.183.279 \
     RC16_GO_AGENT_VERSION=0.13.22 \
     RC16_WINDOWS_AGENT_VERSION=0.13.22 \
     RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-0.13.22.tar.gz \
@@ -120,7 +120,7 @@ for marker in \
     PASTURESTACK_NODE_AGENT_COMMIT="${node_agent_commit}" \
     PASTURESTACK_NODE_AGENT_LINUX_ARTIFACT_SHA256="${node_agent_linux_artifact_sha256}" \
     PASTURESTACK_NODE_AGENT_WINDOWS_ARTIFACT_SHA256="${node_agent_windows_artifact_sha256}" \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.59 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.60 \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
     PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.2.5 \
@@ -306,6 +306,8 @@ docker run --rm --entrypoint bash "$image" -lc '
     require_ui_marker "volumePreflightChanged"
     require_ui_marker "publishPreflightState"
     require_ui_marker "storageTablePerPage:l("
+    require_ui_marker "storagePageSizeChanged"
+    require_ui_marker "pageSizeChanged"
     require_ui_marker "computed(e,{get(){return o(this.get(e))},set(t,n)"
     require_ui_marker "ui/host/containers/route"
     require_ui_marker "followLink(\"instances\")"
@@ -380,17 +382,17 @@ docker run --rm --entrypoint bash "$image" -lc '
     echo "SERVER_IMAGE_GATE_STAGE=api-explorer-complete"
     unzip -p /usr/share/cattle/cattle.jar META-INF/MANIFEST.MF |
         tr -d "\r" |
-        grep -Fx "Implementation-Version: 0.183.278" >/dev/null
+        grep -Fx "Implementation-Version: 0.183.279" >/dev/null
     api_logic=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-iaas-api-logic-0.183.278.jar" -print -quit)
+        -name "cattle-iaas-api-logic-0.183.279.jar" -print -quit)
     model=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-iaas-model-0.183.278.jar" -print -quit)
+        -name "cattle-iaas-model-0.183.279.jar" -print -quit)
     resources=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-resources-0.183.278.jar" -print -quit)
+        -name "cattle-resources-0.183.279.jar" -print -quit)
     app_config=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-app-config-0.183.278.jar" -print -quit)
+        -name "cattle-app-config-0.183.279.jar" -print -quit)
     service_discovery=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-iaas-service-discovery-api-0.183.278.jar" -print -quit)
+        -name "cattle-iaas-service-discovery-api-0.183.279.jar" -print -quit)
     test -n "${api_logic}"
     test -n "${model}"
     test -n "${resources}"
@@ -457,7 +459,7 @@ docker run --rm --entrypoint bash "$image" -lc '
     echo "SERVER_IMAGE_GATE_STAGE=authentication-service-complete"
 '
 
-printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s engine_commit=%s engine_sha256=%s node_agent_commit=%s node_agent_linux_sha256=%s node_agent_windows_sha256=%s web_console_commit=%s web_console_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c port_preflight=authoritative port_preflight_schema_auth=project_visible volume_preflight=authoritative volume_validation=create_and_upgrade volume_driver=select volume_autocomplete=max8 nfs_contract=environment_multiHostRW node_inspection=host.port.check port_preflight_closure_actions=direct api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=writable_normalized storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8\n' \
+printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s engine_commit=%s engine_sha256=%s node_agent_commit=%s node_agent_linux_sha256=%s node_agent_windows_sha256=%s web_console_commit=%s web_console_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c port_preflight=authoritative port_preflight_schema_auth=project_visible volume_preflight=authoritative volume_validation=create_and_upgrade volume_driver=select volume_autocomplete=max8 nfs_contract=environment_multiHostRW_complete_coverage node_inspection=host.port.check port_preflight_closure_actions=direct api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=controller_owned_callback storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8\n' \
     "$image" "$revision" "$base_image" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "$node_agent_commit" "$node_agent_linux_artifact_sha256" \
