@@ -14,10 +14,10 @@ revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.341}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
-orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.276}
-orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.276.jar}
-orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-64bc18a1654b73116dce89f29ede7b4c629a8c5af236b482ef95f50a78ed6376}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-90581d62c885eb56a0b1464ad2c8ed3743891695}
+orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.277}
+orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.277.jar}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-d71c27a0f7a0686154629467d096b456636ac4d55e2eacecae52c420fdf390cb}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-1e913c88f42c9d4bc43bca94a8bff2ff0cb6b03a}
 node_agent_release_base_url=${NODE_AGENT_RELEASE_BASE_URL:-https://github.com/PastureStack/node-agent/releases/download}
 node_agent_release_tag=${NODE_AGENT_RELEASE_TAG:-v0.13.22}
 node_agent_linux_artifact=${NODE_AGENT_LINUX_ARTIFACT:-node-agent-0.13.22.tar.gz}
@@ -26,11 +26,11 @@ node_agent_windows_artifact=${NODE_AGENT_WINDOWS_ARTIFACT:-node-agent-0.13.22-wi
 node_agent_windows_artifact_sha256=${NODE_AGENT_WINDOWS_ARTIFACT_SHA256:-36230c05845c6895988edc06c1d8094cccd66899c2f268e3eb7644ca1e7b7c39}
 node_agent_commit=${NODE_AGENT_COMMIT:-d370dc6772aea00381a97769b9bf827f35440656}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.57}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.57.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-bc1f924dad134d99aa80eaa40e2c9762438b26a068c585ae35efc70a7d319f04}
-web_console_commit=${WEB_CONSOLE_COMMIT:-4888d0470836f120c526961d81552d969f5de24a}
-image=${IMAGE:-pasturestack-validation/server:v1.6.346}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.58}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.58.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-c6857389bd3c89ec34b29265c62e18dc720d3e088d09495f1bd30dee0f9d7068}
+web_console_commit=${WEB_CONSOLE_COMMIT:-d04c28add200c179298655d4e0b89cbccb8e100d}
+image=${IMAGE:-pasturestack-validation/server:v1.6.347}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -95,7 +95,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.346
+    v1.6.347
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -107,10 +107,10 @@ image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 catalog_json='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"57707ddf891e36066a144d7821adc458dbf8da9c"}}}'
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.346 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.347 \
     CATTLE_API_UI_VERSION=1.1.15 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15 \
-    CATTLE_CATTLE_VERSION=v0.183.276 \
+    CATTLE_CATTLE_VERSION=v0.183.277 \
     RC16_GO_AGENT_VERSION=0.13.22 \
     RC16_WINDOWS_AGENT_VERSION=0.13.22 \
     RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-0.13.22.tar.gz \
@@ -120,7 +120,7 @@ for marker in \
     PASTURESTACK_NODE_AGENT_COMMIT="${node_agent_commit}" \
     PASTURESTACK_NODE_AGENT_LINUX_ARTIFACT_SHA256="${node_agent_linux_artifact_sha256}" \
     PASTURESTACK_NODE_AGENT_WINDOWS_ARTIFACT_SHA256="${node_agent_windows_artifact_sha256}" \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.57 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.58 \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
     PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.2.5 \
@@ -364,24 +364,30 @@ docker run --rm --entrypoint bash "$image" -lc '
     grep -F \
       "\"systemManaged\":\"SMTP 寄信服務由系統管理員集中設定，全系統共用。您的帳號不會儲存 SMTP 伺服器、寄件者或密碼。\"" \
       "${web_root}/translations/zh-tw.json" >/dev/null
+    grep -F \
+      "\"active_port_conflict_on_other_host\":\"此環境中的另一台主機已使用這個託管網路連接埠。\"" \
+      "${web_root}/translations/zh-tw.json" >/dev/null
     echo "SERVER_IMAGE_GATE_STAGE=web-console-content-complete"
     grep -F "\"version\": \"1.1.15\"" "${web_root}/api-ui/version.json" >/dev/null
     echo "SERVER_IMAGE_GATE_STAGE=api-explorer-complete"
     unzip -p /usr/share/cattle/cattle.jar META-INF/MANIFEST.MF |
         tr -d "\r" |
-        grep -Fx "Implementation-Version: 0.183.276" >/dev/null
+        grep -Fx "Implementation-Version: 0.183.277" >/dev/null
     api_logic=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-iaas-api-logic-0.183.276.jar" -print -quit)
+        -name "cattle-iaas-api-logic-0.183.277.jar" -print -quit)
     model=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-iaas-model-0.183.276.jar" -print -quit)
+        -name "cattle-iaas-model-0.183.277.jar" -print -quit)
     resources=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-resources-0.183.276.jar" -print -quit)
+        -name "cattle-resources-0.183.277.jar" -print -quit)
     test -n "${api_logic}"
     test -n "${model}"
     test -n "${resources}"
     unzip -p "${api_logic}" \
         io/cattle/platform/iaas/api/port/PortPreflightService.class |
         grep -aF "host.port.check" >/dev/null
+    unzip -p "${api_logic}" \
+        io/cattle/platform/iaas/api/port/PortPreflightService.class |
+        grep -aF "active_port_conflict_on_other_host" >/dev/null
     unzip -p "${api_logic}" \
         schema/base/project.json.d/port-preflight.json |
         grep -F '"portpreflight"' >/dev/null
