@@ -26,11 +26,11 @@ node_agent_windows_artifact=${NODE_AGENT_WINDOWS_ARTIFACT:-node-agent-0.13.22-wi
 node_agent_windows_artifact_sha256=${NODE_AGENT_WINDOWS_ARTIFACT_SHA256:-36230c05845c6895988edc06c1d8094cccd66899c2f268e3eb7644ca1e7b7c39}
 node_agent_commit=${NODE_AGENT_COMMIT:-d370dc6772aea00381a97769b9bf827f35440656}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.61}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.61.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-ee6f8aaf0784823edf57ae8c12e7f7cd861a5c8083a14de96fc655fc96227a1f}
-web_console_commit=${WEB_CONSOLE_COMMIT:-b97d635b61f0daf56cbd20b6d65352a9f8866f20}
-image=${IMAGE:-pasturestack-validation/server:v1.6.352}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.62}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.62.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-99aed13daa89bccc5043bfc944cf7cbac260f975a4a50ad84274f82542c28f50}
+web_console_commit=${WEB_CONSOLE_COMMIT:-d1b59b25be45183a36c76b36c89d55c979fed87e}
+image=${IMAGE:-pasturestack-validation/server:v1.6.353}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -95,7 +95,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.352
+    v1.6.353
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -107,7 +107,7 @@ image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 catalog_json='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"57707ddf891e36066a144d7821adc458dbf8da9c"}}}'
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.352 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.353 \
     CATTLE_API_UI_VERSION=1.1.15 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15 \
     CATTLE_CATTLE_VERSION=v0.183.281 \
@@ -120,7 +120,7 @@ for marker in \
     PASTURESTACK_NODE_AGENT_COMMIT="${node_agent_commit}" \
     PASTURESTACK_NODE_AGENT_LINUX_ARTIFACT_SHA256="${node_agent_linux_artifact_sha256}" \
     PASTURESTACK_NODE_AGENT_WINDOWS_ARTIFACT_SHA256="${node_agent_windows_artifact_sha256}" \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.61 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.62 \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
     PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.2.5 \
@@ -308,6 +308,10 @@ docker run --rm --entrypoint bash "$image" -lc '
     require_ui_marker "([A-Z]+)([A-Z][a-z])"
     if grep -aF ".dasherize()" "${ui_entry}"; then
         echo "Rejected legacy String prototype extension in Web Console image" >&2
+        exit 1
+    fi
+    if grep -aF "formVolumes.errors.preflightChecking" "${ui_entry}"; then
+        echo "Rejected stale client-side volume preflight save blocker in Web Console image" >&2
         exit 1
     fi
     require_ui_marker "storageTablePerPage:l("

@@ -255,10 +255,10 @@ RUN set -eu; \
         "${linux_listing}" "${windows_listing}"
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.61
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.61.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=ee6f8aaf0784823edf57ae8c12e7f7cd861a5c8083a14de96fc655fc96227a1f
-ARG WEB_CONSOLE_COMMIT=b97d635b61f0daf56cbd20b6d65352a9f8866f20
+ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.62
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.62.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=99aed13daa89bccc5043bfc944cf7cbac260f975a4a50ad84274f82542c28f50
+ARG WEB_CONSOLE_COMMIT=d1b59b25be45183a36c76b36c89d55c979fed87e
 
 RUN set -eu; \
     archive=/tmp/web-console.tar.gz; \
@@ -421,6 +421,10 @@ RUN set -eu; \
         echo 'Rejected legacy String prototype extension in Web Console' >&2; \
         exit 1; \
     fi; \
+    if grep -aF 'formVolumes.errors.preflightChecking' "${ui_entry}"; then \
+        echo 'Rejected stale client-side volume preflight save blocker' >&2; \
+        exit 1; \
+    fi; \
     grep -aF 'storageTablePerPage:l(' "${ui_entry}" >/dev/null; \
     grep -aF 'storagePageSizeChanged' "${ui_entry}" >/dev/null; \
     grep -aF 'pageSizeChanged' "${ui_entry}" >/dev/null; \
@@ -518,11 +522,11 @@ RUN set -eu; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server compatibility image with authoritative port and volume preflight." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.352" \
+      org.opencontainers.image.version="v1.6.353" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.341"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.352
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.353
 ENV CATTLE_CATTLE_VERSION=v0.183.281
 ENV RC16_GO_AGENT_VERSION=0.13.22
 ENV RC16_WINDOWS_AGENT_VERSION=0.13.22
@@ -533,7 +537,7 @@ ENV PASTURESTACK_NODE_AGENT_VERSION=0.13.22
 ENV PASTURESTACK_NODE_AGENT_COMMIT=${NODE_AGENT_COMMIT}
 ENV PASTURESTACK_NODE_AGENT_LINUX_ARTIFACT_SHA256=${NODE_AGENT_LINUX_ARTIFACT_SHA256}
 ENV PASTURESTACK_NODE_AGENT_WINDOWS_ARTIFACT_SHA256=${NODE_AGENT_WINDOWS_ARTIFACT_SHA256}
-ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.61
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.62
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
 ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c
