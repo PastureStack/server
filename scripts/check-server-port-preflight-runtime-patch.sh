@@ -6,7 +6,7 @@ cd "$repo_root"
 
 dockerfile=server/Dockerfile.port-preflight-runtime-patch
 build_script=server/build-port-preflight-runtime-patch-image.sh
-release_doc=docs/releases/server-1.6.350.md
+release_doc=docs/releases/server-1.6.351.md
 
 for path in "$dockerfile" "$build_script" "$release_doc"; do
     test -f "$path"
@@ -24,10 +24,11 @@ require_marker()
 }
 
 for marker in \
-    'Orchestration Engine: `0.183.280`' \
+    'Orchestration Engine: `0.183.281`' \
     'Web Console: `1.6.56-pasturestack.60`' \
     '`volumePreflightInput`' \
     '`volumepreflight`' \
+    'real core add-on type set' \
     '`pasturestack-nfs` driver requires environment scope, `multiHostRW`' \
     'Every successful selected-volume deletion'; do
     require_marker "$release_doc" "$marker" \
@@ -38,10 +39,10 @@ require_marker "$dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.341' \
     SERVER_PORT_PREFLIGHT_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.350"' \
+    'org.opencontainers.image.version="v1.6.351"' \
     SERVER_PORT_PREFLIGHT_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.350' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.351' \
     SERVER_PORT_PREFLIGHT_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
     'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.60' \
@@ -53,18 +54,18 @@ require_marker "$dockerfile" \
     'ARG WEB_CONSOLE_COMMIT=d9e6ad05208ba940304b29312003b0c2849ea686' \
     SERVER_WEB_CONSOLE_PATCH_COMMIT_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.280' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.281' \
     SERVER_PORT_PREFLIGHT_PATCH_ENGINE_RELEASE_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=9c97c528898e019359b64b6ee44452b8b8e74ac57cdcfe9cabae7c8df955a0a3' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=da2a8a51562ed16e296f7e29e99482bb44042ff0834cca679bbe01d951ba1682' \
     SERVER_PORT_PREFLIGHT_PATCH_ENGINE_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=dbcf3b091f686de6339df00d2e20a27cbbfd713a' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=17c9b856a8004fb71c64f876ad120942429eb260' \
     SERVER_PORT_PREFLIGHT_PATCH_ENGINE_COMMIT_MISSING
 require_marker "$dockerfile" \
-    '0\\.183\\.280\\.jar$' \
+    '0\\.183\\.281\\.jar$' \
     SERVER_PORT_PREFLIGHT_PATCH_ENGINE_ENTRY_VERSION_MISSING
-if grep -Fq '0\\.183\\.279\\.jar$' "$dockerfile"; then
+if grep -Fq '0\\.183\\.280\\.jar$' "$dockerfile"; then
     echo 'SERVER_PORT_PREFLIGHT_PATCH_STALE_ENGINE_ENTRY_VERSION' >&2
     exit 1
 fi
@@ -91,6 +92,8 @@ for marker in \
         SERVER_PORT_PREFLIGHT_PATCH_ENGINE_ARTIFACT_GATE_MISSING
 done
 for marker in \
+    'for schema_type in VolumePreflightInput VolumePreflightResult VolumePreflightIssue; do' \
+    'io/cattle/platform/app/CoreModelConfig.class' \
     'InstanceVolumesValidationFilter.class' \
     'VolumePreflightActionHandler.class' \
     'VolumePreflightInputs.class' \
@@ -99,6 +102,7 @@ for marker in \
     'VolumePreflightInput.class' \
     'VolumePreflightIssue.class' \
     'VolumePreflightResult.class' \
+    'CoreModelConfig.class' \
     'ServiceValidationFilter.class' \
     'ServiceUpgradeValidationFilter.class'; do
     require_marker "$dockerfile" "$marker" \
@@ -446,4 +450,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_OK release=v1.6.350 base=v1.6.341 engine=0.183.280 node_agent=0.13.22 web_console=1.6.56-pasturestack.60 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c port_preflight=authoritative managed_scope=environment bridge_host_scope=selected_host stopped_owner=warning port_preflight_schema_auth=project_visible volume_preflight=authoritative volume_preflight_project_schema=authorized volume_validation=create_and_upgrade volume_driver=select volume_autocomplete=max8 nfs_contract=environment_multiHostRW_complete_coverage node_inspection=host.port.check port_preflight_closure_actions=direct named_port_callback=1 ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=broker_probe console_broker=unchanged_recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=controller_owned_callback storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'
+printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_OK release=v1.6.351 base=v1.6.341 engine=0.183.281 node_agent=0.13.22 web_console=1.6.56-pasturestack.60 catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c port_preflight=authoritative managed_scope=environment bridge_host_scope=selected_host stopped_owner=warning port_preflight_schema_auth=project_visible volume_preflight=authoritative volume_preflight_project_schema=authorized volume_preflight_type_set=registered volume_validation=create_and_upgrade volume_driver=select volume_autocomplete=max8 nfs_contract=environment_multiHostRW_complete_coverage node_inspection=host.port.check port_preflight_closure_actions=direct named_port_callback=1 ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=broker_probe console_broker=unchanged_recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=controller_owned_callback storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'
