@@ -101,12 +101,29 @@ for marker in \
     'server-critical-high.tsv' \
     'server-secrets.tsv' \
     'server.cdx.json' \
+    'cd "$RUNNER_TEMP"' \
+    '>server-security-evidence.sha256' \
     'actions/attest@508db95dd578ae2727ebd6217d5ba78e4fbda05d # v4.2.1' \
     'subject-name: ghcr.io/pasturestack/server' \
     'subject-digest: ${{ steps.publish.outputs.digest }}' \
     'push-to-registry: true'; do
     require_marker "$workflow" "$marker" \
         SERVER_SUPPLY_CHAIN_RELEASE_GATE_MISSING
+done
+for marker in \
+    'failed_package_version_id:' \
+    'failed_subject_digest:' \
+    'failed_source_sha:' \
+    '- name: Remove exact failed unreleased candidate' \
+    "if: inputs.failed_package_version_id != ''" \
+    'Refusing to remove a candidate with an existing Git tag' \
+    'Refusing to remove a candidate with an existing GitHub Release' \
+    '.metadata.container.tags == [$tag]' \
+    'test "$remote_digest" = "$FAILED_SUBJECT_DIGEST"' \
+    'org.opencontainers.image.revision' \
+    'gh api --method DELETE'; do
+    require_marker "$workflow" "$marker" \
+        SERVER_FAILED_PUBLICATION_RECOVERY_GATE_MISSING
 done
 for marker in \
     '- name: Close registry session' \
