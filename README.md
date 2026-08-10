@@ -11,8 +11,8 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.354` combines Orchestration Engine `0.183.281`, Node Agent `0.13.22`, and
-the reviewed Ember 6.12 LTS Web Console `1.6.64`.
+`v1.6.355` combines Orchestration Engine `0.183.281`, Node Agent `0.13.22`, and
+the reviewed Ember 6.12 LTS Web Console `1.6.66`.
 
 Authoritative host-port and volume preflight protects create and upgrade
 operations without weakening project ownership checks. Managed-network checks
@@ -47,7 +47,7 @@ Catalog stack definitions, their documentation, and referenced public images mus
 
 Version coordinates are available only when the matching GitHub Release and public GHCR package both exist. Each release is held until its assets, checksums, SBOM, license records, anonymous downloads, and isolated-VM gates pass.
 
-Server `v1.6.354` registers the complete live volume-preflight schema model and preserves the project-scoped authorization required by driver-aware volume configuration, accessible
+Server `v1.6.355` registers the complete live volume-preflight schema model and preserves the project-scoped authorization required by driver-aware volume configuration, accessible
 path completion, and an authoritative `volumepreflight` check. The server
 validates container and service create or upgrade requests again at save time,
 including storage-driver state, host coverage, existing volume ownership, and
@@ -59,10 +59,17 @@ The Web Console formats schema-validation field names without legacy String
 prototype extensions, so a missing localized field label cannot leave a
 container or service form stuck in the saving state.
 
-Web Console `1.6.64` gives the loading overlay a deterministic lifecycle. Only
-the newest route transition may change its state; successful, rejected,
-aborted, and overlapping transitions release it safely, with a 30-second
-watchdog as a final recovery path.
+Web Console `1.6.66` gives the loading overlay a deterministic lifecycle and a
+distinct rectangular PastureStack stack-panel loading state. Only the newest
+route transition may change its state; successful, rejected, aborted, and overlapping transitions
+release it safely, with a 30-second watchdog as a final recovery path. The
+retired grass, celestial-body, and orbit scene is rejected by the packaged
+image gate.
+
+The embedded Catalog snapshot is pinned to commit
+`bc446236c16f1170eb9130b4901af3d57dd82db4`. It retains prior immutable
+template revisions and adds Resource Scheduler `v0.8.16` as a new revision,
+using only the public semantic-version GHCR coordinate.
 
 The Create button remains disabled during an ordinary live volume check. If a
 same-tick recheck races with a click, it no longer becomes a stale client-side
@@ -74,7 +81,7 @@ volume and storage-driver validation.
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.354
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.355
 ```
 
 Keep operational image references in semantic `vMAJOR.MINOR.PATCH` form. The matching GitHub Release records the resolved digest for verification without exposing digest-qualified strings to the platform UI. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.

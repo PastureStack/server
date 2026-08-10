@@ -26,11 +26,11 @@ node_agent_windows_artifact=${NODE_AGENT_WINDOWS_ARTIFACT:-node-agent-0.13.22-wi
 node_agent_windows_artifact_sha256=${NODE_AGENT_WINDOWS_ARTIFACT_SHA256:-36230c05845c6895988edc06c1d8094cccd66899c2f268e3eb7644ca1e7b7c39}
 node_agent_commit=${NODE_AGENT_COMMIT:-d370dc6772aea00381a97769b9bf827f35440656}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.64}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.64.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-65f01e4194274353234510c95eac11c070e27e06c808b61522ed25d06e6ce1fc}
-web_console_commit=${WEB_CONSOLE_COMMIT:-35a04a42dafee88d14c522a5b06d24ee6fb438e8}
-image=${IMAGE:-pasturestack-validation/server:v1.6.354}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.66}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-1.6.66.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-826f68413598f1fcc8c6983f487cb357a4a1a46af2b65e7059f7c5c8d335054f}
+web_console_commit=${WEB_CONSOLE_COMMIT:-dd5f6428ae2bebbc3b427569906be43b419c2c99}
+image=${IMAGE:-pasturestack-validation/server:v1.6.355}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -95,7 +95,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.354
+    v1.6.355
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -105,9 +105,9 @@ test "$(docker image inspect "$image" \
 
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
-catalog_json='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"57707ddf891e36066a144d7821adc458dbf8da9c"}}}'
+catalog_json='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"bc446236c16f1170eb9130b4901af3d57dd82db4"}}}'
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.354 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.355 \
     CATTLE_API_UI_VERSION=1.1.15 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15 \
     CATTLE_CATTLE_VERSION=v0.183.281 \
@@ -120,13 +120,13 @@ for marker in \
     PASTURESTACK_NODE_AGENT_COMMIT="${node_agent_commit}" \
     PASTURESTACK_NODE_AGENT_LINUX_ARTIFACT_SHA256="${node_agent_linux_artifact_sha256}" \
     PASTURESTACK_NODE_AGENT_WINDOWS_ARTIFACT_SHA256="${node_agent_windows_artifact_sha256}" \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.64 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.66 \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
     PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.2.5 \
     PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=0.55.1-pasturestack.1 \
     PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-07-27 \
-    PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c \
+    PASTURESTACK_CATALOG_COMMIT=bc446236c16f1170eb9130b4901af3d57dd82db4 \
     "DEFAULT_CATTLE_CATALOG_URL=${catalog_json}" \
     "CATTLE_CATALOG_URL=${catalog_json}"; do
     test "$(grep -Fxc "$marker" <<<"$image_environment")" = 1
@@ -204,7 +204,7 @@ test "$(web_console_hashes "$base_image")" != "$(web_console_hashes "$image")"
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.56"
+    test "$(cat "${web_root}/VERSION.txt")" = "1.6.66"
     test -s "${web_root}/favicon.ico"
     test -s "${web_root}/index.html"
     test -s "${web_root}/licenses/ember/LICENSE"
@@ -310,6 +310,31 @@ docker run --rm --entrypoint bash "$image" -lc '
     require_ui_marker "scheduleLoadingOverlayHide"
     # Minified production marker: stop(!0,!0).css("opacity",1).show()
     require_ui_marker "stop(!0,!0).css(\"opacity\",1).show()"
+    require_ui_marker "pasturestack-loader"
+    require_ui_marker "pasturestack-loader__panel"
+    require_ui_marker "pasturestack-loader__stack"
+    require_ui_marker "pasturestack-loader__layer--three"
+    require_ui_marker "pasturestack-loader__progress"
+    for retired_loader_marker in \
+        'class="loadfield"' \
+        'class="orbit"' \
+        'class="grass"' \
+        'class="sun"' \
+        'class="moon"'; do
+        if grep -aF "${retired_loader_marker}" "${ui_entry}"; then
+            echo "SERVER_IMAGE_GATE_FAILED=retired-loading-scene marker=${retired_loader_marker}" >&2
+            exit 1
+        fi
+    done
+    for retired_loader_marker in \
+        'pasturestack-loader__ring' \
+        'pasturestack-loader-spin' \
+        'pasturestack-loader-pulse'; do
+        if grep -aF "${retired_loader_marker}" "${ui_entry}"; then
+            echo "SERVER_IMAGE_GATE_FAILED=retired-circular-loader marker=${retired_loader_marker}" >&2
+            exit 1
+        fi
+    done
     if grep -aF "stop().show().fadeIn({duration:100" "${ui_entry}"; then
         echo "Rejected race-prone nested loading overlay fade callback in Web Console image" >&2
         exit 1
@@ -490,7 +515,7 @@ docker run --rm --entrypoint bash "$image" -lc '
     echo "SERVER_IMAGE_GATE_STAGE=authentication-service-complete"
 '
 
-printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s engine_commit=%s engine_sha256=%s node_agent_commit=%s node_agent_linux_sha256=%s node_agent_windows_sha256=%s web_console_commit=%s web_console_sha256=%s catalog_commit=57707ddf891e36066a144d7821adc458dbf8da9c port_preflight=authoritative port_preflight_schema_auth=project_visible volume_preflight=authoritative volume_preflight_project_schema=authorized volume_preflight_type_set=registered volume_validation=create_and_upgrade volume_driver=select volume_autocomplete=max8 nfs_contract=environment_multiHostRW_complete_coverage save_validation_string=native node_inspection=host.port.check port_preflight_closure_actions=direct api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=controller_owned_callback storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8\n' \
+printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s engine_commit=%s engine_sha256=%s node_agent_commit=%s node_agent_linux_sha256=%s node_agent_windows_sha256=%s web_console_commit=%s web_console_sha256=%s catalog_commit=bc446236c16f1170eb9130b4901af3d57dd82db4 loading_scene=rectangular_stack port_preflight=authoritative port_preflight_schema_auth=project_visible volume_preflight=authoritative volume_preflight_project_schema=authorized volume_preflight_type_set=registered volume_validation=create_and_upgrade volume_driver=select volume_autocomplete=max8 nfs_contract=environment_multiHostRW_complete_coverage save_validation_string=native node_inspection=host.port.check port_preflight_closure_actions=direct api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=controller_owned_callback storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8\n' \
     "$image" "$revision" "$base_image" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "$node_agent_commit" "$node_agent_linux_artifact_sha256" \
