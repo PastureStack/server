@@ -94,6 +94,7 @@ for marker in \
     'id-token: write' \
     'attestations: write' \
     'artifact-metadata: write' \
+    'GH_TOKEN: ${{ github.token }}' \
     'trivy_version=0.73.0' \
     'trivy_sha256=2edd39da482bb4e9831962487b68f68e3928ec3137794757f54d00383d79547b' \
     '--scanners vuln,secret' \
