@@ -26,11 +26,11 @@ node_agent_windows_artifact=${NODE_AGENT_WINDOWS_ARTIFACT:-node-agent-0.13.22-wi
 node_agent_windows_artifact_sha256=${NODE_AGENT_WINDOWS_ARTIFACT_SHA256:-36230c05845c6895988edc06c1d8094cccd66899c2f268e3eb7644ca1e7b7c39}
 node_agent_commit=${NODE_AGENT_COMMIT:-d370dc6772aea00381a97769b9bf827f35440656}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-v1.6.56-pasturestack.62}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.56-pasturestack.62.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-99aed13daa89bccc5043bfc944cf7cbac260f975a4a50ad84274f82542c28f50}
-web_console_commit=${WEB_CONSOLE_COMMIT:-d1b59b25be45183a36c76b36c89d55c979fed87e}
-image=${IMAGE:-pasturestack-validation/server:v1.6.353}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.64}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.64.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-65f01e4194274353234510c95eac11c070e27e06c808b61522ed25d06e6ce1fc}
+web_console_commit=${WEB_CONSOLE_COMMIT:-35a04a42dafee88d14c522a5b06d24ee6fb438e8}
+image=${IMAGE:-pasturestack-validation/server:v1.6.354}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -42,7 +42,7 @@ build_options=()
 [[ "$node_agent_windows_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$web_console_commit" =~ ^[0-9a-f]{40}$ ]]
 [[ "$web_console_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
-[[ "$web_console_release_tag" =~ ^v[0-9][0-9A-Za-z.-]*$ ]]
+[[ "$web_console_release_tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
 [[ "$web_console_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
 [[ "$base_image" == ghcr.io/pasturestack/server:v1.6.341 ]]
 for release_base_url in \
@@ -95,7 +95,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.353
+    v1.6.354
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -107,7 +107,7 @@ image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 catalog_json='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"57707ddf891e36066a144d7821adc458dbf8da9c"}}}'
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.353 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.354 \
     CATTLE_API_UI_VERSION=1.1.15 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15 \
     CATTLE_CATTLE_VERSION=v0.183.281 \
@@ -120,7 +120,7 @@ for marker in \
     PASTURESTACK_NODE_AGENT_COMMIT="${node_agent_commit}" \
     PASTURESTACK_NODE_AGENT_LINUX_ARTIFACT_SHA256="${node_agent_linux_artifact_sha256}" \
     PASTURESTACK_NODE_AGENT_WINDOWS_ARTIFACT_SHA256="${node_agent_windows_artifact_sha256}" \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.62 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.64 \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
     PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.2.5 \
@@ -305,6 +305,15 @@ docker run --rm --entrypoint bash "$image" -lc '
     require_ui_marker "pasturestack-nfs"
     require_ui_marker "volumePreflightChanged"
     require_ui_marker "publishPreflightState"
+    require_ui_marker "loadingWatchdog"
+    require_ui_marker "loadingTimeout:3e4"
+    require_ui_marker "scheduleLoadingOverlayHide"
+    # Minified production marker: stop(!0,!0).css("opacity",1).show()
+    require_ui_marker "stop(!0,!0).css(\"opacity\",1).show()"
+    if grep -aF "stop().show().fadeIn({duration:100" "${ui_entry}"; then
+        echo "Rejected race-prone nested loading overlay fade callback in Web Console image" >&2
+        exit 1
+    fi
     require_ui_marker "([A-Z]+)([A-Z][a-z])"
     if grep -aF ".dasherize()" "${ui_entry}"; then
         echo "Rejected legacy String prototype extension in Web Console image" >&2
@@ -314,10 +323,13 @@ docker run --rm --entrypoint bash "$image" -lc '
         echo "Rejected stale client-side volume preflight save blocker in Web Console image" >&2
         exit 1
     fi
-    require_ui_marker "storageTablePerPage:l("
+    require_ui_marker "define(\"ui/services/prefs\""
+    require_ui_marker "storageTablePerPage:"
+    require_ui_marker ".PREFS.STORAGE_TABLE_COUNT"
+    require_ui_marker ".TABLES.STORAGE_PAGE_SIZES"
+    require_ui_marker ".TABLES.DEFAULT_STORAGE_COUNT"
     require_ui_marker "storagePageSizeChanged"
     require_ui_marker "pageSizeChanged"
-    require_ui_marker "computed(e,{get(){return o(this.get(e))},set(t,n)"
     require_ui_marker "ui/host/containers/route"
     require_ui_marker "followLink(\"instances\")"
     echo "SERVER_IMAGE_GATE_STAGE=web-console-markers-complete"

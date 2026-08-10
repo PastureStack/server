@@ -255,10 +255,10 @@ RUN set -eu; \
         "${linux_listing}" "${windows_listing}"
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=v1.6.56-pasturestack.62
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.56-pasturestack.62.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=99aed13daa89bccc5043bfc944cf7cbac260f975a4a50ad84274f82542c28f50
-ARG WEB_CONSOLE_COMMIT=d1b59b25be45183a36c76b36c89d55c979fed87e
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.64
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.64.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=65f01e4194274353234510c95eac11c070e27e06c808b61522ed25d06e6ce1fc
+ARG WEB_CONSOLE_COMMIT=35a04a42dafee88d14c522a5b06d24ee6fb438e8
 
 RUN set -eu; \
     archive=/tmp/web-console.tar.gz; \
@@ -416,6 +416,14 @@ RUN set -eu; \
     grep -aF 'pasturestack-nfs' "${ui_entry}" >/dev/null; \
     grep -aF 'volumePreflightChanged' "${ui_entry}" >/dev/null; \
     grep -aF 'publishPreflightState' "${ui_entry}" >/dev/null; \
+    grep -aF 'loadingWatchdog' "${ui_entry}" >/dev/null; \
+    grep -aF 'loadingTimeout:3e4' "${ui_entry}" >/dev/null; \
+    grep -aF 'scheduleLoadingOverlayHide' "${ui_entry}" >/dev/null; \
+    grep -aF 'stop(!0,!0).css("opacity",1).show()' "${ui_entry}" >/dev/null; \
+    if grep -aF 'stop().show().fadeIn({duration:100' "${ui_entry}"; then \
+        echo 'Rejected race-prone nested loading overlay fade callback' >&2; \
+        exit 1; \
+    fi; \
     grep -aF '([A-Z]+)([A-Z][a-z])' "${ui_entry}" >/dev/null; \
     if grep -aF '.dasherize()' "${ui_entry}"; then \
         echo 'Rejected legacy String prototype extension in Web Console' >&2; \
@@ -425,10 +433,13 @@ RUN set -eu; \
         echo 'Rejected stale client-side volume preflight save blocker' >&2; \
         exit 1; \
     fi; \
-    grep -aF 'storageTablePerPage:l(' "${ui_entry}" >/dev/null; \
+    grep -aF 'define("ui/services/prefs"' "${ui_entry}" >/dev/null; \
+    grep -aF 'storageTablePerPage:' "${ui_entry}" >/dev/null; \
+    grep -aF '.PREFS.STORAGE_TABLE_COUNT' "${ui_entry}" >/dev/null; \
+    grep -aF '.TABLES.STORAGE_PAGE_SIZES' "${ui_entry}" >/dev/null; \
+    grep -aF '.TABLES.DEFAULT_STORAGE_COUNT' "${ui_entry}" >/dev/null; \
     grep -aF 'storagePageSizeChanged' "${ui_entry}" >/dev/null; \
     grep -aF 'pageSizeChanged' "${ui_entry}" >/dev/null; \
-    grep -aF 'computed(e,{get(){return o(this.get(e))},set(t,n)' "${ui_entry}" >/dev/null; \
     grep -aF 'ui/host/containers/route' "${ui_entry}" >/dev/null; \
     grep -aF 'followLink("instances")' "${ui_entry}" >/dev/null; \
     grep -aF '_filteredShouldChangeContent' "${vendor_entry}" >/dev/null; \
@@ -522,11 +533,11 @@ RUN set -eu; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server compatibility image with authoritative port and volume preflight." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.353" \
+      org.opencontainers.image.version="v1.6.354" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.341"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.353
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.354
 ENV CATTLE_CATTLE_VERSION=v0.183.281
 ENV RC16_GO_AGENT_VERSION=0.13.22
 ENV RC16_WINDOWS_AGENT_VERSION=0.13.22
@@ -537,7 +548,7 @@ ENV PASTURESTACK_NODE_AGENT_VERSION=0.13.22
 ENV PASTURESTACK_NODE_AGENT_COMMIT=${NODE_AGENT_COMMIT}
 ENV PASTURESTACK_NODE_AGENT_LINUX_ARTIFACT_SHA256=${NODE_AGENT_LINUX_ARTIFACT_SHA256}
 ENV PASTURESTACK_NODE_AGENT_WINDOWS_ARTIFACT_SHA256=${NODE_AGENT_WINDOWS_ARTIFACT_SHA256}
-ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.62
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.64
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
 ENV PASTURESTACK_CATALOG_COMMIT=57707ddf891e36066a144d7821adc458dbf8da9c
