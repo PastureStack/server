@@ -80,6 +80,13 @@ loading markers, and absence of the retired scene before producing the image.
 The manual publisher keeps its authenticated GHCR session open until both the
 image provenance and CycloneDX SBOM attestations have been published, then an
 unconditional cleanup step closes the registry session.
+The retained checksum manifest uses portable artifact basenames so downloaded
+evidence can be verified outside the hosted runner workspace.
+If a run fails after publishing but before those attestations complete, its
+manual recovery inputs require the exact package version ID, digest, and source
+revision. Recovery refuses any candidate that already has a Git tag or GitHub
+Release and revalidates the package tag and embedded source label before
+deleting only that failed candidate.
 Live deployment acceptance also checks `/ping`, local login, OpenID Connect,
 MFA, authenticated route navigation, overlay dismissal, Catalog revision
 discovery, Resource Scheduler continuity, container restart count, and rollback

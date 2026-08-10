@@ -6,7 +6,7 @@ cd "$repo_root"
 
 dockerfile=server/Dockerfile.port-preflight-runtime-patch
 build_script=server/build-port-preflight-runtime-patch-image.sh
-release_doc=docs/releases/server-1.6.355.md
+release_doc=docs/releases/server-1.6.356.md
 workflow=.github/workflows/publish-port-preflight-runtime-patch.yml
 
 for path in "$dockerfile" "$build_script" "$release_doc" "$workflow"; do
@@ -27,7 +27,7 @@ require_marker()
 for marker in \
     'Orchestration Engine: `0.183.281`' \
     'Authentication Service: `0.4.35`' \
-    'Web Console: `1.6.68`' \
+    'Web Console: `1.6.69`' \
     'deterministic loading-overlay lifecycle' \
     'rectangular PastureStack stack-panel loading state' \
     'Resource Scheduler catalog release: `v0.8.16`' \
@@ -47,22 +47,22 @@ require_marker "$dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.341' \
     SERVER_PORT_PREFLIGHT_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.355"' \
+    'org.opencontainers.image.version="v1.6.356"' \
     SERVER_PORT_PREFLIGHT_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.355' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.356' \
     SERVER_PORT_PREFLIGHT_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.68' \
+    'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.69' \
     SERVER_WEB_CONSOLE_PATCH_PACKAGE_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.68.tar.gz' \
+    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.69.tar.gz' \
     SERVER_WEB_CONSOLE_PATCH_ARTIFACT_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=3f98339b378e2a77a86d3078ba3f1f1448030f58d5ef96b9c6bbfcb13b3f9a24' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=ea49b88b49af64ad4d35fe9355b60b19b931224a413df07a4935ef6ae8e33ddd' \
     SERVER_WEB_CONSOLE_PATCH_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=bcd2e28ef63878be5d3d38c06119395d09a0211f' \
+    'ARG WEB_CONSOLE_COMMIT=ee53830526df5fb49aa457ffc56947352e98fed2' \
     SERVER_WEB_CONSOLE_PATCH_COMMIT_MISSING
 for marker in \
     'ARG AUTHENTICATION_SERVICE_RELEASE_TAG=v0.4.35' \
@@ -101,12 +101,29 @@ for marker in \
     'server-critical-high.tsv' \
     'server-secrets.tsv' \
     'server.cdx.json' \
+    'cd "$RUNNER_TEMP"' \
+    '>server-security-evidence.sha256' \
     'actions/attest@508db95dd578ae2727ebd6217d5ba78e4fbda05d # v4.2.1' \
     'subject-name: ghcr.io/pasturestack/server' \
     'subject-digest: ${{ steps.publish.outputs.digest }}' \
     'push-to-registry: true'; do
     require_marker "$workflow" "$marker" \
         SERVER_SUPPLY_CHAIN_RELEASE_GATE_MISSING
+done
+for marker in \
+    'failed_package_version_id:' \
+    'failed_subject_digest:' \
+    'failed_source_sha:' \
+    '- name: Remove exact failed unreleased candidate' \
+    "if: inputs.failed_package_version_id != ''" \
+    'Refusing to remove a candidate with an existing Git tag' \
+    'Refusing to remove a candidate with an existing GitHub Release' \
+    '.metadata.container.tags == [$tag]' \
+    'test "$remote_digest" = "$FAILED_SUBJECT_DIGEST"' \
+    'org.opencontainers.image.revision' \
+    'gh api --method DELETE'; do
+    require_marker "$workflow" "$marker" \
+        SERVER_FAILED_PUBLICATION_RECOVERY_GATE_MISSING
 done
 for marker in \
     '- name: Close registry session' \
@@ -534,4 +551,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_OK release=v1.6.355 base=v1.6.341 engine=0.183.281 node_agent=0.13.22 authentication_service=0.4.35 web_console=1.6.68 loading_overlay=deterministic loading_scene=rectangular_stack catalog_commit=bc446236c16f1170eb9130b4901af3d57dd82db4 scheduler_catalog=v0.8.16 port_preflight=authoritative managed_scope=environment bridge_host_scope=selected_host stopped_owner=warning port_preflight_schema_auth=project_visible volume_preflight=authoritative volume_preflight_project_schema=authorized volume_preflight_type_set=registered volume_validation=create_and_upgrade volume_driver=select volume_autocomplete=max8 nfs_contract=environment_multiHostRW_complete_coverage save_validation_string=native node_inspection=host.port.check port_preflight_closure_actions=direct named_port_callback=1 ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=broker_probe console_broker=unchanged_recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=controller_owned_callback storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link unchanged_critical_runtime=4 unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'
+printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_OK release=v1.6.356 base=v1.6.341 engine=0.183.281 node_agent=0.13.22 authentication_service=0.4.35 web_console=1.6.69 loading_overlay=deterministic loading_scene=rectangular_stack catalog_commit=bc446236c16f1170eb9130b4901af3d57dd82db4 scheduler_catalog=v0.8.16 port_preflight=authoritative managed_scope=environment bridge_host_scope=selected_host stopped_owner=warning port_preflight_schema_auth=project_visible volume_preflight=authoritative volume_preflight_project_schema=authorized volume_preflight_type_set=registered volume_validation=create_and_upgrade volume_driver=select volume_autocomplete=max8 nfs_contract=environment_multiHostRW_complete_coverage save_validation_string=native node_inspection=host.port.check port_preflight_closure_actions=direct named_port_callback=1 ember_lts=6.12 websocket_reconnect=single_owner terminal_recovery=broker_probe console_broker=unchanged_recoverable_missing_status resize_handle=11px oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=controller_owned_callback storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link unchanged_critical_runtime=4 unchanged_broker=1 theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8 runtime_digest_coordinates=0\n'

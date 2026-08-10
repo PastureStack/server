@@ -32,11 +32,11 @@ authentication_service_artifact_sha256=${AUTHENTICATION_SERVICE_ARTIFACT_SHA256:
 authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-a49f60048d841b5e164a3f9d60f52f125e8d6b663f337b4aafb7a20b4e4034dd}
 authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-b5f50c57407fcc1b789bff680084226fba2e3171}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.68}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.68.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-3f98339b378e2a77a86d3078ba3f1f1448030f58d5ef96b9c6bbfcb13b3f9a24}
-web_console_commit=${WEB_CONSOLE_COMMIT:-bcd2e28ef63878be5d3d38c06119395d09a0211f}
-image=${IMAGE:-pasturestack-validation/server:v1.6.355}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.69}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.69.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-ea49b88b49af64ad4d35fe9355b60b19b931224a413df07a4935ef6ae8e33ddd}
+web_console_commit=${WEB_CONSOLE_COMMIT:-ee53830526df5fb49aa457ffc56947352e98fed2}
+image=${IMAGE:-pasturestack-validation/server:v1.6.356}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -113,7 +113,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.355
+    v1.6.356
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -125,7 +125,7 @@ image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 catalog_json='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"bc446236c16f1170eb9130b4901af3d57dd82db4"}}}'
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.355 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.356 \
     CATTLE_API_UI_VERSION=1.1.15 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15 \
     CATTLE_CATTLE_VERSION=v0.183.281 \
@@ -138,7 +138,7 @@ for marker in \
     PASTURESTACK_NODE_AGENT_COMMIT="${node_agent_commit}" \
     PASTURESTACK_NODE_AGENT_LINUX_ARTIFACT_SHA256="${node_agent_linux_artifact_sha256}" \
     PASTURESTACK_NODE_AGENT_WINDOWS_ARTIFACT_SHA256="${node_agent_windows_artifact_sha256}" \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.68 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.69 \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
     PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.4.35 \
@@ -232,7 +232,7 @@ test "$(web_console_hashes "$base_image")" != "$(web_console_hashes "$image")"
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.68"
+    test "$(cat "${web_root}/VERSION.txt")" = "1.6.69"
     test -s "${web_root}/favicon.ico"
     test -s "${web_root}/index.html"
     test -s "${web_root}/licenses/ember/LICENSE"
