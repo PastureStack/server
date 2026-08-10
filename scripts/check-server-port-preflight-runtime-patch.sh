@@ -108,6 +108,26 @@ for marker in \
     require_marker "$workflow" "$marker" \
         SERVER_SUPPLY_CHAIN_RELEASE_GATE_MISSING
 done
+for marker in \
+    '- name: Close registry session' \
+    'if: always()' \
+    'docker logout ghcr.io >/dev/null 2>&1 || true'; do
+    require_marker "$workflow" "$marker" \
+        SERVER_REGISTRY_SESSION_CLEANUP_GATE_MISSING
+done
+
+publish_line=$(grep -nF -- '- name: Publish public semantic-version image' "$workflow" | cut -d: -f1)
+provenance_line=$(grep -nF -- '- name: Attest published image provenance' "$workflow" | cut -d: -f1)
+sbom_line=$(grep -nF -- '- name: Attest published image SBOM' "$workflow" | cut -d: -f1)
+logout_line=$(grep -nF -- '- name: Close registry session' "$workflow" | cut -d: -f1)
+if ! [[ "$publish_line" -lt "$provenance_line" && \
+        "$provenance_line" -lt "$sbom_line" && \
+        "$sbom_line" -lt "$logout_line" ]]; then
+    printf '%s publish=%s provenance=%s sbom=%s logout=%s\n' \
+        SERVER_REGISTRY_SESSION_CLOSED_BEFORE_ATTESTATION \
+        "$publish_line" "$provenance_line" "$sbom_line" "$logout_line" >&2
+    exit 1
+fi
 require_marker "$dockerfile" \
     'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.281' \
     SERVER_PORT_PREFLIGHT_PATCH_ENGINE_RELEASE_MISSING

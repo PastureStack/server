@@ -77,6 +77,9 @@ Critical or High findings, CycloneDX 1.7 SBOM gate, OpenVEX review, and GitHub
 SLSA and SBOM attestation verification. Server assembly verifies the public
 release checksums, archive roots, version markers, required licenses, branded
 loading markers, and absence of the retired scene before producing the image.
+The manual publisher keeps its authenticated GHCR session open until both the
+image provenance and CycloneDX SBOM attestations have been published, then an
+unconditional cleanup step closes the registry session.
 Live deployment acceptance also checks `/ping`, local login, OpenID Connect,
 MFA, authenticated route navigation, overlay dismissal, Catalog revision
 discovery, Resource Scheduler continuity, container restart count, and rollback

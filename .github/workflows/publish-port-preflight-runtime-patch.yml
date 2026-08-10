@@ -216,7 +216,6 @@ jobs:
           printf '%s' "$REGISTRY_TOKEN" |
             docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin >/dev/null
           docker push "$TARGET_IMAGE" | tee "$RUNNER_TEMP/push.log"
-          docker logout ghcr.io >/dev/null
 
           digest="$(docker buildx imagetools inspect "$TARGET_IMAGE" \
             --format '{{.Manifest.Digest}}')"
@@ -242,6 +241,12 @@ jobs:
           subject-digest: ${{ steps.publish.outputs.digest }}
           sbom-path: ${{ runner.temp }}/server.cdx.json
           push-to-registry: true
+
+      - name: Close registry session
+        if: always()
+        shell: bash
+        run: |
+          docker logout ghcr.io >/dev/null 2>&1 || true
 
       - name: Retain publication evidence
         if: always()
