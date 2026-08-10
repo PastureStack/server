@@ -25,11 +25,17 @@ node_agent_linux_artifact_sha256=${NODE_AGENT_LINUX_ARTIFACT_SHA256:-4272c9005ea
 node_agent_windows_artifact=${NODE_AGENT_WINDOWS_ARTIFACT:-node-agent-0.13.22-windows-amd64.zip}
 node_agent_windows_artifact_sha256=${NODE_AGENT_WINDOWS_ARTIFACT_SHA256:-36230c05845c6895988edc06c1d8094cccd66899c2f268e3eb7644ca1e7b7c39}
 node_agent_commit=${NODE_AGENT_COMMIT:-d370dc6772aea00381a97769b9bf827f35440656}
+authentication_service_release_base_url=${AUTHENTICATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/authentication-service/releases/download}
+authentication_service_release_tag=${AUTHENTICATION_SERVICE_RELEASE_TAG:-v0.4.35}
+authentication_service_artifact=${AUTHENTICATION_SERVICE_ARTIFACT:-authentication-service-0.4.35-linux-amd64.tar.xz}
+authentication_service_artifact_sha256=${AUTHENTICATION_SERVICE_ARTIFACT_SHA256:-17c10c2d907d75cc2ead63b9b7ec7c3535b9d45e812afede94c0df799251172b}
+authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-a49f60048d841b5e164a3f9d60f52f125e8d6b663f337b4aafb7a20b4e4034dd}
+authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-b5f50c57407fcc1b789bff680084226fba2e3171}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.66}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-1.6.66.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-826f68413598f1fcc8c6983f487cb357a4a1a46af2b65e7059f7c5c8d335054f}
-web_console_commit=${WEB_CONSOLE_COMMIT:-dd5f6428ae2bebbc3b427569906be43b419c2c99}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.68}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.68.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-3f98339b378e2a77a86d3078ba3f1f1448030f58d5ef96b9c6bbfcb13b3f9a24}
+web_console_commit=${WEB_CONSOLE_COMMIT:-bcd2e28ef63878be5d3d38c06119395d09a0211f}
 image=${IMAGE:-pasturestack-validation/server:v1.6.355}
 build_options=()
 
@@ -40,6 +46,11 @@ build_options=()
 [[ "$node_agent_commit" =~ ^[0-9a-f]{40}$ ]]
 [[ "$node_agent_linux_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$node_agent_windows_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
+[[ "$authentication_service_commit" =~ ^[0-9a-f]{40}$ ]]
+[[ "$authentication_service_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
+[[ "$authentication_service_binary_sha256" =~ ^[0-9a-f]{64}$ ]]
+[[ "$authentication_service_release_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+[[ "$authentication_service_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
 [[ "$web_console_commit" =~ ^[0-9a-f]{40}$ ]]
 [[ "$web_console_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$web_console_release_tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
@@ -48,6 +59,7 @@ build_options=()
 for release_base_url in \
     "$orchestration_engine_release_base_url" \
     "$node_agent_release_base_url" \
+    "$authentication_service_release_base_url" \
     "$web_console_release_base_url"; do
 case "$release_base_url" in
     https://*) ;;
@@ -84,6 +96,12 @@ docker buildx build \
     --build-arg "NODE_AGENT_WINDOWS_ARTIFACT=${node_agent_windows_artifact}" \
     --build-arg "NODE_AGENT_WINDOWS_ARTIFACT_SHA256=${node_agent_windows_artifact_sha256}" \
     --build-arg "NODE_AGENT_COMMIT=${node_agent_commit}" \
+    --build-arg "AUTHENTICATION_SERVICE_RELEASE_BASE_URL=${authentication_service_release_base_url}" \
+    --build-arg "AUTHENTICATION_SERVICE_RELEASE_TAG=${authentication_service_release_tag}" \
+    --build-arg "AUTHENTICATION_SERVICE_ARTIFACT=${authentication_service_artifact}" \
+    --build-arg "AUTHENTICATION_SERVICE_ARTIFACT_SHA256=${authentication_service_artifact_sha256}" \
+    --build-arg "AUTHENTICATION_SERVICE_BINARY_SHA256=${authentication_service_binary_sha256}" \
+    --build-arg "AUTHENTICATION_SERVICE_COMMIT=${authentication_service_commit}" \
     --build-arg "WEB_CONSOLE_RELEASE_BASE_URL=${web_console_release_base_url}" \
     --build-arg "WEB_CONSOLE_RELEASE_TAG=${web_console_release_tag}" \
     --build-arg "WEB_CONSOLE_ARTIFACT=${web_console_artifact}" \
@@ -120,10 +138,13 @@ for marker in \
     PASTURESTACK_NODE_AGENT_COMMIT="${node_agent_commit}" \
     PASTURESTACK_NODE_AGENT_LINUX_ARTIFACT_SHA256="${node_agent_linux_artifact_sha256}" \
     PASTURESTACK_NODE_AGENT_WINDOWS_ARTIFACT_SHA256="${node_agent_windows_artifact_sha256}" \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.66 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.68 \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
-    PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.2.5 \
+    PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.4.35 \
+    PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT="${authentication_service_commit}" \
+    PASTURESTACK_AUTHENTICATION_SERVICE_ARTIFACT_SHA256="${authentication_service_artifact_sha256}" \
+    PASTURESTACK_AUTHENTICATION_SERVICE_BINARY_SHA256="${authentication_service_binary_sha256}" \
     PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=0.55.1-pasturestack.1 \
     PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-07-27 \
     PASTURESTACK_CATALOG_COMMIT=bc446236c16f1170eb9130b4901af3d57dd82db4 \
@@ -132,17 +153,25 @@ for marker in \
     test "$(grep -Fxc "$marker" <<<"$image_environment")" = 1
 done
 
-critical_paths=(
-    /usr/bin/authentication-service.real
+unchanged_critical_paths=(
+    /usr/bin/authentication-service
     /usr/bin/catalog-service.real
     /usr/bin/govc
     /usr/bin/websocket-proxy.real
 )
 base_critical=$(docker run --rm --entrypoint sha256sum "$base_image" \
-    "${critical_paths[@]}")
+    "${unchanged_critical_paths[@]}")
 image_critical=$(docker run --rm --entrypoint sha256sum "$image" \
-    "${critical_paths[@]}")
+    "${unchanged_critical_paths[@]}")
 test "$base_critical" = "$image_critical"
+
+base_authentication_service=$(docker run --rm --entrypoint sha256sum \
+    "$base_image" /usr/bin/authentication-service.real)
+image_authentication_service=$(docker run --rm --entrypoint sha256sum \
+    "$image" /usr/bin/authentication-service.real)
+test "$base_authentication_service" != "$image_authentication_service"
+test "$(cut -d ' ' -f 1 <<<"$image_authentication_service")" = \
+    "$authentication_service_binary_sha256"
 
 base_engine=$(docker run --rm --entrypoint sha256sum "$base_image" \
     /usr/share/cattle/cattle.jar)
@@ -186,7 +215,6 @@ web_console_hashes()
         {
             find \
                 "${web_root}/assets" \
-                "${web_root}/ember-fetch" \
                 "${web_root}/licenses" \
                 "${web_root}/translations" \
                 -type f -print0
@@ -204,7 +232,7 @@ test "$(web_console_hashes "$base_image")" != "$(web_console_hashes "$image")"
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.66"
+    test "$(cat "${web_root}/VERSION.txt")" = "1.6.68"
     test -s "${web_root}/favicon.ico"
     test -s "${web_root}/index.html"
     test -s "${web_root}/licenses/ember/LICENSE"
@@ -393,6 +421,9 @@ docker run --rm --entrypoint bash "$image" -lc '
     echo "SERVER_IMAGE_GATE_STAGE=sortable-table-refresh-complete"
     for theme_asset in ui-light.css ui-light.rtl.css ui-dark.css ui-dark.rtl.css; do
         theme="${web_root}/assets/${theme_asset}"
+        grep -F "@media (prefers-reduced-motion: reduce)" "${theme}" >/dev/null
+        grep -F "pasturestack-loader-reduced-highlight" "${theme}" >/dev/null
+        grep -F "pasturestack-loader-reduced-progress" "${theme}" >/dev/null
         grep -Fx "  --prism-code-foreground: #f8f8f2;" "${theme}" >/dev/null
         grep -Fx "  --prism-code-background: #272822;" "${theme}" >/dev/null
         grep -Fx "  --prism-code-border: #3e3d32;" "${theme}" >/dev/null
@@ -511,13 +542,16 @@ docker run --rm --entrypoint bash "$image" -lc '
     echo "SERVER_IMAGE_GATE_STAGE=server-core-complete"
     test "$(/usr/bin/govc version)" = "govc 0.55.1-pasturestack.1"
     echo "SERVER_IMAGE_GATE_STAGE=vsphere-cli-complete"
-    /usr/bin/authentication-service.real --version | grep -F "0.2.5" >/dev/null
+    /usr/bin/authentication-service.real --version |
+        grep -Fx "pasturestack-authentication-service version v0.4.35" >/dev/null
     echo "SERVER_IMAGE_GATE_STAGE=authentication-service-complete"
 '
 
-printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s engine_commit=%s engine_sha256=%s node_agent_commit=%s node_agent_linux_sha256=%s node_agent_windows_sha256=%s web_console_commit=%s web_console_sha256=%s catalog_commit=bc446236c16f1170eb9130b4901af3d57dd82db4 loading_scene=rectangular_stack port_preflight=authoritative port_preflight_schema_auth=project_visible volume_preflight=authoritative volume_preflight_project_schema=authorized volume_preflight_type_set=registered volume_validation=create_and_upgrade volume_driver=select volume_autocomplete=max8 nfs_contract=environment_multiHostRW_complete_coverage save_validation_string=native node_inspection=host.port.check port_preflight_closure_actions=direct api_explorer_unchanged=1 critical_runtime_unchanged=1 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=controller_owned_callback storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8\n' \
+printf 'SERVER_PORT_PREFLIGHT_RUNTIME_PATCH_IMAGE_OK image=%s revision=%s base=%s engine_commit=%s engine_sha256=%s node_agent_commit=%s node_agent_linux_sha256=%s node_agent_windows_sha256=%s authentication_service_commit=%s authentication_service_artifact_sha256=%s authentication_service_binary_sha256=%s web_console_commit=%s web_console_sha256=%s catalog_commit=bc446236c16f1170eb9130b4901af3d57dd82db4 loading_scene=rectangular_stack port_preflight=authoritative port_preflight_schema_auth=project_visible volume_preflight=authoritative volume_preflight_project_schema=authorized volume_preflight_type_set=registered volume_validation=create_and_upgrade volume_driver=select volume_autocomplete=max8 nfs_contract=environment_multiHostRW_complete_coverage save_validation_string=native node_inspection=host.port.check port_preflight_closure_actions=direct api_explorer_unchanged=1 authentication_service=0.4.35 unchanged_critical_runtime=4 console_broker=unchanged_recoverable_missing_status websocket_reconnect=single_owner terminal_recovery=broker_probe oidc_writable_model=1 legacy_catalog_versions=retained catalog_version_select=reactive_upgrade_links catalog_enum_options=native catalog_required_answers=false_zero_valid catalog_revision_localization=target_label_fallback catalog_version_requests=latest_only sortable_table_late_body=refreshed sortable_table_body_replacement=refreshed sortable_table_initial_attrs=refreshed sortable_table_paged_content=explicit_sync sortable_table_pagination=explicit_sync storage_table_page_size_preference=controller_owned_callback storage_table_page_clamp=last_valid storage_bulk_remove_refresh=per_success host_container_relationship=follow_link theme_css=4 code_block_contrast=wcag_aa code_block_surface=commonmark_pre legal_sources=8\n' \
     "$image" "$revision" "$base_image" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "$node_agent_commit" "$node_agent_linux_artifact_sha256" \
-    "$node_agent_windows_artifact_sha256" "$web_console_commit" \
+    "$node_agent_windows_artifact_sha256" "$authentication_service_commit" \
+    "$authentication_service_artifact_sha256" \
+    "$authentication_service_binary_sha256" "$web_console_commit" \
     "$web_console_artifact_sha256"

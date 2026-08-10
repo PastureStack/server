@@ -5,7 +5,10 @@ on:
 
 permissions:
   contents: read
+  id-token: write
+  attestations: write
   packages: write
+  artifact-metadata: write
 
 concurrency:
   group: server-port-preflight-runtime-patch
@@ -105,6 +108,96 @@ jobs:
             "$SOURCE_SHA" "$RELEASE_TAG" "$payload_a" "$image_a" "$image_b" |
             tee "$RUNNER_TEMP/reproducibility.txt"
 
+      - name: Verify scanner and enforce image security gates
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          trivy_version=0.73.0
+          trivy_sha256=2edd39da482bb4e9831962487b68f68e3928ec3137794757f54d00383d79547b
+          trivy_source_sha=40c73e5d6166dcc0346a1ab4e94499d1572854e4
+          trivy_root="${RUNNER_TEMP}/trivy-${trivy_version}"
+          trivy_asset="${trivy_root}/trivy_${trivy_version}_Linux-64bit.tar.gz"
+          mkdir -p "$trivy_root"
+
+          curl --fail --show-error --silent --location \
+            "https://github.com/aquasecurity/trivy/releases/download/v${trivy_version}/trivy_${trivy_version}_Linux-64bit.tar.gz" \
+            --output "$trivy_asset"
+          printf '%s  %s\n' "$trivy_sha256" "$trivy_asset" | sha256sum --check
+          trivy_attestation_status=verified
+          attestation_error="${trivy_root}/attestation-error.txt"
+          if ! gh attestation verify "$trivy_asset" \
+            --repo aquasecurity/trivy \
+            --signer-workflow aquasecurity/trivy/.github/workflows/reusable-release.yaml \
+            --source-ref "refs/tags/v${trivy_version}" \
+            --source-digest "$trivy_source_sha" \
+            --signer-digest "$trivy_source_sha" \
+            --deny-self-hosted-runners \
+            2>"$attestation_error"; then
+            if grep -Fq 'organization has an IP allow list enabled' \
+              "$attestation_error"; then
+              trivy_attestation_status=unavailable-source-ip-allow-list
+              printf '::warning::Trivy provenance API is unavailable because the source organization rejects this hosted-runner IP. Exact asset SHA-256 verification remains mandatory.\n'
+            else
+              cat "$attestation_error" >&2
+              exit 1
+            fi
+          fi
+          tar -xzf "$trivy_asset" -C "$trivy_root"
+          test "$("${trivy_root}/trivy" --version | awk '/^Version:/ {print $2}')" = \
+            "$trivy_version"
+
+          "${trivy_root}/trivy" image \
+            --cache-dir "${RUNNER_TEMP}/trivy-cache" \
+            --scanners vuln,secret \
+            --format json \
+            --output "${RUNNER_TEMP}/server-security-scan.json" \
+            "$TARGET_IMAGE"
+          jq -e '.SchemaVersion == 2 and (.Results | type == "array")' \
+            "${RUNNER_TEMP}/server-security-scan.json" >/dev/null
+          jq -r '
+            .Results[]?
+            | .Target as $target
+            | .Vulnerabilities[]?
+            | select(.Severity == "CRITICAL" or .Severity == "HIGH")
+            | [.Severity, .VulnerabilityID, .PkgName, .InstalledVersion,
+               (.FixedVersion // ""), ($target // "")]
+            | @tsv
+          ' "${RUNNER_TEMP}/server-security-scan.json" |
+            LC_ALL=C sort -u >"${RUNNER_TEMP}/server-critical-high.tsv"
+          jq -r '
+            .Results[]?
+            | .Target as $target
+            | .Secrets[]?
+            | [.RuleID, .Category, .Severity, (.Title // ""), ($target // "")]
+            | @tsv
+          ' "${RUNNER_TEMP}/server-security-scan.json" |
+            LC_ALL=C sort -u >"${RUNNER_TEMP}/server-secrets.tsv"
+          test ! -s "${RUNNER_TEMP}/server-critical-high.tsv"
+          test ! -s "${RUNNER_TEMP}/server-secrets.tsv"
+
+          "${trivy_root}/trivy" image \
+            --cache-dir "${RUNNER_TEMP}/trivy-cache" \
+            --format cyclonedx \
+            --output "${RUNNER_TEMP}/server.cdx.json" \
+            "$TARGET_IMAGE"
+          jq -e '
+            .bomFormat == "CycloneDX"
+            and ((.specVersion | type) == "string")
+            and ((.components | type) == "array")
+            and ((.components | length) > 0)
+          ' "${RUNNER_TEMP}/server.cdx.json" >/dev/null
+          printf '%s\n' "$trivy_attestation_status" \
+            >"${RUNNER_TEMP}/trivy-attestation-verification.txt"
+          "${trivy_root}/trivy" --version >"${RUNNER_TEMP}/trivy-version.txt"
+          sha256sum \
+            "${RUNNER_TEMP}/server-security-scan.json" \
+            "${RUNNER_TEMP}/server-critical-high.tsv" \
+            "${RUNNER_TEMP}/server-secrets.tsv" \
+            "${RUNNER_TEMP}/server.cdx.json" \
+            "${RUNNER_TEMP}/trivy-attestation-verification.txt" \
+            "${RUNNER_TEMP}/trivy-version.txt" \
+            >"${RUNNER_TEMP}/server-security-evidence.sha256"
+
       - name: Publish public semantic-version image
         id: publish
         shell: bash
@@ -133,7 +226,23 @@ jobs:
             tee "$RUNNER_TEMP/published.txt"
           printf 'digest=%s\n' "$digest" >>"$GITHUB_OUTPUT"
 
+      - name: Attest published image provenance
+        uses: actions/attest@508db95dd578ae2727ebd6217d5ba78e4fbda05d # v4.2.1
+        with:
+          subject-name: ghcr.io/pasturestack/server
+          subject-digest: ${{ steps.publish.outputs.digest }}
+          push-to-registry: true
+
+      - name: Attest published image SBOM
+        uses: actions/attest@508db95dd578ae2727ebd6217d5ba78e4fbda05d # v4.2.1
+        with:
+          subject-name: ghcr.io/pasturestack/server
+          subject-digest: ${{ steps.publish.outputs.digest }}
+          sbom-path: ${{ runner.temp }}/server.cdx.json
+          push-to-registry: true
+
       - name: Retain publication evidence
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: server-${{ env.RELEASE_TAG }}-publication-evidence
@@ -144,6 +253,13 @@ jobs:
             ${{ runner.temp }}/push.log
             ${{ runner.temp }}/image-inspect.txt
             ${{ runner.temp }}/published.txt
+            ${{ runner.temp }}/server-security-scan.json
+            ${{ runner.temp }}/server-critical-high.tsv
+            ${{ runner.temp }}/server-secrets.tsv
+            ${{ runner.temp }}/server.cdx.json
+            ${{ runner.temp }}/server-security-evidence.sha256
+            ${{ runner.temp }}/trivy-attestation-verification.txt
+            ${{ runner.temp }}/trivy-version.txt
           if-no-files-found: error
           retention-days: 30
           compression-level: 9

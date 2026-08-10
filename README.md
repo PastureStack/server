@@ -11,8 +11,9 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.355` combines Orchestration Engine `0.183.281`, Node Agent `0.13.22`, and
-the reviewed Ember 6.12 LTS Web Console `1.6.66`.
+`v1.6.355` combines Orchestration Engine `0.183.281`, Node Agent `0.13.22`,
+Authentication Service `0.4.35`, and the reviewed Ember 6.12 LTS Web Console
+`1.6.68`.
 
 Authoritative host-port and volume preflight protects create and upgrade
 operations without weakening project ownership checks. Managed-network checks
@@ -59,12 +60,18 @@ The Web Console formats schema-validation field names without legacy String
 prototype extensions, so a missing localized field label cannot leave a
 container or service form stuck in the saving state.
 
-Web Console `1.6.66` gives the loading overlay a deterministic lifecycle and a
+Web Console `1.6.68` gives the loading overlay a deterministic lifecycle and a
 distinct rectangular PastureStack stack-panel loading state. Only the newest
 route transition may change its state; successful, rejected, aborted, and overlapping transitions
 release it safely, with a 30-second watchdog as a final recovery path. The
 retired grass, celestial-body, and orbit scene is rejected by the packaged
-image gate.
+image gate. Reduced-motion mode retains a low-displacement layer pulse and
+progress-colour cycle instead of leaving the overlay visually frozen.
+
+Authentication Service `0.4.35` is installed from its checksum-verified public
+release without replacing the established launch wrapper. The packaged image
+requires the reviewed archive digest, extracted-binary digest, exact source
+commit, static binary, and exact version output before publication.
 
 The embedded Catalog snapshot is pinned to commit
 `bc446236c16f1170eb9130b4901af3d57dd82db4`. It retains prior immutable

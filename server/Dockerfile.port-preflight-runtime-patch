@@ -254,11 +254,54 @@ RUN set -eu; \
     rm -f "${linux_archive}" "${windows_archive}" \
         "${linux_listing}" "${windows_listing}"
 
+ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
+ARG AUTHENTICATION_SERVICE_RELEASE_TAG=v0.4.35
+ARG AUTHENTICATION_SERVICE_ARTIFACT=authentication-service-0.4.35-linux-amd64.tar.xz
+ARG AUTHENTICATION_SERVICE_ARTIFACT_SHA256=17c10c2d907d75cc2ead63b9b7ec7c3535b9d45e812afede94c0df799251172b
+ARG AUTHENTICATION_SERVICE_BINARY_SHA256=a49f60048d841b5e164a3f9d60f52f125e8d6b663f337b4aafb7a20b4e4034dd
+ARG AUTHENTICATION_SERVICE_COMMIT=b5f50c57407fcc1b789bff680084226fba2e3171
+
+RUN set -eu; \
+    archive=/tmp/authentication-service.tar.xz; \
+    listing=/tmp/authentication-service-files.txt; \
+    stage=/tmp/pasturestack-authentication-service; \
+    target=/usr/bin/authentication-service.real; \
+    curl -fsSL \
+        --retry 5 \
+        --retry-all-errors \
+        --retry-delay 2 \
+        --connect-timeout 10 \
+        --max-time 300 \
+        -o "${archive}" \
+        "${AUTHENTICATION_SERVICE_RELEASE_BASE_URL%/}/${AUTHENTICATION_SERVICE_RELEASE_TAG}/${AUTHENTICATION_SERVICE_ARTIFACT}"; \
+    echo "${AUTHENTICATION_SERVICE_ARTIFACT_SHA256}  ${archive}" | sha256sum -c -; \
+    tar -tJf "${archive}" >"${listing}"; \
+    test "$(wc -l <"${listing}")" -eq 1; \
+    test "$(grep -Fxc 'authentication-service' "${listing}")" -eq 1; \
+    if tar -tvJf "${archive}" | grep -Eq '^[lh]'; then \
+        echo "Authentication Service archive may not contain links" >&2; \
+        exit 1; \
+    fi; \
+    rm -rf "${stage}"; \
+    mkdir -p "${stage}"; \
+    tar --no-same-owner --no-same-permissions -xJf "${archive}" -C "${stage}"; \
+    test -f "${stage}/authentication-service"; \
+    test ! -L "${stage}/authentication-service"; \
+    test -z "$(find "${stage}" -mindepth 1 -maxdepth 1 ! -type f -print -quit)"; \
+    echo "${AUTHENTICATION_SERVICE_BINARY_SHA256}  ${stage}/authentication-service" | sha256sum -c -; \
+    "${stage}/authentication-service" --version | \
+        grep -Fx 'pasturestack-authentication-service version v0.4.35' >/dev/null; \
+    install -o root -g root -m 0755 \
+        "${stage}/authentication-service" "${target}.new"; \
+    mv -f "${target}.new" "${target}"; \
+    touch -h -d "@${SOURCE_DATE_EPOCH}" "${target}"; \
+    rm -rf "${archive}" "${listing}" "${stage}"
+
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.66
-ARG WEB_CONSOLE_ARTIFACT=1.6.66.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=826f68413598f1fcc8c6983f487cb357a4a1a46af2b65e7059f7c5c8d335054f
-ARG WEB_CONSOLE_COMMIT=dd5f6428ae2bebbc3b427569906be43b419c2c99
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.68
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.68.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=3f98339b378e2a77a86d3078ba3f1f1448030f58d5ef96b9c6bbfcb13b3f9a24
+ARG WEB_CONSOLE_COMMIT=bcd2e28ef63878be5d3d38c06119395d09a0211f
 
 RUN set -eu; \
     archive=/tmp/web-console.tar.gz; \
@@ -289,7 +332,7 @@ RUN set -eu; \
     while IFS= read -r member; do \
         clean="${member#./}"; \
         case "${clean}" in \
-            1.6.66/|1.6.66/*) ;; \
+            1.6.68/|1.6.68/*) ;; \
             *) echo "Unexpected Web Console archive member: ${member}" >&2; exit 1 ;; \
         esac; \
     done <"${listing}"; \
@@ -297,7 +340,7 @@ RUN set -eu; \
     mkdir -p "${stage}"; \
     tar --no-same-owner --no-same-permissions -xzf "${archive}" -C "${stage}"; \
     test -z "$(find "${stage}" -type l -print -quit)"; \
-    package_root="${stage}/1.6.66"; \
+    package_root="${stage}/1.6.68"; \
     for required in \
         VERSION.txt \
         favicon.ico \
@@ -309,7 +352,6 @@ RUN set -eu; \
         assets/ui-light.rtl.css \
         assets/ui-dark.css \
         assets/ui-dark.rtl.css \
-        ember-fetch \
         licenses \
         licenses/ember/LICENSE \
         licenses/ember/UPSTREAM.md \
@@ -352,7 +394,7 @@ RUN set -eu; \
         licenses/runtime/ember-modifier/UPSTREAM.md; do \
         test -s "${package_root}/${required_file}"; \
     done; \
-    test "$(cat "${package_root}/VERSION.txt")" = "1.6.66"; \
+    test "$(cat "${package_root}/VERSION.txt")" = "1.6.68"; \
     test "$(find "${package_root}/translations" -maxdepth 1 -type f -name '*.json' | wc -l)" -eq 13; \
     test ! -e "${package_root}/translations/none.json"; \
     test "$(find "${package_root}" -type f -name '*.map' | wc -l)" -eq 0; \
@@ -491,6 +533,9 @@ RUN set -eu; \
     grep -aF 'run.debounce(this,this._updateFiltered,100,!1)' "${vendor_entry}" >/dev/null; \
     for theme_asset in ui-light.css ui-light.rtl.css ui-dark.css ui-dark.rtl.css; do \
         theme="${package_root}/assets/${theme_asset}"; \
+        grep -F '@media (prefers-reduced-motion: reduce)' "${theme}" >/dev/null; \
+        grep -F 'pasturestack-loader-reduced-highlight' "${theme}" >/dev/null; \
+        grep -F 'pasturestack-loader-reduced-progress' "${theme}" >/dev/null; \
         grep -Fx '  --prism-code-foreground: #f8f8f2;' "${theme}" >/dev/null; \
         grep -Fx '  --prism-code-background: #272822;' "${theme}" >/dev/null; \
         grep -Fx '  --prism-code-border: #3e3d32;' "${theme}" >/dev/null; \
@@ -540,7 +585,6 @@ RUN set -eu; \
     cp -a "${package_root}/." "${web_root}/"; \
     for path in \
         "${web_root}/assets" \
-        "${web_root}/ember-fetch" \
         "${web_root}/licenses" \
         "${web_root}/translations"; do \
         find "${path}" -exec touch -h -d "@${SOURCE_DATE_EPOCH}" {} +; \
@@ -573,9 +617,13 @@ ENV PASTURESTACK_NODE_AGENT_VERSION=0.13.22
 ENV PASTURESTACK_NODE_AGENT_COMMIT=${NODE_AGENT_COMMIT}
 ENV PASTURESTACK_NODE_AGENT_LINUX_ARTIFACT_SHA256=${NODE_AGENT_LINUX_ARTIFACT_SHA256}
 ENV PASTURESTACK_NODE_AGENT_WINDOWS_ARTIFACT_SHA256=${NODE_AGENT_WINDOWS_ARTIFACT_SHA256}
-ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.66
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.68
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
+ENV PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.4.35
+ENV PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT=${AUTHENTICATION_SERVICE_COMMIT}
+ENV PASTURESTACK_AUTHENTICATION_SERVICE_ARTIFACT_SHA256=${AUTHENTICATION_SERVICE_ARTIFACT_SHA256}
+ENV PASTURESTACK_AUTHENTICATION_SERVICE_BINARY_SHA256=${AUTHENTICATION_SERVICE_BINARY_SHA256}
 ENV PASTURESTACK_CATALOG_COMMIT=bc446236c16f1170eb9130b4901af3d57dd82db4
 ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"bc446236c16f1170eb9130b4901af3d57dd82db4"}}}'
 ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"bc446236c16f1170eb9130b4901af3d57dd82db4"}}}'
