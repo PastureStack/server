@@ -64,7 +64,8 @@ require_marker agent/Dockerfile 'ENV RANCHER_AGENT_IMAGE=ghcr.io/pasturestack/no
 require_marker agent/Dockerfile 'io.pasturestack.container.system="node-agent"' AGENT_DOCKERFILE_PASTURESTACK_SYSTEM_LABEL_MISSING
 require_marker agent/Dockerfile 'COPY loglevel /usr/bin/loglevel' AGENT_DOCKERFILE_LOGLEVEL_NOT_CONTEXT_BACKED
 require_marker agent/Dockerfile 'RUN test -s /usr/bin/share-mnt && \' AGENT_DOCKERFILE_BASE_SHARE_MNT_NONEMPTY_CHECK_MISSING
-require_marker agent/build-image.sh 'cp Dockerfile register.py resolve_url.py run.sh loglevel "$tmpdir"/' AGENT_BUILD_TRACKED_CONTEXT_COPY_MISSING
+require_marker agent/Dockerfile 'COPY control_plane_url.py register.py resolve_url.py run.sh /' AGENT_DOCKERFILE_URL_POLICY_NOT_CONTEXT_BACKED
+require_marker agent/build-image.sh 'cp Dockerfile control_plane_url.py register.py resolve_url.py run.sh loglevel "$tmpdir"/' AGENT_BUILD_TRACKED_CONTEXT_COPY_MISSING
 test -s agent/loglevel || fail AGENT_LOGLEVEL_TRACKED_SOURCE_MISSING
 
 reject_marker agent-base/Dockerfile 'github.com/rancher/runc/releases/download/share-mnt' AGENT_BASE_LEGACY_SHARE_MNT_DOWNLOAD

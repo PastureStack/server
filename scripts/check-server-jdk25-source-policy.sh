@@ -87,7 +87,10 @@ else:
 for marker, code in [
     ("FROM ubuntu:26.04", "SERVER_JDK25_SOURCE_POLICY_UBUNTU2604_BASE_OK"),
     ("apt-get update && apt-get upgrade -y", "SERVER_JDK25_SOURCE_POLICY_APT_SECURITY_UPGRADE_OK"),
-    ('ARG TEMURIN_JDK25_URL="https://api.adoptium.net/v3/binary/latest/25/ga/linux/x64/jdk/hotspot/normal/eclipse?project=jdk"', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_URL_OK"),
+    ('ARG TEMURIN_JDK25_VERSION="25.0.4+7"', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_VERSION_OK"),
+    ('ARG TEMURIN_JDK25_URL="https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4%2B7/OpenJDK25U-jdk_x64_linux_hotspot_25.0.4_7.tar.gz"', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_URL_OK"),
+    ('ARG TEMURIN_JDK25_SHA256="e58fcdcd637b25c03ca84cbbcefc70d11efb8f4b4cbd05decc9f661769d77f94"', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_SHA256_OK"),
+    ('echo "${TEMURIN_JDK25_SHA256}  /tmp/temurin-jdk25.tar.gz" | sha256sum -c -', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_CHECK_OK"),
     ("ENV JAVA_HOME=/opt/java/openjdk", "SERVER_JDK25_SOURCE_POLICY_JAVA_HOME_OK"),
     ("ENV PATH=${JAVA_HOME}/bin:${PATH}", "SERVER_JDK25_SOURCE_POLICY_JAVA_PATH_OK"),
     ("ln -s ${JAVA_HOME}/bin/java /usr/bin/java", "SERVER_JDK25_SOURCE_POLICY_JAVA_SYMLINK_OK"),
@@ -164,8 +167,26 @@ else:
     pass_("SERVER_JDK25_SOURCE_POLICY_PATCH_SUPPRESSWARNINGS_ABSENT_OK")
 
 for marker, code in [
-    ('image="${RC16_JDK25_CHECK_IMAGE:-eclipse-temurin:25-jdk}"', "SERVER_JDK25_SOURCE_POLICY_PATCH_GATE_IMAGE_OK"),
-    ("javac -Xlint:deprecation -Werror -d classes", "SERVER_JDK25_SOURCE_POLICY_PATCH_GATE_WERROR_OK"),
+    ("org.apache.commons.io.serialization.ValidatingObjectInputStream", "SERVER_JDK25_SOURCE_POLICY_VALIDATING_STREAM_OK"),
+    (".accept(ALLOWED_SERIALIZED_CLASSES)", "SERVER_JDK25_SOURCE_POLICY_SERIALIZED_CLASS_ALLOWLIST_OK"),
+    ("readObjectCast()", "SERVER_JDK25_SOURCE_POLICY_VALIDATED_READ_OK"),
+    ("limitSchemaObjectGraph", "SERVER_JDK25_SOURCE_POLICY_OBJECT_GRAPH_LIMIT_OK"),
+]:
+    if marker in patch:
+        pass_(code)
+    else:
+        fail(code.replace("_OK", "_MISSING"), f"marker={marker}")
+
+if "new ObjectInputStream" in patch:
+    fail("SERVER_JDK25_SOURCE_POLICY_RAW_OBJECT_INPUT_STREAM_PRESENT")
+else:
+    pass_("SERVER_JDK25_SOURCE_POLICY_RAW_OBJECT_INPUT_STREAM_ABSENT_OK")
+
+for marker, code in [
+    ('image="${RC16_JDK25_CHECK_IMAGE:-eclipse-temurin:25.0.4_7-jdk}"', "SERVER_JDK25_SOURCE_POLICY_PATCH_GATE_IMAGE_OK"),
+    ("commons_io_version=2.22.0", "SERVER_JDK25_SOURCE_POLICY_PATCH_GATE_COMMONS_IO_OK"),
+    ('jdk_home="${RC16_JDK25_HOME:-}"', "SERVER_JDK25_SOURCE_POLICY_PATCH_GATE_LOCAL_JDK_OK"),
+    ("-Xlint:deprecation -Werror -cp lib/commons-io.jar -d classes", "SERVER_JDK25_SOURCE_POLICY_PATCH_GATE_WERROR_OK"),
     ('major version: 69', "SERVER_JDK25_SOURCE_POLICY_PATCH_GATE_CLASS_MAJOR_OK"),
     ("SERVER_JAVA_PATCH_JDK25_OK", "SERVER_JDK25_SOURCE_POLICY_PATCH_GATE_RESULT_OK"),
     ("suppresswarnings=0", "SERVER_JDK25_SOURCE_POLICY_PATCH_GATE_SUPPRESSION_MARKER_OK"),

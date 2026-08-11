@@ -453,17 +453,21 @@ func (b *broker) validatedTarget(request *http.Request, rawTarget, token string)
 		return nil, errors.New("upstream target path is not allowed")
 	}
 
-	internal := *target
+	internal := &url.URL{
+		Host:       b.sessionDialURL.Host,
+		Path:       target.Path,
+		RawPath:    target.RawPath,
+		ForceQuery: target.ForceQuery,
+	}
 	if b.sessionDialURL.Scheme == "https" {
 		internal.Scheme = "wss"
 	} else {
 		internal.Scheme = "ws"
 	}
-	internal.Host = b.sessionDialURL.Host
-	query := internal.Query()
+	query := target.Query()
 	query.Set("token", token)
 	internal.RawQuery = query.Encode()
-	return &internal, nil
+	return internal, nil
 }
 
 func (b *broker) lookupSession(sessionID string) *brokerSession {

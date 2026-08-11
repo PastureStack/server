@@ -40,6 +40,7 @@ run_gate bootstrap_downloads scripts/check-server-bootstrap-downloads.sh
 run_gate agent_base_downloads scripts/check-agent-base-downloads.sh
 run_gate agent_run_downloads scripts/check-agent-run-downloads.sh
 run_gate agent_run_env_parsing scripts/check-agent-run-env-parsing.sh
+run_gate agent_control_plane_url python3 scripts/check-agent-control-plane-url.py
 run_gate scripts_test_env scripts/check-scripts-test-env.sh
 run_gate host_compat_inventory scripts/check-legacy-host-compat-inventory.sh
 run_gate externaldb_restored_smoke scripts/check-externaldb-restored-server-smoke.sh

@@ -294,6 +294,34 @@ func TestCreationRejectsForeignTargetAndSecretsAreRequired(t *testing.T) {
 	}
 }
 
+func TestValidatedTargetRebuildsURLOnFixedDialOrigin(t *testing.T) {
+	dialURL, err := url.Parse("https://127.0.0.1:9443/internal")
+	if err != nil {
+		t.Fatal(err)
+	}
+	instance := &broker{sessionDialURL: dialURL}
+	request := httptest.NewRequest(http.MethodPost, "https://control.example/v1/exec/sessions", nil)
+	request.Host = "control.example"
+
+	target, err := instance.validatedTarget(
+		request,
+		"wss://control.example/v1/containers/1?action=execute&token=untrusted",
+		"trusted-token",
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if target.Scheme != "wss" || target.Host != "127.0.0.1:9443" {
+		t.Fatalf("target did not use fixed dial origin: %s", target)
+	}
+	if target.Path != "/v1/containers/1" || target.Query().Get("action") != "execute" {
+		t.Fatalf("legitimate target path or query was not preserved: %s", target)
+	}
+	if target.Query().Get("token") != "trusted-token" {
+		t.Fatalf("untrusted token was not replaced: %s", target)
+	}
+}
+
 func TestEdgeProxyBrokerAndApplicationWebSocketChain(t *testing.T) {
 	upstream := newUpstreamRecorder(t)
 	defer upstream.close()

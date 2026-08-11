@@ -13,7 +13,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-cp Dockerfile register.py resolve_url.py run.sh loglevel "$tmpdir"/
+cp Dockerfile control_plane_url.py register.py resolve_url.py run.sh loglevel "$tmpdir"/
 
 echo Building $IMAGE
 docker build -t "${IMAGE}" "$tmpdir"

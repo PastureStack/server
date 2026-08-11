@@ -397,9 +397,36 @@ print_token()
 
 register()
 {
-    local env
-    env=$(./register.py "$TOKEN")
-    apply_agent_env_output "$env"
+    local credential_file
+    local access_key
+    local secret_key
+
+    if ! credential_file=$(./register.py "$TOKEN"); then
+        return 1
+    fi
+
+    case "${credential_file##*/}" in
+        pasturestack-agent-registration.*) ;;
+        *)
+            error "PastureStack registration returned an invalid credential file"
+            return 1
+            ;;
+    esac
+    if [ ! -f "$credential_file" ] || [ -L "$credential_file" ] || [ ! -O "$credential_file" ]; then
+        error "PastureStack registration returned an invalid credential file"
+        return 1
+    fi
+
+    if ! access_key=$(jq -er '.accessKey | select(type == "string" and length > 0)' "$credential_file") ||
+       ! secret_key=$(jq -er '.secretKey | select(type == "string" and length > 0)' "$credential_file"); then
+        rm -f -- "$credential_file"
+        error "PastureStack registration returned invalid credentials"
+        return 1
+    fi
+    rm -f -- "$credential_file"
+
+    export CATTLE_ACCESS_KEY="$access_key"
+    export CATTLE_SECRET_KEY="$secret_key"
 }
 
 run_bootstrap()
@@ -521,7 +548,8 @@ inspect()
 setup_env()
 {
     if [ "$1" != "upgrade" ]; then
-        local env="$(./resolve_url.py $CATTLE_URL)"
+        local env
+        env="$(./resolve_url.py "$CATTLE_URL")"
         info Configured Host Registration URL info: CATTLE_URL=$(print_url $CATTLE_URL) ENV_URL=$(print_url $env)
         if ! load "$env"; then
             error Failed to load registration env from CATTLE_URL=$(print_url $CATTLE_URL) ENV_URL=$(print_url $env)

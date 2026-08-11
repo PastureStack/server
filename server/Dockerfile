@@ -4,7 +4,9 @@ FROM ubuntu:26.04
 RUN rm -f /usr/bin/pebble
 
 ENV DEBIAN_FRONTEND=noninteractive
-ARG TEMURIN_JDK25_URL="https://api.adoptium.net/v3/binary/latest/25/ga/linux/x64/jdk/hotspot/normal/eclipse?project=jdk"
+ARG TEMURIN_JDK25_VERSION="25.0.4+7"
+ARG TEMURIN_JDK25_URL="https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4%2B7/OpenJDK25U-jdk_x64_linux_hotspot_25.0.4_7.tar.gz"
+ARG TEMURIN_JDK25_SHA256="e58fcdcd637b25c03ca84cbbcefc70d11efb8f4b4cbd05decc9f661769d77f94"
 ARG UBUNTU_APT_MIRROR="http://tw.archive.ubuntu.com/ubuntu"
 ARG SOURCE_DATE_EPOCH=1784851922
 ENV JAVA_HOME=/opt/java/openjdk
@@ -46,6 +48,7 @@ RUN set -eux; \
 
 RUN mkdir -p ${JAVA_HOME} /usr/lib/jvm && \
     curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 -o /tmp/temurin-jdk25.tar.gz "${TEMURIN_JDK25_URL}" && \
+    echo "${TEMURIN_JDK25_SHA256}  /tmp/temurin-jdk25.tar.gz" | sha256sum -c - && \
     tar -xzf /tmp/temurin-jdk25.tar.gz -C ${JAVA_HOME} --strip-components=1 && \
     rm -f /tmp/temurin-jdk25.tar.gz && \
     ln -s ${JAVA_HOME} /usr/lib/jvm/temurin-25-amd64 && \

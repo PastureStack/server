@@ -1,7 +1,10 @@
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
+import java.io.ObjectInputFilter;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,15 +17,50 @@ import java.util.Set;
 
 import io.github.ibuildthecloud.gdapi.model.Filter;
 import io.github.ibuildthecloud.gdapi.model.Schema;
+import org.apache.commons.io.serialization.ValidatingObjectInputStream;
 
 public class PatchV1GlobalSubscribe {
+    private static final long MAX_SCHEMA_BYTES = 16L * 1024L * 1024L;
+    private static final long MAX_SCHEMA_REFERENCES = 100000L;
+    private static final long MAX_SCHEMA_ARRAY_LENGTH = 1000000L;
+    private static final long MAX_SCHEMA_DEPTH = 64L;
+    private static final String[] ALLOWED_SERIALIZED_CLASSES = {
+        "[Ljava.lang.String;",
+        "io.github.ibuildthecloud.gdapi.model.Action",
+        "io.github.ibuildthecloud.gdapi.model.FieldType",
+        "io.github.ibuildthecloud.gdapi.model.Filter",
+        "io.github.ibuildthecloud.gdapi.model.impl.FieldImpl",
+        "io.github.ibuildthecloud.gdapi.model.impl.SchemaImpl",
+        "java.lang.Boolean",
+        "java.lang.Enum",
+        "java.lang.Integer",
+        "java.lang.Long",
+        "java.lang.Number",
+        "java.util.ArrayList",
+        "java.util.Arrays$ArrayList",
+        "java.util.Collections$EmptyList",
+        "java.util.HashMap",
+        "java.util.LinkedHashMap",
+        "java.util.TreeMap"
+    };
+    private static final Path SCHEMA_ROOT = Paths.get("schema", "v1")
+            .toAbsolutePath().normalize();
     private static final Set<String> ADMIN_TYPES = set(
             "authIdentityLink", "mfaFactor", "mfaStatus");
     private static final Set<String> USER_TYPES = set("mfaFactor", "mfaStatus");
 
     static List<Schema> read(String file) throws Exception {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
-            Object value = in.readObject();
+        Path path = schemaPath(file);
+        if (Files.size(path) > MAX_SCHEMA_BYTES) {
+            throw new IllegalStateException(file + " exceeds the schema size limit");
+        }
+        try (ValidatingObjectInputStream in =
+                ValidatingObjectInputStream.builder()
+                        .setInputStream(new FileInputStream(path.toFile()))
+                        .accept(ALLOWED_SERIALIZED_CLASSES)
+                        .get()) {
+            in.setObjectInputFilter(PatchV1GlobalSubscribe::limitSchemaObjectGraph);
+            Object value = in.readObjectCast();
             if (!(value instanceof List<?>)) {
                 throw new IllegalStateException(file + " did not contain a schema list");
             }
@@ -40,9 +78,32 @@ public class PatchV1GlobalSubscribe {
     }
 
     static void write(String file, List<Schema> schemas) throws Exception {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
+        Path path = schemaPath(file);
+        try (ObjectOutputStream out = new ObjectOutputStream(
+                new FileOutputStream(path.toFile()))) {
             out.writeObject(schemas);
         }
+    }
+
+    private static Path schemaPath(String file) {
+        Path path = Paths.get(file).toAbsolutePath().normalize();
+        if (!SCHEMA_ROOT.equals(path.getParent())) {
+            throw new IllegalArgumentException("schema file must be directly under schema/v1");
+        }
+        return path;
+    }
+
+    private static ObjectInputFilter.Status limitSchemaObjectGraph(
+            ObjectInputFilter.FilterInfo info) {
+        if (info.depth() > MAX_SCHEMA_DEPTH
+                || info.references() > MAX_SCHEMA_REFERENCES
+                || info.streamBytes() > MAX_SCHEMA_BYTES
+                || (info.arrayLength() >= 0
+                        && info.arrayLength() > MAX_SCHEMA_ARRAY_LENGTH)) {
+            return ObjectInputFilter.Status.REJECTED;
+        }
+
+        return ObjectInputFilter.Status.UNDECIDED;
     }
 
     static Schema find(List<Schema> schemas, String id) {

@@ -11,17 +11,20 @@ write_fixture_tree() {
   local docker_base=${2:-'FROM ubuntu:26.04'}
   local javac_command=${3:-'javac -cp "/usr/share/cattle/war/WEB-INF/lib/*" PatchV1GlobalSubscribe.java'}
   local source_gate_line=${4:-'run_gate server_jdk25_source_policy bash scripts/check-server-jdk25-source-policy.sh'}
-  local patch_gate_image=${5:-'image="${RC16_JDK25_CHECK_IMAGE:-eclipse-temurin:25-jdk}"'}
+  local patch_gate_image=${5:-'image="${RC16_JDK25_CHECK_IMAGE:-eclipse-temurin:25.0.4_7-jdk}"'}
 
   mkdir -p "$root/server/patches" "$root/scripts"
 
   cat >"$root/server/Dockerfile" <<DOCKER
 # syntax=docker/dockerfile:1.7
 ${docker_base}
-ARG TEMURIN_JDK25_URL="https://api.adoptium.net/v3/binary/latest/25/ga/linux/x64/jdk/hotspot/normal/eclipse?project=jdk"
+ARG TEMURIN_JDK25_VERSION="25.0.4+7"
+ARG TEMURIN_JDK25_URL="https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4%2B7/OpenJDK25U-jdk_x64_linux_hotspot_25.0.4_7.tar.gz"
+ARG TEMURIN_JDK25_SHA256="e58fcdcd637b25c03ca84cbbcefc70d11efb8f4b4cbd05decc9f661769d77f94"
 ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH=\${JAVA_HOME}/bin:\${PATH}
 RUN apt-get update && apt-get upgrade -y
+RUN echo "\${TEMURIN_JDK25_SHA256}  /tmp/temurin-jdk25.tar.gz" | sha256sum -c -
 RUN ln -s \${JAVA_HOME}/bin/java /usr/bin/java && \
     ln -s \${JAVA_HOME}/bin/jar /usr/bin/jar && \
     ln -s \${JAVA_HOME}/bin/javac /usr/bin/javac && \
@@ -36,8 +39,17 @@ RUN ${javac_command}
 DOCKER
 
   cat >"$root/server/patches/PatchV1GlobalSubscribe.java" <<'JAVA'
+import org.apache.commons.io.serialization.ValidatingObjectInputStream;
+
 public class PatchV1GlobalSubscribe {
+    private static final String[] ALLOWED_SERIALIZED_CLASSES = {"java.util.ArrayList"};
+    private static void limitSchemaObjectGraph() {
+        ValidatingObjectInputStream.builder()
+                .accept(ALLOWED_SERIALIZED_CLASSES);
+    }
+
     public static void main(String[] args) {
+        String marker = "readObjectCast()";
     }
 }
 JAVA
@@ -45,7 +57,9 @@ JAVA
   cat >"$root/scripts/check-server-java-patches-jdk25.sh" <<PATCHGATE
 #!/usr/bin/env bash
 ${patch_gate_image}
-javac -Xlint:deprecation -Werror -d classes
+commons_io_version=2.22.0
+jdk_home="\${RC16_JDK25_HOME:-}"
+javac -Xlint:deprecation -Werror -cp lib/commons-io.jar -d classes
 javap -verbose classes/PatchV1GlobalSubscribe.class | grep -q "major version: 69"
 echo "SERVER_JAVA_PATCH_JDK25_OK file=server/patches/PatchV1GlobalSubscribe.java image=\$image class_major=69 suppresswarnings=0 runtime_smoke=1"
 PATCHGATE
@@ -62,14 +76,16 @@ RELEASEGATE
   cat >"$root/scripts/check-server-source-gates.sh" <<GATES
 #!/usr/bin/env bash
 ${source_gate_line}
-run_gate jdk25_java_patches scripts/check-server-java-patches-jdk25.sh
-run_gate cattle_jdk25_release_evidence scripts/check-server-cattle-jdk25-release-evidence.sh
 GATES
 }
 
 positive="$workdir/positive"
 write_fixture_tree "$positive"
-RC16_SERVER_SOURCE_ROOT="$positive" scripts/check-server-jdk25-source-policy.sh >"$workdir/positive.out"
+if ! RC16_SERVER_SOURCE_ROOT="$positive" scripts/check-server-jdk25-source-policy.sh >"$workdir/positive.out" 2>&1; then
+  echo "expected positive fixture to pass" >&2
+  cat "$workdir/positive.out" >&2
+  exit 1
+fi
 grep -Fq 'SERVER_JDK25_SOURCE_POLICY_OK' "$workdir/positive.out"
 
 legacy_base="$workdir/legacy-base"
@@ -91,6 +107,16 @@ if RC16_SERVER_SOURCE_ROOT="$missing_security_upgrade" scripts/check-server-jdk2
   exit 1
 fi
 grep -Fq 'SERVER_JDK25_SOURCE_POLICY_APT_SECURITY_UPGRADE_MISSING' "$workdir/missing-security-upgrade.out"
+
+missing_jdk_checksum="$workdir/missing-jdk-checksum"
+write_fixture_tree "$missing_jdk_checksum"
+sed -i '/TEMURIN_JDK25_SHA256.*sha256sum -c -/d' "$missing_jdk_checksum/server/Dockerfile"
+if RC16_SERVER_SOURCE_ROOT="$missing_jdk_checksum" scripts/check-server-jdk25-source-policy.sh >"$workdir/missing-jdk-checksum.out" 2>&1; then
+  echo "expected missing-jdk-checksum fixture to fail" >&2
+  cat "$workdir/missing-jdk-checksum.out" >&2
+  exit 1
+fi
+grep -Fq 'SERVER_JDK25_SOURCE_POLICY_TEMURIN25_CHECK_MISSING' "$workdir/missing-jdk-checksum.out"
 
 source_flag="$workdir/source-flag"
 write_fixture_tree "$source_flag" 'FROM ubuntu:26.04' 'javac -source 8 -target 8 -cp "/usr/share/cattle/war/WEB-INF/lib/*" PatchV1GlobalSubscribe.java'

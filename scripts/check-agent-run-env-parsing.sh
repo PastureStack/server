@@ -40,7 +40,10 @@ require_marker agent/run.sh 'trim_agent_env_line()' AGENT_RUN_ENV_TRIM_HELPER_MI
 require_marker agent/run.sh 'export "$key=$value"' AGENT_RUN_ENV_LITERAL_EXPORT_MISSING
 require_marker agent/run.sh 'if [[ "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then' AGENT_RUN_BARE_DOCKER_ENV_COMPATIBILITY_MISSING
 require_marker agent/run.sh 'apply_agent_env_output "$content"' AGENT_RUN_REGISTRATION_SCRIPT_PARSER_NOT_USED
-require_marker agent/run.sh 'apply_agent_env_output "$env"' AGENT_RUN_REGISTER_ENV_PARSER_NOT_USED
+require_marker agent/run.sh 'credential_file=$(./register.py "$TOKEN")' AGENT_RUN_REGISTER_CREDENTIAL_FILE_MISSING
+require_marker agent/run.sh 'jq -er '\''.accessKey | select(type == "string" and length > 0)'\'' "$credential_file"' AGENT_RUN_REGISTER_ACCESS_JSON_MISSING
+require_marker agent/run.sh 'jq -er '\''.secretKey | select(type == "string" and length > 0)'\'' "$credential_file"' AGENT_RUN_REGISTER_SECRET_JSON_MISSING
+require_marker agent/run.sh 'rm -f -- "$credential_file"' AGENT_RUN_REGISTER_CREDENTIAL_CLEANUP_MISSING
 require_marker agent/run.sh "jq -r '.[0].Config.Env[]?'" AGENT_RUN_DOCKER_ENV_RAW_JQ_MISSING
 require_marker agent/run.sh 'apply_agent_info_env_output "$content"' AGENT_RUN_INFO_ENV_PARSER_NOT_USED
 require_marker agent/run.sh 'export RANCHER_AGENT_IMAGE=$save' AGENT_RUN_IMAGE_RESTORE_EXPORT_MISSING
@@ -51,6 +54,7 @@ require_marker agent/run.sh 'container="$(agent_container_name)"' AGENT_RUN_CURR
 
 reject_marker agent/run.sh 'eval "$content"' AGENT_RUN_REGISTRATION_SCRIPT_EVAL
 reject_marker agent/run.sh 'eval "$ENV"' AGENT_RUN_REGISTER_EVAL
+reject_marker agent/run.sh 'apply_agent_env_output "$(./register.py "$TOKEN")"' AGENT_RUN_REGISTER_SECRET_STDOUT
 reject_marker agent/run.sh 'eval $(docker inspect rancher-agent' AGENT_RUN_DOCKER_ENV_EVAL
 reject_marker agent/run.sh 'eval $(echo "$content" | grep '\''INFO: env'\''' AGENT_RUN_INFO_ENV_EVAL
 reject_marker agent/run.sh '--name rancher-agent \' AGENT_RUN_LEGACY_CONTAINER_STILL_PRIMARY
@@ -81,9 +85,9 @@ extract_function() {
 cat >"$sample_run/register.py" <<'STUB'
 #!/usr/bin/env bash
 set -euo pipefail
-printf '%s\n' 'export CATTLE_ACCESS_KEY=access'
-printf '%s\n' "export CATTLE_SECRET_KEY='secret value'"
-printf '%s\n' 'export "CATTLE_HOST_LABELS=role=db node"'
+credential_file=$(mktemp "${TMPDIR:-/tmp}/pasturestack-agent-registration.XXXXXX")
+printf '%s\n' '{"accessKey":"access","secretKey":"secret value"}' >"$credential_file"
+printf '%s\n' "$credential_file"
 STUB
 chmod +x "$sample_run/register.py"
 
@@ -100,6 +104,20 @@ cat >"$sample_run/bin/jq" <<'STUB'
 #!/usr/bin/env bash
 set -euo pipefail
 printf 'JQ_ARGS=%s\n' "$*" >>"$RC16_AGENT_ENV_JQ_LOG"
+
+case "$*" in
+  *'.accessKey | select('*)
+    test -s "${!#}"
+    printf '%s\n' 'access'
+    exit 0
+    ;;
+  *'.secretKey | select('*)
+    test -s "${!#}"
+    printf '%s\n' 'secret value'
+    exit 0
+    ;;
+esac
+
 cat >/dev/null
 printf '%s\n' 'RANCHER_AGENT_IMAGE=from-container'
 printf '%s\n' 'http_proxy'
@@ -150,7 +168,6 @@ jq_log="$sample_run/jq.log"
   register
   printf 'REGISTER_ACCESS=%s\n' "${CATTLE_ACCESS_KEY:-}"
   printf 'REGISTER_SECRET=%s\n' "${CATTLE_SECRET_KEY:-}"
-  printf 'REGISTER_LABELS=%s\n' "${CATTLE_HOST_LABELS:-}"
 
   apply_agent_info_env_output $'noise\nINFO: env TOKEN=abc123\nINFO: env "CATTLE_VAR_LIB_WRITABLE=true"\nINFO: env export CATTLE_BOOT2DOCKER=false'
   printf 'INFO_TOKEN=%s\n' "${TOKEN:-}"
@@ -187,7 +204,6 @@ for expected in \
   "LOAD_LITERAL_SECRET=\$(touch $marker)" \
   'REGISTER_ACCESS=access' \
   'REGISTER_SECRET=secret value' \
-  'REGISTER_LABELS=role=db node' \
   'INFO_TOKEN=abc123' \
   'INFO_WRITABLE=true' \
   'INFO_BOOT2DOCKER=false' \
