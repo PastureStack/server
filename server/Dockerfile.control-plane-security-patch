@@ -1,0 +1,49 @@
+# syntax=docker/dockerfile:1.7
+ARG GO_IMAGE=golang:1.26.5-bookworm@sha256:53eeac89074db483fdf0ab3be1df32bf6e47562263d2d0d6baa7f26acb4957dd
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.357@sha256:32e875c8c8551363311f7a5774520bcf42b86749868f4966b41a28dd0e31edc9
+
+FROM ${GO_IMAGE} AS console_broker_build
+
+WORKDIR /src
+COPY console-broker/go.mod console-broker/go.sum ./
+RUN /usr/local/go/bin/go mod download
+COPY console-broker/*.go ./
+RUN set -eux; \
+    /usr/local/go/bin/go test ./...; \
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+      /usr/local/go/bin/go build \
+        -trimpath \
+        -ldflags='-s -w -buildid=' \
+        -o /out/pasturestack-console-broker .
+
+FROM ${BASE_IMAGE}
+
+ARG PASTURESTACK_SERVER_REVISION
+ARG SOURCE_DATE_EPOCH
+
+COPY --from=console_broker_build /out/pasturestack-console-broker /usr/bin/pasturestack-console-broker
+COPY patches/PatchV1GlobalSubscribe.java /tmp/pasturestack-security/PatchV1GlobalSubscribe.java
+
+RUN set -eux; \
+    chmod 0755 /usr/bin/pasturestack-console-broker; \
+    test -x /usr/bin/pasturestack-console-broker; \
+    mkdir -p /tmp/pasturestack-security/schema/v1; \
+    cd /tmp/pasturestack-security; \
+    resources_jar="$(find /usr/share/cattle/war/WEB-INF/lib -maxdepth 1 -type f -name 'cattle-resources-*.jar' -print -quit)"; \
+    test -n "${resources_jar}"; \
+    jar xf "${resources_jar}" schema/v1/admin.ser schema/v1/project.ser schema/v1/service.ser; \
+    javac -cp '/usr/share/cattle/war/WEB-INF/lib/*' PatchV1GlobalSubscribe.java; \
+    java -cp '.:/usr/share/cattle/war/WEB-INF/lib/*' PatchV1GlobalSubscribe; \
+    source_date_iso="$(date -u -d "@${SOURCE_DATE_EPOCH}" '+%Y-%m-%dT%H:%M:%SZ')"; \
+    jar --update --file "${resources_jar}" --date="${source_date_iso}" schema/v1/admin.ser schema/v1/service.ser; \
+    rm -rf /tmp/pasturestack-security
+
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server control-plane security update." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.358" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.357" \
+      org.opencontainers.image.base.digest="sha256:32e875c8c8551363311f7a5774520bcf42b86749868f4966b41a28dd0e31edc9"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.358
