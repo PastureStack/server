@@ -39,8 +39,8 @@ require_marker agent-base/Dockerfile 'org.opencontainers.image.version="v0.3.5"'
 require_marker agent-base/Dockerfile 'COPY ./share-mnt /usr/bin/share-mnt' AGENT_BASE_SHARE_MNT_NOT_CONTEXT_BACKED
 require_marker agent-base/Dockerfile 'COPY ./r /usr/bin/r' AGENT_BASE_NETWORK_HELPER_NOT_CONTEXT_BACKED
 require_marker agent-base/Dockerfile 'COPY ./update-platform-ssl /usr/bin/update-platform-ssl' AGENT_BASE_SSL_SCRIPT_NOT_CONTEXT_BACKED
-require_marker agent-base/Dockerfile 'ARG DOCKER_VERSION=29.6.2' AGENT_BASE_DOCKER_VERSION_NOT_UPDATED
-require_marker agent-base/Dockerfile 'ARG DOCKER_SHA256=d6204aea92238e2453d5445c885b9d2e5eb8f82915568ec50edf9dbe12a3ac74' AGENT_BASE_DOCKER_SHA_MISSING
+require_marker agent-base/Dockerfile 'ARG DOCKER_VERSION=29.7.2' AGENT_BASE_DOCKER_VERSION_NOT_UPDATED
+require_marker agent-base/Dockerfile 'ARG DOCKER_SHA256=803d433f226db4776e1768fd319fc6c6e4935a456acf84fcc0080818b854bc8f' AGENT_BASE_DOCKER_SHA_MISSING
 require_marker agent-base/Dockerfile 'ENV PYTHON_SHA256=d923c51303e38e249136fc1bdf3568d56ecb03214efdef48516176d3d7faaef8' AGENT_BASE_PYTHON_SHA_MISSING
 require_marker agent-base/Dockerfile '-o /tmp/Python-${PYTHON_VERSION}.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz"' AGENT_BASE_PYTHON_DOWNLOAD_NOT_FILE_BACKED
 require_marker agent-base/Dockerfile 'echo "${PYTHON_SHA256}  /tmp/Python-${PYTHON_VERSION}.tar.xz" | sha256sum -c -' AGENT_BASE_PYTHON_SHA_NOT_CHECKED
@@ -93,4 +93,4 @@ if [ "$failure_count" -ne 0 ]; then
   exit 1
 fi
 
-printf 'AGENT_BASE_DOWNLOADS_OK base=v0.3.5 agent=v1.2.31 base_share_mnt_nonempty=1 tracked_loglevel=1 docker_cli=29.6.2 python_sha=1 docker_sha=1 remote_legacy_helpers=0\n'
+printf 'AGENT_BASE_DOWNLOADS_OK base=v0.3.5 agent=v1.2.31 base_share_mnt_nonempty=1 tracked_loglevel=1 docker_cli=29.7.2 python_sha=1 docker_sha=1 remote_legacy_helpers=0\n'

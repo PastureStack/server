@@ -132,7 +132,7 @@ docker run --rm --entrypoint bash "$image" -lc '
     test -n "${app_config_jar}"
     unzip -p "${app_config_jar}" \
       META-INF/cattle/api-server/defaults.properties \
-      | grep -Fx "newest.docker.version=v29.6.2"
+      | grep -Fx "newest.docker.version=v29.7.2"
 '
 
 printf 'SERVER_CONTAINER_METRICS_UI_PATCH_IMAGE_OK image=%s revision=%s web_console_commit=%s\n' \

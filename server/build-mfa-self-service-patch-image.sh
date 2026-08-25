@@ -256,7 +256,7 @@ docker run --rm --entrypoint bash "$image" -lc '
     test -x /usr/bin/authentication-service.real
     grep -F "RC16_WRAPPER_REAL_DIR" /usr/bin/authentication-service >/dev/null
     /usr/bin/authentication-service.real --version | grep -F "0.2.5" >/dev/null
-    grep -aF "go1.26.5" /usr/bin/authentication-service.real >/dev/null
+    grep -aF "go1.27.0" /usr/bin/authentication-service.real >/dev/null
     for marker in \
       authenticated_at \
       authentication_context \

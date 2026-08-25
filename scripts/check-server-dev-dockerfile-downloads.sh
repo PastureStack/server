@@ -31,8 +31,8 @@ fi
 
 require_marker 'ARG SERVER_DEV_VERSION=v0.1.1' SERVER_DEV_VERSION_NOT_ROLLED_FORWARD
 require_marker 'org.opencontainers.image.version="${SERVER_DEV_VERSION}"' SERVER_DEV_OCI_VERSION_LABEL_MISSING
-require_marker 'ARG DOCKER_VERSION=29.6.2' SERVER_DEV_DOCKER_VERSION_NOT_UPDATED
-require_marker 'ARG DOCKER_SHA256=d6204aea92238e2453d5445c885b9d2e5eb8f82915568ec50edf9dbe12a3ac74' SERVER_DEV_DOCKER_SHA_MISSING
+require_marker 'ARG DOCKER_VERSION=29.7.2' SERVER_DEV_DOCKER_VERSION_NOT_UPDATED
+require_marker 'ARG DOCKER_SHA256=803d433f226db4776e1768fd319fc6c6e4935a456acf84fcc0080818b854bc8f' SERVER_DEV_DOCKER_SHA_MISSING
 require_marker 'ARG COMPOSE_VERSION=v5.1.4' SERVER_DEV_COMPOSE_VERSION_NOT_PINNED
 require_marker 'ARG COMPOSE_SHA256=33b208d7e76639db742fae84b966cc01dacae58ca3fc4dabbc907045aefdf0c4' SERVER_DEV_COMPOSE_SHA_MISSING
 require_marker '-o "$docker_tgz" "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz"' SERVER_DEV_DOCKER_DOWNLOAD_NOT_FILE_BACKED
@@ -54,4 +54,4 @@ if [ "$failure_count" -ne 0 ]; then
   exit 1
 fi
 
-echo 'SERVER_DEV_DOCKERFILE_DOWNLOADS_OK version=v0.1.1 docker=29.6.2 compose=v5.1.4 sha=1 file_backed_downloads=1 retry=5'
+echo 'SERVER_DEV_DOCKERFILE_DOWNLOADS_OK version=v0.1.1 docker=29.7.2 compose=v5.1.4 sha=1 file_backed_downloads=1 retry=5'

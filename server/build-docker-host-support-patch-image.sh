@@ -23,7 +23,7 @@ if [[ ! "$source_date_epoch" =~ ^[0-9]+$ ]]; then
 fi
 
 image=${IMAGE:-pasturestack-validation/server:v1.6.305}
-supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || v29.4.1 || v29.6.2'
+supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || v29.4.1 || v29.7.2'
 
 docker buildx build \
     --provenance=false \
@@ -68,12 +68,12 @@ docker run --rm \
       | grep -Fx "supported.docker.range=${EXPECTED_SUPPORTED_DOCKER_RANGE}"
     unzip -p "${app_config_jar}" \
       META-INF/cattle/api-server/defaults.properties \
-      | grep -Fx "newest.docker.version=v29.6.2"
+      | grep -Fx "newest.docker.version=v29.7.2"
     test -x /usr/bin/pasturestack-console-broker
     test -f /usr/share/cattle/war/translations/zh-tw.json
     grep -F "table-column-scroll-host-overflowing" \
       /usr/share/cattle/war/assets/ui-light.css >/dev/null
 '
 
-printf 'SERVER_DOCKER_HOST_SUPPORT_PATCH_IMAGE_OK image=%s revision=%s newest=29.6.2 exact_modern_versions=24.0.9,29.4.1,29.6.2\n' \
+printf 'SERVER_DOCKER_HOST_SUPPORT_PATCH_IMAGE_OK image=%s revision=%s newest=29.7.2 exact_modern_versions=24.0.9,29.4.1,29.7.2\n' \
     "$image" "$revision"

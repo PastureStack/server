@@ -6,7 +6,7 @@ cd "$repo_root"
 
 dockerfile=server/Dockerfile.docker-host-support-patch
 build_script=server/build-docker-host-support-patch-image.sh
-supported='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || v29.4.1 || v29.6.2'
+supported='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || v29.4.1 || v29.7.2'
 
 require_marker()
 {
@@ -26,7 +26,7 @@ require_marker "$dockerfile" \
     "ARG SUPPORTED_DOCKER_RANGE=\"${supported}\"" \
     SERVER_DOCKER_SUPPORT_RANGE_MISSING
 require_marker "$dockerfile" \
-    'ARG NEWEST_DOCKER_VERSION=v29.6.2' \
+    'ARG NEWEST_DOCKER_VERSION=v29.7.2' \
     SERVER_DOCKER_SUPPORT_NEWEST_MISSING
 require_marker "$dockerfile" \
     'org.opencontainers.image.version="v1.6.305"' \
@@ -59,4 +59,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_DOCKER_HOST_SUPPORT_PATCH_OK release=v1.6.305 newest=29.6.2 exact_modern_versions=24.0.9,29.4.1,29.6.2 broad_25_to_28=0 runtime_digest_coordinates=0\n'
+printf 'SERVER_DOCKER_HOST_SUPPORT_PATCH_OK release=v1.6.305 newest=29.7.2 exact_modern_versions=24.0.9,29.4.1,29.7.2 broad_25_to_28=0 runtime_digest_coordinates=0\n'

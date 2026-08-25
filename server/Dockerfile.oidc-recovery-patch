@@ -34,7 +34,7 @@ RUN set -eu; \
     grep -F 'RC16_WRAPPER_REAL_DIR' /usr/bin/authentication-service >/dev/null; \
     install -p -m 0755 "${package_dir}/authentication-service" "${authentication_target}"; \
     "${authentication_target}" --version | grep -F '0.2.3' >/dev/null; \
-    grep -aF 'go1.26.5' "${authentication_target}" >/dev/null; \
+    grep -aF 'go1.27.0' "${authentication_target}" >/dev/null; \
     rm -rf "${archive}" "${package_dir}"; \
     touch -h -d "@${SOURCE_DATE_EPOCH}" \
         "${authentication_target}" \

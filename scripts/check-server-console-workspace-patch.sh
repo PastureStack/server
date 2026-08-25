@@ -22,7 +22,7 @@ for path in "${required_files[@]}"; do
   test -f "$path"
 done
 
-grep -F 'ARG GO_IMAGE=golang:1.26.5-bookworm' \
+grep -F 'ARG GO_IMAGE=golang:1.27.0-bookworm@sha256:484ef6066fa69acb059fdfeda7ba2b8f7391f2ef6abc6f9b8411e669ebd56466' \
   server/Dockerfile.console-workspace-patch >/dev/null
 grep -F 'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.297' \
   server/Dockerfile.console-workspace-patch >/dev/null
@@ -107,11 +107,20 @@ if grep -E '\?secret=|clientId=' \
   exit 1
 fi
 
-if grep -RInE '@sha256|C:\\Users\\' \
+if grep -RInE 'C:\\Users\\' \
   server/console-broker \
   server/Dockerfile.console-workspace-patch \
   server/build-console-workspace-patch-image.sh; then
-  echo 'Console workspace source contains a private workstation path or image digest coordinate' >&2
+  echo 'Console workspace source contains a private workstation path' >&2
+  exit 1
+fi
+
+if grep -RInF '@sha256:' \
+  server/console-broker \
+  server/Dockerfile.console-workspace-patch \
+  server/build-console-workspace-patch-image.sh \
+  | grep -vF 'ARG GO_IMAGE=golang:1.27.0-bookworm@sha256:484ef6066fa69acb059fdfeda7ba2b8f7391f2ef6abc6f9b8411e669ebd56466'; then
+  echo 'Console workspace source contains an unapproved image digest coordinate' >&2
   exit 1
 fi
 

@@ -556,11 +556,11 @@ build_source()
         fi
 
         if [ ! -x "$(which docker)" ]; then
-            local docker_tgz=/tmp/pasturestack-docker-29.6.2.tgz
-            local docker_sha256=d6204aea92238e2453d5445c885b9d2e5eb8f82915568ec50edf9dbe12a3ac74
+            local docker_tgz=/tmp/pasturestack-docker-29.7.2.tgz
+            local docker_sha256=803d433f226db4776e1768fd319fc6c6e4935a456acf84fcc0080818b854bc8f
             rm -f "$docker_tgz"
             curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 \
-                -o "$docker_tgz" https://download.docker.com/linux/static/stable/x86_64/docker-29.6.2.tgz
+                -o "$docker_tgz" https://download.docker.com/linux/static/stable/x86_64/docker-29.7.2.tgz
             echo "$docker_sha256  $docker_tgz" | sha256sum -c -
             tar xzf "$docker_tgz" -C /usr/bin --strip-components=1 docker/docker
             rm -f "$docker_tgz"

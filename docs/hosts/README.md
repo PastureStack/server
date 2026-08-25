@@ -15,14 +15,14 @@ Engine releases:
 
 | Docker Engine | Validated host | cgroup | Agent line | Result |
 |---|---|---|---|---|
-| `29.6.2` | Ubuntu 24.04.4 LTS | v2 | `v1.2.31` | Supported |
+| `29.7.2` | Ubuntu 24.04.4 LTS | v2 | `v1.2.31` | Supported |
 | `29.4.1` | Ubuntu 24.04.4 LTS | v2 | `v1.2.31` | Supported |
 | `24.0.9` | Ubuntu 22.04.5 LTS | v1 | legacy-compatible agent | Supported |
 
 These are exact evidence-backed releases, not broad major or minor ranges.
 Docker 25 through 28 and other Docker 29 patch releases remain untested unless
 they are listed above. Preserved legacy ranges remain available for compatible
-installations, but new deployments should use `29.6.2`.
+installations, but new deployments should use `29.7.2`.
 
 The two-host matrix covered registration and reconnect, control-plane proxy
 traffic, logs, console and exec sessions, statistics, image pull, managed
@@ -31,12 +31,12 @@ encrypted overlay traffic, Server restart recovery, Docker upgrade, and package
 rollback. Disposable managed workloads were removed after validation, and
 existing data volumes were preserved.
 
-Docker Engine `29.6.2` was the latest stable Engine release when this matrix was
+Docker Engine `29.7.2` was the latest stable Engine release when this matrix was
 completed on 2026-07-27. See the official
 [Docker Engine 29 release notes](https://docs.docker.com/engine/release-notes/29/)
 and [static Linux archive index](https://download.docker.com/linux/static/stable/x86_64/).
-PastureStack build tooling pins the `29.6.2` archive to SHA-256
-`d6204aea92238e2453d5445c885b9d2e5eb8f82915568ec50edf9dbe12a3ac74`.
+PastureStack build tooling pins the `29.7.2` archive to SHA-256
+`803d433f226db4776e1768fd319fc6c6e4935a456acf84fcc0080818b854bc8f`.
 
 Before enrolling a durable host, reproduce its operating-system, kernel,
 storage-driver, cgroup, and Docker combination on a disposable VM. Treat any

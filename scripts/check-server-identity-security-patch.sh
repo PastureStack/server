@@ -36,7 +36,7 @@ require_marker "$dockerfile" \
     'ENV PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.2.4' \
     SERVER_IDENTITY_SECURITY_AUTH_VERSION_MISSING
 require_marker "$dockerfile" \
-    "grep -aF 'go1.26.5'" \
+    "grep -aF 'go1.27.0'" \
     SERVER_IDENTITY_SECURITY_AUTH_TOOLCHAIN_GATE_MISSING
 require_marker "$dockerfile" \
     'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.28' \
