@@ -1,0 +1,323 @@
+name: Publish Current Server
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Exact semantic release tag declared by the Server image
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+  attestations: write
+  artifact-metadata: write
+
+concurrency:
+  group: publish-current-server-${{ inputs.release_tag }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'PastureStack/server' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      RELEASE_TAG: ${{ inputs.release_tag }}
+      SOURCE_SHA: ${{ github.sha }}
+      TARGET_IMAGE: ghcr.io/pasturestack/server:${{ inputs.release_tag }}
+      CANDIDATE_IMAGE: local/pasturestack/server:${{ inputs.release_tag }}-${{ github.run_id }}
+      CANDIDATE_NAME: pasturestack-server-release-${{ github.run_id }}
+      CATTLE_VOLUME: pasturestack-server-release-cattle-${{ github.run_id }}
+      MYSQL_VOLUME: pasturestack-server-release-mysql-${{ github.run_id }}
+      MYSQL_LOG_VOLUME: pasturestack-server-release-mysqllog-${{ github.run_id }}
+      TRIVY_IMAGE: aquasec/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
+
+    steps:
+      - name: Check out exact clean source
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          git clone --filter=blob:none "https://github.com/${GITHUB_REPOSITORY}.git" source
+          git -C source checkout --detach "$SOURCE_SHA"
+          test "$(git -C source rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git -C source status --short)"
+
+          declared_release="$(sed -n 's/.*org.opencontainers.image.version="\([^"]*\)".*/\1/p' \
+            source/server/Dockerfile.api-explorer-patch)"
+          test "$declared_release" = "$RELEASE_TAG"
+          if git -C source ls-remote --exit-code --tags origin "refs/tags/${RELEASE_TAG}" \
+            >/dev/null 2>&1; then
+            echo "Release tag already exists: $RELEASE_TAG" >&2
+            exit 1
+          fi
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" \
+            >/dev/null 2>&1; then
+            echo "GitHub Release already exists: $RELEASE_TAG" >&2
+            exit 1
+          fi
+          if docker manifest inspect "$TARGET_IMAGE" >/dev/null 2>&1; then
+            echo "Container tag already exists: $TARGET_IMAGE" >&2
+            exit 1
+          fi
+          mkdir -p "$RUNNER_TEMP/server-evidence"
+
+      - name: Run source gates
+        shell: bash
+        working-directory: source
+        run: |
+          set -Eeuo pipefail
+          bash scripts/check-server-source-gates.sh
+
+      - name: Build exact release image once
+        shell: bash
+        working-directory: source
+        run: |
+          set -Eeuo pipefail
+          PASTURESTACK_BUILD_NO_CACHE=1 IMAGE="$CANDIDATE_IMAGE" \
+            bash server/build-api-explorer-patch-image.sh |
+            tee "$RUNNER_TEMP/server-evidence/build.log"
+          test "$(docker image inspect "$CANDIDATE_IMAGE" \
+            --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
+            "$RELEASE_TAG"
+          test "$(docker image inspect "$CANDIDATE_IMAGE" \
+            --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
+            "$SOURCE_SHA"
+
+      - name: Start, restart, and export the candidate
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          evidence="$RUNNER_TEMP/server-evidence"
+          rootfs="$RUNNER_TEMP/server-rootfs"
+          cleanup_candidate() {
+            docker rm -f "$CANDIDATE_NAME" >/dev/null 2>&1 || true
+            docker volume rm "$CATTLE_VOLUME" "$MYSQL_VOLUME" "$MYSQL_LOG_VOLUME" \
+              >/dev/null 2>&1 || true
+          }
+          trap cleanup_candidate EXIT
+
+          for object in "$CANDIDATE_NAME" "$CATTLE_VOLUME" "$MYSQL_VOLUME" "$MYSQL_LOG_VOLUME"; do
+            ! docker inspect "$object" >/dev/null 2>&1
+          done
+          docker run -d \
+            --name "$CANDIDATE_NAME" \
+            --restart no \
+            -p 127.0.0.1:18082:8080 \
+            -v "$CATTLE_VOLUME:/var/lib/cattle" \
+            -v "$MYSQL_VOLUME:/var/lib/mysql" \
+            -v "$MYSQL_LOG_VOLUME:/var/log/mysql" \
+            "$CANDIDATE_IMAGE" >/dev/null
+
+          wait_for_pong() {
+            local body attempt
+            for attempt in $(seq 1 180); do
+              body="$(curl -fsS --max-time 3 http://127.0.0.1:18082/ping 2>/dev/null || true)"
+              if [[ "$body" == pong ]]; then
+                printf '%s' "$attempt"
+                return 0
+              fi
+              sleep 2
+            done
+            return 1
+          }
+
+          first_attempts="$(wait_for_pong)"
+          for catalog_attempts in $(seq 1 90); do
+            docker logs "$CANDIDATE_NAME" >"$evidence/candidate.log" 2>&1
+            if grep -Fq 'PastureStack Catalog bootstrap verified a non-empty collection.' \
+              "$evidence/candidate.log"; then
+              break
+            fi
+            sleep 2
+          done
+          grep -Fq 'PastureStack Catalog bootstrap verified a non-empty collection.' \
+            "$evidence/candidate.log"
+          ! grep -Fq "mysql_native_password': this user requires mysql native password authentication" \
+            "$evidence/candidate.log"
+          docker inspect "$CANDIDATE_NAME" --format '{{range .Config.Env}}{{println .}}{{end}}' |
+            grep -Fx "CATTLE_RANCHER_SERVER_VERSION=$RELEASE_TAG" >/dev/null
+
+          docker restart "$CANDIDATE_NAME" >/dev/null
+          restart_attempts="$(wait_for_pong)"
+          test "$(docker inspect "$CANDIDATE_NAME" --format '{{.State.Running}}')" = true
+          http_code="$(curl -sS --max-time 3 -o "$RUNNER_TEMP/ping-body" \
+            -w '%{http_code}' http://127.0.0.1:18082/ping)"
+          test "$http_code" = 200
+          test "$(cat "$RUNNER_TEMP/ping-body")" = pong
+
+          docker stop "$CANDIDATE_NAME" >/dev/null
+          mkdir -p "$rootfs"
+          docker export --output "$RUNNER_TEMP/server-rootfs.tar" "$CANDIDATE_NAME"
+          tar --no-same-owner -xf "$RUNNER_TEMP/server-rootfs.tar" -C "$rootfs"
+          printf 'SERVER_CANDIDATE_SMOKE_OK release=%s first_attempts=%s restart_attempts=%s catalog_attempts=%s http=200 body=pong\n' \
+            "$RELEASE_TAG" "$first_attempts" "$restart_attempts" "$catalog_attempts" |
+            tee "$evidence/candidate-smoke.txt"
+
+          cleanup_candidate
+          trap - EXIT
+
+      - name: Scan the final merged runtime and create SBOM
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          evidence="$RUNNER_TEMP/server-evidence"
+          mkdir -p "$RUNNER_TEMP/trivy-cache"
+          docker pull "$TRIVY_IMAGE" >/dev/null
+          test "$(docker image inspect "$TRIVY_IMAGE" --format '{{index .RepoDigests 0}}')" = \
+            'aquasec/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969'
+
+          docker run --rm \
+            -v "$RUNNER_TEMP/server-rootfs:/rootfs:ro" \
+            -v "$evidence:/evidence" \
+            -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
+            "$TRIVY_IMAGE" rootfs \
+            --scanners vuln,secret \
+            --format json \
+            --output /evidence/server-security-scan.json \
+            /rootfs
+          jq -e '.SchemaVersion == 2 and (.Results | type == "array")' \
+            "$evidence/server-security-scan.json" >/dev/null
+          jq -r '
+            .Results[]? | .Target as $target | .Vulnerabilities[]?
+            | select(.Severity == "CRITICAL" or .Severity == "HIGH")
+            | [.Severity, .VulnerabilityID, .PkgName, .InstalledVersion,
+               (.FixedVersion // ""), ($target // "")] | @tsv
+          ' "$evidence/server-security-scan.json" | LC_ALL=C sort -u \
+            >"$evidence/server-critical-high.tsv"
+          jq -r '
+            .Results[]? | .Target as $target | .Secrets[]?
+            | [.RuleID, .Category, .Severity, (.Title // ""), ($target // "")]
+            | @tsv
+          ' "$evidence/server-security-scan.json" | LC_ALL=C sort -u \
+            >"$evidence/server-secrets.tsv"
+          test ! -s "$evidence/server-critical-high.tsv"
+          test ! -s "$evidence/server-secrets.tsv"
+
+          docker run --rm \
+            -v "$RUNNER_TEMP/server-rootfs:/rootfs:ro" \
+            -v "$evidence:/evidence" \
+            -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
+            "$TRIVY_IMAGE" rootfs \
+            --format cyclonedx \
+            --output /evidence/server.cdx.json \
+            /rootfs
+          jq -e '
+            .bomFormat == "CycloneDX"
+            and ((.components | type) == "array")
+            and ((.components | length) > 0)
+          ' "$evidence/server.cdx.json" >/dev/null
+          printf 'SERVER_SECURITY_GATE_OK critical=0 high=0 secrets=0 scan_target=merged-rootfs trivy=0.74.0\n' |
+            tee "$evidence/security-summary.txt"
+
+      - name: Publish semantic image
+        id: publish
+        shell: bash
+        env:
+          REGISTRY_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          printf '%s' "$REGISTRY_TOKEN" |
+            docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin >/dev/null
+          docker tag "$CANDIDATE_IMAGE" "$TARGET_IMAGE"
+          docker push "$TARGET_IMAGE" | tee "$RUNNER_TEMP/server-evidence/push.log"
+          digest="$(docker buildx imagetools inspect "$TARGET_IMAGE" \
+            --format '{{.Manifest.Digest}}')"
+          [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+          docker buildx imagetools inspect "$TARGET_IMAGE" \
+            >"$RUNNER_TEMP/server-evidence/image-inspect.txt"
+          printf 'SERVER_IMAGE_PUBLISHED release=%s source=%s reference=%s digest=%s\n' \
+            "$RELEASE_TAG" "$SOURCE_SHA" "$TARGET_IMAGE" "$digest" |
+            tee "$RUNNER_TEMP/server-evidence/published.txt"
+          printf 'digest=%s\n' "$digest" >>"$GITHUB_OUTPUT"
+
+      - name: Attest image provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-name: ghcr.io/pasturestack/server
+          subject-digest: ${{ steps.publish.outputs.digest }}
+          push-to-registry: true
+
+      - name: Attest image SBOM
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-name: ghcr.io/pasturestack/server
+          subject-digest: ${{ steps.publish.outputs.digest }}
+          sbom-path: ${{ runner.temp }}/server-evidence/server.cdx.json
+          push-to-registry: true
+
+      - name: Create immutable GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          evidence="$RUNNER_TEMP/server-evidence"
+          cp "source/docs/releases/server-${RELEASE_TAG#v}.md" \
+            "$evidence/release-notes.md"
+          (
+            cd "$evidence"
+            sha256sum \
+              build.log \
+              candidate.log \
+              candidate-smoke.txt \
+              image-inspect.txt \
+              published.txt \
+              push.log \
+              release-notes.md \
+              security-summary.txt \
+              server-critical-high.tsv \
+              server-security-scan.json \
+              server-secrets.tsv \
+              server.cdx.json \
+              >SHA256SUMS
+          )
+          gh release create "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$SOURCE_SHA" \
+            --title "PastureStack Server $RELEASE_TAG" \
+            --notes-file "$evidence/release-notes.md" \
+            "$evidence/SHA256SUMS" \
+            "$evidence/build.log" \
+            "$evidence/candidate.log" \
+            "$evidence/candidate-smoke.txt" \
+            "$evidence/image-inspect.txt" \
+            "$evidence/published.txt" \
+            "$evidence/push.log" \
+            "$evidence/release-notes.md" \
+            "$evidence/security-summary.txt" \
+            "$evidence/server-critical-high.tsv" \
+            "$evidence/server-security-scan.json" \
+            "$evidence/server-secrets.tsv" \
+            "$evidence/server.cdx.json"
+
+      - name: Retain workflow evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: server-${{ inputs.release_tag }}-publication-${{ github.run_id }}
+          path: ${{ runner.temp }}/server-evidence
+          if-no-files-found: warn
+          retention-days: 30
+          compression-level: 9
+
+      - name: Clean run-owned resources
+        if: always()
+        shell: bash
+        run: |
+          docker logout ghcr.io >/dev/null 2>&1 || true
+          docker rm -f "$CANDIDATE_NAME" >/dev/null 2>&1 || true
+          docker volume rm "$CATTLE_VOLUME" "$MYSQL_VOLUME" "$MYSQL_LOG_VOLUME" \
+            >/dev/null 2>&1 || true
+          docker image rm "$TARGET_IMAGE" "$CANDIDATE_IMAGE" "$TRIVY_IMAGE" \
+            >/dev/null 2>&1 || true
+          rm -rf \
+            "$RUNNER_TEMP/server-rootfs" \
+            "$RUNNER_TEMP/server-rootfs.tar" \
+            "$RUNNER_TEMP/trivy-cache" \
+            "$RUNNER_TEMP/ping-body"
