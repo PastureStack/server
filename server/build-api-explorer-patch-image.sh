@@ -243,8 +243,8 @@ EOF
     ls --version | grep -Fq "GNU coreutils"
     uniq --version | grep -Fq "uniq (GNU coreutils) 9.11"
     longline="$(printf "\360\237\230\200"; head -c 255 /dev/zero | tr "\000" A)"
-    printf '%s\n%s\n' "${longline}" "${longline}" >/tmp/uniq-input
-    printf '%s\n' "${longline}" >/tmp/uniq-expected
+    printf "%s\n%s\n" "${longline}" "${longline}" >/tmp/uniq-input
+    printf "%s\n" "${longline}" >/tmp/uniq-expected
     LC_ALL=C.UTF-8 uniq -w256 /tmp/uniq-input >/tmp/uniq-output
     cmp /tmp/uniq-expected /tmp/uniq-output
     grep -aF "1.3.2" /usr/lib/x86_64-linux-gnu/libz.so.1.3.2 >/dev/null
