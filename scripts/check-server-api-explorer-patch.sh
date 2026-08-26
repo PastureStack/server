@@ -123,6 +123,8 @@ bash -n "$build_script"
 
 for marker in \
     'release_tag:' \
+    'docker/setup-docker-action@77e84dbf09b47d1e29270283c22f16145aa85ca1 # v5.4.0' \
+    '"containerd-snapshotter": true' \
     'PASTURESTACK_BUILD_NO_CACHE=1 IMAGE="$CANDIDATE_IMAGE"' \
     'docker restart "$CANDIDATE_NAME"' \
     'aquasec/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969' \
