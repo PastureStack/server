@@ -12,13 +12,13 @@ fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
-base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.324}
+base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.358@sha256:14064cb8a91c2ff058e620ca11b3342de422d1bbc34e43ed82f5712801637fa7}
 api_explorer_release_base_url=${API_EXPLORER_RELEASE_BASE_URL:-https://github.com/PastureStack/api-explorer/releases/download}
-api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.15}
-api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.15.tar.gz}
-api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-3b061a7f4332f330c3fc1c9c85182fd2e0ad2507df069aea857123e6f0d9e334}
-api_explorer_commit=${API_EXPLORER_COMMIT:-1cae0d841981735798bf7b3e5d93ae79cefe8fe5}
-image=${IMAGE:-pasturestack-validation/server:v1.6.325}
+api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.17}
+api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.17.tar.gz}
+api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-6dc1bfd64f520444efe370bb8141fa3bcc36fa0008617e508375b781ecf30fc3}
+api_explorer_commit=${API_EXPLORER_COMMIT:-94e617e0f8950ea80bdb46aaf181f463bae2cea9}
+image=${IMAGE:-pasturestack-validation/server:v1.6.359}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -27,7 +27,7 @@ build_options=()
 [[ "$api_explorer_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$api_explorer_release_tag" =~ ^v[0-9][0-9A-Za-z.-]*$ ]]
 [[ "$api_explorer_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
-[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.324 ]]
+[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.358@sha256:14064cb8a91c2ff058e620ca11b3342de422d1bbc34e43ed82f5712801637fa7 ]]
 case "$api_explorer_release_base_url" in
     https://*) ;;
     http://127.0.0.1:*|http://localhost:*)
@@ -61,25 +61,25 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.325
+    v1.6.359
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.base.name"}}')" = \
-    "$base_image"
+    ghcr.io/pasturestack/server:v1.6.358
 
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.325 \
-    CATTLE_API_UI_VERSION=1.1.15 \
-    PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.359 \
+    CATTLE_API_UI_VERSION=1.1.17 \
+    PASTURESTACK_API_EXPLORER_PACKAGE=1.1.17 \
     PASTURESTACK_API_EXPLORER_COMMIT="${api_explorer_commit}" \
     PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256="${api_explorer_artifact_sha256}" \
-    CATTLE_CATTLE_VERSION=v0.183.273 \
-    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.56-pasturestack.36 \
-    PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.2.5 \
+    CATTLE_CATTLE_VERSION=v0.183.281 \
+    PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.70 \
+    PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.4.35 \
     PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=0.55.1-pasturestack.1 \
     PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-07-27 \
     PASTURESTACK_CATALOG_COMMIT=c3a8e9876a74dbf98ce16ae504b947c5d80582c1; do
@@ -119,16 +119,18 @@ docker run --rm --entrypoint bash "$image" -lc '
     test -d "${api_dir}"
     test -s "${api_dir}/ui.min.js"
     test -s "${api_dir}/ui.min.css"
-    test -s "${api_dir}/fonts/glyphicons-halflings-regular.woff2"
+    test -s "${api_dir}/fonts/bootstrap-icons.woff"
+    test -s "${api_dir}/fonts/bootstrap-icons.woff2"
     test -s "${api_dir}/licenses/LICENSE.txt"
     test -s "${api_dir}/licenses/THIRD-PARTY-NOTICES.md"
-    test -s "${api_dir}/licenses/bootstrap-3.4.1/LICENSE"
-    test -s "${api_dir}/licenses/jquery-3.7.1/LICENSE.txt"
+    test -s "${api_dir}/licenses/bootstrap-5.3.8/LICENSE"
+    test -s "${api_dir}/licenses/bootstrap-icons-1.13.1/LICENSE"
+    test -s "${api_dir}/licenses/jquery-4.0.0/LICENSE.txt"
     test -s "${api_dir}/licenses/handlebars-4.7.9/LICENSE"
     test ! -e "${api_dir}/js/bootstrap.js"
     test "$(find "${api_dir}" -type f -name "*.map" | wc -l)" -eq 0
-    grep -F '"'"'"version": "1.1.15"'"'"' "${api_dir}/version.json" >/dev/null
-    grep -F '"'"'"commit": "1cae0d8"'"'"' "${api_dir}/version.json" >/dev/null
+    grep -F '"'"'"version": "1.1.17"'"'"' "${api_dir}/version.json" >/dev/null
+    grep -F '"'"'"commit": "94e617e"'"'"' "${api_dir}/version.json" >/dev/null
     for marker in \
         PastureStackUi \
         pasturestack:modal:shown \
@@ -141,7 +143,12 @@ docker run --rm --entrypoint bash "$image" -lc '
         echo "Rejected Bootstrap executable surface found in Server image" >&2
         exit 1
     fi
-    grep -F "Bootstrap v3.4.1" "${api_dir}/ui.css" >/dev/null
+    grep -F "Bootstrap v5.3.8" "${api_dir}/ui.css" >/dev/null
+    grep -F "url(\"./fonts/bootstrap-icons.woff2" "${api_dir}/ui.css" >/dev/null
+    if grep -F "Bootstrap v3." "${api_dir}/ui.css"; then
+        echo "Rejected EOL Bootstrap 3 stylesheet in Server image" >&2
+        exit 1
+    fi
     test "$(find /usr/share/cattle/war/translations -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     ui_entry=$(find /usr/share/cattle/war/assets -maxdepth 1 -type f -name "ui-*.js" -print -quit)
     vendor_entry=$(find /usr/share/cattle/war/assets -maxdepth 1 -type f -name "vendor-*.js" -print -quit)

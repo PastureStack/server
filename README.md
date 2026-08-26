@@ -11,9 +11,15 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.358` combines Orchestration Engine `0.183.281`, Node Agent `0.13.22`,
+`v1.6.359` combines Orchestration Engine `0.183.281`, Node Agent `0.13.22`,
 Authentication Service `0.4.35`, and the reviewed Ember 6.12 LTS Web Console
 `1.6.70`.
+
+The `v1.6.359` UI maintenance update replaces the embedded API Explorer's
+retired Bootstrap 3.4.1 stylesheet and Glyphicons with API Explorer `1.1.17`,
+Bootstrap `5.3.8` CSS, and Bootstrap Icons `1.13.1`. Bootstrap JavaScript
+remains excluded; modal and dropdown behavior stays in the reviewed
+first-party compatibility layer.
 
 The `v1.6.358` control-plane security update restricts serialized schema
 loading to an explicit class allowlist with bounded object graphs and prevents
@@ -32,7 +38,7 @@ container routes, relationship refresh, natural sorting, column selection,
 search, and live statistics synchronized. It also retains readable WCAG AA
 Catalog documentation, reactive Catalog upgrade versions, localized
 questions, writable OpenID Connect configuration, broker-aware terminal
-recovery, single-owner project WebSocket reconnect, API Explorer `1.1.15`,
+recovery, single-owner project WebSocket reconnect, API Explorer `1.1.17`,
 administrator-controlled MFA, and all 13 reviewed production locales. SMTP is
 configured once per installation; individual accounts store only their own
 verified recovery address. Passing compatibility gates does not by itself make
@@ -52,7 +58,7 @@ Catalog stack definitions, their documentation, and referenced public images mus
 
 Version coordinates are available only when the matching GitHub Release and public GHCR package both exist. Each release is held until its assets, checksums, SBOM, license records, anonymous downloads, and isolated-VM gates pass.
 
-Server `v1.6.358` registers the complete live volume-preflight schema model and preserves the project-scoped authorization required by driver-aware volume configuration, accessible
+Server `v1.6.359` registers the complete live volume-preflight schema model and preserves the project-scoped authorization required by driver-aware volume configuration, accessible
 path completion, and an authoritative `volumepreflight` check. The server
 validates container and service create or upgrade requests again at save time,
 including storage-driver state, host coverage, existing volume ownership, and

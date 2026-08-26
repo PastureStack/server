@@ -23,22 +23,22 @@ require_marker()
 }
 
 require_marker "$dockerfile" \
-    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.324' \
+    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.358@sha256:14064cb8a91c2ff058e620ca11b3342de422d1bbc34e43ed82f5712801637fa7' \
     SERVER_API_EXPLORER_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.325"' \
+    'org.opencontainers.image.version="v1.6.359"' \
     SERVER_API_EXPLORER_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.325' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.359' \
     SERVER_API_EXPLORER_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_API_UI_VERSION=1.1.15' \
+    'ENV CATTLE_API_UI_VERSION=1.1.17' \
     SERVER_API_EXPLORER_PATCH_API_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ARG API_EXPLORER_ARTIFACT_SHA256=3b061a7f4332f330c3fc1c9c85182fd2e0ad2507df069aea857123e6f0d9e334' \
+    'ARG API_EXPLORER_ARTIFACT_SHA256=6dc1bfd64f520444efe370bb8141fa3bcc36fa0008617e508375b781ecf30fc3' \
     SERVER_API_EXPLORER_PATCH_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG API_EXPLORER_COMMIT=1cae0d841981735798bf7b3e5d93ae79cefe8fe5' \
+    'ARG API_EXPLORER_COMMIT=94e617e0f8950ea80bdb46aaf181f463bae2cea9' \
     SERVER_API_EXPLORER_PATCH_COMMIT_MISSING
 require_marker "$dockerfile" \
     'tar --no-same-owner --no-same-permissions -xzf' \
@@ -62,11 +62,12 @@ require_marker "$build_script" \
     'web_console_unchanged=1' \
     SERVER_API_EXPLORER_PATCH_WEB_CONSOLE_REGRESSION_GATE_MISSING
 
-digest_coordinate='@''sha256:'
-if grep -Fq "$digest_coordinate" "$dockerfile" "$build_script"; then
-    echo 'SERVER_API_EXPLORER_PATCH_DIGEST_QUALIFIED_RUNTIME_COORDINATE' >&2
-    exit 1
-fi
+require_marker "$dockerfile" \
+    'org.opencontainers.image.base.digest="sha256:14064cb8a91c2ff058e620ca11b3342de422d1bbc34e43ed82f5712801637fa7"' \
+    SERVER_API_EXPLORER_PATCH_BASE_DIGEST_MISSING
+require_marker "$build_script" \
+    'ghcr.io/pasturestack/server:v1.6.358@sha256:14064cb8a91c2ff058e620ca11b3342de422d1bbc34e43ed82f5712801637fa7' \
+    SERVER_API_EXPLORER_PATCH_BUILD_BASE_DIGEST_MISSING
 
 if grep -RInE '(^|[^[:alnum:]])[A-Za-z]:\\Users\\|/home/[^/[:space:]]+/|(^|[^[:digit:]])10[.][[:digit:]]{1,3}[.][[:digit:]]{1,3}[.][[:digit:]]{1,3}([^[:digit:]]|$)|[[:alnum:]._%+-]+@[[:alnum:].-]+[.][[:alpha:]]{2,}' \
     "$dockerfile" "$build_script"; then
@@ -76,4 +77,4 @@ fi
 
 bash -n "$build_script"
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.325 base=v1.6.324 api_explorer=1.1.15 bootstrap_javascript=0 runtime_digest_coordinates=0 legal_assets=complete\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.359 base=v1.6.358 api_explorer=1.1.17 bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_digest_coordinates=1 legal_assets=complete\n'

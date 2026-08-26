@@ -1,14 +1,14 @@
 # syntax=docker/dockerfile:1.7
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.324
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.358@sha256:14064cb8a91c2ff058e620ca11b3342de422d1bbc34e43ed82f5712801637fa7
 FROM ${BASE_IMAGE}
 
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
 ARG API_EXPLORER_RELEASE_BASE_URL=https://github.com/PastureStack/api-explorer/releases/download
-ARG API_EXPLORER_RELEASE_TAG=v1.1.15
-ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.15.tar.gz
-ARG API_EXPLORER_ARTIFACT_SHA256=3b061a7f4332f330c3fc1c9c85182fd2e0ad2507df069aea857123e6f0d9e334
-ARG API_EXPLORER_COMMIT=1cae0d841981735798bf7b3e5d93ae79cefe8fe5
+ARG API_EXPLORER_RELEASE_TAG=v1.1.17
+ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.17.tar.gz
+ARG API_EXPLORER_ARTIFACT_SHA256=6dc1bfd64f520444efe370bb8141fa3bcc36fa0008617e508375b781ecf30fc3
+ARG API_EXPLORER_COMMIT=94e617e0f8950ea80bdb46aaf181f463bae2cea9
 
 RUN set -eu; \
     archive=/tmp/api-explorer.tar.gz; \
@@ -53,12 +53,13 @@ RUN set -eu; \
         ui.min.css \
         ui.min.js \
         version.json \
-        fonts/glyphicons-halflings-regular.woff2 \
+        fonts/bootstrap-icons.woff \
+        fonts/bootstrap-icons.woff2 \
         licenses/LICENSE.txt \
         licenses/THIRD-PARTY-NOTICES.md \
-        licenses/bootstrap-3.4.1/LICENSE \
-        licenses/bootstrap-3.4.1/NORMALIZE-LICENSE \
-        licenses/jquery-3.7.1/LICENSE.txt \
+        licenses/bootstrap-5.3.8/LICENSE \
+        licenses/bootstrap-icons-1.13.1/LICENSE \
+        licenses/jquery-4.0.0/LICENSE.txt \
         licenses/handlebars-4.7.9/LICENSE \
         licenses/inherited-vendor/LICENSE-async-0.9.0 \
         licenses/inherited-vendor/LICENSE-jquery-scrollintoview-1.8 \
@@ -67,13 +68,17 @@ RUN set -eu; \
         test -s "${stage}/${required}"; \
     done; \
     test ! -e "${stage}/js/bootstrap.js"; \
-    grep -F '"version": "1.1.15"' "${stage}/version.json" >/dev/null; \
-    grep -F '"commit": "1cae0d8"' "${stage}/version.json" >/dev/null; \
+    grep -F '"version": "1.1.17"' "${stage}/version.json" >/dev/null; \
+    grep -F '"commit": "94e617e"' "${stage}/version.json" >/dev/null; \
     grep -aF 'PastureStackUi' "${stage}/ui.js" >/dev/null; \
     grep -aF 'pasturestack:modal:shown' "${stage}/ui.js" >/dev/null; \
     grep -aF 'data-pasturestack-toggle' "${stage}/ui.js" >/dev/null; \
-    grep -F 'Bootstrap v3.4.1' "${stage}/ui.css" >/dev/null; \
-    grep -F 'url("./fonts/glyphicons-halflings-regular.woff2")' "${stage}/ui.css" >/dev/null; \
+    grep -F 'Bootstrap v5.3.8' "${stage}/ui.css" >/dev/null; \
+    grep -F 'url("./fonts/bootstrap-icons.woff2' "${stage}/ui.css" >/dev/null; \
+    if grep -F 'Bootstrap v3.' "${stage}/ui.css"; then \
+        echo "Rejected EOL Bootstrap 3 stylesheet in API Explorer" >&2; \
+        exit 1; \
+    fi; \
     if grep -aEq 'Bootstrap v3\.4\.1|bs\.(button|tooltip|popover|modal|dropdown)|data-loading-text|data-toggle="dropdown"' \
         "${stage}/ui.js"; then \
         echo "Rejected Bootstrap executable surface found in API Explorer" >&2; \
@@ -95,12 +100,13 @@ RUN set -eu; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server compatibility image with a reviewed first-party API Explorer interaction layer." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.325" \
+      org.opencontainers.image.version="v1.6.359" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
-      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.324"
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.358" \
+      org.opencontainers.image.base.digest="sha256:14064cb8a91c2ff058e620ca11b3342de422d1bbc34e43ed82f5712801637fa7"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.325
-ENV CATTLE_API_UI_VERSION=1.1.15
-ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.15
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.359
+ENV CATTLE_API_UI_VERSION=1.1.17
+ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.17
 ENV PASTURESTACK_API_EXPLORER_COMMIT=${API_EXPLORER_COMMIT}
 ENV PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256=${API_EXPLORER_ARTIFACT_SHA256}
