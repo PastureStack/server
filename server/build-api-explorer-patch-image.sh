@@ -160,9 +160,9 @@ docker run --rm --entrypoint bash "$image" -lc '
         /usr/share/cattle/war/translations/zh-tw.json >/dev/null
     unzip -p /usr/share/cattle/cattle.jar META-INF/MANIFEST.MF |
         tr -d "\r" |
-        grep -Fx "Implementation-Version: 0.183.273" >/dev/null
+        grep -Fx "Implementation-Version: 0.183.281" >/dev/null
     test "$(/usr/bin/govc version)" = "govc 0.55.1-pasturestack.1"
-    /usr/bin/authentication-service.real --version | grep -F "0.2.5" >/dev/null
+    /usr/bin/authentication-service.real --version | grep -F "0.4.35" >/dev/null
 '
 
 printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s api_explorer_commit=%s artifact_sha256=%s bootstrap_javascript=0 critical_runtime_unchanged=1 web_console_unchanged=1\n' \
