@@ -32,6 +32,12 @@ require_marker "$dockerfile" \
     'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.360' \
     SERVER_API_EXPLORER_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
+    'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27' \
+    SERVER_API_EXPLORER_PATCH_LB_IMAGE_MISSING
+require_marker "$dockerfile" \
+    'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.27' \
+    SERVER_API_EXPLORER_PATCH_LB_IMAGE_UUID_MISSING
+require_marker "$dockerfile" \
     'ENV CATTLE_API_UI_VERSION=1.1.17' \
     SERVER_API_EXPLORER_PATCH_API_VERSION_MISSING
 require_marker "$dockerfile" \

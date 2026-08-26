@@ -1,4 +1,5 @@
-FROM ubuntu:26.04
+# syntax=docker/dockerfile:1.7
+FROM ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b
 
 RUN rm -f /usr/bin/pebble
 
@@ -7,6 +8,11 @@ ARG DOCKER_VERSION=29.7.2
 ARG DOCKER_SHA256=803d433f226db4776e1768fd319fc6c6e4935a456acf84fcc0080818b854bc8f
 ARG COMPOSE_VERSION=v5.1.4
 ARG COMPOSE_SHA256=33b208d7e76639db742fae84b966cc01dacae58ca3fc4dabbc907045aefdf0c4
+ARG UBUNTU_SNAPSHOT=20260825T000000Z
+
+ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90 \
+    https://snapshot.ubuntu.com/ubuntu/20260825T000000Z/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb \
+    /tmp/ca-certificates.deb
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.licenses="Apache-2.0" \
@@ -16,7 +22,15 @@ LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && \
+RUN set -eux; \
+    mkdir -p /tmp/ca-bootstrap /etc/ssl/certs; \
+    dpkg-deb --extract /tmp/ca-certificates.deb /tmp/ca-bootstrap; \
+    find /tmp/ca-bootstrap/usr/share/ca-certificates -type f -name '*.crt' | LC_ALL=C sort | while IFS= read -r certificate; do sed -e '$a\' "${certificate}"; done > /etc/ssl/certs/ca-certificates.crt; \
+    rm -rf /tmp/ca-bootstrap /tmp/ca-certificates.deb; \
+    rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; \
+    printf 'Types: deb\nURIs: https://snapshot.ubuntu.com/ubuntu/%s\nSuites: resolute resolute-updates resolute-backports resolute-security\nComponents: main universe restricted multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nSnapshot: no\n' "${UBUNTU_SNAPSHOT}" > /etc/apt/sources.list.d/pasturestack-snapshot.sources; \
+    printf 'Acquire::Retries "5";\nAcquire::https::CaInfo "/etc/ssl/certs/ca-certificates.crt";\nAcquire::https::Verify-Peer "true";\nAcquire::https::Verify-Host "true";\nAcquire::AllowInsecureRepositories "false";\nAPT::Get::AllowUnauthenticated "false";\n' > /etc/apt/apt.conf.d/80pasturestack-snapshot; \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
         bash \
         ca-certificates \

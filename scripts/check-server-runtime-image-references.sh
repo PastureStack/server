@@ -6,7 +6,7 @@ cd "$repo_root"
 
 approved_registry=ghcr.io/pasturestack
 approved_agent="${approved_registry}/node-agent:v1.2.31"
-approved_balancer="${approved_registry}/load-balancer-service:v0.9.25"
+approved_balancer="${approved_registry}/load-balancer-service:v0.9.27"
 
 grep -Fq 'IMAGE_PREFIX=${IMAGE_PREFIX:-ghcr.io/pasturestack}' scripts/build || {
     echo SERVER_BUILD_IMAGE_PREFIX_NOT_APPROVED >&2
@@ -167,9 +167,10 @@ if grep -En '(^|[[:space:]])image:[[:space:]]*rancher/|docker build -t rancher/'
     exit 1
 fi
 
-if grep -En '@sha256:' \
+if grep -En '^ENV DEFAULT_CATTLE_(AGENT|BOOTSTRAP_REQUIRED|LB_INSTANCE)_IMAGE(_UUID)?=.*@sha256:' \
     server/Dockerfile \
-    server/Dockerfile.auth-hotfix \
+    server/Dockerfile.auth-hotfix ||
+   grep -En '^[[:space:]]*image:[[:space:]].*@sha256:' \
     server/artifacts/compose/docker-compose.yml ||
    grep -En '^ENV DEFAULT_CATTLE_(AGENT|BOOTSTRAP_REQUIRED|LB_INSTANCE)_IMAGE(_UUID)?=.*@sha256:' \
     server/Dockerfile.runtime-hotfix ||
