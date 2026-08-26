@@ -184,7 +184,7 @@ func newBroker(cfg brokerConfig, logger *log.Logger) (*broker, error) {
 	}
 	proxy.FlushInterval = -1
 	proxy.ErrorHandler = func(writer http.ResponseWriter, request *http.Request, proxyErr error) {
-		logger.Printf("application proxy failed for %s: %v", safeRequestPath(request), proxyErr)
+		logger.Printf("application proxy failed for %s: %s", safeLogValue(safeRequestPath(request)), safeLogValue(proxyErr))
 		http.Error(writer, "PastureStack application service is not ready", http.StatusBadGateway)
 	}
 
@@ -298,7 +298,7 @@ func (b *broker) createSession(writer http.ResponseWriter, request *http.Request
 		_ = response.Body.Close()
 	}
 	if err != nil {
-		b.logger.Printf("upstream session connection failed for %s: %v", sessionID, err)
+		b.logger.Printf("upstream session connection failed for %s: %s", safeLogValue(sessionID), safeLogValue(err))
 		writeJSONError(writer, http.StatusBadGateway, "upstream_unavailable", "Unable to start the console session")
 		return
 	}
@@ -626,7 +626,7 @@ func (session *brokerSession) readUpstream(b *broker, upstream *websocket.Conn) 
 		messageType, payload, err := upstream.ReadMessage()
 		if err != nil {
 			if !websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
-				b.logger.Printf("upstream session %s ended: %v", session.id, err)
+				b.logger.Printf("upstream session %s ended: %s", safeLogValue(session.id), safeLogValue(err))
 			}
 			session.end("ended")
 			return

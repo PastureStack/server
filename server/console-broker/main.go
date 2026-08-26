@@ -15,13 +15,13 @@ import (
 func main() {
 	cfg, err := configFromEnvironment()
 	if err != nil {
-		log.Fatalf("invalid console broker configuration: %v", err)
+		log.Fatalf("invalid console broker configuration: %s", safeLogValue(err))
 	}
 
 	logger := log.New(os.Stderr, "console-broker: ", log.LstdFlags|log.LUTC)
 	broker, err := newBroker(cfg, logger)
 	if err != nil {
-		logger.Fatalf("initialization failed: %v", err)
+		logger.Fatalf("initialization failed: %s", safeLogValue(err))
 	}
 	defer broker.close()
 
@@ -41,13 +41,13 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 		defer cancel()
 		if err := httpServer.Shutdown(ctx); err != nil {
-			logger.Printf("graceful shutdown failed: %v", err)
+			logger.Printf("graceful shutdown failed: %s", safeLogValue(err))
 		}
 	}()
 
-	logger.Printf("listening on %s and forwarding application traffic to %s", cfg.ListenAddress, cfg.UpstreamURL)
+	logger.Printf("listening on %s and forwarding application traffic to %s", safeLogValue(cfg.ListenAddress), safeLogValue(cfg.UpstreamURL))
 	if err := httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		logger.Fatalf("server failed: %v", err)
+		logger.Fatalf("server failed: %s", safeLogValue(err))
 	}
 }
 
