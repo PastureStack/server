@@ -18,7 +18,7 @@ api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.17}
 api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.17.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-6dc1bfd64f520444efe370bb8141fa3bcc36fa0008617e508375b781ecf30fc3}
 api_explorer_commit=${API_EXPLORER_COMMIT:-94e617e0f8950ea80bdb46aaf181f463bae2cea9}
-image=${IMAGE:-pasturestack-validation/server:v1.6.361}
+image=${IMAGE:-pasturestack-validation/server:v1.6.362}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -61,7 +61,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.361
+    v1.6.362
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -72,7 +72,7 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.361 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.362 \
     CATTLE_API_UI_VERSION=1.1.17 \
     PASTURESTACK_RUNTIME_GO_VERSION=1.27.0 \
     PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-08-26 \
