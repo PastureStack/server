@@ -33,7 +33,7 @@ jobs:
       CATTLE_VOLUME: pasturestack-server-release-cattle-${{ github.run_id }}
       MYSQL_VOLUME: pasturestack-server-release-mysql-${{ github.run_id }}
       MYSQL_LOG_VOLUME: pasturestack-server-release-mysqllog-${{ github.run_id }}
-      TRIVY_IMAGE: aquasec/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
+      TRIVY_IMAGE: ghcr.io/aquasecurity/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
 
     steps:
       - name: Enable the containerd image store
@@ -189,7 +189,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/trivy-cache"
           docker pull "$TRIVY_IMAGE" >/dev/null
           test "$(docker image inspect "$TRIVY_IMAGE" --format '{{index .RepoDigests 0}}')" = \
-            'aquasec/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969'
+            'ghcr.io/aquasecurity/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969'
 
           docker run --rm \
             -v "$RUNNER_TEMP/server-rootfs:/rootfs:ro" \
