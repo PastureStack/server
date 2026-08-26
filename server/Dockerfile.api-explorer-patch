@@ -37,7 +37,7 @@ RUN set -eux; \
     tar -xzf coreutils.tar.gz; \
     cd "coreutils-${COREUTILS_VERSION}"; \
     FORCE_UNSAFE_CONFIGURE=1 ./configure --disable-nls; \
-    make -j"$(nproc)" src/uniq; \
+    make -j"$(nproc)"; \
     install -D -m 0755 src/uniq /out/coreutils/uniq; \
     install -D -m 0644 COPYING /out/coreutils/COPYING; \
     test "$(printf 'a\na\nb\n' | /out/coreutils/uniq -c | awk 'NR == 1 { print $1 ":" $2 }')" = '2:a'; \
