@@ -99,7 +99,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           PASTURESTACK_BUILD_NO_CACHE=1 IMAGE="$CANDIDATE_IMAGE" \
-            bash server/build-api-explorer-patch-image.sh |
+            bash server/build-api-explorer-patch-image.sh |&
             tee "$RUNNER_TEMP/server-evidence/build.log"
           test "$(docker image inspect "$CANDIDATE_IMAGE" \
             --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
@@ -310,9 +310,7 @@ jobs:
             "$evidence/push.log" \
             "$evidence/release-notes.md" \
             "$evidence/security-summary.txt" \
-            "$evidence/server-critical-high.tsv" \
             "$evidence/server-security-scan.json" \
-            "$evidence/server-secrets.tsv" \
             "$evidence/server.cdx.json"
 
       - name: Retain workflow evidence
@@ -335,7 +333,7 @@ jobs:
             >/dev/null 2>&1 || true
           docker image rm "$TARGET_IMAGE" "$CANDIDATE_IMAGE" "$TRIVY_IMAGE" \
             >/dev/null 2>&1 || true
-          rm -rf \
+          sudo rm -rf \
             "$RUNNER_TEMP/server-rootfs" \
             "$RUNNER_TEMP/server-rootfs.tar" \
             "$RUNNER_TEMP/trivy-cache" \
