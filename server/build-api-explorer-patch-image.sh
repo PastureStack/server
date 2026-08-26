@@ -12,13 +12,13 @@ fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
-base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.362@sha256:b3faed24caf43c17f156a5eb1b2beec88a990524ea42e614518df8571db6df88}
+base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.363@sha256:c534993b0735c84ed570def216cfc44912532594aa5a270d060cfa9fcccc2bd7}
 api_explorer_release_base_url=${API_EXPLORER_RELEASE_BASE_URL:-https://github.com/PastureStack/api-explorer/releases/download}
 api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.17}
 api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.17.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-6dc1bfd64f520444efe370bb8141fa3bcc36fa0008617e508375b781ecf30fc3}
 api_explorer_commit=${API_EXPLORER_COMMIT:-94e617e0f8950ea80bdb46aaf181f463bae2cea9}
-image=${IMAGE:-pasturestack-validation/server:v1.6.363}
+image=${IMAGE:-pasturestack-validation/server:v1.6.364}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -27,7 +27,7 @@ build_options=()
 [[ "$api_explorer_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$api_explorer_release_tag" =~ ^v[0-9][0-9A-Za-z.-]*$ ]]
 [[ "$api_explorer_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
-[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.362@sha256:b3faed24caf43c17f156a5eb1b2beec88a990524ea42e614518df8571db6df88 ]]
+[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.363@sha256:c534993b0735c84ed570def216cfc44912532594aa5a270d060cfa9fcccc2bd7 ]]
 case "$api_explorer_release_base_url" in
     https://*) ;;
     http://127.0.0.1:*|http://localhost:*)
@@ -61,22 +61,24 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.363
+    v1.6.364
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.base.name"}}')" = \
-    ghcr.io/pasturestack/server:v1.6.362
+    ghcr.io/pasturestack/server:v1.6.363
 
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.363 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.364 \
     CATTLE_API_UI_VERSION=1.1.17 \
     PASTURESTACK_RUNTIME_GO_VERSION=1.27.0 \
     PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-08-26 \
     PASTURESTACK_COREUTILS_PROVIDER=gnu \
+    PASTURESTACK_SSH_CLIENT_HARDENING=x11-gssapi-disabled \
+    PASTURESTACK_PRIVILEGED_MOUNT_HELPERS=setuid-disabled \
     PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.0 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.17 \
     PASTURESTACK_API_EXPLORER_COMMIT="${api_explorer_commit}" \

@@ -24,16 +24,16 @@ require_marker()
 }
 
 require_marker "$dockerfile" \
-    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.362@sha256:b3faed24caf43c17f156a5eb1b2beec88a990524ea42e614518df8571db6df88' \
+    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.363@sha256:c534993b0735c84ed570def216cfc44912532594aa5a270d060cfa9fcccc2bd7' \
     SERVER_API_EXPLORER_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
     'ARG UBUNTU_SNAPSHOT=20260826T000000Z' \
     SERVER_API_EXPLORER_PATCH_UBUNTU_SNAPSHOT_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.363"' \
+    'org.opencontainers.image.version="v1.6.364"' \
     SERVER_API_EXPLORER_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.363' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.364' \
     SERVER_API_EXPLORER_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
     'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27' \
@@ -68,6 +68,18 @@ require_marker "$dockerfile" \
 require_marker "$dockerfile" \
     'ENV PASTURESTACK_COREUTILS_PROVIDER=gnu' \
     SERVER_COREUTILS_PROVIDER_IDENTITY_MISSING
+require_marker "$dockerfile" \
+    'version_at_least openssl 3.5.5-1ubuntu3.4' \
+    SERVER_OPENSSL_FIXED_VERSION_GATE_MISSING
+require_marker "$dockerfile" \
+    'chmod u-s /usr/bin/mount /usr/bin/umount' \
+    SERVER_MOUNT_SETUID_HARDENING_MISSING
+require_marker "$dockerfile" \
+    'GSSAPIAuthentication no' \
+    SERVER_SSH_GSSAPI_HARDENING_MISSING
+require_marker "$dockerfile" \
+    'ForwardX11 no' \
+    SERVER_SSH_X11_HARDENING_MISSING
 while IFS='|' read -r marker code; do
     require_marker "$dockerfile" "$marker" "$code"
 done <<'EOF'
@@ -119,10 +131,10 @@ require_marker "$build_script" \
     SERVER_API_EXPLORER_PATCH_WEB_CONSOLE_REGRESSION_GATE_MISSING
 
 require_marker "$dockerfile" \
-    'org.opencontainers.image.base.digest="sha256:b3faed24caf43c17f156a5eb1b2beec88a990524ea42e614518df8571db6df88"' \
+    'org.opencontainers.image.base.digest="sha256:c534993b0735c84ed570def216cfc44912532594aa5a270d060cfa9fcccc2bd7"' \
     SERVER_API_EXPLORER_PATCH_BASE_DIGEST_MISSING
 require_marker "$build_script" \
-    'ghcr.io/pasturestack/server:v1.6.362@sha256:b3faed24caf43c17f156a5eb1b2beec88a990524ea42e614518df8571db6df88' \
+    'ghcr.io/pasturestack/server:v1.6.363@sha256:c534993b0735c84ed570def216cfc44912532594aa5a270d060cfa9fcccc2bd7' \
     SERVER_API_EXPLORER_PATCH_BUILD_BASE_DIGEST_MISSING
 
 if grep -RInE '(^|[^[:alnum:]])[A-Za-z]:\\Users\\|/home/[^/[:space:]]+/|(^|[^[:digit:]])10[.][[:digit:]]{1,3}[.][[:digit:]]{1,3}[.][[:digit:]]{1,3}([^[:digit:]]|$)|[[:alnum:]._%+-]+@[[:alnum:].-]+[.][[:alpha:]]{2,}' \
@@ -149,4 +161,4 @@ for marker in \
         SERVER_CURRENT_PUBLISH_WORKFLOW_GATE_MISSING
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.363 base=v1.6.362 api_explorer=1.1.17 bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_provider=gnu rust_coreutils=absent runtime_digest_coordinates=1 legal_assets=complete\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.364 base=v1.6.363 api_explorer=1.1.17 bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_provider=gnu rust_coreutils=absent ssh_x11=disabled ssh_gssapi=disabled mount_setuid=disabled runtime_digest_coordinates=1 legal_assets=complete\n'
