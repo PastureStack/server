@@ -343,7 +343,6 @@ jobs:
             "$evidence/server-security-scan-raw.json" \
             "$evidence/server-security-scan.json" \
             "$evidence/server-vulnerabilities-raw.tsv" \
-            "$evidence/server-vulnerabilities-unresolved.tsv" \
             "$evidence/server.cdx.json"
 
       - name: Retain workflow evidence
