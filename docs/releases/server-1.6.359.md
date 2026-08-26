@@ -1,8 +1,8 @@
 # PastureStack Server v1.6.359
 
-Server v1.6.359 updates the embedded API Explorer without changing the
-orchestration engine, Web Console, authentication service, databases, or
-control-plane API behavior from v1.6.358.
+Server v1.6.359 updates the embedded API Explorer and replaces the vulnerable
+Go 1.26.5 runtime executables inherited from v1.6.358. It does not change the
+orchestration engine, Web Console, databases, or control-plane API contract.
 
 ## UI dependency update
 
@@ -18,8 +18,20 @@ This removes the retired Bootstrap 3.4.1 stylesheet and Glyphicons from the
 server image. The small first-party modal and dropdown compatibility layer is
 retained and covered by the API Explorer security tests.
 
-The v1.6.358 base image is digest-pinned. Assembly verifies the API Explorer
-release checksum, safe archive members, required license files, exact source
+## Runtime security refresh
+
+The image consumes checksum-pinned Go 1.27.0 releases for Authentication
+Service `0.4.36`, Catalog Service `0.20.10`, Compose Executor `0.14.34`, Host
+Provisioner `0.39.6`, Secret Delivery API `0.3.1`, Usage Telemetry Agent
+`0.4.1`, Webhook Automation Service `0.10.1`, WebSocket Proxy `0.23.13`, and
+vSphere CLI Bundle `0.55.1-pasturestack.2`. The in-tree Console Broker is also
+rebuilt with the exact Go 1.27.0 builder. Ubuntu 26.04 packages are upgraded to
+the newest versions available at image-build time, and their installed
+versions are recorded in the final SBOM and Trivy report.
+
+The v1.6.358 base image is digest-pinned. Assembly verifies every replacement
+archive and executable digest, the API Explorer release checksum, safe archive
+members, required license files, exact source
 revision, Bootstrap 5 marker, icon font, and absence of Bootstrap 3 CSS before
 replacing `/usr/share/cattle/war/api-ui`.
 

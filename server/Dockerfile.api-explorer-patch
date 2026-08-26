@@ -1,14 +1,267 @@
 # syntax=docker/dockerfile:1.7
+ARG GO_BUILDER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452
 ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.358@sha256:14064cb8a91c2ff058e620ca11b3342de422d1bbc34e43ed82f5712801637fa7
+
+FROM ${GO_BUILDER_IMAGE} AS console_broker_build
+
+WORKDIR /src
+COPY console-broker/go.mod console-broker/go.sum ./
+RUN set -eux; \
+    test "$(/usr/local/go/bin/go version | awk '{print $3}')" = go1.27.0; \
+    /usr/local/go/bin/go mod download; \
+    /usr/local/go/bin/go mod verify
+COPY console-broker/*.go ./
+RUN set -eux; \
+    /usr/local/go/bin/go test ./...; \
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOTOOLCHAIN=local \
+      /usr/local/go/bin/go build \
+        -mod=readonly \
+        -trimpath \
+        -buildvcs=false \
+        -ldflags='-s -w -buildid=' \
+        -o /out/pasturestack-console-broker .
+
 FROM ${BASE_IMAGE}
 
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
+ARG AUTHENTICATION_SERVICE_VERSION=0.4.36
+ARG AUTHENTICATION_SERVICE_COMMIT=f9609e657486693575753f1bfdfdf1aeb13e1fc5
+ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=9bc5d4070e4b012c4464b986ddcd26225c4cca0756fa3e5a118c4ec8fc74367a
+ARG AUTHENTICATION_SERVICE_BINARY_SHA256=33c59675901c459feb478e55f731420bd2f5f3c3f27e0f6c7b4659207d025d7b
+ARG CATALOG_SERVICE_VERSION=0.20.10
+ARG CATALOG_SERVICE_COMMIT=e083369dbcd53011e3d456162a61fc60c9675e66
+ARG CATALOG_SERVICE_ARCHIVE_SHA256=f9fe719b86418a9bb69d4898c86869a6694e7fff75d0ba39172bf21db2510544
+ARG CATALOG_SERVICE_BINARY_SHA256=9e4aef36c7ead2ff039d96121f6145fc68b34ad70ef030fd09d3446819dd4c84
+ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=a43a5cd4d4877e125e58fdfc80c8b794203c0d4e9103463d4b1fec9847a593e5
+ARG COMPOSE_EXECUTOR_VERSION=0.14.34
+ARG COMPOSE_EXECUTOR_COMMIT=e28011aaec9d9ff87d6e6fa0ede43edefa2221be
+ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=a771d9a0ce2f7d435eb711362bbebf190054cf0943a7c868d8d9b3e713320201
+ARG COMPOSE_EXECUTOR_BINARY_SHA256=e429714b321db8c1a47c727bb241b3de41b74facdfb61af144237d46f3f2c47b
+ARG HOST_PROVISIONER_VERSION=0.39.6
+ARG HOST_PROVISIONER_COMMIT=16f4331a65c6c7f0bef7060bad2807ecc321bd4b
+ARG HOST_PROVISIONER_ARCHIVE_SHA256=bf3281954ff8aafe58feacb82184f94c790136bb26d5bc01057b85ad295648cf
+ARG HOST_PROVISIONER_BINARY_SHA256=1d06bde76920e9738da0365e9fd0ef1eac3a414785bede06b8d8665bf25a2710
+ARG SECRET_DELIVERY_API_VERSION=0.3.1
+ARG SECRET_DELIVERY_API_COMMIT=a812ce56935bca31254a5392104a91ce63517832
+ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=32d20d1178c884f903599b99df8ec5c78e20eecc18286d1b85008196844daf6e
+ARG SECRET_DELIVERY_API_BINARY_SHA256=fbdd12862e1cfe3c957f492ae81c4c1c5658357502bd322febbbe209496929be
+ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.1
+ARG USAGE_TELEMETRY_AGENT_COMMIT=175ed7b5c62e1a6d9df86649a777e69c88f8e369
+ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=a91d7e4c68a65737bcca2b0bea52e2e3989950fd75c45c71cde7c7d5e405a8d2
+ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=f18ed969b8b5959293fdbcd55d2e28846372ab87c9348fbb315a9a490bf85ad4
+ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.1
+ARG WEBHOOK_AUTOMATION_SERVICE_COMMIT=dac77b024bb116bc977a917c9a23728796f526ae
+ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=0692a1cd9806c734d8f304ab4ccd06d7f2a267ce21fad02233169a3bc3686b4e
+ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=07e807c3f66e7e75e7a45073eabbd041a74b5727e315aee96f00e5b6a801ccc5
+ARG WEBSOCKET_PROXY_VERSION=0.23.13
+ARG WEBSOCKET_PROXY_COMMIT=67410de3c4c222b7fd76b85ddf42a022cd8c09b5
+ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=30443fe313662a733ae0e1f2899a6a1fce7cead9d6cf29c1802edd2754d91ab7
+ARG WEBSOCKET_PROXY_BINARY_SHA256=8e24dc052faf54603c95d9187ca63b25435482ad9046825d3676ae522439c949
+ARG VSPHERE_CLI_BUNDLE_VERSION=0.55.1-pasturestack.2
+ARG VSPHERE_CLI_BUNDLE_COMMIT=1452bf1fef4380a350338456467172dc5876c791
+ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=95eea0146ae9e67145800857e0153aa794fc0ba947e7fdb2768b572cd5971a2b
+ARG GOVC_BINARY_SHA256=a42b0649c723b76a2208467c821ff1a9b713b2c8c5ab762808c1d193bd112287
 ARG API_EXPLORER_RELEASE_BASE_URL=https://github.com/PastureStack/api-explorer/releases/download
 ARG API_EXPLORER_RELEASE_TAG=v1.1.17
 ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.17.tar.gz
 ARG API_EXPLORER_ARTIFACT_SHA256=6dc1bfd64f520444efe370bb8141fa3bcc36fa0008617e508375b781ecf30fc3
 ARG API_EXPLORER_COMMIT=94e617e0f8950ea80bdb46aaf181f463bae2cea9
+
+COPY --from=console_broker_build /out/pasturestack-console-broker /usr/bin/pasturestack-console-broker
+COPY --from=console_broker_build /go/pkg/mod/github.com/gorilla/websocket@v1.5.3/LICENSE /usr/share/licenses/pasturestack-console-broker/gorilla-websocket-LICENSE
+COPY console-broker/THIRD-PARTY-NOTICES.md /usr/share/licenses/pasturestack-console-broker/THIRD-PARTY-NOTICES.md
+
+RUN set -eu; \
+    apt-get update; \
+    apt-get upgrade -y; \
+    apt-get install -y --no-install-recommends ca-certificates curl gzip tar xz-utils; \
+    version_at_least() { \
+        package="$1"; minimum="$2"; \
+        installed="$(dpkg-query -W -f='${Version}' "${package}")"; \
+        dpkg --compare-versions "${installed}" ge "${minimum}" || { \
+            echo "${package} ${installed} is older than ${minimum}" >&2; \
+            exit 1; \
+        }; \
+    }; \
+    version_at_least curl 8.18.0-1ubuntu2.4; \
+    version_at_least libcurl4t64 8.18.0-1ubuntu2.4; \
+    version_at_least libc6 2.43-2ubuntu2.3; \
+    version_at_least systemd 259.5-0ubuntu3.4; \
+    version_at_least libsystemd0 259.5-0ubuntu3.4; \
+    version_at_least libudev1 259.5-0ubuntu3.4; \
+    runtime_stage=/tmp/pasturestack-runtime-refresh; \
+    mkdir -p "${runtime_stage}"; \
+    fetch() { \
+        url="$1"; expected="$2"; output="$3"; \
+        curl -fsSL \
+            --retry 5 \
+            --retry-all-errors \
+            --retry-delay 2 \
+            --connect-timeout 10 \
+            --max-time 300 \
+            -o "${output}" \
+            "${url}"; \
+        echo "${expected}  ${output}" | sha256sum -c -; \
+    }; \
+    safe_extract_xz() { \
+        archive="$1"; destination="$2"; listing="${archive}.list"; \
+        mkdir -p "${destination}"; \
+        tar -tJf "${archive}" >"${listing}"; \
+        if grep -Eq '(^/|(^|/)\.\.(/|$))' "${listing}"; then \
+            echo "Unsafe runtime archive path: ${archive}" >&2; \
+            exit 1; \
+        fi; \
+        if sort "${listing}" | uniq -d | grep -q .; then \
+            echo "Duplicate runtime archive path: ${archive}" >&2; \
+            exit 1; \
+        fi; \
+        if tar -tvJf "${archive}" | grep -Eq '^[lh]'; then \
+            echo "Runtime archive may not contain links: ${archive}" >&2; \
+            exit 1; \
+        fi; \
+        tar --no-same-owner --no-same-permissions -xJf "${archive}" -C "${destination}"; \
+        test -z "$(find "${destination}" -type l -print -quit)"; \
+    }; \
+    auth_archive="${runtime_stage}/authentication-service.tar.xz"; \
+    auth_dir="${runtime_stage}/authentication-service"; \
+    fetch \
+        "https://github.com/PastureStack/authentication-service/releases/download/v${AUTHENTICATION_SERVICE_VERSION}/authentication-service-${AUTHENTICATION_SERVICE_VERSION}-linux-amd64.tar.xz" \
+        "${AUTHENTICATION_SERVICE_ARCHIVE_SHA256}" \
+        "${auth_archive}"; \
+    safe_extract_xz "${auth_archive}" "${auth_dir}"; \
+    echo "${AUTHENTICATION_SERVICE_BINARY_SHA256}  ${auth_dir}/authentication-service" | sha256sum -c -; \
+    install -o 0 -g 0 -m 0755 "${auth_dir}/authentication-service" /usr/bin/authentication-service.real; \
+    catalog_archive="${runtime_stage}/catalog-service.tar.xz"; \
+    catalog_dir="${runtime_stage}/catalog-service"; \
+    fetch \
+        "https://github.com/PastureStack/catalog-service/releases/download/v${CATALOG_SERVICE_VERSION}/catalog-service-${CATALOG_SERVICE_VERSION}.tar.xz" \
+        "${CATALOG_SERVICE_ARCHIVE_SHA256}" \
+        "${catalog_archive}"; \
+    safe_extract_xz "${catalog_archive}" "${catalog_dir}"; \
+    echo "${CATALOG_SERVICE_BINARY_SHA256}  ${catalog_dir}/catalog-service" | sha256sum -c -; \
+    echo "${CATALOG_SERVICE_SQLITE_BINARY_SHA256}  ${catalog_dir}/catalog-service-sqlite" | sha256sum -c -; \
+    install -o 0 -g 0 -m 0755 "${catalog_dir}/catalog-service" /usr/bin/catalog-service.real; \
+    install -o 0 -g 0 -m 0755 "${catalog_dir}/catalog-service-sqlite" /usr/bin/catalog-service-sqlite; \
+    compose_archive="${runtime_stage}/compose-executor.gz"; \
+    compose_binary="${runtime_stage}/compose-executor"; \
+    fetch \
+        "https://github.com/PastureStack/compose-cli/releases/download/v${COMPOSE_EXECUTOR_VERSION}/compose-executor-${COMPOSE_EXECUTOR_VERSION}-linux-amd64.gz" \
+        "${COMPOSE_EXECUTOR_ARCHIVE_SHA256}" \
+        "${compose_archive}"; \
+    gzip -dc "${compose_archive}" >"${compose_binary}"; \
+    echo "${COMPOSE_EXECUTOR_BINARY_SHA256}  ${compose_binary}" | sha256sum -c -; \
+    install -o 0 -g 0 -m 0755 "${compose_binary}" /usr/bin/compose-executor.real; \
+    host_archive="${runtime_stage}/host-provisioner.tar.xz"; \
+    host_dir="${runtime_stage}/host-provisioner"; \
+    fetch \
+        "https://github.com/PastureStack/host-provisioner/releases/download/v${HOST_PROVISIONER_VERSION}/host-provisioner-${HOST_PROVISIONER_VERSION}-linux-amd64.tar.xz" \
+        "${HOST_PROVISIONER_ARCHIVE_SHA256}" \
+        "${host_archive}"; \
+    safe_extract_xz "${host_archive}" "${host_dir}"; \
+    host_binary="${host_dir}/host-provisioner-${HOST_PROVISIONER_VERSION}-linux-amd64/host-provisioner"; \
+    echo "${HOST_PROVISIONER_BINARY_SHA256}  ${host_binary}" | sha256sum -c -; \
+    install -o 0 -g 0 -m 0755 "${host_binary}" /usr/bin/host-provisioner.real; \
+    secret_archive="${runtime_stage}/secret-delivery-api.tar.xz"; \
+    secret_dir="${runtime_stage}/secret-delivery-api"; \
+    fetch \
+        "https://github.com/PastureStack/secret-delivery-api/releases/download/v${SECRET_DELIVERY_API_VERSION}/secret-delivery-api-${SECRET_DELIVERY_API_VERSION}-linux-amd64.tar.xz" \
+        "${SECRET_DELIVERY_API_ARCHIVE_SHA256}" \
+        "${secret_archive}"; \
+    safe_extract_xz "${secret_archive}" "${secret_dir}"; \
+    echo "${SECRET_DELIVERY_API_BINARY_SHA256}  ${secret_dir}/secret-delivery-api" | sha256sum -c -; \
+    install -o 0 -g 0 -m 0755 "${secret_dir}/secret-delivery-api" /usr/bin/secret-delivery-api; \
+    secret_license_dir=/usr/share/licenses/pasturestack/secret-delivery-api; \
+    mkdir -p "${secret_license_dir}"; \
+    install -o 0 -g 0 -m 0644 "${secret_dir}/secret-delivery-api-LICENSES.txt" "${secret_license_dir}/"; \
+    install -o 0 -g 0 -m 0644 "${secret_dir}/secret-delivery-api-SOURCES.txt" "${secret_license_dir}/"; \
+    install -o 0 -g 0 -m 0644 "${secret_dir}/secret-delivery-api-THIRD-PARTY-NOTICES.md" "${secret_license_dir}/"; \
+    usage_archive="${runtime_stage}/usage-telemetry-agent.tar.xz"; \
+    usage_dir="${runtime_stage}/usage-telemetry-agent"; \
+    fetch \
+        "https://github.com/PastureStack/usage-telemetry-agent/releases/download/v${USAGE_TELEMETRY_AGENT_VERSION}/usage-telemetry-agent-${USAGE_TELEMETRY_AGENT_VERSION}-linux-amd64.tar.xz" \
+        "${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256}" \
+        "${usage_archive}"; \
+    safe_extract_xz "${usage_archive}" "${usage_dir}"; \
+    echo "${USAGE_TELEMETRY_AGENT_BINARY_SHA256}  ${usage_dir}/usage-telemetry-agent" | sha256sum -c -; \
+    install -o 0 -g 0 -m 0755 "${usage_dir}/usage-telemetry-agent" /usr/bin/usage-telemetry-agent; \
+    usage_license_dir=/usr/share/licenses/pasturestack/usage-telemetry-agent; \
+    mkdir -p "${usage_license_dir}"; \
+    install -o 0 -g 0 -m 0644 "${usage_dir}/usage-telemetry-agent-LICENSES.txt" "${usage_license_dir}/"; \
+    install -o 0 -g 0 -m 0644 "${usage_dir}/usage-telemetry-agent-PRIVACY.md" "${usage_license_dir}/"; \
+    install -o 0 -g 0 -m 0644 "${usage_dir}/usage-telemetry-agent-SOURCES.txt" "${usage_license_dir}/"; \
+    install -o 0 -g 0 -m 0644 "${usage_dir}/usage-telemetry-agent-THIRD-PARTY-NOTICES.md" "${usage_license_dir}/"; \
+    webhook_archive="${runtime_stage}/webhook-automation-service.tar.xz"; \
+    webhook_dir="${runtime_stage}/webhook-automation-service"; \
+    fetch \
+        "https://github.com/PastureStack/webhook-automation-service/releases/download/v${WEBHOOK_AUTOMATION_SERVICE_VERSION}/webhook-automation-service-${WEBHOOK_AUTOMATION_SERVICE_VERSION}-linux-amd64.tar.xz" \
+        "${WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256}" \
+        "${webhook_archive}"; \
+    safe_extract_xz "${webhook_archive}" "${webhook_dir}"; \
+    echo "${WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256}  ${webhook_dir}/webhook-automation-service" | sha256sum -c -; \
+    install -o 0 -g 0 -m 0755 "${webhook_dir}/webhook-automation-service" /usr/bin/webhook-automation-service; \
+    webhook_license_dir=/usr/share/licenses/pasturestack/webhook-automation-service; \
+    mkdir -p "${webhook_license_dir}"; \
+    install -o 0 -g 0 -m 0644 "${webhook_dir}/webhook-automation-service-COMPATIBILITY.md" "${webhook_license_dir}/"; \
+    install -o 0 -g 0 -m 0644 "${webhook_dir}/webhook-automation-service-LICENSES.txt" "${webhook_license_dir}/"; \
+    install -o 0 -g 0 -m 0644 "${webhook_dir}/webhook-automation-service-SOURCES.txt" "${webhook_license_dir}/"; \
+    install -o 0 -g 0 -m 0644 "${webhook_dir}/webhook-automation-service-THIRD-PARTY-NOTICES.md" "${webhook_license_dir}/"; \
+    websocket_archive="${runtime_stage}/websocket-proxy.tar.xz"; \
+    websocket_dir="${runtime_stage}/websocket-proxy"; \
+    fetch \
+        "https://github.com/PastureStack/websocket-proxy/releases/download/v${WEBSOCKET_PROXY_VERSION}/websocket-proxy-${WEBSOCKET_PROXY_VERSION}-linux-amd64.tar.xz" \
+        "${WEBSOCKET_PROXY_ARCHIVE_SHA256}" \
+        "${websocket_archive}"; \
+    safe_extract_xz "${websocket_archive}" "${websocket_dir}"; \
+    echo "${WEBSOCKET_PROXY_BINARY_SHA256}  ${websocket_dir}/websocket-proxy" | sha256sum -c -; \
+    install -o 0 -g 0 -m 0755 "${websocket_dir}/websocket-proxy" /usr/bin/websocket-proxy.real; \
+    vsphere_archive="${runtime_stage}/vsphere-cli-bundle.tar.xz"; \
+    vsphere_dir="${runtime_stage}/vsphere-cli-bundle"; \
+    fetch \
+        "https://github.com/PastureStack/vsphere-cli-bundle/releases/download/v${VSPHERE_CLI_BUNDLE_VERSION}/vsphere-cli-bundle-${VSPHERE_CLI_BUNDLE_VERSION}-linux-amd64.tar.xz" \
+        "${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256}" \
+        "${vsphere_archive}"; \
+    safe_extract_xz "${vsphere_archive}" "${vsphere_dir}"; \
+    echo "${GOVC_BINARY_SHA256}  ${vsphere_dir}/govc" | sha256sum -c -; \
+    install -o 0 -g 0 -m 0755 "${vsphere_dir}/govc" /usr/bin/govc; \
+    vsphere_license_dir=/usr/share/licenses/pasturestack/vsphere-cli-bundle; \
+    mkdir -p "${vsphere_license_dir}"; \
+    install -o 0 -g 0 -m 0644 "${vsphere_dir}/vsphere-cli-bundle-LICENSES.txt" "${vsphere_license_dir}/"; \
+    install -o 0 -g 0 -m 0644 "${vsphere_dir}/vsphere-cli-bundle-SOURCES.txt" "${vsphere_license_dir}/"; \
+    install -o 0 -g 0 -m 0644 "${vsphere_dir}/vsphere-cli-bundle-THIRD-PARTY-NOTICES.txt" "${vsphere_license_dir}/"; \
+    for pair in \
+        "${AUTHENTICATION_SERVICE_BINARY_SHA256} /usr/bin/authentication-service.real" \
+        "${CATALOG_SERVICE_BINARY_SHA256} /usr/bin/catalog-service.real" \
+        "${CATALOG_SERVICE_SQLITE_BINARY_SHA256} /usr/bin/catalog-service-sqlite" \
+        "${COMPOSE_EXECUTOR_BINARY_SHA256} /usr/bin/compose-executor.real" \
+        "${HOST_PROVISIONER_BINARY_SHA256} /usr/bin/host-provisioner.real" \
+        "${SECRET_DELIVERY_API_BINARY_SHA256} /usr/bin/secret-delivery-api" \
+        "${USAGE_TELEMETRY_AGENT_BINARY_SHA256} /usr/bin/usage-telemetry-agent" \
+        "${WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256} /usr/bin/webhook-automation-service" \
+        "${WEBSOCKET_PROXY_BINARY_SHA256} /usr/bin/websocket-proxy.real" \
+        "${GOVC_BINARY_SHA256} /usr/bin/govc"; do \
+        echo "${pair}" | sha256sum -c -; \
+    done; \
+    /usr/bin/authentication-service.real --version | grep -F "${AUTHENTICATION_SERVICE_VERSION}" >/dev/null; \
+    test "$(/usr/bin/govc version)" = "govc ${VSPHERE_CLI_BUNDLE_VERSION}"; \
+    grep -aF 'go1.27.0' /usr/bin/pasturestack-console-broker >/dev/null; \
+    touch -d "@${SOURCE_DATE_EPOCH}" \
+        /usr/bin/authentication-service.real \
+        /usr/bin/catalog-service.real \
+        /usr/bin/catalog-service-sqlite \
+        /usr/bin/compose-executor.real \
+        /usr/bin/host-provisioner.real \
+        /usr/bin/secret-delivery-api \
+        /usr/bin/usage-telemetry-agent \
+        /usr/bin/webhook-automation-service \
+        /usr/bin/websocket-proxy.real \
+        /usr/bin/govc \
+        /usr/bin/pasturestack-console-broker; \
+    rm -rf "${runtime_stage}" \
+        /var/lib/apt/lists/* \
+        /var/cache/apt/archives/* \
+        /var/log/apt/*; \
+    apt-get clean
 
 RUN set -eu; \
     archive=/tmp/api-explorer.tar.gz; \
@@ -98,7 +351,7 @@ RUN set -eu; \
     touch -d "@${SOURCE_DATE_EPOCH}" "${web_root}" /tmp
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
-      org.opencontainers.image.description="PastureStack server compatibility image with a reviewed first-party API Explorer interaction layer." \
+      org.opencontainers.image.description="PastureStack server compatibility image with Go 1.27 runtime refresh, current Ubuntu updates, and a reviewed first-party API Explorer interaction layer." \
       org.opencontainers.image.licenses="Apache-2.0" \
       org.opencontainers.image.version="v1.6.359" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
@@ -107,6 +360,46 @@ LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
 
 ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.359
 ENV CATTLE_API_UI_VERSION=1.1.17
+ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.0
+ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-08-26
+ENV PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.0
+ENV PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=${AUTHENTICATION_SERVICE_VERSION}
+ENV PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT=${AUTHENTICATION_SERVICE_COMMIT}
+ENV PASTURESTACK_AUTHENTICATION_SERVICE_ARCHIVE_SHA256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256}
+ENV PASTURESTACK_AUTHENTICATION_SERVICE_BINARY_SHA256=${AUTHENTICATION_SERVICE_BINARY_SHA256}
+ENV PASTURESTACK_CATALOG_SERVICE_VERSION=${CATALOG_SERVICE_VERSION}
+ENV PASTURESTACK_CATALOG_SERVICE_COMMIT=${CATALOG_SERVICE_COMMIT}
+ENV PASTURESTACK_CATALOG_SERVICE_ARCHIVE_SHA256=${CATALOG_SERVICE_ARCHIVE_SHA256}
+ENV PASTURESTACK_CATALOG_SERVICE_BINARY_SHA256=${CATALOG_SERVICE_BINARY_SHA256}
+ENV PASTURESTACK_CATALOG_SERVICE_SQLITE_BINARY_SHA256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256}
+ENV PASTURESTACK_COMPOSE_EXECUTOR_VERSION=${COMPOSE_EXECUTOR_VERSION}
+ENV PASTURESTACK_COMPOSE_EXECUTOR_COMMIT=${COMPOSE_EXECUTOR_COMMIT}
+ENV PASTURESTACK_COMPOSE_EXECUTOR_ARCHIVE_SHA256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256}
+ENV PASTURESTACK_COMPOSE_EXECUTOR_BINARY_SHA256=${COMPOSE_EXECUTOR_BINARY_SHA256}
+ENV PASTURESTACK_HOST_PROVISIONER_VERSION=${HOST_PROVISIONER_VERSION}
+ENV PASTURESTACK_HOST_PROVISIONER_COMMIT=${HOST_PROVISIONER_COMMIT}
+ENV PASTURESTACK_HOST_PROVISIONER_ARCHIVE_SHA256=${HOST_PROVISIONER_ARCHIVE_SHA256}
+ENV PASTURESTACK_HOST_PROVISIONER_BINARY_SHA256=${HOST_PROVISIONER_BINARY_SHA256}
+ENV PASTURESTACK_SECRET_DELIVERY_API_VERSION=${SECRET_DELIVERY_API_VERSION}
+ENV PASTURESTACK_SECRET_DELIVERY_API_COMMIT=${SECRET_DELIVERY_API_COMMIT}
+ENV PASTURESTACK_SECRET_DELIVERY_API_ARCHIVE_SHA256=${SECRET_DELIVERY_API_ARCHIVE_SHA256}
+ENV PASTURESTACK_SECRET_DELIVERY_API_BINARY_SHA256=${SECRET_DELIVERY_API_BINARY_SHA256}
+ENV PASTURESTACK_USAGE_TELEMETRY_AGENT_VERSION=${USAGE_TELEMETRY_AGENT_VERSION}
+ENV PASTURESTACK_USAGE_TELEMETRY_AGENT_COMMIT=${USAGE_TELEMETRY_AGENT_COMMIT}
+ENV PASTURESTACK_USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256}
+ENV PASTURESTACK_USAGE_TELEMETRY_AGENT_BINARY_SHA256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256}
+ENV PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_VERSION=${WEBHOOK_AUTOMATION_SERVICE_VERSION}
+ENV PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_COMMIT=${WEBHOOK_AUTOMATION_SERVICE_COMMIT}
+ENV PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=${WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256}
+ENV PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=${WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256}
+ENV PASTURESTACK_WEBSOCKET_PROXY_VERSION=${WEBSOCKET_PROXY_VERSION}
+ENV PASTURESTACK_WEBSOCKET_PROXY_COMMIT=${WEBSOCKET_PROXY_COMMIT}
+ENV PASTURESTACK_WEBSOCKET_PROXY_ARCHIVE_SHA256=${WEBSOCKET_PROXY_ARCHIVE_SHA256}
+ENV PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256=${WEBSOCKET_PROXY_BINARY_SHA256}
+ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=${VSPHERE_CLI_BUNDLE_VERSION}
+ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_COMMIT=${VSPHERE_CLI_BUNDLE_COMMIT}
+ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256}
+ENV PASTURESTACK_GOVC_BINARY_SHA256=${GOVC_BINARY_SHA256}
 ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.17
 ENV PASTURESTACK_API_EXPLORER_COMMIT=${API_EXPLORER_COMMIT}
 ENV PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256=${API_EXPLORER_ARTIFACT_SHA256}

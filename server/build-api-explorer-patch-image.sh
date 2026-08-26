@@ -74,30 +74,46 @@ image_environment=$(docker image inspect "$image" \
 for marker in \
     CATTLE_RANCHER_SERVER_VERSION=v1.6.359 \
     CATTLE_API_UI_VERSION=1.1.17 \
+    PASTURESTACK_RUNTIME_GO_VERSION=1.27.0 \
+    PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-08-26 \
+    PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.0 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.17 \
     PASTURESTACK_API_EXPLORER_COMMIT="${api_explorer_commit}" \
     PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256="${api_explorer_artifact_sha256}" \
     CATTLE_CATTLE_VERSION=v0.183.281 \
     PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.70 \
-    PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.4.35 \
-    PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=0.55.1-pasturestack.1 \
+    PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.4.36 \
+    PASTURESTACK_CATALOG_SERVICE_VERSION=0.20.10 \
+    PASTURESTACK_COMPOSE_EXECUTOR_VERSION=0.14.34 \
+    PASTURESTACK_HOST_PROVISIONER_VERSION=0.39.6 \
+    PASTURESTACK_SECRET_DELIVERY_API_VERSION=0.3.1 \
+    PASTURESTACK_USAGE_TELEMETRY_AGENT_VERSION=0.4.1 \
+    PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.1 \
+    PASTURESTACK_WEBSOCKET_PROXY_VERSION=0.23.13 \
+    PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=0.55.1-pasturestack.2 \
     PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-07-27 \
     PASTURESTACK_CATALOG_COMMIT=bc446236c16f1170eb9130b4901af3d57dd82db4; do
     test "$(grep -Fxc "$marker" <<<"$image_environment")" = 1
 done
 
-critical_paths=(
-    /usr/share/cattle/cattle.jar
-    /usr/bin/authentication-service.real
-    /usr/bin/catalog-service.real
-    /usr/bin/govc
-    /usr/bin/websocket-proxy.real
+base_orchestration=$(docker run --rm --entrypoint sha256sum "$base_image" \
+    /usr/share/cattle/cattle.jar)
+image_orchestration=$(docker run --rm --entrypoint sha256sum "$image" \
+    /usr/share/cattle/cattle.jar)
+test "$base_orchestration" = "$image_orchestration"
+
+wrapper_paths=(
+    /usr/bin/authentication-service
+    /usr/bin/catalog-service
+    /usr/bin/compose-executor
+    /usr/bin/host-provisioner
+    /usr/bin/websocket-proxy
 )
-base_critical=$(docker run --rm --entrypoint sha256sum "$base_image" \
-    "${critical_paths[@]}")
-image_critical=$(docker run --rm --entrypoint sha256sum "$image" \
-    "${critical_paths[@]}")
-test "$base_critical" = "$image_critical"
+base_wrappers=$(docker run --rm --entrypoint sha256sum "$base_image" \
+    "${wrapper_paths[@]}")
+image_wrappers=$(docker run --rm --entrypoint sha256sum "$image" \
+    "${wrapper_paths[@]}")
+test "$base_wrappers" = "$image_wrappers"
 
 web_console_hashes()
 {
@@ -161,10 +177,52 @@ docker run --rm --entrypoint bash "$image" -lc '
     unzip -p /usr/share/cattle/cattle.jar META-INF/MANIFEST.MF |
         tr -d "\r" |
         grep -Fx "Implementation-Version: 0.183.281" >/dev/null
-    test "$(/usr/bin/govc version)" = "govc 0.55.1-pasturestack.1"
-    /usr/bin/authentication-service.real --version | grep -F "0.4.35" >/dev/null
+    cat <<'"'"'EOF'"'"' | sha256sum -c -
+33c59675901c459feb478e55f731420bd2f5f3c3f27e0f6c7b4659207d025d7b  /usr/bin/authentication-service.real
+9e4aef36c7ead2ff039d96121f6145fc68b34ad70ef030fd09d3446819dd4c84  /usr/bin/catalog-service.real
+a43a5cd4d4877e125e58fdfc80c8b794203c0d4e9103463d4b1fec9847a593e5  /usr/bin/catalog-service-sqlite
+e429714b321db8c1a47c727bb241b3de41b74facdfb61af144237d46f3f2c47b  /usr/bin/compose-executor.real
+1d06bde76920e9738da0365e9fd0ef1eac3a414785bede06b8d8665bf25a2710  /usr/bin/host-provisioner.real
+fbdd12862e1cfe3c957f492ae81c4c1c5658357502bd322febbbe209496929be  /usr/bin/secret-delivery-api
+f18ed969b8b5959293fdbcd55d2e28846372ab87c9348fbb315a9a490bf85ad4  /usr/bin/usage-telemetry-agent
+07e807c3f66e7e75e7a45073eabbd041a74b5727e315aee96f00e5b6a801ccc5  /usr/bin/webhook-automation-service
+8e24dc052faf54603c95d9187ca63b25435482ad9046825d3676ae522439c949  /usr/bin/websocket-proxy.real
+a42b0649c723b76a2208467c821ff1a9b713b2c8c5ab762808c1d193bd112287  /usr/bin/govc
+EOF
+    for binary in \
+        /usr/bin/authentication-service.real \
+        /usr/bin/catalog-service.real \
+        /usr/bin/catalog-service-sqlite \
+        /usr/bin/compose-executor.real \
+        /usr/bin/host-provisioner.real \
+        /usr/bin/secret-delivery-api \
+        /usr/bin/usage-telemetry-agent \
+        /usr/bin/webhook-automation-service \
+        /usr/bin/websocket-proxy.real \
+        /usr/bin/govc \
+        /usr/bin/pasturestack-console-broker; do
+        test -x "${binary}"
+        grep -aF "go1.27.0" "${binary}" >/dev/null
+    done
+    /usr/bin/authentication-service.real --version | grep -F "0.4.36" >/dev/null
+    /usr/bin/secret-delivery-api --version | grep -F "v0.3.1" >/dev/null
+    /usr/bin/usage-telemetry-agent --version | grep -F "v0.4.1" >/dev/null
+    /usr/bin/webhook-automation-service --version | grep -F "v0.10.1" >/dev/null
+    test "$(/usr/bin/govc version)" = "govc 0.55.1-pasturestack.2"
+    version_at_least()
+    {
+        local package=$1 minimum=$2 installed
+        installed=$(dpkg-query -W -f='"'"'${Version}'"'"' "$package")
+        dpkg --compare-versions "$installed" ge "$minimum"
+    }
+    version_at_least curl 8.18.0-1ubuntu2.4
+    version_at_least libcurl4t64 8.18.0-1ubuntu2.4
+    version_at_least libc6 2.43-2ubuntu2.3
+    version_at_least systemd 259.5-0ubuntu3.4
+    version_at_least libsystemd0 259.5-0ubuntu3.4
+    version_at_least libudev1 259.5-0ubuntu3.4
 '
 
-printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s api_explorer_commit=%s artifact_sha256=%s bootstrap_javascript=0 critical_runtime_unchanged=1 web_console_unchanged=1\n' \
+printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s api_explorer_commit=%s artifact_sha256=%s bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 orchestration_unchanged=1 wrappers_unchanged=1 web_console_unchanged=1\n' \
     "$image" "$revision" "$base_image" "$api_explorer_commit" \
     "$api_explorer_artifact_sha256"
