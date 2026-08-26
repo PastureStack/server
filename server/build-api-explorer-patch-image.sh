@@ -206,8 +206,8 @@ EOF
     done
     /usr/bin/authentication-service.real --version | grep -F "0.4.36" >/dev/null
     /usr/bin/secret-delivery-api --version | grep -F "v0.3.1" >/dev/null
-    /usr/bin/usage-telemetry-agent --version | grep -F "v0.4.1" >/dev/null
-    /usr/bin/webhook-automation-service --version | grep -F "v0.10.1" >/dev/null
+    /usr/bin/usage-telemetry-agent --version | grep -F "0.4.1" >/dev/null
+    /usr/bin/webhook-automation-service --version | grep -F "0.10.1" >/dev/null
     test "$(/usr/bin/govc version)" = "govc 0.55.1-pasturestack.2"
     version_at_least()
     {
