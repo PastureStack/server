@@ -73,7 +73,7 @@ RUN set -eu; \
     grep -aF 'PastureStackUi' "${stage}/ui.js" >/dev/null; \
     grep -aF 'pasturestack:modal:shown' "${stage}/ui.js" >/dev/null; \
     grep -aF 'data-pasturestack-toggle' "${stage}/ui.js" >/dev/null; \
-    grep -F 'Bootstrap v5.3.8' "${stage}/ui.css" >/dev/null; \
+    grep -E 'Bootstrap +v5\.3\.8' "${stage}/ui.css" >/dev/null; \
     grep -F 'url("./fonts/bootstrap-icons.woff2' "${stage}/ui.css" >/dev/null; \
     if grep -F 'Bootstrap v3.' "${stage}/ui.css"; then \
         echo "Rejected EOL Bootstrap 3 stylesheet in API Explorer" >&2; \

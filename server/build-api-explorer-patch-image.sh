@@ -143,7 +143,7 @@ docker run --rm --entrypoint bash "$image" -lc '
         echo "Rejected Bootstrap executable surface found in Server image" >&2
         exit 1
     fi
-    grep -F "Bootstrap v5.3.8" "${api_dir}/ui.css" >/dev/null
+    grep -E "Bootstrap +v5\\.3\\.8" "${api_dir}/ui.css" >/dev/null
     grep -F "url(\"./fonts/bootstrap-icons.woff2" "${api_dir}/ui.css" >/dev/null
     if grep -F "Bootstrap v3." "${api_dir}/ui.css"; then
         echo "Rejected EOL Bootstrap 3 stylesheet in Server image" >&2
