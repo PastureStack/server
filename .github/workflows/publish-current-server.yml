@@ -70,6 +70,9 @@ jobs:
           declared_release="$(sed -n 's/.*org.opencontainers.image.version="\([^"]*\)".*/\1/p' \
             source/server/Dockerfile.api-explorer-patch)"
           test "$declared_release" = "$RELEASE_TAG"
+          release_notes="source/docs/releases/server-${RELEASE_TAG#v}.md"
+          test -f "$release_notes"
+          test -s "$release_notes"
           if git -C source ls-remote --exit-code --tags origin "refs/tags/${RELEASE_TAG}" \
             >/dev/null 2>&1; then
             echo "Release tag already exists: $RELEASE_TAG" >&2
@@ -277,8 +280,8 @@ jobs:
         run: |
           set -Eeuo pipefail
           evidence="$RUNNER_TEMP/server-evidence"
-          cp "source/docs/releases/server-${RELEASE_TAG#v}.md" \
-            "$evidence/release-notes.md"
+          release_notes="source/docs/releases/server-${RELEASE_TAG#v}.md"
+          cp "$release_notes" "$evidence/release-notes.md"
           (
             cd "$evidence"
             sha256sum \

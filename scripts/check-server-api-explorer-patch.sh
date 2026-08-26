@@ -155,6 +155,7 @@ for marker in \
     'server-critical-high.tsv' \
     'server-secrets.tsv' \
     'server.cdx.json' \
+    'test -s "$release_notes"' \
     'actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2' \
     'gh release create "$RELEASE_TAG"'; do
     require_marker "$publish_workflow" "$marker" \
