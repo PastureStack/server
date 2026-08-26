@@ -271,11 +271,15 @@ EOF
         /etc/login.defs \
         /etc/subgid \
         /etc/subuid \
+        /usr/lib/git-core/git-http-push \
+        /usr/lib/x86_64-linux-gnu/libexpat.so.1 \
+        /usr/lib/x86_64-linux-gnu/libexpat.so.1.11.2 \
         /usr/lib/systemd/systemd-journald \
         /usr/libexec/p11-kit/p11-kit-server \
         /usr/share/cattle/install_cattle_binaries; do
         test ! -e "${removed_path}"
     done
+    ! ldconfig -p | grep -Fq "libexpat.so"
     test -z "$(find /run -xdev -type s -path "*p11-kit*" -print -quit 2>/dev/null)"
     libgcrypt_user="$(
         find /usr/bin /usr/sbin /usr/share/cattle -xdev -type f -perm /0111 -print0 |

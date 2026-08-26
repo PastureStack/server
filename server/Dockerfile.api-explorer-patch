@@ -464,6 +464,9 @@ RUN set -eu; \
         /etc/login.defs \
         /etc/subgid \
         /etc/subuid \
+        /usr/lib/git-core/git-http-push \
+        /usr/lib/x86_64-linux-gnu/libexpat.so.1 \
+        /usr/lib/x86_64-linux-gnu/libexpat.so.1.11.2 \
         /usr/lib/systemd/systemd-journald \
         /usr/libexec/p11-kit/p11-kit-server \
         /usr/lib/systemd/system/systemd-journald.service \
@@ -477,6 +480,7 @@ RUN set -eu; \
         /usr/sbin/useradd \
         /usr/sbin/usermod \
         /usr/share/cattle/install_cattle_binaries; \
+    ldconfig; \
     for removed_path in \
         /usr/bin/gpgv \
         /usr/bin/eu-readelf \
@@ -492,11 +496,15 @@ RUN set -eu; \
         /etc/login.defs \
         /etc/subgid \
         /etc/subuid \
+        /usr/lib/git-core/git-http-push \
+        /usr/lib/x86_64-linux-gnu/libexpat.so.1 \
+        /usr/lib/x86_64-linux-gnu/libexpat.so.1.11.2 \
         /usr/lib/systemd/systemd-journald \
         /usr/libexec/p11-kit/p11-kit-server \
         /usr/share/cattle/install_cattle_binaries; do \
         test ! -e "${removed_path}"; \
     done; \
+    ! ldconfig -p | grep -F 'libexpat.so'; \
     if grep -Eq '(^|[[:space:]])(git clone|git -C|apt-get install|tar xzf)([[:space:]]|$)' /usr/share/cattle/cattle.sh; then \
         echo 'Removed source-build tooling remains reachable from cattle.sh' >&2; \
         exit 1; \

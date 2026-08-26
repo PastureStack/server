@@ -25,6 +25,15 @@
       "impact_statement": "The affected subordinate-ID allocation path is absent: login.defs, subuid, subgid, passwd, useradd, usermod, groupadd, newuidmap, and newgidmap are removed from the final runtime."
     },
     {
+      "vulnerability": {"name": "CVE-2024-52005"},
+      "products": [
+        {"@id": "pkg:deb/ubuntu/git@2.53.0-1ubuntu1?arch=amd64&distro=ubuntu-26.04&epoch=1"},
+        {"@id": "pkg:deb/ubuntu/git-man@2.53.0-1ubuntu1?arch=all&distro=ubuntu-26.04&epoch=1"}
+      ],
+      "status": "fixed",
+      "impact_statement": "The upstream advisory lists affected Git release lines only through 2.48.1; the final runtime enforces Git 2.53.0 for Catalog HTTPS clone and fetch operations."
+    },
+    {
       "vulnerability": {"name": "CVE-2025-1352"},
       "products": [
         {"@id": "pkg:deb/ubuntu/libelf1t64@0.194-4?arch=amd64&distro=ubuntu-26.04"}
@@ -41,6 +50,15 @@
       "status": "not_affected",
       "justification": "vulnerable_code_not_present",
       "impact_statement": "The affected eu-readelf utility is absent from the final runtime."
+    },
+    {
+      "vulnerability": {"name": "CVE-2025-66382"},
+      "products": [
+        {"@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"}
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "The final runtime removes both libexpat.so.1 and git-http-push, the sole executable that linked to Expat; Catalog requires only Git HTTPS clone, fetch, and checkout."
     },
     {
       "vulnerability": {"name": "CVE-2026-13757"},

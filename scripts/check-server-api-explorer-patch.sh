@@ -128,6 +128,9 @@ for removed_path in \
     /usr/bin/p11-kit \
     /usr/bin/setfattr \
     /usr/bin/unexpand \
+    /usr/lib/git-core/git-http-push \
+    /usr/lib/x86_64-linux-gnu/libexpat.so.1 \
+    /usr/lib/x86_64-linux-gnu/libexpat.so.1.11.2 \
     /usr/libexec/p11-kit/p11-kit-server \
     /etc/login.defs \
     /etc/subgid \
@@ -158,6 +161,12 @@ require_marker "$dockerfile" \
 require_marker "$build_script" \
     'test "$(git --version)" = "git version 2.53.0"' \
     SERVER_CATALOG_GIT_IMAGE_VALIDATION_MISSING
+require_marker "$dockerfile" \
+    "! ldconfig -p | grep -F 'libexpat.so'" \
+    SERVER_RUNTIME_EXPAT_LINKER_GATE_MISSING
+require_marker "$build_script" \
+    '! ldconfig -p | grep -Fq "libexpat.so"' \
+    SERVER_RUNTIME_EXPAT_IMAGE_VALIDATION_MISSING
 if grep -Eq '(^|[[:space:]])(git clone|git -C|apt-get install|tar xzf)([[:space:]]|$)' "$cattle_script"; then
     echo 'SERVER_SOURCE_BUILD_TOOLING_REMAINS' >&2
     exit 1
@@ -230,13 +239,13 @@ bash -n "$build_script"
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
   and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.365"
-  and (.statements | length) == 16
+  and (.statements | length) == 18
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
-      == ["CVE-2026-18798", "CVE-2026-27171", "CVE-2026-56391"]
+      == ["CVE-2024-52005", "CVE-2026-18798", "CVE-2026-27171", "CVE-2026-56391"]
   and ([.statements[] | select(.status == "not_affected") | .vulnerability.name] | sort)
       == ["CVE-2024-2236", "CVE-2024-56433", "CVE-2025-1352",
-          "CVE-2025-1376", "CVE-2026-13757", "CVE-2026-18477",
+          "CVE-2025-1376", "CVE-2025-66382", "CVE-2026-13757", "CVE-2026-18477",
           "CVE-2026-18508", "CVE-2026-27456", "CVE-2026-3184",
           "CVE-2026-40228", "CVE-2026-54371", "CVE-2026-56392",
           "GO-2026-5932"]
