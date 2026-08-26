@@ -191,8 +191,11 @@ jobs:
           evidence="$RUNNER_TEMP/server-evidence"
           mkdir -p "$RUNNER_TEMP/trivy-cache"
           docker pull "$TRIVY_IMAGE" >/dev/null
-          test "$(docker image inspect "$TRIVY_IMAGE" --format '{{index .RepoDigests 0}}')" = \
-            'ghcr.io/aquasecurity/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969'
+          docker image inspect "$TRIVY_IMAGE" --format '{{json .RepoDigests}}' |
+            jq -e --arg expected \
+              'ghcr.io/aquasecurity/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969' \
+              'index($expected) != null' >/dev/null
+          cp source/server/security/openvex.json "$evidence/server.openvex.json"
 
           docker run --rm \
             -v "$RUNNER_TEMP/server-rootfs:/rootfs:ro" \
@@ -201,25 +204,44 @@ jobs:
             "$TRIVY_IMAGE" rootfs \
             --scanners vuln,secret \
             --format json \
+            --output /evidence/server-security-scan-raw.json \
+            /rootfs
+          jq -e '.SchemaVersion == 2 and (.Results | type == "array")' \
+            "$evidence/server-security-scan-raw.json" >/dev/null
+          jq -r '
+            .Results[]? | .Target as $target | .Vulnerabilities[]?
+            | [.Severity, .VulnerabilityID, .PkgName, .InstalledVersion,
+               (.FixedVersion // ""), ($target // "")] | @tsv
+          ' "$evidence/server-security-scan-raw.json" | LC_ALL=C sort -u \
+            >"$evidence/server-vulnerabilities-raw.tsv"
+          jq -r '
+            .Results[]? | .Target as $target | .Secrets[]?
+            | [.RuleID, .Category, .Severity, (.Title // ""), ($target // "")]
+            | @tsv
+          ' "$evidence/server-security-scan-raw.json" | LC_ALL=C sort -u \
+            >"$evidence/server-secrets.tsv"
+          test ! -s "$evidence/server-secrets.tsv"
+
+          docker run --rm \
+            -v "$RUNNER_TEMP/server-rootfs:/rootfs:ro" \
+            -v "$evidence:/evidence" \
+            -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
+            "$TRIVY_IMAGE" rootfs \
+            --scanners vuln \
+            --skip-vex-repo-update \
+            --vex /evidence/server.openvex.json \
+            --format json \
             --output /evidence/server-security-scan.json \
             /rootfs
           jq -e '.SchemaVersion == 2 and (.Results | type == "array")' \
             "$evidence/server-security-scan.json" >/dev/null
           jq -r '
             .Results[]? | .Target as $target | .Vulnerabilities[]?
-            | select(.Severity == "CRITICAL" or .Severity == "HIGH")
             | [.Severity, .VulnerabilityID, .PkgName, .InstalledVersion,
                (.FixedVersion // ""), ($target // "")] | @tsv
           ' "$evidence/server-security-scan.json" | LC_ALL=C sort -u \
-            >"$evidence/server-critical-high.tsv"
-          jq -r '
-            .Results[]? | .Target as $target | .Secrets[]?
-            | [.RuleID, .Category, .Severity, (.Title // ""), ($target // "")]
-            | @tsv
-          ' "$evidence/server-security-scan.json" | LC_ALL=C sort -u \
-            >"$evidence/server-secrets.tsv"
-          test ! -s "$evidence/server-critical-high.tsv"
-          test ! -s "$evidence/server-secrets.tsv"
+            >"$evidence/server-vulnerabilities-unresolved.tsv"
+          test ! -s "$evidence/server-vulnerabilities-unresolved.tsv"
 
           docker run --rm \
             -v "$RUNNER_TEMP/server-rootfs:/rootfs:ro" \
@@ -234,7 +256,8 @@ jobs:
             and ((.components | type) == "array")
             and ((.components | length) > 0)
           ' "$evidence/server.cdx.json" >/dev/null
-          printf 'SERVER_SECURITY_GATE_OK critical=0 high=0 secrets=0 scan_target=merged-rootfs trivy=0.74.0\n' |
+          raw_count="$(wc -l <"$evidence/server-vulnerabilities-raw.tsv")"
+          printf 'SERVER_SECURITY_GATE_OK unresolved=0 secrets=0 raw_findings=%s vex=openvex-0.2.0 scan_target=merged-rootfs trivy=0.74.0\n' "$raw_count" |
             tee "$evidence/security-summary.txt"
 
       - name: Publish semantic image
@@ -293,9 +316,12 @@ jobs:
               push.log \
               release-notes.md \
               security-summary.txt \
-              server-critical-high.tsv \
+              server.openvex.json \
+              server-security-scan-raw.json \
               server-security-scan.json \
               server-secrets.tsv \
+              server-vulnerabilities-raw.tsv \
+              server-vulnerabilities-unresolved.tsv \
               server.cdx.json \
               >SHA256SUMS
           )
@@ -313,7 +339,11 @@ jobs:
             "$evidence/push.log" \
             "$evidence/release-notes.md" \
             "$evidence/security-summary.txt" \
+            "$evidence/server.openvex.json" \
+            "$evidence/server-security-scan-raw.json" \
             "$evidence/server-security-scan.json" \
+            "$evidence/server-vulnerabilities-raw.tsv" \
+            "$evidence/server-vulnerabilities-unresolved.tsv" \
             "$evidence/server.cdx.json"
 
       - name: Retain workflow evidence

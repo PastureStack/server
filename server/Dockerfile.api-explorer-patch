@@ -25,22 +25,34 @@ FROM ${GO_BUILDER_IMAGE} AS hardened_tools_build
 
 ARG COREUTILS_VERSION=9.11
 ARG COREUTILS_SHA256=2033b8a3049c06bff49a9e3cea72bdf4683bcd0cbeb975211dd56dbaf8b736ae
+ARG COREUTILS_UNIQ_FIX_COMMIT=d64e35a8a4c0e4608321433e0d84d917e4e36371
+ARG COREUTILS_UNIQ_PATCH_SHA256=7c0a1b74325caf05fe0021b26dcde6b19560ea04388f18386cacc4e8bb436efd
 ARG ZLIB_VERSION=1.3.2
 ARG ZLIB_SHA256=bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16
 
 WORKDIR /src
+COPY patches/coreutils-CVE-2026-56391.patch /src/coreutils-CVE-2026-56391.patch
 RUN set -eux; \
+    echo "${COREUTILS_UNIQ_PATCH_SHA256}  /src/coreutils-CVE-2026-56391.patch" | sha256sum -c -; \
+    grep -F "Upstream-Commit: ${COREUTILS_UNIQ_FIX_COMMIT}" /src/coreutils-CVE-2026-56391.patch; \
     curl -fsSL --retry 5 --retry-all-errors --connect-timeout 10 --max-time 300 \
         -o coreutils.tar.gz \
         "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VERSION}.tar.gz"; \
     echo "${COREUTILS_SHA256}  coreutils.tar.gz" | sha256sum -c -; \
     tar -xzf coreutils.tar.gz; \
     cd "coreutils-${COREUTILS_VERSION}"; \
+    git apply --check --no-index /src/coreutils-CVE-2026-56391.patch; \
+    git apply --no-index /src/coreutils-CVE-2026-56391.patch; \
     FORCE_UNSAFE_CONFIGURE=1 ./configure --disable-nls; \
     make -j"$(nproc)"; \
     install -D -m 0755 src/uniq /out/coreutils/uniq; \
     install -D -m 0644 COPYING /out/coreutils/COPYING; \
     test "$(printf 'a\na\nb\n' | /out/coreutils/uniq -c | awk 'NR == 1 { print $1 ":" $2 }')" = '2:a'; \
+    longline="$(printf '\360\237\230\200'; head -c 255 /dev/zero | tr '\0' A)"; \
+    printf '%s\n%s\n' "${longline}" "${longline}" >/tmp/uniq-input; \
+    printf '%s\n' "${longline}" >/tmp/uniq-expected; \
+    LC_ALL=C.UTF-8 /out/coreutils/uniq -w256 /tmp/uniq-input >/tmp/uniq-output; \
+    cmp /tmp/uniq-expected /tmp/uniq-output; \
     /out/coreutils/uniq --version | grep -F "uniq (GNU coreutils) ${COREUTILS_VERSION}"; \
     cd /src; \
     curl -fsSL --retry 5 --retry-all-errors --connect-timeout 10 --max-time 300 \
@@ -439,9 +451,20 @@ RUN set -eu; \
         /usr/bin/newgidmap \
         /usr/bin/newuidmap \
         /usr/bin/passwd \
+        /usr/bin/gpgv \
+        /usr/bin/eu-readelf \
+        /usr/bin/eu-strip \
+        /usr/bin/getfattr \
+        /usr/bin/p11-kit \
+        /usr/bin/setfattr \
         /usr/bin/tar \
         /usr/bin/umount \
+        /usr/bin/unexpand \
+        /etc/login.defs \
+        /etc/subgid \
+        /etc/subuid \
         /usr/lib/systemd/systemd-journald \
+        /usr/libexec/p11-kit/p11-kit-server \
         /usr/lib/systemd/system/systemd-journald.service \
         /usr/lib/systemd/system/systemd-journald-audit.socket \
         /usr/lib/systemd/system/systemd-journald-dev-log.socket \
@@ -455,11 +478,22 @@ RUN set -eu; \
         /usr/share/cattle/install_cattle_binaries; \
     for removed_path in \
         /usr/bin/git \
+        /usr/bin/gpgv \
+        /usr/bin/eu-readelf \
+        /usr/bin/eu-strip \
+        /usr/bin/getfattr \
         /usr/bin/login \
         /usr/bin/mount \
+        /usr/bin/p11-kit \
+        /usr/bin/setfattr \
         /usr/bin/ssh \
         /usr/bin/tar \
+        /usr/bin/unexpand \
+        /etc/login.defs \
+        /etc/subgid \
+        /etc/subuid \
         /usr/lib/systemd/systemd-journald \
+        /usr/libexec/p11-kit/p11-kit-server \
         /usr/share/cattle/install_cattle_binaries; do \
         test ! -e "${removed_path}"; \
     done; \
@@ -486,9 +520,12 @@ ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.0
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-08-26
 ENV PASTURESTACK_COREUTILS_PROVIDER=gnu
 ENV PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11
+ENV PASTURESTACK_COREUTILS_UNIQ_FIX=d64e35a8a4c0e4608321433e0d84d917e4e36371
 ENV PASTURESTACK_ZLIB_VERSION=1.3.2
 ENV PASTURESTACK_SSH_CLIENT_HARDENING=client-removed
 ENV PASTURESTACK_PRIVILEGED_MOUNT_HELPERS=removed
+ENV PASTURESTACK_RUNTIME_USER_MAPPING=removed
+ENV PASTURESTACK_GPG_VERIFIER=removed
 ENV PASTURESTACK_CONTAINER_SOURCE_BUILD_MODE=removed
 ENV PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.0
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=${AUTHENTICATION_SERVICE_VERSION}

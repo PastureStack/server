@@ -8,8 +8,12 @@ dockerfile=server/Dockerfile.api-explorer-patch
 build_script=server/build-api-explorer-patch-image.sh
 publish_workflow=.github/workflows/publish-current-server.yml
 cattle_script=server/artifacts/cattle.sh
+coreutils_patch=server/patches/coreutils-CVE-2026-56391.patch
+runtime_vex=server/security/openvex.json
+release_notes=docs/releases/server-1.6.365.md
 
-for path in "$dockerfile" "$build_script" "$publish_workflow" "$cattle_script"; do
+for path in "$dockerfile" "$build_script" "$publish_workflow" "$cattle_script" \
+    "$coreutils_patch" "$runtime_vex" "$release_notes"; do
     test -f "$path"
 done
 
@@ -76,6 +80,29 @@ require_marker "$dockerfile" \
     'ENV PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11' \
     SERVER_COREUTILS_UNIQ_VERSION_MISSING
 require_marker "$dockerfile" \
+    'ARG COREUTILS_UNIQ_FIX_COMMIT=d64e35a8a4c0e4608321433e0d84d917e4e36371' \
+    SERVER_COREUTILS_UNIQ_FIX_COMMIT_MISSING
+require_marker "$dockerfile" \
+    'ARG COREUTILS_UNIQ_PATCH_SHA256=7c0a1b74325caf05fe0021b26dcde6b19560ea04388f18386cacc4e8bb436efd' \
+    SERVER_COREUTILS_UNIQ_FIX_HASH_MISSING
+require_marker "$dockerfile" \
+    'git apply --check --no-index /src/coreutils-CVE-2026-56391.patch' \
+    SERVER_COREUTILS_UNIQ_FIX_APPLICATION_MISSING
+require_marker "$dockerfile" \
+    'ENV PASTURESTACK_COREUTILS_UNIQ_FIX=d64e35a8a4c0e4608321433e0d84d917e4e36371' \
+    SERVER_COREUTILS_UNIQ_FIX_IDENTITY_MISSING
+test "$(sha256sum "$coreutils_patch" | awk '{print $1}')" = \
+    7c0a1b74325caf05fe0021b26dcde6b19560ea04388f18386cacc4e8bb436efd
+require_marker "$coreutils_patch" \
+    'Upstream-Commit: d64e35a8a4c0e4608321433e0d84d917e4e36371' \
+    SERVER_COREUTILS_UNIQ_PATCH_PROVENANCE_MISSING
+require_marker "$release_notes" \
+    'd64e35a8a4c0e4608321433e0d84d917e4e36371' \
+    SERVER_RELEASE_NOTES_UNIQ_FIX_MISSING
+require_marker "$release_notes" \
+    'unmatched vulnerability at any severity remains a release blocker.' \
+    SERVER_RELEASE_NOTES_VEX_BOUNDARY_MISSING
+require_marker "$dockerfile" \
     'ARG ZLIB_SHA256=bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16' \
     SERVER_ZLIB_SOURCE_HASH_MISSING
 require_marker "$dockerfile" \
@@ -93,6 +120,29 @@ require_marker "$dockerfile" \
 require_marker "$dockerfile" \
     'ENV PASTURESTACK_CONTAINER_SOURCE_BUILD_MODE=removed' \
     SERVER_SOURCE_BUILD_MODE_REMOVAL_IDENTITY_MISSING
+for removed_path in \
+    /usr/bin/eu-readelf \
+    /usr/bin/eu-strip \
+    /usr/bin/getfattr \
+    /usr/bin/gpgv \
+    /usr/bin/p11-kit \
+    /usr/bin/setfattr \
+    /usr/bin/unexpand \
+    /usr/libexec/p11-kit/p11-kit-server \
+    /etc/login.defs \
+    /etc/subgid \
+    /etc/subuid; do
+    require_marker "$dockerfile" "$removed_path" \
+        SERVER_RUNTIME_VULNERABLE_PATH_REMOVAL_MISSING
+    require_marker "$build_script" "$removed_path" \
+        SERVER_RUNTIME_VULNERABLE_PATH_VALIDATION_MISSING
+done
+require_marker "$build_script" \
+    'find /usr/bin /usr/sbin /usr/share/cattle -xdev -type f -perm /0111 -print0' \
+    SERVER_RUNTIME_LIBGCRYPT_EXECUTABLE_AUDIT_MISSING
+require_marker "$build_script" \
+    'find /run -xdev -type s -path "*p11-kit*"' \
+    SERVER_RUNTIME_P11_KIT_SOCKET_AUDIT_MISSING
 require_marker "$dockerfile" \
     '/usr/lib/systemd/systemd-journald' \
     SERVER_JOURNALD_REMOVAL_GATE_MISSING
@@ -171,6 +221,25 @@ fi
 
 bash -n "$build_script"
 
+jq -e '
+  .["@context"] == "https://openvex.dev/ns/v0.2.0"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.365"
+  and (.statements | length) == 16
+  and ([.statements[].vulnerability.name] | length == (unique | length))
+  and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
+      == ["CVE-2026-18798", "CVE-2026-27171", "CVE-2026-56391"]
+  and ([.statements[] | select(.status == "not_affected") | .vulnerability.name] | sort)
+      == ["CVE-2024-2236", "CVE-2024-56433", "CVE-2025-1352",
+          "CVE-2025-1376", "CVE-2026-13757", "CVE-2026-18477",
+          "CVE-2026-18508", "CVE-2026-27456", "CVE-2026-3184",
+          "CVE-2026-40228", "CVE-2026-54371", "CVE-2026-56392",
+          "GO-2026-5932"]
+  and all(.statements[]; (.products | length) > 0)
+  and all(.statements[].products[]; (.["@id"] | startswith("pkg:") and (contains("*") | not)))
+  and all(.statements[] | select(.status == "not_affected");
+          (.justification | type) == "string" and (.impact_statement | length) > 20)
+' "$runtime_vex" >/dev/null
+
 for marker in \
     'release_tag:' \
     '.features["containerd-snapshotter"] = true' \
@@ -178,7 +247,12 @@ for marker in \
     'PASTURESTACK_BUILD_NO_CACHE=1 IMAGE="$CANDIDATE_IMAGE"' \
     'docker restart "$CANDIDATE_NAME"' \
     'ghcr.io/aquasecurity/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969' \
-    'server-critical-high.tsv' \
+    'server.openvex.json' \
+    'server-security-scan-raw.json' \
+    '--vex /evidence/server.openvex.json' \
+    'server-vulnerabilities-raw.tsv' \
+    'server-vulnerabilities-unresolved.tsv' \
+    'test ! -s "$evidence/server-vulnerabilities-unresolved.tsv"' \
     'server-secrets.tsv' \
     'server.cdx.json' \
     'test -s "$release_notes"' \
@@ -188,4 +262,4 @@ for marker in \
         SERVER_CURRENT_PUBLISH_WORKFLOW_GATE_MISSING
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.365 base=v1.6.364 api_explorer=1.1.17 bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11 zlib=1.3.2 source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 legal_assets=complete\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.365 base=v1.6.364 api_explorer=1.1.17 bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 zlib=1.3.2 source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 unresolved=0 legal_assets=complete\n'

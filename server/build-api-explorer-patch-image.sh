@@ -78,9 +78,12 @@ for marker in \
     PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-08-26 \
     PASTURESTACK_COREUTILS_PROVIDER=gnu \
     PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11 \
+    PASTURESTACK_COREUTILS_UNIQ_FIX=d64e35a8a4c0e4608321433e0d84d917e4e36371 \
     PASTURESTACK_ZLIB_VERSION=1.3.2 \
     PASTURESTACK_SSH_CLIENT_HARDENING=client-removed \
     PASTURESTACK_PRIVILEGED_MOUNT_HELPERS=removed \
+    PASTURESTACK_RUNTIME_USER_MAPPING=removed \
+    PASTURESTACK_GPG_VERIFIER=removed \
     PASTURESTACK_CONTAINER_SOURCE_BUILD_MODE=removed \
     PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.0 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.17 \
@@ -239,6 +242,11 @@ EOF
     ! package_is_installed rust-coreutils
     ls --version | grep -Fq "GNU coreutils"
     uniq --version | grep -Fq "uniq (GNU coreutils) 9.11"
+    longline="$(printf "\360\237\230\200"; head -c 255 /dev/zero | tr "\000" A)"
+    printf '%s\n%s\n' "${longline}" "${longline}" >/tmp/uniq-input
+    printf '%s\n' "${longline}" >/tmp/uniq-expected
+    LC_ALL=C.UTF-8 uniq -w256 /tmp/uniq-input >/tmp/uniq-output
+    cmp /tmp/uniq-expected /tmp/uniq-output
     grep -aF "1.3.2" /usr/lib/x86_64-linux-gnu/libz.so.1.3.2 >/dev/null
     ldd /usr/sbin/mariadbd | grep -F "/usr/lib/x86_64-linux-gnu/libz.so.1" >/dev/null
     for removed_package in fontconfig git git-man keychain libexpat1 libfontconfig1 openssh-client; do
@@ -246,19 +254,40 @@ EOF
     done
     for removed_path in \
         /usr/bin/git \
+        /usr/bin/gpgv \
+        /usr/bin/eu-readelf \
+        /usr/bin/eu-strip \
+        /usr/bin/getfattr \
         /usr/bin/login \
         /usr/bin/mount \
+        /usr/bin/p11-kit \
+        /usr/bin/setfattr \
         /usr/bin/ssh \
         /usr/bin/tar \
+        /usr/bin/unexpand \
+        /etc/login.defs \
+        /etc/subgid \
+        /etc/subuid \
         /usr/lib/systemd/systemd-journald \
+        /usr/libexec/p11-kit/p11-kit-server \
         /usr/share/cattle/install_cattle_binaries; do
         test ! -e "${removed_path}"
     done
+    test -z "$(find /run -xdev -type s -path "*p11-kit*" -print -quit 2>/dev/null)"
+    libgcrypt_user="$(
+        find /usr/bin /usr/sbin /usr/share/cattle -xdev -type f -perm /0111 -print0 |
+        while IFS= read -r -d "" executable; do
+            if ldd "${executable}" 2>/dev/null | grep -Fq "libgcrypt.so"; then
+                printf "%s\n" "${executable}"
+            fi
+        done | head -n 1
+    )"
+    test -z "${libgcrypt_user}"
     if grep -Eq "(^|[[:space:]])(git clone|git -C|apt-get install|tar xzf)([[:space:]]|$)" /usr/share/cattle/cattle.sh; then
         exit 1
     fi
 '
 
-printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s api_explorer_commit=%s artifact_sha256=%s bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11 zlib=1.3.2 source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_unchanged=1 wrappers_unchanged=1 web_console_unchanged=1\n' \
+printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s api_explorer_commit=%s artifact_sha256=%s bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 zlib=1.3.2 source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_unchanged=1 wrappers_unchanged=1 web_console_unchanged=1\n' \
     "$image" "$revision" "$base_image" "$api_explorer_commit" \
     "$api_explorer_artifact_sha256"
