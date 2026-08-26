@@ -7,10 +7,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 ARG TEMURIN_JDK25_VERSION="25.0.4+7"
 ARG TEMURIN_JDK25_URL="https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4%2B7/OpenJDK25U-jdk_x64_linux_hotspot_25.0.4_7.tar.gz"
 ARG TEMURIN_JDK25_SHA256="e58fcdcd637b25c03ca84cbbcefc70d11efb8f4b4cbd05decc9f661769d77f94"
-ARG UBUNTU_SNAPSHOT=20260825T000000Z
+ARG UBUNTU_SNAPSHOT=20260826T000000Z
 
 ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90 \
-    https://snapshot.ubuntu.com/ubuntu/20260825T000000Z/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb \
+    https://snapshot.ubuntu.com/ubuntu/20260826T000000Z/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb \
     /tmp/ca-certificates.deb
 ARG SOURCE_DATE_EPOCH=1784851922
 ENV JAVA_HOME=/opt/java/openjdk
@@ -24,7 +24,12 @@ RUN set -eux; \
     rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; \
     printf 'Types: deb\nURIs: https://snapshot.ubuntu.com/ubuntu/%s\nSuites: resolute resolute-updates resolute-backports resolute-security\nComponents: main universe restricted multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nSnapshot: no\n' "${UBUNTU_SNAPSHOT}" > /etc/apt/sources.list.d/pasturestack-snapshot.sources; \
     printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\nAcquire::http::Pipeline-Depth "0";\nAcquire::https::CaInfo "/etc/ssl/certs/ca-certificates.crt";\nAcquire::https::Verify-Peer "true";\nAcquire::https::Verify-Host "true";\nAcquire::AllowInsecureRepositories "false";\nAPT::Get::AllowUnauthenticated "false";\n' > /etc/apt/apt.conf.d/80pasturestack-snapshot; \
-    apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
+    apt-get update && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends --allow-remove-essential \
+                    coreutils-from-gnu \
+                    coreutils-from-uutils- \
+                    rust-coreutils- \
+    && apt-get install -y --no-install-recommends \
                     bash \
                     ca-certificates \
                     curl \
@@ -43,6 +48,10 @@ RUN set -eux; \
                     tzdata \
                     unzip \
                     xz-utils \
+    && dpkg-query -W coreutils-from-gnu \
+    && ! dpkg-query -W coreutils-from-uutils \
+    && ! dpkg-query -W rust-coreutils \
+    && ls --version | grep -Fq 'GNU coreutils' \
     && rm -rf /var/lib/apt/lists/* \
                   /var/lib/mariadb \
                   /var/cache/fontconfig/* \

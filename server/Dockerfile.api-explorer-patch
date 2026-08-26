@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 ARG GO_BUILDER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.358@sha256:14064cb8a91c2ff058e620ca11b3342de422d1bbc34e43ed82f5712801637fa7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.362@sha256:b3faed24caf43c17f156a5eb1b2beec88a990524ea42e614518df8571db6df88
 
 FROM ${GO_BUILDER_IMAGE} AS console_broker_build
 
@@ -79,7 +79,13 @@ RUN set -eu; \
     printf 'Acquire::Retries "5";\nAcquire::https::CaInfo "/etc/ssl/certs/ca-certificates.crt";\nAcquire::https::Verify-Peer "true";\nAcquire::https::Verify-Host "true";\nAcquire::AllowInsecureRepositories "false";\nAPT::Get::AllowUnauthenticated "false";\n' > /etc/apt/apt.conf.d/80pasturestack-snapshot; \
     apt-get update; \
     apt-get upgrade -y; \
+    apt-get install -y --no-install-recommends --allow-remove-essential \
+        coreutils-from-gnu coreutils-from-uutils- rust-coreutils-; \
     apt-get install -y --no-install-recommends ca-certificates curl gzip tar xz-utils; \
+    dpkg-query -W coreutils-from-gnu; \
+    ! dpkg-query -W coreutils-from-uutils; \
+    ! dpkg-query -W rust-coreutils; \
+    ls --version | grep -Fq 'GNU coreutils'; \
     version_at_least() { \
         package="$1"; minimum="$2"; \
         installed="$(dpkg-query -W -f='${Version}' "${package}")"; \
@@ -355,19 +361,20 @@ RUN set -eu; \
     touch -d "@${SOURCE_DATE_EPOCH}" "${web_root}" /tmp
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
-      org.opencontainers.image.description="PastureStack server compatibility image with Go 1.27 runtime refresh, current Ubuntu updates, and a reviewed first-party API Explorer interaction layer." \
+      org.opencontainers.image.description="PastureStack server compatibility image with Go 1.27, current Ubuntu updates, GNU coreutils, and a reviewed first-party API Explorer interaction layer." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.362" \
+      org.opencontainers.image.version="v1.6.363" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
-      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.358" \
-      org.opencontainers.image.base.digest="sha256:14064cb8a91c2ff058e620ca11b3342de422d1bbc34e43ed82f5712801637fa7"
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.362" \
+      org.opencontainers.image.base.digest="sha256:b3faed24caf43c17f156a5eb1b2beec88a990524ea42e614518df8571db6df88"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.362
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.363
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV CATTLE_API_UI_VERSION=1.1.17
 ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.0
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-08-26
+ENV PASTURESTACK_COREUTILS_PROVIDER=gnu
 ENV PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.0
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=${AUTHENTICATION_SERVICE_VERSION}
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT=${AUTHENTICATION_SERVICE_COMMIT}
