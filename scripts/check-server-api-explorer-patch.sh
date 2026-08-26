@@ -7,8 +7,9 @@ cd "$repo_root"
 dockerfile=server/Dockerfile.api-explorer-patch
 build_script=server/build-api-explorer-patch-image.sh
 publish_workflow=.github/workflows/publish-current-server.yml
+cattle_script=server/artifacts/cattle.sh
 
-for path in "$dockerfile" "$build_script" "$publish_workflow"; do
+for path in "$dockerfile" "$build_script" "$publish_workflow" "$cattle_script"; do
     test -f "$path"
 done
 
@@ -24,16 +25,16 @@ require_marker()
 }
 
 require_marker "$dockerfile" \
-    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.363@sha256:c534993b0735c84ed570def216cfc44912532594aa5a270d060cfa9fcccc2bd7' \
+    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5' \
     SERVER_API_EXPLORER_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
     'ARG UBUNTU_SNAPSHOT=20260826T000000Z' \
     SERVER_API_EXPLORER_PATCH_UBUNTU_SNAPSHOT_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.364"' \
+    'org.opencontainers.image.version="v1.6.365"' \
     SERVER_API_EXPLORER_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.364' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.365' \
     SERVER_API_EXPLORER_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
     'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27' \
@@ -69,17 +70,42 @@ require_marker "$dockerfile" \
     'ENV PASTURESTACK_COREUTILS_PROVIDER=gnu' \
     SERVER_COREUTILS_PROVIDER_IDENTITY_MISSING
 require_marker "$dockerfile" \
+    'ARG COREUTILS_SHA256=394024eda0a5955217ceda9cd1201e65dc8fa3aa29c2951135a49521d57c3cc3' \
+    SERVER_COREUTILS_SOURCE_HASH_MISSING
+require_marker "$dockerfile" \
+    'ENV PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11' \
+    SERVER_COREUTILS_UNIQ_VERSION_MISSING
+require_marker "$dockerfile" \
+    'ARG ZLIB_SHA256=bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16' \
+    SERVER_ZLIB_SOURCE_HASH_MISSING
+require_marker "$dockerfile" \
+    'ENV PASTURESTACK_ZLIB_VERSION=1.3.2' \
+    SERVER_ZLIB_VERSION_MISSING
+require_marker "$dockerfile" \
     'version_at_least openssl 3.5.5-1ubuntu3.4' \
     SERVER_OPENSSL_FIXED_VERSION_GATE_MISSING
 require_marker "$dockerfile" \
-    'chmod u-s /usr/bin/mount /usr/bin/umount' \
-    SERVER_MOUNT_SETUID_HARDENING_MISSING
+    'ENV PASTURESTACK_SSH_CLIENT_HARDENING=client-removed' \
+    SERVER_SSH_CLIENT_REMOVAL_IDENTITY_MISSING
 require_marker "$dockerfile" \
-    'GSSAPIAuthentication no' \
-    SERVER_SSH_GSSAPI_HARDENING_MISSING
+    'ENV PASTURESTACK_PRIVILEGED_MOUNT_HELPERS=removed' \
+    SERVER_MOUNT_HELPER_REMOVAL_IDENTITY_MISSING
 require_marker "$dockerfile" \
-    'ForwardX11 no' \
-    SERVER_SSH_X11_HARDENING_MISSING
+    'ENV PASTURESTACK_CONTAINER_SOURCE_BUILD_MODE=removed' \
+    SERVER_SOURCE_BUILD_MODE_REMOVAL_IDENTITY_MISSING
+require_marker "$dockerfile" \
+    '/usr/lib/systemd/systemd-journald' \
+    SERVER_JOURNALD_REMOVAL_GATE_MISSING
+require_marker "$dockerfile" \
+    '/usr/share/cattle/install_cattle_binaries' \
+    SERVER_RUNTIME_INSTALLER_REMOVAL_GATE_MISSING
+require_marker "$cattle_script" \
+    'CATTLE_MASTER source-build mode has been removed' \
+    SERVER_SOURCE_BUILD_MODE_REJECTION_MISSING
+if grep -Eq '(^|[[:space:]])(git clone|git -C|apt-get install|tar xzf)([[:space:]]|$)' "$cattle_script"; then
+    echo 'SERVER_SOURCE_BUILD_TOOLING_REMAINS' >&2
+    exit 1
+fi
 while IFS='|' read -r marker code; do
     require_marker "$dockerfile" "$marker" "$code"
 done <<'EOF'
@@ -131,10 +157,10 @@ require_marker "$build_script" \
     SERVER_API_EXPLORER_PATCH_WEB_CONSOLE_REGRESSION_GATE_MISSING
 
 require_marker "$dockerfile" \
-    'org.opencontainers.image.base.digest="sha256:c534993b0735c84ed570def216cfc44912532594aa5a270d060cfa9fcccc2bd7"' \
+    'org.opencontainers.image.base.digest="sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5"' \
     SERVER_API_EXPLORER_PATCH_BASE_DIGEST_MISSING
 require_marker "$build_script" \
-    'ghcr.io/pasturestack/server:v1.6.363@sha256:c534993b0735c84ed570def216cfc44912532594aa5a270d060cfa9fcccc2bd7' \
+    'ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5' \
     SERVER_API_EXPLORER_PATCH_BUILD_BASE_DIGEST_MISSING
 
 if grep -RInE '(^|[^[:alnum:]])[A-Za-z]:\\Users\\|/home/[^/[:space:]]+/|(^|[^[:digit:]])10[.][[:digit:]]{1,3}[.][[:digit:]]{1,3}[.][[:digit:]]{1,3}([^[:digit:]]|$)|[[:alnum:]._%+-]+@[[:alnum:].-]+[.][[:alpha:]]{2,}' \
@@ -162,4 +188,4 @@ for marker in \
         SERVER_CURRENT_PUBLISH_WORKFLOW_GATE_MISSING
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.364 base=v1.6.363 api_explorer=1.1.17 bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_provider=gnu rust_coreutils=absent ssh_x11=disabled ssh_gssapi=disabled mount_setuid=disabled runtime_digest_coordinates=1 legal_assets=complete\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.365 base=v1.6.364 api_explorer=1.1.17 bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11 zlib=1.3.2 source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 legal_assets=complete\n'

@@ -194,12 +194,6 @@ json_escape()
     printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
 }
 
-artifact_base_url()
-{
-	local base="${RC16_ARTIFACT_BASE_URL:-${PASTURESTACK_RELEASE_BASE_URL:-}}"
-    echo "${base%/}"
-}
-
 setup_catalog_overrides()
 {
     if [ -n "$RC16_CATALOG_URL" ]; then
@@ -429,162 +423,14 @@ extract()
     test -f io/cattle/platform/launcher/Main.class
 }
 
-master()
-{
-    local artifact_base="$(artifact_base_url)"
-    if [ -z "$artifact_base" ]; then
-        echo "RC16_ARTIFACT_BASE_URL is required when CATTLE_MASTER=true" >&2
-        exit 1
-    fi
-
-    unset CATTLE_API_UI_URL
-    unset CATTLE_CATTLE_VERSION
-    unset CATTLE_RANCHER_SERVER_VERSION
-    unset CATTLE_RANCHER_SERVER_VERSION
-    unset CATTLE_USE_LOCAL_ARTIFACTS
-    unset DEFAULT_CATTLE_API_UI_CSS_URL
-    unset DEFAULT_CATTLE_API_UI_INDEX
-    unset DEFAULT_CATTLE_API_UI_JS_URL
-
-    export HASH=none
-    export CATTLE_IDEMPOTENT_CHECKS=false
-    export CATTLE_RANCHER_COMPOSE_VERSION ${CATTLE_RANCHER_COMPOSE_VERSION:-v0.14.31}
-    export DEFAULT_CATTLE_RANCHER_COMPOSE_LINUX_URL=${artifact_base}/compose-cli-${CATTLE_RANCHER_COMPOSE_VERSION#v}-linux-amd64.tar.gz
-    export DEFAULT_CATTLE_RANCHER_COMPOSE_DARWIN_URL=${artifact_base}/compose-cli-${CATTLE_RANCHER_COMPOSE_VERSION#v}-darwin-amd64.tar.gz
-    export DEFAULT_CATTLE_RANCHER_COMPOSE_WINDOWS_URL=${artifact_base}/compose-cli-${CATTLE_RANCHER_COMPOSE_VERSION#v}-windows-amd64.zip
-    export CATTLE_RANCHER_CLI_VERSION ${CATTLE_RANCHER_CLI_VERSION:-v0.6.14}
-    export DEFAULT_CATTLE_RANCHER_CLI_LINUX_URL=${artifact_base}/pasturestack-cli-${CATTLE_RANCHER_CLI_VERSION#v}-linux-amd64.tar.gz
-    export DEFAULT_CATTLE_RANCHER_CLI_DARWIN_URL=${artifact_base}/pasturestack-cli-${CATTLE_RANCHER_CLI_VERSION#v}-darwin-amd64.tar.gz
-    export DEFAULT_CATTLE_RANCHER_CLI_WINDOWS_URL=${artifact_base}/pasturestack-cli-${CATTLE_RANCHER_CLI_VERSION#v}-windows-amd64.zip
-
-    mkdir -p /source
-    cd /source
-    get_source
-
-    cd cattle
-    cattle-binary-pull ./resources/content/cattle-global.properties /usr/bin >/tmp/download.log 2>&1 &
-    cd ..
-
-    build_source
-
-    cd cattle
-    ./mvnw package
-    wait || {
-        cat /tmp/download.log
-        exit 1
-    }
-    JAR=$(readlink -f code/packaging/app/target/cattle-app-*.war)
-    run
-}
-
-get_source()
-{
-    if [[ ! -e cattle || -e .cattle.default ]] && ! echo "$REPOS" | grep -q cattle; then
-        REPOS="$REPOS cattle"
-        touch .cattle.default
-    fi
-    for r in $REPOS; do
-        d=""
-        if ! [[ $r =~ ^http || $r =~ ^git ]]; then
-            case "$r" in
-                cattle)
-                    r="https://github.com/PastureStack/orchestration-engine.git"
-                    d="cattle"
-                    ;;
-                node-agent)
-                    r="https://github.com/PastureStack/node-agent.git"
-                    d="node-agent"
-                    ;;
-                host-api)
-                    r="https://github.com/PastureStack/host-api.git"
-                    d="host-api"
-                    ;;
-                compose-cli)
-                    r="https://github.com/PastureStack/compose-cli.git"
-                    d="compose-cli"
-                    ;;
-                mount-propagation)
-                    r="https://github.com/PastureStack/mount-propagation.git"
-                    d="mount-propagation"
-                    ;;
-                catalog-service)
-                    r="https://github.com/PastureStack/catalog-service.git"
-                    d="catalog-service"
-                    ;;
-                authentication-service)
-                    r="https://github.com/PastureStack/authentication-service.git"
-                    d="authentication-service"
-                    ;;
-                host-provisioner)
-                    r="https://github.com/PastureStack/host-provisioner.git"
-                    d="host-provisioner"
-                    ;;
-                *)
-                    echo "Unknown repository shorthand: $r. Use a full Git URL or a documented PastureStack shorthand." >&2
-                    return 1
-                    ;;
-            esac
-        fi
-        tag=$(echo $r | cut -f2 -d,)
-        r=$(echo $r | cut -f1 -d,)
-        if [ -z "$d" ]; then
-            d=$(echo $r | awk -F/ '{print $NF}' | cut -f1 -d.)
-        fi
-        if [[ -z "$tag" || "$tag" = "$r" ]]; then
-            tag=origin/master
-        fi
-        if [ -e $d ]; then
-            git -C $d fetch origin
-            git -C $d reset --hard $tag
-        else
-            git clone $r $d
-            git -C $d checkout --detach $tag
-        fi
-    done
-}
-
-build_source()
-{
-    for i in *; do
-        if [[ ! -d $i || $i == cattle ]]; then
-            continue
-        fi
-
-        if [ ! -x "$(which make)" ]; then
-            apt-get update
-            apt-get install -y make
-        fi
-
-        if [ ! -x "$(which docker)" ]; then
-            local docker_tgz=/tmp/pasturestack-docker-29.7.2.tgz
-            local docker_sha256=803d433f226db4776e1768fd319fc6c6e4935a456acf84fcc0080818b854bc8f
-            rm -f "$docker_tgz"
-            curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 \
-                -o "$docker_tgz" https://download.docker.com/linux/static/stable/x86_64/docker-29.7.2.tgz
-            echo "$docker_sha256  $docker_tgz" | sha256sum -c -
-            tar xzf "$docker_tgz" -C /usr/bin --strip-components=1 docker/docker
-            rm -f "$docker_tgz"
-            chmod +x /usr/bin/docker
-        fi
-
-        cd $i
-        make build 2>&1 | while IFS= read -r line; do
-            printf '%s | %s\n' "$i" "$line"
-        done
-        ln -sf $(pwd)/bin/* /usr/local/bin/
-        if [ "$i" = "node-agent" ]; then
-            export CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL=$(pwd)
-        fi
-        cd ..
-    done
-}
-
 update-platform-ssl
 
 if [ "$1" = "extract" ]; then
     extract
-elif [ "$CATTLE_MASTER" = true ]; then
-    master
 else
+    if [ "${CATTLE_MASTER:-false}" = true ]; then
+        echo "CATTLE_MASTER source-build mode has been removed; build signed release artifacts outside the runtime image" >&2
+        exit 64
+    fi
     run
 fi

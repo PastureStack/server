@@ -44,15 +44,12 @@ require_marker server/artifacts/cattle.sh 'curl -fsSL --retry 5 --retry-all-erro
 require_marker server/artifacts/cattle.sh 'mv "$TMP_JAR" "$DOWNLOADED_JAR"' SERVER_CATTLE_SH_DOWNLOAD_NOT_ATOMIC_MOVED
 require_marker server/artifacts/cattle.sh 'HASH=$(sha256sum "$JAR" | awk' SERVER_CATTLE_SH_HASH_RECOMPUTE_MISSING
 require_marker server/artifacts/cattle.sh 'HASH_PATH=$(dirname "$JAR")/$HASH' SERVER_CATTLE_SH_HASH_PATH_UNQUOTED
-require_marker server/artifacts/cattle.sh 'local docker_tgz=/tmp/pasturestack-docker-29.7.2.tgz' SERVER_CATTLE_SH_DOCKER_DOWNLOAD_TMP_MISSING
-require_marker server/artifacts/cattle.sh 'local docker_sha256=803d433f226db4776e1768fd319fc6c6e4935a456acf84fcc0080818b854bc8f' SERVER_CATTLE_SH_DOCKER_SHA_MISSING
-require_marker server/artifacts/cattle.sh 'curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 \' SERVER_CATTLE_SH_DOCKER_DOWNLOAD_NOT_RETRIED_OR_FAIL_CLOSED
-require_marker server/artifacts/cattle.sh '-o "$docker_tgz" https://download.docker.com/linux/static/stable/x86_64/docker-29.7.2.tgz' SERVER_CATTLE_SH_DOCKER_DOWNLOAD_NOT_FILE_BACKED
-require_marker server/artifacts/cattle.sh 'echo "$docker_sha256  $docker_tgz" | sha256sum -c -' SERVER_CATTLE_SH_DOCKER_SHA_NOT_CHECKED
-require_marker server/artifacts/cattle.sh 'tar xzf "$docker_tgz" -C /usr/bin --strip-components=1 docker/docker' SERVER_CATTLE_SH_DOCKER_TAR_NOT_FILE_BACKED
-require_marker server/artifacts/cattle.sh 'rm -f "$docker_tgz"' SERVER_CATTLE_SH_DOCKER_DOWNLOAD_TMP_CLEANUP_MISSING
+require_marker server/artifacts/cattle.sh 'CATTLE_MASTER source-build mode has been removed' SERVER_CATTLE_SH_SOURCE_BUILD_REJECTION_MISSING
 reject_marker server/artifacts/cattle.sh 'curl -sLf $URL > cattle-download.jar' SERVER_CATTLE_SH_LEGACY_URL_DOWNLOAD
 reject_marker server/artifacts/cattle.sh 'curl -sfL https://download.docker.com/linux/static/stable/x86_64/docker-29.7.2.tgz | \' SERVER_CATTLE_SH_LEGACY_DOCKER_PIPE_DOWNLOAD
+reject_marker server/artifacts/cattle.sh 'git clone' SERVER_CATTLE_SH_SOURCE_BUILD_GIT_REMAINS
+reject_marker server/artifacts/cattle.sh 'apt-get install' SERVER_CATTLE_SH_SOURCE_BUILD_PACKAGE_INSTALL_REMAINS
+reject_marker server/artifacts/cattle.sh 'tar xzf' SERVER_CATTLE_SH_SOURCE_BUILD_TAR_REMAINS
 
 hash_line=$(grep -n -F 'HASH=$(sha256sum "$JAR" | awk' server/artifacts/cattle.sh | cut -d: -f1 | tail -1)
 debug_line=$(grep -n -F 'if [ -e "$DEBUG_JAR" ]; then' server/artifacts/cattle.sh | cut -d: -f1 | tail -1)
@@ -66,4 +63,4 @@ if [ "$failure_count" -ne 0 ]; then
   exit 1
 fi
 
-echo 'SERVER_CATTLE_SH_DOWNLOADS_OK url_download_fail_closed=1 tmp_file=1 atomic_move=1 hash_after_jar_selection=1 docker_fallback_fail_closed=1 docker=29.7.2 docker_sha=1 embedded_bundle_expansion=1'
+echo 'SERVER_CATTLE_SH_DOWNLOADS_OK url_download_fail_closed=1 tmp_file=1 atomic_move=1 hash_after_jar_selection=1 source_build_mode=removed embedded_bundle_expansion=1'

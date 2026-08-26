@@ -12,13 +12,13 @@ fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
-base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.363@sha256:c534993b0735c84ed570def216cfc44912532594aa5a270d060cfa9fcccc2bd7}
+base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5}
 api_explorer_release_base_url=${API_EXPLORER_RELEASE_BASE_URL:-https://github.com/PastureStack/api-explorer/releases/download}
 api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.17}
 api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.17.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-6dc1bfd64f520444efe370bb8141fa3bcc36fa0008617e508375b781ecf30fc3}
 api_explorer_commit=${API_EXPLORER_COMMIT:-94e617e0f8950ea80bdb46aaf181f463bae2cea9}
-image=${IMAGE:-pasturestack-validation/server:v1.6.364}
+image=${IMAGE:-pasturestack-validation/server:v1.6.365}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -27,7 +27,7 @@ build_options=()
 [[ "$api_explorer_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$api_explorer_release_tag" =~ ^v[0-9][0-9A-Za-z.-]*$ ]]
 [[ "$api_explorer_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
-[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.363@sha256:c534993b0735c84ed570def216cfc44912532594aa5a270d060cfa9fcccc2bd7 ]]
+[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5 ]]
 case "$api_explorer_release_base_url" in
     https://*) ;;
     http://127.0.0.1:*|http://localhost:*)
@@ -61,24 +61,27 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.364
+    v1.6.365
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.base.name"}}')" = \
-    ghcr.io/pasturestack/server:v1.6.363
+    ghcr.io/pasturestack/server:v1.6.364
 
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.364 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.365 \
     CATTLE_API_UI_VERSION=1.1.17 \
     PASTURESTACK_RUNTIME_GO_VERSION=1.27.0 \
     PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-08-26 \
     PASTURESTACK_COREUTILS_PROVIDER=gnu \
-    PASTURESTACK_SSH_CLIENT_HARDENING=x11-gssapi-disabled \
-    PASTURESTACK_PRIVILEGED_MOUNT_HELPERS=setuid-disabled \
+    PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11 \
+    PASTURESTACK_ZLIB_VERSION=1.3.2 \
+    PASTURESTACK_SSH_CLIENT_HARDENING=client-removed \
+    PASTURESTACK_PRIVILEGED_MOUNT_HELPERS=removed \
+    PASTURESTACK_CONTAINER_SOURCE_BUILD_MODE=removed \
     PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.0 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.17 \
     PASTURESTACK_API_EXPLORER_COMMIT="${api_explorer_commit}" \
@@ -229,8 +232,27 @@ EOF
     ! dpkg-query -W coreutils-from-uutils >/dev/null 2>&1
     ! dpkg-query -W rust-coreutils >/dev/null 2>&1
     ls --version | grep -Fq "GNU coreutils"
+    uniq --version | grep -Fq "uniq (GNU coreutils) 9.11"
+    grep -aF "1.3.2" /usr/lib/x86_64-linux-gnu/libz.so.1.3.2 >/dev/null
+    ldd /usr/sbin/mariadbd | grep -F "/usr/lib/x86_64-linux-gnu/libz.so.1" >/dev/null
+    for removed_package in fontconfig git git-man keychain libexpat1 libfontconfig1 openssh-client; do
+        ! dpkg-query -W "${removed_package}" >/dev/null 2>&1
+    done
+    for removed_path in \
+        /usr/bin/git \
+        /usr/bin/login \
+        /usr/bin/mount \
+        /usr/bin/ssh \
+        /usr/bin/tar \
+        /usr/lib/systemd/systemd-journald \
+        /usr/share/cattle/install_cattle_binaries; do
+        test ! -e "${removed_path}"
+    done
+    if grep -Eq "(^|[[:space:]])(git clone|git -C|apt-get install|tar xzf)([[:space:]]|$)" /usr/share/cattle/cattle.sh; then
+        exit 1
+    fi
 '
 
-printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s api_explorer_commit=%s artifact_sha256=%s bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_provider=gnu rust_coreutils=absent orchestration_unchanged=1 wrappers_unchanged=1 web_console_unchanged=1\n' \
+printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s api_explorer_commit=%s artifact_sha256=%s bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11 zlib=1.3.2 source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_unchanged=1 wrappers_unchanged=1 web_console_unchanged=1\n' \
     "$image" "$revision" "$base_image" "$api_explorer_commit" \
     "$api_explorer_artifact_sha256"

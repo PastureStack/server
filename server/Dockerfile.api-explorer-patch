@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 ARG GO_BUILDER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.363@sha256:c534993b0735c84ed570def216cfc44912532594aa5a270d060cfa9fcccc2bd7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5
 
 FROM ${GO_BUILDER_IMAGE} AS console_broker_build
 
@@ -20,6 +20,41 @@ RUN set -eux; \
         -buildvcs=false \
         -ldflags='-s -w -buildid=' \
         -o /out/pasturestack-console-broker .
+
+FROM ${GO_BUILDER_IMAGE} AS hardened_tools_build
+
+ARG COREUTILS_VERSION=9.11
+ARG COREUTILS_SHA256=394024eda0a5955217ceda9cd1201e65dc8fa3aa29c2951135a49521d57c3cc3
+ARG ZLIB_VERSION=1.3.2
+ARG ZLIB_SHA256=bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16
+
+WORKDIR /src
+RUN set -eux; \
+    curl -fsSL --retry 5 --retry-all-errors --connect-timeout 10 --max-time 300 \
+        -o coreutils.tar.xz \
+        "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VERSION}.tar.xz"; \
+    echo "${COREUTILS_SHA256}  coreutils.tar.xz" | sha256sum -c -; \
+    tar -xJf coreutils.tar.xz; \
+    cd "coreutils-${COREUTILS_VERSION}"; \
+    FORCE_UNSAFE_CONFIGURE=1 ./configure --disable-nls; \
+    make -j"$(nproc)" src/uniq; \
+    install -D -m 0755 src/uniq /out/coreutils/uniq; \
+    install -D -m 0644 COPYING /out/coreutils/COPYING; \
+    test "$(printf 'a\na\nb\n' | /out/coreutils/uniq -c | awk 'NR == 1 { print $1 ":" $2 }')" = '2:a'; \
+    /out/coreutils/uniq --version | grep -F "uniq (GNU coreutils) ${COREUTILS_VERSION}"; \
+    cd /src; \
+    curl -fsSL --retry 5 --retry-all-errors --connect-timeout 10 --max-time 300 \
+        -o zlib.tar.gz \
+        "https://zlib.net/zlib-${ZLIB_VERSION}.tar.gz"; \
+    echo "${ZLIB_SHA256}  zlib.tar.gz" | sha256sum -c -; \
+    tar -xzf zlib.tar.gz; \
+    cd "zlib-${ZLIB_VERSION}"; \
+    ./configure --prefix=/out/zlib --libdir=/out/zlib/lib; \
+    make -j"$(nproc)"; \
+    make test; \
+    make install; \
+    test -s "/out/zlib/lib/libz.so.${ZLIB_VERSION}"; \
+    install -D -m 0644 LICENSE /out/zlib/LICENSE
 
 FROM ${BASE_IMAGE}
 
@@ -102,18 +137,6 @@ RUN set -eu; \
     version_at_least libudev1 259.5-0ubuntu3.4; \
     version_at_least openssl 3.5.5-1ubuntu3.4; \
     version_at_least libssl3t64 3.5.5-1ubuntu3.4; \
-    chmod u-s /usr/bin/mount /usr/bin/umount; \
-    test ! -u /usr/bin/mount; \
-    test ! -u /usr/bin/umount; \
-    ! grep -Ev '^[[:space:]]*(#|$)' /etc/fstab | grep -q .; \
-    test ! -x /usr/sbin/sshd; \
-    install -d -m 0755 /etc/ssh/ssh_config.d; \
-    printf 'Host *\n    ForwardX11 no\n    ForwardX11Trusted no\n    GSSAPIAuthentication no\n' \
-        > /etc/ssh/ssh_config.d/99-pasturestack-hardening.conf; \
-    chmod 0644 /etc/ssh/ssh_config.d/99-pasturestack-hardening.conf; \
-    ssh -G example.invalid 2>/dev/null | grep -Fx 'forwardx11 no'; \
-    ssh -G example.invalid 2>/dev/null | grep -Fx 'forwardx11trusted no'; \
-    ssh -G example.invalid 2>/dev/null | grep -Fx 'gssapiauthentication no'; \
     runtime_stage=/tmp/pasturestack-runtime-refresh; \
     mkdir -p "${runtime_stage}"; \
     fetch() { \
@@ -281,11 +304,41 @@ RUN set -eu; \
         /usr/bin/websocket-proxy.real \
         /usr/bin/govc \
         /usr/bin/pasturestack-console-broker; \
+    apt-get purge -y \
+        fontconfig \
+        git \
+        git-man \
+        keychain \
+        libexpat1 \
+        libfontconfig1 \
+        openssh-client; \
+    for removed_package in fontconfig git git-man keychain libexpat1 libfontconfig1 openssh-client; do \
+        if dpkg-query -W "${removed_package}" >/dev/null 2>&1; then \
+            echo "Removed runtime package remains installed: ${removed_package}" >&2; \
+            exit 1; \
+        fi; \
+    done; \
     rm -rf "${runtime_stage}" \
         /var/lib/apt/lists/* \
         /var/cache/apt/archives/* \
         /var/log/apt/*; \
     apt-get clean
+
+COPY artifacts/cattle.sh /usr/share/cattle/cattle.sh
+COPY --from=hardened_tools_build /out/coreutils/uniq /usr/bin/uniq
+COPY --from=hardened_tools_build /out/coreutils/COPYING /usr/share/licenses/pasturestack/coreutils-9.11/COPYING
+COPY --from=hardened_tools_build /out/zlib/lib/libz.so.1.3.2 /usr/lib/x86_64-linux-gnu/libz.so.1.3.2
+COPY --from=hardened_tools_build /out/zlib/LICENSE /usr/share/licenses/pasturestack/zlib-1.3.2/LICENSE
+
+RUN set -eu; \
+    chmod 0755 /usr/share/cattle/cattle.sh /usr/bin/uniq; \
+    rm -f /usr/lib/x86_64-linux-gnu/libz.so.1.3.1; \
+    ln -sfn libz.so.1.3.2 /usr/lib/x86_64-linux-gnu/libz.so.1; \
+    ldconfig; \
+    /usr/bin/uniq --version | grep -F 'uniq (GNU coreutils) 9.11'; \
+    /usr/sbin/mariadbd --version; \
+    ldd /usr/sbin/mariadbd | grep -F '/usr/lib/x86_64-linux-gnu/libz.so.1'; \
+    grep -aF '1.3.2' /usr/lib/x86_64-linux-gnu/libz.so.1.3.2 >/dev/null
 
 RUN set -eu; \
     archive=/tmp/api-explorer.tar.gz; \
@@ -374,23 +427,68 @@ RUN set -eu; \
     rm -rf "${archive}" "${listing}" "${stage}"; \
     touch -d "@${SOURCE_DATE_EPOCH}" "${web_root}" /tmp
 
-LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
-      org.opencontainers.image.description="PastureStack server compatibility image with Go 1.27, current Ubuntu updates, GNU coreutils, and a reviewed first-party API Explorer interaction layer." \
-      org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.364" \
-      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
-      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.363" \
-      org.opencontainers.image.base.digest="sha256:c534993b0735c84ed570def216cfc44912532594aa5a270d060cfa9fcccc2bd7"
+RUN set -eu; \
+    rm -f \
+        /bin/login \
+        /bin/mount \
+        /bin/tar \
+        /bin/umount \
+        /usr/bin/login \
+        /usr/bin/mount \
+        /usr/bin/newgidmap \
+        /usr/bin/newuidmap \
+        /usr/bin/passwd \
+        /usr/bin/tar \
+        /usr/bin/umount \
+        /usr/lib/systemd/systemd-journald \
+        /usr/lib/systemd/system/systemd-journald.service \
+        /usr/lib/systemd/system/systemd-journald-audit.socket \
+        /usr/lib/systemd/system/systemd-journald-dev-log.socket \
+        /usr/lib/systemd/system/systemd-journald-varlink@.socket \
+        /usr/lib/systemd/system/systemd-journald@.service \
+        /usr/lib/systemd/system/systemd-journald@.socket \
+        /usr/sbin/groupadd \
+        /usr/sbin/groupmod \
+        /usr/sbin/useradd \
+        /usr/sbin/usermod \
+        /usr/share/cattle/install_cattle_binaries; \
+    for removed_path in \
+        /usr/bin/git \
+        /usr/bin/login \
+        /usr/bin/mount \
+        /usr/bin/ssh \
+        /usr/bin/tar \
+        /usr/lib/systemd/systemd-journald \
+        /usr/share/cattle/install_cattle_binaries; do \
+        test ! -e "${removed_path}"; \
+    done; \
+    if grep -Eq '(^|[[:space:]])(git clone|git -C|apt-get install|tar xzf)([[:space:]]|$)' /usr/share/cattle/cattle.sh; then \
+        echo 'Removed source-build tooling remains reachable from cattle.sh' >&2; \
+        exit 1; \
+    fi; \
+    /usr/bin/uniq --version | grep -F 'uniq (GNU coreutils) 9.11'; \
+    /usr/sbin/mariadbd --version
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.364
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server image with Go 1.27, a reduced runtime tool surface, zlib 1.3.2, GNU coreutils 9.11 uniq, and the reviewed first-party API Explorer." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.365" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.364" \
+      org.opencontainers.image.base.digest="sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.365
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV CATTLE_API_UI_VERSION=1.1.17
 ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.0
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-08-26
 ENV PASTURESTACK_COREUTILS_PROVIDER=gnu
-ENV PASTURESTACK_SSH_CLIENT_HARDENING=x11-gssapi-disabled
-ENV PASTURESTACK_PRIVILEGED_MOUNT_HELPERS=setuid-disabled
+ENV PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11
+ENV PASTURESTACK_ZLIB_VERSION=1.3.2
+ENV PASTURESTACK_SSH_CLIENT_HARDENING=client-removed
+ENV PASTURESTACK_PRIVILEGED_MOUNT_HELPERS=removed
+ENV PASTURESTACK_CONTAINER_SOURCE_BUILD_MODE=removed
 ENV PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.0
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=${AUTHENTICATION_SERVICE_VERSION}
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT=${AUTHENTICATION_SERVICE_COMMIT}
