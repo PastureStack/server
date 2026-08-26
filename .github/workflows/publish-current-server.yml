@@ -37,14 +37,23 @@ jobs:
 
     steps:
       - name: Enable the containerd image store
-        uses: docker/setup-docker-action@77e84dbf09b47d1e29270283c22f16145aa85ca1 # v5.4.0
-        with:
-          daemon-config: |
-            {
-              "features": {
-                "containerd-snapshotter": true
-              }
-            }
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          if sudo test -f /etc/docker/daemon.json; then
+            sudo cat /etc/docker/daemon.json >"$RUNNER_TEMP/daemon-current.json"
+          else
+            printf '{}\n' >"$RUNNER_TEMP/daemon-current.json"
+          fi
+          jq '
+            .features = (.features // {})
+            | .features["containerd-snapshotter"] = true
+          ' "$RUNNER_TEMP/daemon-current.json" >"$RUNNER_TEMP/daemon-containerd.json"
+          sudo install -o root -g root -m 0644 \
+            "$RUNNER_TEMP/daemon-containerd.json" /etc/docker/daemon.json
+          sudo systemctl restart docker
+          docker info --format '{{json .DriverStatus}}' |
+            grep -F 'io.containerd.snapshotter.v1' >/dev/null
 
       - name: Check out exact clean source
         shell: bash
@@ -330,4 +339,6 @@ jobs:
             "$RUNNER_TEMP/server-rootfs" \
             "$RUNNER_TEMP/server-rootfs.tar" \
             "$RUNNER_TEMP/trivy-cache" \
+            "$RUNNER_TEMP/daemon-current.json" \
+            "$RUNNER_TEMP/daemon-containerd.json" \
             "$RUNNER_TEMP/ping-body"
