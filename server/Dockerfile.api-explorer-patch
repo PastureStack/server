@@ -357,12 +357,12 @@ RUN set -eu; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server compatibility image with Go 1.27 runtime refresh, current Ubuntu updates, and a reviewed first-party API Explorer interaction layer." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.360" \
+      org.opencontainers.image.version="v1.6.361" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.358" \
       org.opencontainers.image.base.digest="sha256:14064cb8a91c2ff058e620ca11b3342de422d1bbc34e43ed82f5712801637fa7"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.360
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.361
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV CATTLE_API_UI_VERSION=1.1.17
