@@ -313,7 +313,8 @@ RUN set -eu; \
         libfontconfig1 \
         openssh-client; \
     for removed_package in fontconfig git git-man keychain libexpat1 libfontconfig1 openssh-client; do \
-        if dpkg-query -W "${removed_package}" >/dev/null 2>&1; then \
+        removed_status="$(dpkg-query -W -f='${db:Status-Status}' "${removed_package}" 2>/dev/null || true)"; \
+        if [ "${removed_status}" = installed ]; then \
             echo "Removed runtime package remains installed: ${removed_package}" >&2; \
             exit 1; \
         fi; \

@@ -222,21 +222,27 @@ EOF
         installed=$(dpkg-query -W -f='"'"'${Version}'"'"' "$package")
         dpkg --compare-versions "$installed" ge "$minimum"
     }
+    package_is_installed()
+    {
+        local status
+        status=$(dpkg-query -W -f='"'"'${db:Status-Status}'"'"' "$1" 2>/dev/null || true)
+        test "$status" = installed
+    }
     version_at_least curl 8.18.0-1ubuntu2.4
     version_at_least libcurl4t64 8.18.0-1ubuntu2.4
     version_at_least libc6 2.43-2ubuntu2.3
     version_at_least systemd 259.5-0ubuntu3.4
     version_at_least libsystemd0 259.5-0ubuntu3.4
     version_at_least libudev1 259.5-0ubuntu3.4
-    dpkg-query -W coreutils-from-gnu >/dev/null
-    ! dpkg-query -W coreutils-from-uutils >/dev/null 2>&1
-    ! dpkg-query -W rust-coreutils >/dev/null 2>&1
+    package_is_installed coreutils-from-gnu
+    ! package_is_installed coreutils-from-uutils
+    ! package_is_installed rust-coreutils
     ls --version | grep -Fq "GNU coreutils"
     uniq --version | grep -Fq "uniq (GNU coreutils) 9.11"
     grep -aF "1.3.2" /usr/lib/x86_64-linux-gnu/libz.so.1.3.2 >/dev/null
     ldd /usr/sbin/mariadbd | grep -F "/usr/lib/x86_64-linux-gnu/libz.so.1" >/dev/null
     for removed_package in fontconfig git git-man keychain libexpat1 libfontconfig1 openssh-client; do
-        ! dpkg-query -W "${removed_package}" >/dev/null 2>&1
+        ! package_is_installed "${removed_package}"
     done
     for removed_path in \
         /usr/bin/git \
