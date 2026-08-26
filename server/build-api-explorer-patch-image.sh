@@ -18,7 +18,7 @@ api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.17}
 api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.17.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-6dc1bfd64f520444efe370bb8141fa3bcc36fa0008617e508375b781ecf30fc3}
 api_explorer_commit=${API_EXPLORER_COMMIT:-94e617e0f8950ea80bdb46aaf181f463bae2cea9}
-image=${IMAGE:-pasturestack-validation/server:v1.6.359}
+image=${IMAGE:-pasturestack-validation/server:v1.6.360}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -61,7 +61,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.359
+    v1.6.360
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -72,7 +72,7 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.359 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.360 \
     CATTLE_API_UI_VERSION=1.1.17 \
     PASTURESTACK_RUNTIME_GO_VERSION=1.27.0 \
     PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-08-26 \
@@ -83,7 +83,7 @@ for marker in \
     CATTLE_CATTLE_VERSION=v0.183.281 \
     PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.70 \
     PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.4.36 \
-    PASTURESTACK_CATALOG_SERVICE_VERSION=0.20.10 \
+    PASTURESTACK_CATALOG_SERVICE_VERSION=0.20.11 \
     PASTURESTACK_COMPOSE_EXECUTOR_VERSION=0.14.34 \
     PASTURESTACK_HOST_PROVISIONER_VERSION=0.39.6 \
     PASTURESTACK_SECRET_DELIVERY_API_VERSION=0.3.1 \
@@ -179,8 +179,8 @@ docker run --rm --entrypoint bash "$image" -lc '
         grep -Fx "Implementation-Version: 0.183.281" >/dev/null
     cat <<'"'"'EOF'"'"' | sha256sum -c -
 33c59675901c459feb478e55f731420bd2f5f3c3f27e0f6c7b4659207d025d7b  /usr/bin/authentication-service.real
-9e4aef36c7ead2ff039d96121f6145fc68b34ad70ef030fd09d3446819dd4c84  /usr/bin/catalog-service.real
-a43a5cd4d4877e125e58fdfc80c8b794203c0d4e9103463d4b1fec9847a593e5  /usr/bin/catalog-service-sqlite
+ccfc75831678df31f58b327b3177da6f40d31603ab329af7bdf700a8513ea329  /usr/bin/catalog-service.real
+e5c517bc7beb6857c12a7df1ffee93d87499107e12ddeca758297b930f0bb4d1  /usr/bin/catalog-service-sqlite
 e429714b321db8c1a47c727bb241b3de41b74facdfb61af144237d46f3f2c47b  /usr/bin/compose-executor.real
 1d06bde76920e9738da0365e9fd0ef1eac3a414785bede06b8d8665bf25a2710  /usr/bin/host-provisioner.real
 fbdd12862e1cfe3c957f492ae81c4c1c5658357502bd322febbbe209496929be  /usr/bin/secret-delivery-api
@@ -205,6 +205,7 @@ EOF
         grep -aF "go1.27.0" "${binary}" >/dev/null
     done
     /usr/bin/authentication-service.real --version | grep -F "0.4.36" >/dev/null
+    /usr/bin/catalog-service.real --version | grep -F "v0.20.11" >/dev/null
     /usr/bin/secret-delivery-api --version | grep -F "v0.3.1" >/dev/null
     /usr/bin/usage-telemetry-agent --version | grep -F "0.4.1" >/dev/null
     /usr/bin/webhook-automation-service --version | grep -F "0.10.1" >/dev/null
