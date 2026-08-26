@@ -5,9 +5,11 @@ production container while preserving the application, database schema,
 public control-plane API, orchestration behavior, and bundled PastureStack
 service versions.
 
-The final runtime no longer contains the in-container source-build path, Git,
-SSH client, tar, privileged mount and login tools, journald, user-mapping
-tools, GPG verifier, or `unexpand`. The only coreutils binary rebuilt from
+The final runtime no longer contains the in-container source-build path, SSH
+client, tar, privileged mount and login tools, journald, user-mapping tools,
+GPG verifier, or `unexpand`. Git 2.53.0 remains because Catalog Service uses
+it at runtime for its pinned HTTPS clone, fetch, and checkout operations; the
+separate SSH client remains absent. The only coreutils binary rebuilt from
 upstream source is `uniq`; it is GNU coreutils 9.11 with upstream fix commit
 `d64e35a8a4c0e4608321433e0d84d917e4e36371` for CVE-2026-56391 and a
 multibyte `--check-chars` regression test. The active zlib shared library is

@@ -152,6 +152,12 @@ require_marker "$dockerfile" \
 require_marker "$cattle_script" \
     'CATTLE_MASTER source-build mode has been removed' \
     SERVER_SOURCE_BUILD_MODE_REJECTION_MISSING
+require_marker "$dockerfile" \
+    "git --version | grep -Fx 'git version 2.53.0'" \
+    SERVER_CATALOG_GIT_RUNTIME_GATE_MISSING
+require_marker "$build_script" \
+    'test "$(git --version)" = "git version 2.53.0"' \
+    SERVER_CATALOG_GIT_IMAGE_VALIDATION_MISSING
 if grep -Eq '(^|[[:space:]])(git clone|git -C|apt-get install|tar xzf)([[:space:]]|$)' "$cattle_script"; then
     echo 'SERVER_SOURCE_BUILD_TOOLING_REMAINS' >&2
     exit 1

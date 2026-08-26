@@ -237,10 +237,14 @@ EOF
     version_at_least systemd 259.5-0ubuntu3.4
     version_at_least libsystemd0 259.5-0ubuntu3.4
     version_at_least libudev1 259.5-0ubuntu3.4
+    version_at_least git 1:2.53.0-1ubuntu1
+    version_at_least git-man 1:2.53.0-1ubuntu1
+    version_at_least libexpat1 2.7.4-1
     package_is_installed coreutils-from-gnu
     ! package_is_installed coreutils-from-uutils
     ! package_is_installed rust-coreutils
     ls --version | grep -Fq "GNU coreutils"
+    test "$(git --version)" = "git version 2.53.0"
     uniq --version | grep -Fq "uniq (GNU coreutils) 9.11"
     longline="$(printf "\360\237\230\200"; head -c 255 /dev/zero | tr "\000" A)"
     printf "%s\n%s\n" "${longline}" "${longline}" >/tmp/uniq-input
@@ -249,11 +253,10 @@ EOF
     cmp /tmp/uniq-expected /tmp/uniq-output
     grep -aF "1.3.2" /usr/lib/x86_64-linux-gnu/libz.so.1.3.2 >/dev/null
     ldd /usr/sbin/mariadbd | grep -F "/usr/lib/x86_64-linux-gnu/libz.so.1" >/dev/null
-    for removed_package in fontconfig git git-man keychain libexpat1 libfontconfig1 openssh-client; do
+    for removed_package in fontconfig keychain libfontconfig1 openssh-client; do
         ! package_is_installed "${removed_package}"
     done
     for removed_path in \
-        /usr/bin/git \
         /usr/bin/gpgv \
         /usr/bin/eu-readelf \
         /usr/bin/eu-strip \

@@ -318,13 +318,14 @@ RUN set -eu; \
         /usr/bin/pasturestack-console-broker; \
     apt-get purge -y \
         fontconfig \
-        git \
-        git-man \
         keychain \
-        libexpat1 \
         libfontconfig1 \
         openssh-client; \
-    for removed_package in fontconfig git git-man keychain libexpat1 libfontconfig1 openssh-client; do \
+    version_at_least git 1:2.53.0-1ubuntu1; \
+    version_at_least git-man 1:2.53.0-1ubuntu1; \
+    version_at_least libexpat1 2.7.4-1; \
+    git --version | grep -Fx 'git version 2.53.0'; \
+    for removed_package in fontconfig keychain libfontconfig1 openssh-client; do \
         removed_status="$(dpkg-query -W -f='${db:Status-Status}' "${removed_package}" 2>/dev/null || true)"; \
         if [ "${removed_status}" = installed ]; then \
             echo "Removed runtime package remains installed: ${removed_package}" >&2; \
@@ -477,7 +478,6 @@ RUN set -eu; \
         /usr/sbin/usermod \
         /usr/share/cattle/install_cattle_binaries; \
     for removed_path in \
-        /usr/bin/git \
         /usr/bin/gpgv \
         /usr/bin/eu-readelf \
         /usr/bin/eu-strip \
