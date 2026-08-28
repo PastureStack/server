@@ -83,6 +83,18 @@ require_marker "$build_script" \
     'image_orchestration' \
     SERVER_ORCHESTRATION_IMAGE_HASH_GATE_MISSING
 require_marker "$dockerfile" \
+    'COPY patches/db/core-124.xml /tmp/pasturestack-server-overlays/db/core-124.xml' \
+    SERVER_CATALOG_PINNED_COMMIT_OVERLAY_MISSING
+require_marker "$dockerfile" \
+    'java -cp ".:${new_web_root}/WEB-INF/lib/*" PatchV1GlobalSubscribe verify' \
+    SERVER_GLOBAL_SUBSCRIBE_SCHEMA_OVERLAY_MISSING
+require_marker "$dockerfile" \
+    'test "$(readlink -f /usr/share/cattle/war)" = "${new_web_root}"' \
+    SERVER_ORCHESTRATION_EXPLODED_ROOT_BINDING_MISSING
+require_marker "$build_script" \
+    'grep -F "pasturestack-catalog-pinned-commit"' \
+    SERVER_CATALOG_PINNED_COMMIT_IMAGE_GATE_MISSING
+require_marker "$dockerfile" \
     'COPY --chmod=0755 patches/websocket-proxy-wrapper.sh /usr/bin/websocket-proxy' \
     SERVER_WEBSOCKET_PROXY_ROUTING_WRAPPER_INSTALL_MISSING
 require_marker "$build_script" \

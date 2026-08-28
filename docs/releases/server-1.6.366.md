@@ -20,6 +20,12 @@ the public `:8080` listener, the authenticated proxy uses private `:8083`, and
 the application remains on `127.0.0.1:8081`. This avoids changing the public
 API port while resolving the candidate listener collision.
 
+The new Orchestration Engine is expanded into the runtime tree before startup,
+then receives the Server's existing catalog `pinned_commit`, service subscribe,
+bootstrap, and serialized-schema overlays. This preserves fresh-database
+migrations and Server authorization contracts instead of replacing them with
+the unassembled upstream JAR contents.
+
 The release keeps the v1.6.365 reduced runtime surface and its OpenVEX
 decisions, including GNU coreutils fix commit
 `d64e35a8a4c0e4608321433e0d84d917e4e36371`. The publication workflow scans the final merged root filesystem;

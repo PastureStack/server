@@ -348,6 +348,11 @@ COPY --from=hardened_tools_build /out/coreutils/uniq /usr/bin/uniq
 COPY --from=hardened_tools_build /out/coreutils/COPYING /usr/share/licenses/pasturestack/coreutils-9.11/COPYING
 COPY --from=hardened_tools_build /out/zlib/lib/libz.so.1.3.2 /usr/lib/x86_64-linux-gnu/libz.so.1.3.2
 COPY --from=hardened_tools_build /out/zlib/LICENSE /usr/share/licenses/pasturestack/zlib-1.3.2/LICENSE
+COPY patches/service-auth.json /tmp/pasturestack-server-overlays/schema/service/service-auth.json
+COPY patches/bootstrap.sh /tmp/pasturestack-server-overlays/config-content/bootstrap/bootstrap.sh
+COPY patches/db/core-060.xml /tmp/pasturestack-server-overlays/db/core-060.xml
+COPY patches/db/core-124.xml /tmp/pasturestack-server-overlays/db/core-124.xml
+COPY patches/PatchV1GlobalSubscribe.java /tmp/pasturestack-server-overlays/PatchV1GlobalSubscribe.java
 
 RUN set -eu; \
     chmod 0755 /usr/share/cattle/cattle.sh /usr/bin/uniq; \
@@ -384,7 +389,75 @@ RUN set -eu; \
         grep -Fx 'Implementation-Version: 0.183.286' >/dev/null; \
     test "$(grep -Ec '^WEB-INF/lib/hazelcast-5\.7\.3-pasturestack\.4\.jar$' "${listing}")" -eq 1; \
     ! grep -Eq '^WEB-INF/lib/hazelcast-(5\.7\.[012]|5\.7\.3-pasturestack\.[0-3])([.-]|\.jar$)' "${listing}"; \
+    old_web_root="$(readlink -f /usr/share/cattle/war)"; \
+    case "${old_web_root}" in \
+        /usr/share/cattle/*) ;; \
+        *) echo "Unsafe existing document root: ${old_web_root}" >&2; exit 1 ;; \
+    esac; \
+    test -L /usr/share/cattle/war; \
+    test -d "${old_web_root}/api-ui"; \
+    cp -a "${old_web_root}/api-ui" /tmp/pasturestack-api-ui; \
     install -m 0644 "${archive}" /usr/share/cattle/cattle.jar; \
+    engine_hash="$(sha256sum /usr/share/cattle/cattle.jar | awk '{print $1}')"; \
+    new_web_root="/usr/share/cattle/${engine_hash}"; \
+    test "${new_web_root}" != "${old_web_root}"; \
+    rm /usr/share/cattle/war; \
+    rm -rf "${old_web_root}" "${new_web_root}"; \
+    mkdir -p "${new_web_root}"; \
+    ln -s "${engine_hash}" /usr/share/cattle/war; \
+    cd "${new_web_root}"; \
+    unzip -q ../cattle.jar; \
+    if [ -f resources.jar ]; then \
+        unzip -oq resources.jar; \
+        rm -f resources.jar; \
+    fi; \
+    resources_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
+        -name 'cattle-resources-0.183.286.jar' -print -quit)"; \
+    test -n "${resources_jar}"; \
+    source_date_iso="$(date -u -d "@${SOURCE_DATE_EPOCH}" '+%Y-%m-%dT%H:%M:%SZ')"; \
+    cd /tmp/pasturestack-server-overlays; \
+    jar --update --file "${resources_jar}" --date="${source_date_iso}" \
+        schema/service/service-auth.json \
+        config-content/bootstrap/bootstrap.sh \
+        db/core-060.xml \
+        db/core-124.xml; \
+    mkdir -p schema/v1; \
+    jar xf "${resources_jar}" \
+        schema/v1/admin.ser \
+        schema/v1/base.ser \
+        schema/v1/member.ser \
+        schema/v1/owner.ser \
+        schema/v1/project.ser \
+        schema/v1/projectadmin.ser \
+        schema/v1/readAdmin.ser \
+        schema/v1/readonly.ser \
+        schema/v1/restricted.ser \
+        schema/v1/service.ser \
+        schema/v1/superadmin.ser \
+        schema/v1/user.ser; \
+    javac -cp "${new_web_root}/WEB-INF/lib/*" PatchV1GlobalSubscribe.java; \
+    java -cp ".:${new_web_root}/WEB-INF/lib/*" PatchV1GlobalSubscribe; \
+    java -cp ".:${new_web_root}/WEB-INF/lib/*" PatchV1GlobalSubscribe verify; \
+    jar --update --file "${resources_jar}" --date="${source_date_iso}" \
+        schema/v1/admin.ser \
+        schema/v1/service.ser; \
+    cd "${new_web_root}"; \
+    rm -rf api-ui; \
+    mv /tmp/pasturestack-api-ui api-ui; \
+    test "$(readlink -f /usr/share/cattle/war)" = "${new_web_root}"; \
+    unzip -p "${resources_jar}" db/core-124.xml | \
+        grep -F 'pasturestack-catalog-pinned-commit' >/dev/null; \
+    unzip -p "${resources_jar}" schema/service/service-auth.json | \
+        grep -F '"subscribe": "cr"' >/dev/null; \
+    unzip -p "${resources_jar}" db/core-125.xml | \
+        grep -F 'pasturestack-credential-secret-value-mediumtext' >/dev/null; \
+    touch -h -d "@${SOURCE_DATE_EPOCH}" \
+        /usr/share/cattle/cattle.jar \
+        /usr/share/cattle/war \
+        "${new_web_root}" \
+        "${new_web_root}/api-ui" \
+        /tmp; \
+    rm -rf /tmp/pasturestack-server-overlays; \
     rm -f "${archive}" "${listing}"
 
 RUN set -eu; \
