@@ -10,7 +10,7 @@ publish_workflow=.github/workflows/publish-current-server.yml
 cattle_script=server/artifacts/cattle.sh
 coreutils_patch=server/patches/coreutils-CVE-2026-56391.patch
 runtime_vex=server/security/openvex.json
-release_notes=docs/releases/server-1.6.365.md
+release_notes=docs/releases/server-1.6.366.md
 
 for path in "$dockerfile" "$build_script" "$publish_workflow" "$cattle_script" \
     "$coreutils_patch" "$runtime_vex" "$release_notes"; do
@@ -29,16 +29,16 @@ require_marker()
 }
 
 require_marker "$dockerfile" \
-    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5' \
+    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.365@sha256:0912675836d012cf0d1492412a729685687c05f5b13d529fd59cffe90f3e761e' \
     SERVER_API_EXPLORER_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
     'ARG UBUNTU_SNAPSHOT=20260826T000000Z' \
     SERVER_API_EXPLORER_PATCH_UBUNTU_SNAPSHOT_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.365"' \
+    'org.opencontainers.image.version="v1.6.366"' \
     SERVER_API_EXPLORER_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.365' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.366' \
     SERVER_API_EXPLORER_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
     'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27' \
@@ -47,14 +47,41 @@ require_marker "$dockerfile" \
     'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.27' \
     SERVER_API_EXPLORER_PATCH_LB_IMAGE_UUID_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_API_UI_VERSION=1.1.17' \
+    'ENV CATTLE_API_UI_VERSION=1.1.18' \
     SERVER_API_EXPLORER_PATCH_API_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ARG API_EXPLORER_ARTIFACT_SHA256=6dc1bfd64f520444efe370bb8141fa3bcc36fa0008617e508375b781ecf30fc3' \
+    'ARG API_EXPLORER_ARTIFACT_SHA256=92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c' \
     SERVER_API_EXPLORER_PATCH_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG API_EXPLORER_COMMIT=94e617e0f8950ea80bdb46aaf181f463bae2cea9' \
+    'ARG API_EXPLORER_COMMIT=3b1c39e8a116f58649d94233a384a0362c02b43e' \
     SERVER_API_EXPLORER_PATCH_COMMIT_MISSING
+require_marker "$dockerfile" \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.286' \
+    SERVER_ORCHESTRATION_RELEASE_TAG_MISSING
+require_marker "$dockerfile" \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.286.jar' \
+    SERVER_ORCHESTRATION_RELEASE_ARTIFACT_MISSING
+require_marker "$dockerfile" \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=1506ad37153bede468ad2ff1b87caf8dd448a13c45a31c851dc7acce73a86484' \
+    SERVER_ORCHESTRATION_RELEASE_HASH_MISSING
+require_marker "$dockerfile" \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=f0b9e8a10e20527f2f6a9b9b0179a3cfc752cbc6' \
+    SERVER_ORCHESTRATION_RELEASE_COMMIT_MISSING
+require_marker "$dockerfile" \
+    'ENV CATTLE_CATTLE_VERSION=v0.183.286' \
+    SERVER_ORCHESTRATION_RUNTIME_VERSION_MISSING
+require_marker "$dockerfile" \
+    'grep -Fx '\''Implementation-Version: 0.183.286'\'' >/dev/null' \
+    SERVER_ORCHESTRATION_MANIFEST_GATE_MISSING
+require_marker "$dockerfile" \
+    'WEB-INF/lib/hazelcast-5\.7\.3-pasturestack\.4\.jar' \
+    SERVER_DISTRIBUTED_CACHE_RUNTIME_GATE_MISSING
+require_marker "$build_script" \
+    '9fa751998ce3cc1f17692e21933b24646c39a7142ca387af772e43f49dc77764  /tmp/hazelcast.jar' \
+    SERVER_DISTRIBUTED_CACHE_RUNTIME_HASH_GATE_MISSING
+require_marker "$build_script" \
+    'image_orchestration' \
+    SERVER_ORCHESTRATION_IMAGE_HASH_GATE_MISSING
 require_marker "$dockerfile" \
     'ARG GO_BUILDER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452' \
     SERVER_RUNTIME_GO_BUILDER_NOT_CURRENT
@@ -212,8 +239,8 @@ require_marker "$build_script" \
     'runtime_go=1.27.0' \
     SERVER_RUNTIME_GO_GATE_MISSING
 require_marker "$build_script" \
-    'orchestration_unchanged=1' \
-    SERVER_ORCHESTRATION_REGRESSION_GATE_MISSING
+    'orchestration_updated=1' \
+    SERVER_ORCHESTRATION_UPDATE_GATE_MISSING
 require_marker "$build_script" \
     'wrappers_unchanged=1' \
     SERVER_WRAPPER_REGRESSION_GATE_MISSING
@@ -222,10 +249,10 @@ require_marker "$build_script" \
     SERVER_API_EXPLORER_PATCH_WEB_CONSOLE_REGRESSION_GATE_MISSING
 
 require_marker "$dockerfile" \
-    'org.opencontainers.image.base.digest="sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5"' \
+    'org.opencontainers.image.base.digest="sha256:0912675836d012cf0d1492412a729685687c05f5b13d529fd59cffe90f3e761e"' \
     SERVER_API_EXPLORER_PATCH_BASE_DIGEST_MISSING
 require_marker "$build_script" \
-    'ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5' \
+    'ghcr.io/pasturestack/server:v1.6.365@sha256:0912675836d012cf0d1492412a729685687c05f5b13d529fd59cffe90f3e761e' \
     SERVER_API_EXPLORER_PATCH_BUILD_BASE_DIGEST_MISSING
 
 if grep -RInE '(^|[^[:alnum:]])[A-Za-z]:\\Users\\|/home/[^/[:space:]]+/|(^|[^[:digit:]])10[.][[:digit:]]{1,3}[.][[:digit:]]{1,3}[.][[:digit:]]{1,3}([^[:digit:]]|$)|[[:alnum:]._%+-]+@[[:alnum:].-]+[.][[:alpha:]]{2,}' \
@@ -238,7 +265,7 @@ bash -n "$build_script"
 
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.365"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.366"
   and (.statements | length) == 18
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -277,4 +304,4 @@ for marker in \
         SERVER_CURRENT_PUBLISH_WORKFLOW_GATE_MISSING
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.365 base=v1.6.364 api_explorer=1.1.17 bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 zlib=1.3.2 source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 unresolved=0 legal_assets=complete\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.366 base=v1.6.365 orchestration=0.183.286 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 zlib=1.3.2 source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 unresolved=0 legal_assets=complete\n'

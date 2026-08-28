@@ -12,32 +12,43 @@ fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
-base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5}
+base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.365@sha256:0912675836d012cf0d1492412a729685687c05f5b13d529fd59cffe90f3e761e}
+orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
+orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.286}
+orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.286.jar}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-1506ad37153bede468ad2ff1b87caf8dd448a13c45a31c851dc7acce73a86484}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-f0b9e8a10e20527f2f6a9b9b0179a3cfc752cbc6}
 api_explorer_release_base_url=${API_EXPLORER_RELEASE_BASE_URL:-https://github.com/PastureStack/api-explorer/releases/download}
-api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.17}
-api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.17.tar.gz}
-api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-6dc1bfd64f520444efe370bb8141fa3bcc36fa0008617e508375b781ecf30fc3}
-api_explorer_commit=${API_EXPLORER_COMMIT:-94e617e0f8950ea80bdb46aaf181f463bae2cea9}
-image=${IMAGE:-pasturestack-validation/server:v1.6.365}
+api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.18}
+api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
+api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
+api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
+image=${IMAGE:-pasturestack-validation/server:v1.6.366}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
 [[ "$source_date_epoch" =~ ^[0-9]+$ ]]
+[[ "$orchestration_engine_commit" =~ ^[0-9a-f]{40}$ ]]
+[[ "$orchestration_engine_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
+[[ "$orchestration_engine_release_tag" =~ ^v[0-9][0-9A-Za-z.-]*$ ]]
+[[ "$orchestration_engine_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
 [[ "$api_explorer_commit" =~ ^[0-9a-f]{40}$ ]]
 [[ "$api_explorer_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$api_explorer_release_tag" =~ ^v[0-9][0-9A-Za-z.-]*$ ]]
 [[ "$api_explorer_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
-[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5 ]]
-case "$api_explorer_release_base_url" in
+[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.365@sha256:0912675836d012cf0d1492412a729685687c05f5b13d529fd59cffe90f3e761e ]]
+for release_base_url in "$orchestration_engine_release_base_url" "$api_explorer_release_base_url"; do
+case "$release_base_url" in
     https://*) ;;
     http://127.0.0.1:*|http://localhost:*)
         [[ ${PASTURESTACK_ALLOW_LOOPBACK_ARTIFACTS:-0} == 1 ]]
         ;;
     *)
-        echo "API Explorer artifact source must use HTTPS or an explicitly allowed loopback address" >&2
+        echo "Release artifact source must use HTTPS or an explicitly allowed loopback address" >&2
         exit 1
         ;;
 esac
+done
 if [[ ${PASTURESTACK_BUILD_NO_CACHE:-0} == 1 ]]; then
     build_options+=(--no-cache)
 fi
@@ -50,6 +61,11 @@ docker buildx build \
     --build-arg "BASE_IMAGE=${base_image}" \
     --build-arg "SOURCE_DATE_EPOCH=${source_date_epoch}" \
     --build-arg "PASTURESTACK_SERVER_REVISION=${revision}" \
+    --build-arg "ORCHESTRATION_ENGINE_RELEASE_BASE_URL=${orchestration_engine_release_base_url}" \
+    --build-arg "ORCHESTRATION_ENGINE_RELEASE_TAG=${orchestration_engine_release_tag}" \
+    --build-arg "ORCHESTRATION_ENGINE_ARTIFACT=${orchestration_engine_artifact}" \
+    --build-arg "ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${orchestration_engine_artifact_sha256}" \
+    --build-arg "ORCHESTRATION_ENGINE_COMMIT=${orchestration_engine_commit}" \
     --build-arg "API_EXPLORER_RELEASE_BASE_URL=${api_explorer_release_base_url}" \
     --build-arg "API_EXPLORER_RELEASE_TAG=${api_explorer_release_tag}" \
     --build-arg "API_EXPLORER_ARTIFACT=${api_explorer_artifact}" \
@@ -61,19 +77,22 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.365
+    v1.6.366
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.base.name"}}')" = \
-    ghcr.io/pasturestack/server:v1.6.364
+    ghcr.io/pasturestack/server:v1.6.365
 
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.365 \
-    CATTLE_API_UI_VERSION=1.1.17 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.366 \
+    CATTLE_API_UI_VERSION=1.1.18 \
+    CATTLE_CATTLE_VERSION=v0.183.286 \
+    PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT="${orchestration_engine_commit}" \
+    PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256="${orchestration_engine_artifact_sha256}" \
     PASTURESTACK_RUNTIME_GO_VERSION=1.27.0 \
     PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-08-26 \
     PASTURESTACK_COREUTILS_PROVIDER=gnu \
@@ -86,10 +105,9 @@ for marker in \
     PASTURESTACK_GPG_VERIFIER=removed \
     PASTURESTACK_CONTAINER_SOURCE_BUILD_MODE=removed \
     PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.0 \
-    PASTURESTACK_API_EXPLORER_PACKAGE=1.1.17 \
+    PASTURESTACK_API_EXPLORER_PACKAGE=1.1.18 \
     PASTURESTACK_API_EXPLORER_COMMIT="${api_explorer_commit}" \
     PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256="${api_explorer_artifact_sha256}" \
-    CATTLE_CATTLE_VERSION=v0.183.281 \
     PASTURESTACK_WEB_CONSOLE_PACKAGE=1.6.70 \
     PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.4.36 \
     PASTURESTACK_CATALOG_SERVICE_VERSION=0.20.11 \
@@ -105,11 +123,10 @@ for marker in \
     test "$(grep -Fxc "$marker" <<<"$image_environment")" = 1
 done
 
-base_orchestration=$(docker run --rm --entrypoint sha256sum "$base_image" \
-    /usr/share/cattle/cattle.jar)
 image_orchestration=$(docker run --rm --entrypoint sha256sum "$image" \
     /usr/share/cattle/cattle.jar)
-test "$base_orchestration" = "$image_orchestration"
+test "$image_orchestration" = \
+    "${orchestration_engine_artifact_sha256}  /usr/share/cattle/cattle.jar"
 
 wrapper_paths=(
     /usr/bin/authentication-service
@@ -154,8 +171,8 @@ docker run --rm --entrypoint bash "$image" -lc '
     test -s "${api_dir}/licenses/handlebars-4.7.9/LICENSE"
     test ! -e "${api_dir}/js/bootstrap.js"
     test "$(find "${api_dir}" -type f -name "*.map" | wc -l)" -eq 0
-    grep -F '"'"'"version": "1.1.17"'"'"' "${api_dir}/version.json" >/dev/null
-    grep -F '"'"'"commit": "94e617e"'"'"' "${api_dir}/version.json" >/dev/null
+    grep -F '"'"'"version": "1.1.18"'"'"' "${api_dir}/version.json" >/dev/null
+    grep -F '"'"'"commit": "3b1c39e"'"'"' "${api_dir}/version.json" >/dev/null
     for marker in \
         PastureStackUi \
         pasturestack:modal:shown \
@@ -185,7 +202,14 @@ docker run --rm --entrypoint bash "$image" -lc '
         /usr/share/cattle/war/translations/zh-tw.json >/dev/null
     unzip -p /usr/share/cattle/cattle.jar META-INF/MANIFEST.MF |
         tr -d "\r" |
-        grep -Fx "Implementation-Version: 0.183.281" >/dev/null
+        grep -Fx "Implementation-Version: 0.183.286" >/dev/null
+    hazelcast_entry=$(unzip -Z1 /usr/share/cattle/cattle.jar |
+        grep -E "^WEB-INF/lib/hazelcast-[^/]+[.]jar$")
+    test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.3-pasturestack.4.jar"
+    unzip -p /usr/share/cattle/cattle.jar "${hazelcast_entry}" >/tmp/hazelcast.jar
+    echo "9fa751998ce3cc1f17692e21933b24646c39a7142ca387af772e43f49dc77764  /tmp/hazelcast.jar" |
+        sha256sum -c -
+    rm -f /tmp/hazelcast.jar
     cat <<'"'"'EOF'"'"' | sha256sum -c -
 33c59675901c459feb478e55f731420bd2f5f3c3f27e0f6c7b4659207d025d7b  /usr/bin/authentication-service.real
 ccfc75831678df31f58b327b3177da6f40d31603ab329af7bdf700a8513ea329  /usr/bin/catalog-service.real
@@ -295,6 +319,7 @@ EOF
     fi
 '
 
-printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s api_explorer_commit=%s artifact_sha256=%s bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 zlib=1.3.2 source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_unchanged=1 wrappers_unchanged=1 web_console_unchanged=1\n' \
-    "$image" "$revision" "$base_image" "$api_explorer_commit" \
-    "$api_explorer_artifact_sha256"
+printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 zlib=1.3.2 source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_unchanged=1 web_console_unchanged=1\n' \
+    "$image" "$revision" "$base_image" "${orchestration_engine_release_tag#v}" \
+    "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
+    "${api_explorer_release_tag#v}" "$api_explorer_commit" "$api_explorer_artifact_sha256"
