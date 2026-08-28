@@ -193,6 +193,15 @@ require_marker "$build_script" \
     'openssl version | grep -F "OpenSSL 3.5.8 25 Aug 2026"' \
     SERVER_OPENSSL_IMAGE_VERSION_GATE_MISSING
 require_marker "$build_script" \
+    'test "$(openssl version -d)" = "OPENSSLDIR: \"/usr/lib/ssl\""' \
+    SERVER_OPENSSL_IMAGE_OPENSSLDIR_GATE_MISSING
+require_marker "$build_script" \
+    'test "$(openssl version -e)" = "ENGINESDIR: \"/usr/lib/x86_64-linux-gnu/engines-3\""' \
+    SERVER_OPENSSL_IMAGE_ENGINESDIR_GATE_MISSING
+require_marker "$build_script" \
+    'test "$(openssl version -m)" = "MODULESDIR: \"/usr/lib/x86_64-linux-gnu/ossl-modules\""' \
+    SERVER_OPENSSL_IMAGE_MODULESDIR_GATE_MISSING
+require_marker "$build_script" \
     'ldd /usr/bin/curl | grep -F "/usr/lib/x86_64-linux-gnu/libssl.so.3"' \
     SERVER_OPENSSL_CURL_LINKAGE_GATE_MISSING
 require_marker "$dockerfile" \
