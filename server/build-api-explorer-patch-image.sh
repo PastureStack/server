@@ -128,6 +128,22 @@ image_orchestration=$(docker run --rm --entrypoint sha256sum "$image" \
 test "$image_orchestration" = \
     "${orchestration_engine_artifact_sha256}  /usr/share/cattle/cattle.jar"
 
+docker run --rm --entrypoint bash "$image" -lc '
+    set -euo pipefail
+    engine_hash=$(sha256sum /usr/share/cattle/cattle.jar | awk "{print \$1}")
+    web_root=$(readlink -f /usr/share/cattle/war)
+    test "${web_root}" = "/usr/share/cattle/${engine_hash}"
+    resources_jar=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
+        -name "cattle-resources-0.183.286.jar" -print -quit)
+    test -n "${resources_jar}"
+    unzip -p "${resources_jar}" db/core-124.xml |
+        grep -F "pasturestack-catalog-pinned-commit" >/dev/null
+    unzip -p "${resources_jar}" schema/service/service-auth.json |
+        grep -F "\"subscribe\": \"cr\"" >/dev/null
+    unzip -p "${resources_jar}" db/core-125.xml |
+        grep -F "pasturestack-credential-secret-value-mediumtext" >/dev/null
+'
+
 wrapper_paths=(
     /usr/bin/authentication-service
     /usr/bin/catalog-service
