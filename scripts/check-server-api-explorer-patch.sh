@@ -128,6 +128,12 @@ require_marker "$dockerfile" \
     'grep -aF "${marker}" "${ui_entry}"' \
     SERVER_WEB_CONSOLE_AUDIT_FILTER_MARKER_GATE_MISSING
 require_marker "$dockerfile" \
+    'ui/utils/bootstrap-runtime' \
+    SERVER_WEB_CONSOLE_BOOTSTRAP_MODULE_GATE_MISSING
+require_marker "$dockerfile" \
+    'window.bootstrap=' \
+    SERVER_WEB_CONSOLE_BOOTSTRAP_GLOBAL_GATE_MISSING
+require_marker "$dockerfile" \
     "grep -F '篩選稽核日誌'" \
     SERVER_WEB_CONSOLE_ZH_TW_FILTER_GATE_MISSING
 require_marker "$dockerfile" \
@@ -139,6 +145,16 @@ require_marker "$build_script" \
 require_marker "$build_script" \
     'test "$(cat "${web_root}/VERSION.txt")" = "1.6.73"' \
     SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING
+require_marker "$build_script" \
+    'grep -aF "ui/utils/bootstrap-runtime" "${ui_entry}"' \
+    SERVER_WEB_CONSOLE_RUNTIME_MODULE_GATE_MISSING
+require_marker "$build_script" \
+    'grep -aF "window.bootstrap=" "${ui_entry}"' \
+    SERVER_WEB_CONSOLE_RUNTIME_GLOBAL_GATE_MISSING
+if grep -F 'grep -aF "bs.collapse"' "$build_script" >/dev/null; then
+    echo SERVER_WEB_CONSOLE_DORMANT_VENDOR_RUNTIME_GATE_PRESENT
+    exit 1
+fi
 require_marker "$build_script" \
     'grep -F "pasturestack-catalog-pinned-commit"' \
     SERVER_CATALOG_PINNED_COMMIT_IMAGE_GATE_MISSING
