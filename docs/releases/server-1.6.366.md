@@ -10,7 +10,8 @@ releases but were not yet present in production:
 
 Both artifacts are downloaded from their exact GitHub releases and verified
 with pinned SHA-256 values before they replace the corresponding files from
-the digest-pinned Server v1.6.365 base. The Server image then verifies the
+the digest-pinned Server v1.6.364 build base. The same recipe reapplies the
+v1.6.365 runtime hardening before the Server image verifies the
 orchestration manifest, the exact embedded distributed-cache JAR, the API
 Explorer package identity, and the unchanged first-party service wrappers and
 Web Console.
