@@ -99,6 +99,8 @@ for marker in \
     PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11 \
     PASTURESTACK_COREUTILS_UNIQ_FIX=d64e35a8a4c0e4608321433e0d84d917e4e36371 \
     PASTURESTACK_ZLIB_VERSION=1.3.2 \
+    PASTURESTACK_OPENSSL_VERSION=3.5.8 \
+    PASTURESTACK_DIFF3_HARDENING=removed \
     PASTURESTACK_SSH_CLIENT_HARDENING=client-removed \
     PASTURESTACK_PRIVILEGED_MOUNT_HELPERS=removed \
     PASTURESTACK_RUNTIME_USER_MAPPING=removed \
@@ -298,6 +300,15 @@ EOF
     cmp /tmp/uniq-expected /tmp/uniq-output
     grep -aF "1.3.2" /usr/lib/x86_64-linux-gnu/libz.so.1.3.2 >/dev/null
     ldd /usr/sbin/mariadbd | grep -F "/usr/lib/x86_64-linux-gnu/libz.so.1" >/dev/null
+    openssl version | grep -F "OpenSSL 3.5.8 25 Aug 2026" >/dev/null
+    test "$(openssl version -d)" = 'OPENSSLDIR: "/usr/lib/ssl"'
+    test "$(openssl version -e)" = 'ENGINESDIR: "/usr/lib/x86_64-linux-gnu/engines-3"'
+    test "$(openssl version -m)" = 'MODULESDIR: "/usr/lib/x86_64-linux-gnu/ossl-modules"'
+    openssl list -providers -provider legacy | grep -F "OpenSSL Legacy Provider" >/dev/null
+    ldd /usr/bin/curl | grep -F "/usr/lib/x86_64-linux-gnu/libssl.so.3" >/dev/null
+    ldd /usr/bin/curl | grep -F "/usr/lib/x86_64-linux-gnu/libcrypto.so.3" >/dev/null
+    ldd /usr/sbin/mariadbd | grep -F "/usr/lib/x86_64-linux-gnu/libssl.so.3" >/dev/null
+    ldd /usr/sbin/mariadbd | grep -F "/usr/lib/x86_64-linux-gnu/libcrypto.so.3" >/dev/null
     for removed_package in fontconfig keychain libfontconfig1 openssh-client; do
         ! package_is_installed "${removed_package}"
     done
@@ -305,6 +316,7 @@ EOF
         /usr/bin/gpgv \
         /usr/bin/eu-readelf \
         /usr/bin/eu-strip \
+        /usr/bin/diff3 \
         /usr/bin/getfattr \
         /usr/bin/login \
         /usr/bin/mount \
@@ -340,7 +352,7 @@ EOF
     fi
 '
 
-printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 zlib=1.3.2 source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_unchanged=1 web_console_unchanged=1\n' \
+printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_unchanged=1 web_console_unchanged=1\n' \
     "$image" "$revision" "$base_image" "${orchestration_engine_release_tag#v}" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "${api_explorer_release_tag#v}" "$api_explorer_commit" "$api_explorer_artifact_sha256"

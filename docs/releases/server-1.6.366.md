@@ -28,7 +28,16 @@ the unassembled upstream JAR contents.
 
 The release keeps the v1.6.365 reduced runtime surface and its OpenVEX
 decisions, including GNU coreutils fix commit
-`d64e35a8a4c0e4608321433e0d84d917e4e36371`. The publication workflow scans the final merged root filesystem;
+`d64e35a8a4c0e4608321433e0d84d917e4e36371`. It also replaces the active
+OpenSSL CLI, 3.5 ABI libraries, engines, and legacy provider with verified
+OpenSSL `3.5.8` LTS source
+(`a8f84a39918ec6415ce765d9b429d313ba97b8143169c172e734b9514464f5b2`)
+to close `CVE-2026-75803`. The vulnerable `diff3` executable is removed
+because Server does not invoke it; the unaffected `cmp` validation path is
+retained. This closes `CVE-2026-53910` without replacing or removing unrelated
+diffutils behavior.
+
+The publication workflow scans the final merged root filesystem;
 any new or unmatched vulnerability at any severity remains a release blocker.
 It also starts the exact candidate with fresh data volumes, verifies HTTP 200
 and `pong`, restarts it, verifies `pong` again, and publishes the image, SBOM,
