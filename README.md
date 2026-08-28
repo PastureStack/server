@@ -11,9 +11,9 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.371` combines Orchestration Engine `0.183.286`, Node Agent `0.13.22`,
+`v1.6.372` combines Orchestration Engine `0.183.286`, Node Agent `0.13.22`,
 Authentication Service `0.4.36`, and the reviewed Ember 7.2 Web Console
-`1.6.74`.
+`1.6.75`.
 
 Docker Engine `29.4.1` through `29.7.2` is represented as one bounded SemVer
 compatibility interval rather than a list of isolated patch releases. Hosts on
@@ -73,7 +73,7 @@ Catalog stack definitions, their documentation, and referenced public images mus
 
 Version coordinates are available only when the matching GitHub Release and public GHCR package both exist. Each release is held until its assets, checksums, SBOM, license records, anonymous downloads, and isolated-VM gates pass.
 
-Server `v1.6.371` registers the complete live volume-preflight schema model and preserves the project-scoped authorization required by driver-aware volume configuration, accessible
+Server `v1.6.372` registers the complete live volume-preflight schema model and preserves the project-scoped authorization required by driver-aware volume configuration, accessible
 path completion, and an authoritative `volumepreflight` check. The server
 validates container and service create or upgrade requests again at save time,
 including storage-driver state, host coverage, existing volume ownership, and
@@ -85,10 +85,13 @@ The Web Console formats schema-validation field names without legacy String
 prototype extensions, so a missing localized field label cannot leave a
 container or service form stuck in the saving state.
 
-Web Console `1.6.74` restores the hidden-state compatibility contract required by
-the Bootstrap 5 migration, so inactive full-screen overlays no longer intercept
-navigation or filter controls. It retains the audit-log filter builder, existing
-audit table, Bootstrap runtime boundary, and deterministic loading-overlay lifecycle and
+Web Console `1.6.75` restores the global dropdown destination required by the
+maintained PowerSelect runtime, so environment and user selectors render their
+actual options. It also preserves the hidden-state compatibility contract, so
+inactive full-screen overlays cannot intercept navigation or filter controls,
+and prevents the legacy positioning shim from throwing on Bootstrap 5 events.
+It retains the audit-log filter builder, existing audit table, Bootstrap runtime
+boundary, and deterministic loading-overlay lifecycle and
 distinct rectangular PastureStack stack-panel loading state. Only the newest
 route transition may change its state; successful, rejected, aborted, and overlapping transitions
 release it safely, with a 30-second watchdog as a final recovery path. The
@@ -119,7 +122,7 @@ volume and storage-driver validation.
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.371
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.372
 ```
 
 Keep operational image references in semantic `vMAJOR.MINOR.PATCH` form. The matching GitHub Release records the resolved digest for verification without exposing digest-qualified strings to the platform UI. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.

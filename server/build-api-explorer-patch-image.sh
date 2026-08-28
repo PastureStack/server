@@ -27,13 +27,13 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
 api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.74}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.74.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-09722a8e754ba7bcbd8a2b8eb1a581f89885591ce8dbe9540486e7d7d53c8bc2}
-web_console_commit=${WEB_CONSOLE_COMMIT:-2818786f41998e4d419620abf3cebdc5f7185a9a}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.75}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.75.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-d27442f880bb42a91441019dc9ef7f780035065389f981bcbe07be07db059ecb}
+web_console_commit=${WEB_CONSOLE_COMMIT:-7499f6e49cd5cc3acfd488f89cae95b618d8b114}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2'
 newest_docker_version=v29.7.2
-image=${IMAGE:-pasturestack-validation/server:v1.6.371}
+image=${IMAGE:-pasturestack-validation/server:v1.6.372}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -98,7 +98,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.371
+    v1.6.372
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -109,7 +109,7 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.371 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.372 \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION=v0.183.286 \
     PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT="${orchestration_engine_commit}" \
@@ -204,7 +204,7 @@ docker run --rm --entrypoint bash "$image" -lc 'test -x /usr/bin/websocket-proxy
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.74"
+    test "$(cat "${web_root}/VERSION.txt")" = "1.6.75"
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     test ! -e "${web_root}/translations/none.json"
     test -z "$(find "${web_root}" -type f -name "*.map" -print -quit)"
@@ -217,6 +217,7 @@ docker run --rm --entrypoint bash "$image" -lc '
         authenticatedAsAccountId \
         eventTypeOperator \
         descriptionOperator \
+        ember-basic-dropdown-wormhole \
         _notlike; do
         grep -aF "${marker}" "${ui_entry}" >/dev/null
     done
