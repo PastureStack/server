@@ -155,6 +155,8 @@ ARG API_EXPLORER_RELEASE_TAG=v1.1.18
 ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.18.tar.gz
 ARG API_EXPLORER_ARTIFACT_SHA256=92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c
 ARG API_EXPLORER_COMMIT=3b1c39e8a116f58649d94233a384a0362c02b43e
+ARG SUPPORTED_DOCKER_RANGE="~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2"
+ARG NEWEST_DOCKER_VERSION=v29.7.2
 
 COPY --from=console_broker_build /out/pasturestack-console-broker /usr/bin/pasturestack-console-broker
 COPY --from=console_broker_build /go/pkg/mod/github.com/gorilla/websocket@v1.5.3/LICENSE /usr/share/licenses/pasturestack-console-broker/gorilla-websocket-LICENSE
@@ -483,6 +485,43 @@ RUN set -eu; \
         -name 'cattle-resources-0.183.286.jar' -print -quit)"; \
     test -n "${resources_jar}"; \
     source_date_iso="$(date -u -d "@${SOURCE_DATE_EPOCH}" '+%Y-%m-%dT%H:%M:%SZ')"; \
+    app_config_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
+        -name 'cattle-app-config-*.jar' -print -quit)"; \
+    test -n "${app_config_jar}"; \
+    docker_support_stage=/tmp/pasturestack-docker-support; \
+    mkdir -p "${docker_support_stage}"; \
+    cd "${docker_support_stage}"; \
+    jar xf "${app_config_jar}" META-INF/cattle/api-server/defaults.properties; \
+    defaults=META-INF/cattle/api-server/defaults.properties; \
+    awk \
+        -v supported="${SUPPORTED_DOCKER_RANGE}" \
+        -v newest="${NEWEST_DOCKER_VERSION}" \
+        'BEGIN { supported_count = 0; newest_count = 0 } \
+         /^supported[.]docker[.]range=/ { \
+             print "supported.docker.range=" supported; \
+             supported_count++; \
+             next \
+         } \
+         /^newest[.]docker[.]version=/ { \
+             print "newest.docker.version=" newest; \
+             newest_count++; \
+             next \
+         } \
+         { print } \
+         END { \
+             if (supported_count != 1 || newest_count != 1) { \
+                 exit 42 \
+             } \
+         }' "${defaults}" >"${defaults}.new"; \
+    mv "${defaults}.new" "${defaults}"; \
+    jar --update --file "${app_config_jar}" --date="${source_date_iso}" \
+        META-INF/cattle/api-server/defaults.properties; \
+    unzip -p "${app_config_jar}" META-INF/cattle/api-server/defaults.properties | \
+        grep -Fx "supported.docker.range=${SUPPORTED_DOCKER_RANGE}"; \
+    unzip -p "${app_config_jar}" META-INF/cattle/api-server/defaults.properties | \
+        grep -Fx "newest.docker.version=${NEWEST_DOCKER_VERSION}"; \
+    cd /tmp; \
+    rm -rf "${docker_support_stage}"; \
     cd /tmp/pasturestack-server-overlays; \
     jar --update --file "${resources_jar}" --date="${source_date_iso}" \
         schema/service/service-auth.json \
@@ -709,12 +748,12 @@ COPY --chmod=0755 patches/websocket-proxy-wrapper.sh /usr/bin/websocket-proxy
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with the reviewed Orchestration Engine, API Explorer, Go 1.27, OpenSSL 3.5.8, zlib 1.3.2, and a reduced runtime tool surface." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.366" \
+      org.opencontainers.image.version="v1.6.367" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.364" \
       org.opencontainers.image.base.digest="sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.366
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.367
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV CATTLE_API_UI_VERSION=1.1.18
@@ -728,6 +767,7 @@ ENV PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11
 ENV PASTURESTACK_COREUTILS_UNIQ_FIX=d64e35a8a4c0e4608321433e0d84d917e4e36371
 ENV PASTURESTACK_ZLIB_VERSION=1.3.2
 ENV PASTURESTACK_OPENSSL_VERSION=3.5.8
+ENV PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-08-28
 ENV PASTURESTACK_DIFF3_HARDENING=removed
 ENV PASTURESTACK_SSH_CLIENT_HARDENING=client-removed
 ENV PASTURESTACK_PRIVILEGED_MOUNT_HELPERS=removed

@@ -10,7 +10,7 @@ publish_workflow=.github/workflows/publish-current-server.yml
 cattle_script=server/artifacts/cattle.sh
 coreutils_patch=server/patches/coreutils-CVE-2026-56391.patch
 runtime_vex=server/security/openvex.json
-release_notes=docs/releases/server-1.6.366.md
+release_notes=docs/releases/server-1.6.367.md
 
 for path in "$dockerfile" "$build_script" "$publish_workflow" "$cattle_script" \
     "$coreutils_patch" "$runtime_vex" "$release_notes"; do
@@ -35,11 +35,20 @@ require_marker "$dockerfile" \
     'ARG UBUNTU_SNAPSHOT=20260826T000000Z' \
     SERVER_API_EXPLORER_PATCH_UBUNTU_SNAPSHOT_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.366"' \
+    'org.opencontainers.image.version="v1.6.367"' \
     SERVER_API_EXPLORER_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.366' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.367' \
     SERVER_API_EXPLORER_PATCH_RUNTIME_VERSION_MISSING
+require_marker "$dockerfile" \
+    'ARG SUPPORTED_DOCKER_RANGE="~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2"' \
+    SERVER_DOCKER_29_COMPATIBILITY_RANGE_MISSING
+require_marker "$dockerfile" \
+    'jar --update --file "${app_config_jar}" --date="${source_date_iso}"' \
+    SERVER_DOCKER_SUPPORT_RUNTIME_PATCH_MISSING
+require_marker "$build_script" \
+    'docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported' \
+    SERVER_DOCKER_SUPPORT_IMAGE_GATE_MISSING
 require_marker "$dockerfile" \
     'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27' \
     SERVER_API_EXPLORER_PATCH_LB_IMAGE_MISSING
@@ -335,7 +344,7 @@ bash -n "$build_script"
 
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.366"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.367"
   and (.statements | length) == 20
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -374,4 +383,4 @@ for marker in \
         SERVER_CURRENT_PUBLISH_WORKFLOW_GATE_MISSING
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.366 base=v1.6.364 orchestration=0.183.286 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 unresolved=0 legal_assets=complete\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.367 base=v1.6.364 orchestration=0.183.286 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 unresolved=0 legal_assets=complete\n'

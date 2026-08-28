@@ -23,7 +23,9 @@ api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.18}
 api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
 api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
-image=${IMAGE:-pasturestack-validation/server:v1.6.366}
+supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2'
+newest_docker_version=v29.7.2
+image=${IMAGE:-pasturestack-validation/server:v1.6.367}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -71,13 +73,15 @@ docker buildx build \
     --build-arg "API_EXPLORER_ARTIFACT=${api_explorer_artifact}" \
     --build-arg "API_EXPLORER_ARTIFACT_SHA256=${api_explorer_artifact_sha256}" \
     --build-arg "API_EXPLORER_COMMIT=${api_explorer_commit}" \
+    --build-arg "SUPPORTED_DOCKER_RANGE=${supported_docker_range}" \
+    --build-arg "NEWEST_DOCKER_VERSION=${newest_docker_version}" \
     --tag "$image" \
     --file server/Dockerfile.api-explorer-patch \
     server
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.366
+    v1.6.367
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -88,7 +92,7 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.366 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.367 \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION=v0.183.286 \
     PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT="${orchestration_engine_commit}" \
@@ -120,7 +124,7 @@ for marker in \
     PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.1 \
     PASTURESTACK_WEBSOCKET_PROXY_VERSION=0.23.13 \
     PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=0.55.1-pasturestack.2 \
-    PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-07-27 \
+    PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-08-28 \
     PASTURESTACK_CATALOG_COMMIT=bc446236c16f1170eb9130b4901af3d57dd82db4; do
     test "$(grep -Fxc "$marker" <<<"$image_environment")" = 1
 done
@@ -144,6 +148,13 @@ docker run --rm --entrypoint bash "$image" -lc '
         grep -F "\"subscribe\": \"cr\"" >/dev/null
     unzip -p "${resources_jar}" db/core-125.xml |
         grep -F "pasturestack-credential-secret-value-mediumtext" >/dev/null
+    app_config_jar=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
+        -name "cattle-app-config-*.jar" -print -quit)
+    test -n "${app_config_jar}"
+    unzip -p "${app_config_jar}" META-INF/cattle/api-server/defaults.properties |
+        grep -Fx "supported.docker.range=~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2" >/dev/null
+    unzip -p "${app_config_jar}" META-INF/cattle/api-server/defaults.properties |
+        grep -Fx "newest.docker.version=v29.7.2" >/dev/null
 '
 
 wrapper_paths=(
@@ -352,7 +363,7 @@ EOF
     fi
 '
 
-printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_unchanged=1 web_console_unchanged=1\n' \
+printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_unchanged=1 web_console_unchanged=1\n' \
     "$image" "$revision" "$base_image" "${orchestration_engine_release_tag#v}" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "${api_explorer_release_tag#v}" "$api_explorer_commit" "$api_explorer_artifact_sha256"
