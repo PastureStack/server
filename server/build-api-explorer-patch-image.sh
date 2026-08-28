@@ -272,7 +272,7 @@ docker run --rm --entrypoint bash "$image" -lc '
     test -n "${vendor_entry}"
     grep -aF "bs.collapse" "${vendor_entry}" >/dev/null
     grep -aF "bs.dropdown" "${vendor_entry}" >/dev/null
-    grep -F '"'"'"systemManaged":"SMTP 寄信服務由系統管理員集中設定，全系統共用。您的帳號不會儲存 SMTP 伺服器、寄件者或密碼。"'"'"' \
+    grep -F '"'"'"authPage.mfa.email.systemManaged":"SMTP 寄信服務由系統管理員集中設定，全系統共用。您的帳號不會儲存 SMTP 伺服器、寄件者或密碼。"'"'"' \
         /usr/share/cattle/war/translations/zh-tw.json >/dev/null
     unzip -p /usr/share/cattle/cattle.jar META-INF/MANIFEST.MF |
         tr -d "\r" |
