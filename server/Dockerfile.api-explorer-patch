@@ -146,6 +146,11 @@ ARG VSPHERE_CLI_BUNDLE_COMMIT=1452bf1fef4380a350338456467172dc5876c791
 ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=95eea0146ae9e67145800857e0153aa794fc0ba947e7fdb2768b572cd5971a2b
 ARG GOVC_BINARY_SHA256=a42b0649c723b76a2208467c821ff1a9b713b2c8c5ab762808c1d193bd112287
 ARG API_EXPLORER_RELEASE_BASE_URL=https://github.com/PastureStack/api-explorer/releases/download
+ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.71
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.71.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=386e00ad85d86d073fe2d9d46fc875d3d8a4ac347f0833c1abbaaad01dccfea5
+ARG WEB_CONSOLE_COMMIT=040ee8ac2c7454ac8a56c330f6496b09863e810b
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
 ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.286
 ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.286.jar
@@ -581,6 +586,115 @@ RUN set -eu; \
     rm -f "${archive}" "${listing}"
 
 RUN set -eu; \
+    archive=/tmp/web-console.tar.gz; \
+    listing=/tmp/web-console-files.txt; \
+    stage=/tmp/pasturestack-web-console-release; \
+    curl -fsSL \
+        --retry 5 \
+        --retry-all-errors \
+        --retry-delay 2 \
+        --connect-timeout 10 \
+        --max-time 300 \
+        -o "${archive}" \
+        "${WEB_CONSOLE_RELEASE_BASE_URL%/}/${WEB_CONSOLE_RELEASE_TAG}/${WEB_CONSOLE_ARTIFACT}"; \
+    echo "${WEB_CONSOLE_ARTIFACT_SHA256}  ${archive}" | sha256sum -c -; \
+    tar -tzf "${archive}" >"${listing}"; \
+    if grep -Eq '(^/|(^|/)\.\.(/|$))' "${listing}"; then \
+        echo "Unsafe Web Console archive path" >&2; \
+        exit 1; \
+    fi; \
+    if sort "${listing}" | uniq -d | grep -q .; then \
+        echo "Duplicate Web Console archive path" >&2; \
+        exit 1; \
+    fi; \
+    if tar -tvzf "${archive}" | grep -Eq '^[lh]'; then \
+        echo "Web Console archive may not contain links" >&2; \
+        exit 1; \
+    fi; \
+    while IFS= read -r member; do \
+        clean="${member#./}"; \
+        case "${clean}" in \
+            ${WEB_CONSOLE_RELEASE_TAG}/|${WEB_CONSOLE_RELEASE_TAG}/*) ;; \
+            *) echo "Unexpected Web Console archive member: ${member}" >&2; exit 1 ;; \
+        esac; \
+    done <"${listing}"; \
+    rm -rf "${stage}"; \
+    mkdir -p "${stage}"; \
+    tar --no-same-owner --no-same-permissions -xzf "${archive}" -C "${stage}"; \
+    test -z "$(find "${stage}" -type l -print -quit)"; \
+    package_root="${stage}/${WEB_CONSOLE_RELEASE_TAG}"; \
+    for required in \
+        VERSION.txt \
+        favicon.ico \
+        humans.txt \
+        index.html \
+        robots.txt \
+        assets \
+        assets/ui-light.css \
+        assets/ui-light.rtl.css \
+        assets/ui-dark.css \
+        assets/ui-dark.rtl.css \
+        licenses \
+        translations \
+        translations/zh-tw.json; do \
+        test -e "${package_root}/${required}"; \
+    done; \
+    test "$(cat "${package_root}/VERSION.txt")" = "${WEB_CONSOLE_RELEASE_TAG}"; \
+    test "$(find "${package_root}/translations" -maxdepth 1 -type f -name '*.json' | wc -l)" -eq 13; \
+    test ! -e "${package_root}/translations/none.json"; \
+    test "$(find "${package_root}" -type f -name '*.map' | wc -l)" -eq 0; \
+    ui_entry="$(find "${package_root}/assets" -maxdepth 1 -type f -name 'ui-*.js' -print -quit)"; \
+    test -n "${ui_entry}"; \
+    for marker in \
+        audit-log-filter-panel \
+        created_gte \
+        created_lte \
+        authenticatedAsAccountId \
+        eventTypeOperator \
+        descriptionOperator \
+        _notlike; do \
+        grep -aF "${marker}" "${ui_entry}" >/dev/null; \
+    done; \
+    for theme_asset in ui-light.css ui-light.rtl.css ui-dark.css ui-dark.rtl.css; do \
+        grep -F '.audit-log-filter-panel' "${package_root}/assets/${theme_asset}" >/dev/null; \
+        grep -F '.audit-log-filter-primary-grid' "${package_root}/assets/${theme_asset}" >/dev/null; \
+        grep -F '.audit-log-filter-condition' "${package_root}/assets/${theme_asset}" >/dev/null; \
+    done; \
+    grep -F '篩選稽核日誌' "${package_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '開始時間必須早於或等於結束時間' "${package_root}/translations/zh-tw.json" >/dev/null; \
+    web_root="$(readlink -f /usr/share/cattle/war)"; \
+    case "${web_root}" in \
+        /usr/share/cattle/*) ;; \
+        *) echo "Unsafe Web Console document root: ${web_root}" >&2; exit 1 ;; \
+    esac; \
+    rm -rf \
+        "${web_root}/assets" \
+        "${web_root}/ember-fetch" \
+        "${web_root}/licenses" \
+        "${web_root}/translations"; \
+    rm -f \
+        "${web_root}/VERSION.txt" \
+        "${web_root}/favicon.ico" \
+        "${web_root}/humans.txt" \
+        "${web_root}/index.html" \
+        "${web_root}/robots.txt"; \
+    cp -a "${package_root}/." "${web_root}/"; \
+    find \
+        "${web_root}/assets" \
+        "${web_root}/licenses" \
+        "${web_root}/translations" \
+        -exec touch -h -d "@${SOURCE_DATE_EPOCH}" {} +; \
+    touch -d "@${SOURCE_DATE_EPOCH}" \
+        "${web_root}/VERSION.txt" \
+        "${web_root}/favicon.ico" \
+        "${web_root}/humans.txt" \
+        "${web_root}/index.html" \
+        "${web_root}/robots.txt" \
+        "${web_root}" \
+        /tmp; \
+    rm -rf "${archive}" "${listing}" "${stage}"
+
+RUN set -eu; \
     archive=/tmp/api-explorer.tar.gz; \
     listing=/tmp/api-explorer-files.txt; \
     stage=/tmp/pasturestack-api-explorer; \
@@ -748,18 +862,21 @@ COPY --chmod=0755 patches/websocket-proxy-wrapper.sh /usr/bin/websocket-proxy
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with the reviewed Orchestration Engine, API Explorer, Go 1.27, OpenSSL 3.5.8, zlib 1.3.2, and a reduced runtime tool surface." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.367" \
+      org.opencontainers.image.version="v1.6.368" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.364" \
       org.opencontainers.image.base.digest="sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.367
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.368
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV CATTLE_API_UI_VERSION=1.1.18
 ENV CATTLE_CATTLE_VERSION=v0.183.286
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}
+ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
+ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
 ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.0
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-08-26
 ENV PASTURESTACK_COREUTILS_PROVIDER=gnu
