@@ -162,12 +162,39 @@ require_marker "$release_notes" \
 require_marker "$release_notes" \
     'unmatched vulnerability at any severity remains a release blocker.' \
     SERVER_RELEASE_NOTES_VEX_BOUNDARY_MISSING
+require_marker "$release_notes" \
+    'CVE-2026-75803' \
+    SERVER_RELEASE_NOTES_OPENSSL_FIX_MISSING
+require_marker "$release_notes" \
+    'CVE-2026-53910' \
+    SERVER_RELEASE_NOTES_DIFF3_CLOSURE_MISSING
 require_marker "$dockerfile" \
     'ARG ZLIB_SHA256=bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16' \
     SERVER_ZLIB_SOURCE_HASH_MISSING
 require_marker "$dockerfile" \
     'ENV PASTURESTACK_ZLIB_VERSION=1.3.2' \
     SERVER_ZLIB_VERSION_MISSING
+require_marker "$dockerfile" \
+    'ARG OPENSSL_VERSION=3.5.8' \
+    SERVER_OPENSSL_SOURCE_VERSION_MISSING
+require_marker "$dockerfile" \
+    'ARG OPENSSL_SHA256=a8f84a39918ec6415ce765d9b429d313ba97b8143169c172e734b9514464f5b2' \
+    SERVER_OPENSSL_SOURCE_HASH_MISSING
+require_marker "$dockerfile" \
+    'make test TESTS=test_evp_extra' \
+    SERVER_OPENSSL_TARGETED_TEST_MISSING
+require_marker "$dockerfile" \
+    'ENV PASTURESTACK_OPENSSL_VERSION=3.5.8' \
+    SERVER_OPENSSL_RUNTIME_IDENTITY_MISSING
+require_marker "$dockerfile" \
+    'ENV PASTURESTACK_DIFF3_HARDENING=removed' \
+    SERVER_DIFF3_REMOVAL_IDENTITY_MISSING
+require_marker "$build_script" \
+    'openssl version | grep -F "OpenSSL 3.5.8 25 Aug 2026"' \
+    SERVER_OPENSSL_IMAGE_VERSION_GATE_MISSING
+require_marker "$build_script" \
+    'ldd /usr/bin/curl | grep -F "/usr/lib/x86_64-linux-gnu/libssl.so.3"' \
+    SERVER_OPENSSL_CURL_LINKAGE_GATE_MISSING
 require_marker "$dockerfile" \
     'version_at_least openssl 3.5.5-1ubuntu3.4' \
     SERVER_OPENSSL_FIXED_VERSION_GATE_MISSING
@@ -183,6 +210,7 @@ require_marker "$dockerfile" \
 for removed_path in \
     /usr/bin/eu-readelf \
     /usr/bin/eu-strip \
+    /usr/bin/diff3 \
     /usr/bin/getfattr \
     /usr/bin/gpgv \
     /usr/bin/p11-kit \
@@ -299,15 +327,15 @@ bash -n "$build_script"
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
   and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.366"
-  and (.statements | length) == 18
+  and (.statements | length) == 20
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
-      == ["CVE-2024-52005", "CVE-2026-18798", "CVE-2026-27171", "CVE-2026-56391"]
+      == ["CVE-2024-52005", "CVE-2026-18798", "CVE-2026-27171", "CVE-2026-56391", "CVE-2026-75803"]
   and ([.statements[] | select(.status == "not_affected") | .vulnerability.name] | sort)
       == ["CVE-2024-2236", "CVE-2024-56433", "CVE-2025-1352",
           "CVE-2025-1376", "CVE-2025-66382", "CVE-2026-13757", "CVE-2026-18477",
           "CVE-2026-18508", "CVE-2026-27456", "CVE-2026-3184",
-          "CVE-2026-40228", "CVE-2026-54371", "CVE-2026-56392",
+          "CVE-2026-40228", "CVE-2026-53910", "CVE-2026-54371", "CVE-2026-56392",
           "GO-2026-5932"]
   and all(.statements[]; (.products | length) > 0)
   and all(.statements[].products[]; (.["@id"] | startswith("pkg:") and (contains("*") | not)))
@@ -337,4 +365,4 @@ for marker in \
         SERVER_CURRENT_PUBLISH_WORKFLOW_GATE_MISSING
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.366 base=v1.6.364 orchestration=0.183.286 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 zlib=1.3.2 source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 unresolved=0 legal_assets=complete\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.366 base=v1.6.364 orchestration=0.183.286 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 unresolved=0 legal_assets=complete\n'

@@ -98,6 +98,16 @@
       "impact_statement": "Ubuntu USN-8678-1 identifies 3.5.5-1ubuntu3.4 as the fixed Ubuntu 26.04 package version; the final runtime enforces that exact minimum."
     },
     {
+      "vulnerability": {"name": "CVE-2026-75803"},
+      "products": [
+        {"@id": "pkg:deb/ubuntu/libssl3t64@3.5.5-1ubuntu3.4?arch=amd64&distro=ubuntu-26.04"},
+        {"@id": "pkg:deb/ubuntu/openssl@3.5.5-1ubuntu3.4?arch=amd64&distro=ubuntu-26.04"},
+        {"@id": "pkg:deb/ubuntu/openssl-provider-legacy@3.5.5-1ubuntu3.4?arch=amd64&distro=ubuntu-26.04"}
+      ],
+      "status": "fixed",
+      "impact_statement": "The package database still describes the Ubuntu base layer, but the active OpenSSL CLI, libcrypto, libssl, engines, and legacy provider are replaced with verified upstream OpenSSL 3.5.8, the first 3.5 LTS release containing the fix, and their runtime paths and linkage are validated in the final image."
+    },
+    {
       "vulnerability": {"name": "CVE-2026-27171"},
       "products": [
         {"@id": "pkg:deb/ubuntu/zlib1g@1.3.dfsg%2Breally1.3.1-1ubuntu3?arch=amd64&distro=ubuntu-26.04&epoch=1"}
@@ -148,6 +158,15 @@
       "status": "not_affected",
       "justification": "vulnerable_code_not_present",
       "impact_statement": "The vulnerable systemd-journald executable, service units, and sockets are removed from the final runtime."
+    },
+    {
+      "vulnerability": {"name": "CVE-2026-53910"},
+      "products": [
+        {"@id": "pkg:deb/ubuntu/diffutils@3.12-1?arch=amd64&distro=ubuntu-26.04&epoch=1"}
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "The advisory is specific to diff3 line mapping. The final Server runtime removes /usr/bin/diff3 and validates its absence while retaining only the unaffected diffutils tools required by existing image checks."
     },
     {
       "vulnerability": {"name": "CVE-2026-54371"},
