@@ -167,9 +167,10 @@ web_console_hashes()
     docker run --rm --entrypoint bash "$candidate" -lc '
         set -euo pipefail
         web_root=$(readlink -f /usr/share/cattle/war)
+        cd "${web_root}"
         {
-            find "${web_root}/assets" "${web_root}/translations" -type f -print0
-            printf "%s\0" "${web_root}/index.html" "${web_root}/favicon.ico"
+            find assets licenses translations -type f -print0
+            printf "%s\0" VERSION.txt favicon.ico humans.txt index.html robots.txt
         } | sort -z | xargs -0 sha256sum
     '
 }
