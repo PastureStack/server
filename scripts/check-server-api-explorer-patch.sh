@@ -192,6 +192,9 @@ require_marker "$dockerfile" \
     'ARG COREUTILS_SHA256=2033b8a3049c06bff49a9e3cea72bdf4683bcd0cbeb975211dd56dbaf8b736ae' \
     SERVER_COREUTILS_SOURCE_HASH_MISSING
 require_marker "$dockerfile" \
+    'https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VERSION}.tar.gz' \
+    SERVER_COREUTILS_PRIMARY_SOURCE_MISSING
+require_marker "$dockerfile" \
     'ENV PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11' \
     SERVER_COREUTILS_UNIQ_VERSION_MISSING
 require_marker "$dockerfile" \
