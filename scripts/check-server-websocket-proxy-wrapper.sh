@@ -44,11 +44,13 @@ require_marker server/patches/websocket-proxy-wrapper.sh 'attempts="${PASTURESTA
 require_marker server/patches/websocket-proxy-wrapper.sh 'endpoint="${PASTURESTACK_CATALOG_BOOTSTRAP_URL:-http://127.0.0.1:8088/v1-catalog/templates}"' SERVER_CATALOG_BOOTSTRAP_ENDPOINT_MISSING
 require_marker server/patches/websocket-proxy-wrapper.sh '"${endpoint}?action=refresh"' SERVER_CATALOG_BOOTSTRAP_REFRESH_MISSING
 require_marker server/patches/websocket-proxy-wrapper.sh 'PastureStack Catalog bootstrap verified a non-empty collection.' SERVER_CATALOG_BOOTSTRAP_SUCCESS_MARKER_MISSING
-require_marker server/patches/websocket-proxy-wrapper.sh '[ -x /usr/bin/pasturestack-console-broker ]' SERVER_WEBSOCKET_PROXY_BROKER_EXECUTABLE_TRIGGER_MISSING
+require_marker server/patches/websocket-proxy-wrapper.sh 'console_broker="${PASTURESTACK_CONSOLE_BROKER_BIN:-/usr/bin/pasturestack-console-broker}"' SERVER_WEBSOCKET_PROXY_BROKER_EXECUTABLE_TRIGGER_MISSING
 require_marker server/patches/websocket-proxy-wrapper.sh 'ready_connect_timeout="${RC16_CATTLE_READY_CONNECT_TIMEOUT:-2}"' SERVER_WEBSOCKET_PROXY_READY_CONNECT_TIMEOUT_MISSING
 require_marker server/patches/websocket-proxy-wrapper.sh 'ready_max_time="${RC16_CATTLE_READY_CURL_TIMEOUT:-5}"' SERVER_WEBSOCKET_PROXY_READY_MAX_TIME_MISSING
 require_marker server/patches/websocket-proxy-wrapper.sh 'export PROXY_LISTEN_ADDRESS="${PASTURESTACK_CONSOLE_PROXY_LISTEN_ADDRESS:-:8083}"' SERVER_WEBSOCKET_PROXY_PRIVATE_LISTENER_MISSING
 require_marker server/patches/websocket-proxy-wrapper.sh 'export PROXY_CATTLE_ADDRESS="${PASTURESTACK_CONSOLE_APPLICATION_ADDRESS:-127.0.0.1:8081}"' SERVER_WEBSOCKET_PROXY_APPLICATION_ADDRESS_MISSING
+require_marker server/patches/websocket-proxy-wrapper.sh '"--listen-address=${PROXY_LISTEN_ADDRESS}"' SERVER_WEBSOCKET_PROXY_LISTENER_ARG_NORMALIZATION_MISSING
+require_marker server/patches/websocket-proxy-wrapper.sh '"--platform-address=${PROXY_CATTLE_ADDRESS}"' SERVER_WEBSOCKET_PROXY_PLATFORM_ARG_NORMALIZATION_MISSING
 require_marker server/patches/websocket-proxy-wrapper.sh 'ready_address="${PASTURESTACK_CONSOLE_APPLICATION_ADDRESS:-127.0.0.1:8081}"' SERVER_WEBSOCKET_PROXY_APPLICATION_READY_ADDRESS_MISSING
 require_marker server/patches/websocket-proxy-wrapper.sh 'curl -sS -o /dev/null -w "%{http_code}" --connect-timeout "$ready_connect_timeout" --max-time "$ready_max_time" "$ready_url"' SERVER_WEBSOCKET_PROXY_READY_CURL_NOT_BOUNDED
 reject_marker server/patches/websocket-proxy-wrapper.sh 'curl -sS -o /dev/null -w "%{http_code}" --max-time "${RC16_CATTLE_READY_CURL_TIMEOUT:-5}" "$ready_url"' SERVER_WEBSOCKET_PROXY_READY_LEGACY_CURL
@@ -103,6 +105,32 @@ for mapping in \
     failure_count=$((failure_count + 1))
   fi
 done
+
+cat >"$sample_dir/pasturestack-console-broker" <<'EOF'
+#!/usr/bin/env bash
+exit 0
+EOF
+chmod +x "$sample_dir/pasturestack-console-broker"
+proxy_output="$sample_dir/output-websocket-proxy-routing"
+PASTURESTACK_CONSOLE_BROKER_BIN="$sample_dir/pasturestack-console-broker" \
+  PASTURESTACK_CONSOLE_PROXY_LISTEN_ADDRESS=:19083 \
+  PASTURESTACK_CONSOLE_APPLICATION_ADDRESS=127.0.0.1:19081 \
+  RC16_WRAPPER_REAL_DIR="$sample_dir" \
+  RC16_CATTLE_READY_TIMEOUT=0 \
+  "$sample_dir/websocket-proxy" \
+    --listen-address=:8080 \
+    --tls-listen-address=:8080 \
+    --platform-address=localhost:8081 \
+    --https-proxy-protocol-ports=443 >"$proxy_output"
+
+if ! grep -Fx 'ARGS=--listen-address=:19083 --platform-address=127.0.0.1:19081 --https-proxy-protocol-ports=443' "$proxy_output" >/dev/null; then
+  printf 'SERVER_WEBSOCKET_PROXY_ROUTING_ARGS_NOT_NORMALIZED\n' >&2
+  failure_count=$((failure_count + 1))
+fi
+if grep -E -- '(^| )--tls-listen-address(=| |$)' "$proxy_output" >/dev/null; then
+  printf 'SERVER_WEBSOCKET_PROXY_TLS_LISTENER_NOT_DISABLED\n' >&2
+  failure_count=$((failure_count + 1))
+fi
 
 cat >"$sample_dir/catalog-service.real" <<'EOF'
 #!/usr/bin/env bash

@@ -545,6 +545,11 @@ RUN set -eu; \
     /usr/bin/uniq --version | grep -F 'uniq (GNU coreutils) 9.11'; \
     /usr/sbin/mariadbd --version
 
+# The current orchestration engine supplies websocket-proxy listener flags
+# explicitly. Install the reviewed compatibility wrapper so the console broker
+# remains the public :8080 owner while the authenticated proxy stays on :8083.
+COPY --chmod=0755 patches/websocket-proxy-wrapper.sh /usr/bin/websocket-proxy
+
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with the reviewed Orchestration Engine, API Explorer, Go 1.27, zlib 1.3.2, and a reduced runtime tool surface." \
       org.opencontainers.image.licenses="Apache-2.0" \

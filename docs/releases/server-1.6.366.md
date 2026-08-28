@@ -14,7 +14,11 @@ the digest-pinned Server v1.6.364 build base. The same recipe reapplies the
 v1.6.365 runtime hardening before the Server image verifies the
 orchestration manifest, the exact embedded distributed-cache JAR, the API
 Explorer package identity, and the unchanged first-party service wrappers and
-Web Console.
+Web Console. The Server compatibility wrapper also normalizes the upgraded
+Orchestration Engine's explicit WebSocket proxy flags: the Console broker keeps
+the public `:8080` listener, the authenticated proxy uses private `:8083`, and
+the application remains on `127.0.0.1:8081`. This avoids changing the public
+API port while resolving the candidate listener collision.
 
 The release keeps the v1.6.365 reduced runtime surface and its OpenVEX
 decisions, including GNU coreutils fix commit
