@@ -38,7 +38,7 @@ RUN set -eux; \
     grep -F "Upstream-Commit: ${COREUTILS_UNIQ_FIX_COMMIT}" /src/coreutils-CVE-2026-56391.patch; \
     curl -fsSL --retry 5 --retry-all-errors --connect-timeout 10 --max-time 300 \
         -o coreutils.tar.gz \
-        "https://ftpmirror.gnu.org/coreutils/coreutils-${COREUTILS_VERSION}.tar.gz"; \
+        "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VERSION}.tar.gz"; \
     echo "${COREUTILS_SHA256}  coreutils.tar.gz" | sha256sum -c -; \
     tar -xzf coreutils.tar.gz; \
     cd "coreutils-${COREUTILS_VERSION}"; \
