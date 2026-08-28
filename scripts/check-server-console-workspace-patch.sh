@@ -83,7 +83,7 @@ grep -F '"confirmTerminateTitle":"要結束工作階段嗎？"' \
   server/Dockerfile.console-workspace-patch >/dev/null
 grep -F 'catalog_commit=c3a8e9876a74dbf98ce16ae504b947c5d80582c1' \
   server/build-console-workspace-patch-image.sh >/dev/null
-grep -F '[ -x /usr/bin/pasturestack-console-broker ]' \
+grep -F 'console_broker="${PASTURESTACK_CONSOLE_BROKER_BIN:-/usr/bin/pasturestack-console-broker}"' \
   server/patches/websocket-proxy-wrapper.sh >/dev/null
 grep -F 'exec /usr/bin/s6-setuidgid cattle /usr/bin/pasturestack-console-broker' \
   server/console-broker/service/run >/dev/null

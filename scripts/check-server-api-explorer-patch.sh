@@ -83,6 +83,12 @@ require_marker "$build_script" \
     'image_orchestration' \
     SERVER_ORCHESTRATION_IMAGE_HASH_GATE_MISSING
 require_marker "$dockerfile" \
+    'COPY --chmod=0755 patches/websocket-proxy-wrapper.sh /usr/bin/websocket-proxy' \
+    SERVER_WEBSOCKET_PROXY_ROUTING_WRAPPER_INSTALL_MISSING
+require_marker "$build_script" \
+    'websocket_wrapper_sha256=$(sha256sum server/patches/websocket-proxy-wrapper.sh' \
+    SERVER_WEBSOCKET_PROXY_ROUTING_WRAPPER_HASH_GATE_MISSING
+require_marker "$dockerfile" \
     'ARG GO_BUILDER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452' \
     SERVER_RUNTIME_GO_BUILDER_NOT_CURRENT
 require_marker "$dockerfile" \

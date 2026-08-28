@@ -32,12 +32,39 @@ if [ "$name" = "websocket-proxy" ] &&
   unset PROXY_TLS_LISTEN_ADDRESS
 fi
 
+console_broker="${PASTURESTACK_CONSOLE_BROKER_BIN:-/usr/bin/pasturestack-console-broker}"
 if [ "$name" = "websocket-proxy" ] &&
-   [ -x /usr/bin/pasturestack-console-broker ]; then
+   [ -x "$console_broker" ]; then
   # The broker owns the public listener.  Keep the existing authenticated edge
   # proxy on a private port and preserve its direct application control channel.
+  # Newer orchestration-engine releases pass these addresses as command-line
+  # flags, which take precedence over PROXY_* variables, so normalize only the
+  # proxy's routing flags while preserving every unrelated argument.
   export PROXY_LISTEN_ADDRESS="${PASTURESTACK_CONSOLE_PROXY_LISTEN_ADDRESS:-:8083}"
   export PROXY_CATTLE_ADDRESS="${PASTURESTACK_CONSOLE_APPLICATION_ADDRESS:-127.0.0.1:8081}"
+
+  rewritten_args=()
+  skip_value=false
+  for arg in "$@"; do
+    if [ "$skip_value" = true ]; then
+      skip_value=false
+      continue
+    fi
+    case "$arg" in
+      --listen-address|--tls-listen-address|--platform-address|--cattle-address|-listen-address|-tls-listen-address|-platform-address|-cattle-address)
+        skip_value=true
+        ;;
+      --listen-address=*|--tls-listen-address=*|--platform-address=*|--cattle-address=*|-listen-address=*|-tls-listen-address=*|-platform-address=*|-cattle-address=*)
+        ;;
+      *)
+        rewritten_args+=("$arg")
+        ;;
+    esac
+  done
+  set -- \
+    "--listen-address=${PROXY_LISTEN_ADDRESS}" \
+    "--platform-address=${PROXY_CATTLE_ADDRESS}" \
+    "${rewritten_args[@]}"
 fi
 
 case "$name" in

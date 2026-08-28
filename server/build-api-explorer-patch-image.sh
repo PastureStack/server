@@ -133,13 +133,17 @@ wrapper_paths=(
     /usr/bin/catalog-service
     /usr/bin/compose-executor
     /usr/bin/host-provisioner
-    /usr/bin/websocket-proxy
 )
 base_wrappers=$(docker run --rm --entrypoint sha256sum "$base_image" \
     "${wrapper_paths[@]}")
 image_wrappers=$(docker run --rm --entrypoint sha256sum "$image" \
     "${wrapper_paths[@]}")
 test "$base_wrappers" = "$image_wrappers"
+
+websocket_wrapper_sha256=$(sha256sum server/patches/websocket-proxy-wrapper.sh | awk '{print $1}')
+test "$(docker run --rm --entrypoint sha256sum "$image" /usr/bin/websocket-proxy)" = \
+    "${websocket_wrapper_sha256}  /usr/bin/websocket-proxy"
+docker run --rm --entrypoint bash "$image" -lc 'test -x /usr/bin/websocket-proxy'
 
 web_console_hashes()
 {
