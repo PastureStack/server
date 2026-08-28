@@ -91,6 +91,21 @@ require_marker "$dockerfile" \
 require_marker "$dockerfile" \
     'test "$(readlink -f /usr/share/cattle/war)" = "${new_web_root}"' \
     SERVER_ORCHESTRATION_EXPLODED_ROOT_BINDING_MISSING
+require_marker "$dockerfile" \
+    'web_console_stage=/tmp/pasturestack-web-console' \
+    SERVER_WEB_CONSOLE_PRESERVATION_STAGE_MISSING
+require_marker "$dockerfile" \
+    'cp -a "${old_web_root}/${static_path}" "${web_console_stage}/${static_path}"' \
+    SERVER_WEB_CONSOLE_PRESERVATION_COPY_MISSING
+require_marker "$dockerfile" \
+    'test -z "$(find "${web_console_stage}" -type l -print -quit)"' \
+    SERVER_WEB_CONSOLE_PRESERVATION_SYMLINK_GATE_MISSING
+require_marker "$build_script" \
+    'find assets licenses translations -type f -print0' \
+    SERVER_WEB_CONSOLE_CONTENT_HASH_GATE_MISSING
+require_marker "$build_script" \
+    'printf "%s\0" VERSION.txt favicon.ico humans.txt index.html robots.txt' \
+    SERVER_WEB_CONSOLE_ROOT_FILE_HASH_GATE_MISSING
 require_marker "$build_script" \
     'grep -F "pasturestack-catalog-pinned-commit"' \
     SERVER_CATALOG_PINNED_COMMIT_IMAGE_GATE_MISSING

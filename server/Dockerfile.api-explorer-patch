@@ -396,6 +396,22 @@ RUN set -eu; \
     esac; \
     test -L /usr/share/cattle/war; \
     test -d "${old_web_root}/api-ui"; \
+    web_console_stage=/tmp/pasturestack-web-console; \
+    rm -rf "${web_console_stage}"; \
+    mkdir -p "${web_console_stage}"; \
+    for static_path in \
+        VERSION.txt \
+        assets \
+        favicon.ico \
+        humans.txt \
+        index.html \
+        licenses \
+        robots.txt \
+        translations; do \
+        test -e "${old_web_root}/${static_path}"; \
+        cp -a "${old_web_root}/${static_path}" "${web_console_stage}/${static_path}"; \
+    done; \
+    test -z "$(find "${web_console_stage}" -type l -print -quit)"; \
     cp -a "${old_web_root}/api-ui" /tmp/pasturestack-api-ui; \
     install -m 0644 "${archive}" /usr/share/cattle/cattle.jar; \
     engine_hash="$(sha256sum /usr/share/cattle/cattle.jar | awk '{print $1}')"; \
@@ -442,6 +458,19 @@ RUN set -eu; \
         schema/v1/admin.ser \
         schema/v1/service.ser; \
     cd "${new_web_root}"; \
+    for static_path in \
+        VERSION.txt \
+        assets \
+        favicon.ico \
+        humans.txt \
+        index.html \
+        licenses \
+        robots.txt \
+        translations; do \
+        test ! -e "${new_web_root}/${static_path}"; \
+        mv "${web_console_stage}/${static_path}" "${new_web_root}/${static_path}"; \
+    done; \
+    rmdir "${web_console_stage}"; \
     rm -rf api-ui; \
     mv /tmp/pasturestack-api-ui api-ui; \
     test "$(readlink -f /usr/share/cattle/war)" = "${new_web_root}"; \
