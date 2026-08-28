@@ -10,18 +10,18 @@ machine names.
 
 ## Supported Docker versions
 
-PastureStack Server `v1.6.305` recognizes the following exact modern Docker
-Engine releases:
+PastureStack Server `v1.6.367` recognizes the following modern Docker Engine
+compatibility ranges:
 
 | Docker Engine | Validated host | cgroup | Agent line | Result |
 |---|---|---|---|---|
-| `29.7.2` | Ubuntu 24.04.4 LTS | v2 | `v1.2.31` | Supported |
-| `29.4.1` | Ubuntu 24.04.4 LTS | v2 | `v1.2.31` | Supported |
+| `29.4.1` through `29.7.2` (inclusive) | Ubuntu 24.04.4 LTS | v2 | `v1.2.31` | Supported |
 | `24.0.9` | Ubuntu 22.04.5 LTS | v1 | legacy-compatible agent | Supported |
 
-These are exact evidence-backed releases, not broad major or minor ranges.
-Docker 25 through 28 and other Docker 29 patch releases remain untested unless
-they are listed above. Preserved legacy ranges remain available for compatible
+The Docker 29 interval includes every stable patch release between the tested
+lower and upper boundaries, including `29.6.2`. Versions below `29.4.1`, above
+`29.7.2`, Docker 25 through 28, and Docker 30 or newer remain outside this
+bounded policy. Preserved legacy ranges remain available for compatible
 installations, but new deployments should use `29.7.2`.
 
 The two-host matrix covered registration and reconnect, control-plane proxy
@@ -40,8 +40,8 @@ PastureStack build tooling pins the `29.7.2` archive to SHA-256
 
 Before enrolling a durable host, reproduce its operating-system, kernel,
 storage-driver, cgroup, and Docker combination on a disposable VM. Treat any
-combination not listed above as unsupported until its evidence is recorded and
-reviewed.
+combination outside the ranges above as unsupported until its evidence is
+recorded and reviewed.
 
 ## Amazon EC2 image requirements
 
