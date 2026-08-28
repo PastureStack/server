@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 ARG GO_BUILDER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.365@sha256:0912675836d012cf0d1492412a729685687c05f5b13d529fd59cffe90f3e761e
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5
 
 FROM ${GO_BUILDER_IMAGE} AS console_broker_build
 
@@ -550,8 +550,8 @@ LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.licenses="Apache-2.0" \
       org.opencontainers.image.version="v1.6.366" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
-      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.365" \
-      org.opencontainers.image.base.digest="sha256:0912675836d012cf0d1492412a729685687c05f5b13d529fd59cffe90f3e761e"
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.364" \
+      org.opencontainers.image.base.digest="sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5"
 
 ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.366
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27

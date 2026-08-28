@@ -12,7 +12,7 @@ fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
-base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.365@sha256:0912675836d012cf0d1492412a729685687c05f5b13d529fd59cffe90f3e761e}
+base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
 orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.286}
 orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.286.jar}
@@ -36,7 +36,7 @@ build_options=()
 [[ "$api_explorer_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$api_explorer_release_tag" =~ ^v[0-9][0-9A-Za-z.-]*$ ]]
 [[ "$api_explorer_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
-[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.365@sha256:0912675836d012cf0d1492412a729685687c05f5b13d529fd59cffe90f3e761e ]]
+[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5 ]]
 for release_base_url in "$orchestration_engine_release_base_url" "$api_explorer_release_base_url"; do
 case "$release_base_url" in
     https://*) ;;
@@ -83,7 +83,7 @@ test "$(docker image inspect "$image" \
     "$revision"
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.base.name"}}')" = \
-    ghcr.io/pasturestack/server:v1.6.365
+    ghcr.io/pasturestack/server:v1.6.364
 
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')

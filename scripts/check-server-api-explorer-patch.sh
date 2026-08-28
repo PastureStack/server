@@ -29,7 +29,7 @@ require_marker()
 }
 
 require_marker "$dockerfile" \
-    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.365@sha256:0912675836d012cf0d1492412a729685687c05f5b13d529fd59cffe90f3e761e' \
+    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5' \
     SERVER_API_EXPLORER_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
     'ARG UBUNTU_SNAPSHOT=20260826T000000Z' \
@@ -249,10 +249,10 @@ require_marker "$build_script" \
     SERVER_API_EXPLORER_PATCH_WEB_CONSOLE_REGRESSION_GATE_MISSING
 
 require_marker "$dockerfile" \
-    'org.opencontainers.image.base.digest="sha256:0912675836d012cf0d1492412a729685687c05f5b13d529fd59cffe90f3e761e"' \
+    'org.opencontainers.image.base.digest="sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5"' \
     SERVER_API_EXPLORER_PATCH_BASE_DIGEST_MISSING
 require_marker "$build_script" \
-    'ghcr.io/pasturestack/server:v1.6.365@sha256:0912675836d012cf0d1492412a729685687c05f5b13d529fd59cffe90f3e761e' \
+    'ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5' \
     SERVER_API_EXPLORER_PATCH_BUILD_BASE_DIGEST_MISSING
 
 if grep -RInE '(^|[^[:alnum:]])[A-Za-z]:\\Users\\|/home/[^/[:space:]]+/|(^|[^[:digit:]])10[.][[:digit:]]{1,3}[.][[:digit:]]{1,3}[.][[:digit:]]{1,3}([^[:digit:]]|$)|[[:alnum:]._%+-]+@[[:alnum:].-]+[.][[:alpha:]]{2,}' \
@@ -304,4 +304,4 @@ for marker in \
         SERVER_CURRENT_PUBLISH_WORKFLOW_GATE_MISSING
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.366 base=v1.6.365 orchestration=0.183.286 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 zlib=1.3.2 source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 unresolved=0 legal_assets=complete\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.366 base=v1.6.364 orchestration=0.183.286 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 zlib=1.3.2 source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 unresolved=0 legal_assets=complete\n'
