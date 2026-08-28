@@ -117,7 +117,15 @@ jobs:
           set -Eeuo pipefail
           evidence="$RUNNER_TEMP/server-evidence"
           rootfs="$RUNNER_TEMP/server-rootfs"
+          capture_candidate_evidence() {
+            if docker inspect "$CANDIDATE_NAME" >/dev/null 2>&1; then
+              docker logs "$CANDIDATE_NAME" >"$evidence/candidate.log" 2>&1 || true
+              docker inspect "$CANDIDATE_NAME" >"$evidence/candidate-inspect.json" \
+                2>/dev/null || true
+            fi
+          }
           cleanup_candidate() {
+            capture_candidate_evidence
             docker rm -f "$CANDIDATE_NAME" >/dev/null 2>&1 || true
             docker volume rm "$CATTLE_VOLUME" "$MYSQL_VOLUME" "$MYSQL_LOG_VOLUME" \
               >/dev/null 2>&1 || true
@@ -139,6 +147,10 @@ jobs:
           wait_for_pong() {
             local body attempt
             for attempt in $(seq 1 180); do
+              if [[ "$(docker inspect "$CANDIDATE_NAME" \
+                --format '{{.State.Running}}' 2>/dev/null || true)" != true ]]; then
+                return 1
+              fi
               body="$(curl -fsS --max-time 3 http://127.0.0.1:18082/ping 2>/dev/null || true)"
               if [[ "$body" == pong ]]; then
                 printf '%s' "$attempt"
