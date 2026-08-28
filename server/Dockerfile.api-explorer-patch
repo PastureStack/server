@@ -652,12 +652,13 @@ RUN set -eu; \
         authenticatedAsAccountId \
         eventTypeOperator \
         descriptionOperator \
-        ember-basic-dropdown-wormhole \
+        basic-dropdown-wormhole \
         ui/utils/bootstrap-runtime \
         window.bootstrap= \
         _notlike; do \
         grep -aF "${marker}" "${ui_entry}" >/dev/null; \
     done; \
+    grep -aF 'ember-basic-dropdown-wormhole' "${package_root}"/assets/*.js >/dev/null; \
     for theme_asset in ui-light.css ui-light.rtl.css ui-dark.css ui-dark.rtl.css; do \
         grep -F '.audit-log-filter-panel' "${package_root}/assets/${theme_asset}" >/dev/null; \
         grep -F '.audit-log-filter-primary-grid' "${package_root}/assets/${theme_asset}" >/dev/null; \

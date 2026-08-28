@@ -217,10 +217,11 @@ docker run --rm --entrypoint bash "$image" -lc '
         authenticatedAsAccountId \
         eventTypeOperator \
         descriptionOperator \
-        ember-basic-dropdown-wormhole \
+        basic-dropdown-wormhole \
         _notlike; do
         grep -aF "${marker}" "${ui_entry}" >/dev/null
     done
+    grep -aF "ember-basic-dropdown-wormhole" "${web_root}"/assets/*.js >/dev/null
     for theme_asset in ui-light.css ui-light.rtl.css ui-dark.css ui-dark.rtl.css; do
         grep -F ".audit-log-filter-panel" "${web_root}/assets/${theme_asset}" >/dev/null
         grep -F ".audit-log-filter-primary-grid" "${web_root}/assets/${theme_asset}" >/dev/null

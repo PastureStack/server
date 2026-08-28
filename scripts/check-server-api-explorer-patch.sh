@@ -137,6 +137,9 @@ require_marker "$dockerfile" \
     'ember-basic-dropdown-wormhole' \
     SERVER_WEB_CONSOLE_DROPDOWN_DESTINATION_GATE_MISSING
 require_marker "$dockerfile" \
+    'basic-dropdown-wormhole' \
+    SERVER_WEB_CONSOLE_DROPDOWN_COMPONENT_GATE_MISSING
+require_marker "$dockerfile" \
     "grep -F '篩選稽核日誌'" \
     SERVER_WEB_CONSOLE_ZH_TW_FILTER_GATE_MISSING
 require_marker "$dockerfile" \
