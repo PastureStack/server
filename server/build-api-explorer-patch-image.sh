@@ -186,7 +186,9 @@ launcher_wrapper_sha256=57b6422dc4a51d4c5448306a4efad182517ed1622bba1257df3c270c
 image_wrappers=$(docker run --rm --entrypoint sha256sum "$image" \
     "${wrapper_paths[@]}")
 expected_image_wrappers=$(
-    printf '%s  %s\n' "$launcher_wrapper_sha256" "${wrapper_paths[@]}"
+    for wrapper_path in "${wrapper_paths[@]}"; do
+        printf '%s  %s\n' "$launcher_wrapper_sha256" "$wrapper_path"
+    done
 )
 if [[ "$image_wrappers" != "$expected_image_wrappers" ]]; then
     printf 'SERVER_LAUNCHER_WRAPPER_INVALID expected_sha256=%s\n%s\n' \
