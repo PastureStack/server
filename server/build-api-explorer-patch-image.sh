@@ -301,9 +301,9 @@ EOF
     grep -aF "1.3.2" /usr/lib/x86_64-linux-gnu/libz.so.1.3.2 >/dev/null
     ldd /usr/sbin/mariadbd | grep -F "/usr/lib/x86_64-linux-gnu/libz.so.1" >/dev/null
     openssl version | grep -F "OpenSSL 3.5.8 25 Aug 2026" >/dev/null
-    test "$(openssl version -d)" = 'OPENSSLDIR: "/usr/lib/ssl"'
-    test "$(openssl version -e)" = 'ENGINESDIR: "/usr/lib/x86_64-linux-gnu/engines-3"'
-    test "$(openssl version -m)" = 'MODULESDIR: "/usr/lib/x86_64-linux-gnu/ossl-modules"'
+    test "$(openssl version -d)" = "OPENSSLDIR: \"/usr/lib/ssl\""
+    test "$(openssl version -e)" = "ENGINESDIR: \"/usr/lib/x86_64-linux-gnu/engines-3\""
+    test "$(openssl version -m)" = "MODULESDIR: \"/usr/lib/x86_64-linux-gnu/ossl-modules\""
     openssl list -providers -provider legacy | grep -F "OpenSSL Legacy Provider" >/dev/null
     ldd /usr/bin/curl | grep -F "/usr/lib/x86_64-linux-gnu/libssl.so.3" >/dev/null
     ldd /usr/bin/curl | grep -F "/usr/lib/x86_64-linux-gnu/libcrypto.so.3" >/dev/null
