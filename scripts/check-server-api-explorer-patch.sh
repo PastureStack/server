@@ -134,11 +134,11 @@ require_marker "$dockerfile" \
     'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}' \
     SERVER_WEB_CONSOLE_RUNTIME_VERSION_MISSING
 require_marker "$build_script" \
-    'find assets licenses translations -type f -print0' \
-    SERVER_WEB_CONSOLE_CONTENT_HASH_GATE_MISSING
+    'PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}"' \
+    SERVER_WEB_CONSOLE_RUNTIME_HASH_GATE_MISSING
 require_marker "$build_script" \
-    'printf "%s\0" VERSION.txt favicon.ico humans.txt index.html robots.txt' \
-    SERVER_WEB_CONSOLE_ROOT_FILE_HASH_GATE_MISSING
+    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.72"' \
+    SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING
 require_marker "$build_script" \
     'grep -F "pasturestack-catalog-pinned-commit"' \
     SERVER_CATALOG_PINNED_COMMIT_IMAGE_GATE_MISSING
@@ -345,8 +345,11 @@ require_marker "$build_script" \
     'orchestration_updated=1' \
     SERVER_ORCHESTRATION_UPDATE_GATE_MISSING
 require_marker "$build_script" \
-    'wrappers_unchanged=1' \
+    'wrappers_pinned=1' \
     SERVER_WRAPPER_REGRESSION_GATE_MISSING
+require_marker "$build_script" \
+    'launcher_wrapper_sha256=57b6422dc4a51d4c5448306a4efad182517ed1622bba1257df3c270c5c23ee47' \
+    SERVER_WRAPPER_HASH_GATE_MISSING
 require_marker "$build_script" \
     'audit_log_filters=1' \
     SERVER_API_EXPLORER_PATCH_WEB_CONSOLE_REGRESSION_GATE_MISSING

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
+
+trap 'status=$?; printf "SERVER_IMAGE_BUILD_FAILED line=%s exit=%s command=%q\n" \
+    "$LINENO" "$status" "$BASH_COMMAND" >&2; exit "$status"' ERR
 
 server_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 repo_root=$(cd "${server_dir}/.." && pwd)
@@ -179,31 +182,22 @@ wrapper_paths=(
     /usr/bin/compose-executor
     /usr/bin/host-provisioner
 )
-base_wrappers=$(docker run --rm --entrypoint sha256sum "$base_image" \
-    "${wrapper_paths[@]}")
+launcher_wrapper_sha256=57b6422dc4a51d4c5448306a4efad182517ed1622bba1257df3c270c5c23ee47
 image_wrappers=$(docker run --rm --entrypoint sha256sum "$image" \
     "${wrapper_paths[@]}")
-test "$base_wrappers" = "$image_wrappers"
+expected_image_wrappers=$(
+    printf '%s  %s\n' "$launcher_wrapper_sha256" "${wrapper_paths[@]}"
+)
+if [[ "$image_wrappers" != "$expected_image_wrappers" ]]; then
+    printf 'SERVER_LAUNCHER_WRAPPER_INVALID expected_sha256=%s\n%s\n' \
+        "$launcher_wrapper_sha256" "$image_wrappers" >&2
+    exit 1
+fi
 
 websocket_wrapper_sha256=$(sha256sum server/patches/websocket-proxy-wrapper.sh | awk '{print $1}')
 test "$(docker run --rm --entrypoint sha256sum "$image" /usr/bin/websocket-proxy)" = \
     "${websocket_wrapper_sha256}  /usr/bin/websocket-proxy"
 docker run --rm --entrypoint bash "$image" -lc 'test -x /usr/bin/websocket-proxy'
-
-web_console_hashes()
-{
-    local candidate=$1
-    docker run --rm --entrypoint bash "$candidate" -lc '
-        set -euo pipefail
-        web_root=$(readlink -f /usr/share/cattle/war)
-        cd "${web_root}"
-        {
-            find assets licenses translations -type f -print0
-            printf "%s\0" VERSION.txt favicon.ico humans.txt index.html robots.txt
-        } | sort -z | xargs -0 sha256sum
-    '
-}
-test "$(web_console_hashes "$base_image")" != "$(web_console_hashes "$image")"
 
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
@@ -407,7 +401,7 @@ EOF
     fi
 '
 
-printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s audit_log_filters=1 docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_unchanged=1\n' \
+printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s audit_log_filters=1 docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_pinned=1\n' \
     "$image" "$revision" "$base_image" "${orchestration_engine_release_tag#v}" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "${api_explorer_release_tag#v}" "$api_explorer_commit" "$api_explorer_artifact_sha256" \
