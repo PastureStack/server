@@ -652,6 +652,8 @@ RUN set -eu; \
         authenticatedAsAccountId \
         eventTypeOperator \
         descriptionOperator \
+        ui/utils/bootstrap-runtime \
+        window.bootstrap= \
         _notlike; do \
         grep -aF "${marker}" "${ui_entry}" >/dev/null; \
     done; \
