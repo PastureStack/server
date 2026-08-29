@@ -14,6 +14,7 @@ import (
 )
 
 type auditExportRow struct {
+	EventID      string `json:"eventId"`
 	Created      string `json:"created"`
 	Environment  string `json:"environment"`
 	User         string `json:"user"`
@@ -24,6 +25,8 @@ type auditExportRow struct {
 	Description  string `json:"description"`
 	ResourceType string `json:"resourceType"`
 	ResourceID   string `json:"resourceId"`
+	RequestID    string `json:"requestId,omitempty"`
+	TraceID      string `json:"traceId,omitempty"`
 }
 
 type auditJSONExport struct {
@@ -31,6 +34,7 @@ type auditJSONExport struct {
 	From        string           `json:"from"`
 	To          string           `json:"to"`
 	Count       int              `json:"count"`
+	Range       string           `json:"rangeSemantics"`
 	Records     []auditExportRow `json:"records"`
 }
 
@@ -42,11 +46,14 @@ func writeAuditExport(writer http.ResponseWriter, request *http.Request, query a
 	rows := make([]auditExportRow, 0, len(result.Records))
 	for _, record := range result.Records {
 		rows = append(rows, auditExportRow{
+			EventID: auditString(record, "id"),
 			Created: auditString(record, "created"), Environment: auditString(record, "environmentDisplayName"),
 			User: auditString(record, "actorDisplayName"), Channel: auditString(record, "interactionChannel"),
 			AuthType: auditString(record, "authType"), ClientIP: auditString(record, "clientIp"),
 			EventType: auditString(record, "eventType"), Description: auditString(record, "description"),
 			ResourceType: auditString(record, "resourceType"), ResourceID: auditString(record, "resourceId"),
+			RequestID: firstNonEmpty(auditString(record, "requestId"), auditString(record, "requestID")),
+			TraceID:   firstNonEmpty(auditString(record, "traceId"), auditString(record, "traceID")),
 		})
 	}
 
@@ -67,7 +74,7 @@ func writeAuditExport(writer http.ResponseWriter, request *http.Request, query a
 	case "json":
 		payload, err = json.MarshalIndent(auditJSONExport{
 			GeneratedAt: time.Now().UTC().Format(time.RFC3339), From: query.From.Format(time.RFC3339Nano),
-			To: query.To.Format(time.RFC3339Nano), Count: len(rows), Records: rows,
+			To: query.To.Format(time.RFC3339Nano), Count: len(rows), Range: "[from,to)", Records: rows,
 		}, "", "  ")
 		if err == nil {
 			payload = append(payload, '\n')
@@ -88,6 +95,8 @@ func writeAuditExport(writer http.ResponseWriter, request *http.Request, query a
 	writer.Header().Set("Cache-Control", "no-store")
 	writer.Header().Set("Pragma", "no-cache")
 	writer.Header().Set("X-Content-Type-Options", "nosniff")
+	writer.Header().Set("Content-Security-Policy", "sandbox")
+	writer.Header().Set("Referrer-Policy", "no-referrer")
 	writer.Header().Set("Content-Length", strconv.Itoa(len(payload)))
 	_, err = writer.Write(payload)
 	return err
@@ -183,7 +192,7 @@ func auditXLSXSheet(rows []auditExportRow, traditionalChinese bool) string {
 	buffer.WriteString(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`)
 	buffer.WriteString(`<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">`)
 	buffer.WriteString(`<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>`)
-	buffer.WriteString(`<cols><col min="1" max="1" width="23" customWidth="1"/><col min="2" max="4" width="20" customWidth="1"/><col min="5" max="6" width="18" customWidth="1"/><col min="7" max="7" width="28" customWidth="1"/><col min="8" max="8" width="48" customWidth="1"/><col min="9" max="10" width="24" customWidth="1"/></cols>`)
+	buffer.WriteString(`<cols><col min="1" max="1" width="22" customWidth="1"/><col min="2" max="2" width="23" customWidth="1"/><col min="3" max="5" width="20" customWidth="1"/><col min="6" max="7" width="18" customWidth="1"/><col min="8" max="8" width="28" customWidth="1"/><col min="9" max="9" width="48" customWidth="1"/><col min="10" max="13" width="24" customWidth="1"/></cols>`)
 	buffer.WriteString(`<sheetData>`)
 	writeXLSXRow(buffer, 1, auditExportHeaders(traditionalChinese), 1)
 	for index, row := range rows {
@@ -195,7 +204,7 @@ func auditXLSXSheet(rows []auditExportRow, traditionalChinese bool) string {
 	}
 	buffer.WriteString(`</sheetData>`)
 	lastRow := len(rows) + 1
-	buffer.WriteString(fmt.Sprintf(`<autoFilter ref="A1:J%d"/>`, lastRow))
+	buffer.WriteString(fmt.Sprintf(`<autoFilter ref="A1:M%d"/>`, lastRow))
 	buffer.WriteString(`</worksheet>`)
 	return buffer.String()
 }
@@ -227,9 +236,9 @@ func xmlText(value string) string {
 
 func auditExportHeaders(traditionalChinese bool) []string {
 	if traditionalChinese {
-		return []string{"時間", "環境", "使用者", "操作管道", "驗證方式", "來源 IP", "事件類型", "描述", "資源類型", "資源 ID"}
+		return []string{"事件 ID", "時間", "環境", "使用者", "操作管道", "驗證方式", "來源 IP", "事件類型", "描述", "資源類型", "資源 ID", "請求 ID", "追蹤 ID"}
 	}
-	return []string{"Time", "Environment", "User", "Channel", "Authentication", "Source IP", "Event Type", "Description", "Resource Type", "Resource ID"}
+	return []string{"Event ID", "Time", "Environment", "User", "Channel", "Authentication", "Source IP", "Event Type", "Description", "Resource Type", "Resource ID", "Request ID", "Trace ID"}
 }
 
 func auditExportValues(row auditExportRow, traditionalChinese bool) []string {
@@ -240,7 +249,7 @@ func auditExportValues(row auditExportRow, traditionalChinese bool) []string {
 			channel = "未知"
 		}
 	}
-	return []string{row.Created, row.Environment, row.User, channel, row.AuthType, row.ClientIP, row.EventType, row.Description, row.ResourceType, row.ResourceID}
+	return []string{row.EventID, row.Created, row.Environment, row.User, channel, row.AuthType, row.ClientIP, row.EventType, row.Description, row.ResourceType, row.ResourceID, row.RequestID, row.TraceID}
 }
 
 func safeSpreadsheetText(value string) string {
