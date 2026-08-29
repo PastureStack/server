@@ -35,10 +35,10 @@ require_marker "$dockerfile" \
     'ARG UBUNTU_SNAPSHOT=20260826T000000Z' \
     SERVER_API_EXPLORER_PATCH_UBUNTU_SNAPSHOT_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.374"' \
+    'org.opencontainers.image.version="v1.6.375"' \
     SERVER_API_EXPLORER_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.374' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.375' \
     SERVER_API_EXPLORER_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
     'ARG SUPPORTED_DOCKER_RANGE="~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2"' \
@@ -110,16 +110,16 @@ require_marker "$dockerfile" \
     'test -z "$(find "${web_console_stage}" -type l -print -quit)"' \
     SERVER_WEB_CONSOLE_PRESERVATION_SYMLINK_GATE_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.77' \
+    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.78' \
     SERVER_WEB_CONSOLE_RELEASE_TAG_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.77.tar.gz' \
+    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.78.tar.gz' \
     SERVER_WEB_CONSOLE_RELEASE_ARTIFACT_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=999e4cb9d809ea01d280c39cd27cc75797f8e61baf7c198e938c9c77412daf61' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=00430933b0f0f1ae259510b6e2f0999972c6d5bfa3de6e80ce968ba6d3c5140f' \
     SERVER_WEB_CONSOLE_RELEASE_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=6ec6d9a35540e66dba0d9210db24ecd35ce367fc' \
+    'ARG WEB_CONSOLE_COMMIT=9eeb4e6cdf9c66113483b1f5a6cc342e3acbfa9e' \
     SERVER_WEB_CONSOLE_RELEASE_COMMIT_MISSING
 require_marker "$dockerfile" \
     'tar --no-same-owner --no-same-permissions -xzf "${archive}" -C "${stage}"' \
@@ -149,7 +149,7 @@ require_marker "$build_script" \
     'PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}"' \
     SERVER_WEB_CONSOLE_RUNTIME_HASH_GATE_MISSING
 require_marker "$build_script" \
-    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.77"' \
+    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.78"' \
     SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING
 require_marker "$build_script" \
     'grep -aF "ui/utils/bootstrap-runtime" "${ui_entry}"' \
@@ -396,7 +396,7 @@ bash -n "$build_script"
 
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.374"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.375"
   and (.statements | length) == 20
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -435,4 +435,4 @@ for marker in \
         SERVER_CURRENT_PUBLISH_WORKFLOW_GATE_MISSING
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.374 base=v1.6.364 orchestration=0.183.286 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 web_console=1.6.77 audit_log_filters=1 dropdown_destination=1 locale_compatibility=1 operator_state=1 docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 unresolved=0 legal_assets=complete\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.375 base=v1.6.364 orchestration=0.183.286 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 web_console=1.6.78 audit_log_filters=1 dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 unresolved=0 legal_assets=complete\n'

@@ -10,7 +10,7 @@ machine names.
 
 ## Supported Docker versions
 
-PastureStack Server `v1.6.374` recognizes the following modern Docker Engine
+PastureStack Server `v1.6.375` recognizes the following modern Docker Engine
 compatibility ranges:
 
 | Docker Engine | Validated host | cgroup | Agent line | Result |
