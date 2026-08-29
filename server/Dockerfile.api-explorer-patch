@@ -666,7 +666,7 @@ RUN set -eu; \
         grep -F '.audit-log-filter-condition' "${package_root}/assets/${theme_asset}" >/dev/null; \
     done; \
     grep -F '篩選稽核日誌' "${package_root}/translations/zh-tw.json" >/dev/null; \
-    grep -F '開始時間必須早於或等於結束時間' "${package_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '開始時間必須早於結束時間' "${package_root}/translations/zh-tw.json" >/dev/null; \
     web_root="$(readlink -f /usr/share/cattle/war)"; \
     case "${web_root}" in \
         /usr/share/cattle/*) ;; \

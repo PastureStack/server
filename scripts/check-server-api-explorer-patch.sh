@@ -143,6 +143,9 @@ require_marker "$dockerfile" \
     "grep -F '篩選稽核日誌'" \
     SERVER_WEB_CONSOLE_ZH_TW_FILTER_GATE_MISSING
 require_marker "$dockerfile" \
+    "grep -F '開始時間必須早於結束時間'" \
+    SERVER_WEB_CONSOLE_ZH_TW_RANGE_GATE_MISSING
+require_marker "$dockerfile" \
     'ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}' \
     SERVER_WEB_CONSOLE_RUNTIME_VERSION_MISSING
 require_marker "$build_script" \
@@ -151,6 +154,9 @@ require_marker "$build_script" \
 require_marker "$build_script" \
     'test "$(cat "${web_root}/VERSION.txt")" = "1.6.81"' \
     SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING
+require_marker "$build_script" \
+    'grep -F "開始時間必須早於結束時間"' \
+    SERVER_WEB_CONSOLE_RUNTIME_ZH_TW_RANGE_GATE_MISSING
 require_marker "$build_script" \
     'grep -aF "ui/utils/bootstrap-runtime" "${ui_entry}"' \
     SERVER_WEB_CONSOLE_RUNTIME_MODULE_GATE_MISSING

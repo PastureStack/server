@@ -229,7 +229,7 @@ docker run --rm --entrypoint bash "$image" -lc '
         grep -F ".audit-log-filter-condition" "${web_root}/assets/${theme_asset}" >/dev/null
     done
     grep -F "篩選稽核日誌" "${web_root}/translations/zh-tw.json" >/dev/null
-    grep -F "開始時間必須早於或等於結束時間" "${web_root}/translations/zh-tw.json" >/dev/null
+    grep -F "開始時間必須早於結束時間" "${web_root}/translations/zh-tw.json" >/dev/null
 '
 
 docker run --rm --entrypoint bash "$image" -lc '
