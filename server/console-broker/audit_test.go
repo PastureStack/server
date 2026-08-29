@@ -174,6 +174,94 @@ func TestAuditQueryEnforcesBothTimeBoundariesAndEnvironmentAuthorization(t *test
 	}
 }
 
+func TestAuditQueryAppliesEverySupportedConditionAndAndSemantics(t *testing.T) {
+	fixture := newAuditUpstreamFixture(t)
+	target := auditTestRecord("host10", "2026-08-29T02:55:00Z", "1p1", "1a1", "resource.change10", "TokenAuth", "Changed production setting")
+	api := auditTestRecord("volume2", "2026-08-29T02:50:00Z", "1p1", "1a2", "resource.remove2", "ApiKey", "Removed volume")
+	automation := auditTestRecord("host3", "2026-08-29T02:45:00Z", "1p1", "1a2", "host.register3", "HostRegistration", "Agent registered")
+	system := auditTestRecord("environment4", "2026-08-29T02:40:00Z", "1p1", "1a1", "system.cleanup4", "None", "Scheduled cleanup")
+	unknown := auditTestRecord("service5", "2026-08-29T02:35:00Z", "1p1", "1a2", "custom.observe5", "CustomAuth", "Observed custom action")
+	project2 := auditTestRecord("host20", "2026-08-29T02:30:00Z", "1p2", "1a2", "resource.change20", "BasicAuth", "Changed test setting")
+
+	api["clientIp"], api["resourceType"], api["resourceId"] = "10.0.0.26", "volume", "volume2"
+	automation["clientIp"], automation["resourceType"], automation["resourceId"] = "10.0.0.27", "host", "host3"
+	system["clientIp"], system["resourceType"], system["resourceId"] = "127.0.0.1", "environment", "1p1"
+	unknown["clientIp"], unknown["resourceType"], unknown["resourceId"] = "10.0.0.28", "service", "service5"
+	project2["clientIp"], project2["resourceType"], project2["resourceId"] = "10.0.0.29", "host", "host20"
+	fixture.auditRecords = []map[string]any{target, api, automation, system, unknown, project2}
+	server := newAuditTestBroker(t, fixture)
+
+	allExceptTarget := "volume2,host3,environment4,service5,host20"
+	allExceptAPI := "host10,host3,environment4,service5,host20"
+	cases := []struct {
+		name     string
+		filter   url.Values
+		expected string
+	}{
+		{name: "environment", filter: url.Values{"accountId": {"1p2"}}, expected: "host20"},
+		{name: "user", filter: url.Values{"authenticatedAsAccountId": {"1a1"}}, expected: "host10,environment4"},
+		{name: "resource type", filter: url.Values{"resourceType": {"volume"}}, expected: "volume2"},
+		{name: "resource id", filter: url.Values{"resourceId": {"host3"}}, expected: "host3"},
+		{name: "client IP exact", filter: url.Values{"clientIp": {"10.0.0.26"}}, expected: "volume2"},
+		{name: "authentication type exact ignoring case", filter: url.Values{"authType": {"apikey"}}, expected: "volume2"},
+		{name: "Web UI source", filter: url.Values{"interactionChannel": {"web_ui"}}, expected: "host10"},
+		{name: "public API source", filter: url.Values{"interactionChannel": {"public_api"}}, expected: "volume2,host20"},
+		{name: "automation source", filter: url.Values{"interactionChannel": {"automation"}}, expected: "host3"},
+		{name: "system source", filter: url.Values{"interactionChannel": {"system_internal"}}, expected: "environment4"},
+		{name: "unknown source", filter: url.Values{"interactionChannel": {"unknown"}}, expected: "service5"},
+		{name: "event exact ignoring case", filter: url.Values{"eventType": {"RESOURCE.CHANGE10"}}, expected: "host10"},
+		{name: "event contains ignoring case", filter: url.Values{"eventType_like": {"%CHANGE%"}}, expected: "host10,host20"},
+		{name: "event starts with ignoring case", filter: url.Values{"eventType_prefix": {"RESOURCE."}}, expected: "host10,volume2,host20"},
+		{name: "event is not", filter: url.Values{"eventType_ne": {"resource.change10"}}, expected: allExceptTarget},
+		{name: "event does not contain", filter: url.Values{"eventType_notlike": {"%change%"}}, expected: "volume2,host3,environment4,service5"},
+		{name: "description exact ignoring case", filter: url.Values{"description": {"REMOVED VOLUME"}}, expected: "volume2"},
+		{name: "description contains ignoring case", filter: url.Values{"description_like": {"%SETTING%"}}, expected: "host10,host20"},
+		{name: "description starts with ignoring case", filter: url.Values{"description_prefix": {"scheduled"}}, expected: "environment4"},
+		{name: "description is not", filter: url.Values{"description_ne": {"removed volume"}}, expected: allExceptAPI},
+		{name: "description does not contain", filter: url.Values{"description_notlike": {"%change%"}}, expected: "volume2,host3,environment4,service5"},
+		{name: "all conditions use AND", filter: url.Values{
+			"accountId": {"1p1"}, "authenticatedAsAccountId": {"1a1"}, "resourceType": {"host"},
+			"resourceId": {"host10"}, "clientIp": {"10.0.0.25"}, "authType": {"TokenAuth"},
+			"interactionChannel": {"web_ui"}, "eventType_prefix": {"resource.change"},
+			"description_like": {"%production%"},
+		}, expected: "host10"},
+	}
+
+	for _, testCase := range cases {
+		t.Run(testCase.name, func(t *testing.T) {
+			values := url.Values{
+				"created_gte": {"2026-08-29T02:00:00Z"},
+				"created_lte": {"2026-08-29T03:00:00Z"},
+			}
+			for key, entries := range testCase.filter {
+				for _, entry := range entries {
+					values.Add(key, entry)
+				}
+			}
+
+			response := performAuditRequest(t, server, auditQueryPath+"?"+values.Encode())
+			if response.StatusCode != http.StatusOK {
+				body, _ := io.ReadAll(response.Body)
+				response.Body.Close()
+				t.Fatalf("query returned %d: %s", response.StatusCode, body)
+			}
+			var payload auditCollection
+			if err := json.NewDecoder(response.Body).Decode(&payload); err != nil {
+				response.Body.Close()
+				t.Fatal(err)
+			}
+			response.Body.Close()
+			ids := make([]string, 0, len(payload.Data))
+			for _, record := range payload.Data {
+				ids = append(ids, auditString(record, "id"))
+			}
+			if actual := strings.Join(ids, ","); actual != testCase.expected {
+				t.Fatalf("filter result=%q expected=%q", actual, testCase.expected)
+			}
+		})
+	}
+}
+
 func TestAuditQueryRejectsAnUnauthorizedEnvironmentBeforeReadingLogs(t *testing.T) {
 	fixture := newAuditUpstreamFixture(t)
 	server := newAuditTestBroker(t, fixture)
