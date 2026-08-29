@@ -52,9 +52,15 @@ type auditResult struct {
 }
 
 type auditSuggestions struct {
-	ClientIPs     []string `json:"clientIps"`
-	EventTypes    []string `json:"eventTypes"`
-	ResourceTypes []string `json:"resourceTypes"`
+	ClientIPs     []string               `json:"clientIps"`
+	EventTypes    []string               `json:"eventTypes"`
+	ResourceTypes []string               `json:"resourceTypes"`
+	Actors        []auditNamedSuggestion `json:"actors"`
+}
+
+type auditNamedSuggestion struct {
+	ID    string `json:"id"`
+	Label string `json:"label"`
 }
 
 type auditCollection struct {
@@ -169,8 +175,8 @@ func parseAuditQuery(values url.Values, now time.Time) (auditQuery, error) {
 		query.From = query.From.UTC()
 		query.To = query.To.UTC()
 	}
-	if query.From.After(query.To) {
-		return auditQuery{}, &auditHTTPError{Status: http.StatusBadRequest, Code: "invalid_time_range", Message: "Audit log start time must not be later than the end time"}
+	if !query.From.Before(query.To) {
+		return auditQuery{}, &auditHTTPError{Status: http.StatusBadRequest, Code: "invalid_time_range", Message: "Audit log start time must be earlier than the end time"}
 	}
 	if query.To.Sub(query.From) > auditMaximumRange {
 		return auditQuery{}, &auditHTTPError{Status: http.StatusUnprocessableEntity, Code: "time_range_too_large", Message: "Audit log time range must not exceed 366 days"}
@@ -182,13 +188,12 @@ func parseAuditQuery(values url.Values, now time.Time) (auditQuery, error) {
 	query.ResourceID = cleanAuditValue(values.Get("resourceId"), 512)
 	query.ClientIP = cleanAuditValue(values.Get("clientIp"), 128)
 	query.AuthType = cleanAuditValue(values.Get("authType"), 128)
-	query.Channel = cleanAuditValue(values.Get("interactionChannel"), 64)
+	query.Channel = strings.ToLower(cleanAuditValue(values.Get("interactionChannel"), 64))
 	query.EventType, query.EventTypeOperator = parseTextAuditFilter(values, "eventType")
 	query.Description, query.DescriptionOperator = parseTextAuditFilter(values, "description")
 
 	if query.Channel != "" {
-		allowedChannels := map[string]bool{"web_ui": true, "public_api": true, "automation": true, "system_internal": true, "unknown": true}
-		if !allowedChannels[query.Channel] {
+		if !validAuditChannel(query.Channel) {
 			return auditQuery{}, &auditHTTPError{Status: http.StatusBadRequest, Code: "invalid_channel", Message: "Unsupported audit interaction channel"}
 		}
 	}
@@ -218,8 +223,9 @@ func parseTextAuditFilter(values url.Values, field string) (string, string) {
 
 func cleanAuditValue(value string, maximum int) string {
 	value = strings.TrimSpace(value)
-	if len(value) > maximum {
-		return value[:maximum]
+	runes := []rune(value)
+	if len(runes) > maximum {
+		return string(runes[:maximum])
 	}
 	return value
 }
@@ -289,7 +295,7 @@ func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, quer
 			continue
 		}
 		created, ok := auditTimestamp(record)
-		if !ok || created.Before(query.From) || created.After(query.To) {
+		if !ok || created.Before(query.From) || !created.Before(query.To) {
 			continue
 		}
 		if query.EnvironmentID != "" && projectID != query.EnvironmentID {
@@ -299,7 +305,12 @@ func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, quer
 		copyRecord := cloneAuditRecord(record)
 		copyRecord["environmentDisplayName"] = allowedProjects[projectID]
 		actorID := auditString(record, "authenticatedAsAccountId")
-		copyRecord["actorDisplayName"] = accountNames[actorID]
+		copyRecord["actorDisplayName"] = firstNonEmpty(
+			accountNames[actorID],
+			auditString(record, "authenticatedAsAccountName"),
+			auditString(record, "authenticatedAsIdentityName"),
+			auditString(record, "actorDisplayName"),
+		)
 		copyRecord["interactionChannel"] = auditInteractionChannel(record)
 		scoped = append(scoped, copyRecord)
 	}
@@ -420,7 +431,7 @@ func auditRecordMatches(record map[string]any, query auditQuery) bool {
 	if query.ClientIP != "" && !strings.EqualFold(auditString(record, "clientIp"), query.ClientIP) {
 		return false
 	}
-	if query.AuthType != "" && auditString(record, "authType") != query.AuthType {
+	if query.AuthType != "" && !strings.EqualFold(auditString(record, "authType"), query.AuthType) {
 		return false
 	}
 	if query.Channel != "" && auditString(record, "interactionChannel") != query.Channel {
@@ -453,6 +464,9 @@ func matchAuditText(actual, expected, operator string) bool {
 }
 
 func auditInteractionChannel(record map[string]any) string {
+	if channel := strings.ToLower(auditString(record, "interactionChannel")); validAuditChannel(channel) {
+		return channel
+	}
 	authType := strings.ToLower(auditString(record, "authType"))
 	switch {
 	case authType == "tokenauth", strings.Contains(authType, "uisession"), strings.Contains(authType, "session"):
@@ -468,10 +482,20 @@ func auditInteractionChannel(record map[string]any) string {
 	}
 }
 
+func validAuditChannel(channel string) bool {
+	switch channel {
+	case "web_ui", "public_api", "automation", "system_internal", "unknown":
+		return true
+	default:
+		return false
+	}
+}
+
 func collectAuditSuggestions(records []map[string]any) auditSuggestions {
 	ipSet := map[string]bool{}
 	eventSet := map[string]bool{}
 	resourceSet := map[string]bool{}
+	actorSet := map[string]string{}
 	for _, record := range records {
 		if value := auditString(record, "clientIp"); value != "" {
 			ipSet[value] = true
@@ -482,10 +506,34 @@ func collectAuditSuggestions(records []map[string]any) auditSuggestions {
 		if value := auditString(record, "resourceType"); value != "" {
 			resourceSet[value] = true
 		}
+		actorID := auditString(record, "authenticatedAsAccountId")
+		actorLabel := auditString(record, "actorDisplayName")
+		if actorID != "" && actorLabel != "" {
+			actorSet[actorID] = actorLabel
+		}
 	}
 	return auditSuggestions{
 		ClientIPs: naturalSetValues(ipSet, 100), EventTypes: naturalSetValues(eventSet, 100), ResourceTypes: naturalSetValues(resourceSet, 100),
+		Actors: naturalNamedSuggestions(actorSet, 250),
 	}
+}
+
+func naturalNamedSuggestions(values map[string]string, maximum int) []auditNamedSuggestion {
+	result := make([]auditNamedSuggestion, 0, len(values))
+	for id, label := range values {
+		result = append(result, auditNamedSuggestion{ID: id, Label: label})
+	}
+	sort.Slice(result, func(left, right int) bool {
+		comparison := naturalCompare(result[left].Label, result[right].Label)
+		if comparison == 0 {
+			comparison = naturalCompare(result[left].ID, result[right].ID)
+		}
+		return comparison < 0
+	})
+	if len(result) > maximum {
+		result = result[:maximum]
+	}
+	return result
 }
 
 func naturalSetValues(values map[string]bool, maximum int) []string {
@@ -501,7 +549,7 @@ func naturalSetValues(values map[string]bool, maximum int) []string {
 }
 
 func compareAuditRecords(left, right map[string]any, field string) int {
-	if field == "created" || field == "id" {
+	if field == "created" {
 		leftTime, leftOK := auditTimestamp(left)
 		rightTime, rightOK := auditTimestamp(right)
 		if leftOK && rightOK && !leftTime.Equal(rightTime) {
@@ -511,7 +559,14 @@ func compareAuditRecords(left, right map[string]any, field string) int {
 			return 1
 		}
 	}
-	return naturalCompare(auditString(left, field), auditString(right, field))
+	sortField := field
+	switch field {
+	case "accountId":
+		sortField = "environmentDisplayName"
+	case "authenticatedAsIdentityId":
+		sortField = "actorDisplayName"
+	}
+	return naturalCompare(auditString(left, sortField), auditString(right, sortField))
 }
 
 func naturalCompare(left, right string) int {

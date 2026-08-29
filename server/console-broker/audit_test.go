@@ -122,7 +122,8 @@ func TestAuditQueryEnforcesBothTimeBoundariesAndEnvironmentAuthorization(t *test
 	fixture := newAuditUpstreamFixture(t)
 	fixture.auditRecords = []map[string]any{
 		auditTestRecord("host10", "2026-08-29T02:20:00Z", "1p1", "1a1", "resource.change10", "TokenAuth", "newer"),
-		auditTestRecord("forbidden", "2026-08-29T02:15:00Z", "1p9", "1a1", "resource.change3", "ApiKey", "must not leak"),
+		auditTestRecord("forbidden", "2026-08-29T02:15:00Z", "1p9", "1a9", "forbidden.event99", "ApiKey", "must not leak"),
+		auditTestRecord("at-upper-bound", "2026-08-29T03:00:00Z", "1p1", "1a1", "resource.change11", "BasicAuth", "exclusive upper boundary"),
 		auditTestRecord("too-new", "2026-08-29T03:01:00Z", "1p1", "1a1", "resource.change4", "BasicAuth", "outside upper boundary"),
 		auditTestRecord("too-old", "2026-08-29T01:59:59Z", "1p1", "1a1", "resource.change1", "BasicAuth", "outside lower boundary"),
 	}
@@ -153,6 +154,16 @@ func TestAuditQueryEnforcesBothTimeBoundariesAndEnvironmentAuthorization(t *test
 	if auditString(payload.Data[0], "interactionChannel") != "public_api" || auditString(payload.Data[1], "interactionChannel") != "web_ui" {
 		t.Fatalf("interaction channels were not distinguished: %#v", payload.Data)
 	}
+	if len(payload.Filters) == 0 {
+		t.Fatal("permission-scoped suggestions are missing")
+	}
+	encodedFilters, _ := json.Marshal(payload.Filters)
+	if bytes.Contains(encodedFilters, []byte("1a9")) || bytes.Contains(encodedFilters, []byte("forbidden.event99")) {
+		t.Fatalf("an unauthorized environment leaked into suggestions: %s", encodedFilters)
+	}
+	if !bytes.Contains(encodedFilters, []byte(`"label":"alice"`)) || !bytes.Contains(encodedFilters, []byte(`"label":"陳管理員"`)) {
+		t.Fatalf("authorized human actor suggestions are incomplete: %s", encodedFilters)
+	}
 	fixture.mu.Lock()
 	defer fixture.mu.Unlock()
 	if len(fixture.auditQueries) != 2 {
@@ -181,8 +192,12 @@ func TestAuditQueryRejectsAnUnauthorizedEnvironmentBeforeReadingLogs(t *testing.
 
 func TestAuditExportsUseTheSameFilteredRecordsAndSafeSpreadsheetText(t *testing.T) {
 	fixture := newAuditUpstreamFixture(t)
+	authorized := auditTestRecord("event10", "2026-08-29T02:20:00Z", "1p1", "1a1", "resource.change", "BasicAuth", "=HYPERLINK(\"https://invalid\")")
+	authorized["requestId"] = "request-10"
+	authorized["traceID"] = "trace-2"
 	fixture.auditRecords = []map[string]any{
-		auditTestRecord("1", "2026-08-29T02:20:00Z", "1p1", "1a1", "resource.change", "BasicAuth", "=HYPERLINK(\"https://invalid\")"),
+		authorized,
+		auditTestRecord("forbidden-export", "2026-08-29T02:25:00Z", "1p9", "1a1", "secret.change", "BasicAuth", "forbidden-export-value"),
 	}
 	server := newAuditTestBroker(t, fixture)
 	base := auditExportPath + "?created_gte=2026-08-29T02%3A00%3A00Z&created_lte=2026-08-29T03%3A00%3A00Z"
@@ -193,14 +208,17 @@ func TestAuditExportsUseTheSameFilteredRecordsAndSafeSpreadsheetText(t *testing.
 	if csvResponse.StatusCode != http.StatusOK || !bytes.HasPrefix(csvBody, []byte{0xEF, 0xBB, 0xBF}) {
 		t.Fatalf("CSV response is invalid: status=%d body=%q", csvResponse.StatusCode, csvBody)
 	}
-	if !bytes.Contains(csvBody, []byte("'=HYPERLINK")) || bytes.Contains(csvBody, []byte("must-not-export")) {
+	if !bytes.Contains(csvBody, []byte("'=HYPERLINK")) || !bytes.Contains(csvBody, []byte("event10")) || !bytes.Contains(csvBody, []byte("request-10")) || !bytes.Contains(csvBody, []byte("trace-2")) || bytes.Contains(csvBody, []byte("must-not-export")) || bytes.Contains(csvBody, []byte("forbidden-export")) {
 		t.Fatalf("CSV did not neutralize formulas or leaked hidden payloads: %q", csvBody)
+	}
+	if csvResponse.Header.Get("Content-Security-Policy") != "sandbox" || csvResponse.Header.Get("Referrer-Policy") != "no-referrer" || csvResponse.Header.Get("Cache-Control") != "no-store" {
+		t.Fatalf("export security headers are incomplete: %#v", csvResponse.Header)
 	}
 
 	jsonResponse := performAuditRequest(t, server, base+"&format=json")
 	jsonBody, _ := io.ReadAll(jsonResponse.Body)
 	jsonResponse.Body.Close()
-	if !bytes.Contains(jsonBody, []byte(`"count": 1`)) || bytes.Contains(jsonBody, []byte("must-not-export")) {
+	if !bytes.Contains(jsonBody, []byte(`"count": 1`)) || !bytes.Contains(jsonBody, []byte(`"rangeSemantics": "[from,to)"`)) || !bytes.Contains(jsonBody, []byte(`"requestId": "request-10"`)) || bytes.Contains(jsonBody, []byte("must-not-export")) || bytes.Contains(jsonBody, []byte("forbidden-export")) {
 		t.Fatalf("JSON export is invalid: %s", jsonBody)
 	}
 
@@ -223,7 +241,7 @@ func TestAuditExportsUseTheSameFilteredRecordsAndSafeSpreadsheetText(t *testing.
 		}
 		sheet, _ := io.ReadAll(reader)
 		reader.Close()
-		if !bytes.Contains(sheet, []byte("autoFilter")) || !bytes.Contains(sheet, []byte("&#39;=HYPERLINK")) || bytes.Contains(sheet, []byte("must-not-export")) {
+		if !bytes.Contains(sheet, []byte(`<autoFilter ref="A1:M2"/>`)) || !bytes.Contains(sheet, []byte("Event ID")) || !bytes.Contains(sheet, []byte("Request ID")) || !bytes.Contains(sheet, []byte("&#39;=HYPERLINK")) || bytes.Contains(sheet, []byte("must-not-export")) || bytes.Contains(sheet, []byte("forbidden-export")) {
 			t.Fatalf("XLSX sheet is missing safety or usability features: %s", sheet)
 		}
 	}
@@ -241,6 +259,15 @@ func TestParseAuditQueryRejectsAmbiguousOrExcessiveTimeRanges(t *testing.T) {
 		"created_gte": {"2025-01-01T00:00:00Z"}, "created_lte": {"2026-08-29T00:00:00Z"},
 	}, now); err == nil {
 		t.Fatal("excessive time range was accepted")
+	}
+	if _, err := parseAuditQuery(url.Values{
+		"created_gte": {"2026-08-29T02:00:00Z"}, "created_lte": {"2026-08-29T02:00:00Z"},
+	}, now); err == nil {
+		t.Fatal("zero-width half-open time range was accepted")
+	}
+	channelQuery, err := parseAuditQuery(url.Values{"interactionChannel": {"PUBLIC_API"}}, now)
+	if err != nil || channelQuery.Channel != "public_api" {
+		t.Fatalf("interaction channel normalization failed: %#v %v", channelQuery, err)
 	}
 	query, err := parseAuditQuery(url.Values{}, now)
 	if err != nil {
@@ -261,6 +288,25 @@ func TestAuditInteractionChannelClassification(t *testing.T) {
 		if actual := auditInteractionChannel(map[string]any{"authType": authType}); actual != expected {
 			t.Fatalf("%s classified as %s, expected %s", authType, actual, expected)
 		}
+	}
+	if actual := auditInteractionChannel(map[string]any{"authType": "TokenAuth", "interactionChannel": "public_api"}); actual != "public_api" {
+		t.Fatalf("an explicitly recorded valid channel was overwritten: %s", actual)
+	}
+}
+
+func TestAuditNaturalSortUsesDisplayNamesAndNumericSegments(t *testing.T) {
+	records := []map[string]any{
+		{"id": "event10", "environmentDisplayName": "環境10", "actorDisplayName": "User 10"},
+		{"id": "event2", "environmentDisplayName": "環境2", "actorDisplayName": "User 2"},
+	}
+	if compareAuditRecords(records[0], records[1], "id") <= 0 {
+		t.Fatal("event IDs were not naturally sorted")
+	}
+	if compareAuditRecords(records[0], records[1], "accountId") <= 0 {
+		t.Fatal("environment sorting did not use human display names")
+	}
+	if compareAuditRecords(records[0], records[1], "authenticatedAsIdentityId") <= 0 {
+		t.Fatal("identity sorting did not use human actor names")
 	}
 }
 
