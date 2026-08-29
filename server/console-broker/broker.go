@@ -217,6 +217,11 @@ func (b *broker) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
+	if request.URL.Path == auditQueryPath || request.URL.Path == auditExportPath {
+		b.serveAudit(writer, request)
+		return
+	}
+
 	if !strings.HasPrefix(request.URL.Path, sessionPathPrefix) {
 		b.reverseProxy.ServeHTTP(writer, request)
 		return

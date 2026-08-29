@@ -9,6 +9,9 @@ required_files=(
   server/build-console-workspace-patch-image.sh
   server/console-broker/broker.go
   server/console-broker/broker_test.go
+  server/console-broker/audit.go
+  server/console-broker/audit_export.go
+  server/console-broker/audit_test.go
   server/console-broker/main.go
   server/console-broker/go.mod
   server/console-broker/go.sum
