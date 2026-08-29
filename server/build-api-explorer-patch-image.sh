@@ -216,7 +216,6 @@ docker run --rm --entrypoint bash "$image" -lc '
         created_lte \
         authenticatedAsAccountId \
         interactionChannel \
-        audit-log-export-menu \
         eventTypeOperator \
         descriptionOperator \
         basic-dropdown-wormhole \
