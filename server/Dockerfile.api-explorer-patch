@@ -58,7 +58,7 @@ RUN set -eux; \
     cd /src; \
     curl -fsSL --retry 5 --retry-all-errors --connect-timeout 10 --max-time 300 \
         -o zlib.tar.gz \
-        "https://zlib.net/zlib-${ZLIB_VERSION}.tar.gz"; \
+        "https://github.com/madler/zlib/releases/download/v${ZLIB_VERSION}/zlib-${ZLIB_VERSION}.tar.gz"; \
     echo "${ZLIB_SHA256}  zlib.tar.gz" | sha256sum -c -; \
     tar -xzf zlib.tar.gz; \
     cd "zlib-${ZLIB_VERSION}"; \
