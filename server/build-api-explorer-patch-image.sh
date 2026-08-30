@@ -27,13 +27,13 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
 api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.86}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.86.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-3e7afe1eb87990979f51ede5101fdf0a29eb2261a2057e5a45b35310c50d1783}
-web_console_commit=${WEB_CONSOLE_COMMIT:-279da505680acda91ce7ed1028e4354b8abbd9fd}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.87}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.87.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-25ca6c0a1ed1f3f9e55d40cee454609718522d6cf7ff446d4b19e85ae38bffc6}
+web_console_commit=${WEB_CONSOLE_COMMIT:-177dfbccde2ae691b9426aedd8d60b0f7cfeaa36}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2'
 newest_docker_version=v29.7.2
-image=${IMAGE:-pasturestack-validation/server:v1.6.383}
+image=${IMAGE:-pasturestack-validation/server:v1.6.384}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -98,7 +98,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.383
+    v1.6.384
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -109,7 +109,7 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.383 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.384 \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION=v0.183.286 \
     PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT="${orchestration_engine_commit}" \
@@ -204,7 +204,7 @@ docker run --rm --entrypoint bash "$image" -lc 'test -x /usr/bin/websocket-proxy
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.86"
+    test "$(cat "${web_root}/VERSION.txt")" = "1.6.87"
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     test ! -e "${web_root}/translations/none.json"
     test -z "$(find "${web_root}" -type f -name "*.map" -print -quit)"
@@ -218,6 +218,9 @@ docker run --rm --entrypoint bash "$image" -lc '
         interactionChannel \
         eventTypeOperator \
         descriptionOperator \
+        audit-date-picker \
+        openDateCalendar \
+        data-bs-display \
         basic-dropdown-wormhole \
         _notlike; do
         grep -aF "${marker}" "${ui_entry}" >/dev/null
@@ -227,14 +230,19 @@ docker run --rm --entrypoint bash "$image" -lc '
         grep -F ".audit-log-filter-panel" "${web_root}/assets/${theme_asset}" >/dev/null
         grep -F ".audit-log-filter-primary-grid" "${web_root}/assets/${theme_asset}" >/dev/null
         grep -F ".audit-log-filter-condition" "${web_root}/assets/${theme_asset}" >/dev/null
+        grep -F ".audit-date-calendar" "${web_root}/assets/${theme_asset}" >/dev/null
+        grep -F "footer .language-dropdown .dropdown-menu" "${web_root}/assets/${theme_asset}" >/dev/null
     done
     grep -F "篩選稽核日誌" "${web_root}/translations/zh-tw.json" >/dev/null
     grep -F "開始時間必須早於結束時間" "${web_root}/translations/zh-tw.json" >/dev/null
     for locale in de-de fa-ir fil-ph fr-fr hu-hu ja-jp ko-kr pt-br ru-ru uk-ua zh-hans zh-tw; do
         locale_file="${web_root}/translations/${locale}.json"
         grep -F "\"auditLogsPage.filterBuilder.title\":" "${locale_file}" >/dev/null
+        grep -F "\"auditLogsPage.filterBuilder.timeDialog.calendar.today\":" "${locale_file}" >/dev/null
         ! grep -F "\"auditLogsPage.filterBuilder.title\":\"Filter audit logs\"" "${locale_file}" >/dev/null
+        ! grep -F "\"auditLogsPage.filterBuilder.timeDialog.calendar.today\":\"Today\"" "${locale_file}" >/dev/null
     done
+    grep -F "\"auditLogsPage.filterBuilder.timeDialog.calendar.today\":\"Today\"" "${web_root}/translations/en-us.json" >/dev/null
 '
 
 docker run --rm --entrypoint bash "$image" -lc '
@@ -409,7 +417,7 @@ EOF
     fi
 '
 
-printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s audit_log_filters=1 docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_pinned=1\n' \
+printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s audit_log_filters=1 audit_calendar_localized=1 footer_language_menu_bounded=1 docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_pinned=1\n' \
     "$image" "$revision" "$base_image" "${orchestration_engine_release_tag#v}" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "${api_explorer_release_tag#v}" "$api_explorer_commit" "$api_explorer_artifact_sha256" \
