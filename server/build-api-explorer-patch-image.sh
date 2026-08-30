@@ -27,13 +27,13 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
 api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.87}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.87.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-25ca6c0a1ed1f3f9e55d40cee454609718522d6cf7ff446d4b19e85ae38bffc6}
-web_console_commit=${WEB_CONSOLE_COMMIT:-177dfbccde2ae691b9426aedd8d60b0f7cfeaa36}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.88}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.88.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-c0dbbe076043e30e2619c89adbd13f284026cf734938dceb28b06090ae88ea9c}
+web_console_commit=${WEB_CONSOLE_COMMIT:-2f9bb4fce5f831119a3770d593e78425ad6a5fd8}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2'
 newest_docker_version=v29.7.2
-image=${IMAGE:-pasturestack-validation/server:v1.6.384}
+image=${IMAGE:-pasturestack-validation/server:v1.6.385}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -98,7 +98,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.384
+    v1.6.385
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -109,7 +109,7 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.384 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.385 \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION=v0.183.286 \
     PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT="${orchestration_engine_commit}" \
@@ -204,7 +204,7 @@ docker run --rm --entrypoint bash "$image" -lc 'test -x /usr/bin/websocket-proxy
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.87"
+    test "$(cat "${web_root}/VERSION.txt")" = "1.6.88"
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     test ! -e "${web_root}/translations/none.json"
     test -z "$(find "${web_root}" -type f -name "*.map" -print -quit)"
@@ -232,6 +232,8 @@ docker run --rm --entrypoint bash "$image" -lc '
         grep -F ".audit-log-filter-condition" "${web_root}/assets/${theme_asset}" >/dev/null
         grep -F ".audit-date-calendar" "${web_root}/assets/${theme_asset}" >/dev/null
         grep -F "footer .language-dropdown .dropdown-menu" "${web_root}/assets/${theme_asset}" >/dev/null
+        grep -F "table.audit-log-results-table[data-resizable-columns=true]:not(.table-column-measuring) > thead > th.audit-log-auth-ip-heading" "${web_root}/assets/${theme_asset}" >/dev/null
+        grep -F -A 6 "table.audit-log-results-table[data-resizable-columns=true]:not(.table-column-measuring) > thead > th.audit-log-auth-ip-heading" "${web_root}/assets/${theme_asset}" | grep -F "white-space: normal;" >/dev/null
     done
     grep -F "篩選稽核日誌" "${web_root}/translations/zh-tw.json" >/dev/null
     grep -F "開始時間必須早於結束時間" "${web_root}/translations/zh-tw.json" >/dev/null
