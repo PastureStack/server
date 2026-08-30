@@ -147,10 +147,10 @@ ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=95eea0146ae9e67145800857e0153aa794fc0ba947
 ARG GOVC_BINARY_SHA256=a42b0649c723b76a2208467c821ff1a9b713b2c8c5ab762808c1d193bd112287
 ARG API_EXPLORER_RELEASE_BASE_URL=https://github.com/PastureStack/api-explorer/releases/download
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.85
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.85.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=ba54eed407cdea0a00d91102a81e9716b092ddf53f1c4ff0cdedf315f0dea2bf
-ARG WEB_CONSOLE_COMMIT=3f3ec2acd4664cd31ff5de9c5769c8a19531c3fb
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.86
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.86.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=3e7afe1eb87990979f51ede5101fdf0a29eb2261a2057e5a45b35310c50d1783
+ARG WEB_CONSOLE_COMMIT=279da505680acda91ce7ed1028e4354b8abbd9fd
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
 ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.286
 ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.286.jar
@@ -667,6 +667,11 @@ RUN set -eu; \
     done; \
     grep -F '篩選稽核日誌' "${package_root}/translations/zh-tw.json" >/dev/null; \
     grep -F '開始時間必須早於結束時間' "${package_root}/translations/zh-tw.json" >/dev/null; \
+    for locale in de-de fa-ir fil-ph fr-fr hu-hu ja-jp ko-kr pt-br ru-ru uk-ua zh-hans zh-tw; do \
+        locale_file="${package_root}/translations/${locale}.json"; \
+        grep -F '"auditLogsPage.filterBuilder.title":' "${locale_file}" >/dev/null; \
+        ! grep -F '"auditLogsPage.filterBuilder.title":"Filter audit logs"' "${locale_file}" >/dev/null; \
+    done; \
     web_root="$(readlink -f /usr/share/cattle/war)"; \
     case "${web_root}" in \
         /usr/share/cattle/*) ;; \
@@ -867,12 +872,12 @@ COPY --chmod=0755 patches/websocket-proxy-wrapper.sh /usr/bin/websocket-proxy
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with the reviewed Orchestration Engine, API Explorer, Go 1.27, OpenSSL 3.5.8, zlib 1.3.2, and a reduced runtime tool surface." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.382" \
+      org.opencontainers.image.version="v1.6.383" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.364" \
       org.opencontainers.image.base.digest="sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.382
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.383
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV CATTLE_API_UI_VERSION=1.1.18
