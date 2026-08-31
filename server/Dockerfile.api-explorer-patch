@@ -147,15 +147,15 @@ ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=95eea0146ae9e67145800857e0153aa794fc0ba947
 ARG GOVC_BINARY_SHA256=a42b0649c723b76a2208467c821ff1a9b713b2c8c5ab762808c1d193bd112287
 ARG API_EXPLORER_RELEASE_BASE_URL=https://github.com/PastureStack/api-explorer/releases/download
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.90
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.90.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=7a7c85b1f2da49f1d7648588e204a341ef245fb5933b07b996634e46a35532cb
-ARG WEB_CONSOLE_COMMIT=476f5b7f9418c3d237e6cb237cfd11c1f2aad3a2
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.91
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.91.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=e93e3c1791286823a5dd841e4af166704f01c42f5eece39a5383b1b10f83040a
+ARG WEB_CONSOLE_COMMIT=a01255d184c24f5e10aba64cfbab3f36222e7714
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
-ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.286
-ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.286.jar
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=1506ad37153bede468ad2ff1b87caf8dd448a13c45a31c851dc7acce73a86484
-ARG ORCHESTRATION_ENGINE_COMMIT=f0b9e8a10e20527f2f6a9b9b0179a3cfc752cbc6
+ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.288
+ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.288.jar
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=a68f1fea103ececd288db708f129e8cb8f47ad3b78b73102d2190d680e357247
+ARG ORCHESTRATION_ENGINE_COMMIT=a9e5d71cb5c11360018488a391c25db3f245555d
 ARG API_EXPLORER_RELEASE_TAG=v1.1.18
 ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.18.tar.gz
 ARG API_EXPLORER_ARTIFACT_SHA256=92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c
@@ -445,7 +445,7 @@ RUN set -eu; \
         exit 1; \
     fi; \
     unzip -p "${archive}" META-INF/MANIFEST.MF | tr -d '\r' | \
-        grep -Fx 'Implementation-Version: 0.183.286' >/dev/null; \
+        grep -Fx 'Implementation-Version: 0.183.288' >/dev/null; \
     test "$(grep -Ec '^WEB-INF/lib/hazelcast-5\.7\.3-pasturestack\.4\.jar$' "${listing}")" -eq 1; \
     ! grep -Eq '^WEB-INF/lib/hazelcast-(5\.7\.[012]|5\.7\.3-pasturestack\.[0-3])([.-]|\.jar$)' "${listing}"; \
     old_web_root="$(readlink -f /usr/share/cattle/war)"; \
@@ -487,7 +487,7 @@ RUN set -eu; \
         rm -f resources.jar; \
     fi; \
     resources_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name 'cattle-resources-0.183.286.jar' -print -quit)"; \
+        -name 'cattle-resources-0.183.288.jar' -print -quit)"; \
     test -n "${resources_jar}"; \
     source_date_iso="$(date -u -d "@${SOURCE_DATE_EPOCH}" '+%Y-%m-%dT%H:%M:%SZ')"; \
     app_config_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
@@ -647,6 +647,8 @@ RUN set -eu; \
     test -n "${ui_entry}"; \
     for marker in \
         audit-log-filter-panel \
+        service-log-filter-panel \
+        service.instance.restart \
         created_gte \
         created_lte \
         authenticatedAsAccountId \
@@ -673,6 +675,7 @@ RUN set -eu; \
         grep -F -A 6 'table.audit-log-results-table[data-resizable-columns=true]:not(.table-column-measuring) > thead > th.audit-log-auth-ip-heading' "${package_root}/assets/${theme_asset}" | grep -F 'white-space: normal;' >/dev/null; \
     done; \
     grep -F '篩選稽核日誌' "${package_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '篩選服務日誌' "${package_root}/translations/zh-tw.json" >/dev/null; \
     grep -F '開始時間必須早於結束時間' "${package_root}/translations/zh-tw.json" >/dev/null; \
     for locale in de-de fa-ir fil-ph fr-fr hu-hu ja-jp ko-kr pt-br ru-ru uk-ua zh-hans zh-tw; do \
         locale_file="${package_root}/translations/${locale}.json"; \
@@ -882,16 +885,16 @@ COPY --chmod=0755 patches/websocket-proxy-wrapper.sh /usr/bin/websocket-proxy
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with the reviewed Orchestration Engine, API Explorer, Go 1.27, OpenSSL 3.5.8, zlib 1.3.2, and a reduced runtime tool surface." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.387" \
+      org.opencontainers.image.version="v1.6.388" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.364" \
       org.opencontainers.image.base.digest="sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.387
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.388
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV CATTLE_API_UI_VERSION=1.1.18
-ENV CATTLE_CATTLE_VERSION=v0.183.286
+ENV CATTLE_CATTLE_VERSION=v0.183.288
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}
 ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}

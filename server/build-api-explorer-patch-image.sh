@@ -17,23 +17,23 @@ revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
-orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.286}
-orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.286.jar}
-orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-1506ad37153bede468ad2ff1b87caf8dd448a13c45a31c851dc7acce73a86484}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-f0b9e8a10e20527f2f6a9b9b0179a3cfc752cbc6}
+orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.288}
+orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.288.jar}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-a68f1fea103ececd288db708f129e8cb8f47ad3b78b73102d2190d680e357247}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-a9e5d71cb5c11360018488a391c25db3f245555d}
 api_explorer_release_base_url=${API_EXPLORER_RELEASE_BASE_URL:-https://github.com/PastureStack/api-explorer/releases/download}
 api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.18}
 api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
 api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.90}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.90.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-7a7c85b1f2da49f1d7648588e204a341ef245fb5933b07b996634e46a35532cb}
-web_console_commit=${WEB_CONSOLE_COMMIT:-476f5b7f9418c3d237e6cb237cfd11c1f2aad3a2}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.91}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.91.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-e93e3c1791286823a5dd841e4af166704f01c42f5eece39a5383b1b10f83040a}
+web_console_commit=${WEB_CONSOLE_COMMIT:-a01255d184c24f5e10aba64cfbab3f36222e7714}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2'
 newest_docker_version=v29.7.2
-image=${IMAGE:-pasturestack-validation/server:v1.6.387}
+image=${IMAGE:-pasturestack-validation/server:v1.6.388}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -98,7 +98,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.387
+    v1.6.388
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -109,9 +109,9 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.387 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.388 \
     CATTLE_API_UI_VERSION=1.1.18 \
-    CATTLE_CATTLE_VERSION=v0.183.286 \
+    CATTLE_CATTLE_VERSION=v0.183.288 \
     PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT="${orchestration_engine_commit}" \
     PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256="${orchestration_engine_artifact_sha256}" \
     PASTURESTACK_RUNTIME_GO_VERSION=1.27.0 \
@@ -159,7 +159,7 @@ docker run --rm --entrypoint bash "$image" -lc '
     web_root=$(readlink -f /usr/share/cattle/war)
     test "${web_root}" = "/usr/share/cattle/${engine_hash}"
     resources_jar=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-resources-0.183.286.jar" -print -quit)
+        -name "cattle-resources-0.183.288.jar" -print -quit)
     test -n "${resources_jar}"
     unzip -p "${resources_jar}" db/core-124.xml |
         grep -F "pasturestack-catalog-pinned-commit" >/dev/null
@@ -204,7 +204,7 @@ docker run --rm --entrypoint bash "$image" -lc 'test -x /usr/bin/websocket-proxy
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.90"
+    test "$(cat "${web_root}/VERSION.txt")" = "1.6.91"
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     test ! -e "${web_root}/translations/none.json"
     test -z "$(find "${web_root}" -type f -name "*.map" -print -quit)"
@@ -212,6 +212,8 @@ docker run --rm --entrypoint bash "$image" -lc '
     test -n "${ui_entry}"
     for marker in \
         audit-log-filter-panel \
+        service-log-filter-panel \
+        service.instance.restart \
         created_gte \
         created_lte \
         authenticatedAsAccountId \
@@ -236,6 +238,7 @@ docker run --rm --entrypoint bash "$image" -lc '
         grep -F -A 6 "table.audit-log-results-table[data-resizable-columns=true]:not(.table-column-measuring) > thead > th.audit-log-auth-ip-heading" "${web_root}/assets/${theme_asset}" | grep -F "white-space: normal;" >/dev/null
     done
     grep -F "篩選稽核日誌" "${web_root}/translations/zh-tw.json" >/dev/null
+    grep -F "篩選服務日誌" "${web_root}/translations/zh-tw.json" >/dev/null
     grep -F "開始時間必須早於結束時間" "${web_root}/translations/zh-tw.json" >/dev/null
     for locale in de-de fa-ir fil-ph fr-fr hu-hu ja-jp ko-kr pt-br ru-ru uk-ua zh-hans zh-tw; do
         locale_file="${web_root}/translations/${locale}.json"
@@ -292,7 +295,7 @@ docker run --rm --entrypoint bash "$image" -lc '
         /usr/share/cattle/war/translations/zh-tw.json >/dev/null
     unzip -p /usr/share/cattle/cattle.jar META-INF/MANIFEST.MF |
         tr -d "\r" |
-        grep -Fx "Implementation-Version: 0.183.286" >/dev/null
+        grep -Fx "Implementation-Version: 0.183.288" >/dev/null
     hazelcast_entry=$(unzip -Z1 /usr/share/cattle/cattle.jar |
         grep -E "^WEB-INF/lib/hazelcast-[^/]+[.]jar$")
     test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.3-pasturestack.4.jar"
