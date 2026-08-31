@@ -30,10 +30,10 @@ web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/
 web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.94}
 web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.94.tar.gz}
 web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-aa93bbdb12ac35048da23bc6244b8b232fc5ff269d268d37a0f709725468bb37}
-web_console_commit=${WEB_CONSOLE_COMMIT:-30378c93e1fdb70404a2ad2793212b61c65e74b1}
+web_console_commit=${WEB_CONSOLE_COMMIT:-eb025ef2d5b795de4d9f8da61d344298358c86ff}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2'
 newest_docker_version=v29.7.2
-image=${IMAGE:-pasturestack-validation/server:v1.6.391}
+image=${IMAGE:-pasturestack-validation/server:v1.6.392}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -98,7 +98,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.391
+    v1.6.392
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -109,7 +109,7 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.391 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.392 \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION=v0.183.288 \
     PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT="${orchestration_engine_commit}" \
