@@ -107,7 +107,7 @@ FROM ${BASE_IMAGE}
 
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
-ARG UBUNTU_SNAPSHOT=20260826T000000Z
+ARG UBUNTU_SNAPSHOT=20260901T000000Z
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.36
 ARG AUTHENTICATION_SERVICE_COMMIT=f9609e657486693575753f1bfdfdf1aeb13e1fc5
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=9bc5d4070e4b012c4464b986ddcd26225c4cca0756fa3e5a118c4ec8fc74367a
@@ -194,6 +194,15 @@ RUN set -eu; \
     version_at_least systemd 259.5-0ubuntu3.4; \
     version_at_least libsystemd0 259.5-0ubuntu3.4; \
     version_at_least libudev1 259.5-0ubuntu3.4; \
+    version_at_least gnu-coreutils 9.7-3ubuntu2.1; \
+    version_at_least bsdutils 1:2.41.3-3ubuntu2.2; \
+    version_at_least libblkid1 2.41.3-3ubuntu2.2; \
+    version_at_least libmount1 2.41.3-3ubuntu2.2; \
+    version_at_least libsmartcols1 2.41.3-3ubuntu2.2; \
+    version_at_least libuuid1 2.41.3-3ubuntu2.2; \
+    version_at_least login 1:4.16.0-2+really2.41.3-3ubuntu2.2; \
+    version_at_least mount 2.41.3-3ubuntu2.2; \
+    version_at_least util-linux 2.41.3-3ubuntu2.2; \
     version_at_least openssl 3.5.5-1ubuntu3.4; \
     version_at_least libssl3t64 3.5.5-1ubuntu3.4; \
     runtime_stage=/tmp/pasturestack-runtime-refresh; \

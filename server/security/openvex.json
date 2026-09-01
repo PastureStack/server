@@ -118,14 +118,14 @@
     {
       "vulnerability": {"name": "CVE-2026-27456"},
       "products": [
-        {"@id": "pkg:deb/ubuntu/bsdutils@2.41.3-3ubuntu2?arch=amd64&distro=ubuntu-26.04&epoch=1"},
-        {"@id": "pkg:deb/ubuntu/libblkid1@2.41.3-3ubuntu2?arch=amd64&distro=ubuntu-26.04"},
-        {"@id": "pkg:deb/ubuntu/libmount1@2.41.3-3ubuntu2?arch=amd64&distro=ubuntu-26.04"},
-        {"@id": "pkg:deb/ubuntu/libsmartcols1@2.41.3-3ubuntu2?arch=amd64&distro=ubuntu-26.04"},
-        {"@id": "pkg:deb/ubuntu/libuuid1@2.41.3-3ubuntu2?arch=amd64&distro=ubuntu-26.04"},
-        {"@id": "pkg:deb/ubuntu/login@4.16.0-2%2Breally2.41.3-3ubuntu2?arch=amd64&distro=ubuntu-26.04&epoch=1"},
-        {"@id": "pkg:deb/ubuntu/mount@2.41.3-3ubuntu2?arch=amd64&distro=ubuntu-26.04"},
-        {"@id": "pkg:deb/ubuntu/util-linux@2.41.3-3ubuntu2?arch=amd64&distro=ubuntu-26.04"}
+        {"@id": "pkg:deb/ubuntu/bsdutils@2.41.3-3ubuntu2.2?arch=amd64&distro=ubuntu-26.04&epoch=1"},
+        {"@id": "pkg:deb/ubuntu/libblkid1@2.41.3-3ubuntu2.2?arch=amd64&distro=ubuntu-26.04"},
+        {"@id": "pkg:deb/ubuntu/libmount1@2.41.3-3ubuntu2.2?arch=amd64&distro=ubuntu-26.04"},
+        {"@id": "pkg:deb/ubuntu/libsmartcols1@2.41.3-3ubuntu2.2?arch=amd64&distro=ubuntu-26.04"},
+        {"@id": "pkg:deb/ubuntu/libuuid1@2.41.3-3ubuntu2.2?arch=amd64&distro=ubuntu-26.04"},
+        {"@id": "pkg:deb/ubuntu/login@4.16.0-2%2Breally2.41.3-3ubuntu2.2?arch=amd64&distro=ubuntu-26.04&epoch=1"},
+        {"@id": "pkg:deb/ubuntu/mount@2.41.3-3ubuntu2.2?arch=amd64&distro=ubuntu-26.04"},
+        {"@id": "pkg:deb/ubuntu/util-linux@2.41.3-3ubuntu2.2?arch=amd64&distro=ubuntu-26.04"}
       ],
       "status": "not_affected",
       "justification": "vulnerable_code_not_present",
@@ -134,14 +134,14 @@
     {
       "vulnerability": {"name": "CVE-2026-3184"},
       "products": [
-        {"@id": "pkg:deb/ubuntu/bsdutils@2.41.3-3ubuntu2?arch=amd64&distro=ubuntu-26.04&epoch=1"},
-        {"@id": "pkg:deb/ubuntu/libblkid1@2.41.3-3ubuntu2?arch=amd64&distro=ubuntu-26.04"},
-        {"@id": "pkg:deb/ubuntu/libmount1@2.41.3-3ubuntu2?arch=amd64&distro=ubuntu-26.04"},
-        {"@id": "pkg:deb/ubuntu/libsmartcols1@2.41.3-3ubuntu2?arch=amd64&distro=ubuntu-26.04"},
-        {"@id": "pkg:deb/ubuntu/libuuid1@2.41.3-3ubuntu2?arch=amd64&distro=ubuntu-26.04"},
-        {"@id": "pkg:deb/ubuntu/login@4.16.0-2%2Breally2.41.3-3ubuntu2?arch=amd64&distro=ubuntu-26.04&epoch=1"},
-        {"@id": "pkg:deb/ubuntu/mount@2.41.3-3ubuntu2?arch=amd64&distro=ubuntu-26.04"},
-        {"@id": "pkg:deb/ubuntu/util-linux@2.41.3-3ubuntu2?arch=amd64&distro=ubuntu-26.04"}
+        {"@id": "pkg:deb/ubuntu/bsdutils@2.41.3-3ubuntu2.2?arch=amd64&distro=ubuntu-26.04&epoch=1"},
+        {"@id": "pkg:deb/ubuntu/libblkid1@2.41.3-3ubuntu2.2?arch=amd64&distro=ubuntu-26.04"},
+        {"@id": "pkg:deb/ubuntu/libmount1@2.41.3-3ubuntu2.2?arch=amd64&distro=ubuntu-26.04"},
+        {"@id": "pkg:deb/ubuntu/libsmartcols1@2.41.3-3ubuntu2.2?arch=amd64&distro=ubuntu-26.04"},
+        {"@id": "pkg:deb/ubuntu/libuuid1@2.41.3-3ubuntu2.2?arch=amd64&distro=ubuntu-26.04"},
+        {"@id": "pkg:deb/ubuntu/login@4.16.0-2%2Breally2.41.3-3ubuntu2.2?arch=amd64&distro=ubuntu-26.04&epoch=1"},
+        {"@id": "pkg:deb/ubuntu/mount@2.41.3-3ubuntu2.2?arch=amd64&distro=ubuntu-26.04"},
+        {"@id": "pkg:deb/ubuntu/util-linux@2.41.3-3ubuntu2.2?arch=amd64&distro=ubuntu-26.04"}
       ],
       "status": "not_affected",
       "justification": "vulnerable_code_not_present",
@@ -180,7 +180,7 @@
     {
       "vulnerability": {"name": "CVE-2026-56391"},
       "products": [
-        {"@id": "pkg:deb/ubuntu/gnu-coreutils@9.7-3ubuntu2?arch=amd64&distro=ubuntu-26.04"}
+        {"@id": "pkg:deb/ubuntu/gnu-coreutils@9.7-3ubuntu2.1?arch=amd64&distro=ubuntu-26.04"}
       ],
       "status": "fixed",
       "impact_statement": "The final runtime replaces uniq with GNU coreutils 9.11 plus upstream fix commit d64e35a8a4c0e4608321433e0d84d917e4e36371 and runs a multibyte -w regression test during build and image validation."
@@ -188,7 +188,7 @@
     {
       "vulnerability": {"name": "CVE-2026-56392"},
       "products": [
-        {"@id": "pkg:deb/ubuntu/gnu-coreutils@9.7-3ubuntu2?arch=amd64&distro=ubuntu-26.04"}
+        {"@id": "pkg:deb/ubuntu/gnu-coreutils@9.7-3ubuntu2.1?arch=amd64&distro=ubuntu-26.04"}
       ],
       "status": "not_affected",
       "justification": "vulnerable_code_not_present",

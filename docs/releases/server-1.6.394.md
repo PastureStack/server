@@ -25,6 +25,9 @@ container detail data, or the content of its child tabs.
 - The Server publish workflow performs source gates, isolated start/restart
   smoke, merged-rootfs Trivy scanning, SBOM generation, image publication,
   provenance and SBOM attestations, and immutable release creation.
+- The runtime is rebuilt from the `20260901T000000Z` Ubuntu snapshot and
+  rejects GNU coreutils older than `9.7-3ubuntu2.1` or util-linux-family
+  packages older than `2.41.3-3ubuntu2.2` before publication.
 
 ## Bound release inputs
 
