@@ -354,6 +354,15 @@ EOF
     version_at_least systemd 259.5-0ubuntu3.4
     version_at_least libsystemd0 259.5-0ubuntu3.4
     version_at_least libudev1 259.5-0ubuntu3.4
+    version_at_least gnu-coreutils 9.7-3ubuntu2.1
+    version_at_least bsdutils 1:2.41.3-3ubuntu2.2
+    version_at_least libblkid1 2.41.3-3ubuntu2.2
+    version_at_least libmount1 2.41.3-3ubuntu2.2
+    version_at_least libsmartcols1 2.41.3-3ubuntu2.2
+    version_at_least libuuid1 2.41.3-3ubuntu2.2
+    version_at_least login 1:4.16.0-2+really2.41.3-3ubuntu2.2
+    version_at_least mount 2.41.3-3ubuntu2.2
+    version_at_least util-linux 2.41.3-3ubuntu2.2
     version_at_least git 1:2.53.0-1ubuntu1
     version_at_least git-man 1:2.53.0-1ubuntu1
     version_at_least libexpat1 2.7.4-1
@@ -422,7 +431,7 @@ EOF
     fi
 '
 
-printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s audit_log_filters=1 audit_calendar_localized=1 footer_language_menu_bounded=1 docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_pinned=1\n' \
+printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s audit_log_filters=1 audit_calendar_localized=1 footer_language_menu_bounded=1 docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-01 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_pinned=1\n' \
     "$image" "$revision" "$base_image" "${orchestration_engine_release_tag#v}" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "${api_explorer_release_tag#v}" "$api_explorer_commit" "$api_explorer_artifact_sha256" \

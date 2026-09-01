@@ -32,7 +32,7 @@ require_marker "$dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5' \
     SERVER_API_EXPLORER_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'ARG UBUNTU_SNAPSHOT=20260826T000000Z' \
+    'ARG UBUNTU_SNAPSHOT=20260901T000000Z' \
     SERVER_API_EXPLORER_PATCH_UBUNTU_SNAPSHOT_NOT_CURRENT
 require_marker "$dockerfile" \
     'org.opencontainers.image.version="v1.6.394"' \
@@ -304,6 +304,21 @@ require_marker "$build_script" \
 require_marker "$dockerfile" \
     'version_at_least openssl 3.5.5-1ubuntu3.4' \
     SERVER_OPENSSL_FIXED_VERSION_GATE_MISSING
+for fixed_package_gate in \
+    'version_at_least gnu-coreutils 9.7-3ubuntu2.1' \
+    'version_at_least bsdutils 1:2.41.3-3ubuntu2.2' \
+    'version_at_least libblkid1 2.41.3-3ubuntu2.2' \
+    'version_at_least libmount1 2.41.3-3ubuntu2.2' \
+    'version_at_least libsmartcols1 2.41.3-3ubuntu2.2' \
+    'version_at_least libuuid1 2.41.3-3ubuntu2.2' \
+    'version_at_least login 1:4.16.0-2+really2.41.3-3ubuntu2.2' \
+    'version_at_least mount 2.41.3-3ubuntu2.2' \
+    'version_at_least util-linux 2.41.3-3ubuntu2.2'; do
+    require_marker "$dockerfile" "$fixed_package_gate" \
+        SERVER_UBUNTU_FIXED_VERSION_GATE_MISSING
+    require_marker "$build_script" "$fixed_package_gate" \
+        SERVER_UBUNTU_RUNTIME_VERSION_GATE_MISSING
+done
 require_marker "$dockerfile" \
     'ENV PASTURESTACK_SSH_CLIENT_HARDENING=client-removed' \
     SERVER_SSH_CLIENT_REMOVAL_IDENTITY_MISSING
@@ -474,4 +489,4 @@ for marker in \
         SERVER_CURRENT_PUBLISH_WORKFLOW_GATE_MISSING
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.394 base=v1.6.364 orchestration=0.183.288 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 web_console=1.6.96 host_stats_charts=route-independent-shared-stream resource_actions=deferred-outside-click service_log_filters=service-scoped service_restart_events=explicit log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_language_menu_bounded=1 audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-08-26 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 unresolved=0 legal_assets=complete\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.394 base=v1.6.364 orchestration=0.183.288 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 web_console=1.6.96 host_stats_charts=route-independent-shared-stream resource_actions=deferred-outside-click service_log_filters=service-scoped service_restart_events=explicit log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_language_menu_bounded=1 audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-01 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 unresolved=0 legal_assets=complete\n'
