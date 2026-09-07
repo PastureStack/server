@@ -156,6 +156,10 @@ ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.289
 ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.289.jar
 ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=eed36714f4d5ac6841f172562d71a9ee7a93e2e43b4d212bb1d109bd77d0a5ec
 ARG ORCHESTRATION_ENGINE_COMMIT=60e97127ba49ab0b14f8bd872688257b1478aa98
+ARG NODE_AGENT_VERSION=0.13.24
+ARG NODE_AGENT_COMMIT=6866f8158ab7e5beb9e0ee20f600bb096dd2782f
+ARG NODE_AGENT_LINUX_ARTIFACT_SHA256=d043672b4f9ee9429836e7f5763ec626c6ee3cb63db828f933d81819cb1fe96e
+ARG NODE_AGENT_WINDOWS_ARTIFACT_SHA256=017f178705ca502e330278317822c546accfe70399366784fc3aa9735efdb591
 ARG API_EXPLORER_RELEASE_TAG=v1.1.18
 ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.18.tar.gz
 ARG API_EXPLORER_ARTIFACT_SHA256=92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c
@@ -238,6 +242,19 @@ RUN set -eu; \
         tar --no-same-owner --no-same-permissions -xJf "${archive}" -C "${destination}"; \
         test -z "$(find "${destination}" -type l -print -quit)"; \
     }; \
+    agent_linux="node-agent-${NODE_AGENT_VERSION}.tar.gz"; \
+    agent_windows="node-agent-${NODE_AGENT_VERSION}-windows-amd64.zip"; \
+    fetch "https://github.com/PastureStack/node-agent/releases/download/v${NODE_AGENT_VERSION}/${agent_linux}" \
+        "${NODE_AGENT_LINUX_ARTIFACT_SHA256}" "/usr/share/cattle/artifacts/${agent_linux}"; \
+    fetch "https://github.com/PastureStack/node-agent/releases/download/v${NODE_AGENT_VERSION}/${agent_windows}" \
+        "${NODE_AGENT_WINDOWS_ARTIFACT_SHA256}" "/usr/share/cattle/artifacts/${agent_windows}"; \
+    ln -sfn "${agent_linux}" /usr/share/cattle/artifacts/go-agent.tar.gz; \
+    sed -i -E \
+        -e "s|node-agent-0\\.13\\.[0-9]+\\.tar\\.gz|${agent_linux}|g" \
+        -e "s|node-agent-0\\.13\\.[0-9]+-windows-amd64\\.zip|${agent_windows}|g" \
+        /usr/share/cattle/env_vars; \
+    grep -Fx "export CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL=/usr/share/cattle/artifacts/${agent_linux}" /usr/share/cattle/env_vars; \
+    grep -Fx "export CATTLE_AGENT_PACKAGE_WINDOWS_AGENT_URL=/usr/share/cattle/artifacts/${agent_windows}" /usr/share/cattle/env_vars; \
     auth_archive="${runtime_stage}/authentication-service.tar.xz"; \
     auth_dir="${runtime_stage}/authentication-service"; \
     fetch \
@@ -904,6 +921,13 @@ ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV CATTLE_API_UI_VERSION=1.1.18
 ENV CATTLE_CATTLE_VERSION=v0.183.289
+ENV RC16_GO_AGENT_VERSION=0.13.24
+ENV RC16_WINDOWS_AGENT_VERSION=0.13.24
+ENV RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-0.13.24.tar.gz
+ENV PASTURESTACK_NODE_AGENT_VERSION=${NODE_AGENT_VERSION}
+ENV PASTURESTACK_NODE_AGENT_COMMIT=${NODE_AGENT_COMMIT}
+ENV PASTURESTACK_NODE_AGENT_LINUX_ARTIFACT_SHA256=${NODE_AGENT_LINUX_ARTIFACT_SHA256}
+ENV PASTURESTACK_NODE_AGENT_WINDOWS_ARTIFACT_SHA256=${NODE_AGENT_WINDOWS_ARTIFACT_SHA256}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}
 ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}
