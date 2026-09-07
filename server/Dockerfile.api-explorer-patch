@@ -117,10 +117,10 @@ ARG CATALOG_SERVICE_COMMIT=9a892bc2bb5e0917b7a5cdb056426036ec99c979
 ARG CATALOG_SERVICE_ARCHIVE_SHA256=b44bc4d337ea3b54d5a5febca2060ce23e3b988c298c2fb926227fea3c228d3d
 ARG CATALOG_SERVICE_BINARY_SHA256=ccfc75831678df31f58b327b3177da6f40d31603ab329af7bdf700a8513ea329
 ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=e5c517bc7beb6857c12a7df1ffee93d87499107e12ddeca758297b930f0bb4d1
-ARG COMPOSE_EXECUTOR_VERSION=0.14.34
-ARG COMPOSE_EXECUTOR_COMMIT=e28011aaec9d9ff87d6e6fa0ede43edefa2221be
-ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=a771d9a0ce2f7d435eb711362bbebf190054cf0943a7c868d8d9b3e713320201
-ARG COMPOSE_EXECUTOR_BINARY_SHA256=e429714b321db8c1a47c727bb241b3de41b74facdfb61af144237d46f3f2c47b
+ARG COMPOSE_EXECUTOR_VERSION=0.14.35
+ARG COMPOSE_EXECUTOR_COMMIT=9cb410a47f587782cb1d19d1896cb85bc8471cbb
+ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=136308e72c384a7ec5aae350a52f607e9acc5965e7a7be1b933aa2994d42b96d
+ARG COMPOSE_EXECUTOR_BINARY_SHA256=e08a9783284b3c6ad6e224623e1b270097e07607df0f35b876a4c6741fab812f
 ARG HOST_PROVISIONER_VERSION=0.39.6
 ARG HOST_PROVISIONER_COMMIT=16f4331a65c6c7f0bef7060bad2807ecc321bd4b
 ARG HOST_PROVISIONER_ARCHIVE_SHA256=bf3281954ff8aafe58feacb82184f94c790136bb26d5bc01057b85ad295648cf
@@ -147,15 +147,15 @@ ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=95eea0146ae9e67145800857e0153aa794fc0ba947
 ARG GOVC_BINARY_SHA256=a42b0649c723b76a2208467c821ff1a9b713b2c8c5ab762808c1d193bd112287
 ARG API_EXPLORER_RELEASE_BASE_URL=https://github.com/PastureStack/api-explorer/releases/download
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.98
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.98.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=2e7a34ca1c39cc0f0425bf8a0165496510149e4ef6f9e7938d8871edb96edbff
-ARG WEB_CONSOLE_COMMIT=ee871276309fbc95af85f369eaf2c22174490fbc
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.99
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.99.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=54fefc80f3f0ebb986c2a4ed529a8861879157ab21c86009a16b01ff06208973
+ARG WEB_CONSOLE_COMMIT=ec3e47f5ce2baa0ab83200fe469e350bb672447d
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
-ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.288
-ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.288.jar
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=a68f1fea103ececd288db708f129e8cb8f47ad3b78b73102d2190d680e357247
-ARG ORCHESTRATION_ENGINE_COMMIT=a9e5d71cb5c11360018488a391c25db3f245555d
+ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.289
+ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.289.jar
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=eed36714f4d5ac6841f172562d71a9ee7a93e2e43b4d212bb1d109bd77d0a5ec
+ARG ORCHESTRATION_ENGINE_COMMIT=60e97127ba49ab0b14f8bd872688257b1478aa98
 ARG API_EXPLORER_RELEASE_TAG=v1.1.18
 ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.18.tar.gz
 ARG API_EXPLORER_ARTIFACT_SHA256=92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c
@@ -454,7 +454,7 @@ RUN set -eu; \
         exit 1; \
     fi; \
     unzip -p "${archive}" META-INF/MANIFEST.MF | tr -d '\r' | \
-        grep -Fx 'Implementation-Version: 0.183.288' >/dev/null; \
+        grep -Fx 'Implementation-Version: 0.183.289' >/dev/null; \
     test "$(grep -Ec '^WEB-INF/lib/hazelcast-5\.7\.3-pasturestack\.4\.jar$' "${listing}")" -eq 1; \
     ! grep -Eq '^WEB-INF/lib/hazelcast-(5\.7\.[012]|5\.7\.3-pasturestack\.[0-3])([.-]|\.jar$)' "${listing}"; \
     old_web_root="$(readlink -f /usr/share/cattle/war)"; \
@@ -496,7 +496,7 @@ RUN set -eu; \
         rm -f resources.jar; \
     fi; \
     resources_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name 'cattle-resources-0.183.288.jar' -print -quit)"; \
+        -name 'cattle-resources-0.183.289.jar' -print -quit)"; \
     test -n "${resources_jar}"; \
     source_date_iso="$(date -u -d "@${SOURCE_DATE_EPOCH}" '+%Y-%m-%dT%H:%M:%SZ')"; \
     app_config_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
@@ -894,16 +894,16 @@ COPY --chmod=0755 patches/websocket-proxy-wrapper.sh /usr/bin/websocket-proxy
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with the reviewed Orchestration Engine, API Explorer, Go 1.27, OpenSSL 3.5.8, zlib 1.3.2, and a reduced runtime tool surface." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.396" \
+      org.opencontainers.image.version="v1.6.397" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.364" \
       org.opencontainers.image.base.digest="sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.396
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.397
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV CATTLE_API_UI_VERSION=1.1.18
-ENV CATTLE_CATTLE_VERSION=v0.183.288
+ENV CATTLE_CATTLE_VERSION=v0.183.289
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}
 ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}

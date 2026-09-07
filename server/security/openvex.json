@@ -1,8 +1,8 @@
 {
   "@context": "https://openvex.dev/ns/v0.2.0",
-  "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.396",
+  "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.397",
   "author": "PastureStack Security",
-  "timestamp": "2026-08-31T00:00:00+08:00",
+  "timestamp": "2026-09-07T22:00:00+08:00",
   "version": 1,
   "statements": [
     {
@@ -197,7 +197,8 @@
     {
       "vulnerability": {"name": "GO-2026-5932"},
       "products": [
-        {"@id": "pkg:golang/golang.org/x/crypto@v0.55.0"}
+        {"@id": "pkg:golang/golang.org/x/crypto@v0.55.0"},
+        {"@id": "pkg:golang/golang.org/x/crypto@v0.56.0"}
       ],
       "status": "not_affected",
       "justification": "vulnerable_code_not_present",
