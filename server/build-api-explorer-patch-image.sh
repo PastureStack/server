@@ -112,6 +112,11 @@ for marker in \
     CATTLE_RANCHER_SERVER_VERSION=v1.6.397 \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION=v0.183.289 \
+    RC16_GO_AGENT_VERSION=0.13.24 \
+    RC16_WINDOWS_AGENT_VERSION=0.13.24 \
+    RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-0.13.24.tar.gz \
+    PASTURESTACK_NODE_AGENT_VERSION=0.13.24 \
+    PASTURESTACK_NODE_AGENT_COMMIT=6866f8158ab7e5beb9e0ee20f600bb096dd2782f \
     PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT="${orchestration_engine_commit}" \
     PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256="${orchestration_engine_artifact_sha256}" \
     PASTURESTACK_RUNTIME_GO_VERSION=1.27.0 \
@@ -147,6 +152,16 @@ for marker in \
     PASTURESTACK_CATALOG_COMMIT=bc446236c16f1170eb9130b4901af3d57dd82db4; do
     test "$(grep -Fxc "$marker" <<<"$image_environment")" = 1
 done
+
+docker run --rm --entrypoint sh "$image" -eu -c '
+    printf "%s\n" \
+      "d043672b4f9ee9429836e7f5763ec626c6ee3cb63db828f933d81819cb1fe96e  /usr/share/cattle/artifacts/node-agent-0.13.24.tar.gz" \
+      "017f178705ca502e330278317822c546accfe70399366784fc3aa9735efdb591  /usr/share/cattle/artifacts/node-agent-0.13.24-windows-amd64.zip" | sha256sum -c -
+    test "$(readlink /usr/share/cattle/artifacts/go-agent.tar.gz)" = node-agent-0.13.24.tar.gz
+    . /usr/share/cattle/env_vars
+    test "$CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL" = /usr/share/cattle/artifacts/node-agent-0.13.24.tar.gz
+    test "$CATTLE_AGENT_PACKAGE_WINDOWS_AGENT_URL" = /usr/share/cattle/artifacts/node-agent-0.13.24-windows-amd64.zip
+'
 
 image_orchestration=$(docker run --rm --entrypoint sha256sum "$image" \
     /usr/share/cattle/cattle.jar)

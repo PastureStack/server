@@ -266,6 +266,21 @@ require_marker "$release_notes" \
     'CVE-2026-53910' \
     SERVER_RELEASE_NOTES_DIFF3_CLOSURE_MISSING
 require_marker "$dockerfile" \
+    'ARG NODE_AGENT_VERSION=0.13.24' \
+    SERVER_HARDWARE_AGENT_VERSION_MISSING
+require_marker "$dockerfile" \
+    'ARG NODE_AGENT_LINUX_ARTIFACT_SHA256=d043672b4f9ee9429836e7f5763ec626c6ee3cb63db828f933d81819cb1fe96e' \
+    SERVER_HARDWARE_AGENT_LINUX_HASH_MISSING
+require_marker "$dockerfile" \
+    'ARG NODE_AGENT_WINDOWS_ARTIFACT_SHA256=017f178705ca502e330278317822c546accfe70399366784fc3aa9735efdb591' \
+    SERVER_HARDWARE_AGENT_WINDOWS_HASH_MISSING
+require_marker "$dockerfile" \
+    'export CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL=/usr/share/cattle/artifacts/${agent_linux}' \
+    SERVER_HARDWARE_AGENT_EFFECTIVE_URL_MISSING
+require_marker server/build-api-explorer-patch-image.sh \
+    'test "$CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL" = /usr/share/cattle/artifacts/node-agent-0.13.24.tar.gz' \
+    SERVER_HARDWARE_AGENT_EFFECTIVE_URL_NOT_VERIFIED
+require_marker "$dockerfile" \
     'ARG ZLIB_SHA256=bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16' \
     SERVER_ZLIB_SOURCE_HASH_MISSING
 require_marker "$dockerfile" \

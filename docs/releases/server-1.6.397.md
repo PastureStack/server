@@ -54,6 +54,16 @@ must be checked rather than assuming every host has upgraded.
 - Compose Executor source: `9cb410a47f587782cb1d19d1896cb85bc8471cbb`
 - Compose Executor archive SHA-256:
   `136308e72c384a7ec5aae350a52f607e9acc5965e7a7be1b933aa2994d42b96d`
+- Node Agent release: `v0.13.24`
+- Node Agent source: `6866f8158ab7e5beb9e0ee20f600bb096dd2782f`
+- Node Agent Linux archive SHA-256:
+  `d043672b4f9ee9429836e7f5763ec626c6ee3cb63db828f933d81819cb1fe96e`
+- Node Agent Windows archive SHA-256:
+  `017f178705ca502e330278317822c546accfe70399366784fc3aa9735efdb591`
+
+Both Agent packages are embedded and checksum-verified. The inherited startup
+environment and compatibility symlink are updated as well as engine defaults,
+so the actual package endpoint cannot remain pinned to the old embedded agent.
 
 This release retains Ember `7.2`, Bootstrap `5.3.8`, Go `1.27.0`, OpenSSL
 `3.5.8`, zlib `1.3.2`, the existing runtime hardening and Docker compatibility.
