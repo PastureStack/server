@@ -13,7 +13,7 @@ coreutils_patch=server/patches/coreutils-CVE-2026-56391.patch
 glibc_patch=server/patches/glibc-CVE-2026-18374.patch
 glibc_test=server/patches/test-glibc-CVE-2026-18374.c
 runtime_vex=server/security/openvex.json
-release_notes=docs/releases/server-1.6.402.md
+release_notes=docs/releases/server-1.6.403.md
 
 for path in "$dockerfile" "$release_dockerfile" "$build_script" "$publish_workflow" "$cattle_script" \
     "$coreutils_patch" "$glibc_patch" "$glibc_test" "$runtime_vex" \
@@ -36,7 +36,7 @@ require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.401@sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
-    'org.opencontainers.image.version="v1.6.402"' \
+    'org.opencontainers.image.version="v1.6.403"' \
     SERVER_INCREMENTAL_RELEASE_VERSION_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.401"' \
@@ -45,7 +45,7 @@ require_marker "$release_dockerfile" \
     'org.opencontainers.image.base.digest="sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb"' \
     SERVER_INCREMENTAL_RELEASE_BASE_DIGEST_MISSING
 require_marker "$release_dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.402' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.403' \
     SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING
 require_marker "$release_dockerfile" \
     'ARG WEB_CONSOLE_RELEASE_TAG=1.6.102' \
@@ -97,10 +97,10 @@ require_marker "$dockerfile" \
     'ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90' \
     SERVER_CA_CERTIFICATES_BOOTSTRAP_HASH_MISSING
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.402"' \
+    'org.opencontainers.image.version="v1.6.403"' \
     SERVER_API_EXPLORER_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.402' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.403' \
     SERVER_API_EXPLORER_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
     'ARG SUPPORTED_DOCKER_RANGE="~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2"' \
@@ -281,13 +281,13 @@ require_marker "$build_script" \
     'grep -F "pasturestack-catalog-pinned-commit"' \
     SERVER_CATALOG_PINNED_COMMIT_IMAGE_GATE_MISSING
 require_marker "$dockerfile" \
-    'ENV PASTURESTACK_CATALOG_COMMIT=d8641d291d7262c07251ba64e06c229a7db5e4b5' \
+    'ENV PASTURESTACK_CATALOG_COMMIT=06dfff6234ba8bf163d98e148cc61c0ebd0b2656' \
     SERVER_CATALOG_VERSION_LABEL_COMMIT_MISSING
 require_marker "$dockerfile" \
-    '"pinnedCommit":"d8641d291d7262c07251ba64e06c229a7db5e4b5"' \
+    '"pinnedCommit":"06dfff6234ba8bf163d98e148cc61c0ebd0b2656"' \
     SERVER_CATALOG_VERSION_LABEL_URL_MISSING
 require_marker "$build_script" \
-    'PASTURESTACK_CATALOG_COMMIT=d8641d291d7262c07251ba64e06c229a7db5e4b5' \
+    'PASTURESTACK_CATALOG_COMMIT=06dfff6234ba8bf163d98e148cc61c0ebd0b2656' \
     SERVER_CATALOG_VERSION_LABEL_IMAGE_GATE_MISSING
 require_marker "$dockerfile" \
     'COPY --chmod=0755 patches/websocket-proxy-wrapper.sh /usr/bin/websocket-proxy' \
@@ -604,7 +604,7 @@ bash -n "$build_script"
 
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.402"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.403"
   and (.statements | length) == 46
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -641,4 +641,4 @@ for marker in \
         SERVER_CURRENT_PUBLISH_WORKFLOW_GATE_MISSING
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.402 source_base=v1.6.364 release_base=v1.6.401 release_mode=web-compose-incremental orchestration=0.183.289 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 web_console=1.6.102 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=overlap-safe-nested-scroll-contained service_log_filters=service-scoped service_restart_events=explicit log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-07 glibc_cve_2026_18374=9765a538 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 applicability_review_pending=0 artifact_scan=required legal_assets=complete\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.403 source_base=v1.6.364 release_base=v1.6.401 release_mode=web-compose-incremental orchestration=0.183.289 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 web_console=1.6.102 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=overlap-safe-nested-scroll-contained service_log_filters=service-scoped service_restart_events=explicit log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-07 glibc_cve_2026_18374=9765a538 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 applicability_review_pending=0 artifact_scan=required legal_assets=complete\n'

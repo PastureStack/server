@@ -141,14 +141,14 @@ RUN set -eux; \
     test "${compose_version_output}" = "pasturestack-compose version ${COMPOSE_EXECUTOR_VERSION}"
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
-      org.opencontainers.image.description="PastureStack server image with Web Console footer/resource layout fixes and Compose YAML v3 mapping support." \
+      org.opencontainers.image.description="PastureStack server image with Web Console footer/resource layout fixes, Compose YAML v3 mapping support, and the reviewed catalog upgrade pin." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.402" \
+      org.opencontainers.image.version="v1.6.403" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.401" \
       org.opencontainers.image.base.digest="sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.402
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.403
 ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
@@ -156,3 +156,6 @@ ENV PASTURESTACK_COMPOSE_EXECUTOR_VERSION=${COMPOSE_EXECUTOR_VERSION}
 ENV PASTURESTACK_COMPOSE_EXECUTOR_COMMIT=${COMPOSE_EXECUTOR_COMMIT}
 ENV PASTURESTACK_COMPOSE_EXECUTOR_ARCHIVE_SHA256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256}
 ENV PASTURESTACK_COMPOSE_EXECUTOR_BINARY_SHA256=${COMPOSE_EXECUTOR_BINARY_SHA256}
+ENV PASTURESTACK_CATALOG_COMMIT=06dfff6234ba8bf163d98e148cc61c0ebd0b2656
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"06dfff6234ba8bf163d98e148cc61c0ebd0b2656"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"06dfff6234ba8bf163d98e148cc61c0ebd0b2656"}}}'

@@ -15,6 +15,6 @@ LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.base.digest="sha256:b66ddb1f16ab12b80176051bb66d6a9db69a15680b6bbbd08757c59b4a19bb12"
 
 ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.401
-ENV PASTURESTACK_CATALOG_COMMIT=d8641d291d7262c07251ba64e06c229a7db5e4b5
-ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"d8641d291d7262c07251ba64e06c229a7db5e4b5"}}}'
-ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"d8641d291d7262c07251ba64e06c229a7db5e4b5"}}}'
+ENV PASTURESTACK_CATALOG_COMMIT=06dfff6234ba8bf163d98e148cc61c0ebd0b2656
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"06dfff6234ba8bf163d98e148cc61c0ebd0b2656"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"06dfff6234ba8bf163d98e148cc61c0ebd0b2656"}}}'
