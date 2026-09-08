@@ -21,6 +21,11 @@ consistent without changing any workload image reference or runtime contract.
   deployable-image blockers.
 - The CA bootstrap package is fetched from its official Launchpad file URL and
   remains pinned to the byte-identical SHA-256 used by v1.6.400.
+- Because this release changes only image metadata and the Catalog authority,
+  its runtime filesystem is inherited byte-for-byte from the immutable
+  `v1.6.400` digest. This avoids rebuilding unrelated native dependencies while
+  the final merged rootfs is still scanned and exercised by the normal release
+  smoke test.
 - Web Console remains `1.6.101`; Node Agent remains `v0.13.27`; Orchestration
   Engine remains `0.183.289`.
 
