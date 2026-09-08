@@ -258,9 +258,14 @@ ARG NEWEST_DOCKER_VERSION=v29.7.2
 COPY --from=console_broker_build /out/pasturestack-console-broker /usr/bin/pasturestack-console-broker
 COPY --from=console_broker_build /go/pkg/mod/github.com/gorilla/websocket@v1.5.3/LICENSE /usr/share/licenses/pasturestack-console-broker/gorilla-websocket-LICENSE
 COPY console-broker/THIRD-PARTY-NOTICES.md /usr/share/licenses/pasturestack-console-broker/THIRD-PARTY-NOTICES.md
+# The hardened base intentionally removes tar. dpkg requires it before apt can
+# reinstall the pinned runtime toolset, so bootstrap only the verified builder
+# binary; the snapshot-pinned tar package replaces and owns it later in this RUN.
+COPY --from=glibc_backport_test /usr/bin/tar /usr/bin/tar
 COPY --from=glibc_backport_test /validated/ /tmp/pasturestack-glibc-backport/
 
 RUN set -eu; \
+    test "$(tar --version | sed -n '1p')" = 'tar (GNU tar) 1.35'; \
     cd /tmp/pasturestack-glibc-backport; \
     sha256sum -c SHA256SUMS; \
     dpkg -i libc6.deb libc-bin.deb libc-gconv-modules-extra.deb; \
