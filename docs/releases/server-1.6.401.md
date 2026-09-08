@@ -19,6 +19,8 @@ consistent without changing any workload image reference or runtime contract.
   `d8641d291d7262c07251ba64e06c229a7db5e4b5`
 - Catalog source validation: 22 templates, 48 image references and no
   deployable-image blockers.
+- The CA bootstrap package is fetched from its official Launchpad file URL and
+  remains pinned to the byte-identical SHA-256 used by v1.6.400.
 - Web Console remains `1.6.101`; Node Agent remains `v0.13.27`; Orchestration
   Engine remains `0.183.289`.
 

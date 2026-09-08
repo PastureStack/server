@@ -16,7 +16,7 @@ ARG GLIBC_FIX_PATCH_SHA256=a01ec64b187e5765b9cef7cdd9801172a420a3e4bce4cf222a0a8
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /build
 ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90 \
-    https://snapshot.ubuntu.com/ubuntu/20260826T000000Z/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb \
+    https://launchpad.net/ubuntu/+archive/primary/+files/ca-certificates_20260601~26.04.1_all.deb \
     /tmp/ca-certificates.deb
 COPY patches/glibc-CVE-2026-18374.patch /build/glibc-CVE-2026-18374.patch
 COPY patches/test-glibc-CVE-2026-18374.c /build/test-glibc-CVE-2026-18374.c
