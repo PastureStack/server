@@ -33,7 +33,7 @@ web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-54fefc80f3f0ebb986c2a
 web_console_commit=${WEB_CONSOLE_COMMIT:-ec3e47f5ce2baa0ab83200fe469e350bb672447d}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2'
 newest_docker_version=v29.7.2
-image=${IMAGE:-pasturestack-validation/server:v1.6.397}
+image=${IMAGE:-pasturestack-validation/server:v1.6.398}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -98,7 +98,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.397
+    v1.6.398
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -109,14 +109,14 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.397 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.398 \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION=v0.183.289 \
-    RC16_GO_AGENT_VERSION=0.13.24 \
-    RC16_WINDOWS_AGENT_VERSION=0.13.24 \
-    RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-0.13.24.tar.gz \
-    PASTURESTACK_NODE_AGENT_VERSION=0.13.24 \
-    PASTURESTACK_NODE_AGENT_COMMIT=6866f8158ab7e5beb9e0ee20f600bb096dd2782f \
+    RC16_GO_AGENT_VERSION=0.13.25 \
+    RC16_WINDOWS_AGENT_VERSION=0.13.25 \
+    RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-0.13.25.tar.gz \
+    PASTURESTACK_NODE_AGENT_VERSION=0.13.25 \
+    PASTURESTACK_NODE_AGENT_COMMIT=5943a98500c0ee2a5847d8fdba3dcf71e3c4e82b \
     PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT="${orchestration_engine_commit}" \
     PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256="${orchestration_engine_artifact_sha256}" \
     PASTURESTACK_RUNTIME_GO_VERSION=1.27.0 \
@@ -157,12 +157,12 @@ done
 
 docker run --rm --entrypoint sh "$image" -eu -c '
     printf "%s\n" \
-      "d043672b4f9ee9429836e7f5763ec626c6ee3cb63db828f933d81819cb1fe96e  /usr/share/cattle/artifacts/node-agent-0.13.24.tar.gz" \
-      "017f178705ca502e330278317822c546accfe70399366784fc3aa9735efdb591  /usr/share/cattle/artifacts/node-agent-0.13.24-windows-amd64.zip" | sha256sum -c -
-    test "$(readlink /usr/share/cattle/artifacts/go-agent.tar.gz)" = node-agent-0.13.24.tar.gz
+      "331f166261c5e8b5a43f4323caf83faf7d81bac202c2dac8eba5bfe314062fff  /usr/share/cattle/artifacts/node-agent-0.13.25.tar.gz" \
+      "79e995b589aaea91735c2676ebe4644507bc46805f38965b8b7ea9804bf279c1  /usr/share/cattle/artifacts/node-agent-0.13.25-windows-amd64.zip" | sha256sum -c -
+    test "$(readlink /usr/share/cattle/artifacts/go-agent.tar.gz)" = node-agent-0.13.25.tar.gz
     . /usr/share/cattle/env_vars
-    test "$CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL" = /usr/share/cattle/artifacts/node-agent-0.13.24.tar.gz
-    test "$CATTLE_AGENT_PACKAGE_WINDOWS_AGENT_URL" = /usr/share/cattle/artifacts/node-agent-0.13.24-windows-amd64.zip
+    test "$CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL" = /usr/share/cattle/artifacts/node-agent-0.13.25.tar.gz
+    test "$CATTLE_AGENT_PACKAGE_WINDOWS_AGENT_URL" = /usr/share/cattle/artifacts/node-agent-0.13.25-windows-amd64.zip
 '
 
 image_orchestration=$(docker run --rm --entrypoint sha256sum "$image" \
