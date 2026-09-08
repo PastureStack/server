@@ -322,6 +322,12 @@ require_marker "$dockerfile" \
 require_marker "$dockerfile" \
     'ARG GLIBC_FIX_PATCH_SHA256=a01ec64b187e5765b9cef7cdd9801172a420a3e4bce4cf222a0a85cb2dea1dcc' \
     SERVER_GLIBC_PATCH_HASH_MISSING
+require_marker "$dockerfile" \
+    'COPY --from=glibc_backport_test /usr/bin/tar /usr/bin/tar' \
+    SERVER_GLIBC_BOOTSTRAP_TAR_MISSING
+require_marker "$dockerfile" \
+    'test "$(tar --version | sed -n '\''1p'\'')" = '\''tar (GNU tar) 1.35'\''' \
+    SERVER_GLIBC_BOOTSTRAP_TAR_UNVERIFIED
 for glibc_build_marker in \
     'apt-get source "glibc=${GLIBC_SOURCE_VERSION}"' \
     'patch --dry-run -p1 < /build/glibc-CVE-2026-18374.patch' \
