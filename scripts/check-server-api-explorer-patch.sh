@@ -9,11 +9,14 @@ build_script=server/build-api-explorer-patch-image.sh
 publish_workflow=.github/workflows/publish-current-server.yml
 cattle_script=server/artifacts/cattle.sh
 coreutils_patch=server/patches/coreutils-CVE-2026-56391.patch
+glibc_patch=server/patches/glibc-CVE-2026-18374.patch
+glibc_test=server/patches/test-glibc-CVE-2026-18374.c
 runtime_vex=server/security/openvex.json
 release_notes=docs/releases/server-1.6.397.md
 
 for path in "$dockerfile" "$build_script" "$publish_workflow" "$cattle_script" \
-    "$coreutils_patch" "$runtime_vex" "$release_notes"; do
+    "$coreutils_patch" "$glibc_patch" "$glibc_test" "$runtime_vex" \
+    "$release_notes"; do
     test -f "$path"
 done
 
@@ -32,7 +35,7 @@ require_marker "$dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5' \
     SERVER_API_EXPLORER_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'ARG UBUNTU_SNAPSHOT=20260901T000000Z' \
+    'ARG UBUNTU_SNAPSHOT=20260907T000000Z' \
     SERVER_API_EXPLORER_PATCH_UBUNTU_SNAPSHOT_NOT_CURRENT
 require_marker "$dockerfile" \
     'org.opencontainers.image.version="v1.6.397"' \
@@ -219,6 +222,54 @@ require_marker "$dockerfile" \
     'ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-08-26' \
     SERVER_UBUNTU_SECURITY_REFRESH_MISSING
 require_marker "$dockerfile" \
+    'ARG GLIBC_BUILDER_IMAGE=ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b' \
+    SERVER_GLIBC_BUILDER_NOT_PINNED
+require_marker "$dockerfile" \
+    'ARG GLIBC_SOURCE_VERSION=2.43-2ubuntu2.3' \
+    SERVER_GLIBC_SOURCE_VERSION_MISSING
+require_marker "$dockerfile" \
+    'ARG GLIBC_BACKPORT_VERSION=2.43-2ubuntu2.3+pasturestack1' \
+    SERVER_GLIBC_BACKPORT_VERSION_MISSING
+require_marker "$dockerfile" \
+    'ARG GLIBC_FIX_COMMIT=9765a538ebf8661a6e5578e01e35a3dd30db7eb4' \
+    SERVER_GLIBC_FIX_COMMIT_MISSING
+require_marker "$dockerfile" \
+    'ARG GLIBC_TEST_COMMIT=cca93e5d88d3d4ed073c03100467696f652269e7' \
+    SERVER_GLIBC_TEST_COMMIT_MISSING
+require_marker "$dockerfile" \
+    'ARG GLIBC_FIX_PATCH_SHA256=a01ec64b187e5765b9cef7cdd9801172a420a3e4bce4cf222a0a85cb2dea1dcc' \
+    SERVER_GLIBC_PATCH_HASH_MISSING
+for glibc_build_marker in \
+    'apt-get source "glibc=${GLIBC_SOURCE_VERSION}"' \
+    'patch --dry-run -p1 < /build/glibc-CVE-2026-18374.patch' \
+    'dpkg-buildpackage -B -us -uc' \
+    '/out/test-glibc-CVE-2026-18374' \
+    'ENV PASTURESTACK_GLIBC_CVE_2026_18374_FIX=${GLIBC_FIX_COMMIT}' \
+    'ENV PASTURESTACK_GLIBC_PACKAGE_VERSION=${GLIBC_BACKPORT_VERSION}'; do
+    require_marker "$dockerfile" "$glibc_build_marker" \
+        SERVER_GLIBC_BACKPORT_GATE_MISSING
+done
+test "$(sha256sum "$glibc_patch" | awk '{print $1}')" = \
+    a01ec64b187e5765b9cef7cdd9801172a420a3e4bce4cf222a0a85cb2dea1dcc
+require_marker "$glibc_patch" \
+    'Upstream-Commit: 9765a538ebf8661a6e5578e01e35a3dd30db7eb4' \
+    SERVER_GLIBC_PATCH_PROVENANCE_MISSING
+for glibc_test_marker in \
+    '"w,ccs=                     ,"' \
+    'expect_einval ("empty ccs", "w,ccs=")' \
+    'expect_einval ("empty ccs before comma", "w,ccs=,")' \
+    'expect_success ("ordinary fopen", "w")' \
+    'expect_success ("non-empty ccs", "w,ccs=UTF-8")'; do
+    require_marker "$glibc_test" "$glibc_test_marker" \
+        SERVER_GLIBC_TARGETED_TEST_MISSING
+done
+require_marker "$build_script" \
+    'PASTURESTACK_GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.3+pasturestack1' \
+    SERVER_GLIBC_IMAGE_VERSION_GATE_MISSING
+require_marker "$release_notes" \
+    '9765a538ebf8661a6e5578e01e35a3dd30db7eb4' \
+    SERVER_RELEASE_NOTES_GLIBC_FIX_MISSING
+require_marker "$dockerfile" \
     'coreutils-from-gnu coreutils-from-uutils- rust-coreutils-' \
     SERVER_GNU_COREUTILS_SWITCH_MISSING
 require_marker "$dockerfile" \
@@ -404,8 +455,8 @@ ARG CATALOG_SERVICE_VERSION=0.20.11|SERVER_CATALOG_SERVICE_VERSION_MISSING
 ARG CATALOG_SERVICE_BINARY_SHA256=ccfc75831678df31f58b327b3177da6f40d31603ab329af7bdf700a8513ea329|SERVER_CATALOG_SERVICE_HASH_MISSING
 ARG COMPOSE_EXECUTOR_VERSION=0.14.35|SERVER_COMPOSE_EXECUTOR_VERSION_MISSING
 ARG COMPOSE_EXECUTOR_BINARY_SHA256=e08a9783284b3c6ad6e224623e1b270097e07607df0f35b876a4c6741fab812f|SERVER_COMPOSE_EXECUTOR_HASH_MISSING
-ARG HOST_PROVISIONER_VERSION=0.39.6|SERVER_HOST_PROVISIONER_VERSION_MISSING
-ARG HOST_PROVISIONER_BINARY_SHA256=1d06bde76920e9738da0365e9fd0ef1eac3a414785bede06b8d8665bf25a2710|SERVER_HOST_PROVISIONER_HASH_MISSING
+ARG HOST_PROVISIONER_VERSION=0.39.7|SERVER_HOST_PROVISIONER_VERSION_MISSING
+ARG HOST_PROVISIONER_BINARY_SHA256=bce26b98133d3f5d4ecaddba26179ed8e14e5b260b38dee5f9e4383cbfbc855a|SERVER_HOST_PROVISIONER_HASH_MISSING
 ARG SECRET_DELIVERY_API_VERSION=0.3.1|SERVER_SECRET_DELIVERY_API_VERSION_MISSING
 ARG SECRET_DELIVERY_API_BINARY_SHA256=fbdd12862e1cfe3c957f492ae81c4c1c5658357502bd322febbbe209496929be|SERVER_SECRET_DELIVERY_API_HASH_MISSING
 ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.1|SERVER_USAGE_TELEMETRY_AGENT_VERSION_MISSING
@@ -466,16 +517,14 @@ bash -n "$build_script"
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
   and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.397"
-  and (.statements | length) == 20
+  and (.statements | length) == 46
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
-      == ["CVE-2024-52005", "CVE-2026-18798", "CVE-2026-27171", "CVE-2026-56391", "CVE-2026-75803"]
+      == ["CVE-2024-52005","CVE-2026-18374","CVE-2026-18798","CVE-2026-27171","CVE-2026-56391","CVE-2026-75803"]
   and ([.statements[] | select(.status == "not_affected") | .vulnerability.name] | sort)
-      == ["CVE-2024-2236", "CVE-2024-56433", "CVE-2025-1352",
-          "CVE-2025-1376", "CVE-2025-66382", "CVE-2026-13757", "CVE-2026-18477",
-          "CVE-2026-18508", "CVE-2026-27456", "CVE-2026-3184",
-          "CVE-2026-40228", "CVE-2026-53910", "CVE-2026-54371", "CVE-2026-56392",
-          "GO-2026-5932"]
+      == ["CVE-2024-2236","CVE-2024-56433","CVE-2025-1352","CVE-2025-1376","CVE-2025-66382","CVE-2026-13757","CVE-2026-18477","CVE-2026-18508","CVE-2026-27456","CVE-2026-3184","CVE-2026-32776","CVE-2026-32777","CVE-2026-32778","CVE-2026-40228","CVE-2026-41080","CVE-2026-45186","CVE-2026-50219","CVE-2026-53910","CVE-2026-54371","CVE-2026-56131","CVE-2026-56132","CVE-2026-56392","CVE-2026-56403","CVE-2026-56404","CVE-2026-56405","CVE-2026-56406","CVE-2026-56407","CVE-2026-56408","CVE-2026-56409","CVE-2026-56410","CVE-2026-56411","CVE-2026-56412","CVE-2026-56855","CVE-2026-57062","CVE-2026-66046","CVE-2026-72522","CVE-2026-76641","CVE-2026-76957","CVE-2026-78662","GO-2026-5932"]
+  and ([.statements[] | select(.status == "under_investigation") | .vulnerability.name] | sort)
+      == []
   and all(.statements[]; (.products | length) > 0)
   and all(.statements[].products[]; (.["@id"] | startswith("pkg:") and (contains("*") | not)))
   and all(.statements[] | select(.status == "not_affected");
@@ -504,4 +553,4 @@ for marker in \
         SERVER_CURRENT_PUBLISH_WORKFLOW_GATE_MISSING
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.397 base=v1.6.364 orchestration=0.183.289 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 web_console=1.6.99 host_stats_charts=route-independent-shared-stream resource_actions=overlap-safe-nested-scroll-contained service_log_filters=service-scoped service_restart_events=explicit log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_language_menu_bounded=1 audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-01 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 unresolved=0 legal_assets=complete\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.397 base=v1.6.364 orchestration=0.183.289 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 web_console=1.6.99 host_stats_charts=route-independent-shared-stream resource_actions=overlap-safe-nested-scroll-contained service_log_filters=service-scoped service_restart_events=explicit log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_language_menu_bounded=1 audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-07 glibc_cve_2026_18374=9765a538 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 applicability_review_pending=0 artifact_scan=required legal_assets=complete\n'
