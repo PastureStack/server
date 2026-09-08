@@ -1,0 +1,158 @@
+# syntax=docker/dockerfile:1.7
+ARG ARTIFACT_HELPER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.401@sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb
+
+FROM ${ARTIFACT_HELPER_IMAGE} AS release_artifacts
+
+ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.102
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.102.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=6269235a9a23a43b025ca78269ea7d807108c36b007f3eb65c5369c639261bb1
+ARG COMPOSE_EXECUTOR_VERSION=0.14.36
+ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66
+ARG COMPOSE_EXECUTOR_BINARY_SHA256=1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d
+
+RUN set -eux; \
+    command -v curl; \
+    command -v gzip; \
+    command -v sha256sum; \
+    command -v tar; \
+    web_archive=/tmp/web-console.tar.gz; \
+    web_listing=/tmp/web-console-files.txt; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
+        --connect-timeout 10 --max-time 300 \
+        -o "${web_archive}" \
+        "${WEB_CONSOLE_RELEASE_BASE_URL%/}/${WEB_CONSOLE_RELEASE_TAG}/${WEB_CONSOLE_ARTIFACT}"; \
+    echo "${WEB_CONSOLE_ARTIFACT_SHA256}  ${web_archive}" | sha256sum -c -; \
+    tar -tzf "${web_archive}" >"${web_listing}"; \
+    if grep -Eq '(^/|(^|/)\.\.(/|$))' "${web_listing}"; then \
+        echo 'Unsafe Web Console archive path' >&2; \
+        exit 1; \
+    fi; \
+    if sort "${web_listing}" | uniq -d | grep -q .; then \
+        echo 'Duplicate Web Console archive path' >&2; \
+        exit 1; \
+    fi; \
+    if tar -tvzf "${web_archive}" | grep -Eq '^[lh]'; then \
+        echo 'Web Console archive may not contain links' >&2; \
+        exit 1; \
+    fi; \
+    while IFS= read -r member; do \
+        clean="${member#./}"; \
+        case "${clean}" in \
+            ${WEB_CONSOLE_RELEASE_TAG}/|${WEB_CONSOLE_RELEASE_TAG}/*) ;; \
+            *) echo "Unexpected Web Console archive member: ${member}" >&2; exit 1 ;; \
+        esac; \
+    done <"${web_listing}"; \
+    mkdir -p /out/web-console /tmp/web-console; \
+    tar --no-same-owner --no-same-permissions -xzf "${web_archive}" -C /tmp/web-console; \
+    package_root="/tmp/web-console/${WEB_CONSOLE_RELEASE_TAG}"; \
+    test "$(cat "${package_root}/VERSION.txt")" = "${WEB_CONSOLE_RELEASE_TAG}"; \
+    test "$(find "${package_root}/translations" -maxdepth 1 -type f -name '*.json' | wc -l)" -eq 13; \
+    test -z "$(find "${package_root}" -type l -print -quit)"; \
+    test -z "$(find "${package_root}" -type f -name '*.map' -print -quit)"; \
+    ui_entry="$(find "${package_root}/assets" -maxdepth 1 -type f -name 'ui-*.js' -print -quit)"; \
+    test -n "${ui_entry}"; \
+    grep -aF 'footer-dropdown' "${ui_entry}" >/dev/null; \
+    grep -aF 'resource-host-guidance' "${ui_entry}" >/dev/null; \
+    grep -aF 'resource-advanced-grid' "${ui_entry}" >/dev/null; \
+    for theme_asset in ui-light.css ui-light.rtl.css ui-dark.css ui-dark.rtl.css; do \
+        theme_path="${package_root}/assets/${theme_asset}"; \
+        grep -F 'footer .footer-dropdown .dropdown-menu' "${theme_path}" >/dev/null; \
+        grep -F '.form-resources .resource-host-guidance' "${theme_path}" >/dev/null; \
+        grep -F '.form-resources .resource-advanced-content.resource-advanced-grid' "${theme_path}" >/dev/null; \
+    done; \
+    grep -F '"formResources.addUlimit":"新增限制"' \
+        "${package_root}/translations/zh-tw.json" >/dev/null; \
+    for locale_file in "${package_root}"/translations/*.json; do \
+        grep -F '"formResources.addUlimit":' "${locale_file}" >/dev/null; \
+    done; \
+    cp -a "${package_root}/." /out/web-console/; \
+    compose_archive=/tmp/compose-executor.gz; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
+        --connect-timeout 10 --max-time 300 \
+        -o "${compose_archive}" \
+        "https://github.com/PastureStack/compose-cli/releases/download/v${COMPOSE_EXECUTOR_VERSION}/compose-executor-${COMPOSE_EXECUTOR_VERSION}-linux-amd64.gz"; \
+    echo "${COMPOSE_EXECUTOR_ARCHIVE_SHA256}  ${compose_archive}" | sha256sum -c -; \
+    gzip -dc "${compose_archive}" >/out/compose-executor; \
+    chmod 0755 /out/compose-executor; \
+    echo "${COMPOSE_EXECUTOR_BINARY_SHA256}  /out/compose-executor" | sha256sum -c -; \
+    compose_version_output="$(/out/compose-executor --version 2>&1)"; \
+    test "${compose_version_output}" = "compose-executor version ${COMPOSE_EXECUTOR_VERSION}"
+
+FROM ${BASE_IMAGE}
+
+ARG SOURCE_DATE_EPOCH
+ARG PASTURESTACK_SERVER_REVISION
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.102
+ARG WEB_CONSOLE_ARTIFACT_SHA256=6269235a9a23a43b025ca78269ea7d807108c36b007f3eb65c5369c639261bb1
+ARG WEB_CONSOLE_COMMIT=9f754ba35ab0c6eaa7d6cd42304f36bb9aba378c
+ARG COMPOSE_EXECUTOR_VERSION=0.14.36
+ARG COMPOSE_EXECUTOR_COMMIT=e85545a1bc34cb5c42db62ff90dd82b7ff9f5838
+ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66
+ARG COMPOSE_EXECUTOR_BINARY_SHA256=1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d
+
+COPY --from=release_artifacts /out/web-console/ /tmp/pasturestack-web-console/
+COPY --from=release_artifacts --chmod=0755 /out/compose-executor /usr/bin/compose-executor.real
+
+RUN set -eux; \
+    test -n "${SOURCE_DATE_EPOCH}"; \
+    test -n "${PASTURESTACK_SERVER_REVISION}"; \
+    web_root="$(readlink -f /usr/share/cattle/war)"; \
+    case "${web_root}" in \
+        /usr/share/cattle/*) ;; \
+        *) echo "Unsafe Web Console document root: ${web_root}" >&2; exit 1 ;; \
+    esac; \
+    rm -rf \
+        "${web_root}/assets" \
+        "${web_root}/ember-fetch" \
+        "${web_root}/licenses" \
+        "${web_root}/translations"; \
+    rm -f \
+        "${web_root}/VERSION.txt" \
+        "${web_root}/favicon.ico" \
+        "${web_root}/humans.txt" \
+        "${web_root}/index.html" \
+        "${web_root}/robots.txt"; \
+    cp -a /tmp/pasturestack-web-console/. "${web_root}/"; \
+    rm -rf /tmp/pasturestack-web-console; \
+    find "${web_root}/assets" "${web_root}/licenses" "${web_root}/translations" \
+        -exec touch -h -d "@${SOURCE_DATE_EPOCH}" {} +; \
+    touch -d "@${SOURCE_DATE_EPOCH}" \
+        "${web_root}/VERSION.txt" \
+        "${web_root}/favicon.ico" \
+        "${web_root}/humans.txt" \
+        "${web_root}/index.html" \
+        "${web_root}/robots.txt" \
+        "${web_root}"; \
+    test "$(cat "${web_root}/VERSION.txt")" = "${WEB_CONSOLE_RELEASE_TAG}"; \
+    test "$(find "${web_root}/translations" -maxdepth 1 -type f -name '*.json' | wc -l)" -eq 13; \
+    test -z "$(find "${web_root}" -type f -name '*.map' -print -quit)"; \
+    for theme_asset in ui-light.css ui-light.rtl.css ui-dark.css ui-dark.rtl.css; do \
+        theme_path="${web_root}/assets/${theme_asset}"; \
+        grep -F 'footer .footer-dropdown .dropdown-menu' "${theme_path}" >/dev/null; \
+        grep -F '.form-resources .resource-host-guidance' "${theme_path}" >/dev/null; \
+        grep -F '.form-resources .resource-advanced-content.resource-advanced-grid' "${theme_path}" >/dev/null; \
+    done; \
+    grep -F '"formResources.addUlimit":"新增限制"' \
+        "${web_root}/translations/zh-tw.json" >/dev/null; \
+    echo "${COMPOSE_EXECUTOR_BINARY_SHA256}  /usr/bin/compose-executor.real" | sha256sum -c -; \
+    compose_version_output="$(/usr/bin/compose-executor.real --version 2>&1)"; \
+    test "${compose_version_output}" = "pasturestack-compose version ${COMPOSE_EXECUTOR_VERSION}"
+
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server image with Web Console footer/resource layout fixes and Compose YAML v3 mapping support." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.402" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.401" \
+      org.opencontainers.image.base.digest="sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.402
+ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}
+ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
+ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
+ENV PASTURESTACK_COMPOSE_EXECUTOR_VERSION=${COMPOSE_EXECUTOR_VERSION}
+ENV PASTURESTACK_COMPOSE_EXECUTOR_COMMIT=${COMPOSE_EXECUTOR_COMMIT}
+ENV PASTURESTACK_COMPOSE_EXECUTOR_ARCHIVE_SHA256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256}
+ENV PASTURESTACK_COMPOSE_EXECUTOR_BINARY_SHA256=${COMPOSE_EXECUTOR_BINARY_SHA256}
