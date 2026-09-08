@@ -68,7 +68,7 @@ jobs:
           test -z "$(git -C source status --short)"
 
           declared_release="$(sed -n 's/.*org.opencontainers.image.version="\([^"]*\)".*/\1/p' \
-            source/server/Dockerfile.api-explorer-patch)"
+            source/server/Dockerfile.web-compose-release)"
           test "$declared_release" = "$RELEASE_TAG"
           release_notes="source/docs/releases/server-${RELEASE_TAG#v}.md"
           test -f "$release_notes"

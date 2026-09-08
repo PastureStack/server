@@ -15,7 +15,7 @@ fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
-base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.400@sha256:b66ddb1f16ab12b80176051bb66d6a9db69a15680b6bbbd08757c59b4a19bb12}
+base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.401@sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
 orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.289}
 orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.289.jar}
@@ -27,13 +27,17 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
 api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.101}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.101.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-bae2ba7f837f396ea1980d97f5654b2c02cef256bc18926ca1a80992ed542189}
-web_console_commit=${WEB_CONSOLE_COMMIT:-cb5af27e29f166ba71eda7939d0a90b6c6e52255}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.102}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.102.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-6269235a9a23a43b025ca78269ea7d807108c36b007f3eb65c5369c639261bb1}
+web_console_commit=${WEB_CONSOLE_COMMIT:-9f754ba35ab0c6eaa7d6cd42304f36bb9aba378c}
+compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.36}
+compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-e85545a1bc34cb5c42db62ff90dd82b7ff9f5838}
+compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66}
+compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2'
 newest_docker_version=v29.7.2
-image=${IMAGE:-pasturestack-validation/server:v1.6.401}
+image=${IMAGE:-pasturestack-validation/server:v1.6.402}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -50,7 +54,11 @@ build_options=()
 [[ "$web_console_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$web_console_release_tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
 [[ "$web_console_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
-[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.400@sha256:b66ddb1f16ab12b80176051bb66d6a9db69a15680b6bbbd08757c59b4a19bb12 ]]
+[[ "$compose_executor_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+[[ "$compose_executor_commit" =~ ^[0-9a-f]{40}$ ]]
+[[ "$compose_executor_archive_sha256" =~ ^[0-9a-f]{64}$ ]]
+[[ "$compose_executor_binary_sha256" =~ ^[0-9a-f]{64}$ ]]
+[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.401@sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb ]]
 for release_base_url in "$orchestration_engine_release_base_url" "$api_explorer_release_base_url" "$web_console_release_base_url"; do
 case "$release_base_url" in
     https://*) ;;
@@ -90,29 +98,33 @@ docker buildx build \
     --build-arg "WEB_CONSOLE_ARTIFACT=${web_console_artifact}" \
     --build-arg "WEB_CONSOLE_ARTIFACT_SHA256=${web_console_artifact_sha256}" \
     --build-arg "WEB_CONSOLE_COMMIT=${web_console_commit}" \
+    --build-arg "COMPOSE_EXECUTOR_VERSION=${compose_executor_version}" \
+    --build-arg "COMPOSE_EXECUTOR_COMMIT=${compose_executor_commit}" \
+    --build-arg "COMPOSE_EXECUTOR_ARCHIVE_SHA256=${compose_executor_archive_sha256}" \
+    --build-arg "COMPOSE_EXECUTOR_BINARY_SHA256=${compose_executor_binary_sha256}" \
     --build-arg "SUPPORTED_DOCKER_RANGE=${supported_docker_range}" \
     --build-arg "NEWEST_DOCKER_VERSION=${newest_docker_version}" \
     --tag "$image" \
-    --file server/Dockerfile.catalog-version-labels-release \
+    --file server/Dockerfile.web-compose-release \
     server
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.401
+    v1.6.402
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.base.name"}}')" = \
-    ghcr.io/pasturestack/server:v1.6.400
+    ghcr.io/pasturestack/server:v1.6.401
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.base.digest"}}')" = \
-    sha256:b66ddb1f16ab12b80176051bb66d6a9db69a15680b6bbbd08757c59b4a19bb12
+    sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb
 
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.401 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.402 \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION=v0.183.289 \
     RC16_GO_AGENT_VERSION=0.13.27 \
@@ -146,7 +158,10 @@ for marker in \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
     PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.4.36 \
     PASTURESTACK_CATALOG_SERVICE_VERSION=0.20.11 \
-    PASTURESTACK_COMPOSE_EXECUTOR_VERSION=0.14.35 \
+    PASTURESTACK_COMPOSE_EXECUTOR_VERSION="${compose_executor_version}" \
+    PASTURESTACK_COMPOSE_EXECUTOR_COMMIT="${compose_executor_commit}" \
+    PASTURESTACK_COMPOSE_EXECUTOR_ARCHIVE_SHA256="${compose_executor_archive_sha256}" \
+    PASTURESTACK_COMPOSE_EXECUTOR_BINARY_SHA256="${compose_executor_binary_sha256}" \
     PASTURESTACK_HOST_PROVISIONER_VERSION=0.39.7 \
     PASTURESTACK_SECRET_DELIVERY_API_VERSION=0.3.1 \
     PASTURESTACK_USAGE_TELEMETRY_AGENT_VERSION=0.4.1 \
@@ -226,7 +241,7 @@ docker run --rm --entrypoint bash "$image" -lc 'test -x /usr/bin/websocket-proxy
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.101"
+    test "$(cat "${web_root}/VERSION.txt")" = "1.6.102"
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     test ! -e "${web_root}/translations/none.json"
     test -z "$(find "${web_root}" -type f -name "*.map" -print -quit)"
@@ -255,11 +270,15 @@ docker run --rm --entrypoint bash "$image" -lc '
         grep -F ".audit-log-filter-primary-grid" "${web_root}/assets/${theme_asset}" >/dev/null
         grep -F ".audit-log-filter-condition" "${web_root}/assets/${theme_asset}" >/dev/null
         grep -F ".audit-date-calendar" "${web_root}/assets/${theme_asset}" >/dev/null
-        grep -F "footer .language-dropdown .dropdown-menu" "${web_root}/assets/${theme_asset}" >/dev/null
+        grep -F "footer .footer-dropdown .dropdown-menu" "${web_root}/assets/${theme_asset}" >/dev/null
+        grep -F ".form-resources .resource-host-guidance" "${web_root}/assets/${theme_asset}" >/dev/null
+        grep -F ".form-resources .resource-advanced-content.resource-advanced-grid" "${web_root}/assets/${theme_asset}" >/dev/null
         grep -F "table.audit-log-results-table[data-resizable-columns=true]:not(.table-column-measuring) > thead > th.audit-log-auth-ip-heading" "${web_root}/assets/${theme_asset}" >/dev/null
         grep -F -A 6 "table.audit-log-results-table[data-resizable-columns=true]:not(.table-column-measuring) > thead > th.audit-log-auth-ip-heading" "${web_root}/assets/${theme_asset}" | grep -F "white-space: normal;" >/dev/null
     done
     grep -F "篩選稽核日誌" "${web_root}/translations/zh-tw.json" >/dev/null
+    grep -F '"'"'"formResources.addUlimit"'"'"'"'"':"'"'"新增限制"'"'"'"' \
+        "${web_root}/translations/zh-tw.json" >/dev/null
     grep -F "篩選服務日誌" "${web_root}/translations/zh-tw.json" >/dev/null
     grep -F "開始時間必須早於結束時間" "${web_root}/translations/zh-tw.json" >/dev/null
     for locale in de-de fa-ir fil-ph fr-fr hu-hu ja-jp ko-kr pt-br ru-ru uk-ua zh-hans zh-tw; do
@@ -329,7 +348,7 @@ docker run --rm --entrypoint bash "$image" -lc '
 33c59675901c459feb478e55f731420bd2f5f3c3f27e0f6c7b4659207d025d7b  /usr/bin/authentication-service.real
 ccfc75831678df31f58b327b3177da6f40d31603ab329af7bdf700a8513ea329  /usr/bin/catalog-service.real
 e5c517bc7beb6857c12a7df1ffee93d87499107e12ddeca758297b930f0bb4d1  /usr/bin/catalog-service-sqlite
-e08a9783284b3c6ad6e224623e1b270097e07607df0f35b876a4c6741fab812f  /usr/bin/compose-executor.real
+1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d  /usr/bin/compose-executor.real
 bce26b98133d3f5d4ecaddba26179ed8e14e5b260b38dee5f9e4383cbfbc855a  /usr/bin/host-provisioner.real
 fbdd12862e1cfe3c957f492ae81c4c1c5658357502bd322febbbe209496929be  /usr/bin/secret-delivery-api
 f18ed969b8b5959293fdbcd55d2e28846372ab87c9348fbb315a9a490bf85ad4  /usr/bin/usage-telemetry-agent
@@ -353,6 +372,8 @@ EOF
         grep -aF "go1.27.0" "${binary}" >/dev/null
     done
     /usr/bin/authentication-service.real --version | grep -F "0.4.36" >/dev/null
+    test "$(/usr/bin/compose-executor.real --version)" = \
+        "pasturestack-compose version ${compose_executor_version}"
     for ssh_binary in /usr/bin/host-provisioner.real /usr/bin/compose-executor.real; do
         grep -aF "$(printf "dep\tgolang.org/x/crypto\tv0.56.0\t")" "${ssh_binary}" >/dev/null
     done
@@ -461,8 +482,10 @@ EOF
     fi
 '
 
-printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s audit_log_filters=1 audit_calendar_localized=1 footer_language_menu_bounded=1 docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-07 glibc_cve_2026_18374=9765a538 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_pinned=1\n' \
+printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s compose_executor=%s compose_executor_commit=%s compose_executor_archive_sha256=%s compose_executor_binary_sha256=%s audit_log_filters=1 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-07 glibc_cve_2026_18374=9765a538 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_pinned=1\n' \
     "$image" "$revision" "$base_image" "${orchestration_engine_release_tag#v}" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "${api_explorer_release_tag#v}" "$api_explorer_commit" "$api_explorer_artifact_sha256" \
-    "$web_console_release_tag" "$web_console_commit" "$web_console_artifact_sha256"
+    "$web_console_release_tag" "$web_console_commit" "$web_console_artifact_sha256" \
+    "$compose_executor_version" "$compose_executor_commit" \
+    "$compose_executor_archive_sha256" "$compose_executor_binary_sha256"

@@ -205,10 +205,10 @@ ARG CATALOG_SERVICE_COMMIT=9a892bc2bb5e0917b7a5cdb056426036ec99c979
 ARG CATALOG_SERVICE_ARCHIVE_SHA256=b44bc4d337ea3b54d5a5febca2060ce23e3b988c298c2fb926227fea3c228d3d
 ARG CATALOG_SERVICE_BINARY_SHA256=ccfc75831678df31f58b327b3177da6f40d31603ab329af7bdf700a8513ea329
 ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=e5c517bc7beb6857c12a7df1ffee93d87499107e12ddeca758297b930f0bb4d1
-ARG COMPOSE_EXECUTOR_VERSION=0.14.35
-ARG COMPOSE_EXECUTOR_COMMIT=9cb410a47f587782cb1d19d1896cb85bc8471cbb
-ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=136308e72c384a7ec5aae350a52f607e9acc5965e7a7be1b933aa2994d42b96d
-ARG COMPOSE_EXECUTOR_BINARY_SHA256=e08a9783284b3c6ad6e224623e1b270097e07607df0f35b876a4c6741fab812f
+ARG COMPOSE_EXECUTOR_VERSION=0.14.36
+ARG COMPOSE_EXECUTOR_COMMIT=e85545a1bc34cb5c42db62ff90dd82b7ff9f5838
+ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66
+ARG COMPOSE_EXECUTOR_BINARY_SHA256=1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d
 ARG HOST_PROVISIONER_VERSION=0.39.7
 ARG HOST_PROVISIONER_COMMIT=c396df52491cf115de49fd909ea09afe5c6ce135
 ARG HOST_PROVISIONER_ARCHIVE_SHA256=97cc465025d5ad996f7e90b3786255e0eba11e60df7931075f2b795248452fb5
@@ -235,10 +235,10 @@ ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=95eea0146ae9e67145800857e0153aa794fc0ba947
 ARG GOVC_BINARY_SHA256=a42b0649c723b76a2208467c821ff1a9b713b2c8c5ab762808c1d193bd112287
 ARG API_EXPLORER_RELEASE_BASE_URL=https://github.com/PastureStack/api-explorer/releases/download
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.101
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.101.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=bae2ba7f837f396ea1980d97f5654b2c02cef256bc18926ca1a80992ed542189
-ARG WEB_CONSOLE_COMMIT=cb5af27e29f166ba71eda7939d0a90b6c6e52255
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.102
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.102.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=6269235a9a23a43b025ca78269ea7d807108c36b007f3eb65c5369c639261bb1
+ARG WEB_CONSOLE_COMMIT=9f754ba35ab0c6eaa7d6cd42304f36bb9aba378c
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
 ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.289
 ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.289.jar
@@ -799,11 +799,14 @@ RUN set -eu; \
         grep -F '.audit-log-filter-primary-grid' "${package_root}/assets/${theme_asset}" >/dev/null; \
         grep -F '.audit-log-filter-condition' "${package_root}/assets/${theme_asset}" >/dev/null; \
         grep -F '.audit-date-calendar' "${package_root}/assets/${theme_asset}" >/dev/null; \
-        grep -F 'footer .language-dropdown .dropdown-menu' "${package_root}/assets/${theme_asset}" >/dev/null; \
+        grep -F 'footer .footer-dropdown .dropdown-menu' "${package_root}/assets/${theme_asset}" >/dev/null; \
+        grep -F '.form-resources .resource-host-guidance' "${package_root}/assets/${theme_asset}" >/dev/null; \
+        grep -F '.form-resources .resource-advanced-content.resource-advanced-grid' "${package_root}/assets/${theme_asset}" >/dev/null; \
         grep -F 'table.audit-log-results-table[data-resizable-columns=true]:not(.table-column-measuring) > thead > th.audit-log-auth-ip-heading' "${package_root}/assets/${theme_asset}" >/dev/null; \
         grep -F -A 6 'table.audit-log-results-table[data-resizable-columns=true]:not(.table-column-measuring) > thead > th.audit-log-auth-ip-heading' "${package_root}/assets/${theme_asset}" | grep -F 'white-space: normal;' >/dev/null; \
     done; \
     grep -F '篩選稽核日誌' "${package_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"formResources.addUlimit":"新增限制"' "${package_root}/translations/zh-tw.json" >/dev/null; \
     grep -F '篩選服務日誌' "${package_root}/translations/zh-tw.json" >/dev/null; \
     grep -F '開始時間必須早於結束時間' "${package_root}/translations/zh-tw.json" >/dev/null; \
     for locale in de-de fa-ir fil-ph fr-fr hu-hu ja-jp ko-kr pt-br ru-ru uk-ua zh-hans zh-tw; do \
@@ -1016,12 +1019,12 @@ COPY --chmod=0755 patches/websocket-proxy-wrapper.sh /usr/bin/websocket-proxy
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with the reviewed Orchestration Engine, API Explorer, Go 1.27, OpenSSL 3.5.8, zlib 1.3.2, and a reduced runtime tool surface." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.401" \
+      org.opencontainers.image.version="v1.6.402" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.364" \
       org.opencontainers.image.base.digest="sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.401
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.402
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV CATTLE_API_UI_VERSION=1.1.18
