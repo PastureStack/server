@@ -277,7 +277,7 @@ docker run --rm --entrypoint bash "$image" -lc '
         grep -F -A 6 "table.audit-log-results-table[data-resizable-columns=true]:not(.table-column-measuring) > thead > th.audit-log-auth-ip-heading" "${web_root}/assets/${theme_asset}" | grep -F "white-space: normal;" >/dev/null
     done
     grep -F "篩選稽核日誌" "${web_root}/translations/zh-tw.json" >/dev/null
-    grep -F '"'"'"formResources.addUlimit"'"'"'"'"':"'"'"新增限制"'"'"'"' \
+    grep -F "\"formResources.addUlimit\":\"新增限制\"" \
         "${web_root}/translations/zh-tw.json" >/dev/null
     grep -F "篩選服務日誌" "${web_root}/translations/zh-tw.json" >/dev/null
     grep -F "開始時間必須早於結束時間" "${web_root}/translations/zh-tw.json" >/dev/null
@@ -373,7 +373,7 @@ EOF
     done
     /usr/bin/authentication-service.real --version | grep -F "0.4.36" >/dev/null
     test "$(/usr/bin/compose-executor.real --version)" = \
-        "pasturestack-compose version ${compose_executor_version}"
+        "pasturestack-compose version ${PASTURESTACK_COMPOSE_EXECUTOR_VERSION}"
     for ssh_binary in /usr/bin/host-provisioner.real /usr/bin/compose-executor.real; do
         grep -aF "$(printf "dep\tgolang.org/x/crypto\tv0.56.0\t")" "${ssh_binary}" >/dev/null
     done
