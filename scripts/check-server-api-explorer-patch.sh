@@ -12,7 +12,7 @@ coreutils_patch=server/patches/coreutils-CVE-2026-56391.patch
 glibc_patch=server/patches/glibc-CVE-2026-18374.patch
 glibc_test=server/patches/test-glibc-CVE-2026-18374.c
 runtime_vex=server/security/openvex.json
-release_notes=docs/releases/server-1.6.397.md
+release_notes=docs/releases/server-1.6.398.md
 
 for path in "$dockerfile" "$build_script" "$publish_workflow" "$cattle_script" \
     "$coreutils_patch" "$glibc_patch" "$glibc_test" "$runtime_vex" \
@@ -38,10 +38,10 @@ require_marker "$dockerfile" \
     'ARG UBUNTU_SNAPSHOT=20260907T000000Z' \
     SERVER_API_EXPLORER_PATCH_UBUNTU_SNAPSHOT_NOT_CURRENT
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.397"' \
+    'org.opencontainers.image.version="v1.6.398"' \
     SERVER_API_EXPLORER_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.397' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.398' \
     SERVER_API_EXPLORER_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
     'ARG SUPPORTED_DOCKER_RANGE="~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2"' \
@@ -322,19 +322,19 @@ require_marker "$release_notes" \
     'CVE-2026-53910' \
     SERVER_RELEASE_NOTES_DIFF3_CLOSURE_MISSING
 require_marker "$dockerfile" \
-    'ARG NODE_AGENT_VERSION=0.13.24' \
+    'ARG NODE_AGENT_VERSION=0.13.25' \
     SERVER_HARDWARE_AGENT_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ARG NODE_AGENT_LINUX_ARTIFACT_SHA256=d043672b4f9ee9429836e7f5763ec626c6ee3cb63db828f933d81819cb1fe96e' \
+    'ARG NODE_AGENT_LINUX_ARTIFACT_SHA256=331f166261c5e8b5a43f4323caf83faf7d81bac202c2dac8eba5bfe314062fff' \
     SERVER_HARDWARE_AGENT_LINUX_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG NODE_AGENT_WINDOWS_ARTIFACT_SHA256=017f178705ca502e330278317822c546accfe70399366784fc3aa9735efdb591' \
+    'ARG NODE_AGENT_WINDOWS_ARTIFACT_SHA256=79e995b589aaea91735c2676ebe4644507bc46805f38965b8b7ea9804bf279c1' \
     SERVER_HARDWARE_AGENT_WINDOWS_HASH_MISSING
 require_marker "$dockerfile" \
     'export CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL=/usr/share/cattle/artifacts/${agent_linux}' \
     SERVER_HARDWARE_AGENT_EFFECTIVE_URL_MISSING
 require_marker server/build-api-explorer-patch-image.sh \
-    'test "$CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL" = /usr/share/cattle/artifacts/node-agent-0.13.24.tar.gz' \
+    'test "$CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL" = /usr/share/cattle/artifacts/node-agent-0.13.25.tar.gz' \
     SERVER_HARDWARE_AGENT_EFFECTIVE_URL_NOT_VERIFIED
 require_marker "$dockerfile" \
     'ARG ZLIB_SHA256=bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16' \
@@ -521,7 +521,7 @@ bash -n "$build_script"
 
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.397"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.398"
   and (.statements | length) == 46
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -558,4 +558,4 @@ for marker in \
         SERVER_CURRENT_PUBLISH_WORKFLOW_GATE_MISSING
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.397 base=v1.6.364 orchestration=0.183.289 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 web_console=1.6.99 host_stats_charts=route-independent-shared-stream resource_actions=overlap-safe-nested-scroll-contained service_log_filters=service-scoped service_restart_events=explicit log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_language_menu_bounded=1 audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-07 glibc_cve_2026_18374=9765a538 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 applicability_review_pending=0 artifact_scan=required legal_assets=complete\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.398 base=v1.6.364 orchestration=0.183.289 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 web_console=1.6.99 node_agent=0.13.25 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=overlap-safe-nested-scroll-contained service_log_filters=service-scoped service_restart_events=explicit log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_language_menu_bounded=1 audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-07 glibc_cve_2026_18374=9765a538 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 applicability_review_pending=0 artifact_scan=required legal_assets=complete\n'
