@@ -9,9 +9,9 @@ ARG WEB_CONSOLE_RELEASE_TAG=1.6.102
 ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.102.tar.gz
 ARG WEB_CONSOLE_ARTIFACT_SHA256=6269235a9a23a43b025ca78269ea7d807108c36b007f3eb65c5369c639261bb1
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
-ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.292
-ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.292.jar
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=57362214e72f611b45d0b3a878aeb017282ddc766cf59abc3e5f487714b9a79e
+ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.293
+ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.293.jar
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=aad8c43e09ab36f63409aada9ad61a24d12ba787ce3d51ebc1dde51a5ca460fa
 ARG COMPOSE_EXECUTOR_VERSION=0.14.36
 ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66
 ARG COMPOSE_EXECUTOR_BINARY_SHA256=1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d
@@ -97,8 +97,8 @@ ARG PASTURESTACK_SERVER_REVISION
 ARG WEB_CONSOLE_RELEASE_TAG=1.6.102
 ARG WEB_CONSOLE_ARTIFACT_SHA256=6269235a9a23a43b025ca78269ea7d807108c36b007f3eb65c5369c639261bb1
 ARG WEB_CONSOLE_COMMIT=9f754ba35ab0c6eaa7d6cd42304f36bb9aba378c
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=57362214e72f611b45d0b3a878aeb017282ddc766cf59abc3e5f487714b9a79e
-ARG ORCHESTRATION_ENGINE_COMMIT=63d2d63a2036f569010daaaed701307b1c4f20a5
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=aad8c43e09ab36f63409aada9ad61a24d12ba787ce3d51ebc1dde51a5ca460fa
+ARG ORCHESTRATION_ENGINE_COMMIT=c8a2e6509f54702ab3bf969f0d92712c00b10e2e
 ARG COMPOSE_EXECUTOR_VERSION=0.14.36
 ARG COMPOSE_EXECUTOR_COMMIT=e85545a1bc34cb5c42db62ff90dd82b7ff9f5838
 ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66
@@ -129,7 +129,7 @@ RUN set -eux; \
         exit 1; \
     fi; \
     unzip -p "${archive}" META-INF/MANIFEST.MF | tr -d '\r' | \
-        grep -Fx 'Implementation-Version: 0.183.292' >/dev/null; \
+        grep -Fx 'Implementation-Version: 0.183.293' >/dev/null; \
     test "$(grep -Ec '^WEB-INF/lib/hazelcast-5\.7\.3-pasturestack\.4\.jar$' "${listing}")" -eq 1; \
     ! grep -Eq '^WEB-INF/lib/hazelcast-(5\.7\.[012]|5\.7\.3-pasturestack\.[0-3])([.-]|\.jar$)' "${listing}"; \
     old_web_root="$(readlink -f /usr/share/cattle/war)"; \
@@ -155,10 +155,10 @@ RUN set -eux; \
         rm -f resources.jar; \
     fi; \
     resources_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name 'cattle-resources-0.183.292.jar' -print -quit)"; \
+        -name 'cattle-resources-0.183.293.jar' -print -quit)"; \
     test -n "${resources_jar}"; \
     app_config_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name 'cattle-app-config-0.183.292.jar' -print -quit)"; \
+        -name 'cattle-app-config-0.183.293.jar' -print -quit)"; \
     test -n "${app_config_jar}"; \
     unzip -p "${app_config_jar}" META-INF/cattle/api-server/defaults.properties | \
         grep -Fx 'supported.docker.range=~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2' >/dev/null; \
@@ -256,15 +256,15 @@ RUN set -eux; \
     test "${compose_version_output}" = "pasturestack-compose version ${COMPOSE_EXECUTOR_VERSION}"
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
-      org.opencontainers.image.description="PastureStack server image with the reviewed Orchestration Engine service restart-policy fix and the verified Web Console, Compose, and catalog coordinates." \
+      org.opencontainers.image.description="PastureStack server image with reviewed Docker bind-propagation validation and verified Web Console, Compose, and catalog coordinates." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.406" \
+      org.opencontainers.image.version="v1.6.407" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.401" \
       org.opencontainers.image.base.digest="sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.406
-ENV CATTLE_CATTLE_VERSION=v0.183.292
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.407
+ENV CATTLE_CATTLE_VERSION=v0.183.293
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}
 ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}
