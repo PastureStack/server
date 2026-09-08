@@ -42,3 +42,10 @@ The runtime retains the glibc fix
 `d64e35a8a4c0e4608321433e0d84d917e4e36371`, the OpenSSL closure for
 `CVE-2026-75803`, and removal of the unreachable `diff3` path for
 `CVE-2026-53910`.
+
+The release is an incremental image over the immutable v1.6.401 runtime. It
+verifies and replaces the Orchestration Engine JAR, reapplies the Server-only
+schema and bootstrap overlays, and then installs the pinned Web Console and
+Compose artifacts. Unchanged glibc, OpenSSL, and operating-system bytes are
+inherited from the already scanned base instead of being rebuilt from the
+Ubuntu snapshot service.

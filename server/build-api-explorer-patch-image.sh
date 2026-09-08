@@ -105,7 +105,7 @@ docker buildx build \
     --build-arg "SUPPORTED_DOCKER_RANGE=${supported_docker_range}" \
     --build-arg "NEWEST_DOCKER_VERSION=${newest_docker_version}" \
     --tag "$image" \
-    --file server/Dockerfile.api-explorer-patch \
+    --file server/Dockerfile.web-compose-release \
     server
 
 test "$(docker image inspect "$image" \
