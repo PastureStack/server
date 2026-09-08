@@ -15,7 +15,7 @@ fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
-base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5}
+base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.400@sha256:b66ddb1f16ab12b80176051bb66d6a9db69a15680b6bbbd08757c59b4a19bb12}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
 orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.289}
 orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.289.jar}
@@ -50,7 +50,7 @@ build_options=()
 [[ "$web_console_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$web_console_release_tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
 [[ "$web_console_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
-[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5 ]]
+[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.400@sha256:b66ddb1f16ab12b80176051bb66d6a9db69a15680b6bbbd08757c59b4a19bb12 ]]
 for release_base_url in "$orchestration_engine_release_base_url" "$api_explorer_release_base_url" "$web_console_release_base_url"; do
 case "$release_base_url" in
     https://*) ;;
@@ -93,7 +93,7 @@ docker buildx build \
     --build-arg "SUPPORTED_DOCKER_RANGE=${supported_docker_range}" \
     --build-arg "NEWEST_DOCKER_VERSION=${newest_docker_version}" \
     --tag "$image" \
-    --file server/Dockerfile.api-explorer-patch \
+    --file server/Dockerfile.catalog-version-labels-release \
     server
 
 test "$(docker image inspect "$image" \
@@ -104,7 +104,10 @@ test "$(docker image inspect "$image" \
     "$revision"
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.base.name"}}')" = \
-    ghcr.io/pasturestack/server:v1.6.364
+    ghcr.io/pasturestack/server:v1.6.400
+test "$(docker image inspect "$image" \
+    --format '{{index .Config.Labels "org.opencontainers.image.base.digest"}}')" = \
+    sha256:b66ddb1f16ab12b80176051bb66d6a9db69a15680b6bbbd08757c59b4a19bb12
 
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')

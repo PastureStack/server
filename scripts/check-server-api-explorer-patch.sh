@@ -5,6 +5,7 @@ repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$repo_root"
 
 dockerfile=server/Dockerfile.api-explorer-patch
+release_dockerfile=server/Dockerfile.catalog-version-labels-release
 build_script=server/build-api-explorer-patch-image.sh
 publish_workflow=.github/workflows/publish-current-server.yml
 cattle_script=server/artifacts/cattle.sh
@@ -14,7 +15,7 @@ glibc_test=server/patches/test-glibc-CVE-2026-18374.c
 runtime_vex=server/security/openvex.json
 release_notes=docs/releases/server-1.6.401.md
 
-for path in "$dockerfile" "$build_script" "$publish_workflow" "$cattle_script" \
+for path in "$dockerfile" "$release_dockerfile" "$build_script" "$publish_workflow" "$cattle_script" \
     "$coreutils_patch" "$glibc_patch" "$glibc_test" "$runtime_vex" \
     "$release_notes"; do
     test -f "$path"
@@ -30,6 +31,36 @@ require_marker()
         exit 1
     fi
 }
+
+require_marker "$release_dockerfile" \
+    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.400@sha256:b66ddb1f16ab12b80176051bb66d6a9db69a15680b6bbbd08757c59b4a19bb12' \
+    SERVER_CATALOG_LABEL_RELEASE_BASE_MISSING
+require_marker "$release_dockerfile" \
+    'org.opencontainers.image.version="v1.6.401"' \
+    SERVER_CATALOG_LABEL_RELEASE_VERSION_MISSING
+require_marker "$release_dockerfile" \
+    'org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.400"' \
+    SERVER_CATALOG_LABEL_RELEASE_BASE_NAME_MISSING
+require_marker "$release_dockerfile" \
+    'org.opencontainers.image.base.digest="sha256:b66ddb1f16ab12b80176051bb66d6a9db69a15680b6bbbd08757c59b4a19bb12"' \
+    SERVER_CATALOG_LABEL_RELEASE_BASE_DIGEST_MISSING
+require_marker "$release_dockerfile" \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.401' \
+    SERVER_CATALOG_LABEL_RELEASE_RUNTIME_VERSION_MISSING
+require_marker "$release_dockerfile" \
+    'ENV PASTURESTACK_CATALOG_COMMIT=d8641d291d7262c07251ba64e06c229a7db5e4b5' \
+    SERVER_CATALOG_LABEL_RELEASE_COMMIT_MISSING
+require_marker "$release_dockerfile" \
+    '"pinnedCommit":"d8641d291d7262c07251ba64e06c229a7db5e4b5"' \
+    SERVER_CATALOG_LABEL_RELEASE_URL_MISSING
+require_marker "$build_script" \
+    '--file server/Dockerfile.catalog-version-labels-release' \
+    SERVER_CATALOG_LABEL_RELEASE_BUILD_PATH_MISSING
+if grep -Eq '^(ADD|COPY|RUN)[[:space:]]' "$release_dockerfile"; then
+    printf 'SERVER_CATALOG_LABEL_RELEASE_NOT_METADATA_ONLY file=%s\n' \
+        "$release_dockerfile" >&2
+    exit 1
+fi
 
 require_marker "$dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5' \
@@ -523,7 +554,7 @@ require_marker "$dockerfile" \
     'org.opencontainers.image.base.digest="sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5"' \
     SERVER_API_EXPLORER_PATCH_BASE_DIGEST_MISSING
 require_marker "$build_script" \
-    'ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5' \
+    'ghcr.io/pasturestack/server:v1.6.400@sha256:b66ddb1f16ab12b80176051bb66d6a9db69a15680b6bbbd08757c59b4a19bb12' \
     SERVER_API_EXPLORER_PATCH_BUILD_BASE_DIGEST_MISSING
 
 if grep -RInE '(^|[^[:alnum:]])[A-Za-z]:\\Users\\|/home/[^/[:space:]]+/|(^|[^[:digit:]])10[.][[:digit:]]{1,3}[.][[:digit:]]{1,3}[.][[:digit:]]{1,3}([^[:digit:]]|$)|[[:alnum:]._%+-]+@[[:alnum:].-]+[.][[:alpha:]]{2,}' \
@@ -573,4 +604,4 @@ for marker in \
         SERVER_CURRENT_PUBLISH_WORKFLOW_GATE_MISSING
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.401 base=v1.6.364 orchestration=0.183.289 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 web_console=1.6.101 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=overlap-safe-nested-scroll-contained service_log_filters=service-scoped service_restart_events=explicit log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_language_menu_bounded=1 audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-07 glibc_cve_2026_18374=9765a538 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 applicability_review_pending=0 artifact_scan=required legal_assets=complete\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.401 source_base=v1.6.364 release_base=v1.6.400 release_mode=metadata-only orchestration=0.183.289 distributed_cache=5.7.3-pasturestack.4 api_explorer=1.1.18 web_console=1.6.101 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=overlap-safe-nested-scroll-contained service_log_filters=service-scoped service_restart_events=explicit log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_language_menu_bounded=1 audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-07 glibc_cve_2026_18374=9765a538 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 vex=openvex-0.2.0 applicability_review_pending=0 artifact_scan=required legal_assets=complete\n'

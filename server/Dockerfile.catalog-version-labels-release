@@ -1,0 +1,20 @@
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.400@sha256:b66ddb1f16ab12b80176051bb66d6a9db69a15680b6bbbd08757c59b4a19bb12
+FROM ${BASE_IMAGE}
+
+ARG PASTURESTACK_SERVER_REVISION
+
+# v1.6.401 changes only the Catalog source authority and user-facing release
+# identity. Reuse the already published and scanned v1.6.400 runtime rootfs
+# byte-for-byte instead of rebuilding unrelated native dependencies.
+LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.description="PastureStack server image with plain semantic Catalog version labels." \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.version="v1.6.401" \
+      org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.400" \
+      org.opencontainers.image.base.digest="sha256:b66ddb1f16ab12b80176051bb66d6a9db69a15680b6bbbd08757c59b4a19bb12"
+
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.401
+ENV PASTURESTACK_CATALOG_COMMIT=d8641d291d7262c07251ba64e06c229a7db5e4b5
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"d8641d291d7262c07251ba64e06c229a7db5e4b5"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"d8641d291d7262c07251ba64e06c229a7db5e4b5"}}}'
