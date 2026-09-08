@@ -1,7 +1,93 @@
 # syntax=docker/dockerfile:1.7
 ARG GO_BUILDER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452
+ARG GLIBC_BUILDER_IMAGE=ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b
 ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5
 ARG SOURCE_DATE_EPOCH
+
+FROM ${GLIBC_BUILDER_IMAGE} AS glibc_backport_build
+
+ARG UBUNTU_SNAPSHOT=20260907T000000Z
+ARG GLIBC_SOURCE_VERSION=2.43-2ubuntu2.3
+ARG GLIBC_BACKPORT_VERSION=2.43-2ubuntu2.3+pasturestack1
+ARG GLIBC_FIX_COMMIT=9765a538ebf8661a6e5578e01e35a3dd30db7eb4
+ARG GLIBC_TEST_COMMIT=cca93e5d88d3d4ed073c03100467696f652269e7
+ARG GLIBC_FIX_PATCH_SHA256=a01ec64b187e5765b9cef7cdd9801172a420a3e4bce4cf222a0a85cb2dea1dcc
+
+ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /build
+ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90 \
+    https://snapshot.ubuntu.com/ubuntu/20260826T000000Z/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb \
+    /tmp/ca-certificates.deb
+COPY patches/glibc-CVE-2026-18374.patch /build/glibc-CVE-2026-18374.patch
+COPY patches/test-glibc-CVE-2026-18374.c /build/test-glibc-CVE-2026-18374.c
+RUN set -eux; \
+    echo "${GLIBC_FIX_PATCH_SHA256}  /build/glibc-CVE-2026-18374.patch" | sha256sum -c -; \
+    grep -Fx "Upstream-Commit: ${GLIBC_FIX_COMMIT}" /build/glibc-CVE-2026-18374.patch; \
+    grep -Fx "Upstream-Test-Commit: ${GLIBC_TEST_COMMIT}" /build/glibc-CVE-2026-18374.patch; \
+    mkdir -p /tmp/ca-bootstrap /etc/ssl/certs; \
+    dpkg-deb --extract /tmp/ca-certificates.deb /tmp/ca-bootstrap; \
+    find /tmp/ca-bootstrap/usr/share/ca-certificates -type f -name '*.crt' | \
+      LC_ALL=C sort | while IFS= read -r certificate; do sed -e '$a\' "${certificate}"; done \
+      > /etc/ssl/certs/ca-certificates.crt; \
+    rm -rf /tmp/ca-bootstrap /tmp/ca-certificates.deb; \
+    rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; \
+    printf 'Types: deb deb-src\nURIs: https://snapshot.ubuntu.com/ubuntu/%s\nSuites: resolute resolute-updates resolute-backports resolute-security\nComponents: main universe restricted multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nSnapshot: no\n' "${UBUNTU_SNAPSHOT}" > /etc/apt/sources.list.d/pasturestack-snapshot.sources; \
+    printf 'Acquire::Retries "5";\nAcquire::https::CaInfo "/etc/ssl/certs/ca-certificates.crt";\nAcquire::https::Verify-Peer "true";\nAcquire::https::Verify-Host "true";\nAcquire::AllowInsecureRepositories "false";\nAPT::Get::AllowUnauthenticated "false";\n' > /etc/apt/apt.conf.d/80pasturestack-snapshot; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends ca-certificates dpkg-dev gcc; \
+    DEB_BUILD_PROFILES='nobiarch nocheck pkg.glibc.nosystemtap' \
+      apt-get build-dep -y --no-install-recommends "glibc=${GLIBC_SOURCE_VERSION}"; \
+    apt-get source "glibc=${GLIBC_SOURCE_VERSION}"; \
+    source_dir="$(find /build -mindepth 1 -maxdepth 1 -type d -name 'glibc-*' -print -quit)"; \
+    test -n "${source_dir}"; \
+    test "$(find /build -mindepth 1 -maxdepth 1 -type d -name 'glibc-*' | wc -l)" -eq 1; \
+    cd "${source_dir}"; \
+    test "$(dpkg-parsechangelog -S Version)" = "${GLIBC_SOURCE_VERSION}"; \
+    patch --dry-run -p1 < /build/glibc-CVE-2026-18374.patch; \
+    patch -p1 < /build/glibc-CVE-2026-18374.patch; \
+    grep -F "CVE-2026-18374" libio/fileops.c; \
+    { \
+      printf 'glibc (%s) resolute; urgency=medium\n\n' "${GLIBC_BACKPORT_VERSION}"; \
+      printf '  * Backport upstream fix %s for CVE-2026-18374.\n\n' "${GLIBC_FIX_COMMIT}"; \
+      printf ' -- PastureStack Maintainers <noreply@localhost>  Fri, 04 Sep 2026 12:52:05 +0000\n\n'; \
+      cat debian/changelog; \
+    } > debian/changelog.pasturestack; \
+    mv debian/changelog.pasturestack debian/changelog; \
+    test "$(dpkg-parsechangelog -S Version)" = "${GLIBC_BACKPORT_VERSION}"; \
+    DEB_BUILD_PROFILES='nobiarch pkg.glibc.nosystemtap' \
+    DEB_BUILD_OPTIONS="nocheck nodoc noautodbgsym parallel=$(nproc)" \
+      dpkg-buildpackage -B -us -uc; \
+    mkdir -p /out; \
+    for package in libc6 libc-bin libc-gconv-modules-extra; do \
+      package_file="$(find /build -maxdepth 1 -type f -name "${package}_*_amd64.deb" -print)"; \
+      test -n "${package_file}"; \
+      test "$(printf '%s\n' "${package_file}" | wc -l)" -eq 1; \
+      test "$(dpkg-deb -f "${package_file}" Package)" = "${package}"; \
+      test "$(dpkg-deb -f "${package_file}" Version)" = "${GLIBC_BACKPORT_VERSION}"; \
+      test "$(dpkg-deb -f "${package_file}" Architecture)" = amd64; \
+      cp "${package_file}" "/out/${package}.deb"; \
+    done; \
+    gcc -std=c11 -O2 -Wall -Wextra -Werror \
+      /build/test-glibc-CVE-2026-18374.c -o /out/test-glibc-CVE-2026-18374; \
+    cd /out; \
+    sha256sum libc6.deb libc-bin.deb libc-gconv-modules-extra.deb test-glibc-CVE-2026-18374 > SHA256SUMS
+
+FROM ${GLIBC_BUILDER_IMAGE} AS glibc_backport_test
+
+ARG GLIBC_BACKPORT_VERSION=2.43-2ubuntu2.3+pasturestack1
+ENV DEBIAN_FRONTEND=noninteractive
+COPY --from=glibc_backport_build /out/ /opt/pasturestack-glibc-backport/
+RUN set -eux; \
+    cd /opt/pasturestack-glibc-backport; \
+    sha256sum -c SHA256SUMS; \
+    dpkg -i libc6.deb libc-bin.deb libc-gconv-modules-extra.deb; \
+    for package in libc6 libc-bin libc-gconv-modules-extra; do \
+      test "$(dpkg-query -W -f='${Version}' "${package}")" = "${GLIBC_BACKPORT_VERSION}"; \
+    done; \
+    ./test-glibc-CVE-2026-18374; \
+    mkdir -p /validated; \
+    cp SHA256SUMS libc6.deb libc-bin.deb libc-gconv-modules-extra.deb \
+      test-glibc-CVE-2026-18374 /validated/
 
 FROM ${GO_BUILDER_IMAGE} AS console_broker_build
 
@@ -107,7 +193,9 @@ FROM ${BASE_IMAGE}
 
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
-ARG UBUNTU_SNAPSHOT=20260901T000000Z
+ARG UBUNTU_SNAPSHOT=20260907T000000Z
+ARG GLIBC_BACKPORT_VERSION=2.43-2ubuntu2.3+pasturestack1
+ARG GLIBC_FIX_COMMIT=9765a538ebf8661a6e5578e01e35a3dd30db7eb4
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.36
 ARG AUTHENTICATION_SERVICE_COMMIT=f9609e657486693575753f1bfdfdf1aeb13e1fc5
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=9bc5d4070e4b012c4464b986ddcd26225c4cca0756fa3e5a118c4ec8fc74367a
@@ -121,10 +209,10 @@ ARG COMPOSE_EXECUTOR_VERSION=0.14.35
 ARG COMPOSE_EXECUTOR_COMMIT=9cb410a47f587782cb1d19d1896cb85bc8471cbb
 ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=136308e72c384a7ec5aae350a52f607e9acc5965e7a7be1b933aa2994d42b96d
 ARG COMPOSE_EXECUTOR_BINARY_SHA256=e08a9783284b3c6ad6e224623e1b270097e07607df0f35b876a4c6741fab812f
-ARG HOST_PROVISIONER_VERSION=0.39.6
-ARG HOST_PROVISIONER_COMMIT=16f4331a65c6c7f0bef7060bad2807ecc321bd4b
-ARG HOST_PROVISIONER_ARCHIVE_SHA256=bf3281954ff8aafe58feacb82184f94c790136bb26d5bc01057b85ad295648cf
-ARG HOST_PROVISIONER_BINARY_SHA256=1d06bde76920e9738da0365e9fd0ef1eac3a414785bede06b8d8665bf25a2710
+ARG HOST_PROVISIONER_VERSION=0.39.7
+ARG HOST_PROVISIONER_COMMIT=c396df52491cf115de49fd909ea09afe5c6ce135
+ARG HOST_PROVISIONER_ARCHIVE_SHA256=97cc465025d5ad996f7e90b3786255e0eba11e60df7931075f2b795248452fb5
+ARG HOST_PROVISIONER_BINARY_SHA256=bce26b98133d3f5d4ecaddba26179ed8e14e5b260b38dee5f9e4383cbfbc855a
 ARG SECRET_DELIVERY_API_VERSION=0.3.1
 ARG SECRET_DELIVERY_API_COMMIT=a812ce56935bca31254a5392104a91ce63517832
 ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=32d20d1178c884f903599b99df8ec5c78e20eecc18286d1b85008196844daf6e
@@ -170,8 +258,15 @@ ARG NEWEST_DOCKER_VERSION=v29.7.2
 COPY --from=console_broker_build /out/pasturestack-console-broker /usr/bin/pasturestack-console-broker
 COPY --from=console_broker_build /go/pkg/mod/github.com/gorilla/websocket@v1.5.3/LICENSE /usr/share/licenses/pasturestack-console-broker/gorilla-websocket-LICENSE
 COPY console-broker/THIRD-PARTY-NOTICES.md /usr/share/licenses/pasturestack-console-broker/THIRD-PARTY-NOTICES.md
+COPY --from=glibc_backport_test /validated/ /tmp/pasturestack-glibc-backport/
 
 RUN set -eu; \
+    cd /tmp/pasturestack-glibc-backport; \
+    sha256sum -c SHA256SUMS; \
+    dpkg -i libc6.deb libc-bin.deb libc-gconv-modules-extra.deb; \
+    test "$(dpkg-query -W -f='${Version}' libc6)" = "${GLIBC_BACKPORT_VERSION}"; \
+    ./test-glibc-CVE-2026-18374; \
+    cd /; \
     rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; \
     printf 'Types: deb\nURIs: https://snapshot.ubuntu.com/ubuntu/%s\nSuites: resolute resolute-updates resolute-backports resolute-security\nComponents: main universe restricted multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nSnapshot: no\n' "${UBUNTU_SNAPSHOT}" > /etc/apt/sources.list.d/pasturestack-snapshot.sources; \
     printf 'Acquire::Retries "5";\nAcquire::https::CaInfo "/etc/ssl/certs/ca-certificates.crt";\nAcquire::https::Verify-Peer "true";\nAcquire::https::Verify-Host "true";\nAcquire::AllowInsecureRepositories "false";\nAPT::Get::AllowUnauthenticated "false";\n' > /etc/apt/apt.conf.d/80pasturestack-snapshot; \
@@ -194,7 +289,11 @@ RUN set -eu; \
     }; \
     version_at_least curl 8.18.0-1ubuntu2.4; \
     version_at_least libcurl4t64 8.18.0-1ubuntu2.4; \
-    version_at_least libc6 2.43-2ubuntu2.3; \
+    test "$(dpkg-query -W -f='${Version}' libc6)" = "${GLIBC_BACKPORT_VERSION}"; \
+    test "$(dpkg-query -W -f='${Version}' libc-bin)" = "${GLIBC_BACKPORT_VERSION}"; \
+    test "$(dpkg-query -W -f='${Version}' libc-gconv-modules-extra)" = "${GLIBC_BACKPORT_VERSION}"; \
+    /tmp/pasturestack-glibc-backport/test-glibc-CVE-2026-18374; \
+    version_at_least libssh2-1t64 1.11.1-1ubuntu0.26.04.4; \
     version_at_least systemd 259.5-0ubuntu3.4; \
     version_at_least libsystemd0 259.5-0ubuntu3.4; \
     version_at_least libudev1 259.5-0ubuntu3.4; \
@@ -209,6 +308,7 @@ RUN set -eu; \
     version_at_least util-linux 2.41.3-3ubuntu2.2; \
     version_at_least openssl 3.5.5-1ubuntu3.4; \
     version_at_least libssl3t64 3.5.5-1ubuntu3.4; \
+    rm -rf /tmp/pasturestack-glibc-backport; \
     runtime_stage=/tmp/pasturestack-runtime-refresh; \
     mkdir -p "${runtime_stage}"; \
     fetch() { \
@@ -377,6 +477,9 @@ RUN set -eu; \
     /usr/bin/authentication-service.real --version | grep -F "${AUTHENTICATION_SERVICE_VERSION}" >/dev/null; \
     test "$(/usr/bin/govc version)" = "govc ${VSPHERE_CLI_BUNDLE_VERSION}"; \
     grep -aF 'go1.27.0' /usr/bin/pasturestack-console-broker >/dev/null; \
+    for ssh_binary in /usr/bin/host-provisioner.real /usr/bin/compose-executor.real; do \
+        grep -aF "$(printf 'dep\tgolang.org/x/crypto\tv0.56.0\t')" "${ssh_binary}" >/dev/null; \
+    done; \
     touch -d "@${SOURCE_DATE_EPOCH}" \
         /usr/bin/authentication-service.real \
         /usr/bin/catalog-service.real \
@@ -842,6 +945,7 @@ RUN set -eu; \
         /usr/bin/newuidmap \
         /usr/bin/passwd \
         /usr/bin/gpgv \
+        /usr/bin/gpgsm \
         /usr/bin/eu-readelf \
         /usr/bin/eu-strip \
         /usr/bin/diff3 \
@@ -873,6 +977,7 @@ RUN set -eu; \
     ldconfig; \
     for removed_path in \
         /usr/bin/gpgv \
+        /usr/bin/gpgsm \
         /usr/bin/eu-readelf \
         /usr/bin/eu-strip \
         /usr/bin/diff3 \
@@ -935,6 +1040,8 @@ ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
 ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.0
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-08-26
+ENV PASTURESTACK_GLIBC_CVE_2026_18374_FIX=${GLIBC_FIX_COMMIT}
+ENV PASTURESTACK_GLIBC_PACKAGE_VERSION=${GLIBC_BACKPORT_VERSION}
 ENV PASTURESTACK_COREUTILS_PROVIDER=gnu
 ENV PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11
 ENV PASTURESTACK_COREUTILS_UNIQ_FIX=d64e35a8a4c0e4608321433e0d84d917e4e36371

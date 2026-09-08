@@ -121,6 +121,8 @@ for marker in \
     PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256="${orchestration_engine_artifact_sha256}" \
     PASTURESTACK_RUNTIME_GO_VERSION=1.27.0 \
     PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-08-26 \
+    PASTURESTACK_GLIBC_CVE_2026_18374_FIX=9765a538ebf8661a6e5578e01e35a3dd30db7eb4 \
+    PASTURESTACK_GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.3+pasturestack1 \
     PASTURESTACK_COREUTILS_PROVIDER=gnu \
     PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11 \
     PASTURESTACK_COREUTILS_UNIQ_FIX=d64e35a8a4c0e4608321433e0d84d917e4e36371 \
@@ -142,7 +144,7 @@ for marker in \
     PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=0.4.36 \
     PASTURESTACK_CATALOG_SERVICE_VERSION=0.20.11 \
     PASTURESTACK_COMPOSE_EXECUTOR_VERSION=0.14.35 \
-    PASTURESTACK_HOST_PROVISIONER_VERSION=0.39.6 \
+    PASTURESTACK_HOST_PROVISIONER_VERSION=0.39.7 \
     PASTURESTACK_SECRET_DELIVERY_API_VERSION=0.3.1 \
     PASTURESTACK_USAGE_TELEMETRY_AGENT_VERSION=0.4.1 \
     PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.1 \
@@ -323,7 +325,7 @@ docker run --rm --entrypoint bash "$image" -lc '
 ccfc75831678df31f58b327b3177da6f40d31603ab329af7bdf700a8513ea329  /usr/bin/catalog-service.real
 e5c517bc7beb6857c12a7df1ffee93d87499107e12ddeca758297b930f0bb4d1  /usr/bin/catalog-service-sqlite
 e08a9783284b3c6ad6e224623e1b270097e07607df0f35b876a4c6741fab812f  /usr/bin/compose-executor.real
-1d06bde76920e9738da0365e9fd0ef1eac3a414785bede06b8d8665bf25a2710  /usr/bin/host-provisioner.real
+bce26b98133d3f5d4ecaddba26179ed8e14e5b260b38dee5f9e4383cbfbc855a  /usr/bin/host-provisioner.real
 fbdd12862e1cfe3c957f492ae81c4c1c5658357502bd322febbbe209496929be  /usr/bin/secret-delivery-api
 f18ed969b8b5959293fdbcd55d2e28846372ab87c9348fbb315a9a490bf85ad4  /usr/bin/usage-telemetry-agent
 07e807c3f66e7e75e7a45073eabbd041a74b5727e315aee96f00e5b6a801ccc5  /usr/bin/webhook-automation-service
@@ -346,6 +348,9 @@ EOF
         grep -aF "go1.27.0" "${binary}" >/dev/null
     done
     /usr/bin/authentication-service.real --version | grep -F "0.4.36" >/dev/null
+    for ssh_binary in /usr/bin/host-provisioner.real /usr/bin/compose-executor.real; do
+        grep -aF "$(printf "dep\tgolang.org/x/crypto\tv0.56.0\t")" "${ssh_binary}" >/dev/null
+    done
     /usr/bin/catalog-service.real --version | grep -F "v0.20.11" >/dev/null
     /usr/bin/secret-delivery-api --version | grep -F "v0.3.1" >/dev/null
     /usr/bin/usage-telemetry-agent --version | grep -F "0.4.1" >/dev/null
@@ -365,7 +370,11 @@ EOF
     }
     version_at_least curl 8.18.0-1ubuntu2.4
     version_at_least libcurl4t64 8.18.0-1ubuntu2.4
-    version_at_least libc6 2.43-2ubuntu2.3
+    for glibc_package in libc6 libc-bin libc-gconv-modules-extra; do
+        test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${glibc_package}")" = \
+            "2.43-2ubuntu2.3+pasturestack1"
+    done
+    version_at_least libssh2-1t64 1.11.1-1ubuntu0.26.04.4
     version_at_least systemd 259.5-0ubuntu3.4
     version_at_least libsystemd0 259.5-0ubuntu3.4
     version_at_least libudev1 259.5-0ubuntu3.4
@@ -408,6 +417,7 @@ EOF
     done
     for removed_path in \
         /usr/bin/gpgv \
+        /usr/bin/gpgsm \
         /usr/bin/eu-readelf \
         /usr/bin/eu-strip \
         /usr/bin/diff3 \
@@ -446,7 +456,7 @@ EOF
     fi
 '
 
-printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s audit_log_filters=1 audit_calendar_localized=1 footer_language_menu_bounded=1 docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-01 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_pinned=1\n' \
+printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s audit_log_filters=1 audit_calendar_localized=1 footer_language_menu_bounded=1 docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-07 glibc_cve_2026_18374=9765a538 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_pinned=1\n' \
     "$image" "$revision" "$base_image" "${orchestration_engine_release_tag#v}" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "${api_explorer_release_tag#v}" "$api_explorer_commit" "$api_explorer_artifact_sha256" \

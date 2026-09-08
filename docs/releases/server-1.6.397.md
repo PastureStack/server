@@ -1,5 +1,10 @@
 # PastureStack Server v1.6.397
 
+The source candidate includes the official glibc fix for the final unresolved
+runtime advisory. Publication still requires the merged-rootfs scan plus initial
+start and restart smoke; source checks alone do not constitute a released or
+deployed artifact.
+
 Server v1.6.397 embeds Orchestration Engine `0.183.289`, Web Console
 `1.6.99`, and Compose Executor `0.14.35` for end-to-end hardware resources.
 
@@ -35,7 +40,14 @@ must be checked rather than assuming every host has upgraded.
   private IPC, init, ulimit, tmpfs, sysctl, device and group settings without
   implicit privileges or host mounts.
 - The UI build dependency `@xmldom/xmldom` is locked to `0.9.12` and
-  `fast-uri` to `3.1.6`. Compose uses `golang.org/x/crypto v0.56.0`.
+  `fast-uri` to `3.1.6`. Compose and Host Provisioner use
+  `golang.org/x/crypto v0.56.0`; Host Provisioner `v0.39.7` passed full CI and
+  focused SSH channel security regression tests.
+- Ubuntu glibc `2.43-2ubuntu2.3` is rebuilt as
+  `2.43-2ubuntu2.3+pasturestack1` with upstream fix commit
+  `9765a538ebf8661a6e5578e01e35a3dd30db7eb4` for `CVE-2026-18374`.
+  The build runs all three upstream empty-`ccs` rejection cases and two
+  legitimate `fopen` cases against the installed packages.
 - The Server publication workflow verifies start/restart health, scans the
   merged runtime with current vulnerability data, produces the artifact SBOM,
   publishes image attestations and creates the immutable release.
@@ -60,6 +72,12 @@ must be checked rather than assuming every host has upgraded.
   `d043672b4f9ee9429836e7f5763ec626c6ee3cb63db828f933d81819cb1fe96e`
 - Node Agent Windows archive SHA-256:
   `017f178705ca502e330278317822c546accfe70399366784fc3aa9735efdb591`
+- Host Provisioner release: `v0.39.7`
+- Host Provisioner source: `c396df52491cf115de49fd909ea09afe5c6ce135`
+- Host Provisioner archive SHA-256:
+  `97cc465025d5ad996f7e90b3786255e0eba11e60df7931075f2b795248452fb5`
+- Host Provisioner executable SHA-256:
+  `bce26b98133d3f5d4ecaddba26179ed8e14e5b260b38dee5f9e4383cbfbc855a`
 
 Both Agent packages are embedded and checksum-verified. The inherited startup
 environment and compatibility symlink are updated as well as engine defaults,
