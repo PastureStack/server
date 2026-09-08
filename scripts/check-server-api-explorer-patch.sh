@@ -219,6 +219,12 @@ require_marker "$dockerfile" \
 require_marker "$dockerfile" \
     '"formResources.addUlimit":"新增限制"' \
     SERVER_WEB_CONSOLE_ADD_ULIMIT_TRANSLATION_GATE_MISSING
+require_marker "$build_script" \
+    'grep -F "\"formResources.addUlimit\":\"新增限制\""' \
+    SERVER_WEB_CONSOLE_BUILD_ADD_ULIMIT_TRANSLATION_GATE_MISSING
+require_marker "$build_script" \
+    'pasturestack-compose version ${PASTURESTACK_COMPOSE_EXECUTOR_VERSION}' \
+    SERVER_COMPOSE_EXECUTOR_CONTAINER_VERSION_GATE_MISSING
 require_marker "$dockerfile" \
     'table.audit-log-results-table[data-resizable-columns=true]:not(.table-column-measuring) > thead > th.audit-log-auth-ip-heading' \
     SERVER_WEB_CONSOLE_AUDIT_AUTH_IP_HEADER_GATE_MISSING
