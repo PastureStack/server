@@ -249,6 +249,11 @@ for glibc_build_marker in \
     require_marker "$dockerfile" "$glibc_build_marker" \
         SERVER_GLIBC_BACKPORT_GATE_MISSING
 done
+if [[ $(grep -Fc "DEB_BUILD_PROFILES='nobiarch nocheck pkg.glibc.nosystemtap'" \
+    "$dockerfile") -ne 2 ]]; then
+    printf '%s\n' SERVER_GLIBC_BUILD_PROFILE_MISMATCH >&2
+    exit 1
+fi
 test "$(sha256sum "$glibc_patch" | awk '{print $1}')" = \
     a01ec64b187e5765b9cef7cdd9801172a420a3e4bce4cf222a0a85cb2dea1dcc
 require_marker "$glibc_patch" \

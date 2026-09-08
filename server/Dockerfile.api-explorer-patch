@@ -54,7 +54,7 @@ RUN set -eux; \
     } > debian/changelog.pasturestack; \
     mv debian/changelog.pasturestack debian/changelog; \
     test "$(dpkg-parsechangelog -S Version)" = "${GLIBC_BACKPORT_VERSION}"; \
-    DEB_BUILD_PROFILES='nobiarch pkg.glibc.nosystemtap' \
+    DEB_BUILD_PROFILES='nobiarch nocheck pkg.glibc.nosystemtap' \
     DEB_BUILD_OPTIONS="nocheck nodoc noautodbgsym parallel=$(nproc)" \
       dpkg-buildpackage -B -us -uc; \
     mkdir -p /out; \
