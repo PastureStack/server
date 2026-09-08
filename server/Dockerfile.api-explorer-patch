@@ -240,10 +240,10 @@ ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.102.tar.gz
 ARG WEB_CONSOLE_ARTIFACT_SHA256=6269235a9a23a43b025ca78269ea7d807108c36b007f3eb65c5369c639261bb1
 ARG WEB_CONSOLE_COMMIT=9f754ba35ab0c6eaa7d6cd42304f36bb9aba378c
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
-ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.290
-ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.290.jar
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=6d1af6126777dfeccf4722f96a049abff1621f217a4a01f9bee6824dedb3fb21
-ARG ORCHESTRATION_ENGINE_COMMIT=8cec53e69ea30157273dbd5089edb4a79fad7998
+ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.291
+ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.291.jar
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=2dd6d0637df1fd5e8fc7cafd184f0048ec9ff4b81ac0211f09ab935de0e19615
+ARG ORCHESTRATION_ENGINE_COMMIT=5e3e566eff15478f8ba77799fa8a73c18f61e4c7
 ARG NODE_AGENT_VERSION=0.13.27
 ARG NODE_AGENT_COMMIT=d78a0817214bb21e3537730e68e12ebb74cbdaca
 ARG NODE_AGENT_LINUX_ARTIFACT_SHA256=0cbf93ef6f90db8c5f6b8cf7d63c99f452b8fc43e93097a21cdb5bcc3007d475
@@ -579,7 +579,7 @@ RUN set -eu; \
         exit 1; \
     fi; \
     unzip -p "${archive}" META-INF/MANIFEST.MF | tr -d '\r' | \
-        grep -Fx 'Implementation-Version: 0.183.290' >/dev/null; \
+        grep -Fx 'Implementation-Version: 0.183.291' >/dev/null; \
     test "$(grep -Ec '^WEB-INF/lib/hazelcast-5\.7\.3-pasturestack\.4\.jar$' "${listing}")" -eq 1; \
     ! grep -Eq '^WEB-INF/lib/hazelcast-(5\.7\.[012]|5\.7\.3-pasturestack\.[0-3])([.-]|\.jar$)' "${listing}"; \
     old_web_root="$(readlink -f /usr/share/cattle/war)"; \
@@ -621,7 +621,7 @@ RUN set -eu; \
         rm -f resources.jar; \
     fi; \
     resources_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name 'cattle-resources-0.183.290.jar' -print -quit)"; \
+        -name 'cattle-resources-0.183.291.jar' -print -quit)"; \
     test -n "${resources_jar}"; \
     source_date_iso="$(date -u -d "@${SOURCE_DATE_EPOCH}" '+%Y-%m-%dT%H:%M:%SZ')"; \
     app_config_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
@@ -1024,16 +1024,16 @@ COPY --chmod=0755 patches/websocket-proxy-wrapper.sh /usr/bin/websocket-proxy
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with the reviewed Orchestration Engine, API Explorer, Go 1.27, OpenSSL 3.5.8, zlib 1.3.2, and a reduced runtime tool surface." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.404" \
+      org.opencontainers.image.version="v1.6.405" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.364" \
       org.opencontainers.image.base.digest="sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.404
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.405
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV CATTLE_API_UI_VERSION=1.1.18
-ENV CATTLE_CATTLE_VERSION=v0.183.290
+ENV CATTLE_CATTLE_VERSION=v0.183.291
 ENV RC16_GO_AGENT_VERSION=0.13.27
 ENV RC16_WINDOWS_AGENT_VERSION=0.13.27
 ENV RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-0.13.27.tar.gz
