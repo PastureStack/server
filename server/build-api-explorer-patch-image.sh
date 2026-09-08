@@ -33,7 +33,7 @@ web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-bae2ba7f837f396ea1980
 web_console_commit=${WEB_CONSOLE_COMMIT:-cb5af27e29f166ba71eda7939d0a90b6c6e52255}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2'
 newest_docker_version=v29.7.2
-image=${IMAGE:-pasturestack-validation/server:v1.6.400}
+image=${IMAGE:-pasturestack-validation/server:v1.6.401}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -98,7 +98,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.400
+    v1.6.401
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -109,7 +109,7 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.400 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.401 \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION=v0.183.289 \
     RC16_GO_AGENT_VERSION=0.13.27 \
@@ -151,7 +151,9 @@ for marker in \
     PASTURESTACK_WEBSOCKET_PROXY_VERSION=0.23.13 \
     PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=0.55.1-pasturestack.2 \
     PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-08-28 \
-    PASTURESTACK_CATALOG_COMMIT=bc446236c16f1170eb9130b4901af3d57dd82db4; do
+    PASTURESTACK_CATALOG_COMMIT=d8641d291d7262c07251ba64e06c229a7db5e4b5 \
+    'DEFAULT_CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"d8641d291d7262c07251ba64e06c229a7db5e4b5"}}}' \
+    'CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"d8641d291d7262c07251ba64e06c229a7db5e4b5"}}}'; do
     test "$(grep -Fxc "$marker" <<<"$image_environment")" = 1
 done
 
