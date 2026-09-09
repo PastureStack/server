@@ -5,23 +5,16 @@ versioned releases. Public images and Release assets exist only for tags whose
 published checksums, SBOM, licenses, anonymous-download checks, and isolated
 runtime gates have passed.
 
+## Current release
+
+- [Server v1.6.410](releases/server-1.6.410.md)
 - [Build and source POC](build-and-source-poc.md)
-- [Server v1.6.289 release](releases/server-1.6.289.md)
-- [Server v1.6.288 release](releases/server-1.6.288.md)
-- [Server v1.6.287 release](releases/server-1.6.287.md)
-- [Server v1.6.279 release](releases/server-1.6.279.md)
-- [Server v1.6.278 release](releases/server-1.6.278.md)
-- [Server v1.6.277 release](releases/server-1.6.277.md)
-- [Orchestration Engine 0.183.269 release evidence](releases/orchestration-engine-0.183.269.md)
-- [Orchestration Engine 0.183.270 release evidence](releases/orchestration-engine-0.183.270.md)
-- [Server v1.6.312 storage-filter clarification release](releases/server-1.6.312.md)
-- [Server v1.6.311 storage pagination and zero-count release](releases/server-1.6.311.md)
-- [Server v1.6.310 operator-selected storage removal release](releases/server-1.6.310.md)
-- [Server v1.6.309 guarded storage cleanup release](releases/server-1.6.309.md)
-- [Server v1.6.308 container table controls release](releases/server-1.6.308.md)
-- [Server v1.6.307 localized container table release](releases/server-1.6.307.md)
-- [Server v1.6.306 container metrics release](releases/server-1.6.306.md)
-- [Server v1.6.305 Docker host support release](releases/server-1.6.305.md)
+
+Older immutable release records remain under [`releases/`](releases/) for
+audit and rollback context; they are not the current installation guide.
+
+## Operations
+
 - [Upgrade and persisted-coordinate migration](upgrades/README.md)
 - [Host compatibility](hosts/README.md)
 - [Service compatibility](services/README.md)
