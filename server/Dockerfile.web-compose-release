@@ -29,14 +29,20 @@ ARG WEB_CONSOLE_RELEASE_TAG=1.6.102
 ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.102.tar.gz
 ARG WEB_CONSOLE_ARTIFACT_SHA256=6269235a9a23a43b025ca78269ea7d807108c36b007f3eb65c5369c639261bb1
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
-ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.293
-ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.293.jar
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=aad8c43e09ab36f63409aada9ad61a24d12ba787ce3d51ebc1dde51a5ca460fa
+ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.294
+ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.294.jar
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=1e49dac19043cb1579a0449f0d8874ebe5d1777c1231bff61dca793f58fe0b73
 ARG COMPOSE_EXECUTOR_VERSION=0.14.36
 ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66
 ARG COMPOSE_EXECUTOR_BINARY_SHA256=1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d
+ARG VSPHERE_CLI_BUNDLE_VERSION=0.55.2
+ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=bebcc1c0275072ac40b5bc9b80f914c40a7f0431fffebc2c06fe34a34c33a57c
+ARG GOVC_BINARY_SHA256=f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31
 
 RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends xz-utils; \
+    rm -rf /var/lib/apt/lists/*; \
     command -v curl; \
     command -v gzip; \
     command -v sha256sum; \
@@ -108,7 +114,46 @@ RUN set -eux; \
         --connect-timeout 10 --max-time 300 \
         -o "${engine_archive}" \
         "${ORCHESTRATION_ENGINE_RELEASE_BASE_URL%/}/${ORCHESTRATION_ENGINE_RELEASE_TAG}/${ORCHESTRATION_ENGINE_ARTIFACT}"; \
-    echo "${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}  ${engine_archive}" | sha256sum -c -
+    echo "${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}  ${engine_archive}" | sha256sum -c -; \
+    vsphere_archive=/tmp/vsphere-cli-bundle.tar.xz; \
+    vsphere_listing=/tmp/vsphere-cli-bundle-files.txt; \
+    vsphere_expected=/tmp/vsphere-cli-bundle-expected.txt; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
+        --connect-timeout 10 --max-time 300 \
+        -o "${vsphere_archive}" \
+        "https://github.com/PastureStack/vsphere-cli-bundle/releases/download/v${VSPHERE_CLI_BUNDLE_VERSION}/vsphere-cli-bundle-${VSPHERE_CLI_BUNDLE_VERSION}-linux-amd64.tar.xz"; \
+    echo "${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256}  ${vsphere_archive}" | sha256sum -c -; \
+    tar -tJf "${vsphere_archive}" >"${vsphere_listing}"; \
+    if grep -Eq '(^/|(^|/)\.\.(/|$))' "${vsphere_listing}"; then \
+        echo 'Unsafe vSphere CLI bundle archive path' >&2; \
+        exit 1; \
+    fi; \
+    if sort "${vsphere_listing}" | uniq -d | grep -q .; then \
+        echo 'Duplicate vSphere CLI bundle archive path' >&2; \
+        exit 1; \
+    fi; \
+    if tar -tvJf "${vsphere_archive}" | grep -Eq '^[lh]'; then \
+        echo 'vSphere CLI bundle archive may not contain links' >&2; \
+        exit 1; \
+    fi; \
+    printf '%s\n' \
+        govc \
+        vsphere-cli-bundle-LICENSES.txt \
+        vsphere-cli-bundle-SOURCES.txt \
+        vsphere-cli-bundle-THIRD-PARTY-NOTICES.txt | LC_ALL=C sort >"${vsphere_expected}"; \
+    LC_ALL=C sort "${vsphere_listing}" | cmp "${vsphere_expected}" -; \
+    mkdir -p /out/vsphere-cli-bundle; \
+    tar --no-same-owner --no-same-permissions -xJf "${vsphere_archive}" \
+        -C /out/vsphere-cli-bundle; \
+    echo "${GOVC_BINARY_SHA256}  /out/vsphere-cli-bundle/govc" | sha256sum -c -; \
+    chmod 0755 /out/vsphere-cli-bundle/govc; \
+    test "$(/out/vsphere-cli-bundle/govc version)" = "govc ${VSPHERE_CLI_BUNDLE_VERSION}"; \
+    grep -Fx 'Pinned source commit: a668d9c60399552ea96782b8751c956720a0b8fb' \
+        /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null; \
+    grep -Fx 'Build Go version: 1.27.0' \
+        /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null; \
+    grep -Fx "Binary SHA-256: ${GOVC_BINARY_SHA256}" \
+        /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null
 
 FROM ${BASE_IMAGE}
 
@@ -117,16 +162,24 @@ ARG PASTURESTACK_SERVER_REVISION
 ARG WEB_CONSOLE_RELEASE_TAG=1.6.102
 ARG WEB_CONSOLE_ARTIFACT_SHA256=6269235a9a23a43b025ca78269ea7d807108c36b007f3eb65c5369c639261bb1
 ARG WEB_CONSOLE_COMMIT=9f754ba35ab0c6eaa7d6cd42304f36bb9aba378c
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=aad8c43e09ab36f63409aada9ad61a24d12ba787ce3d51ebc1dde51a5ca460fa
-ARG ORCHESTRATION_ENGINE_COMMIT=c8a2e6509f54702ab3bf969f0d92712c00b10e2e
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=1e49dac19043cb1579a0449f0d8874ebe5d1777c1231bff61dca793f58fe0b73
+ARG ORCHESTRATION_ENGINE_COMMIT=b59ddee9d79dcffa8b95a00dd9182fe5304b619b
 ARG COMPOSE_EXECUTOR_VERSION=0.14.36
 ARG COMPOSE_EXECUTOR_COMMIT=e85545a1bc34cb5c42db62ff90dd82b7ff9f5838
 ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66
 ARG COMPOSE_EXECUTOR_BINARY_SHA256=1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d
+ARG VSPHERE_CLI_BUNDLE_VERSION=0.55.2
+ARG VSPHERE_CLI_BUNDLE_COMMIT=c4b27e87aa0dacce432a2c6108ee0752319e6d5b
+ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=bebcc1c0275072ac40b5bc9b80f914c40a7f0431fffebc2c06fe34a34c33a57c
+ARG GOVC_BINARY_SHA256=f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31
 
 COPY --from=release_artifacts /out/web-console/ /tmp/pasturestack-web-console/
 COPY --from=release_artifacts --chmod=0755 /out/compose-executor /usr/bin/compose-executor.real
 COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar
+COPY --from=release_artifacts --chmod=0755 /out/vsphere-cli-bundle/govc /usr/bin/govc
+COPY --from=release_artifacts /out/vsphere-cli-bundle/vsphere-cli-bundle-LICENSES.txt /usr/share/licenses/pasturestack/vsphere-cli-bundle/vsphere-cli-bundle-LICENSES.txt
+COPY --from=release_artifacts /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt /usr/share/licenses/pasturestack/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt
+COPY --from=release_artifacts /out/vsphere-cli-bundle/vsphere-cli-bundle-THIRD-PARTY-NOTICES.txt /usr/share/licenses/pasturestack/vsphere-cli-bundle/vsphere-cli-bundle-THIRD-PARTY-NOTICES.txt
 COPY --from=console_broker_build --chmod=0755 /out/pasturestack-console-broker /usr/bin/pasturestack-console-broker
 COPY patches/service-auth.json /tmp/pasturestack-server-overlays/schema/service/service-auth.json
 COPY patches/bootstrap.sh /tmp/pasturestack-server-overlays/config-content/bootstrap/bootstrap.sh
@@ -150,9 +203,9 @@ RUN set -eux; \
         exit 1; \
     fi; \
     unzip -p "${archive}" META-INF/MANIFEST.MF | tr -d '\r' | \
-        grep -Fx 'Implementation-Version: 0.183.293' >/dev/null; \
-    test "$(grep -Ec '^WEB-INF/lib/hazelcast-5\.7\.3-pasturestack\.4\.jar$' "${listing}")" -eq 1; \
-    ! grep -Eq '^WEB-INF/lib/hazelcast-(5\.7\.[012]|5\.7\.3-pasturestack\.[0-3])([.-]|\.jar$)' "${listing}"; \
+        grep -Fx 'Implementation-Version: 0.183.294' >/dev/null; \
+    test "$(grep -Ec '^WEB-INF/lib/hazelcast-5\.7\.4\.jar$' "${listing}")" -eq 1; \
+    ! grep -Eq '^WEB-INF/lib/hazelcast-(5\.7\.[0-3]|5\.7\.3-pasturestack\.[0-9]+)([.-]|\.jar$)' "${listing}"; \
     old_web_root="$(readlink -f /usr/share/cattle/war)"; \
     case "${old_web_root}" in \
         /usr/share/cattle/*) ;; \
@@ -176,10 +229,10 @@ RUN set -eux; \
         rm -f resources.jar; \
     fi; \
     resources_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name 'cattle-resources-0.183.293.jar' -print -quit)"; \
+        -name 'cattle-resources-0.183.294.jar' -print -quit)"; \
     test -n "${resources_jar}"; \
     app_config_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name 'cattle-app-config-0.183.293.jar' -print -quit)"; \
+        -name 'cattle-app-config-0.183.294.jar' -print -quit)"; \
     test -n "${app_config_jar}"; \
     unzip -p "${app_config_jar}" META-INF/cattle/api-server/defaults.properties | \
         grep -Fx 'supported.docker.range=~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2' >/dev/null; \
@@ -274,18 +327,24 @@ RUN set -eux; \
         "${web_root}/translations/zh-tw.json" >/dev/null; \
     echo "${COMPOSE_EXECUTOR_BINARY_SHA256}  /usr/bin/compose-executor.real" | sha256sum -c -; \
     compose_version_output="$(/usr/bin/compose-executor.real --version 2>&1)"; \
-    test "${compose_version_output}" = "pasturestack-compose version ${COMPOSE_EXECUTOR_VERSION}"
+    test "${compose_version_output}" = "pasturestack-compose version ${COMPOSE_EXECUTOR_VERSION}"; \
+    echo "${GOVC_BINARY_SHA256}  /usr/bin/govc" | sha256sum -c -; \
+    test "$(/usr/bin/govc version)" = "govc ${VSPHERE_CLI_BUNDLE_VERSION}"; \
+    test -s /usr/share/licenses/pasturestack/vsphere-cli-bundle/vsphere-cli-bundle-LICENSES.txt; \
+    test -s /usr/share/licenses/pasturestack/vsphere-cli-bundle/vsphere-cli-bundle-THIRD-PARTY-NOTICES.txt; \
+    grep -Fx 'Pinned source commit: a668d9c60399552ea96782b8751c956720a0b8fb' \
+        /usr/share/licenses/pasturestack/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
-      org.opencontainers.image.description="PastureStack server image with reviewed console WebSocket origin rebinding and bounded backend-registration retry." \
+      org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.409" \
+      org.opencontainers.image.version="v1.6.410" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.401" \
       org.opencontainers.image.base.digest="sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.409
-ENV CATTLE_CATTLE_VERSION=v0.183.293
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.410
+ENV CATTLE_CATTLE_VERSION=v0.183.294
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}
 ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}
@@ -295,6 +354,10 @@ ENV PASTURESTACK_COMPOSE_EXECUTOR_VERSION=${COMPOSE_EXECUTOR_VERSION}
 ENV PASTURESTACK_COMPOSE_EXECUTOR_COMMIT=${COMPOSE_EXECUTOR_COMMIT}
 ENV PASTURESTACK_COMPOSE_EXECUTOR_ARCHIVE_SHA256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256}
 ENV PASTURESTACK_COMPOSE_EXECUTOR_BINARY_SHA256=${COMPOSE_EXECUTOR_BINARY_SHA256}
-ENV PASTURESTACK_CATALOG_COMMIT=06dfff6234ba8bf163d98e148cc61c0ebd0b2656
-ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"06dfff6234ba8bf163d98e148cc61c0ebd0b2656"}}}'
-ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"06dfff6234ba8bf163d98e148cc61c0ebd0b2656"}}}'
+ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=${VSPHERE_CLI_BUNDLE_VERSION}
+ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_COMMIT=${VSPHERE_CLI_BUNDLE_COMMIT}
+ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256}
+ENV PASTURESTACK_GOVC_BINARY_SHA256=${GOVC_BINARY_SHA256}
+ENV PASTURESTACK_CATALOG_COMMIT=02df5f7df9eebe640590d93b1506543d2367e355
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"02df5f7df9eebe640590d93b1506543d2367e355"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"02df5f7df9eebe640590d93b1506543d2367e355"}}}'

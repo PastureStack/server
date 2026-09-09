@@ -8,7 +8,7 @@ The catalog helper is packaged and installed as `catalog-service` and `catalog-s
 
 The authentication helper follows the same boundary: the GitHub Release asset and actual executable use `authentication-service`, while the preserved supervisor-facing executable name exists only as a compatibility wrapper.
 
-Server `v1.6.316` keeps the platform account as the authorization principal
+Server `v1.6.410` keeps the platform account as the authorization principal
 and treats local credentials and external identities as explicit login links.
 Provider changes therefore preserve the account identifier, direct project
 memberships, and administrator role. OpenID Connect links use exact issuer and
@@ -25,7 +25,19 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The `v1.6.282` patch assembly inherits the reviewed `v1.6.281` runtime and consumes Orchestration Engine `v0.183.269`, Web Console package `1.6.56-pasturestack.5`, API Explorer `1.1.14`, Compose Executor `v0.14.31`, Node Agent `v1.2.31`, Load Balancer Service `v0.9.25`, Catalog Service `v0.20.7`, and Catalog Templates `v0.3.0-rc11` at commit `3cfb447d7564cf9bada4bac2e15ce3dd6b221615`. A Catalog upgrade changes `pinned_commit` first and leaves the last indexed `commit` untouched until Catalog Service has rebuilt the template index; pre-advancing both values can preserve a stale nonempty index. Operational container references must use semantic version tags; image digests are retained only in release-verification evidence. Web Console packaging must retain its fingerprinted `/assets/ui*.js` entry, and API Explorer must retain `/api-ui/ui.min.js` and `/api-ui/ui.min.css`.
+The current `v1.6.410` assembly consumes Orchestration Engine `v0.183.294`, Web
+Console package `1.6.102`, API Explorer `v1.1.18`, Compose Executor
+`v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
+Service `v0.20.11`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
+`v5.7.4`, and Catalog Templates at commit
+`02df5f7df9eebe640590d93b1506543d2367e355`. A Catalog upgrade changes
+`pinned_commit` first and leaves the last indexed `commit` untouched until
+Catalog Service has rebuilt the template index; pre-advancing both values can
+preserve a stale nonempty index. Operational container references must use
+numeric semantic version tags; image digests are retained only in
+release-verification evidence. Web Console packaging must retain its
+fingerprinted `/assets/ui*.js` entry, and API Explorer must retain
+`/api-ui/ui.min.js` and `/api-ui/ui.min.css`.
 
 Native MariaDB validation must override both `CATTLE_DB_CATTLE_MYSQL_URL` and `CATTLE_DB_LIQUIBASE_MYSQL_URL`; the application and migration pools are configured independently. The default compatibility path intentionally uses a MySQL JDBC scheme with the MariaDB driver compatibility options.
 
@@ -44,4 +56,7 @@ before cutover. The tool preserves compatibility setting names, creates an
 exact rollback bundle, and changes only approved GitHub, GHCR, CLI, Agent,
 load-balancer, and Catalog coordinates.
 
-Before release, validate fresh install, preserved-database upgrade, both database modes, web console and API, CLI, node registration, authentication, subscriptions, catalog, networking, storage, backup/restore, rollback, artifact hashes, and non-root execution in isolated VMs.
+Before a future release, validate fresh install, preserved-database upgrade,
+both database modes, web console and API, CLI, node registration,
+authentication, subscriptions, catalog, networking, storage, backup/restore,
+rollback, artifact hashes, and non-root execution in isolated VMs.

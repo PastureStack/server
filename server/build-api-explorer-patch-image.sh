@@ -17,10 +17,10 @@ revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.401@sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
-orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.293}
-orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.293.jar}
-orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-aad8c43e09ab36f63409aada9ad61a24d12ba787ce3d51ebc1dde51a5ca460fa}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-c8a2e6509f54702ab3bf969f0d92712c00b10e2e}
+orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.294}
+orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.294.jar}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-1e49dac19043cb1579a0449f0d8874ebe5d1777c1231bff61dca793f58fe0b73}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-b59ddee9d79dcffa8b95a00dd9182fe5304b619b}
 api_explorer_release_base_url=${API_EXPLORER_RELEASE_BASE_URL:-https://github.com/PastureStack/api-explorer/releases/download}
 api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.18}
 api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
@@ -35,20 +35,24 @@ compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.36}
 compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-e85545a1bc34cb5c42db62ff90dd82b7ff9f5838}
 compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66}
 compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d}
+vsphere_cli_bundle_version=${VSPHERE_CLI_BUNDLE_VERSION:-0.55.2}
+vsphere_cli_bundle_commit=${VSPHERE_CLI_BUNDLE_COMMIT:-c4b27e87aa0dacce432a2c6108ee0752319e6d5b}
+vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-bebcc1c0275072ac40b5bc9b80f914c40a7f0431fffebc2c06fe34a34c33a57c}
+govc_binary_sha256=${GOVC_BINARY_SHA256:-f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2'
 newest_docker_version=v29.7.2
-image=${IMAGE:-pasturestack-validation/server:v1.6.409}
+image=${IMAGE:-pasturestack-validation/server:v1.6.410}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
 [[ "$source_date_epoch" =~ ^[0-9]+$ ]]
 [[ "$orchestration_engine_commit" =~ ^[0-9a-f]{40}$ ]]
 [[ "$orchestration_engine_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
-[[ "$orchestration_engine_release_tag" =~ ^v[0-9][0-9A-Za-z.-]*$ ]]
+[[ "$orchestration_engine_release_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
 [[ "$orchestration_engine_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
 [[ "$api_explorer_commit" =~ ^[0-9a-f]{40}$ ]]
 [[ "$api_explorer_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
-[[ "$api_explorer_release_tag" =~ ^v[0-9][0-9A-Za-z.-]*$ ]]
+[[ "$api_explorer_release_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
 [[ "$api_explorer_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
 [[ "$web_console_commit" =~ ^[0-9a-f]{40}$ ]]
 [[ "$web_console_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
@@ -58,6 +62,10 @@ build_options=()
 [[ "$compose_executor_commit" =~ ^[0-9a-f]{40}$ ]]
 [[ "$compose_executor_archive_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$compose_executor_binary_sha256" =~ ^[0-9a-f]{64}$ ]]
+[[ "$vsphere_cli_bundle_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+[[ "$vsphere_cli_bundle_commit" =~ ^[0-9a-f]{40}$ ]]
+[[ "$vsphere_cli_bundle_archive_sha256" =~ ^[0-9a-f]{64}$ ]]
+[[ "$govc_binary_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$base_image" == ghcr.io/pasturestack/server:v1.6.401@sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb ]]
 for release_base_url in "$orchestration_engine_release_base_url" "$api_explorer_release_base_url" "$web_console_release_base_url"; do
 case "$release_base_url" in
@@ -102,6 +110,10 @@ docker buildx build \
     --build-arg "COMPOSE_EXECUTOR_COMMIT=${compose_executor_commit}" \
     --build-arg "COMPOSE_EXECUTOR_ARCHIVE_SHA256=${compose_executor_archive_sha256}" \
     --build-arg "COMPOSE_EXECUTOR_BINARY_SHA256=${compose_executor_binary_sha256}" \
+    --build-arg "VSPHERE_CLI_BUNDLE_VERSION=${vsphere_cli_bundle_version}" \
+    --build-arg "VSPHERE_CLI_BUNDLE_COMMIT=${vsphere_cli_bundle_commit}" \
+    --build-arg "VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=${vsphere_cli_bundle_archive_sha256}" \
+    --build-arg "GOVC_BINARY_SHA256=${govc_binary_sha256}" \
     --build-arg "SUPPORTED_DOCKER_RANGE=${supported_docker_range}" \
     --build-arg "NEWEST_DOCKER_VERSION=${newest_docker_version}" \
     --tag "$image" \
@@ -110,7 +122,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.409
+    v1.6.410
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -124,9 +136,9 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.409 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.410 \
     CATTLE_API_UI_VERSION=1.1.18 \
-    CATTLE_CATTLE_VERSION=v0.183.293 \
+    CATTLE_CATTLE_VERSION=v0.183.294 \
     RC16_GO_AGENT_VERSION=0.13.27 \
     RC16_WINDOWS_AGENT_VERSION=0.13.27 \
     RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-0.13.27.tar.gz \
@@ -167,11 +179,14 @@ for marker in \
     PASTURESTACK_USAGE_TELEMETRY_AGENT_VERSION=0.4.1 \
     PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.1 \
     PASTURESTACK_WEBSOCKET_PROXY_VERSION=0.23.13 \
-    PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=0.55.1-pasturestack.2 \
+    PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION="${vsphere_cli_bundle_version}" \
+    PASTURESTACK_VSPHERE_CLI_BUNDLE_COMMIT="${vsphere_cli_bundle_commit}" \
+    PASTURESTACK_VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256="${vsphere_cli_bundle_archive_sha256}" \
+    PASTURESTACK_GOVC_BINARY_SHA256="${govc_binary_sha256}" \
     PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-08-28 \
-    PASTURESTACK_CATALOG_COMMIT=06dfff6234ba8bf163d98e148cc61c0ebd0b2656 \
-    'DEFAULT_CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"06dfff6234ba8bf163d98e148cc61c0ebd0b2656"}}}' \
-    'CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"06dfff6234ba8bf163d98e148cc61c0ebd0b2656"}}}'; do
+    PASTURESTACK_CATALOG_COMMIT=02df5f7df9eebe640590d93b1506543d2367e355 \
+    'DEFAULT_CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"02df5f7df9eebe640590d93b1506543d2367e355"}}}' \
+    'CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"02df5f7df9eebe640590d93b1506543d2367e355"}}}'; do
     test "$(grep -Fxc "$marker" <<<"$image_environment")" = 1
 done
 
@@ -196,7 +211,7 @@ docker run --rm --entrypoint bash "$image" -lc '
     web_root=$(readlink -f /usr/share/cattle/war)
     test "${web_root}" = "/usr/share/cattle/${engine_hash}"
     resources_jar=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-resources-0.183.293.jar" -print -quit)
+        -name "cattle-resources-0.183.294.jar" -print -quit)
     test -n "${resources_jar}"
     unzip -p "${resources_jar}" db/core-124.xml |
         grep -F "pasturestack-catalog-pinned-commit" >/dev/null
@@ -336,12 +351,12 @@ docker run --rm --entrypoint bash "$image" -lc '
         /usr/share/cattle/war/translations/zh-tw.json >/dev/null
     unzip -p /usr/share/cattle/cattle.jar META-INF/MANIFEST.MF |
         tr -d "\r" |
-        grep -Fx "Implementation-Version: 0.183.293" >/dev/null
+        grep -Fx "Implementation-Version: 0.183.294" >/dev/null
     hazelcast_entry=$(unzip -Z1 /usr/share/cattle/cattle.jar |
         grep -E "^WEB-INF/lib/hazelcast-[^/]+[.]jar$")
-    test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.3-pasturestack.4.jar"
+    test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.4.jar"
     unzip -p /usr/share/cattle/cattle.jar "${hazelcast_entry}" >/tmp/hazelcast.jar
-    echo "9fa751998ce3cc1f17692e21933b24646c39a7142ca387af772e43f49dc77764  /tmp/hazelcast.jar" |
+    echo "6b768e6cff9e5281e77ad14e609b69bac6856ecd4469af827f566be95553644c  /tmp/hazelcast.jar" |
         sha256sum -c -
     rm -f /tmp/hazelcast.jar
     cat <<'"'"'EOF'"'"' | sha256sum -c -
@@ -354,7 +369,7 @@ fbdd12862e1cfe3c957f492ae81c4c1c5658357502bd322febbbe209496929be  /usr/bin/secre
 f18ed969b8b5959293fdbcd55d2e28846372ab87c9348fbb315a9a490bf85ad4  /usr/bin/usage-telemetry-agent
 07e807c3f66e7e75e7a45073eabbd041a74b5727e315aee96f00e5b6a801ccc5  /usr/bin/webhook-automation-service
 8e24dc052faf54603c95d9187ca63b25435482ad9046825d3676ae522439c949  /usr/bin/websocket-proxy.real
-a42b0649c723b76a2208467c821ff1a9b713b2c8c5ab762808c1d193bd112287  /usr/bin/govc
+f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31  /usr/bin/govc
 EOF
     for binary in \
         /usr/bin/authentication-service.real \
@@ -381,7 +396,7 @@ EOF
     /usr/bin/secret-delivery-api --version | grep -F "v0.3.1" >/dev/null
     /usr/bin/usage-telemetry-agent --version | grep -F "0.4.1" >/dev/null
     /usr/bin/webhook-automation-service --version | grep -F "0.10.1" >/dev/null
-    test "$(/usr/bin/govc version)" = "govc 0.55.1-pasturestack.2"
+    test "$(/usr/bin/govc version)" = "govc 0.55.2"
     version_at_least()
     {
         local package=$1 minimum=$2 installed
@@ -482,10 +497,12 @@ EOF
     fi
 '
 
-printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s compose_executor=%s compose_executor_commit=%s compose_executor_archive_sha256=%s compose_executor_binary_sha256=%s audit_log_filters=1 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-07 glibc_cve_2026_18374=9765a538 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_pinned=1\n' \
+printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s compose_executor=%s compose_executor_commit=%s compose_executor_archive_sha256=%s compose_executor_binary_sha256=%s vsphere_cli=%s vsphere_cli_commit=%s vsphere_cli_archive_sha256=%s govc_binary_sha256=%s audit_log_filters=1 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-07 glibc_cve_2026_18374=9765a538 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_pinned=1\n' \
     "$image" "$revision" "$base_image" "${orchestration_engine_release_tag#v}" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "${api_explorer_release_tag#v}" "$api_explorer_commit" "$api_explorer_artifact_sha256" \
     "$web_console_release_tag" "$web_console_commit" "$web_console_artifact_sha256" \
     "$compose_executor_version" "$compose_executor_commit" \
-    "$compose_executor_archive_sha256" "$compose_executor_binary_sha256"
+    "$compose_executor_archive_sha256" "$compose_executor_binary_sha256" \
+    "$vsphere_cli_bundle_version" "$vsphere_cli_bundle_commit" \
+    "$vsphere_cli_bundle_archive_sha256" "$govc_binary_sha256"

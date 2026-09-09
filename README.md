@@ -11,9 +11,9 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.396` combines Orchestration Engine `0.183.288`, Node Agent `0.13.22`,
+`v1.6.410` combines Orchestration Engine `0.183.294`, Node Agent `0.13.27`,
 Authentication Service `0.4.36`, and the reviewed Ember 7.2 Web Console
-`1.6.98`.
+`1.6.102`.
 
 Docker Engine `29.4.1` through `29.7.2` is represented as one bounded SemVer
 compatibility interval rather than a list of isolated patch releases. Hosts on
@@ -27,10 +27,10 @@ first-party compatibility layer.
 
 The same release replaces every vulnerable Go 1.26.5 executable found by the
 finished-image scan with a Go 1.27.0 build: Authentication Service `0.4.36`,
-Catalog Service `0.20.11`, Compose Executor `0.14.34`, Host Provisioner
-`0.39.6`, Secret Delivery API `0.3.1`, Usage Telemetry Agent `0.4.1`, Webhook
+Catalog Service `0.20.11`, Compose Executor `0.14.36`, Host Provisioner
+`0.39.7`, Secret Delivery API `0.3.1`, Usage Telemetry Agent `0.4.1`, Webhook
 Automation Service `0.10.1`, WebSocket Proxy `0.23.13`, vSphere CLI Bundle
-`0.55.1-pasturestack.2`, and the in-tree Console Broker. Image assembly also
+`0.55.2`, and the in-tree Console Broker. Image assembly also
 installs the current Ubuntu 26.04 package updates before the final scan. It
 also removes the setuid bit from the container's mount helpers and disables
 SSH X11 forwarding and GSSAPI authentication; root-only mount operations and
@@ -73,7 +73,7 @@ Catalog stack definitions, their documentation, and referenced public images mus
 
 Version coordinates are available only when the matching GitHub Release and public GHCR package both exist. Each release is held until its assets, checksums, SBOM, license records, anonymous downloads, and isolated-VM gates pass.
 
-Server `v1.6.396` registers the complete live volume-preflight schema model and preserves the project-scoped authorization required by driver-aware volume configuration, accessible
+Server `v1.6.410` registers the complete live volume-preflight schema model and preserves the project-scoped authorization required by driver-aware volume configuration, accessible
 path completion, and an authoritative `volumepreflight` check. The server
 validates container and service create or upgrade requests again at save time,
 including storage-driver state, host coverage, existing volume ownership, and
@@ -85,7 +85,7 @@ The Web Console formats schema-validation field names without legacy String
 prototype extensions, so a missing localized field label cannot leave a
 container or service form stuck in the saving state.
 
-Web Console `1.6.98` preserves the Server `v1.6.358` authenticated visual and
+Web Console `1.6.102` preserves the Server `v1.6.358` authenticated visual and
 layout contract through a provenance-bound presentation layer while retaining
 Ember 7.2, the Bootstrap 5.3.8 JavaScript runtime, current security fixes, MFA,
 and adds permission-scoped incident filters and XLSX, CSV, and JSON export to
@@ -144,7 +144,7 @@ requires the reviewed archive digest, extracted-binary digest, exact source
 commit, static binary, and exact version output before publication.
 
 The embedded Catalog snapshot is pinned to commit
-`bc446236c16f1170eb9130b4901af3d57dd82db4`. It retains prior immutable
+`02df5f7df9eebe640590d93b1506543d2367e355`. It retains prior immutable
 template revisions and adds Resource Scheduler `v0.8.16` as a new revision,
 using only the public semantic-version GHCR coordinate.
 
@@ -158,7 +158,7 @@ volume and storage-driver validation.
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.396
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.410
 ```
 
 Keep operational image references in semantic `vMAJOR.MINOR.PATCH` form. The matching GitHub Release records the resolved digest for verification without exposing digest-qualified strings to the platform UI. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
@@ -176,7 +176,7 @@ The versioned Windows node-agent ZIP is an artifact candidate only. Windows host
 
 The machine-management dependency is supplied by the independently maintained `PastureStack/machine-driver-bundle` artifact. Its two licensed upstream executables, full license texts, source coordinates, deterministic archive, and provider-plugin handshake are verified before assembly. Real provider provisioning, deletion, upgrade, and rollback remain release gates.
 
-The vSphere command-line dependency is supplied by the independently maintained `PastureStack/vsphere-cli-bundle` artifact. The current recipe builds `govc` `0.55.1-pasturestack.2` from the exact Apache-2.0 upstream commit with Go 1.27.0 and `golang.org/x/text` 0.39.0, verifies the injected version metadata, and carries complete source and license records. Offline command checks do not prove authenticated vSphere inventory, clone, power, delete, upgrade, rollback, or failure recovery; those remain isolated-VM release gates.
+The vSphere command-line dependency is supplied by the independently maintained `PastureStack/vsphere-cli-bundle` artifact. Server `v1.6.410` consumes the pure numeric `0.55.2` successor, built from the exact Apache-2.0 upstream commit with Go 1.27.0 and `golang.org/x/text` 0.39.0. Image assembly verifies the release archive digest, extracted `govc` digest, exact version output, source record, and complete license records. Offline command checks do not prove authenticated vSphere inventory, clone, power, delete, upgrade, rollback, or failure recovery; those remain isolated-VM release gates.
 
 Secret encryption and rewrap operations are supplied by the `PastureStack/secret-delivery-api` GitHub fork. Release `v0.3.1` preserves the official `v0.2.2` history, carries complete Apache-2.0 and third-party license text, rejects malformed keys and path-like key names, and passes a loopback local-key API smoke test. Server installs the neutral executable and exposes the historical `secrets-api` filename only as an internal compatibility symlink; database key continuity, restart persistence, backup restore, and Vault integration remain isolated-VM release gates.
 
