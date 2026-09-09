@@ -277,14 +277,14 @@ RUN set -eux; \
     test "${compose_version_output}" = "pasturestack-compose version ${COMPOSE_EXECUTOR_VERSION}"
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
-      org.opencontainers.image.description="PastureStack server image with reviewed console WebSocket origin rebinding and verified Web Console, Compose, and catalog coordinates." \
+      org.opencontainers.image.description="PastureStack server image with reviewed console WebSocket origin rebinding and bounded backend-registration retry." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.408" \
+      org.opencontainers.image.version="v1.6.409" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.401" \
       org.opencontainers.image.base.digest="sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.408
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.409
 ENV CATTLE_CATTLE_VERSION=v0.183.293
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}
