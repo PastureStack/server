@@ -24,6 +24,8 @@ type upstreamRecorder struct {
 	inputs   []string
 	origins  []string
 	output   chan string
+	rejects  int
+	attempts int
 }
 
 func newUpstreamRecorder(t *testing.T) *upstreamRecorder {
@@ -31,9 +33,14 @@ func newUpstreamRecorder(t *testing.T) *upstreamRecorder {
 }
 
 func newUpstreamRecorderWithOriginCheck(t *testing.T, requireSameOrigin bool) *upstreamRecorder {
+	return newUpstreamRecorderWithFailures(t, requireSameOrigin, 0)
+}
+
+func newUpstreamRecorderWithFailures(t *testing.T, requireSameOrigin bool, rejects int) *upstreamRecorder {
 	t.Helper()
 	recorder := &upstreamRecorder{
-		output: make(chan string, 16),
+		output:  make(chan string, 16),
+		rejects: rejects,
 	}
 	recorder.upgrader.CheckOrigin = func(request *http.Request) bool {
 		recorder.mu.Lock()
@@ -47,6 +54,17 @@ func newUpstreamRecorderWithOriginCheck(t *testing.T, requireSameOrigin bool) *u
 	recorder.server = httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.Path != "/v1/exec" || request.URL.Query().Get("token") != "valid-token" {
 			http.NotFound(writer, request)
+			return
+		}
+		recorder.mu.Lock()
+		recorder.attempts++
+		shouldReject := recorder.rejects > 0
+		if shouldReject {
+			recorder.rejects--
+		}
+		recorder.mu.Unlock()
+		if shouldReject {
+			http.Error(writer, "backend registration pending", http.StatusUnauthorized)
 			return
 		}
 		connection, err := recorder.upgrader.Upgrade(writer, request, nil)
@@ -79,6 +97,64 @@ func newUpstreamRecorderWithOriginCheck(t *testing.T, requireSameOrigin bool) *u
 		}
 	}))
 	return recorder
+}
+
+func TestSessionCreationRetriesBackendRegistrationRace(t *testing.T) {
+	upstream := newUpstreamRecorderWithFailures(t, true, 2)
+	defer upstream.close()
+	instance, server := newTestBroker(t, upstream)
+	instance.config.SessionDialRetryWait = time.Millisecond
+
+	createSession(
+		t,
+		server.URL,
+		upstream.server.URL,
+		"psw_abcdefghijklmnopqrstuv02",
+		"2023456789abcdefghijklmnopqrstuvwxyzABCDEFGH",
+		"logs",
+	)
+
+	upstream.mu.Lock()
+	attempts := upstream.attempts
+	upstream.mu.Unlock()
+	if attempts != 3 {
+		t.Fatalf("backend registration race used %d attempts, expected 3", attempts)
+	}
+}
+
+func TestSessionCreationBackendRetryIsBounded(t *testing.T) {
+	upstream := newUpstreamRecorderWithFailures(t, true, 10)
+	defer upstream.close()
+	instance, server := newTestBroker(t, upstream)
+	instance.config.SessionDialRetryWait = time.Millisecond
+
+	requestBody, _ := json.Marshal(createSessionRequest{
+		Secret: "3023456789abcdefghijklmnopqrstuvwxyzABCDEFGH",
+		Kind:   "logs",
+		Target: "ws" + strings.TrimPrefix(server.URL, "http") + "/v1/exec",
+		Token:  "valid-token",
+	})
+	request, _ := http.NewRequest(
+		http.MethodPost,
+		server.URL+sessionPathPrefix+"psw_abcdefghijklmnopqrstuv03",
+		strings.NewReader(string(requestBody)),
+	)
+	request.Header.Set("Content-Type", "application/json")
+	response, err := http.DefaultClient.Do(request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusBadGateway {
+		t.Fatalf("exhausted registration retry returned %d", response.StatusCode)
+	}
+
+	upstream.mu.Lock()
+	attempts := upstream.attempts
+	upstream.mu.Unlock()
+	if attempts != defaultDialAttempts {
+		t.Fatalf("backend registration retry used %d attempts, expected %d", attempts, defaultDialAttempts)
+	}
 }
 
 func TestSessionCreationRebindsBrowserOriginToInternalDialOrigin(t *testing.T) {

@@ -104,6 +104,12 @@ grep -F 'headers.Set("Origin", sessionDialOrigin(target))' \
   server/console-broker/broker.go >/dev/null
 grep -F 'TestSessionCreationRebindsBrowserOriginToInternalDialOrigin' \
   server/console-broker/broker_test.go >/dev/null
+grep -F 'status != http.StatusUnauthorized || attempt == b.config.SessionDialAttempts' \
+  server/console-broker/broker.go >/dev/null
+grep -F 'TestSessionCreationRetriesBackendRegistrationRace' \
+  server/console-broker/broker_test.go >/dev/null
+grep -F 'TestSessionCreationBackendRetryIsBounded' \
+  server/console-broker/broker_test.go >/dev/null
 grep -F 'pasturestack-secret.' \
   server/console-broker/broker.go >/dev/null
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/base64"
@@ -35,6 +36,8 @@ const (
 	writeWait            = 10 * time.Second
 	pongWait             = 60 * time.Second
 	pingPeriod           = 25 * time.Second
+	defaultDialAttempts  = 3
+	defaultDialRetryWait = 5 * time.Second
 )
 
 var (
@@ -44,14 +47,16 @@ var (
 )
 
 type brokerConfig struct {
-	ListenAddress   string
-	UpstreamURL     string
-	SessionDialURL  string
-	MaxSessions     int
-	ReplayBytes     int
-	ActiveTTL       time.Duration
-	HistoryTTL      time.Duration
-	CleanupInterval time.Duration
+	ListenAddress        string
+	UpstreamURL          string
+	SessionDialURL       string
+	MaxSessions          int
+	ReplayBytes          int
+	ActiveTTL            time.Duration
+	HistoryTTL           time.Duration
+	CleanupInterval      time.Duration
+	SessionDialAttempts  int
+	SessionDialRetryWait time.Duration
 }
 
 type broker struct {
@@ -148,6 +153,12 @@ type errorFrame struct {
 }
 
 func newBroker(cfg brokerConfig, logger *log.Logger) (*broker, error) {
+	if cfg.SessionDialAttempts == 0 {
+		cfg.SessionDialAttempts = defaultDialAttempts
+	}
+	if cfg.SessionDialRetryWait == 0 {
+		cfg.SessionDialRetryWait = defaultDialRetryWait
+	}
 	upstreamURL, err := url.Parse(cfg.UpstreamURL)
 	if err != nil {
 		return nil, fmt.Errorf("parse upstream URL: %w", err)
@@ -302,10 +313,7 @@ func (b *broker) createSession(writer http.ResponseWriter, request *http.Request
 	// Rebind Origin to the already-validated, operator-controlled dial origin.
 	headers := http.Header{}
 	headers.Set("Origin", sessionDialOrigin(target))
-	upstream, response, err := websocket.DefaultDialer.Dial(target.String(), headers)
-	if response != nil && response.Body != nil {
-		_ = response.Body.Close()
-	}
+	upstream, err := b.dialUpstreamSession(request.Context(), target, headers)
 	if err != nil {
 		b.logger.Printf("upstream session connection failed for %s: %s", safeLogValue(sessionID), safeLogValue(err))
 		writeJSONError(writer, http.StatusBadGateway, "upstream_unavailable", "Unable to start the console session")
@@ -348,6 +356,38 @@ func (b *broker) createSession(writer http.ResponseWriter, request *http.Request
 
 	go session.readUpstream(b, upstream)
 	writeSessionCreated(writer, http.StatusCreated, session)
+}
+
+func (b *broker) dialUpstreamSession(ctx context.Context, target *url.URL, headers http.Header) (*websocket.Conn, error) {
+	var lastErr error
+	for attempt := 1; attempt <= b.config.SessionDialAttempts; attempt++ {
+		connection, response, err := websocket.DefaultDialer.DialContext(ctx, target.String(), headers)
+		status := 0
+		if response != nil {
+			status = response.StatusCode
+			if response.Body != nil {
+				_ = response.Body.Close()
+			}
+		}
+		if err == nil {
+			return connection, nil
+		}
+		lastErr = err
+		if status != http.StatusUnauthorized || attempt == b.config.SessionDialAttempts {
+			break
+		}
+
+		timer := time.NewTimer(b.config.SessionDialRetryWait)
+		select {
+		case <-ctx.Done():
+			if !timer.Stop() {
+				<-timer.C
+			}
+			return nil, ctx.Err()
+		case <-timer.C:
+		}
+	}
+	return nil, lastErr
 }
 
 func sessionDialOrigin(target *url.URL) string {
