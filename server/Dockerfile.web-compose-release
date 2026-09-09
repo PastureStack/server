@@ -1,6 +1,57 @@
 # syntax=docker/dockerfile:1.7
 ARG ARTIFACT_HELPER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452
+ARG UBUNTU_SECURITY_IMAGE=ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b
 ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.401@sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb
+
+FROM ${UBUNTU_SECURITY_IMAGE} AS ubuntu_security_packages
+
+ARG UBUNTU_SNAPSHOT=20260909T000000Z
+ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
+ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.2
+
+ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /build
+ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90 \
+    https://launchpad.net/ubuntu/+archive/primary/+files/ca-certificates_20260601~26.04.1_all.deb \
+    /tmp/ca-certificates.deb
+RUN set -eux; \
+    mkdir -p /tmp/ca-bootstrap /etc/ssl/certs; \
+    dpkg-deb --extract /tmp/ca-certificates.deb /tmp/ca-bootstrap; \
+    find /tmp/ca-bootstrap/usr/share/ca-certificates -type f -name '*.crt' | \
+      LC_ALL=C sort | while IFS= read -r certificate; do sed -e '$a\' "${certificate}"; done \
+      > /etc/ssl/certs/ca-certificates.crt; \
+    rm -rf /tmp/ca-bootstrap /tmp/ca-certificates.deb; \
+    rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; \
+    printf 'Types: deb\nURIs: https://snapshot.ubuntu.com/ubuntu/%s\nSuites: resolute resolute-updates resolute-backports resolute-security\nComponents: main universe restricted multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nSnapshot: no\n' "${UBUNTU_SNAPSHOT}" > /etc/apt/sources.list.d/pasturestack-snapshot.sources; \
+    printf 'Acquire::Retries "5";\nAcquire::https::CaInfo "/etc/ssl/certs/ca-certificates.crt";\nAcquire::https::Verify-Peer "true";\nAcquire::https::Verify-Host "true";\nAcquire::AllowInsecureRepositories "false";\nAPT::Get::AllowUnauthenticated "false";\n' > /etc/apt/apt.conf.d/80pasturestack-snapshot; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends ca-certificates tar; \
+    mkdir -p /out/packages; \
+    cd /out/packages; \
+    apt-get download \
+      "libc6=${GLIBC_PACKAGE_VERSION}" \
+      "libc-bin=${GLIBC_PACKAGE_VERSION}" \
+      "libc-gconv-modules-extra=${GLIBC_PACKAGE_VERSION}" \
+      "libperl5.40=${PERL_PACKAGE_VERSION}" \
+      "perl=${PERL_PACKAGE_VERSION}" \
+      "perl-base=${PERL_PACKAGE_VERSION}" \
+      "perl-modules-5.40=${PERL_PACKAGE_VERSION}"; \
+    for package in libc6 libc-bin libc-gconv-modules-extra libperl5.40 perl perl-base perl-modules-5.40; do \
+      package_file="$(find . -maxdepth 1 -type f -name "${package}_*.deb" -print)"; \
+      test -n "${package_file}"; \
+      test "$(printf '%s\n' "${package_file}" | wc -l)" -eq 1; \
+      test "$(dpkg-deb -f "${package_file}" Package)" = "${package}"; \
+      case "${package}" in \
+        libc6|libc-bin|libc-gconv-modules-extra) expected_version="${GLIBC_PACKAGE_VERSION}" ;; \
+        *) expected_version="${PERL_PACKAGE_VERSION}" ;; \
+      esac; \
+      test "$(dpkg-deb -f "${package_file}" Version)" = "${expected_version}"; \
+      architecture="$(dpkg-deb -f "${package_file}" Architecture)"; \
+      test "${architecture}" = amd64 || { test "${package}" = perl-modules-5.40 && test "${architecture}" = all; }; \
+    done; \
+    cp /usr/bin/tar /out/tar; \
+    cd /out; \
+    sha256sum packages/*.deb tar > SHA256SUMS
 
 FROM ${ARTIFACT_HELPER_IMAGE} AS console_broker_build
 
@@ -159,6 +210,9 @@ FROM ${BASE_IMAGE}
 
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
+ARG UBUNTU_SNAPSHOT=20260909T000000Z
+ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
+ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.2
 ARG WEB_CONSOLE_RELEASE_TAG=1.6.102
 ARG WEB_CONSOLE_ARTIFACT_SHA256=6269235a9a23a43b025ca78269ea7d807108c36b007f3eb65c5369c639261bb1
 ARG WEB_CONSOLE_COMMIT=9f754ba35ab0c6eaa7d6cd42304f36bb9aba378c
@@ -173,6 +227,7 @@ ARG VSPHERE_CLI_BUNDLE_COMMIT=c4b27e87aa0dacce432a2c6108ee0752319e6d5b
 ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=bebcc1c0275072ac40b5bc9b80f914c40a7f0431fffebc2c06fe34a34c33a57c
 ARG GOVC_BINARY_SHA256=f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31
 
+COPY --from=ubuntu_security_packages /out/ /tmp/pasturestack-ubuntu-security/
 COPY --from=release_artifacts /out/web-console/ /tmp/pasturestack-web-console/
 COPY --from=release_artifacts --chmod=0755 /out/compose-executor /usr/bin/compose-executor.real
 COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar
@@ -186,6 +241,21 @@ COPY patches/bootstrap.sh /tmp/pasturestack-server-overlays/config-content/boots
 COPY patches/db/core-060.xml /tmp/pasturestack-server-overlays/db/core-060.xml
 COPY patches/db/core-124.xml /tmp/pasturestack-server-overlays/db/core-124.xml
 COPY patches/PatchV1GlobalSubscribe.java /tmp/pasturestack-server-overlays/PatchV1GlobalSubscribe.java
+
+RUN set -eux; \
+    cd /tmp/pasturestack-ubuntu-security; \
+    sha256sum -c SHA256SUMS; \
+    install -o 0 -g 0 -m 0755 tar /usr/bin/tar; \
+    dpkg -i packages/*.deb; \
+    for package in libc6 libc-bin libc-gconv-modules-extra; do \
+      test "$(dpkg-query -W -f='${Version}' "${package}")" = "${GLIBC_PACKAGE_VERSION}"; \
+    done; \
+    for package in libperl5.40 perl perl-base perl-modules-5.40; do \
+      test "$(dpkg-query -W -f='${Version}' "${package}")" = "${PERL_PACKAGE_VERSION}"; \
+    done; \
+    cd /; \
+    rm -rf /tmp/pasturestack-ubuntu-security; \
+    rm -f /usr/bin/tar
 
 RUN set -eux; \
     test -n "${SOURCE_DATE_EPOCH}"; \
@@ -345,6 +415,10 @@ LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
 
 ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.410
 ENV CATTLE_CATTLE_VERSION=v0.183.294
+ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-09
+ENV PASTURESTACK_GLIBC_CVE_2026_18374_FIX=not-in-execute-path
+ENV PASTURESTACK_GLIBC_PACKAGE_VERSION=${GLIBC_PACKAGE_VERSION}
+ENV PASTURESTACK_PERL_PACKAGE_VERSION=${PERL_PACKAGE_VERSION}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}
 ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}

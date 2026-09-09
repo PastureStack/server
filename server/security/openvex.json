@@ -2,8 +2,8 @@
   "@context": "https://openvex.dev/ns/v0.2.0",
   "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.410",
   "author": "PastureStack Security",
-  "timestamp": "2026-09-09T07:12:21+08:00",
-  "version": 8,
+  "timestamp": "2026-09-09T17:48:55+08:00",
+  "version": 10,
   "statements": [
     {
       "vulnerability": {
@@ -663,17 +663,106 @@
       },
       "products": [
         {
-          "@id": "pkg:deb/ubuntu/libc-bin@2.43-2ubuntu2.3%2Bpasturestack1?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/libc-bin@2.43-2ubuntu2.4?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/libc-gconv-modules-extra@2.43-2ubuntu2.3%2Bpasturestack1?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/libc-gconv-modules-extra@2.43-2ubuntu2.4?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/libc6@2.43-2ubuntu2.3%2Bpasturestack1?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/libc6@2.43-2ubuntu2.4?arch=amd64&distro=ubuntu-26.04"
         }
       ],
-      "status": "fixed",
-      "impact_statement": "The image rebuilds Ubuntu glibc 2.43-2ubuntu2.3 as 2.43-2ubuntu2.3+pasturestack1 with the exact upstream fix commit 9765a538ebf8661a6e5578e01e35a3dd30db7eb4. The build verifies the patch hash and source version, installs the rebuilt libc6, libc-bin and libc-gconv-modules-extra packages, and runs the three upstream empty-ccs rejection cases plus ordinary and non-empty-ccs positive cases against the installed libraries."
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The issue requires a caller to pass an attacker-controlled fopen mode containing an empty ,ccs= conversion specification. The Server runtime does not accept or construct fopen mode strings from user input; the image gate scans the exact Java, Go, shell and service entrypoint set and rejects any ,ccs= use. Ubuntu still lists the Resolute package status as needs evaluation, so this is an execution-path determination rather than a claim that package version 2.43-2ubuntu2.4 fixes the defect."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-12087"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/libperl5.40@5.40.1-7ubuntu0.2?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/perl@5.40.1-7ubuntu0.2?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/perl-base@5.40.1-7ubuntu0.2?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/perl-modules-5.40@5.40.1-7ubuntu0.2?arch=all&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The affected Socket::pack_ip_mreq_source path requires a running Perl program. Perl remains only as an operating-system administration dependency; the Server, MariaDB, console broker, API services, s6 service definitions and public entrypoint do not execute Perl. The image gate enumerates those runtime entrypoints and rejects any Perl or affected-symbol reference."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-13221"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/libperl5.40@5.40.1-7ubuntu0.2?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/perl@5.40.1-7ubuntu0.2?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/perl-base@5.40.1-7ubuntu0.2?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/perl-modules-5.40@5.40.1-7ubuntu0.2?arch=all&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The affected regular-expression compiler is reachable only from an executing Perl program that compiles a crafted expression. No Server runtime entrypoint launches Perl or translates API, WebSocket, database, catalog or container input into a Perl expression; the exact entrypoint set is enforced by the image gate."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-57432"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/libperl5.40@5.40.1-7ubuntu0.2?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/perl@5.40.1-7ubuntu0.2?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/perl-base@5.40.1-7ubuntu0.2?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/perl-modules-5.40@5.40.1-7ubuntu0.2?arch=all&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The affected pack and unpack repeat-count path requires an executing Perl program to process attacker-controlled format data. The running product uses Java, Go, MariaDB and shell service entrypoints and exposes no Perl execution path; the image gate fails if Perl or the affected symbols appear in those entrypoints."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-57433"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/libperl5.40@5.40.1-7ubuntu0.2?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/perl@5.40.1-7ubuntu0.2?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/perl-base@5.40.1-7ubuntu0.2?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/perl-modules-5.40@5.40.1-7ubuntu0.2?arch=all&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "The affected Storable SX_HOOK deserialization path requires a Perl process loading Storable and accepting crafted serialized data. None of the Server service or public entrypoints executes Perl or loads Storable, and the image gate rejects Storable and SX_HOOK references in the exact runtime entrypoint set."
     }
   ]
 }
