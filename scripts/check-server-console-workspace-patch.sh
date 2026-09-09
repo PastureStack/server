@@ -100,6 +100,10 @@ grep -F 'map[string]string{"status": "missing"}' \
   server/console-broker/broker.go >/dev/null
 grep -F 'TestMissingSessionStatusIsARecoverableState' \
   server/console-broker/broker_test.go >/dev/null
+grep -F 'headers.Set("Origin", sessionDialOrigin(target))' \
+  server/console-broker/broker.go >/dev/null
+grep -F 'TestSessionCreationRebindsBrowserOriginToInternalDialOrigin' \
+  server/console-broker/broker_test.go >/dev/null
 grep -F 'pasturestack-secret.' \
   server/console-broker/broker.go >/dev/null
 
