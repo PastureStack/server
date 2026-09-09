@@ -37,8 +37,17 @@ initial and restart `pong` checks, Catalog bootstrap, merged-rootfs Trivy
 vulnerability and secret scans, CycloneDX SBOM generation, provenance and SBOM
 attestations, and a release bound to the exact source commit. Any unmatched vulnerability at any severity remains a release blocker.
 
-The unchanged runtime base retains the glibc fix
-`9765a538ebf8661a6e5578e01e35a3dd30db7eb4`, GNU coreutils `uniq` fix
-`d64e35a8a4c0e4608321433e0d84d917e4e36371`, the OpenSSL closure for
-`CVE-2026-75803`, and removal of the unreachable `diff3` path for
-`CVE-2026-53910`.
+The runtime security layer advances to the signed Ubuntu snapshot from
+2026-09-09 and installs the official glibc `2.43-2ubuntu2.4` and Perl
+`5.40.1-7ubuntu0.2` packages. The build verifies every downloaded package name,
+version and architecture and rejects any Server runtime entrypoint that invokes
+Perl, references the four reviewed Perl-only vulnerable paths, or contains the
+empty `,ccs=` mode required by `CVE-2026-18374`. Ubuntu still marks that glibc
+issue as needing evaluation for Resolute; therefore the OpenVEX statement is an
+explicit runtime-path determination, not a false claim that package revision
+`2.43-2ubuntu2.4` fixes it. Perl remains present for operating-system package and
+MariaDB administration compatibility, but is not in the running Server, API,
+WebSocket, database or service-launch execution path. GNU coreutils `uniq`
+retains fix `d64e35a8a4c0e4608321433e0d84d917e4e36371`; the OpenSSL closure for
+`CVE-2026-75803` and removal of the unreachable `diff3` path for
+`CVE-2026-53910` are unchanged.

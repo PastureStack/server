@@ -1,29 +1,21 @@
 # syntax=docker/dockerfile:1.7
 ARG GO_BUILDER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452
-ARG GLIBC_BUILDER_IMAGE=ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b
+ARG UBUNTU_SECURITY_IMAGE=ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b
 ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5
 ARG SOURCE_DATE_EPOCH
 
-FROM ${GLIBC_BUILDER_IMAGE} AS glibc_backport_build
+FROM ${UBUNTU_SECURITY_IMAGE} AS ubuntu_security_packages
 
-ARG UBUNTU_SNAPSHOT=20260907T000000Z
-ARG GLIBC_SOURCE_VERSION=2.43-2ubuntu2.3
-ARG GLIBC_BACKPORT_VERSION=2.43-2ubuntu2.3+pasturestack1
-ARG GLIBC_FIX_COMMIT=9765a538ebf8661a6e5578e01e35a3dd30db7eb4
-ARG GLIBC_TEST_COMMIT=cca93e5d88d3d4ed073c03100467696f652269e7
-ARG GLIBC_FIX_PATCH_SHA256=a01ec64b187e5765b9cef7cdd9801172a420a3e4bce4cf222a0a85cb2dea1dcc
+ARG UBUNTU_SNAPSHOT=20260909T000000Z
+ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
+ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.2
 
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /build
 ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90 \
     https://launchpad.net/ubuntu/+archive/primary/+files/ca-certificates_20260601~26.04.1_all.deb \
     /tmp/ca-certificates.deb
-COPY patches/glibc-CVE-2026-18374.patch /build/glibc-CVE-2026-18374.patch
-COPY patches/test-glibc-CVE-2026-18374.c /build/test-glibc-CVE-2026-18374.c
 RUN set -eux; \
-    echo "${GLIBC_FIX_PATCH_SHA256}  /build/glibc-CVE-2026-18374.patch" | sha256sum -c -; \
-    grep -Fx "Upstream-Commit: ${GLIBC_FIX_COMMIT}" /build/glibc-CVE-2026-18374.patch; \
-    grep -Fx "Upstream-Test-Commit: ${GLIBC_TEST_COMMIT}" /build/glibc-CVE-2026-18374.patch; \
     mkdir -p /tmp/ca-bootstrap /etc/ssl/certs; \
     dpkg-deb --extract /tmp/ca-certificates.deb /tmp/ca-bootstrap; \
     find /tmp/ca-bootstrap/usr/share/ca-certificates -type f -name '*.crt' | \
@@ -34,60 +26,33 @@ RUN set -eux; \
     printf 'Types: deb deb-src\nURIs: https://snapshot.ubuntu.com/ubuntu/%s\nSuites: resolute resolute-updates resolute-backports resolute-security\nComponents: main universe restricted multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nSnapshot: no\n' "${UBUNTU_SNAPSHOT}" > /etc/apt/sources.list.d/pasturestack-snapshot.sources; \
     printf 'Acquire::Retries "5";\nAcquire::https::CaInfo "/etc/ssl/certs/ca-certificates.crt";\nAcquire::https::Verify-Peer "true";\nAcquire::https::Verify-Host "true";\nAcquire::AllowInsecureRepositories "false";\nAPT::Get::AllowUnauthenticated "false";\n' > /etc/apt/apt.conf.d/80pasturestack-snapshot; \
     apt-get update; \
-    apt-get install -y --no-install-recommends ca-certificates dpkg-dev gcc; \
-    DEB_BUILD_PROFILES='nobiarch nocheck pkg.glibc.nosystemtap' \
-      apt-get build-dep -y --no-install-recommends "glibc=${GLIBC_SOURCE_VERSION}"; \
-    apt-get source "glibc=${GLIBC_SOURCE_VERSION}"; \
-    source_dir="$(find /build -mindepth 1 -maxdepth 1 -type d -name 'glibc-*' -print -quit)"; \
-    test -n "${source_dir}"; \
-    test "$(find /build -mindepth 1 -maxdepth 1 -type d -name 'glibc-*' | wc -l)" -eq 1; \
-    cd "${source_dir}"; \
-    test "$(dpkg-parsechangelog -S Version)" = "${GLIBC_SOURCE_VERSION}"; \
-    patch --dry-run -p1 < /build/glibc-CVE-2026-18374.patch; \
-    patch -p1 < /build/glibc-CVE-2026-18374.patch; \
-    grep -F "CVE-2026-18374" libio/fileops.c; \
-    { \
-      printf 'glibc (%s) resolute; urgency=medium\n\n' "${GLIBC_BACKPORT_VERSION}"; \
-      printf '  * Backport upstream fix %s for CVE-2026-18374.\n\n' "${GLIBC_FIX_COMMIT}"; \
-      printf ' -- PastureStack Maintainers <noreply@localhost>  Fri, 04 Sep 2026 12:52:05 +0000\n\n'; \
-      cat debian/changelog; \
-    } > debian/changelog.pasturestack; \
-    mv debian/changelog.pasturestack debian/changelog; \
-    test "$(dpkg-parsechangelog -S Version)" = "${GLIBC_BACKPORT_VERSION}"; \
-    DEB_BUILD_PROFILES='nobiarch nocheck pkg.glibc.nosystemtap' \
-    DEB_BUILD_OPTIONS="nocheck nodoc noautodbgsym parallel=$(nproc)" \
-      dpkg-buildpackage -B -us -uc; \
-    mkdir -p /out; \
-    for package in libc6 libc-bin libc-gconv-modules-extra; do \
-      package_file="$(find /build -maxdepth 1 -type f -name "${package}_*_amd64.deb" -print)"; \
+    apt-get install -y --no-install-recommends ca-certificates tar; \
+    mkdir -p /out/packages; \
+    cd /out/packages; \
+    apt-get download \
+      "libc6=${GLIBC_PACKAGE_VERSION}" \
+      "libc-bin=${GLIBC_PACKAGE_VERSION}" \
+      "libc-gconv-modules-extra=${GLIBC_PACKAGE_VERSION}" \
+      "libperl5.40=${PERL_PACKAGE_VERSION}" \
+      "perl=${PERL_PACKAGE_VERSION}" \
+      "perl-base=${PERL_PACKAGE_VERSION}" \
+      "perl-modules-5.40=${PERL_PACKAGE_VERSION}"; \
+    for package in libc6 libc-bin libc-gconv-modules-extra libperl5.40 perl perl-base perl-modules-5.40; do \
+      package_file="$(find . -maxdepth 1 -type f -name "${package}_*.deb" -print)"; \
       test -n "${package_file}"; \
       test "$(printf '%s\n' "${package_file}" | wc -l)" -eq 1; \
       test "$(dpkg-deb -f "${package_file}" Package)" = "${package}"; \
-      test "$(dpkg-deb -f "${package_file}" Version)" = "${GLIBC_BACKPORT_VERSION}"; \
-      test "$(dpkg-deb -f "${package_file}" Architecture)" = amd64; \
-      cp "${package_file}" "/out/${package}.deb"; \
+      case "${package}" in \
+        libc6|libc-bin|libc-gconv-modules-extra) expected_version="${GLIBC_PACKAGE_VERSION}" ;; \
+        *) expected_version="${PERL_PACKAGE_VERSION}" ;; \
+      esac; \
+      test "$(dpkg-deb -f "${package_file}" Version)" = "${expected_version}"; \
+      architecture="$(dpkg-deb -f "${package_file}" Architecture)"; \
+      test "${architecture}" = amd64 || { test "${package}" = perl-modules-5.40 && test "${architecture}" = all; }; \
     done; \
-    gcc -std=c11 -O2 -Wall -Wextra -Werror \
-      /build/test-glibc-CVE-2026-18374.c -o /out/test-glibc-CVE-2026-18374; \
+    cp /usr/bin/tar /out/tar; \
     cd /out; \
-    sha256sum libc6.deb libc-bin.deb libc-gconv-modules-extra.deb test-glibc-CVE-2026-18374 > SHA256SUMS
-
-FROM ${GLIBC_BUILDER_IMAGE} AS glibc_backport_test
-
-ARG GLIBC_BACKPORT_VERSION=2.43-2ubuntu2.3+pasturestack1
-ENV DEBIAN_FRONTEND=noninteractive
-COPY --from=glibc_backport_build /out/ /opt/pasturestack-glibc-backport/
-RUN set -eux; \
-    cd /opt/pasturestack-glibc-backport; \
-    sha256sum -c SHA256SUMS; \
-    dpkg -i libc6.deb libc-bin.deb libc-gconv-modules-extra.deb; \
-    for package in libc6 libc-bin libc-gconv-modules-extra; do \
-      test "$(dpkg-query -W -f='${Version}' "${package}")" = "${GLIBC_BACKPORT_VERSION}"; \
-    done; \
-    ./test-glibc-CVE-2026-18374; \
-    mkdir -p /validated; \
-    cp SHA256SUMS libc6.deb libc-bin.deb libc-gconv-modules-extra.deb \
-      test-glibc-CVE-2026-18374 /validated/
+    sha256sum packages/*.deb tar > SHA256SUMS
 
 FROM ${GO_BUILDER_IMAGE} AS console_broker_build
 
@@ -193,9 +158,9 @@ FROM ${BASE_IMAGE}
 
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
-ARG UBUNTU_SNAPSHOT=20260907T000000Z
-ARG GLIBC_BACKPORT_VERSION=2.43-2ubuntu2.3+pasturestack1
-ARG GLIBC_FIX_COMMIT=9765a538ebf8661a6e5578e01e35a3dd30db7eb4
+ARG UBUNTU_SNAPSHOT=20260909T000000Z
+ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
+ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.2
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.36
 ARG AUTHENTICATION_SERVICE_COMMIT=f9609e657486693575753f1bfdfdf1aeb13e1fc5
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=9bc5d4070e4b012c4464b986ddcd26225c4cca0756fa3e5a118c4ec8fc74367a
@@ -258,19 +223,24 @@ ARG NEWEST_DOCKER_VERSION=v29.7.2
 COPY --from=console_broker_build /out/pasturestack-console-broker /usr/bin/pasturestack-console-broker
 COPY --from=console_broker_build /go/pkg/mod/github.com/gorilla/websocket@v1.5.3/LICENSE /usr/share/licenses/pasturestack-console-broker/gorilla-websocket-LICENSE
 COPY console-broker/THIRD-PARTY-NOTICES.md /usr/share/licenses/pasturestack-console-broker/THIRD-PARTY-NOTICES.md
-# The hardened base intentionally removes tar. dpkg requires it before apt can
-# reinstall the pinned runtime toolset, so bootstrap only the verified builder
-# binary; the snapshot-pinned tar package replaces and owns it later in this RUN.
-COPY --from=glibc_backport_test /usr/bin/tar /usr/bin/tar
-COPY --from=glibc_backport_test /validated/ /tmp/pasturestack-glibc-backport/
+# The hardened base intentionally removes tar. dpkg requires it while applying
+# the snapshot-pinned official Ubuntu security packages, so bootstrap only the
+# verified builder binary and remove it again after package installation.
+COPY --from=ubuntu_security_packages /out/ /tmp/pasturestack-ubuntu-security/
+COPY --from=ubuntu_security_packages /out/tar /usr/bin/tar
 
 RUN set -eu; \
     test "$(tar --version | sed -n '1p')" = 'tar (GNU tar) 1.35'; \
-    cd /tmp/pasturestack-glibc-backport; \
+    cd /tmp/pasturestack-ubuntu-security; \
     sha256sum -c SHA256SUMS; \
-    dpkg -i libc6.deb libc-bin.deb libc-gconv-modules-extra.deb; \
-    test "$(dpkg-query -W -f='${Version}' libc6)" = "${GLIBC_BACKPORT_VERSION}"; \
-    ./test-glibc-CVE-2026-18374; \
+    install -o 0 -g 0 -m 0755 tar /usr/bin/tar; \
+    dpkg -i packages/*.deb; \
+    for package in libc6 libc-bin libc-gconv-modules-extra; do \
+      test "$(dpkg-query -W -f='${Version}' "${package}")" = "${GLIBC_PACKAGE_VERSION}"; \
+    done; \
+    for package in libperl5.40 perl perl-base perl-modules-5.40; do \
+      test "$(dpkg-query -W -f='${Version}' "${package}")" = "${PERL_PACKAGE_VERSION}"; \
+    done; \
     cd /; \
     rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; \
     printf 'Types: deb\nURIs: https://snapshot.ubuntu.com/ubuntu/%s\nSuites: resolute resolute-updates resolute-backports resolute-security\nComponents: main universe restricted multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nSnapshot: no\n' "${UBUNTU_SNAPSHOT}" > /etc/apt/sources.list.d/pasturestack-snapshot.sources; \
@@ -294,10 +264,13 @@ RUN set -eu; \
     }; \
     version_at_least curl 8.18.0-1ubuntu2.4; \
     version_at_least libcurl4t64 8.18.0-1ubuntu2.4; \
-    test "$(dpkg-query -W -f='${Version}' libc6)" = "${GLIBC_BACKPORT_VERSION}"; \
-    test "$(dpkg-query -W -f='${Version}' libc-bin)" = "${GLIBC_BACKPORT_VERSION}"; \
-    test "$(dpkg-query -W -f='${Version}' libc-gconv-modules-extra)" = "${GLIBC_BACKPORT_VERSION}"; \
-    /tmp/pasturestack-glibc-backport/test-glibc-CVE-2026-18374; \
+    test "$(dpkg-query -W -f='${Version}' libc6)" = "${GLIBC_PACKAGE_VERSION}"; \
+    test "$(dpkg-query -W -f='${Version}' libc-bin)" = "${GLIBC_PACKAGE_VERSION}"; \
+    test "$(dpkg-query -W -f='${Version}' libc-gconv-modules-extra)" = "${GLIBC_PACKAGE_VERSION}"; \
+    test "$(dpkg-query -W -f='${Version}' libperl5.40)" = "${PERL_PACKAGE_VERSION}"; \
+    test "$(dpkg-query -W -f='${Version}' perl)" = "${PERL_PACKAGE_VERSION}"; \
+    test "$(dpkg-query -W -f='${Version}' perl-base)" = "${PERL_PACKAGE_VERSION}"; \
+    test "$(dpkg-query -W -f='${Version}' perl-modules-5.40)" = "${PERL_PACKAGE_VERSION}"; \
     version_at_least libssh2-1t64 1.11.1-1ubuntu0.26.04.4; \
     version_at_least systemd 259.5-0ubuntu3.4; \
     version_at_least libsystemd0 259.5-0ubuntu3.4; \
@@ -313,7 +286,7 @@ RUN set -eu; \
     version_at_least util-linux 2.41.3-3ubuntu2.2; \
     version_at_least openssl 3.5.5-1ubuntu3.4; \
     version_at_least libssl3t64 3.5.5-1ubuntu3.4; \
-    rm -rf /tmp/pasturestack-glibc-backport; \
+    rm -rf /tmp/pasturestack-ubuntu-security; \
     runtime_stage=/tmp/pasturestack-runtime-refresh; \
     mkdir -p "${runtime_stage}"; \
     fetch() { \
@@ -1047,9 +1020,10 @@ ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
 ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.0
-ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-08-26
-ENV PASTURESTACK_GLIBC_CVE_2026_18374_FIX=${GLIBC_FIX_COMMIT}
-ENV PASTURESTACK_GLIBC_PACKAGE_VERSION=${GLIBC_BACKPORT_VERSION}
+ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-09
+ENV PASTURESTACK_GLIBC_CVE_2026_18374_FIX=not-in-execute-path
+ENV PASTURESTACK_GLIBC_PACKAGE_VERSION=${GLIBC_PACKAGE_VERSION}
+ENV PASTURESTACK_PERL_PACKAGE_VERSION=${PERL_PACKAGE_VERSION}
 ENV PASTURESTACK_COREUTILS_PROVIDER=gnu
 ENV PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11
 ENV PASTURESTACK_COREUTILS_UNIQ_FIX=d64e35a8a4c0e4608321433e0d84d917e4e36371
