@@ -2,6 +2,26 @@
 ARG ARTIFACT_HELPER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452
 ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.401@sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb
 
+FROM ${ARTIFACT_HELPER_IMAGE} AS console_broker_build
+
+WORKDIR /src
+COPY console-broker/go.mod console-broker/go.sum ./
+RUN set -eux; \
+    test "$(go version | awk '{print $3}')" = go1.27.0; \
+    go mod download; \
+    go mod verify
+COPY console-broker/*.go ./
+RUN set -eux; \
+    go test ./...; \
+    mkdir -p /out; \
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOTOOLCHAIN=local \
+      go build \
+        -mod=readonly \
+        -trimpath \
+        -buildvcs=false \
+        -ldflags='-s -w -buildid=' \
+        -o /out/pasturestack-console-broker .
+
 FROM ${ARTIFACT_HELPER_IMAGE} AS release_artifacts
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
@@ -107,6 +127,7 @@ ARG COMPOSE_EXECUTOR_BINARY_SHA256=1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8
 COPY --from=release_artifacts /out/web-console/ /tmp/pasturestack-web-console/
 COPY --from=release_artifacts --chmod=0755 /out/compose-executor /usr/bin/compose-executor.real
 COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar
+COPY --from=console_broker_build --chmod=0755 /out/pasturestack-console-broker /usr/bin/pasturestack-console-broker
 COPY patches/service-auth.json /tmp/pasturestack-server-overlays/schema/service/service-auth.json
 COPY patches/bootstrap.sh /tmp/pasturestack-server-overlays/config-content/bootstrap/bootstrap.sh
 COPY patches/db/core-060.xml /tmp/pasturestack-server-overlays/db/core-060.xml
@@ -256,14 +277,14 @@ RUN set -eux; \
     test "${compose_version_output}" = "pasturestack-compose version ${COMPOSE_EXECUTOR_VERSION}"
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
-      org.opencontainers.image.description="PastureStack server image with reviewed Docker bind-propagation validation and verified Web Console, Compose, and catalog coordinates." \
+      org.opencontainers.image.description="PastureStack server image with reviewed console WebSocket origin rebinding and verified Web Console, Compose, and catalog coordinates." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.407" \
+      org.opencontainers.image.version="v1.6.408" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.401" \
       org.opencontainers.image.base.digest="sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.407
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.408
 ENV CATTLE_CATTLE_VERSION=v0.183.293
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}

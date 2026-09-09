@@ -294,10 +294,14 @@ func (b *broker) createSession(writer http.ResponseWriter, request *http.Request
 		return
 	}
 
+	// The browser origin is validated above for the public session-creation
+	// request, but it must not be forwarded to the broker's fixed internal dial
+	// address.  The upstream WebSocket proxy applies its own same-origin check;
+	// forwarding (for example) http://control.example while dialing
+	// http://127.0.0.1 would make every logs and terminal handshake fail.
+	// Rebind Origin to the already-validated, operator-controlled dial origin.
 	headers := http.Header{}
-	if origin := request.Header.Get("Origin"); origin != "" {
-		headers.Set("Origin", origin)
-	}
+	headers.Set("Origin", sessionDialOrigin(target))
 	upstream, response, err := websocket.DefaultDialer.Dial(target.String(), headers)
 	if response != nil && response.Body != nil {
 		_ = response.Body.Close()
@@ -344,6 +348,14 @@ func (b *broker) createSession(writer http.ResponseWriter, request *http.Request
 
 	go session.readUpstream(b, upstream)
 	writeSessionCreated(writer, http.StatusCreated, session)
+}
+
+func sessionDialOrigin(target *url.URL) string {
+	scheme := "http"
+	if target.Scheme == "wss" {
+		scheme = "https"
+	}
+	return scheme + "://" + target.Host
 }
 
 func (b *broker) attachSession(writer http.ResponseWriter, request *http.Request, sessionID string) {

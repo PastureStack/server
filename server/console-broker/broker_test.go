@@ -22,14 +22,27 @@ type upstreamRecorder struct {
 	upgrader websocket.Upgrader
 	mu       sync.Mutex
 	inputs   []string
+	origins  []string
 	output   chan string
 }
 
 func newUpstreamRecorder(t *testing.T) *upstreamRecorder {
+	return newUpstreamRecorderWithOriginCheck(t, false)
+}
+
+func newUpstreamRecorderWithOriginCheck(t *testing.T, requireSameOrigin bool) *upstreamRecorder {
 	t.Helper()
 	recorder := &upstreamRecorder{
-		upgrader: websocket.Upgrader{CheckOrigin: func(*http.Request) bool { return true }},
-		output:   make(chan string, 16),
+		output: make(chan string, 16),
+	}
+	recorder.upgrader.CheckOrigin = func(request *http.Request) bool {
+		recorder.mu.Lock()
+		recorder.origins = append(recorder.origins, request.Header.Get("Origin"))
+		recorder.mu.Unlock()
+		if !requireSameOrigin {
+			return true
+		}
+		return requestOriginAllowed(request)
 	}
 	recorder.server = httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.Path != "/v1/exec" || request.URL.Query().Get("token") != "valid-token" {
@@ -66,6 +79,63 @@ func newUpstreamRecorder(t *testing.T) *upstreamRecorder {
 		}
 	}))
 	return recorder
+}
+
+func TestSessionCreationRebindsBrowserOriginToInternalDialOrigin(t *testing.T) {
+	testCases := []struct {
+		kind      string
+		sessionID string
+		secret    string
+	}{
+		{"logs", "psw_abcdefghijklmnopqrstuv00", "0023456789abcdefghijklmnopqrstuvwxyzABCDEFGH"},
+		{"terminal", "psw_abcdefghijklmnopqrstuv01", "1023456789abcdefghijklmnopqrstuvwxyzABCDEFGH"},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.kind, func(t *testing.T) {
+			upstream := newUpstreamRecorderWithOriginCheck(t, true)
+			defer upstream.close()
+			_, server := newTestBroker(t, upstream)
+
+			brokerTarget, err := url.Parse(server.URL)
+			if err != nil {
+				t.Fatal(err)
+			}
+			requestBody, _ := json.Marshal(createSessionRequest{
+				Secret: testCase.secret,
+				Kind:   testCase.kind,
+				Target: "ws://" + brokerTarget.Host + "/v1/exec",
+				Token:  "valid-token",
+			})
+			request, _ := http.NewRequest(
+				http.MethodPost,
+				server.URL+sessionPathPrefix+testCase.sessionID,
+				strings.NewReader(string(requestBody)),
+			)
+			request.Header.Set("Content-Type", "application/json")
+			request.Header.Set("Origin", server.URL)
+			response, err := http.DefaultClient.Do(request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer response.Body.Close()
+			if response.StatusCode != http.StatusCreated {
+				body, _ := io.ReadAll(response.Body)
+				t.Fatalf("create returned %d: %s", response.StatusCode, body)
+			}
+
+			upstreamTarget, err := url.Parse(upstream.server.URL)
+			if err != nil {
+				t.Fatal(err)
+			}
+			upstream.mu.Lock()
+			origins := append([]string(nil), upstream.origins...)
+			upstream.mu.Unlock()
+			if len(origins) != 1 || origins[0] != "http://"+upstreamTarget.Host {
+				t.Fatalf("upstream origin was not rebound to the fixed dial origin: %#v", origins)
+			}
+		})
+	}
 }
 
 func (recorder *upstreamRecorder) close() {
