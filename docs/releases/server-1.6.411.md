@@ -66,7 +66,10 @@ perform that one interactive login after installing this release.
 The runtime security layer uses the signed Ubuntu snapshot from 2026-09-10,
 including the official curl, libcurl3t64-gnutls, and libcurl4t64
 `8.18.0-1ubuntu2.5` fix for `CVE-2026-8932`, plus glibc
-`2.43-2ubuntu2.4` and Perl `5.40.1-7ubuntu0.2` packages.
+`2.43-2ubuntu2.4` and Perl `5.40.1-7ubuntu0.3` packages. Canonical's
+`USN-8675-2` identifies this Perl revision as the Ubuntu 26.04 fix for
+`CVE-2026-12087`, `CVE-2026-13221`, `CVE-2026-57432`, and
+`CVE-2026-57433`.
 Ubuntu still marks `CVE-2026-18374` as needing evaluation for Resolute; its
 OpenVEX status remains an explicit runtime-path determination rather than a
 claim that the package revision fixes it. GNU coreutils `uniq` retains upstream
