@@ -176,9 +176,16 @@ require_marker "$dockerfile" \
 require_marker "$dockerfile" \
     'ARG UBUNTU_SNAPSHOT=20260910T100000Z' \
     SERVER_API_EXPLORER_PATCH_UBUNTU_SNAPSHOT_NOT_CURRENT
-require_marker "$dockerfile" \
-    'https://launchpad.net/ubuntu/+archive/primary/+files/ca-certificates_20260601~26.04.1_all.deb' \
-    SERVER_CA_CERTIFICATES_BOOTSTRAP_SOURCE_MISSING
+for snapshot_dockerfile in "$dockerfile" "$release_dockerfile"; do
+    require_marker "$snapshot_dockerfile" \
+        'https://snapshot.ubuntu.com/ubuntu/20260910T100000Z/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb' \
+        SERVER_CA_CERTIFICATES_IMMUTABLE_BOOTSTRAP_SOURCE_MISSING
+done
+if grep -Fq 'https://launchpad.net/ubuntu/+archive/primary/+files/' \
+    "$dockerfile" "$release_dockerfile"; then
+    echo 'SERVER_CA_CERTIFICATES_MUTABLE_BOOTSTRAP_SOURCE_BLOCKED' >&2
+    exit 1
+fi
 require_marker "$dockerfile" \
     'ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90' \
     SERVER_CA_CERTIFICATES_BOOTSTRAP_HASH_MISSING
