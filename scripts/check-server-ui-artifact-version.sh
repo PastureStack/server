@@ -351,7 +351,7 @@ require_marker server/artifacts/mysql.sh 'command -v mariadb-tzinfo-to-sql || co
 require_marker server/artifacts/mysql.sh '"$(tzinfo_to_sql_bin)" /usr/share/zoneinfo | "$(mysql_bin)"' SERVER_MYSQL_TZINFO_HELPER_NOT_USED
 reject_marker server/artifacts/mysql.sh 'mysql_tzinfo_to_sql /usr/share/zoneinfo |' SERVER_MYSQL_TZINFO_LEGACY_DIRECT_CALL_PRESENT
 require_marker server/artifacts/mysql.sh '/etc/mysql/mariadb.conf.d/99-pasturestack.cnf' SERVER_MYSQL_CONFIG_NAME_NOT_CURRENT
-require_marker server/artifacts/mysql.sh 'innodb_snapshot_isolation = OFF' SERVER_MYSQL_SNAPSHOT_ISOLATION_COMPATIBILITY_MISSING
+require_marker server/artifacts/performance-env.sh 'innodb_snapshot_isolation = OFF' SERVER_MYSQL_SNAPSHOT_ISOLATION_COMPATIBILITY_MISSING
 reject_marker server/artifacts/mysql.sh '/etc/mysql/mariadb.conf.d/99-rancher.cnf' SERVER_MYSQL_OLD_CONFIG_NAME_PRESENT
 require_marker server/Dockerfile '                    tzdata \' SERVER_DOCKERFILE_TZDATA_PACKAGE_MISSING
 if [ "$require_promotion_defaults" = "true" ] || [ "$require_promotion_defaults" = "1" ]; then

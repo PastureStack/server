@@ -24,6 +24,16 @@ entry_error()
     fi
 }
 
+PERFORMANCE_ENV_LIB=/usr/share/cattle/performance-env.sh
+if [ ! -r "$PERFORMANCE_ENV_LIB" ]; then
+    entry_error \
+        "PastureStack performance environment library is missing" \
+        "PastureStack 效能環境變數程式庫遺失"
+    exit 1
+fi
+source "$PERFORMANCE_ENV_LIB"
+pasturestack_validate_performance_env
+
 
 is_default_server_command()
 {
@@ -220,6 +230,8 @@ while [ "$#" -gt 0 ]; do
 
     shift 1
 done
+
+pasturestack_validate_performance_env
 
 
 if [ "${STRICT_ENFORCING}" = "true" ];then

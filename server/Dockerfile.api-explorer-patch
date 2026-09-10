@@ -499,7 +499,7 @@ RUN set -eu; \
         /var/log/apt/*; \
     apt-get clean
 
-COPY artifacts/cattle.sh /usr/share/cattle/cattle.sh
+COPY artifacts/cattle.sh artifacts/performance-env.sh /usr/share/cattle/
 COPY --from=hardened_tools_build /out/coreutils/uniq /usr/bin/uniq
 COPY --from=hardened_tools_build /out/coreutils/COPYING /usr/share/licenses/pasturestack/coreutils-9.11/COPYING
 COPY --from=hardened_tools_build /out/zlib/lib/libz.so.1.3.2 /usr/lib/x86_64-linux-gnu/libz.so.1.3.2
@@ -519,7 +519,7 @@ COPY patches/db/core-124.xml /tmp/pasturestack-server-overlays/db/core-124.xml
 COPY patches/PatchV1GlobalSubscribe.java /tmp/pasturestack-server-overlays/PatchV1GlobalSubscribe.java
 
 RUN set -eu; \
-    chmod 0755 /usr/share/cattle/cattle.sh /usr/bin/uniq; \
+    chmod 0755 /usr/share/cattle/cattle.sh /usr/share/cattle/performance-env.sh /usr/bin/uniq; \
     rm -f /usr/lib/x86_64-linux-gnu/libz.so.1.3.1; \
     ln -sfn libz.so.1.3.2 /usr/lib/x86_64-linux-gnu/libz.so.1; \
     ldconfig; \
@@ -1004,12 +1004,12 @@ COPY --chmod=0755 patches/websocket-proxy-wrapper.sh /usr/bin/websocket-proxy
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with the reviewed Orchestration Engine, API Explorer, Go 1.27, OpenSSL 3.5.8, zlib 1.3.2, and a reduced runtime tool surface." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.411" \
+      org.opencontainers.image.version="v1.6.412" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.364" \
       org.opencontainers.image.base.digest="sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.411
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.412
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV CATTLE_API_UI_VERSION=1.1.18

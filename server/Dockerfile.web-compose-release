@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 ARG ARTIFACT_HELPER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452
 ARG UBUNTU_SECURITY_IMAGE=ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.410@sha256:23407f6bed9036fd12db9f37a4c5afce2d719e4941d0c9d0adfdd30a5e2244b7
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.411@sha256:32190f9becc8462171f597789b55b4abfba7dbd30c9e152e165a5e3067d8dadb
 
 FROM ${UBUNTU_SECURITY_IMAGE} AS ubuntu_security_packages
 
@@ -274,6 +274,8 @@ COPY patches/bootstrap.sh /tmp/pasturestack-server-overlays/config-content/boots
 COPY patches/db/core-060.xml /tmp/pasturestack-server-overlays/db/core-060.xml
 COPY patches/db/core-124.xml /tmp/pasturestack-server-overlays/db/core-124.xml
 COPY patches/PatchV1GlobalSubscribe.java /tmp/pasturestack-server-overlays/PatchV1GlobalSubscribe.java
+COPY --chmod=0755 bin/entry /usr/bin/entry
+COPY --chmod=0755 artifacts/cattle.sh artifacts/mysql.sh artifacts/performance-env.sh /usr/share/cattle/
 
 RUN set -eux; \
     cd /tmp/pasturestack-ubuntu-security; \
@@ -451,12 +453,12 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.411" \
+      org.opencontainers.image.version="v1.6.412" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
-      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.410" \
-      org.opencontainers.image.base.digest="sha256:23407f6bed9036fd12db9f37a4c5afce2d719e4941d0c9d0adfdd30a5e2244b7"
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.411" \
+      org.opencontainers.image.base.digest="sha256:32190f9becc8462171f597789b55b4abfba7dbd30c9e152e165a5e3067d8dadb"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.411
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.412
 ENV CATTLE_CATTLE_VERSION=v0.183.295
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_PACKAGE_VERSION=${CURL_PACKAGE_VERSION}

@@ -1,9 +1,9 @@
 {
   "@context": "https://openvex.dev/ns/v0.2.0",
-  "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.411",
+  "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.412",
   "author": "PastureStack Security",
-  "timestamp": "2026-09-10T19:43:11+08:00",
-  "version": 12,
+  "timestamp": "2026-09-10T23:20:00+08:00",
+  "version": 13,
   "statements": [
     {
       "vulnerability": {
