@@ -1,16 +1,24 @@
 # PastureStack Server v1.6.418
 
-This release bundles Web Console `1.6.108` and fixes the remaining first-service
-completion failure reproduced on the real two-host environment after the API
-had already persisted the service and started its container.
+> **Retain as the immediate rollback until `v1.6.419` passes real-host
+> acceptance testing.** `v1.6.418`
+> persisted the service and started its requested container on
+> `ranchernode22`, but its completion action could still lose the controller
+> receiver and leave the form visible with `undefined.get` or an invalid
+> template-action error. It is not the forward deployment target.
+
+This release bundles Web Console `1.6.108` and attempted to close the
+first-service completion failure reproduced after persistence. Real-host
+testing proved that the remaining failure was in the action receiver contract,
+not in the Docker payload or container creation itself.
 
 ## Operator-visible result
 
-- Create and upgrade completion invokes and awaits the template's closure
-  callback directly instead of routing it through deprecated `sendAction`
-  dispatch.
-- A successful first create leaves the form exactly once and cannot present the
-  stale `undefined.get` error that invited an accidental duplicate submission.
+- Create and upgrade completion invokes the template's closure callback after
+  persistence, but real-host testing found that the legacy compatibility path
+  can still misroute that callback when a component action target exists.
+- The service and its container can be created successfully even though the
+  form then displays a false failure; operators must not resubmit the form.
 - The saved service remains available through service-link persistence, while
   route selection continues to use the immutable stack query input.
 - The existing resource and hardware form remains intact: init, shared memory,
