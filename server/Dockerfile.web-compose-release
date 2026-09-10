@@ -314,16 +314,20 @@ RUN set -eux; \
     install -m 0644 "${archive}" /usr/share/cattle/cattle.jar; \
     engine_hash="$(sha256sum /usr/share/cattle/cattle.jar | awk '{print $1}')"; \
     new_web_root="/usr/share/cattle/${engine_hash}"; \
-    test "${new_web_root}" != "${old_web_root}"; \
-    rm /usr/share/cattle/war; \
-    rm -rf "${old_web_root}" "${new_web_root}"; \
-    mkdir -p "${new_web_root}"; \
-    ln -s "${engine_hash}" /usr/share/cattle/war; \
-    cd "${new_web_root}"; \
-    unzip -q ../cattle.jar; \
-    if [ -f resources.jar ]; then \
-        unzip -oq resources.jar; \
-        rm -f resources.jar; \
+    if [ "${new_web_root}" != "${old_web_root}" ]; then \
+        rm /usr/share/cattle/war; \
+        rm -rf "${old_web_root}" "${new_web_root}"; \
+        mkdir -p "${new_web_root}"; \
+        ln -s "${engine_hash}" /usr/share/cattle/war; \
+        cd "${new_web_root}"; \
+        unzip -q ../cattle.jar; \
+        if [ -f resources.jar ]; then \
+            unzip -oq resources.jar; \
+            rm -f resources.jar; \
+        fi; \
+    else \
+        test "$(readlink -f /usr/share/cattle/war)" = "${new_web_root}"; \
+        test -d "${new_web_root}/WEB-INF/lib"; \
     fi; \
     resources_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
         -name 'cattle-resources-0.183.294.jar' -print -quit)"; \
