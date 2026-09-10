@@ -1,5 +1,10 @@
 # PastureStack Server v1.6.413
 
+> **Superseded by `v1.6.414` for the service resource form.** Runtime and
+> database behavior remain valid, but Web Console `1.6.104` prevents the init
+> checkbox from overlapping the process-limit field and adds complete create
+> and upgrade payload regression coverage.
+
 This release completes the Docker Compose performance-setting support started
 in `v1.6.412` and supersedes that image for deployments using
 `PASTURESTACK_MARIADB_*` variables.
