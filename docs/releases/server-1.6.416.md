@@ -1,5 +1,10 @@
 # PastureStack Server v1.6.416
 
+> **Superseded by `v1.6.417` after real-host acceptance testing.** `v1.6.416`
+> can persist the first service and start its container, but a partially loaded
+> saved response can still raise a client-side error before navigation. Keep it
+> only as the tested rollback image while moving production to `v1.6.417`.
+
 This release updates the bundled Web Console to `1.6.106` and closes the
 remaining first-service creation completion failure reproduced against the
 real two-host environment.
