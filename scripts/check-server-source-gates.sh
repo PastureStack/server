@@ -31,7 +31,7 @@ run_gate install_cattle_binaries_downloads scripts/check-server-install-cattle-b
 run_gate build_artifact_downloads scripts/check-server-build-artifact-downloads.sh
 run_gate cattle_sh_downloads scripts/check-server-cattle-sh-downloads.sh
 run_gate cattle_sh_linked_env scripts/check-server-cattle-sh-linked-env.sh
-run_gate performance_environment scripts/check-server-performance-env.sh
+run_gate performance_environment bash scripts/check-server-performance-env.sh
 run_gate client_download_urls scripts/check-server-client-download-urls.sh
 run_gate metric_mapper scripts/check-server-metric-mapper.sh
 run_gate entry_advertise_address scripts/check-server-entry-advertise-address.sh
