@@ -1,5 +1,10 @@
 # PastureStack Server v1.6.415
 
+> **Superseded by `v1.6.416` for reliable first-create completion.** The
+> `v1.6.415` runtime and hardware payload remain valid, while Web Console
+> `1.6.106` removes the redundant empty link action and preserves immutable
+> stack routing across partial action responses.
+
 This release updates the bundled Web Console to `1.6.105` and closes the
 service-creation completion regression found during real two-host production
 workflow validation.
