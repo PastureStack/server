@@ -2,8 +2,8 @@
   "@context": "https://openvex.dev/ns/v0.2.0",
   "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.411",
   "author": "PastureStack Security",
-  "timestamp": "2026-09-09T17:48:55+08:00",
-  "version": 10,
+  "timestamp": "2026-09-10T19:09:27+08:00",
+  "version": 11,
   "statements": [
     {
       "vulnerability": {
@@ -48,6 +48,24 @@
       ],
       "status": "fixed",
       "impact_statement": "The upstream advisory lists affected Git release lines only through 2.48.1; the final runtime enforces Git 2.53.0 for Catalog HTTPS clone and fetch operations."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-8932"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.5?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.5?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.5?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "The final runtime installs the Ubuntu 26.04 security update 8.18.0-1ubuntu2.5 for curl and both shipped libcurl variants from the signed 2026-09-10 snapshot, and enforces the exact installed versions during image assembly and post-build validation."
     },
     {
       "vulnerability": {

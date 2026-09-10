@@ -129,13 +129,13 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 for release_engine_marker in \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.294' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.294.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=1e49dac19043cb1579a0449f0d8874ebe5d1777c1231bff61dca793f58fe0b73' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=b59ddee9d79dcffa8b95a00dd9182fe5304b619b' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.295' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.295.jar' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=f06f1ebff2457f87f93402562007fcb29cd34d5afc00d15940c4a2e63947166e' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=6c7922b492b45eccb28e46fe485864104a9ed075' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
-    "grep -Fx 'Implementation-Version: 0.183.294'" \
-    'ENV CATTLE_CATTLE_VERSION=v0.183.294' \
+    "grep -Fx 'Implementation-Version: 0.183.295'" \
+    'ENV CATTLE_CATTLE_VERSION=v0.183.295' \
     'ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}' \
     'ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}'; do
     require_marker "$release_dockerfile" "$release_engine_marker" \
@@ -174,7 +174,7 @@ require_marker "$dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.364@sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5' \
     SERVER_API_EXPLORER_PATCH_BASE_NOT_CURRENT
 require_marker "$dockerfile" \
-    'ARG UBUNTU_SNAPSHOT=20260909T000000Z' \
+    'ARG UBUNTU_SNAPSHOT=20260910T100000Z' \
     SERVER_API_EXPLORER_PATCH_UBUNTU_SNAPSHOT_NOT_CURRENT
 require_marker "$dockerfile" \
     'https://launchpad.net/ubuntu/+archive/primary/+files/ca-certificates_20260601~26.04.1_all.deb' \
@@ -213,22 +213,22 @@ require_marker "$dockerfile" \
     'ARG API_EXPLORER_COMMIT=3b1c39e8a116f58649d94233a384a0362c02b43e' \
     SERVER_API_EXPLORER_PATCH_COMMIT_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.294' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.295' \
     SERVER_ORCHESTRATION_RELEASE_TAG_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.294.jar' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.295.jar' \
     SERVER_ORCHESTRATION_RELEASE_ARTIFACT_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=1e49dac19043cb1579a0449f0d8874ebe5d1777c1231bff61dca793f58fe0b73' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=f06f1ebff2457f87f93402562007fcb29cd34d5afc00d15940c4a2e63947166e' \
     SERVER_ORCHESTRATION_RELEASE_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=b59ddee9d79dcffa8b95a00dd9182fe5304b619b' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=6c7922b492b45eccb28e46fe485864104a9ed075' \
     SERVER_ORCHESTRATION_RELEASE_COMMIT_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_CATTLE_VERSION=v0.183.294' \
+    'ENV CATTLE_CATTLE_VERSION=v0.183.295' \
     SERVER_ORCHESTRATION_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
-    'grep -Fx '\''Implementation-Version: 0.183.294'\'' >/dev/null' \
+    'grep -Fx '\''Implementation-Version: 0.183.295'\'' >/dev/null' \
     SERVER_ORCHESTRATION_MANIFEST_GATE_MISSING
 require_marker "$dockerfile" \
     'WEB-INF/lib/hazelcast-5\.7\.4\.jar' \
@@ -388,7 +388,7 @@ require_marker "$dockerfile" \
     'ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.0' \
     SERVER_RUNTIME_GO_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-09' \
+    'ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10' \
     SERVER_UBUNTU_SECURITY_REFRESH_MISSING
 require_marker "$dockerfile" \
     'ARG UBUNTU_SECURITY_IMAGE=ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b' \
@@ -412,6 +412,9 @@ require_marker "$dockerfile" \
     'ENV PASTURESTACK_PERL_PACKAGE_VERSION=${PERL_PACKAGE_VERSION}' \
     SERVER_PERL_IMAGE_VERSION_ENV_MISSING
 for official_package_marker in \
+    '"curl=${CURL_PACKAGE_VERSION}"' \
+    '"libcurl3t64-gnutls=${CURL_PACKAGE_VERSION}"' \
+    '"libcurl4t64=${CURL_PACKAGE_VERSION}"' \
     '"libc6=${GLIBC_PACKAGE_VERSION}"' \
     '"libc-bin=${GLIBC_PACKAGE_VERSION}"' \
     '"libc-gconv-modules-extra=${GLIBC_PACKAGE_VERSION}"' \
@@ -426,8 +429,11 @@ for official_package_marker in \
 done
 for security_dockerfile in "$dockerfile" "$release_dockerfile"; do
     require_marker "$security_dockerfile" \
-        'ARG UBUNTU_SNAPSHOT=20260909T000000Z' \
+        'ARG UBUNTU_SNAPSHOT=20260910T100000Z' \
         SERVER_UBUNTU_SECURITY_SNAPSHOT_MISSING
+    require_marker "$security_dockerfile" \
+        'ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.5' \
+        SERVER_UBUNTU_CURL_PACKAGE_VERSION_MISSING
     require_marker "$security_dockerfile" \
         'ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4' \
         SERVER_UBUNTU_GLIBC_PACKAGE_VERSION_MISSING
@@ -435,12 +441,18 @@ for security_dockerfile in "$dockerfile" "$release_dockerfile"; do
         'ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.2' \
         SERVER_UBUNTU_PERL_PACKAGE_VERSION_MISSING
     require_marker "$security_dockerfile" \
+        'ENV PASTURESTACK_CURL_PACKAGE_VERSION=${CURL_PACKAGE_VERSION}' \
+        SERVER_CURL_IMAGE_VERSION_ENV_MISSING
+    require_marker "$security_dockerfile" \
         'ENV PASTURESTACK_GLIBC_CVE_2026_18374_FIX=not-in-execute-path' \
         SERVER_GLIBC_EXECUTION_PATH_AUTHORITY_MISSING
     require_marker "$security_dockerfile" \
         'dpkg -i packages/*.deb' \
         SERVER_UBUNTU_SECURITY_FINAL_INSTALL_MISSING
 done
+require_marker "$build_script" \
+    'PASTURESTACK_CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.5' \
+    SERVER_CURL_IMAGE_VERSION_GATE_MISSING
 require_marker "$build_script" \
     'PASTURESTACK_GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4' \
     SERVER_GLIBC_IMAGE_VERSION_GATE_MISSING
@@ -456,6 +468,9 @@ for runtime_reachability_marker in \
     require_marker "$build_script" "$runtime_reachability_marker" \
         SERVER_RUNTIME_REACHABILITY_GATE_MISSING
 done
+require_marker "$release_notes" \
+    'CVE-2026-8932' \
+    SERVER_RELEASE_NOTES_CURL_FIX_MISSING
 require_marker "$release_notes" \
     '2.43-2ubuntu2.4' \
     SERVER_RELEASE_NOTES_GLIBC_FIX_MISSING
@@ -714,10 +729,10 @@ bash -n "$build_script"
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
   and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.411"
-  and (.statements | length) == 50
+  and (.statements | length) == 51
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
-      == ["CVE-2024-52005","CVE-2026-18798","CVE-2026-27171","CVE-2026-56391","CVE-2026-75803"]
+      == ["CVE-2024-52005","CVE-2026-18798","CVE-2026-27171","CVE-2026-56391","CVE-2026-75803","CVE-2026-8932"]
   and ([.statements[] | select(.status == "not_affected") | .vulnerability.name] | sort)
       == ["CVE-2024-2236","CVE-2024-56433","CVE-2025-1352","CVE-2025-1376","CVE-2025-66382","CVE-2026-12087","CVE-2026-13221","CVE-2026-13757","CVE-2026-18374","CVE-2026-18477","CVE-2026-18508","CVE-2026-27456","CVE-2026-3184","CVE-2026-32776","CVE-2026-32777","CVE-2026-32778","CVE-2026-40228","CVE-2026-41080","CVE-2026-45186","CVE-2026-50219","CVE-2026-53910","CVE-2026-54371","CVE-2026-56131","CVE-2026-56132","CVE-2026-56392","CVE-2026-56403","CVE-2026-56404","CVE-2026-56405","CVE-2026-56406","CVE-2026-56407","CVE-2026-56408","CVE-2026-56409","CVE-2026-56410","CVE-2026-56411","CVE-2026-56412","CVE-2026-56855","CVE-2026-57062","CVE-2026-57432","CVE-2026-57433","CVE-2026-66046","CVE-2026-72522","CVE-2026-76641","CVE-2026-76957","CVE-2026-78662","GO-2026-5932"]
   and ([.statements[] | select(.status == "under_investigation") | .vulnerability.name] | sort)
@@ -735,6 +750,10 @@ for marker in \
     'PASTURESTACK_BUILD_NO_CACHE=1 IMAGE="$CANDIDATE_IMAGE"' \
     'PROXY_PLATFORM_PUBLIC_ORIGIN=https://stack.example.test' \
     'https://stack.example.test/v2-beta/schemas' \
+    'assert_public_proxy_contract before-restart' \
+    'first_contract_attempts="$public_proxy_contract_attempts"' \
+    'assert_public_proxy_contract after-restart' \
+    'restart_contract_attempts="$public_proxy_contract_attempts"' \
     'test "$(header_value "$response_headers" Cache-Control)" = '\''private, no-store'\''' \
     'reverse-proxy-before-restart.txt' \
     'reverse-proxy-after-restart.txt' \
@@ -755,4 +774,9 @@ for marker in \
         SERVER_CURRENT_PUBLISH_WORKFLOW_GATE_MISSING
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.411 source_base=v1.6.364 release_base=v1.6.410 release_mode=engine-web-compose-incremental orchestration=0.183.294 engine_root_reuse=validated distributed_cache=5.7.4 vsphere_cli=0.55.2 api_explorer=1.1.18 web_console=1.6.103 websocket_proxy=0.23.14 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=overlap-safe-nested-scroll-contained service_log_filters=service-scoped service_restart_events=explicit service_restart_policy=api-and-runtime-preserved console_workspace_origin=internal-dial-bound console_backend_retry=401-only,3-attempts platform_public_origin=authority-bound private_api_cache=no-store log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-09 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=1 perl=5.40.1-7ubuntu0.2 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 numeric_release_tags=enforced vex=openvex-0.2.0 artifact_scan=required legal_assets=complete\n'
+if grep -Fq '="$(assert_public_proxy_contract' "$publish_workflow"; then
+    printf '%s file=%s\n' SERVER_CURRENT_PUBLISH_WORKFLOW_PROXY_CONTRACT_COMMAND_SUBSTITUTION "$publish_workflow" >&2
+    exit 1
+fi
+
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.411 source_base=v1.6.364 release_base=v1.6.410 release_mode=engine-web-compose-incremental orchestration=0.183.295 engine_root_reuse=validated distributed_cache=5.7.4 vsphere_cli=0.55.2 api_explorer=1.1.18 web_console=1.6.103 websocket_proxy=0.23.14 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=overlap-safe-nested-scroll-contained service_log_filters=service-scoped service_restart_events=explicit service_restart_policy=api-and-runtime-preserved console_workspace_origin=internal-dial-bound console_backend_retry=401-only,3-attempts platform_public_origin=authority-bound private_api_cache=no-store log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-10 curl=8.18.0-1ubuntu2.5 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=1 perl=5.40.1-7ubuntu0.2 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 numeric_release_tags=enforced vex=openvex-0.2.0 artifact_scan=required legal_assets=complete\n'

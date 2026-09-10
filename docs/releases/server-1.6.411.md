@@ -39,9 +39,13 @@ The value cannot contain credentials, a path, query, or fragment.
   `c55108c3dbfd8e6579fc768a1988920db83c6f605ca1284b60edf92ae8d0160e`,
   and installed binary SHA-256
   `efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d`.
-- Orchestration Engine `0.183.294`, API Explorer `1.1.18`, Compose Executor
-  `0.14.36`, Node Agent `0.13.27`, and the remaining reviewed runtime
-  coordinates are unchanged from `v1.6.410`.
+- Orchestration Engine `0.183.295`, source commit
+  `6c7922b492b45eccb28e46fe485864104a9ed075`, and release JAR SHA-256
+  `f06f1ebff2457f87f93402562007fcb29cd34d5afc00d15940c4a2e63947166e`
+  preserve the reviewed public-origin setting in the Engine-managed proxy
+  process. API Explorer `1.1.18`, Compose Executor `0.14.36`, Node Agent
+  `0.13.27`, and the remaining reviewed runtime coordinates are unchanged
+  from `v1.6.410`.
 
 ## Release validation
 
@@ -59,8 +63,10 @@ Synology OIDC plus TOTP browser login still depends on the deployment's issuer,
 client, callback, claims, certificates, and outer reverse-proxy configuration;
 perform that one interactive login after installing this release.
 
-The runtime security layer retains the signed Ubuntu snapshot from 2026-09-09
-and official glibc `2.43-2ubuntu2.4` and Perl `5.40.1-7ubuntu0.2` packages.
+The runtime security layer uses the signed Ubuntu snapshot from 2026-09-10,
+including the official curl, libcurl3t64-gnutls, and libcurl4t64
+`8.18.0-1ubuntu2.5` fix for `CVE-2026-8932`, plus glibc
+`2.43-2ubuntu2.4` and Perl `5.40.1-7ubuntu0.2` packages.
 Ubuntu still marks `CVE-2026-18374` as needing evaluation for Resolute; its
 OpenVEX status remains an explicit runtime-path determination rather than a
 claim that the package revision fixes it. GNU coreutils `uniq` retains upstream

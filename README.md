@@ -11,7 +11,7 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.411` combines Orchestration Engine `0.183.294`, Node Agent `0.13.27`,
+`v1.6.411` combines Orchestration Engine `0.183.295`, Node Agent `0.13.27`,
 Authentication Service `0.4.36`, and the reviewed Ember 7.2 Web Console
 `1.6.103`.
 
