@@ -181,15 +181,17 @@ jobs:
 
           assert_public_proxy_contract() {
             local phase=$1 attempt schema_code schema_value path slug response_code
+            local private_api_attempt cache_control pragma expires age
             local schema_matched=false
             local schema_headers="$RUNNER_TEMP/public-origin-${phase}-schema.headers"
-            local response_headers
+            local response_headers private_api_matched
             local summary="$evidence/reverse-proxy-${phase}.txt"
             public_proxy_contract_attempts=0
             : >"$summary"
 
             for attempt in $(seq 1 60); do
               public_proxy_contract_attempts="$attempt"
+              : >"$schema_headers"
               schema_code="$(curl -sS --max-time 5 -D "$schema_headers" -o /dev/null \
                 -w '%{http_code}' -H 'Host: stack.example.test' \
                 http://127.0.0.1:18082/v2-beta/schemas 2>/dev/null || true)"
@@ -212,19 +214,34 @@ jobs:
               slug="${path#/}"
               slug="${slug//\//-}"
               response_headers="$RUNNER_TEMP/public-origin-${phase}-${slug}.headers"
-              response_code="$(curl -sS --max-time 5 -D "$response_headers" -o /dev/null \
-                -w '%{http_code}' -H 'Host: stack.example.test' \
-                "http://127.0.0.1:18082${path}")"
-              case "$response_code" in
-                200|401|403) ;;
-                *) echo "Unexpected ${path} status: ${response_code}" >&2; return 1 ;;
-              esac
-              test "$(header_value "$response_headers" Cache-Control)" = 'private, no-store'
-              test "$(header_value "$response_headers" Pragma)" = 'no-cache'
-              test "$(header_value "$response_headers" Expires)" = 0
-              test -z "$(header_value "$response_headers" Age)"
-              printf 'phase=%s path=%s status=%s cache_control=private,no-store pragma=no-cache expires=0 age=absent\n' \
-                "$phase" "$path" "$response_code" >>"$summary"
+              private_api_matched=false
+              for private_api_attempt in $(seq 1 60); do
+                : >"$response_headers"
+                response_code="$(curl -sS --max-time 5 -D "$response_headers" -o /dev/null \
+                  -w '%{http_code}' -H 'Host: stack.example.test' \
+                  "http://127.0.0.1:18082${path}" 2>/dev/null || true)"
+                cache_control="$(header_value "$response_headers" Cache-Control 2>/dev/null || true)"
+                pragma="$(header_value "$response_headers" Pragma 2>/dev/null || true)"
+                expires="$(header_value "$response_headers" Expires 2>/dev/null || true)"
+                age="$(header_value "$response_headers" Age 2>/dev/null || true)"
+                if [[ "$response_code" =~ ^(200|401|403)$ && \
+                      "$cache_control" == 'private, no-store' && \
+                      "$pragma" == 'no-cache' && "$expires" == 0 && -z "$age" ]]; then
+                  private_api_matched=true
+                  break
+                fi
+                sleep 2
+              done
+              if (( private_api_attempt > public_proxy_contract_attempts )); then
+                public_proxy_contract_attempts="$private_api_attempt"
+              fi
+              printf 'phase=%s path=%s status=%s cache_control=%s pragma=%s expires=%s age=%s attempts=%s\n' \
+                "$phase" "$path" "$response_code" "$cache_control" "$pragma" \
+                "$expires" "${age:-absent}" "$private_api_attempt" >>"$summary"
+              if [[ "$private_api_matched" != true ]]; then
+                echo "Private API contract did not converge during ${phase}: path=${path} status=${response_code} cache_control=${cache_control} pragma=${pragma} expires=${expires} age=${age:-absent}" >&2
+                return 1
+              fi
             done
           }
 

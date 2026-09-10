@@ -754,7 +754,10 @@ for marker in \
     'first_contract_attempts="$public_proxy_contract_attempts"' \
     'assert_public_proxy_contract after-restart' \
     'restart_contract_attempts="$public_proxy_contract_attempts"' \
-    'test "$(header_value "$response_headers" Cache-Control)" = '\''private, no-store'\''' \
+    'for private_api_attempt in $(seq 1 60); do' \
+    '"$response_code" =~ ^(200|401|403)$' \
+    'Private API contract did not converge during ${phase}' \
+    'attempts=%s' \
     'reverse-proxy-before-restart.txt' \
     'reverse-proxy-after-restart.txt' \
     'docker restart "$CANDIDATE_NAME"' \
