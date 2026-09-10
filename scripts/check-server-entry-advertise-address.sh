@@ -61,12 +61,17 @@ sample_ipify=$(mktemp "${TMPDIR:-/tmp}/rc16-ipify.XXXXXX")
 sample_awslocal=$(mktemp "${TMPDIR:-/tmp}/rc16-awslocal.XXXXXX")
 sample_empty=$(mktemp "${TMPDIR:-/tmp}/rc16-empty-advertise.XXXXXX")
 sample_output=$(mktemp "${TMPDIR:-/tmp}/rc16-entry-advertise-output.XXXXXX")
+sample_entry=$(mktemp "${TMPDIR:-/tmp}/rc16-entry-under-test.XXXXXX")
 cleanup() {
-  rm -f "$sample_ipify" "$sample_awslocal" "$sample_empty" "$sample_output"
+  rm -f "$sample_ipify" "$sample_awslocal" "$sample_empty" "$sample_output" "$sample_entry"
   rm -f "$sample_bin/ip"
   rmdir "$sample_sys/eth-test" "$sample_bin" "$sample_sys" 2>/dev/null || true
 }
 trap cleanup EXIT
+
+sed \
+  "s|^PERFORMANCE_ENV_LIB=/usr/share/cattle/performance-env.sh$|PERFORMANCE_ENV_LIB=${repo_root}/server/artifacts/performance-env.sh|" \
+  server/bin/entry >"$sample_entry"
 
 mkdir -p "$sample_sys/eth-test"
 cat >"$sample_bin/ip" <<'EOF'
@@ -98,43 +103,43 @@ printf '203.0.113.42\n' >"$sample_ipify"
 printf '10.42.0.15\n' >"$sample_awslocal"
 : >"$sample_empty"
 
-PATH="$sample_bin:$PATH" RC16_SYS_CLASS_NET="$sample_sys" bash server/bin/entry --advertise-address eth-test env >"$sample_output"
+PATH="$sample_bin:$PATH" RC16_SYS_CLASS_NET="$sample_sys" bash "$sample_entry" --advertise-address eth-test env >"$sample_output"
 if ! grep -F 'CATTLE_CLUSTER_ADVERTISE_ADDRESS=198.51.100.24' "$sample_output" >/dev/null; then
   printf 'SERVER_ENTRY_INTERFACE_SAMPLE_ADDRESS_MISSING\n' >&2
   failure_count=$((failure_count + 1))
 fi
 
 RC16_IPIFY_URL="$(file_url "$sample_ipify")" \
-  bash server/bin/entry --advertise-address ipify env >"$sample_output"
+  bash "$sample_entry" --advertise-address ipify env >"$sample_output"
 if ! grep -F 'CATTLE_CLUSTER_ADVERTISE_ADDRESS=203.0.113.42' "$sample_output" >/dev/null; then
   printf 'SERVER_ENTRY_IPIFY_SAMPLE_ADDRESS_MISSING\n' >&2
   failure_count=$((failure_count + 1))
 fi
 
 RC16_AWSLOCAL_METADATA_URL="$(file_url "$sample_awslocal")" \
-  bash server/bin/entry --advertise-address awslocal env >"$sample_output"
+  bash "$sample_entry" --advertise-address awslocal env >"$sample_output"
 if ! grep -F 'CATTLE_CLUSTER_ADVERTISE_ADDRESS=10.42.0.15' "$sample_output" >/dev/null; then
   printf 'SERVER_ENTRY_AWSLOCAL_SAMPLE_ADDRESS_MISSING\n' >&2
   failure_count=$((failure_count + 1))
 fi
 
 if RC16_IPIFY_URL="$(file_url "$sample_empty")" \
-  bash server/bin/entry --advertise-address ipify true >/dev/null 2>&1; then
+  bash "$sample_entry" --advertise-address ipify true >/dev/null 2>&1; then
   printf 'SERVER_ENTRY_EMPTY_ADVERTISE_VALUE_ACCEPTED\n' >&2
   failure_count=$((failure_count + 1))
 fi
 
-if RC16_IPIFY_URL='file:///tmp/rc16-missing-advertise-address' bash server/bin/entry --advertise-address ipify true >/dev/null 2>&1; then
+if RC16_IPIFY_URL='file:///tmp/rc16-missing-advertise-address' bash "$sample_entry" --advertise-address ipify true >/dev/null 2>&1; then
   printf 'SERVER_ENTRY_FAILED_ADVERTISE_FETCH_ACCEPTED\n' >&2
   failure_count=$((failure_count + 1))
 fi
 
-if PATH="$sample_bin:$PATH" RC16_ENTRY_IP_STUB_MODE=fail RC16_SYS_CLASS_NET="$sample_sys" bash server/bin/entry --advertise-address eth-test true >/dev/null 2>&1; then
+if PATH="$sample_bin:$PATH" RC16_ENTRY_IP_STUB_MODE=fail RC16_SYS_CLASS_NET="$sample_sys" bash "$sample_entry" --advertise-address eth-test true >/dev/null 2>&1; then
   printf 'SERVER_ENTRY_FAILED_INTERFACE_LOOKUP_ACCEPTED\n' >&2
   failure_count=$((failure_count + 1))
 fi
 
-if PATH="$sample_bin:$PATH" RC16_ENTRY_IP_STUB_MODE=empty RC16_SYS_CLASS_NET="$sample_sys" bash server/bin/entry --advertise-address eth-test true >/dev/null 2>&1; then
+if PATH="$sample_bin:$PATH" RC16_ENTRY_IP_STUB_MODE=empty RC16_SYS_CLASS_NET="$sample_sys" bash "$sample_entry" --advertise-address eth-test true >/dev/null 2>&1; then
   printf 'SERVER_ENTRY_EMPTY_INTERFACE_LOOKUP_ACCEPTED\n' >&2
   failure_count=$((failure_count + 1))
 fi

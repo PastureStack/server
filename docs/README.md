@@ -7,7 +7,8 @@ runtime gates have passed.
 
 ## Current release
 
-- [Server v1.6.411](releases/server-1.6.411.md)
+- [Server v1.6.412](releases/server-1.6.412.md)
+- [Performance settings](performance/README.md)
 - [Build and source POC](build-and-source-poc.md)
 
 Older immutable release records remain under [`releases/`](releases/) for

@@ -7,6 +7,7 @@ JAR=/usr/share/cattle/cattle.jar
 DEBUG_JAR=/var/lib/cattle/lib/cattle-debug.jar
 LOG_DIR=/var/lib/cattle/logs
 export S6_SERVICE_DIR=${S6_SERVICE_DIR:-$S6_SERVICE_DIR}
+source /usr/share/cattle/performance-env.sh
 
 if [ "${URL:-}" != "" ]
 then
@@ -355,7 +356,8 @@ default_cattle_java_opts()
 {
     local mx="$1"
     local major="$(java_major_version)"
-    local common="-Xms128m -Xmx${mx} -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${LOG_DIR}"
+    local common
+    common="$(pasturestack_java_common_opts "$mx")"
 
     if [ -n "$major" ] && [ "$major" -ge 9 ] 2>/dev/null; then
         echo "-XX:+UseG1GC ${common} --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
