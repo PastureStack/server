@@ -181,27 +181,32 @@ jobs:
 
           assert_public_proxy_contract() {
             local phase=$1 attempt schema_code schema_value path slug response_code
+            local schema_matched=false
             local schema_headers="$RUNNER_TEMP/public-origin-${phase}-schema.headers"
             local response_headers
             local summary="$evidence/reverse-proxy-${phase}.txt"
+            public_proxy_contract_attempts=0
             : >"$summary"
 
             for attempt in $(seq 1 60); do
+              public_proxy_contract_attempts="$attempt"
               schema_code="$(curl -sS --max-time 5 -D "$schema_headers" -o /dev/null \
                 -w '%{http_code}' -H 'Host: stack.example.test' \
                 http://127.0.0.1:18082/v2-beta/schemas 2>/dev/null || true)"
               schema_value="$(header_value "$schema_headers" X-Api-Schemas 2>/dev/null || true)"
               if [[ "$schema_code" == 200 && \
                     "$schema_value" == https://stack.example.test/v2-beta/schemas ]]; then
+                schema_matched=true
                 break
               fi
               sleep 2
             done
-            test "$attempt" -le 60
-            test "$schema_code" = 200
-            test "$schema_value" = https://stack.example.test/v2-beta/schemas
             printf 'phase=%s path=/v2-beta/schemas status=%s x_api_schemas=%s\n' \
               "$phase" "$schema_code" "$schema_value" >>"$summary"
+            if [[ "$schema_matched" != true ]]; then
+              echo "Public proxy contract did not converge during ${phase}: status=${schema_code} X-Api-Schemas=${schema_value}" >&2
+              return 1
+            fi
 
             for path in /v2-beta/accounts /v1-auth/config; do
               slug="${path#/}"
@@ -221,7 +226,6 @@ jobs:
               printf 'phase=%s path=%s status=%s cache_control=private,no-store pragma=no-cache expires=0 age=absent\n' \
                 "$phase" "$path" "$response_code" >>"$summary"
             done
-            printf '%s' "$attempt"
           }
 
           first_attempts="$(wait_for_pong)"
@@ -241,11 +245,13 @@ jobs:
             grep -Fx "CATTLE_RANCHER_SERVER_VERSION=$RELEASE_TAG" >/dev/null
           docker inspect "$CANDIDATE_NAME" --format '{{range .Config.Env}}{{println .}}{{end}}' |
             grep -Fx 'PROXY_PLATFORM_PUBLIC_ORIGIN=https://stack.example.test' >/dev/null
-          first_contract_attempts="$(assert_public_proxy_contract before-restart)"
+          assert_public_proxy_contract before-restart
+          first_contract_attempts="$public_proxy_contract_attempts"
 
           docker restart "$CANDIDATE_NAME" >/dev/null
           restart_attempts="$(wait_for_pong)"
-          restart_contract_attempts="$(assert_public_proxy_contract after-restart)"
+          assert_public_proxy_contract after-restart
+          restart_contract_attempts="$public_proxy_contract_attempts"
           test "$(docker inspect "$CANDIDATE_NAME" --format '{{.State.Running}}')" = true
           http_code="$(curl -sS --max-time 3 -o "$RUNNER_TEMP/ping-body" \
             -w '%{http_code}' http://127.0.0.1:18082/ping)"
