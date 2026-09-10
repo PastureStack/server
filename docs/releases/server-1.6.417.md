@@ -1,20 +1,30 @@
 # PastureStack Server v1.6.417
 
-This release bundles Web Console `1.6.107` and closes the remaining false
-post-save failure found by creating a real service on `ranchernode22` with the
-full hardware and runtime form.
+> **Superseded by `v1.6.418` after real-host acceptance testing.** `v1.6.417`
+> successfully persists the service and starts its container with the requested
+> hardware/runtime HostConfig, but deprecated completion dispatch can then raise
+> `undefined.get` before navigation. Keep it only as the immediate tested
+> rollback image while moving production to `v1.6.418`.
+
+This release bundles Web Console `1.6.107` and removes the saved-response route
+dependency from the first-create completion path. Real-host testing proved that
+this narrowed the failure but did not close the later callback-dispatch error.
 
 ## Operator-visible result
 
-- The first successful service submission leaves the form and returns to the
-  intended stack; it does not display an error after the API already persisted
-  the service and started its container.
+- A successful service submission keeps the intended stack identifier
+  independently from the saved API response.
 - Navigation is derived only from the immutable stack query input. A partial,
   replaced, or unreadable saved API resource is never used as route authority.
 - The saved service remains available to the completion chain so non-empty
   service links are still persisted before navigation.
 - Empty service-link sets continue to avoid the redundant action introduced in
   older completion paths.
+- Real-host acceptance created exactly one container on `ranchernode22` with
+  the requested shared memory, IPC, runtime, CPU/PID limits, init, supplementary
+  group, tmpfs, sysctl, ulimit, device mapping, and host placement, but the form
+  remained visible after persistence. `v1.6.418` replaces that final dispatch
+  with an awaited closure callback.
 - The existing resource and hardware form remains intact: init, shared memory,
   IPC, runtime, CPU and PID limits, supplementary groups, tmpfs, sysctls,
   ulimits, device mappings, GPU requests, and host placement retain their create
