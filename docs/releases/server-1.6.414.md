@@ -1,5 +1,10 @@
 # PastureStack Server v1.6.414
 
+> **Superseded by `v1.6.415` for service-creation completion.** Runtime and
+> hardware payload behavior remain valid, while Web Console `1.6.105` prevents
+> a successful first create from remaining on the form with a stale-model
+> navigation error.
+
 This release updates the bundled Web Console to `1.6.104` and closes the
 remaining service resource-form layout and payload regression gap before
 production use.
