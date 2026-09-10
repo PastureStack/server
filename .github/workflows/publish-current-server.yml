@@ -139,6 +139,7 @@ jobs:
             --name "$CANDIDATE_NAME" \
             --restart no \
             -p 127.0.0.1:18082:8080 \
+            -e PROXY_PLATFORM_PUBLIC_ORIGIN=https://stack.example.test \
             -v "$CATTLE_VOLUME:/var/lib/cattle" \
             -v "$MYSQL_VOLUME:/var/lib/mysql" \
             -v "$MYSQL_LOG_VOLUME:/var/log/mysql" \
@@ -161,6 +162,68 @@ jobs:
             return 1
           }
 
+          header_value() {
+            local file=$1 name=$2
+            awk -v name="$name" '
+              BEGIN { IGNORECASE = 1 }
+              {
+                line = $0
+                sub(/\r$/, "", line)
+                colon = index(line, ":")
+                if (colon > 0 && tolower(substr(line, 1, colon - 1)) == tolower(name)) {
+                  value = substr(line, colon + 1)
+                  sub(/^[[:space:]]+/, "", value)
+                }
+              }
+              END { print value }
+            ' "$file"
+          }
+
+          assert_public_proxy_contract() {
+            local phase=$1 attempt schema_code schema_value path slug response_code
+            local schema_headers="$RUNNER_TEMP/public-origin-${phase}-schema.headers"
+            local response_headers
+            local summary="$evidence/reverse-proxy-${phase}.txt"
+            : >"$summary"
+
+            for attempt in $(seq 1 60); do
+              schema_code="$(curl -sS --max-time 5 -D "$schema_headers" -o /dev/null \
+                -w '%{http_code}' -H 'Host: stack.example.test' \
+                http://127.0.0.1:18082/v2-beta/schemas 2>/dev/null || true)"
+              schema_value="$(header_value "$schema_headers" X-Api-Schemas 2>/dev/null || true)"
+              if [[ "$schema_code" == 200 && \
+                    "$schema_value" == https://stack.example.test/v2-beta/schemas ]]; then
+                break
+              fi
+              sleep 2
+            done
+            test "$attempt" -le 60
+            test "$schema_code" = 200
+            test "$schema_value" = https://stack.example.test/v2-beta/schemas
+            printf 'phase=%s path=/v2-beta/schemas status=%s x_api_schemas=%s\n' \
+              "$phase" "$schema_code" "$schema_value" >>"$summary"
+
+            for path in /v2-beta/accounts /v1-auth/config; do
+              slug="${path#/}"
+              slug="${slug//\//-}"
+              response_headers="$RUNNER_TEMP/public-origin-${phase}-${slug}.headers"
+              response_code="$(curl -sS --max-time 5 -D "$response_headers" -o /dev/null \
+                -w '%{http_code}' -H 'Host: stack.example.test' \
+                "http://127.0.0.1:18082${path}")"
+              case "$response_code" in
+                200|401|403) ;;
+                *) echo "Unexpected ${path} status: ${response_code}" >&2; return 1 ;;
+              esac
+              test "$(header_value "$response_headers" Cache-Control)" = 'private, no-store'
+              test "$(header_value "$response_headers" Pragma)" = 'no-cache'
+              test "$(header_value "$response_headers" Expires)" = 0
+              test -z "$(header_value "$response_headers" Age)"
+              printf 'phase=%s path=%s status=%s cache_control=private,no-store pragma=no-cache expires=0 age=absent\n' \
+                "$phase" "$path" "$response_code" >>"$summary"
+            done
+            printf '%s' "$attempt"
+          }
+
           first_attempts="$(wait_for_pong)"
           for catalog_attempts in $(seq 1 90); do
             docker logs "$CANDIDATE_NAME" >"$evidence/candidate.log" 2>&1
@@ -176,9 +239,13 @@ jobs:
             "$evidence/candidate.log"
           docker inspect "$CANDIDATE_NAME" --format '{{range .Config.Env}}{{println .}}{{end}}' |
             grep -Fx "CATTLE_RANCHER_SERVER_VERSION=$RELEASE_TAG" >/dev/null
+          docker inspect "$CANDIDATE_NAME" --format '{{range .Config.Env}}{{println .}}{{end}}' |
+            grep -Fx 'PROXY_PLATFORM_PUBLIC_ORIGIN=https://stack.example.test' >/dev/null
+          first_contract_attempts="$(assert_public_proxy_contract before-restart)"
 
           docker restart "$CANDIDATE_NAME" >/dev/null
           restart_attempts="$(wait_for_pong)"
+          restart_contract_attempts="$(assert_public_proxy_contract after-restart)"
           test "$(docker inspect "$CANDIDATE_NAME" --format '{{.State.Running}}')" = true
           http_code="$(curl -sS --max-time 3 -o "$RUNNER_TEMP/ping-body" \
             -w '%{http_code}' http://127.0.0.1:18082/ping)"
@@ -189,8 +256,9 @@ jobs:
           mkdir -p "$rootfs"
           docker export --output "$RUNNER_TEMP/server-rootfs.tar" "$CANDIDATE_NAME"
           tar --no-same-owner -xf "$RUNNER_TEMP/server-rootfs.tar" -C "$rootfs"
-          printf 'SERVER_CANDIDATE_SMOKE_OK release=%s first_attempts=%s restart_attempts=%s catalog_attempts=%s http=200 body=pong\n' \
-            "$RELEASE_TAG" "$first_attempts" "$restart_attempts" "$catalog_attempts" |
+          printf 'SERVER_CANDIDATE_SMOKE_OK release=%s first_attempts=%s restart_attempts=%s catalog_attempts=%s first_contract_attempts=%s restart_contract_attempts=%s http=200 body=pong public_origin=https://stack.example.test private_api_cache=no-store\n' \
+            "$RELEASE_TAG" "$first_attempts" "$restart_attempts" "$catalog_attempts" \
+            "$first_contract_attempts" "$restart_contract_attempts" |
             tee "$evidence/candidate-smoke.txt"
 
           cleanup_candidate
@@ -327,6 +395,8 @@ jobs:
               published.txt \
               push.log \
               release-notes.md \
+              reverse-proxy-after-restart.txt \
+              reverse-proxy-before-restart.txt \
               security-summary.txt \
               server.openvex.json \
               server-security-scan-raw.json \
@@ -350,6 +420,8 @@ jobs:
             "$evidence/published.txt" \
             "$evidence/push.log" \
             "$evidence/release-notes.md" \
+            "$evidence/reverse-proxy-after-restart.txt" \
+            "$evidence/reverse-proxy-before-restart.txt" \
             "$evidence/security-summary.txt" \
             "$evidence/server.openvex.json" \
             "$evidence/server-security-scan-raw.json" \
