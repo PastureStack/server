@@ -8,7 +8,7 @@ The catalog helper is packaged and installed as `catalog-service` and `catalog-s
 
 The authentication helper follows the same boundary: the GitHub Release asset and actual executable use `authentication-service`, while the preserved supervisor-facing executable name exists only as a compatibility wrapper.
 
-Server `v1.6.410` keeps the platform account as the authorization principal
+Server `v1.6.411` keeps the platform account as the authorization principal
 and treats local credentials and external identities as explicit login links.
 Provider changes therefore preserve the account identifier, direct project
 memberships, and administrator role. OpenID Connect links use exact issuer and
@@ -25,10 +25,10 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.410` assembly consumes Orchestration Engine `v0.183.294`, Web
-Console package `1.6.102`, API Explorer `v1.1.18`, Compose Executor
+The current `v1.6.411` assembly consumes Orchestration Engine `v0.183.294`, Web
+Console package `1.6.103`, API Explorer `v1.1.18`, Compose Executor
 `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
-Service `v0.20.11`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
+Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
 `v5.7.4`, and Catalog Templates at commit
 `02df5f7df9eebe640590d93b1506543d2367e355`. A Catalog upgrade changes
 `pinned_commit` first and leaves the last indexed `commit` untouched until
@@ -38,6 +38,14 @@ numeric semantic version tags; image digests are retained only in
 release-verification evidence. Web Console packaging must retain its
 fingerprinted `/assets/ui*.js` entry, and API Explorer must retain
 `/api-ui/ui.min.js` and `/api-ui/ui.min.css`.
+
+Deployments that terminate TLS before the Server container may set
+`PROXY_PLATFORM_PUBLIC_ORIGIN` to one exact public HTTP(S) origin. The proxy
+uses that origin only for requests whose Host matches the configured authority;
+unrelated hosts retain transport-derived forwarding values. Credentials,
+paths, queries, and fragments are rejected. Platform API responses are always
+rewritten to `Cache-Control: private, no-store`, while static assets preserve
+their existing cache policy.
 
 Native MariaDB validation must override both `CATTLE_DB_CATTLE_MYSQL_URL` and `CATTLE_DB_LIQUIBASE_MYSQL_URL`; the application and migration pools are configured independently. The default compatibility path intentionally uses a MySQL JDBC scheme with the MariaDB driver compatibility options.
 

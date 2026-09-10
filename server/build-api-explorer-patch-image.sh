@@ -15,7 +15,7 @@ fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
-base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.401@sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb}
+base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.410@sha256:23407f6bed9036fd12db9f37a4c5afce2d719e4941d0c9d0adfdd30a5e2244b7}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
 orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.294}
 orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.294.jar}
@@ -27,10 +27,15 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
 api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.102}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.102.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-6269235a9a23a43b025ca78269ea7d807108c36b007f3eb65c5369c639261bb1}
-web_console_commit=${WEB_CONSOLE_COMMIT:-9f754ba35ab0c6eaa7d6cd42304f36bb9aba378c}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.103}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.103.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-8d469d7eb3329402a3a201bdbd8d7a0bc3c1600eb0bdf3a5c99f0d7484fc65ee}
+web_console_commit=${WEB_CONSOLE_COMMIT:-00ff7a76a1606aab4fc5c08e0c863989d266eec9}
+websocket_proxy_release_base_url=${WEBSOCKET_PROXY_RELEASE_BASE_URL:-https://github.com/PastureStack/websocket-proxy/releases/download}
+websocket_proxy_version=${WEBSOCKET_PROXY_VERSION:-0.23.14}
+websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-3b5788bdc52f4edab0097a3d97afccf138c64089}
+websocket_proxy_archive_sha256=${WEBSOCKET_PROXY_ARCHIVE_SHA256:-c55108c3dbfd8e6579fc768a1988920db83c6f605ca1284b60edf92ae8d0160e}
+websocket_proxy_binary_sha256=${WEBSOCKET_PROXY_BINARY_SHA256:-efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d}
 compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.36}
 compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-e85545a1bc34cb5c42db62ff90dd82b7ff9f5838}
 compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66}
@@ -41,7 +46,7 @@ vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-bebcc1c02
 govc_binary_sha256=${GOVC_BINARY_SHA256:-f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2'
 newest_docker_version=v29.7.2
-image=${IMAGE:-pasturestack-validation/server:v1.6.410}
+image=${IMAGE:-pasturestack-validation/server:v1.6.411}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -58,6 +63,10 @@ build_options=()
 [[ "$web_console_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$web_console_release_tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
 [[ "$web_console_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
+[[ "$websocket_proxy_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+[[ "$websocket_proxy_commit" =~ ^[0-9a-f]{40}$ ]]
+[[ "$websocket_proxy_archive_sha256" =~ ^[0-9a-f]{64}$ ]]
+[[ "$websocket_proxy_binary_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$compose_executor_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
 [[ "$compose_executor_commit" =~ ^[0-9a-f]{40}$ ]]
 [[ "$compose_executor_archive_sha256" =~ ^[0-9a-f]{64}$ ]]
@@ -66,8 +75,8 @@ build_options=()
 [[ "$vsphere_cli_bundle_commit" =~ ^[0-9a-f]{40}$ ]]
 [[ "$vsphere_cli_bundle_archive_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$govc_binary_sha256" =~ ^[0-9a-f]{64}$ ]]
-[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.401@sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb ]]
-for release_base_url in "$orchestration_engine_release_base_url" "$api_explorer_release_base_url" "$web_console_release_base_url"; do
+[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.410@sha256:23407f6bed9036fd12db9f37a4c5afce2d719e4941d0c9d0adfdd30a5e2244b7 ]]
+for release_base_url in "$orchestration_engine_release_base_url" "$api_explorer_release_base_url" "$web_console_release_base_url" "$websocket_proxy_release_base_url"; do
 case "$release_base_url" in
     https://*) ;;
     http://127.0.0.1:*|http://localhost:*)
@@ -106,6 +115,11 @@ docker buildx build \
     --build-arg "WEB_CONSOLE_ARTIFACT=${web_console_artifact}" \
     --build-arg "WEB_CONSOLE_ARTIFACT_SHA256=${web_console_artifact_sha256}" \
     --build-arg "WEB_CONSOLE_COMMIT=${web_console_commit}" \
+    --build-arg "WEBSOCKET_PROXY_RELEASE_BASE_URL=${websocket_proxy_release_base_url}" \
+    --build-arg "WEBSOCKET_PROXY_VERSION=${websocket_proxy_version}" \
+    --build-arg "WEBSOCKET_PROXY_COMMIT=${websocket_proxy_commit}" \
+    --build-arg "WEBSOCKET_PROXY_ARCHIVE_SHA256=${websocket_proxy_archive_sha256}" \
+    --build-arg "WEBSOCKET_PROXY_BINARY_SHA256=${websocket_proxy_binary_sha256}" \
     --build-arg "COMPOSE_EXECUTOR_VERSION=${compose_executor_version}" \
     --build-arg "COMPOSE_EXECUTOR_COMMIT=${compose_executor_commit}" \
     --build-arg "COMPOSE_EXECUTOR_ARCHIVE_SHA256=${compose_executor_archive_sha256}" \
@@ -122,21 +136,21 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.410
+    v1.6.411
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.base.name"}}')" = \
-    ghcr.io/pasturestack/server:v1.6.401
+    ghcr.io/pasturestack/server:v1.6.410
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.base.digest"}}')" = \
-    sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb
+    sha256:23407f6bed9036fd12db9f37a4c5afce2d719e4941d0c9d0adfdd30a5e2244b7
 
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.410 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.411 \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION=v0.183.294 \
     RC16_GO_AGENT_VERSION=0.13.27 \
@@ -179,7 +193,10 @@ for marker in \
     PASTURESTACK_SECRET_DELIVERY_API_VERSION=0.3.1 \
     PASTURESTACK_USAGE_TELEMETRY_AGENT_VERSION=0.4.1 \
     PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.1 \
-    PASTURESTACK_WEBSOCKET_PROXY_VERSION=0.23.13 \
+    PASTURESTACK_WEBSOCKET_PROXY_VERSION="${websocket_proxy_version}" \
+    PASTURESTACK_WEBSOCKET_PROXY_COMMIT="${websocket_proxy_commit}" \
+    PASTURESTACK_WEBSOCKET_PROXY_ARCHIVE_SHA256="${websocket_proxy_archive_sha256}" \
+    PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256="${websocket_proxy_binary_sha256}" \
     PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION="${vsphere_cli_bundle_version}" \
     PASTURESTACK_VSPHERE_CLI_BUNDLE_COMMIT="${vsphere_cli_bundle_commit}" \
     PASTURESTACK_VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256="${vsphere_cli_bundle_archive_sha256}" \
@@ -289,7 +306,7 @@ docker run --rm --entrypoint bash "$image" -lc 'test -x /usr/bin/websocket-proxy
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.102"
+    test "$(cat "${web_root}/VERSION.txt")" = "1.6.103"
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     test ! -e "${web_root}/translations/none.json"
     test -z "$(find "${web_root}" -type f -name "*.map" -print -quit)"
@@ -401,7 +418,7 @@ bce26b98133d3f5d4ecaddba26179ed8e14e5b260b38dee5f9e4383cbfbc855a  /usr/bin/host-
 fbdd12862e1cfe3c957f492ae81c4c1c5658357502bd322febbbe209496929be  /usr/bin/secret-delivery-api
 f18ed969b8b5959293fdbcd55d2e28846372ab87c9348fbb315a9a490bf85ad4  /usr/bin/usage-telemetry-agent
 07e807c3f66e7e75e7a45073eabbd041a74b5727e315aee96f00e5b6a801ccc5  /usr/bin/webhook-automation-service
-8e24dc052faf54603c95d9187ca63b25435482ad9046825d3676ae522439c949  /usr/bin/websocket-proxy.real
+efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d  /usr/bin/websocket-proxy.real
 f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31  /usr/bin/govc
 EOF
     for binary in \
@@ -534,11 +551,13 @@ EOF
     fi
 '
 
-printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s compose_executor=%s compose_executor_commit=%s compose_executor_archive_sha256=%s compose_executor_binary_sha256=%s vsphere_cli=%s vsphere_cli_commit=%s vsphere_cli_archive_sha256=%s govc_binary_sha256=%s audit_log_filters=1 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-09 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=1 perl=5.40.1-7ubuntu0.2 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_pinned=1\n' \
+printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s websocket_proxy=%s websocket_proxy_commit=%s websocket_proxy_archive_sha256=%s websocket_proxy_binary_sha256=%s compose_executor=%s compose_executor_commit=%s compose_executor_archive_sha256=%s compose_executor_binary_sha256=%s vsphere_cli=%s vsphere_cli_commit=%s vsphere_cli_archive_sha256=%s govc_binary_sha256=%s audit_log_filters=1 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-09 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=1 perl=5.40.1-7ubuntu0.2 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed orchestration_updated=1 wrappers_pinned=1\n' \
     "$image" "$revision" "$base_image" "${orchestration_engine_release_tag#v}" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "${api_explorer_release_tag#v}" "$api_explorer_commit" "$api_explorer_artifact_sha256" \
     "$web_console_release_tag" "$web_console_commit" "$web_console_artifact_sha256" \
+    "$websocket_proxy_version" "$websocket_proxy_commit" \
+    "$websocket_proxy_archive_sha256" "$websocket_proxy_binary_sha256" \
     "$compose_executor_version" "$compose_executor_commit" \
     "$compose_executor_archive_sha256" "$compose_executor_binary_sha256" \
     "$vsphere_cli_bundle_version" "$vsphere_cli_bundle_commit" \

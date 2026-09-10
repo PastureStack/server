@@ -193,6 +193,15 @@ func newBroker(cfg brokerConfig, logger *log.Logger) (*broker, error) {
 			request.Header.Set("X-Forwarded-Proto", "https")
 		}
 	}
+	proxy.ModifyResponse = func(response *http.Response) error {
+		if response.Request != nil && response.Request.URL != nil && isPlatformAPIPath(response.Request.URL.Path) {
+			response.Header.Set("Cache-Control", "private, no-store")
+			response.Header.Set("Pragma", "no-cache")
+			response.Header.Set("Expires", "0")
+			response.Header.Del("Age")
+		}
+		return nil
+	}
 	proxy.FlushInterval = -1
 	proxy.ErrorHandler = func(writer http.ResponseWriter, request *http.Request, proxyErr error) {
 		logger.Printf("application proxy failed for %s: %s", safeLogValue(safeRequestPath(request)), safeLogValue(proxyErr))
@@ -218,6 +227,15 @@ func newBroker(cfg brokerConfig, logger *log.Logger) (*broker, error) {
 	}
 	go result.cleanupLoop()
 	return result, nil
+}
+
+func isPlatformAPIPath(path string) bool {
+	for _, prefix := range []string{"/v1", "/v2", "/v3"} {
+		if path == prefix || strings.HasPrefix(path, prefix+"/") || strings.HasPrefix(path, prefix+"-") {
+			return true
+		}
+	}
+	return false
 }
 
 func (b *broker) ServeHTTP(writer http.ResponseWriter, request *http.Request) {

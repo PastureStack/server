@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 ARG ARTIFACT_HELPER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452
 ARG UBUNTU_SECURITY_IMAGE=ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.401@sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.410@sha256:23407f6bed9036fd12db9f37a4c5afce2d719e4941d0c9d0adfdd30a5e2244b7
 
 FROM ${UBUNTU_SECURITY_IMAGE} AS ubuntu_security_packages
 
@@ -76,9 +76,13 @@ RUN set -eux; \
 FROM ${ARTIFACT_HELPER_IMAGE} AS release_artifacts
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.102
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.102.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=6269235a9a23a43b025ca78269ea7d807108c36b007f3eb65c5369c639261bb1
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.103
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.103.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=8d469d7eb3329402a3a201bdbd8d7a0bc3c1600eb0bdf3a5c99f0d7484fc65ee
+ARG WEBSOCKET_PROXY_RELEASE_BASE_URL=https://github.com/PastureStack/websocket-proxy/releases/download
+ARG WEBSOCKET_PROXY_VERSION=0.23.14
+ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=c55108c3dbfd8e6579fc768a1988920db83c6f605ca1284b60edf92ae8d0160e
+ARG WEBSOCKET_PROXY_BINARY_SHA256=efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
 ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.294
 ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.294.jar
@@ -149,6 +153,24 @@ RUN set -eux; \
         grep -F '"formResources.addUlimit":' "${locale_file}" >/dev/null; \
     done; \
     cp -a "${package_root}/." /out/web-console/; \
+    websocket_archive=/tmp/websocket-proxy.tar.xz; \
+    websocket_listing=/tmp/websocket-proxy-files.txt; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
+        --connect-timeout 10 --max-time 300 \
+        -o "${websocket_archive}" \
+        "${WEBSOCKET_PROXY_RELEASE_BASE_URL%/}/v${WEBSOCKET_PROXY_VERSION}/websocket-proxy-${WEBSOCKET_PROXY_VERSION}-linux-amd64.tar.xz"; \
+    echo "${WEBSOCKET_PROXY_ARCHIVE_SHA256}  ${websocket_archive}" | sha256sum -c -; \
+    tar -tJf "${websocket_archive}" >"${websocket_listing}"; \
+    test "$(cat "${websocket_listing}")" = websocket-proxy; \
+    test "$(wc -l <"${websocket_listing}")" -eq 1; \
+    if tar -tvJf "${websocket_archive}" | grep -Eq '^[lh]'; then \
+        echo 'WebSocket Proxy archive may not contain links' >&2; \
+        exit 1; \
+    fi; \
+    mkdir -p /out/websocket-proxy; \
+    tar --no-same-owner --no-same-permissions -xJf "${websocket_archive}" -C /out/websocket-proxy; \
+    echo "${WEBSOCKET_PROXY_BINARY_SHA256}  /out/websocket-proxy/websocket-proxy" | sha256sum -c -; \
+    chmod 0755 /out/websocket-proxy/websocket-proxy; \
     compose_archive=/tmp/compose-executor.gz; \
     curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
         --connect-timeout 10 --max-time 300 \
@@ -213,9 +235,13 @@ ARG PASTURESTACK_SERVER_REVISION
 ARG UBUNTU_SNAPSHOT=20260909T000000Z
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.2
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.102
-ARG WEB_CONSOLE_ARTIFACT_SHA256=6269235a9a23a43b025ca78269ea7d807108c36b007f3eb65c5369c639261bb1
-ARG WEB_CONSOLE_COMMIT=9f754ba35ab0c6eaa7d6cd42304f36bb9aba378c
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.103
+ARG WEB_CONSOLE_ARTIFACT_SHA256=8d469d7eb3329402a3a201bdbd8d7a0bc3c1600eb0bdf3a5c99f0d7484fc65ee
+ARG WEB_CONSOLE_COMMIT=00ff7a76a1606aab4fc5c08e0c863989d266eec9
+ARG WEBSOCKET_PROXY_VERSION=0.23.14
+ARG WEBSOCKET_PROXY_COMMIT=3b5788bdc52f4edab0097a3d97afccf138c64089
+ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=c55108c3dbfd8e6579fc768a1988920db83c6f605ca1284b60edf92ae8d0160e
+ARG WEBSOCKET_PROXY_BINARY_SHA256=efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d
 ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=1e49dac19043cb1579a0449f0d8874ebe5d1777c1231bff61dca793f58fe0b73
 ARG ORCHESTRATION_ENGINE_COMMIT=b59ddee9d79dcffa8b95a00dd9182fe5304b619b
 ARG COMPOSE_EXECUTOR_VERSION=0.14.36
@@ -229,6 +255,7 @@ ARG GOVC_BINARY_SHA256=f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d
 
 COPY --from=ubuntu_security_packages /out/ /tmp/pasturestack-ubuntu-security/
 COPY --from=release_artifacts /out/web-console/ /tmp/pasturestack-web-console/
+COPY --from=release_artifacts --chmod=0755 /out/websocket-proxy/websocket-proxy /usr/bin/websocket-proxy.real
 COPY --from=release_artifacts --chmod=0755 /out/compose-executor /usr/bin/compose-executor.real
 COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar
 COPY --from=release_artifacts --chmod=0755 /out/vsphere-cli-bundle/govc /usr/bin/govc
@@ -395,6 +422,9 @@ RUN set -eux; \
     done; \
     grep -F '"formResources.addUlimit":"新增限制"' \
         "${web_root}/translations/zh-tw.json" >/dev/null; \
+    echo "${WEBSOCKET_PROXY_BINARY_SHA256}  /usr/bin/websocket-proxy.real" | sha256sum -c -; \
+    /usr/bin/websocket-proxy.real --help 2>&1 | grep -F -- '-platform-public-origin' >/dev/null; \
+    touch -d "@${SOURCE_DATE_EPOCH}" /usr/bin/websocket-proxy.real; \
     echo "${COMPOSE_EXECUTOR_BINARY_SHA256}  /usr/bin/compose-executor.real" | sha256sum -c -; \
     compose_version_output="$(/usr/bin/compose-executor.real --version 2>&1)"; \
     test "${compose_version_output}" = "pasturestack-compose version ${COMPOSE_EXECUTOR_VERSION}"; \
@@ -408,12 +438,12 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.410" \
+      org.opencontainers.image.version="v1.6.411" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
-      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.401" \
-      org.opencontainers.image.base.digest="sha256:961ea3de0f550a84034bd18c2f2cb39d72822310887c4605f12fa6dcdb9fddcb"
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.410" \
+      org.opencontainers.image.base.digest="sha256:23407f6bed9036fd12db9f37a4c5afce2d719e4941d0c9d0adfdd30a5e2244b7"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.410
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.411
 ENV CATTLE_CATTLE_VERSION=v0.183.294
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-09
 ENV PASTURESTACK_GLIBC_CVE_2026_18374_FIX=not-in-execute-path
@@ -424,6 +454,10 @@ ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ART
 ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
+ENV PASTURESTACK_WEBSOCKET_PROXY_VERSION=${WEBSOCKET_PROXY_VERSION}
+ENV PASTURESTACK_WEBSOCKET_PROXY_COMMIT=${WEBSOCKET_PROXY_COMMIT}
+ENV PASTURESTACK_WEBSOCKET_PROXY_ARCHIVE_SHA256=${WEBSOCKET_PROXY_ARCHIVE_SHA256}
+ENV PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256=${WEBSOCKET_PROXY_BINARY_SHA256}
 ENV PASTURESTACK_COMPOSE_EXECUTOR_VERSION=${COMPOSE_EXECUTOR_VERSION}
 ENV PASTURESTACK_COMPOSE_EXECUTOR_COMMIT=${COMPOSE_EXECUTOR_COMMIT}
 ENV PASTURESTACK_COMPOSE_EXECUTOR_ARCHIVE_SHA256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256}

@@ -676,3 +676,75 @@ func TestAttachRequiresNamedConsoleSubprotocol(t *testing.T) {
 		t.Fatalf("unexpected missing-subprotocol response: %#v %v", response, err)
 	}
 }
+
+func TestPlatformAPIResponsesCannotBeSharedCached(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		writer.Header().Set("Cache-Control", "public,s-maxage=86400")
+		writer.Header().Set("Age", "120")
+		_, _ = io.WriteString(writer, request.URL.Path)
+	}))
+	defer upstream.Close()
+
+	cfg := brokerConfig{
+		ListenAddress:   ":0",
+		UpstreamURL:     upstream.URL,
+		SessionDialURL:  upstream.URL,
+		MaxSessions:     8,
+		ReplayBytes:     128 * 1024,
+		ActiveTTL:       time.Hour,
+		HistoryTTL:      time.Hour,
+		CleanupInterval: time.Hour,
+	}
+	instance, err := newBroker(cfg, log.New(io.Discard, "", 0))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer instance.close()
+
+	for _, path := range []string{"/v2-beta/accounts", "/v1-auth/config", "/v3/schema"} {
+		response := httptest.NewRecorder()
+		instance.ServeHTTP(response, httptest.NewRequest(http.MethodGet, path, nil))
+		if got := response.Header().Get("Cache-Control"); got != "private, no-store" {
+			t.Fatalf("API response %s remained shared-cacheable: %q", path, got)
+		}
+		if got := response.Header().Get("Pragma"); got != "no-cache" {
+			t.Fatalf("API response %s lacks legacy no-cache protection: %q", path, got)
+		}
+		if got := response.Header().Get("Expires"); got != "0" {
+			t.Fatalf("API response %s lacks an immediate expiry: %q", path, got)
+		}
+		if got := response.Header().Get("Age"); got != "" {
+			t.Fatalf("API response %s retained an upstream cache age: %q", path, got)
+		}
+	}
+}
+
+func TestStaticAssetCachePolicyIsPreserved(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+		writer.Header().Set("Cache-Control", "public,max-age=31536000,immutable")
+		_, _ = io.WriteString(writer, "asset")
+	}))
+	defer upstream.Close()
+
+	cfg := brokerConfig{
+		ListenAddress:   ":0",
+		UpstreamURL:     upstream.URL,
+		SessionDialURL:  upstream.URL,
+		MaxSessions:     8,
+		ReplayBytes:     128 * 1024,
+		ActiveTTL:       time.Hour,
+		HistoryTTL:      time.Hour,
+		CleanupInterval: time.Hour,
+	}
+	instance, err := newBroker(cfg, log.New(io.Discard, "", 0))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer instance.close()
+
+	response := httptest.NewRecorder()
+	instance.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/assets/app.js", nil))
+	if got := response.Header().Get("Cache-Control"); got != "public,max-age=31536000,immutable" {
+		t.Fatalf("static asset cache policy changed unexpectedly: %q", got)
+	}
+}
