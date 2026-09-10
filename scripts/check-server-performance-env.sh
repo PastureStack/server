@@ -64,6 +64,9 @@ check 'Java launcher consumes typed settings' \
     has_marker server/artifacts/cattle.sh 'pasturestack_java_common_opts'
 check 'MariaDB startup renders typed settings' \
     has_marker server/artifacts/mysql.sh 'pasturestack_write_mariadb_config'
+check 'embedded MariaDB startup declares its database context' \
+    has_marker server/artifacts/mysql.sh \
+        '/etc/mysql/mariadb.conf.d/99-pasturestack.cnf embedded'
 check 'MariaDB startup verifies live readback' \
     has_marker server/artifacts/mysql.sh 'verify_mariadb_performance_settings'
 check 'incremental release image installs the canonical scripts' \
@@ -149,6 +152,14 @@ do
     check "MariaDB config contains ${expected_line}" grep -Fxq "$expected_line" "$tuned_config"
 done
 
+export CATTLE_DB_CATTLE_MYSQL_HOST=localhost
+embedded_config="$work_root/embedded.cnf"
+check 'embedded MariaDB localhost is not misclassified as an external database' \
+    pasturestack_write_mariadb_config "$embedded_config" embedded
+check 'embedded MariaDB renders the same validated configuration' \
+    cmp "$tuned_config" "$embedded_config"
+unset CATTLE_DB_CATTLE_MYSQL_HOST
+
 check 'heap injection is rejected' validation_fails \
     'export PASTURESTACK_JAVA_MAX_HEAP="8g -Dunsafe=true"'
 check 'initial heap above maximum is rejected' validation_fails \
@@ -163,6 +174,8 @@ check 'buffer-pool maximum requires an explicit current size' validation_fails \
     'export PASTURESTACK_MARIADB_BUFFER_POOL_SIZE_MAX=12g'
 check 'external-DB mode rejects embedded MariaDB tuning' validation_fails \
     'export PASTURESTACK_SERVER_MODE=externaldb PASTURESTACK_MARIADB_BUFFER_POOL_SIZE=4g'
+check 'external database host rejects embedded MariaDB tuning' validation_fails \
+    'export CATTLE_DB_CATTLE_MYSQL_HOST=db.example.test PASTURESTACK_MARIADB_BUFFER_POOL_SIZE=4g'
 check 'buffer-pool current size above maximum is rejected' validation_fails \
     'export PASTURESTACK_MARIADB_BUFFER_POOL_SIZE=8g PASTURESTACK_MARIADB_BUFFER_POOL_SIZE_MAX=4g'
 check 'invalid query-cache mode is rejected' validation_fails \

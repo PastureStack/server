@@ -152,6 +152,7 @@ pasturestack_mariadb_tuning_is_set()
 
 pasturestack_validate_performance_env()
 {
+    local database_context="${1:-detect}"
     local setting
     local initial_bytes
     local maximum_bytes
@@ -159,7 +160,8 @@ pasturestack_validate_performance_env()
     local pool_max_bytes
     local gc_log_enabled="${PASTURESTACK_JAVA_GC_LOG_ENABLED:-}"
 
-    if pasturestack_mariadb_tuning_is_set &&
+    if [ "$database_context" != embedded ] &&
+       pasturestack_mariadb_tuning_is_set &&
        { [ "${PASTURESTACK_SERVER_MODE:-${RC16_SERVER_MODE:-}}" = externaldb ] ||
          [ -n "${CATTLE_DB_CATTLE_MYSQL_HOST:-}" ] ||
          [ -n "${MYSQL_PORT_3306_TCP_ADDR:-}" ]; }; then
@@ -321,10 +323,11 @@ pasturestack_java_common_opts()
 pasturestack_write_mariadb_config()
 {
     local target="$1"
+    local database_context="${2:-detect}"
     local temporary="${target}.tmp.$$"
     local value
 
-    pasturestack_validate_performance_env || return 1
+    pasturestack_validate_performance_env "$database_context" || return 1
     umask 022
     {
         cat << 'EOF'
