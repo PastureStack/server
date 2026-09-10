@@ -87,7 +87,8 @@ config_mysql()
 {
     mkdir -p /etc/mysql/mariadb.conf.d /var/run/mysqld /var/log/mysql
     chown -R mysql:mysql /var/run/mysqld /var/log/mysql
-    pasturestack_write_mariadb_config /etc/mysql/mariadb.conf.d/99-pasturestack.cnf
+    pasturestack_write_mariadb_config \
+        /etc/mysql/mariadb.conf.d/99-pasturestack.cnf embedded
 }
 
 

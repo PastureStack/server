@@ -1,5 +1,10 @@
 # PastureStack Server v1.6.412
 
+> **Superseded by `v1.6.413`.** The `v1.6.412` image correctly validates and
+> renders the typed settings, but embedded MariaDB startup can misclassify its
+> own internal `localhost` handoff as an external database when
+> `PASTURESTACK_MARIADB_*` is configured. Use `v1.6.413` for these settings.
+
 This release makes the reviewed JVM and embedded MariaDB performance settings
 first-class Docker Compose environment variables. Operators no longer need to
 replace image files or maintain a custom MariaDB configuration for these
