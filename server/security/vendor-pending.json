@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "release": "v1.6.426",
+  "generatedAt": "2026-09-11T08:30:48Z",
+  "policy": {
+    "allowedSeverities": [
+      "LOW",
+      "MEDIUM"
+    ],
+    "requiresEmptyFixedVersion": true,
+    "vendorStatus": "needs-evaluation",
+    "scanTarget": "merged-rootfs",
+    "trivyTarget": "/rootfs (ubuntu 26.04)"
+  },
+  "findings": [
+    {
+      "vulnerabilityId": "CVE-2026-13608",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-13608",
+      "reviewAfter": "2026-09-18",
+      "packages": [
+        { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
+        { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
+        { "name": "libcurl4t64", "installedVersion": "8.18.0-1ubuntu2.5" }
+      ]
+    },
+    {
+      "vulnerabilityId": "CVE-2026-18924",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-18924",
+      "reviewAfter": "2026-09-18",
+      "packages": [
+        { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
+        { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
+        { "name": "libcurl4t64", "installedVersion": "8.18.0-1ubuntu2.5" }
+      ]
+    },
+    {
+      "vulnerabilityId": "CVE-2026-19931",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-19931",
+      "reviewAfter": "2026-09-18",
+      "packages": [
+        { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
+        { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
+        { "name": "libcurl4t64", "installedVersion": "8.18.0-1ubuntu2.5" }
+      ]
+    },
+    {
+      "vulnerabilityId": "CVE-2026-80229",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-80229",
+      "reviewAfter": "2026-09-18",
+      "packages": [
+        { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
+        { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
+        { "name": "libcurl4t64", "installedVersion": "8.18.0-1ubuntu2.5" }
+      ]
+    },
+    {
+      "vulnerabilityId": "CVE-2026-80230",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-80230",
+      "reviewAfter": "2026-09-18",
+      "packages": [
+        { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
+        { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
+        { "name": "libcurl4t64", "installedVersion": "8.18.0-1ubuntu2.5" }
+      ]
+    },
+    {
+      "vulnerabilityId": "CVE-2026-80255",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-80255",
+      "reviewAfter": "2026-09-18",
+      "packages": [
+        { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
+        { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
+        { "name": "libcurl4t64", "installedVersion": "8.18.0-1ubuntu2.5" }
+      ]
+    },
+    {
+      "vulnerabilityId": "CVE-2026-82209",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-82209",
+      "reviewAfter": "2026-09-18",
+      "packages": [
+        { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
+        { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
+        { "name": "libcurl4t64", "installedVersion": "8.18.0-1ubuntu2.5" }
+      ]
+    }
+  ]
+}
