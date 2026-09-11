@@ -7,7 +7,7 @@ runtime gates have passed.
 
 ## Current release
 
-- [Server v1.6.425](releases/server-1.6.424.md)
+- [Server v1.6.426](releases/server-1.6.426.md)
 - [Performance settings](performance/README.md)
 - [Build and source POC](build-and-source-poc.md)
 

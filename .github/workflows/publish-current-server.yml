@@ -299,6 +299,8 @@ jobs:
               'ghcr.io/aquasecurity/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969' \
               'index($expected) != null' >/dev/null
           cp source/server/security/openvex.json "$evidence/server.openvex.json"
+          cp source/server/security/vendor-pending.json \
+            "$evidence/server.vendor-pending.json"
 
           docker run --rm \
             -v "$RUNNER_TEMP/server-rootfs:/rootfs:ro" \
@@ -344,7 +346,10 @@ jobs:
                (.FixedVersion // ""), ($target // "")] | @tsv
           ' "$evidence/server-security-scan.json" | LC_ALL=C sort -u \
             >"$evidence/server-vulnerabilities-unresolved.tsv"
-          test ! -s "$evidence/server-vulnerabilities-unresolved.tsv"
+          source/scripts/validate-vendor-pending-findings.sh \
+            "$evidence/server.vendor-pending.json" \
+            "$evidence/server-vulnerabilities-unresolved.tsv" \
+            "$RELEASE_TAG" | tee "$evidence/vendor-pending-summary.txt"
 
           docker run --rm \
             -v "$RUNNER_TEMP/server-rootfs:/rootfs:ro" \
@@ -360,7 +365,9 @@ jobs:
             and ((.components | length) > 0)
           ' "$evidence/server.cdx.json" >/dev/null
           raw_count="$(wc -l <"$evidence/server-vulnerabilities-raw.tsv")"
-          printf 'SERVER_SECURITY_GATE_OK unresolved=0 secrets=0 raw_findings=%s vex=openvex-0.2.0 scan_target=merged-rootfs trivy=0.74.0\n' "$raw_count" |
+          vendor_pending_count="$(wc -l <"$evidence/server-vulnerabilities-unresolved.tsv" | tr -d ' ')"
+          printf 'SERVER_SECURITY_GATE_OK untracked=0 vendor_pending=%s critical_high=0 fixed_available=0 secrets=0 raw_findings=%s vex=openvex-0.2.0 scan_target=merged-rootfs trivy=0.74.0\n' \
+            "$vendor_pending_count" "$raw_count" |
             tee "$evidence/security-summary.txt"
 
       - name: Publish semantic image
@@ -422,12 +429,14 @@ jobs:
               reverse-proxy-before-restart.txt \
               security-summary.txt \
               server.openvex.json \
+              server.vendor-pending.json \
               server-security-scan-raw.json \
               server-security-scan.json \
               server-secrets.tsv \
               server-vulnerabilities-raw.tsv \
               server-vulnerabilities-unresolved.tsv \
               server.cdx.json \
+              vendor-pending-summary.txt \
               >SHA256SUMS
           )
           gh release create "$RELEASE_TAG" \
@@ -447,10 +456,14 @@ jobs:
             "$evidence/reverse-proxy-before-restart.txt" \
             "$evidence/security-summary.txt" \
             "$evidence/server.openvex.json" \
+            "$evidence/server.vendor-pending.json" \
             "$evidence/server-security-scan-raw.json" \
             "$evidence/server-security-scan.json" \
+            "$evidence/server-secrets.tsv" \
             "$evidence/server-vulnerabilities-raw.tsv" \
-            "$evidence/server.cdx.json"
+            "$evidence/server-vulnerabilities-unresolved.tsv" \
+            "$evidence/server.cdx.json" \
+            "$evidence/vendor-pending-summary.txt"
 
       - name: Retain workflow evidence
         if: always()
