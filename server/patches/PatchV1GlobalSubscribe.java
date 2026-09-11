@@ -48,6 +48,11 @@ public class PatchV1GlobalSubscribe {
     private static final Set<String> ADMIN_TYPES = set(
             "authIdentityLink", "mfaFactor", "mfaStatus");
     private static final Set<String> USER_TYPES = set("mfaFactor", "mfaStatus");
+    private static final String[] FROZEN_SCHEMA_FILES = {
+        "admin.ser", "base.ser", "member.ser", "owner.ser", "project.ser",
+        "projectadmin.ser", "readAdmin.ser", "readonly.ser", "restricted.ser",
+        "service.ser", "superadmin.ser", "user.ser"
+    };
 
     static List<Schema> read(String file) throws Exception {
         Path path = schemaPath(file);
@@ -138,8 +143,13 @@ public class PatchV1GlobalSubscribe {
             verifyIdentitySecuritySchemas();
             return;
         }
+        if (args.length == 1 && "verify-hardware".equals(args[0])) {
+            verifyFrozenHardwareSchemas();
+            return;
+        }
         if (args.length != 0) {
-            throw new IllegalArgumentException("Expected no arguments or verify");
+            throw new IllegalArgumentException(
+                    "Expected no arguments, verify, or verify-hardware");
         }
 
         Schema subscribe = find(read("schema/v1/project.ser"), "subscribe");
@@ -169,6 +179,105 @@ public class PatchV1GlobalSubscribe {
             verify("schema/v1/" + entry.getKey(), entry.getValue());
         }
         System.out.println("FROZEN_IDENTITY_SECURITY_SCHEMAS_OK roles=" + expected.size());
+    }
+
+    static void verifyFrozenHardwareSchemas() throws Exception {
+        int checked = 0;
+        for (String schemaFile : FROZEN_SCHEMA_FILES) {
+            String path = "schema/v1/" + schemaFile;
+            List<Schema> schemas = read(path);
+            Schema container = requiredSchema(path, schemas, "container");
+            Schema launchConfig = requiredSchema(path, schemas, "launchConfig");
+            Object shmSize = requiredField(path, container, "shmSize");
+
+            for (String fieldName : new String[] {
+                    "runtime", "shmSize", "deviceRequests"}) {
+                Object containerField = requiredField(path, container, fieldName);
+                Object launchConfigField = requiredField(path, launchConfig, fieldName);
+                requireSameContract(path, fieldName, containerField, launchConfigField);
+            }
+
+            Object deviceRequests = requiredField(path, container, "deviceRequests");
+            if (!"array[deviceRequest]".equals(fieldType(deviceRequests))) {
+                throw new IllegalStateException(
+                        path + " container.deviceRequests type is "
+                                + fieldType(deviceRequests));
+            }
+
+            Schema deviceRequest = requiredSchema(path, schemas, "deviceRequest");
+            for (String fieldName : new String[] {
+                    "driver", "count", "deviceIds", "capabilities", "options"}) {
+                Object field = requiredField(path, deviceRequest, fieldName);
+                if (fieldFlag(field, "isCreate") != fieldFlag(shmSize, "isCreate")
+                        || fieldFlag(field, "isUpdate")
+                                != fieldFlag(shmSize, "isUpdate")) {
+                    throw new IllegalStateException(
+                            path + " deviceRequest." + fieldName
+                                    + " authorization differs from container.shmSize");
+                }
+            }
+            checked++;
+        }
+        System.out.println(
+                "FROZEN_V1_HARDWARE_SCHEMAS_OK roles=" + checked
+                        + " resources=container-and-launchConfig");
+    }
+
+    private static Schema requiredSchema(
+            String path, List<Schema> schemas, String schemaId) {
+        Schema schema = find(schemas, schemaId);
+        if (schema == null) {
+            throw new IllegalStateException(path + " lacks " + schemaId);
+        }
+        return schema;
+    }
+
+    private static Object requiredField(
+            String path, Schema schema, String fieldName) {
+        Map<?, ?> fields = (Map<?, ?>) invoke(schema, "getResourceFields");
+        Object field = fields == null ? null : fields.get(fieldName);
+        if (field == null) {
+            throw new IllegalStateException(
+                    path + " lacks " + schema.getId() + "." + fieldName);
+        }
+        return field;
+    }
+
+    private static void requireSameContract(
+            String path, String fieldName, Object container, Object launchConfig) {
+        if (fieldFlag(container, "isCreate") != fieldFlag(launchConfig, "isCreate")
+                || fieldFlag(container, "isUpdate")
+                        != fieldFlag(launchConfig, "isUpdate")
+                || !fieldType(container).equals(fieldType(launchConfig))) {
+            throw new IllegalStateException(
+                    path + " launchConfig." + fieldName
+                            + " differs from container." + fieldName);
+        }
+    }
+
+    private static boolean fieldFlag(Object field, String method) {
+        Object value = invoke(field, method);
+        if (!(value instanceof Boolean)) {
+            throw new IllegalStateException(method + " did not return boolean");
+        }
+        return ((Boolean) value).booleanValue();
+    }
+
+    private static String fieldType(Object field) {
+        Object value = invoke(field, "getType");
+        if (!(value instanceof String)) {
+            throw new IllegalStateException("getType did not return a string");
+        }
+        return (String) value;
+    }
+
+    private static Object invoke(Object target, String method) {
+        try {
+            return target.getClass().getMethod(method).invoke(target);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException(
+                    target.getClass().getName() + " lacks usable " + method, e);
+        }
     }
 
     private static void verify(String file, Set<String> expected) throws Exception {
