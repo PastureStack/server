@@ -459,7 +459,6 @@ jobs:
             "$evidence/server.vendor-pending.json" \
             "$evidence/server-security-scan-raw.json" \
             "$evidence/server-security-scan.json" \
-            "$evidence/server-secrets.tsv" \
             "$evidence/server-vulnerabilities-raw.tsv" \
             "$evidence/server-vulnerabilities-unresolved.tsv" \
             "$evidence/server.cdx.json" \
