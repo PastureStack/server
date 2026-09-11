@@ -346,7 +346,7 @@ jobs:
                (.FixedVersion // ""), ($target // "")] | @tsv
           ' "$evidence/server-security-scan.json" | LC_ALL=C sort -u \
             >"$evidence/server-vulnerabilities-unresolved.tsv"
-          source/scripts/validate-vendor-pending-findings.sh \
+          bash source/scripts/validate-vendor-pending-findings.sh \
             "$evidence/server.vendor-pending.json" \
             "$evidence/server-vulnerabilities-unresolved.tsv" \
             "$RELEASE_TAG" | tee "$evidence/vendor-pending-summary.txt"

@@ -764,7 +764,7 @@ jq -r '
      "", $root.policy.trivyTarget]
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
-"$vendor_pending_validator" "$runtime_vendor_pending" \
+bash "$vendor_pending_validator" "$runtime_vendor_pending" \
     "$vendor_pending_fixture" v1.6.426 >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
