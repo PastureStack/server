@@ -206,15 +206,15 @@ ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=bebcc1c0275072ac40b5bc9b80f914c40a7f0431ff
 ARG GOVC_BINARY_SHA256=f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31
 ARG API_EXPLORER_RELEASE_BASE_URL=https://github.com/PastureStack/api-explorer/releases/download
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.115
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.115.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=a89ba273de9369665cfb223722b4bc24e692221ba66f8d489aa8a862aeed5599
-ARG WEB_CONSOLE_COMMIT=25dd612a380a56b5af002fbda96b8427cc6dc6a9
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.116
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.116.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=c48a5921476b7f543f56bb12908c75ac76ae5d441aa86a7bbf70b2c98d4faf41
+ARG WEB_CONSOLE_COMMIT=7c2300ec5342d416382e5bf9442db493e8a648b4
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
-ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.297
-ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.297.jar
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=22d126442aab342f6f94d88fc3706c50008d1e437ce86cea8f32dda81c896fb7
-ARG ORCHESTRATION_ENGINE_COMMIT=9beb27e228d65dc89166f681b81478addbcfc887
+ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.298
+ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.298.jar
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=cf7cd9c9948cabe242d6e9659f4fa60cdf645ef775b855b9876b765a9386b7f1
+ARG ORCHESTRATION_ENGINE_COMMIT=f95ac014dba0931c62aa5ae3d8cc25f5c5921285
 ARG NODE_AGENT_VERSION=0.13.27
 ARG NODE_AGENT_COMMIT=d78a0817214bb21e3537730e68e12ebb74cbdaca
 ARG NODE_AGENT_LINUX_ARTIFACT_SHA256=0cbf93ef6f90db8c5f6b8cf7d63c99f452b8fc43e93097a21cdb5bcc3007d475
@@ -559,7 +559,7 @@ RUN set -eu; \
         exit 1; \
     fi; \
     unzip -p "${archive}" META-INF/MANIFEST.MF | tr -d '\r' | \
-        grep -Fx 'Implementation-Version: 0.183.297' >/dev/null; \
+        grep -Fx 'Implementation-Version: 0.183.298' >/dev/null; \
     test "$(grep -Ec '^WEB-INF/lib/hazelcast-5\.7\.4\.jar$' "${listing}")" -eq 1; \
     ! grep -Eq '^WEB-INF/lib/hazelcast-(5\.7\.[0-3]|5\.7\.3-pasturestack\.[0-9]+)([.-]|\.jar$)' "${listing}"; \
     old_web_root="$(readlink -f /usr/share/cattle/war)"; \
@@ -601,7 +601,7 @@ RUN set -eu; \
         rm -f resources.jar; \
     fi; \
     resources_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name 'cattle-resources-0.183.297.jar' -print -quit)"; \
+        -name 'cattle-resources-0.183.298.jar' -print -quit)"; \
     test -n "${resources_jar}"; \
     source_date_iso="$(date -u -d "@${SOURCE_DATE_EPOCH}" '+%Y-%m-%dT%H:%M:%SZ')"; \
     app_config_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
@@ -1005,16 +1005,16 @@ COPY --chmod=0755 patches/websocket-proxy-wrapper.sh /usr/bin/websocket-proxy
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with the reviewed Orchestration Engine, API Explorer, Go 1.27, OpenSSL 3.5.8, zlib 1.3.2, and a reduced runtime tool surface." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.427" \
+      org.opencontainers.image.version="v1.6.428" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.364" \
       org.opencontainers.image.base.digest="sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.427
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.428
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.27
 ENV CATTLE_API_UI_VERSION=1.1.18
-ENV CATTLE_CATTLE_VERSION=v0.183.297
+ENV CATTLE_CATTLE_VERSION=v0.183.298
 ENV RC16_GO_AGENT_VERSION=0.13.27
 ENV RC16_WINDOWS_AGENT_VERSION=0.13.27
 ENV RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-0.13.27.tar.gz
