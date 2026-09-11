@@ -11,9 +11,9 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.419` combines Orchestration Engine `0.183.295`, Node Agent `0.13.27`,
+`v1.6.420` combines Orchestration Engine `0.183.295`, Node Agent `0.13.27`,
 Authentication Service `0.4.36`, and the reviewed Ember 7.2 Web Console
-`1.6.109`.
+`1.6.110`.
 
 Docker Engine `29.4.1` through `29.7.2` is represented as one bounded SemVer
 compatibility interval rather than a list of isolated patch releases. Hosts on
@@ -73,7 +73,7 @@ Catalog stack definitions, their documentation, and referenced public images mus
 
 Version coordinates are available only when the matching GitHub Release and public GHCR package both exist. Each release is held until its assets, checksums, SBOM, license records, anonymous downloads, and isolated-VM gates pass.
 
-Server `v1.6.419` registers the complete live volume-preflight schema model and preserves the project-scoped authorization required by driver-aware volume configuration, accessible
+Server `v1.6.420` registers the complete live volume-preflight schema model and preserves the project-scoped authorization required by driver-aware volume configuration, accessible
 path completion, and an authoritative `volumepreflight` check. The server
 validates container and service create or upgrade requests again at save time,
 including storage-driver state, host coverage, existing volume ownership, and
@@ -85,7 +85,7 @@ The Web Console formats schema-validation field names without legacy String
 prototype extensions, so a missing localized field label cannot leave a
 container or service form stuck in the saving state.
 
-Web Console `1.6.109` preserves the Server `v1.6.358` authenticated visual and
+Web Console `1.6.110` preserves the Server `v1.6.358` authenticated visual and
 layout contract through a provenance-bound presentation layer while retaining
 Ember 7.2, the Bootstrap 5.3.8 JavaScript runtime, current security fixes, MFA,
 and adds permission-scoped incident filters and XLSX, CSV, and JSON export to
@@ -174,7 +174,7 @@ volume and storage-driver validation.
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.419
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.420
 ```
 
 Keep operational image references in semantic `vMAJOR.MINOR.PATCH` form. The matching GitHub Release records the resolved digest for verification without exposing digest-qualified strings to the platform UI. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
@@ -186,7 +186,7 @@ without trusting arbitrary forwarded headers:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.419
+    image: ghcr.io/pasturestack/server:v1.6.420
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -215,7 +215,7 @@ environment variables without replacing image files or mounting a custom
 MariaDB configuration. See the
 [Server performance settings](docs/performance/README.md) for the complete
 Compose example, validation rules, and the separate host-kernel boundary.
-Server `v1.6.419` also keeps the embedded-database startup context explicit, so
+Server `v1.6.420` also keeps the embedded-database startup context explicit, so
 its internal `localhost` handoff cannot be mistaken for an operator-configured
 external database when `PASTURESTACK_MARIADB_*` settings are present.
 
@@ -232,7 +232,7 @@ The versioned Windows node-agent ZIP is an artifact candidate only. Windows host
 
 The machine-management dependency is supplied by the independently maintained `PastureStack/machine-driver-bundle` artifact. Its two licensed upstream executables, full license texts, source coordinates, deterministic archive, and provider-plugin handshake are verified before assembly. Real provider provisioning, deletion, upgrade, and rollback remain release gates.
 
-The vSphere command-line dependency is supplied by the independently maintained `PastureStack/vsphere-cli-bundle` artifact. Server `v1.6.419` consumes the pure numeric `0.55.2` successor, built from the exact Apache-2.0 upstream commit with Go 1.27.0 and `golang.org/x/text` 0.39.0. Image assembly verifies the release archive digest, extracted `govc` digest, exact version output, source record, and complete license records. Offline command checks do not prove authenticated vSphere inventory, clone, power, delete, upgrade, rollback, or failure recovery; those remain isolated-VM release gates.
+The vSphere command-line dependency is supplied by the independently maintained `PastureStack/vsphere-cli-bundle` artifact. Server `v1.6.420` consumes the pure numeric `0.55.2` successor, built from the exact Apache-2.0 upstream commit with Go 1.27.0 and `golang.org/x/text` 0.39.0. Image assembly verifies the release archive digest, extracted `govc` digest, exact version output, source record, and complete license records. Offline command checks do not prove authenticated vSphere inventory, clone, power, delete, upgrade, rollback, or failure recovery; those remain isolated-VM release gates.
 
 Secret encryption and rewrap operations are supplied by the `PastureStack/secret-delivery-api` GitHub fork. Release `v0.3.1` preserves the official `v0.2.2` history, carries complete Apache-2.0 and third-party license text, rejects malformed keys and path-like key names, and passes a loopback local-key API smoke test. Server installs the neutral executable and exposes the historical `secrets-api` filename only as an internal compatibility symlink; database key continuity, restart persistence, backup restore, and Vault integration remain isolated-VM release gates.
 
