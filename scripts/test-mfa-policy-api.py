@@ -9,12 +9,11 @@ import argparse
 import base64
 import hashlib
 import hmac
+import http.client
 import json
 import secrets
 import struct
 import time
-import urllib.error
-import urllib.request
 
 
 def main():
@@ -26,14 +25,7 @@ def main():
     assert 1 <= args.port <= 65535
     # Fixed loopback authority: callers cannot supply a remote URL, and the
     # local fixture cannot redirect this privileged smoke to another server.
-    base = 'http://127.0.0.1:' + str(args.port)
-
-    class NoRedirect(urllib.request.HTTPRedirectHandler):
-        def redirect_request(self, req, fp, code, msg, headers, newurl):
-            return None
-
-    http = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
-    api = '/' + args.api_version
+    api = '/v1' if args.api_version == 'v1' else '/v2-beta'
     token = None
     passed = []
 
@@ -42,13 +34,15 @@ def main():
         auth = token if bearer is None else bearer
         if auth:
             headers['Authorization'] = 'Bearer ' + auth
-        req = urllib.request.Request(base + path, method=method, headers=headers,
-                                     data=None if data is None else json.dumps(data).encode())
+        assert path.startswith(('/v1/', '/v1-auth/', '/v2-beta/'))
+        connection = http.client.HTTPConnection('127.0.0.1', port=args.port, timeout=20)
         try:
-            with http.open(req, timeout=20) as response:
-                status, content = response.status, response.read()
-        except urllib.error.HTTPError as error:
-            status, content = error.code, error.read()
+            connection.request(method, path, headers=headers,
+                               body=None if data is None else json.dumps(data).encode())
+            response = connection.getresponse()
+            status, content = response.status, response.read()
+        finally:
+            connection.close()
         assert status in expected, f'{method} {path}: unexpected HTTP {status}'
         return json.loads(content)
 
