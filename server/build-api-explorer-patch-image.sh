@@ -17,20 +17,20 @@ revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.411@sha256:32190f9becc8462171f597789b55b4abfba7dbd30c9e152e165a5e3067d8dadb}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
-orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.295}
-orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.295.jar}
-orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-f06f1ebff2457f87f93402562007fcb29cd34d5afc00d15940c4a2e63947166e}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-6c7922b492b45eccb28e46fe485864104a9ed075}
+orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.296}
+orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.296.jar}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-3a2db2749994011fd404077bde8242f7ba35027545a5f762a5da7fac0950bf53}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-3f857fbdb8f402e152f4c1111c81ecb7e27c43af}
 api_explorer_release_base_url=${API_EXPLORER_RELEASE_BASE_URL:-https://github.com/PastureStack/api-explorer/releases/download}
 api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.18}
 api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
 api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.114}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.114.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-8aee1a37fca5e025d37d324a872bf97d39d32bc458a82f523ff8fdf38f35d56d}
-web_console_commit=${WEB_CONSOLE_COMMIT:-0073eb16fcc746e69657a2d40f1022bb6bc968c2}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.115}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.115.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-a89ba273de9369665cfb223722b4bc24e692221ba66f8d489aa8a862aeed5599}
+web_console_commit=${WEB_CONSOLE_COMMIT:-25dd612a380a56b5af002fbda96b8427cc6dc6a9}
 websocket_proxy_release_base_url=${WEBSOCKET_PROXY_RELEASE_BASE_URL:-https://github.com/PastureStack/websocket-proxy/releases/download}
 websocket_proxy_version=${WEBSOCKET_PROXY_VERSION:-0.23.14}
 websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-3b5788bdc52f4edab0097a3d97afccf138c64089}
@@ -46,7 +46,7 @@ vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-bebcc1c02
 govc_binary_sha256=${GOVC_BINARY_SHA256:-f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2'
 newest_docker_version=v29.7.2
-image=${IMAGE:-pasturestack-validation/server:v1.6.424}
+image=${IMAGE:-pasturestack-validation/server:v1.6.425}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -136,7 +136,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.424
+    v1.6.425
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -150,9 +150,9 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.424 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.425 \
     CATTLE_API_UI_VERSION=1.1.18 \
-    CATTLE_CATTLE_VERSION=v0.183.295 \
+    CATTLE_CATTLE_VERSION=v0.183.296 \
     RC16_GO_AGENT_VERSION=0.13.27 \
     RC16_WINDOWS_AGENT_VERSION=0.13.27 \
     RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-0.13.27.tar.gz \
@@ -262,7 +262,7 @@ docker run --rm --entrypoint bash "$image" -lc '
     web_root=$(readlink -f /usr/share/cattle/war)
     test "${web_root}" = "/usr/share/cattle/${engine_hash}"
     resources_jar=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-resources-0.183.295.jar" -print -quit)
+        -name "cattle-resources-0.183.296.jar" -print -quit)
     test -n "${resources_jar}"
     unzip -p "${resources_jar}" db/core-124.xml |
         grep -F "pasturestack-catalog-pinned-commit" >/dev/null
@@ -307,7 +307,7 @@ docker run --rm --entrypoint bash "$image" -lc 'test -x /usr/bin/websocket-proxy
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.114"
+    test "$(cat "${web_root}/VERSION.txt")" = "1.6.115"
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     test ! -e "${web_root}/translations/none.json"
     test -z "$(find "${web_root}" -type f -name "*.map" -print -quit)"
@@ -402,7 +402,7 @@ docker run --rm --entrypoint bash "$image" -lc '
         /usr/share/cattle/war/translations/zh-tw.json >/dev/null
     unzip -p /usr/share/cattle/cattle.jar META-INF/MANIFEST.MF |
         tr -d "\r" |
-        grep -Fx "Implementation-Version: 0.183.295" >/dev/null
+        grep -Fx "Implementation-Version: 0.183.296" >/dev/null
     hazelcast_entry=$(unzip -Z1 /usr/share/cattle/cattle.jar |
         grep -E "^WEB-INF/lib/hazelcast-[^/]+[.]jar$")
     test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.4.jar"

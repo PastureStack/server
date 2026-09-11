@@ -34,7 +34,7 @@ require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.411@sha256:32190f9becc8462171f597789b55b4abfba7dbd30c9e152e165a5e3067d8dadb' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
-    'org.opencontainers.image.version="v1.6.424"' \
+    'org.opencontainers.image.version="v1.6.425"' \
     SERVER_INCREMENTAL_RELEASE_VERSION_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.411"' \
@@ -43,13 +43,13 @@ require_marker "$release_dockerfile" \
     'org.opencontainers.image.base.digest="sha256:32190f9becc8462171f597789b55b4abfba7dbd30c9e152e165a5e3067d8dadb"' \
     SERVER_INCREMENTAL_RELEASE_BASE_DIGEST_MISSING
 require_marker "$release_dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.424' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.425' \
     SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.114' \
+    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.115' \
     SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=8aee1a37fca5e025d37d324a872bf97d39d32bc458a82f523ff8fdf38f35d56d' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=a89ba273de9369665cfb223722b4bc24e692221ba66f8d489aa8a862aeed5599' \
     SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING
 for release_proxy_marker in \
     'ARG WEBSOCKET_PROXY_VERSION=0.23.14' \
@@ -129,13 +129,13 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 for release_engine_marker in \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.295' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.295.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=f06f1ebff2457f87f93402562007fcb29cd34d5afc00d15940c4a2e63947166e' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=6c7922b492b45eccb28e46fe485864104a9ed075' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.296' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.296.jar' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=3a2db2749994011fd404077bde8242f7ba35027545a5f762a5da7fac0950bf53' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=3f857fbdb8f402e152f4c1111c81ecb7e27c43af' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
-    "grep -Fx 'Implementation-Version: 0.183.295'" \
-    'ENV CATTLE_CATTLE_VERSION=v0.183.295' \
+    "grep -Fx 'Implementation-Version: 0.183.296'" \
+    'ENV CATTLE_CATTLE_VERSION=v0.183.296' \
     'ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}' \
     'ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}'; do
     require_marker "$release_dockerfile" "$release_engine_marker" \
@@ -190,10 +190,10 @@ require_marker "$dockerfile" \
     'ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90' \
     SERVER_CA_CERTIFICATES_BOOTSTRAP_HASH_MISSING
 require_marker "$dockerfile" \
-    'org.opencontainers.image.version="v1.6.424"' \
+    'org.opencontainers.image.version="v1.6.425"' \
     SERVER_API_EXPLORER_PATCH_VERSION_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.424' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.425' \
     SERVER_API_EXPLORER_PATCH_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
     'ARG SUPPORTED_DOCKER_RANGE="~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2"' \
@@ -220,22 +220,22 @@ require_marker "$dockerfile" \
     'ARG API_EXPLORER_COMMIT=3b1c39e8a116f58649d94233a384a0362c02b43e' \
     SERVER_API_EXPLORER_PATCH_COMMIT_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.295' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.296' \
     SERVER_ORCHESTRATION_RELEASE_TAG_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.295.jar' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.296.jar' \
     SERVER_ORCHESTRATION_RELEASE_ARTIFACT_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=f06f1ebff2457f87f93402562007fcb29cd34d5afc00d15940c4a2e63947166e' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=3a2db2749994011fd404077bde8242f7ba35027545a5f762a5da7fac0950bf53' \
     SERVER_ORCHESTRATION_RELEASE_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=6c7922b492b45eccb28e46fe485864104a9ed075' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=3f857fbdb8f402e152f4c1111c81ecb7e27c43af' \
     SERVER_ORCHESTRATION_RELEASE_COMMIT_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_CATTLE_VERSION=v0.183.295' \
+    'ENV CATTLE_CATTLE_VERSION=v0.183.296' \
     SERVER_ORCHESTRATION_RUNTIME_VERSION_MISSING
 require_marker "$dockerfile" \
-    'grep -Fx '\''Implementation-Version: 0.183.295'\'' >/dev/null' \
+    'grep -Fx '\''Implementation-Version: 0.183.296'\'' >/dev/null' \
     SERVER_ORCHESTRATION_MANIFEST_GATE_MISSING
 require_marker "$dockerfile" \
     'WEB-INF/lib/hazelcast-5\.7\.4\.jar' \
@@ -265,16 +265,16 @@ require_marker "$dockerfile" \
     'test -z "$(find "${web_console_stage}" -type l -print -quit)"' \
     SERVER_WEB_CONSOLE_PRESERVATION_SYMLINK_GATE_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.114' \
+    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.115' \
     SERVER_WEB_CONSOLE_RELEASE_TAG_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.114.tar.gz' \
+    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.115.tar.gz' \
     SERVER_WEB_CONSOLE_RELEASE_ARTIFACT_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=8aee1a37fca5e025d37d324a872bf97d39d32bc458a82f523ff8fdf38f35d56d' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=a89ba273de9369665cfb223722b4bc24e692221ba66f8d489aa8a862aeed5599' \
     SERVER_WEB_CONSOLE_RELEASE_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=0073eb16fcc746e69657a2d40f1022bb6bc968c2' \
+    'ARG WEB_CONSOLE_COMMIT=25dd612a380a56b5af002fbda96b8427cc6dc6a9' \
     SERVER_WEB_CONSOLE_RELEASE_COMMIT_MISSING
 require_marker "$dockerfile" \
     'tar --no-same-owner --no-same-permissions -xzf "${archive}" -C "${stage}"' \
@@ -346,7 +346,7 @@ require_marker "$build_script" \
     'PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}"' \
     SERVER_WEB_CONSOLE_RUNTIME_HASH_GATE_MISSING
 require_marker "$build_script" \
-    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.114"' \
+    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.115"' \
     SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING
 require_marker "$build_script" \
     'test "$(/usr/bin/compose-executor.real --version)" =' \
@@ -735,7 +735,7 @@ bash -n "$build_script"
 
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.424"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.425"
   and (.statements | length) == 51
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -789,4 +789,4 @@ if grep -Fq '="$(assert_public_proxy_contract' "$publish_workflow"; then
     exit 1
 fi
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.424 source_base=v1.6.364 release_base=v1.6.411 release_mode=engine-web-compose-incremental orchestration=0.183.295 engine_root_reuse=validated distributed_cache=5.7.4 vsphere_cli=0.55.2 api_explorer=1.1.18 web_console=1.6.114 websocket_proxy=0.23.14 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=overlap-safe-nested-scroll-contained service_log_filters=service-scoped service_restart_events=explicit service_restart_policy=api-and-runtime-preserved console_workspace_origin=internal-dial-bound console_backend_retry=401-only,3-attempts platform_public_origin=authority-bound private_api_cache=no-store log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver hardware_payloads=create-and-upgrade-preserved init_control=contained-separated service_create_completion=transient-service-collection-guarded docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-10 curl=8.18.0-1ubuntu2.5 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=1 perl=5.40.1-7ubuntu0.3 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 numeric_release_tags=enforced vex=openvex-0.2.0 artifact_scan=required legal_assets=complete\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.425 source_base=v1.6.364 release_base=v1.6.411 release_mode=engine-web-compose-incremental orchestration=0.183.296 engine_root_reuse=validated distributed_cache=5.7.4 vsphere_cli=0.55.2 api_explorer=1.1.18 web_console=1.6.115 websocket_proxy=0.23.14 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=modal-close-before-dispatch service_log_filters=service-scoped service_restart_events=explicit service_restart_policy=api-and-runtime-preserved console_workspace_origin=internal-dial-bound console_backend_retry=401-only,3-attempts platform_public_origin=authority-bound private_api_cache=no-store log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver hardware_payloads=create-and-upgrade-preserved v1_hardware_schema=runtime-deviceRequests-authorized init_control=contained-separated service_create_completion=transient-service-collection-guarded docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-10 curl=8.18.0-1ubuntu2.5 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=1 perl=5.40.1-7ubuntu0.3 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 numeric_release_tags=enforced vex=openvex-0.2.0 artifact_scan=required legal_assets=complete\n'
