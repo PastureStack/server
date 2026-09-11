@@ -14,21 +14,25 @@ import secrets
 import struct
 import time
 import urllib.error
-import urllib.parse
 import urllib.request
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--url', required=True)
+    parser.add_argument('--port', required=True, type=int)
     parser.add_argument('--disposable', action='store_true', required=True)
     parser.add_argument('--api-version', choices=('v1', 'v2-beta'), default='v2-beta')
     args = parser.parse_args()
-    origin = urllib.parse.urlsplit(args.url)
-    assert origin.scheme == 'http' and origin.hostname in ('127.0.0.1', 'localhost')
-    assert origin.port and not origin.username and not origin.password
-    assert origin.path in ('', '/') and not origin.query and not origin.fragment
-    base = args.url.rstrip('/')
+    assert 1 <= args.port <= 65535
+    # Fixed loopback authority: callers cannot supply a remote URL, and the
+    # local fixture cannot redirect this privileged smoke to another server.
+    base = 'http://127.0.0.1:' + str(args.port)
+
+    class NoRedirect(urllib.request.HTTPRedirectHandler):
+        def redirect_request(self, req, fp, code, msg, headers, newurl):
+            return None
+
+    http = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
     api = '/' + args.api_version
     token = None
     passed = []
@@ -41,7 +45,7 @@ def main():
         req = urllib.request.Request(base + path, method=method, headers=headers,
                                      data=None if data is None else json.dumps(data).encode())
         try:
-            with urllib.request.urlopen(req, timeout=20) as response:
+            with http.open(req, timeout=20) as response:
                 status, content = response.status, response.read()
         except urllib.error.HTTPError as error:
             status, content = error.code, error.read()

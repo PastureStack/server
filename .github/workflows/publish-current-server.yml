@@ -278,7 +278,7 @@ jobs:
           # Exercise the published API and real auth overlay on this fresh,
           # disposable database before the image is allowed to be released.
           python3 source/scripts/test-mfa-policy-api.py \
-            --url http://127.0.0.1:18082 --disposable |
+            --port 18082 --disposable |
             tee "$evidence/mfa-policy-api-smoke.txt"
 
           docker stop "$CANDIDATE_NAME" >/dev/null
