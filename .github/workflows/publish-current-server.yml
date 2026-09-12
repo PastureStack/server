@@ -28,6 +28,7 @@ jobs:
       RELEASE_TAG: ${{ inputs.release_tag }}
       SOURCE_SHA: ${{ github.sha }}
       TARGET_IMAGE: ghcr.io/pasturestack/server:${{ inputs.release_tag }}
+      LAYERED_CANDIDATE_IMAGE: local/pasturestack/server-layered:${{ inputs.release_tag }}-${{ github.run_id }}
       CANDIDATE_IMAGE: local/pasturestack/server:${{ inputs.release_tag }}-${{ github.run_id }}
       CANDIDATE_NAME: pasturestack-server-release-${{ github.run_id }}
       CATTLE_VOLUME: pasturestack-server-release-cattle-${{ github.run_id }}
@@ -101,15 +102,42 @@ jobs:
         working-directory: source
         run: |
           set -Eeuo pipefail
-          PASTURESTACK_BUILD_NO_CACHE=1 IMAGE="$CANDIDATE_IMAGE" \
+          PASTURESTACK_BUILD_NO_CACHE=1 IMAGE="$LAYERED_CANDIDATE_IMAGE" \
             bash server/build-api-explorer-patch-image.sh |&
             tee "$RUNNER_TEMP/server-evidence/build.log"
+          test "$(docker image inspect "$LAYERED_CANDIDATE_IMAGE" \
+            --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
+            "$RELEASE_TAG"
+          test "$(docker image inspect "$LAYERED_CANDIDATE_IMAGE" \
+            --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
+            "$SOURCE_SHA"
+
+      - name: Flatten and compare the release image for classic overlay2
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          extract_name="pasturestack-server-layer-export-${GITHUB_RUN_ID}"
+          rootfs_tar="$RUNNER_TEMP/server-layered-rootfs.tar"
+          cleanup_extract() {
+            docker rm -v "$extract_name" >/dev/null 2>&1 || true
+            rm -f -- "$rootfs_tar"
+          }
+          trap cleanup_extract EXIT
+          docker create --name "$extract_name" "$LAYERED_CANDIDATE_IMAGE" >/dev/null
+          docker export --output "$rootfs_tar" "$extract_name"
+          python3 source/scripts/flatten-server-image.py \
+            "$LAYERED_CANDIDATE_IMAGE" "$rootfs_tar" "$CANDIDATE_IMAGE" |
+            tee "$RUNNER_TEMP/server-evidence/image-flatten.txt"
+          grep -F 'SERVER_IMAGE_FLATTEN_OK' \
+            "$RUNNER_TEMP/server-evidence/image-flatten.txt" >/dev/null
           test "$(docker image inspect "$CANDIDATE_IMAGE" \
             --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
             "$RELEASE_TAG"
           test "$(docker image inspect "$CANDIDATE_IMAGE" \
             --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
             "$SOURCE_SHA"
+          cleanup_extract
+          trap - EXIT
 
       - name: Start, restart, and export the candidate
         shell: bash
