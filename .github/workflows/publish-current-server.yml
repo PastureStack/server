@@ -285,6 +285,16 @@ jobs:
           mkdir -p "$rootfs"
           docker export --output "$RUNNER_TEMP/server-rootfs.tar" "$CANDIDATE_NAME"
           tar --no-same-owner -xf "$RUNNER_TEMP/server-rootfs.tar" -C "$rootfs"
+          test "$(readlink "$rootfs/usr/share/cattle/artifacts/host-api.tar.gz")" = \
+            host-api-0.38.4.tar.gz
+          grep -Fx \
+            'export CATTLE_AGENT_PACKAGE_HOST_API_URL=/usr/share/cattle/artifacts/host-api-0.38.4.tar.gz' \
+            "$rootfs/usr/share/cattle/env_vars" >/dev/null
+          cp "$rootfs/usr/share/cattle/artifacts/host-api-0.38.4.tar.gz" \
+            "$evidence/host-api-0.38.4.tar.gz"
+          bash source/scripts/check-server-host-api-package.sh \
+            "$evidence/host-api-0.38.4.tar.gz" |
+            tee "$evidence/host-api-package-check.txt"
           printf 'SERVER_CANDIDATE_SMOKE_OK release=%s first_attempts=%s restart_attempts=%s catalog_attempts=%s first_contract_attempts=%s restart_contract_attempts=%s http=200 body=pong public_origin=https://stack.example.test private_api_cache=no-store\n' \
             "$RELEASE_TAG" "$first_attempts" "$restart_attempts" "$catalog_attempts" \
             "$first_contract_attempts" "$restart_contract_attempts" |
@@ -427,6 +437,8 @@ jobs:
               build.log \
               candidate.log \
               candidate-smoke.txt \
+              host-api-0.38.4.tar.gz \
+              host-api-package-check.txt \
               image-inspect.txt \
               mfa-policy-api-smoke.txt \
               published.txt \
@@ -455,6 +467,8 @@ jobs:
             "$evidence/build.log" \
             "$evidence/candidate.log" \
             "$evidence/candidate-smoke.txt" \
+            "$evidence/host-api-0.38.4.tar.gz" \
+            "$evidence/host-api-package-check.txt" \
             "$evidence/image-inspect.txt" \
             "$evidence/mfa-policy-api-smoke.txt" \
             "$evidence/published.txt" \
