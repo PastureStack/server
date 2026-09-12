@@ -7,7 +7,6 @@ NUL-delimited Dockerfile metadata instructions, then verifies the result.
 """
 
 import json
-import re
 import sys
 
 
@@ -31,15 +30,27 @@ def changes(image):
     result = []
     for item in config.get("Env") or []:
         key, separator, value = item.partition("=")
-        if not separator or not re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*", key):
+        if (
+            not separator or not key or not key.isascii()
+            or not (key[0].isalpha() or key[0] == "_")
+            or not all(char.isalnum() or char == "_" for char in key[1:])
+        ):
             raise SystemExit("Invalid environment variable name in source image")
         result.append("ENV " + key + "=" + instruction_value(value))
     for port in sorted(config.get("ExposedPorts") or {}):
-        if not re.fullmatch(r"[0-9]+/(tcp|udp|sctp)", port):
+        number, separator, protocol = port.partition("/")
+        if (
+            not separator or protocol not in {"tcp", "udp", "sctp"}
+            or not number.isascii() or not number.isdecimal()
+            or len(number) > 5 or not 0 < int(number) <= 65535
+        ):
             raise SystemExit("Invalid exposed port in source image")
         result.append("EXPOSE " + port)
     for key, value in sorted((config.get("Labels") or {}).items()):
-        if not re.fullmatch(r"[A-Za-z0-9_.-]+", key):
+        if (
+            not key or not key.isascii()
+            or not all(char.isalnum() or char in "_.-" for char in key)
+        ):
             raise SystemExit("Invalid label name in source image")
         result.append("LABEL " + key + "=" + instruction_value(value))
     if config.get("User"):
