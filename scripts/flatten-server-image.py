@@ -12,6 +12,7 @@ import json
 import re
 import subprocess
 import sys
+from pathlib import Path
 
 
 def docker_json(reference):
@@ -32,6 +33,26 @@ def main():
     parser.add_argument("rootfs_tar")
     parser.add_argument("target_image")
     args = parser.parse_args()
+
+    source_match = re.fullmatch(
+        r"local/pasturestack/server-layered:(v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+)",
+        args.source_image,
+    )
+    target_match = re.fullmatch(
+        r"local/pasturestack/server:(v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+)",
+        args.target_image,
+    )
+    rootfs = Path(args.rootfs_tar)
+    if (
+        not source_match
+        or not target_match
+        or source_match.group(1) != target_match.group(1)
+        or not rootfs.is_absolute()
+        or rootfs.name != "server-layered-rootfs.tar"
+        or rootfs.is_symlink()
+        or not rootfs.is_file()
+    ):
+        raise SystemExit("Expected one matching CI release pair and its regular rootfs tar")
 
     source = docker_json(args.source_image)
     if source["Os"] != "linux" or source["Architecture"] != "amd64":
@@ -66,7 +87,7 @@ def main():
     command = ["docker", "image", "import", "--platform", "linux/amd64"]
     for change in changes:
         command.extend(["--change", change])
-    command.extend([args.rootfs_tar, args.target_image])
+    command.extend([str(rootfs), args.target_image])
     subprocess.run(command, check=True, stdout=subprocess.DEVNULL)
 
     target = docker_json(args.target_image)
