@@ -80,6 +80,9 @@ RUN set -eux; \
 
 FROM ${ARTIFACT_HELPER_IMAGE} AS release_artifacts
 
+ARG SOURCE_DATE_EPOCH
+COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host-api-sha256
+
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
 ARG WEB_CONSOLE_RELEASE_TAG=1.6.116
 ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.116.tar.gz
@@ -233,6 +236,25 @@ RUN set -eux; \
     grep -Fx "Binary SHA-256: ${GOVC_BINARY_SHA256}" \
         /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null
 
+RUN set -eux; \
+    test -n "${SOURCE_DATE_EPOCH}"; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
+        --connect-timeout 10 --max-time 300 \
+        -o /tmp/host-api-original.tar.gz \
+        https://github.com/PastureStack/server/releases/download/v1.6.278/host-api-0.38.4.tar.gz; \
+    echo '4c62c4130e65d2c00f9bb021929dbb178d43bcd155c4be6da344f3856121c49c  /tmp/host-api-original.tar.gz' | sha256sum -c -; \
+    repair-host-api-sha256 \
+        /tmp/host-api-original.tar.gz \
+        /out/host-api-0.38.4.tar.gz \
+        "${SOURCE_DATE_EPOCH}"; \
+    mkdir /tmp/host-api-check; \
+    tar --no-same-owner --no-same-permissions \
+        -xzf /out/host-api-0.38.4.tar.gz -C /tmp/host-api-check; \
+    cd /tmp/host-api-check; \
+    sha256sum -c 301025de31c07073cc03efa17e1ab8ef/SHA256SUMSSUM; \
+    sha256sum -c 301025de31c07073cc03efa17e1ab8ef/SHA256SUMS; \
+    sha256sum /out/host-api-0.38.4.tar.gz
+
 FROM ${BASE_IMAGE}
 
 ARG SOURCE_DATE_EPOCH
@@ -264,6 +286,7 @@ COPY --from=release_artifacts /out/web-console/ /tmp/pasturestack-web-console/
 COPY --from=release_artifacts --chmod=0755 /out/websocket-proxy/websocket-proxy /usr/bin/websocket-proxy.real
 COPY --from=release_artifacts --chmod=0755 /out/compose-executor /usr/bin/compose-executor.real
 COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar
+COPY --from=release_artifacts /out/host-api-0.38.4.tar.gz /usr/share/cattle/artifacts/host-api-0.38.4.tar.gz
 COPY --from=release_artifacts --chmod=0755 /out/vsphere-cli-bundle/govc /usr/bin/govc
 COPY --from=release_artifacts /out/vsphere-cli-bundle/vsphere-cli-bundle-LICENSES.txt /usr/share/licenses/pasturestack/vsphere-cli-bundle/vsphere-cli-bundle-LICENSES.txt
 COPY --from=release_artifacts /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt /usr/share/licenses/pasturestack/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt
@@ -454,12 +477,12 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.428" \
+      org.opencontainers.image.version="v1.6.429" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.411" \
       org.opencontainers.image.base.digest="sha256:32190f9becc8462171f597789b55b4abfba7dbd30c9e152e165a5e3067d8dadb"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.428
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.429
 ENV CATTLE_CATTLE_VERSION=v0.183.298
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_PACKAGE_VERSION=${CURL_PACKAGE_VERSION}
