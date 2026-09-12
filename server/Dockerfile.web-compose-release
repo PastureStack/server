@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 ARG ARTIFACT_HELPER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452
 ARG UBUNTU_SECURITY_IMAGE=ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.411@sha256:32190f9becc8462171f597789b55b4abfba7dbd30c9e152e165a5e3067d8dadb
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.431@sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68
 
 FROM ${UBUNTU_SECURITY_IMAGE} AS ubuntu_security_packages
 
@@ -477,12 +477,12 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.431" \
+      org.opencontainers.image.version="v1.6.432" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
-      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.411" \
-      org.opencontainers.image.base.digest="sha256:32190f9becc8462171f597789b55b4abfba7dbd30c9e152e165a5e3067d8dadb"
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.431" \
+      org.opencontainers.image.base.digest="sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.431
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.432
 ENV CATTLE_CATTLE_VERSION=v0.183.298
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_PACKAGE_VERSION=${CURL_PACKAGE_VERSION}
@@ -506,6 +506,6 @@ ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=${VSPHERE_CLI_BUNDLE_VERSION}
 ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_COMMIT=${VSPHERE_CLI_BUNDLE_COMMIT}
 ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256}
 ENV PASTURESTACK_GOVC_BINARY_SHA256=${GOVC_BINARY_SHA256}
-ENV PASTURESTACK_CATALOG_COMMIT=a181a2b86e5862077e62a6201f4bccff4c634ff9
-ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"a181a2b86e5862077e62a6201f4bccff4c634ff9"}}}'
-ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"a181a2b86e5862077e62a6201f4bccff4c634ff9"}}}'
+ENV PASTURESTACK_CATALOG_COMMIT=8a6a646a156a7780283c0f6057ac3a0a2f5ab2bc
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"8a6a646a156a7780283c0f6057ac3a0a2f5ab2bc"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"8a6a646a156a7780283c0f6057ac3a0a2f5ab2bc"}}}'

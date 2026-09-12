@@ -111,6 +111,17 @@ jobs:
           test "$(docker image inspect "$LAYERED_CANDIDATE_IMAGE" \
             --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
             "$SOURCE_SHA"
+          base_ref='ghcr.io/pasturestack/server:v1.6.431@sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68'
+          base_count="$(docker buildx imagetools inspect --raw "$base_ref" |
+            jq -r '.layers | length')"
+          layered_count="$(docker image inspect "$LAYERED_CANDIDATE_IMAGE" |
+            jq -r '.[0].RootFS.Layers | length')"
+          test "$base_count" -eq 1
+          test "$layered_count" -gt 1
+          test "$layered_count" -le 32
+          printf 'SERVER_LAYERED_BUILD_OK base_layers=%s source_layers=%s maximum=32 base=v1.6.431\n' \
+            "$base_count" "$layered_count" |
+            tee "$RUNNER_TEMP/server-evidence/source-layers.txt"
 
       - name: Flatten and compare the release image for classic overlay2
         shell: bash
