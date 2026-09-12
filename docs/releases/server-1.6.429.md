@@ -23,6 +23,10 @@ All other runtime components and behavior remain at v1.6.428. The existing
 initial-start, restart, merged-rootfs vulnerability/secret scan, SBOM, and
 image attestation gates still apply. Existing vendor-pending findings remain
 documented rather than being claimed fixed by this packaging change.
+The current Ubuntu 26.04 `zlib1g` finding `CVE-2026-85091` is also recorded
+as vendor-pending: Ubuntu lists it as needing evaluation, and the scanned
+package has no published fixed version. It is not claimed resolved by this
+release.
 
 The inherited runtime still includes the curl fix for `CVE-2026-8932`, glibc
 `2.43-2ubuntu2.4`, and GNU coreutils `uniq` commit
