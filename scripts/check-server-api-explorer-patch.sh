@@ -398,13 +398,13 @@ require_marker "$build_script" \
     'grep -F "pasturestack-catalog-pinned-commit"' \
     SERVER_CATALOG_PINNED_COMMIT_IMAGE_GATE_MISSING
 require_marker "$release_dockerfile" \
-    'ENV PASTURESTACK_CATALOG_COMMIT=a181a2b86e5862077e62a6201f4bccff4c634ff9' \
+    'ENV PASTURESTACK_CATALOG_COMMIT=8a6a646a156a7780283c0f6057ac3a0a2f5ab2bc' \
     SERVER_CATALOG_VERSION_LABEL_COMMIT_MISSING
 require_marker "$release_dockerfile" \
-    '"pinnedCommit":"a181a2b86e5862077e62a6201f4bccff4c634ff9"' \
+    '"pinnedCommit":"8a6a646a156a7780283c0f6057ac3a0a2f5ab2bc"' \
     SERVER_CATALOG_VERSION_LABEL_URL_MISSING
 require_marker "$build_script" \
-    'PASTURESTACK_CATALOG_COMMIT=a181a2b86e5862077e62a6201f4bccff4c634ff9' \
+    'PASTURESTACK_CATALOG_COMMIT=8a6a646a156a7780283c0f6057ac3a0a2f5ab2bc' \
     SERVER_CATALOG_VERSION_LABEL_IMAGE_GATE_MISSING
 require_marker "$dockerfile" \
     'COPY --chmod=0755 patches/websocket-proxy-wrapper.sh /usr/bin/websocket-proxy' \
