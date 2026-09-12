@@ -118,15 +118,30 @@ jobs:
           set -Eeuo pipefail
           extract_name="pasturestack-server-layer-export-${GITHUB_RUN_ID}"
           rootfs_tar="$RUNNER_TEMP/server-layered-rootfs.tar"
+          changes_file="$RUNNER_TEMP/server-flatten-changes.bin"
           cleanup_extract() {
             docker rm -v "$extract_name" >/dev/null 2>&1 || true
-            rm -f -- "$rootfs_tar"
+            rm -f -- "$rootfs_tar" "$changes_file"
           }
           trap cleanup_extract EXIT
+          [[ "$LAYERED_CANDIDATE_IMAGE" =~ ^local/pasturestack/server-layered:v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+$ ]]
+          [[ "$CANDIDATE_IMAGE" =~ ^local/pasturestack/server:v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+$ ]]
           docker create --name "$extract_name" "$LAYERED_CANDIDATE_IMAGE" >/dev/null
           docker export --output "$rootfs_tar" "$extract_name"
-          python3 source/scripts/flatten-server-image.py \
-            "$LAYERED_CANDIDATE_IMAGE" "$rootfs_tar" "$CANDIDATE_IMAGE" |
+          test -f "$rootfs_tar"
+          test ! -L "$rootfs_tar"
+          docker image inspect "$LAYERED_CANDIDATE_IMAGE" |
+            python3 source/scripts/flatten-server-image.py changes >"$changes_file"
+          mapfile -d '' -t flatten_changes <"$changes_file"
+          test "${#flatten_changes[@]}" -gt 0
+          flatten_args=()
+          for change in "${flatten_changes[@]}"; do
+            flatten_args+=(--change "$change")
+          done
+          docker image import --platform linux/amd64 \
+            "${flatten_args[@]}" "$rootfs_tar" "$CANDIDATE_IMAGE" >/dev/null
+          docker image inspect "$LAYERED_CANDIDATE_IMAGE" "$CANDIDATE_IMAGE" |
+            python3 source/scripts/flatten-server-image.py verify |
             tee "$RUNNER_TEMP/server-evidence/image-flatten.txt"
           grep -F 'SERVER_IMAGE_FLATTEN_OK' \
             "$RUNNER_TEMP/server-evidence/image-flatten.txt" >/dev/null

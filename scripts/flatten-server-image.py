@@ -1,99 +1,69 @@
 #!/usr/bin/env python3
-"""Flatten a tested Server rootfs while preserving its Docker runtime contract.
+"""Encode and verify metadata for a single-layer Server release image.
 
-The Server release inherits a long compatibility-patch chain.  The classic
-overlay2 store cannot register an image with that many lower layers.  This
-script changes packaging only: it imports the exact exported rootfs and
-reapplies, then compares, every runtime configuration field used by the image.
+Docker operations stay in the release workflow, which owns exact image names
+and paths. This tool only transforms Docker's JSON image-inspect input into
+NUL-delimited Dockerfile metadata instructions, then verifies the result.
 """
 
-import argparse
 import json
 import re
-import subprocess
 import sys
-from pathlib import Path
-
-
-def docker_json(reference):
-    return json.loads(
-        subprocess.check_output(
-            ["docker", "image", "inspect", reference], text=True
-        )
-    )[0]
 
 
 def instruction_value(value):
+    if not isinstance(value, str) or any(ord(char) < 32 for char in value):
+        raise SystemExit("Image metadata contains a control character")
     return json.dumps(value, ensure_ascii=True, separators=(",", ":"))
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("source_image")
-    parser.add_argument("rootfs_tar")
-    parser.add_argument("target_image")
-    args = parser.parse_args()
-
-    source_match = re.fullmatch(
-        r"local/pasturestack/server-layered:(v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+)",
-        args.source_image,
-    )
-    target_match = re.fullmatch(
-        r"local/pasturestack/server:(v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+)",
-        args.target_image,
-    )
-    rootfs = Path(args.rootfs_tar)
-    if (
-        not source_match
-        or not target_match
-        or source_match.group(1) != target_match.group(1)
-        or not rootfs.is_absolute()
-        or rootfs.name != "server-layered-rootfs.tar"
-        or rootfs.is_symlink()
-        or not rootfs.is_file()
-    ):
-        raise SystemExit("Expected one matching CI release pair and its regular rootfs tar")
-
-    source = docker_json(args.source_image)
-    if source["Os"] != "linux" or source["Architecture"] != "amd64":
+def validate_source(image):
+    if image["Os"] != "linux" or image["Architecture"] != "amd64":
         raise SystemExit("Only the reviewed linux/amd64 Server image is supported")
-    config = source["Config"]
+    config = image["Config"]
     if config.get("OnBuild") or config.get("Shell") or config.get("Healthcheck"):
         raise SystemExit("Unhandled image configuration; extend and verify this tool first")
+    return config
 
-    changes = []
+
+def changes(image):
+    config = validate_source(image)
+    result = []
     for item in config.get("Env") or []:
         key, separator, value = item.partition("=")
         if not separator or not re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*", key):
             raise SystemExit("Invalid environment variable name in source image")
-        changes.append("ENV " + key + "=" + instruction_value(value))
+        result.append("ENV " + key + "=" + instruction_value(value))
     for port in sorted(config.get("ExposedPorts") or {}):
-        changes.append("EXPOSE " + port)
+        if not re.fullmatch(r"[0-9]+/(tcp|udp|sctp)", port):
+            raise SystemExit("Invalid exposed port in source image")
+        result.append("EXPOSE " + port)
     for key, value in sorted((config.get("Labels") or {}).items()):
-        changes.append("LABEL " + key + "=" + instruction_value(value))
+        if not re.fullmatch(r"[A-Za-z0-9_.-]+", key):
+            raise SystemExit("Invalid label name in source image")
+        result.append("LABEL " + key + "=" + instruction_value(value))
     if config.get("User"):
-        changes.append("USER " + instruction_value(config["User"]))
+        result.append("USER " + instruction_value(config["User"]))
     if config.get("WorkingDir"):
-        changes.append("WORKDIR " + instruction_value(config["WorkingDir"]))
+        result.append("WORKDIR " + instruction_value(config["WorkingDir"]))
     if config.get("Volumes"):
-        changes.append("VOLUME " + instruction_value(sorted(config["Volumes"])))
+        paths = sorted(config["Volumes"])
+        if not all(path.startswith("/") for path in paths):
+            raise SystemExit("Invalid volume path in source image")
+        result.append("VOLUME " + json.dumps(paths, separators=(",", ":")))
     if config.get("Entrypoint"):
-        changes.append("ENTRYPOINT " + instruction_value(config["Entrypoint"]))
+        result.append("ENTRYPOINT " + json.dumps(config["Entrypoint"], separators=(",", ":")))
     if config.get("Cmd"):
-        changes.append("CMD " + instruction_value(config["Cmd"]))
+        result.append("CMD " + json.dumps(config["Cmd"], separators=(",", ":")))
     if config.get("StopSignal"):
-        changes.append("STOPSIGNAL " + config["StopSignal"])
+        result.append("STOPSIGNAL " + instruction_value(config["StopSignal"]))
+    return result
 
-    command = ["docker", "image", "import", "--platform", "linux/amd64"]
-    for change in changes:
-        command.extend(["--change", change])
-    command.extend([str(rootfs), args.target_image])
-    subprocess.run(command, check=True, stdout=subprocess.DEVNULL)
 
-    target = docker_json(args.target_image)
-    # ArgsEscaped is an image-serialization hint for Windows command parsing;
-    # the release is Linux-only. Every other field, including any future field
-    # this script did not expect, must match rather than silently disappear.
+def verify(source, target):
+    config = validate_source(source)
+    # ArgsEscaped only affects Windows command parsing. All other config
+    # fields, including fields added in future images, must remain identical.
     keys = (set(config) | set(target["Config"])) - {"ArgsEscaped"}
     mismatches = sorted(
         key for key in keys if config.get(key) != target["Config"].get(key)
@@ -105,12 +75,27 @@ def main():
         raise SystemExit(f"Expected one rootfs layer, got {layers}")
     if target["Os"] != source["Os"] or target["Architecture"] != source["Architecture"]:
         raise SystemExit("Flattened image platform differs")
-    print(f"SERVER_IMAGE_FLATTEN_OK source_layers={len(source['RootFS']['Layers'])} target_layers={layers} config=identical platform=linux/amd64")
+    print(
+        "SERVER_IMAGE_FLATTEN_OK "
+        f"source_layers={len(source['RootFS']['Layers'])} "
+        f"target_layers={layers} config=identical platform=linux/amd64"
+    )
+
+
+def main():
+    if len(sys.argv) != 2 or sys.argv[1] not in {"changes", "verify"}:
+        raise SystemExit("Usage: flatten-server-image.py changes|verify < docker-image-inspect.json")
+    images = json.load(sys.stdin)
+    if sys.argv[1] == "changes":
+        if len(images) != 1:
+            raise SystemExit("Expected exactly one source image")
+        for item in changes(images[0]):
+            sys.stdout.buffer.write(item.encode("utf-8") + b"\0")
+    else:
+        if len(images) != 2:
+            raise SystemExit("Expected source and flattened image")
+        verify(images[0], images[1])
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except subprocess.CalledProcessError as error:
-        print(f"Docker command failed with exit code {error.returncode}", file=sys.stderr)
-        sys.exit(error.returncode)
+    main()
