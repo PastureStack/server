@@ -17,8 +17,13 @@ and retained; the plugins must not silently switch or mix backends.
 The Server application components are unchanged from `v1.6.436`. The
 digest-pinned transitional build base, separate build stages, verified
 single-rootfs-layer final image, Host API SHA256 chain, and matching
-SBOM/OpenVEX release evidence remain required. Vendor-pending findings
-remain recorded; an unmatched finding is not waived to force publication.
+SBOM/OpenVEX release evidence remain required. Inherited security fixes
+include curl's `CVE-2026-8932` closure, glibc `2.43-2ubuntu2.4`, the GNU
+coreutils `uniq` fix `d64e35a8a4c0e4608321433e0d84d917e4e36371`, and
+the OpenSSL fix for `CVE-2026-75803`. The unreachable `diff3` path for
+`CVE-2026-53910` remains removed. Ubuntu still marks `CVE-2026-18374` as
+needing evaluation for Resolute. Vendor-pending findings remain recorded in
+matching SBOM and OpenVEX evidence; unmatched vulnerability at any severity remains a release blocker.
 
 Before production rollout, preserve the prior image, database, named volumes
 and configuration. Check `/ping`, authenticated API, the exact Catalog pin,
