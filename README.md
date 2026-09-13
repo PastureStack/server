@@ -11,7 +11,7 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.437` combines Orchestration Engine `0.183.298`, Node Agent `0.13.27`,
+`v1.6.438` combines Orchestration Engine `0.183.298`, Node Agent `0.13.27`,
 Authentication Service `0.4.36`, and the reviewed Ember 7.2 Web Console
 `1.6.116`.
 
@@ -61,6 +61,10 @@ firewall backend is preserved (`nftables`, `iptables-nft` or
 The IPsec module retries a transient TCP port-80 handoff without changing
 another plugin's firewall rules. See
 [v1.6.437 release notes](docs/releases/server-1.6.437.md).
+`v1.6.438` pins Catalog Templates `v0.3.10`. Network Services uses Network
+Plugin Manager `v0.8.18`, and Layer 2 Flat Network uses the corrected CNI in
+IPsec/VXLAN Overlay `v0.14.36`. Existing numeric template versions remain
+available. See [v1.6.438 release notes](docs/releases/server-1.6.438.md).
 
 Docker Engine `29.4.1` through `29.7.2` is represented as one bounded SemVer
 compatibility interval rather than a list of isolated patch releases. Hosts on
@@ -239,8 +243,8 @@ requires the reviewed archive digest, extracted-binary digest, exact source
 commit, static binary, and exact version output before publication.
 
 The embedded Catalog snapshot is pinned to commit
-`9d487b1cf3681e6718058b456d218b7742d7b96b` (Catalog Templates
-`v0.3.9`). It retains prior immutable template revisions and adds reviewed
+`d99c9c79e3f193ab3c252d73c763a72133989677` (Catalog Templates
+`v0.3.10`). It retains prior immutable template revisions and adds reviewed
 Network Services, IPsec Overlay, per-host subnet, L2 and VXLAN revisions with an explicit firewall backend
 choice (`auto`, native nftables, iptables-nft, or iptables-legacy). The network
 plugin manager owns its NAT and host-port rules; IPsec owns its XFRM and route
@@ -257,7 +261,7 @@ volume and storage-driver validation.
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.437
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.438
 ```
 
 Keep operational image references in semantic `vMAJOR.MINOR.PATCH` form. The matching GitHub Release records the resolved digest for verification without exposing digest-qualified strings to the platform UI. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
@@ -269,7 +273,7 @@ without trusting arbitrary forwarded headers:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.437
+    image: ghcr.io/pasturestack/server:v1.6.438
     restart: unless-stopped
     ports:
       - "8080:8080"
