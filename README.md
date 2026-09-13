@@ -11,7 +11,7 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.434` combines Orchestration Engine `0.183.298`, Node Agent `0.13.27`,
+`v1.6.435` combines Orchestration Engine `0.183.298`, Node Agent `0.13.27`,
 Authentication Service `0.4.36`, and the reviewed Ember 7.2 Web Console
 `1.6.116`.
 
@@ -34,16 +34,23 @@ single-layer `v1.6.431` runtime as a transitional base, and CI rejects a
 layered source candidate above 32 layers before publishing the verified
 single-layer image. This stops accumulation of the older 207-layer base while
 retaining separate build stages; see [v1.6.432 release notes](docs/releases/server-1.6.432.md).
+The `v1.6.435` gate also checks that the pushed registry manifest has one layer.
 `v1.6.433` targets Catalog Templates `v0.3.5` with IPsec Overlay `v0.14.31`.
 It keeps the same multi-stage packaging and verified single-layer runtime,
 while a temporarily offline overlay peer is retried without stopping the
 shared charon daemon. Publication and live peer-restart validation are
 separate release gates; see [v1.6.433 release notes](docs/releases/server-1.6.433.md).
 `v1.6.434` targets Catalog Templates `v0.3.6` and IPsec Overlay `v0.14.32`.
-It resolves persistent duplicate IKE associations after simultaneous peer
-reconnects while retaining one functional association per managed peer.
-The verified one-layer runtime and multi-stage build remain unchanged; see
+Although it kept encrypted traffic working, a subsequent real two-host
+rolling upgrade retained two established IKE associations for one peer;
+that release did not satisfy the one-SA gate. The verified one-layer runtime
+and multi-stage build remain unchanged; see
 [v1.6.434 release notes](docs/releases/server-1.6.434.md).
+`v1.6.435` targets the follow-up IPsec Overlay `v0.14.33` through Catalog
+Templates `v0.3.7`. Missing-SA recovery remains inside the IPsec module;
+Network Plugin Manager still exclusively owns host NAT, forwarding marks,
+and host-port rules. Publication and two-host rollout results are separate
+evidence gates; see [v1.6.435 release notes](docs/releases/server-1.6.435.md).
 
 Docker Engine `29.4.1` through `29.7.2` is represented as one bounded SemVer
 compatibility interval rather than a list of isolated patch releases. Hosts on
@@ -222,7 +229,7 @@ requires the reviewed archive digest, extracted-binary digest, exact source
 commit, static binary, and exact version output before publication.
 
 The embedded Catalog snapshot is pinned to commit
-`b0a36559e91a539c87fd38bae663c4b41a112fcf` (Catalog Templates
+`ae8a8ce45e1537756ec6f55dd93f2acec1c15e98` (Catalog Templates
 `v0.3.6`). It retains prior immutable template revisions and adds reviewed
 Network Services and IPsec Overlay revisions with an explicit firewall backend
 choice (`auto`, native nftables, iptables-nft, or iptables-legacy). The network
@@ -240,7 +247,7 @@ volume and storage-driver validation.
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.434
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.435
 ```
 
 Keep operational image references in semantic `vMAJOR.MINOR.PATCH` form. The matching GitHub Release records the resolved digest for verification without exposing digest-qualified strings to the platform UI. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
@@ -252,7 +259,7 @@ without trusting arbitrary forwarded headers:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.434
+    image: ghcr.io/pasturestack/server:v1.6.435
     restart: unless-stopped
     ports:
       - "8080:8080"
