@@ -8,6 +8,13 @@ installed CHILD_SA. This addresses duplicate associations after simultaneous
 peer reconnects without restarting the shared daemon or changing unrelated
 peers, XFRM routes, host NAT, or host-port ownership.
 
+Post-release erratum (2026-09-13): a real two-host rolling upgrade retained
+two `ESTABLISHED` IKE associations for the same peer on both hosts, although
+only one carried traffic. The `unique=replace` setting and `DELETING` cleanup
+therefore did not fully resolve this case. Keep v1.6.434 as a historical
+release, not as evidence that the one-SA live gate passed; the follow-up
+IPsec and Catalog version must pass the two-host gate separately.
+
 The multi-stage build retains the digest-pinned, single-layer v1.6.431
 transitional base. The source candidate remains bounded below 32 layers;
 release validation checks runtime configuration, start/restart behavior, and

@@ -454,6 +454,13 @@ jobs:
           digest="$(docker buildx imagetools inspect "$TARGET_IMAGE" \
             --format '{{.Manifest.Digest}}')"
           [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+          docker buildx imagetools inspect --raw "$TARGET_IMAGE" |
+            jq -e \
+              '.schemaVersion == 2 and (.config.digest | test("^sha256:[0-9a-f]{64}$")) and (.layers | length) == 1' \
+              >"$RUNNER_TEMP/server-evidence/registry-layer-verification.json"
+          printf 'SERVER_REGISTRY_LAYER_OK release=%s layers=1\n' \
+            "$RELEASE_TAG" |
+            tee "$RUNNER_TEMP/server-evidence/registry-layer-summary.txt"
           docker buildx imagetools inspect "$TARGET_IMAGE" \
             >"$RUNNER_TEMP/server-evidence/image-inspect.txt"
           printf 'SERVER_IMAGE_PUBLISHED release=%s source=%s reference=%s digest=%s\n' \
