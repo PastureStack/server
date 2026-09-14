@@ -370,9 +370,9 @@ RUN set -eux; \
         -name 'cattle-app-config-0.183.301.jar' -print -quit)"; \
     test -n "${app_config_jar}"; \
     unzip -p "${app_config_jar}" META-INF/cattle/api-server/defaults.properties | \
-        grep -Fx 'supported.docker.range=~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2' >/dev/null; \
+        grep -Fx 'supported.docker.range=~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0' >/dev/null; \
     unzip -p "${app_config_jar}" META-INF/cattle/api-server/defaults.properties | \
-        grep -Fx 'newest.docker.version=v29.7.2' >/dev/null; \
+        grep -Fx 'newest.docker.version=v29.8.0' >/dev/null; \
     source_date_iso="$(date -u -d "@${SOURCE_DATE_EPOCH}" '+%Y-%m-%dT%H:%M:%SZ')"; \
     cd /tmp/pasturestack-server-overlays; \
     jar --update --file "${resources_jar}" --date="${source_date_iso}" \

@@ -79,7 +79,7 @@ launch configuration before scheduling a Catalog stack rollback. See
 [v1.6.440 release notes](docs/releases/server-1.6.440.md).
 
 Docker Engine `29.4.1` through `29.7.2` is represented as one bounded SemVer
-compatibility interval rather than a list of isolated patch releases. Hosts on
+compatibility interval, with `29.8.0` supported explicitly. Hosts on
 an in-range version such as `29.6.2` are therefore reported as supported.
 
 The current image retains the embedded API Explorer's reviewed UI maintenance,
