@@ -42,6 +42,10 @@ egress; health reporting; backend isolation; Docker restart; and one-at-a-time
 host reboots. The switched test host was restored to its pre-test
 iptables-nft frontend.
 
+The Server's host-version contract retains the bounded Docker Engine
+`29.4.1`–`29.7.2` interval and explicitly supports `29.8.0`, matching the
+properties embedded in Orchestration Engine `v0.183.301`.
+
 Orchestration Engine `v0.183.301` restores each upgraded child service's
 previous primary and sidekick launch configuration before the stack rollback
 process is scheduled. It reuses the direct service rollback contract, so
