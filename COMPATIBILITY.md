@@ -25,12 +25,12 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.428` assembly consumes Orchestration Engine `v0.183.298`, Web
+The current `v1.6.440` assembly consumes Orchestration Engine `v0.183.301`, Web
 Console package `1.6.116`, API Explorer `v1.1.18`, Compose Executor
 `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
 Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
 `v5.7.4`, and Catalog Templates at commit
-`02df5f7df9eebe640590d93b1506543d2367e355`. A Catalog upgrade changes
+`e082033ba3c12b5f5cfcae93ff1d6f50d5440d07` (Catalog Templates `v0.3.12`). A Catalog upgrade changes
 `pinned_commit` first and leaves the last indexed `commit` untouched until
 Catalog Service has rebuilt the template index; pre-advancing both values can
 preserve a stale nonempty index. Operational container references must use

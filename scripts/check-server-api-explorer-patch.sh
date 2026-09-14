@@ -14,13 +14,14 @@ runtime_vex=server/security/openvex.json
 runtime_vendor_pending=server/security/vendor-pending.json
 vendor_pending_validator=scripts/validate-vendor-pending-findings.sh
 release_notes=docs/releases/server-1.6.438.md
+current_release_notes=docs/releases/server-1.6.440.md
 host_api_repair=server/artifacts/repair-host-api-sha256.sh
 host_api_check=scripts/check-server-host-api-package.sh
 
 for path in "$dockerfile" "$release_dockerfile" "$build_script" "$publish_workflow" "$cattle_script" \
     "$coreutils_patch" "$runtime_vex" "$runtime_vendor_pending" \
     "$vendor_pending_validator" \
-    "$release_notes" "$host_api_repair" "$host_api_check"; do
+    "$release_notes" "$current_release_notes" "$host_api_repair" "$host_api_check"; do
     test -f "$path"
 done
 
@@ -41,7 +42,7 @@ require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.431@sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
-    'org.opencontainers.image.version="v1.6.439"' \
+    'org.opencontainers.image.version="v1.6.440"' \
     SERVER_INCREMENTAL_RELEASE_VERSION_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.431"' \
@@ -50,7 +51,7 @@ require_marker "$release_dockerfile" \
     'org.opencontainers.image.base.digest="sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68"' \
     SERVER_INCREMENTAL_RELEASE_BASE_DIGEST_MISSING
 require_marker "$release_dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.439' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.440' \
     SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING
 require_marker "$release_dockerfile" \
     'COPY --from=release_artifacts /out/host-api-0.38.4.tar.gz /usr/share/cattle/artifacts/host-api-0.38.4.tar.gz' \
@@ -145,13 +146,13 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 for release_engine_marker in \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.298' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.298.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=cf7cd9c9948cabe242d6e9659f4fa60cdf645ef775b855b9876b765a9386b7f1' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=f95ac014dba0931c62aa5ae3d8cc25f5c5921285' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.301' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.301.jar' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=5c7201ef1c8653f62fa05ced1952921f8bbab53e36a09ea88401983144e1cd91' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=88f8a457dccce88f9b6fdb6deddcc99b9d4d3179' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
-    "grep -Fx 'Implementation-Version: 0.183.298'" \
-    'ENV CATTLE_CATTLE_VERSION=v0.183.298' \
+    "grep -Fx 'Implementation-Version: 0.183.301'" \
+    'ENV CATTLE_CATTLE_VERSION=v0.183.301' \
     'ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}' \
     'ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}'; do
     require_marker "$release_dockerfile" "$release_engine_marker" \
@@ -398,14 +399,23 @@ require_marker "$build_script" \
     'grep -F "pasturestack-catalog-pinned-commit"' \
     SERVER_CATALOG_PINNED_COMMIT_IMAGE_GATE_MISSING
 require_marker "$release_dockerfile" \
-    'ENV PASTURESTACK_CATALOG_COMMIT=b083630a34d1a9a1cf48006389187bcf90a6b4da' \
+    'ENV PASTURESTACK_CATALOG_COMMIT=e082033ba3c12b5f5cfcae93ff1d6f50d5440d07' \
     SERVER_CATALOG_VERSION_LABEL_COMMIT_MISSING
 require_marker "$release_dockerfile" \
-    '"pinnedCommit":"b083630a34d1a9a1cf48006389187bcf90a6b4da"' \
+    '"pinnedCommit":"e082033ba3c12b5f5cfcae93ff1d6f50d5440d07"' \
     SERVER_CATALOG_VERSION_LABEL_URL_MISSING
 require_marker "$build_script" \
-    'PASTURESTACK_CATALOG_COMMIT=b083630a34d1a9a1cf48006389187bcf90a6b4da' \
+    'PASTURESTACK_CATALOG_COMMIT=e082033ba3c12b5f5cfcae93ff1d6f50d5440d07' \
     SERVER_CATALOG_VERSION_LABEL_IMAGE_GATE_MISSING
+for current_release_marker in \
+    '# Server v1.6.440' \
+    '`e082033ba3c12b5f5cfcae93ff1d6f50d5440d07` (Catalog Templates' \
+    'Orchestration Engine `v0.183.301` at' \
+    '`v0.8.21` image. Its manifest digest is' \
+    '`sha256:aab4c05b0801feeca40fa9cb82a52fbfbfe506c609d3df2024fbc07ef4b968e9`'; do
+    require_marker "$current_release_notes" "$current_release_marker" \
+        SERVER_CURRENT_RELEASE_NOTES_IDENTITY_MISSING
+done
 require_marker "$dockerfile" \
     'COPY --chmod=0755 patches/websocket-proxy-wrapper.sh /usr/bin/websocket-proxy' \
     SERVER_WEBSOCKET_PROXY_ROUTING_WRAPPER_INSTALL_MISSING
@@ -760,7 +770,7 @@ bash -n "$vendor_pending_validator"
 
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.439"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.440"
   and (.statements | length) == 51
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -786,7 +796,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.439 >/dev/null
+    "$vendor_pending_fixture" v1.6.440 >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
 
@@ -844,4 +854,4 @@ if grep -Fq '"$evidence/server-secrets.tsv"' <<<"$release_upload_block"; then
     exit 1
 fi
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.439 source_base=v1.6.364 release_base=v1.6.431 release_mode=engine-web-compose-incremental orchestration=0.183.298 engine_root_reuse=validated distributed_cache=5.7.4 vsphere_cli=0.55.2 api_explorer=1.1.18 web_console=1.6.116 websocket_proxy=0.23.14 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=modal-close-before-dispatch service_log_filters=service-scoped service_restart_events=explicit service_restart_policy=api-and-runtime-preserved console_workspace_origin=internal-dial-bound console_backend_retry=401-only,3-attempts platform_public_origin=authority-bound private_api_cache=no-store log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver hardware_payloads=create-and-upgrade-preserved v1_hardware_schema=container-and-launchConfig init_control=contained-separated service_create_completion=transient-service-collection-guarded docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-10 curl=8.18.0-1ubuntu2.5 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=8 vendor_pending_occurrences=22 perl=5.40.1-7ubuntu0.3 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 numeric_release_tags=enforced vex=openvex-0.2.0 artifact_scan=required legal_assets=complete\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.440 source_base=v1.6.364 release_base=v1.6.431 release_mode=engine-web-compose-incremental orchestration=0.183.301 engine_root_reuse=validated distributed_cache=5.7.4 vsphere_cli=0.55.2 api_explorer=1.1.18 web_console=1.6.116 websocket_proxy=0.23.14 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=modal-close-before-dispatch service_log_filters=service-scoped service_restart_events=explicit service_restart_policy=api-and-runtime-preserved console_workspace_origin=internal-dial-bound console_backend_retry=401-only,3-attempts platform_public_origin=authority-bound private_api_cache=no-store log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver hardware_payloads=create-and-upgrade-preserved v1_hardware_schema=container-and-launchConfig init_control=contained-separated service_create_completion=transient-service-collection-guarded docker_29_range=29.4.1..29.7.2 docker_29_6_2=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-10 curl=8.18.0-1ubuntu2.5 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=8 vendor_pending_occurrences=22 perl=5.40.1-7ubuntu0.3 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 numeric_release_tags=enforced vex=openvex-0.2.0 artifact_scan=required legal_assets=complete\n'

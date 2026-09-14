@@ -92,9 +92,9 @@ ARG WEBSOCKET_PROXY_VERSION=0.23.14
 ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=c55108c3dbfd8e6579fc768a1988920db83c6f605ca1284b60edf92ae8d0160e
 ARG WEBSOCKET_PROXY_BINARY_SHA256=efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
-ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.298
-ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.298.jar
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=cf7cd9c9948cabe242d6e9659f4fa60cdf645ef775b855b9876b765a9386b7f1
+ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.301
+ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.301.jar
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=5c7201ef1c8653f62fa05ced1952921f8bbab53e36a09ea88401983144e1cd91
 ARG COMPOSE_EXECUTOR_VERSION=0.14.36
 ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66
 ARG COMPOSE_EXECUTOR_BINARY_SHA256=1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d
@@ -270,8 +270,8 @@ ARG WEBSOCKET_PROXY_VERSION=0.23.14
 ARG WEBSOCKET_PROXY_COMMIT=3b5788bdc52f4edab0097a3d97afccf138c64089
 ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=c55108c3dbfd8e6579fc768a1988920db83c6f605ca1284b60edf92ae8d0160e
 ARG WEBSOCKET_PROXY_BINARY_SHA256=efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=cf7cd9c9948cabe242d6e9659f4fa60cdf645ef775b855b9876b765a9386b7f1
-ARG ORCHESTRATION_ENGINE_COMMIT=f95ac014dba0931c62aa5ae3d8cc25f5c5921285
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=5c7201ef1c8653f62fa05ced1952921f8bbab53e36a09ea88401983144e1cd91
+ARG ORCHESTRATION_ENGINE_COMMIT=88f8a457dccce88f9b6fdb6deddcc99b9d4d3179
 ARG COMPOSE_EXECUTOR_VERSION=0.14.36
 ARG COMPOSE_EXECUTOR_COMMIT=e85545a1bc34cb5c42db62ff90dd82b7ff9f5838
 ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66
@@ -334,7 +334,7 @@ RUN set -eux; \
         exit 1; \
     fi; \
     unzip -p "${archive}" META-INF/MANIFEST.MF | tr -d '\r' | \
-        grep -Fx 'Implementation-Version: 0.183.298' >/dev/null; \
+        grep -Fx 'Implementation-Version: 0.183.301' >/dev/null; \
     test "$(grep -Ec '^WEB-INF/lib/hazelcast-5\.7\.4\.jar$' "${listing}")" -eq 1; \
     ! grep -Eq '^WEB-INF/lib/hazelcast-(5\.7\.[0-3]|5\.7\.3-pasturestack\.[0-9]+)([.-]|\.jar$)' "${listing}"; \
     old_web_root="$(readlink -f /usr/share/cattle/war)"; \
@@ -364,10 +364,10 @@ RUN set -eux; \
         test -d "${new_web_root}/WEB-INF/lib"; \
     fi; \
     resources_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name 'cattle-resources-0.183.298.jar' -print -quit)"; \
+        -name 'cattle-resources-0.183.301.jar' -print -quit)"; \
     test -n "${resources_jar}"; \
     app_config_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name 'cattle-app-config-0.183.298.jar' -print -quit)"; \
+        -name 'cattle-app-config-0.183.301.jar' -print -quit)"; \
     test -n "${app_config_jar}"; \
     unzip -p "${app_config_jar}" META-INF/cattle/api-server/defaults.properties | \
         grep -Fx 'supported.docker.range=~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2' >/dev/null; \
@@ -477,13 +477,13 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.439" \
+      org.opencontainers.image.version="v1.6.440" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.431" \
       org.opencontainers.image.base.digest="sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.439
-ENV CATTLE_CATTLE_VERSION=v0.183.298
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.440
+ENV CATTLE_CATTLE_VERSION=v0.183.301
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_PACKAGE_VERSION=${CURL_PACKAGE_VERSION}
 ENV PASTURESTACK_GLIBC_CVE_2026_18374_FIX=not-in-execute-path
@@ -506,6 +506,6 @@ ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=${VSPHERE_CLI_BUNDLE_VERSION}
 ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_COMMIT=${VSPHERE_CLI_BUNDLE_COMMIT}
 ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256}
 ENV PASTURESTACK_GOVC_BINARY_SHA256=${GOVC_BINARY_SHA256}
-ENV PASTURESTACK_CATALOG_COMMIT=b083630a34d1a9a1cf48006389187bcf90a6b4da
-ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"b083630a34d1a9a1cf48006389187bcf90a6b4da"}}}'
-ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"b083630a34d1a9a1cf48006389187bcf90a6b4da"}}}'
+ENV PASTURESTACK_CATALOG_COMMIT=e082033ba3c12b5f5cfcae93ff1d6f50d5440d07
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"e082033ba3c12b5f5cfcae93ff1d6f50d5440d07"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"e082033ba3c12b5f5cfcae93ff1d6f50d5440d07"}}}'
