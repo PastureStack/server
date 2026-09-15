@@ -11,7 +11,7 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.441` combines Orchestration Engine `0.183.303`, Node Agent `0.13.27`,
+`v1.6.442` combines Orchestration Engine `0.183.303`, Node Agent `0.13.27`,
 Authentication Service `0.4.37`, and the reviewed Ember 7.2 Web Console
 `1.6.118`.
 
@@ -78,7 +78,7 @@ Orchestration Engine `v0.183.301` restores every upgraded child service's prior
 launch configuration before scheduling a Catalog stack rollback. See
 [v1.6.440 release notes](docs/releases/server-1.6.440.md).
 
-`v1.6.441` fixes the same-origin, cross-tab authentication race and the OIDC
+`v1.6.442` fixes the same-origin, cross-tab authentication race and the OIDC
 site-access policy save regression. Web Console `1.6.118` separates explicit
 logout from passive authentication failures,
 serializes login commit and logout through a fail-closed cross-tab mutex, and
@@ -89,7 +89,7 @@ revocation, and serializes restricted-session replacement. Authentication
 Service `v0.4.37` distinguishes an OIDC identity-source change from a policy-only
 update, normalizes the allowlist, and consumes an actor-, purpose-, and
 request-digest-bound one-use MFA confirmation when access is broadened. See
-[v1.6.441 release notes](docs/releases/server-1.6.441.md).
+[v1.6.442 release notes](docs/releases/server-1.6.442.md).
 
 Docker Engine `29.4.1` through `29.7.2` is represented as one bounded SemVer
 compatibility interval, with `29.8.0` supported explicitly. Hosts on
@@ -305,7 +305,7 @@ volume and storage-driver validation.
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.441
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.442
 ```
 
 Keep operational image references in semantic `vMAJOR.MINOR.PATCH` form. The matching GitHub Release records the resolved digest for verification without exposing digest-qualified strings to the platform UI. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
@@ -317,7 +317,7 @@ without trusting arbitrary forwarded headers:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.441
+    image: ghcr.io/pasturestack/server:v1.6.442
     restart: unless-stopped
     ports:
       - "8080:8080"

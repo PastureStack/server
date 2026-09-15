@@ -530,12 +530,12 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.441" \
+      org.opencontainers.image.version="v1.6.442" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.431" \
       org.opencontainers.image.base.digest="sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.441
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.442
 ENV CATTLE_CATTLE_VERSION=v0.183.303
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_PACKAGE_VERSION=${CURL_PACKAGE_VERSION}

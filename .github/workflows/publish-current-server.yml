@@ -512,7 +512,6 @@ jobs:
               server.vendor-pending.json \
               server-security-scan-raw.json \
               server-security-scan.json \
-              server-secrets.tsv \
               server-vulnerabilities-raw.tsv \
               server-vulnerabilities-unresolved.tsv \
               server.cdx.json \
@@ -546,6 +545,20 @@ jobs:
             "$evidence/server-vulnerabilities-unresolved.tsv" \
             "$evidence/server.cdx.json" \
             "$evidence/vendor-pending-summary.txt"
+
+          {
+            printf 'SHA256SUMS\tsha256:%s\n' \
+              "$(sha256sum "$evidence/SHA256SUMS" | awk '{print $1}')"
+            awk '{ print $2 "\tsha256:" $1 }' "$evidence/SHA256SUMS"
+          } | LC_ALL=C sort >"$evidence/release-assets-expected.tsv"
+          gh release view "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --json assets \
+            --jq '.assets[] | [.name, .digest] | @tsv' |
+            LC_ALL=C sort >"$evidence/release-assets-published.tsv"
+          diff -u \
+            "$evidence/release-assets-expected.tsv" \
+            "$evidence/release-assets-published.tsv"
 
       - name: Retain workflow evidence
         if: always()
