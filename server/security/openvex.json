@@ -1,9 +1,9 @@
 {
   "@context": "https://openvex.dev/ns/v0.2.0",
-  "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.440",
+  "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.441",
   "author": "PastureStack Security",
-  "timestamp": "2026-09-12T11:16:05+08:00",
-  "version": 23,
+  "timestamp": "2026-09-15T15:07:00+08:00",
+  "version": 24,
   "statements": [
     {
       "vulnerability": {
@@ -660,7 +660,7 @@
       ],
       "status": "not_affected",
       "justification": "vulnerable_code_not_present",
-      "impact_statement": "After upgrading Host Provisioner and Compose Executor to x/crypto v0.56.0, only the checksum-pinned authentication-service binary retains module v0.55.0. Its exact v0.4.36 source and vendored dependency graph import md4/ripemd160 but no golang.org/x/crypto/ssh package. These two advisories require SSH channel dispatch, which is absent from that binary. This statement must not be reused for an SSH-bearing v0.55.0 binary."
+      "impact_statement": "After upgrading Host Provisioner and Compose Executor to x/crypto v0.56.0, only the checksum-pinned authentication-service binary retains module v0.55.0. Its exact v0.4.37 source at 48c3f9e850b4f91f8ea8ee78bf7c3b206464a4cb and vendored dependency graph import md4/ripemd160 but no golang.org/x/crypto/ssh package. These two advisories require SSH channel dispatch, which is absent from that binary. This statement must not be reused for an SSH-bearing v0.55.0 binary."
     },
     {
       "vulnerability": {
@@ -673,7 +673,7 @@
       ],
       "status": "not_affected",
       "justification": "vulnerable_code_not_present",
-      "impact_statement": "After upgrading Host Provisioner and Compose Executor to x/crypto v0.56.0, only the checksum-pinned authentication-service binary retains module v0.55.0. Its exact v0.4.36 source and vendored dependency graph import md4/ripemd160 but no golang.org/x/crypto/ssh package. These two advisories require SSH channel dispatch, which is absent from that binary. This statement must not be reused for an SSH-bearing v0.55.0 binary."
+      "impact_statement": "After upgrading Host Provisioner and Compose Executor to x/crypto v0.56.0, only the checksum-pinned authentication-service binary retains module v0.55.0. Its exact v0.4.37 source at 48c3f9e850b4f91f8ea8ee78bf7c3b206464a4cb and vendored dependency graph import md4/ripemd160 but no golang.org/x/crypto/ssh package. These two advisories require SSH channel dispatch, which is absent from that binary. This statement must not be reused for an SSH-bearing v0.55.0 binary."
     },
     {
       "vulnerability": {

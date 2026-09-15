@@ -124,11 +124,17 @@ def main():
     denied = call('PUT', path, {'issuer': 'Must not save'}, expected=(401,))
     check('policy-requires-step-up', denied['code'] == 'MfaReauthenticationRequired')
 
-    def confirm(codes, bearer=None):
-        challenge = operation({'operation': 'beginSecurityConfirmation'}, bearer)
+    def confirm(codes, bearer=None, purpose=None, request_digest=None):
+        binding = {}
+        if purpose is not None:
+            binding['purpose'] = purpose
+        if request_digest is not None:
+            binding['requestDigest'] = request_digest
+        challenge = operation(dict({'operation': 'beginSecurityConfirmation'}, **binding), bearer)
         assert 'recoveryCode' in challenge['methods'] and 'totp' in challenge['methods']
-        result = operation({'operation': 'confirmSecurityConfirmation', 'challengeId': challenge['challengeId'],
-                            'method': 'recoveryCode', 'recoveryCode': codes.pop()}, bearer)
+        result = operation(dict({'operation': 'confirmSecurityConfirmation',
+                                 'challengeId': challenge['challengeId'],
+                                 'method': 'recoveryCode', 'recoveryCode': codes.pop()}, **binding), bearer)
         return result['securityConfirmation']
 
     ticket = confirm(recovery_codes)
@@ -138,6 +144,50 @@ def main():
     denied = call('PUT', path, {'issuer': 'Replay must not save', 'securityConfirmation': ticket}, expected=(401,))
     check('ticket-replay-rejected', denied['code'] == 'MfaReauthenticationRequired')
     check('replay-did-not-write', call('GET', path)['issuer'] == 'MFA confirmed')
+
+    policy_purpose = 'oidcAccessPolicyUpdate'
+    policy_digest = hashlib.sha256(b'PastureStack disposable OIDC access policy').hexdigest()
+    bound_ticket = confirm(recovery_codes, purpose=policy_purpose, request_digest=policy_digest)
+    consumed = operation({'operation': 'consumeSecurityConfirmation',
+                          'securityConfirmation': bound_ticket,
+                          'purpose': policy_purpose,
+                          'requestDigest': policy_digest})
+    check('bound-policy-confirmation-consumed', consumed['status'] == 'securityConfirmationConsumed')
+    replay = operation({'operation': 'consumeSecurityConfirmation',
+                        'securityConfirmation': bound_ticket,
+                        'purpose': policy_purpose,
+                        'requestDigest': policy_digest}, expected=(401,))
+    check('bound-policy-confirmation-replay-rejected', replay['code'] == 'MfaReauthenticationRequired')
+
+    oidc_candidate = {
+        'provider': 'oidcconfig',
+        'enabled': True,
+        'accessMode': 'unrestricted',
+        'allowedIdentities': [{'externalIdType': 'oidc_user', 'externalId': 'must-be-cleared'}],
+        'oidcConfig': {
+            'displayName': 'Disposable OIDC QA',
+            'wellKnownUrl': 'https://oidc.invalid.example/.well-known/openid-configuration',
+            'clientId': 'disposable-client',
+            'clientSecret': 'not-a-real-secret',
+            'scopes': 'openid email groups',
+            'usePkce': True,
+            'usernameClaim': 'sub',
+            'displayNameClaim': 'name',
+            'emailClaim': 'email',
+            'groupsClaim': 'groups',
+        },
+    }
+    recovery_required = call('POST', '/v1-auth/config', oidc_candidate, expected=(403,))
+    check('oidc-source-change-stable-recovery-error',
+          recovery_required['code'] == 'LocalRecoveryRequired')
+    invalid_candidate = dict(oidc_candidate)
+    invalid_candidate['accessMode'] = 'restricted'
+    invalid_candidate['allowedIdentities'] = [
+        {'externalIdType': 'github_user', 'externalId': 'not-an-oidc-principal'}]
+    invalid_identity = call('POST', '/v1-auth/config', invalid_candidate, expected=(422,))
+    check('oidc-invalid-principal-stable-error',
+          invalid_identity['code'] == 'InvalidAllowedIdentity')
+
     pk = operation({'operation': 'beginPasskeyEnrollment', 'securityConfirmation': confirm(recovery_codes)})
     public_key = pk['publicKey']
     if isinstance(public_key, str):

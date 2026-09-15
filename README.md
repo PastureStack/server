@@ -11,9 +11,9 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.440` combines Orchestration Engine `0.183.301`, Node Agent `0.13.27`,
-Authentication Service `0.4.36`, and the reviewed Ember 7.2 Web Console
-`1.6.116`.
+`v1.6.441` combines Orchestration Engine `0.183.303`, Node Agent `0.13.27`,
+Authentication Service `0.4.37`, and the reviewed Ember 7.2 Web Console
+`1.6.118`.
 
 The inherited `v1.6.429` runtime repairs the embedded Host API `0.38.4`
 package for fresh host registration. The original executable and installer
@@ -78,6 +78,19 @@ Orchestration Engine `v0.183.301` restores every upgraded child service's prior
 launch configuration before scheduling a Catalog stack rollback. See
 [v1.6.440 release notes](docs/releases/server-1.6.440.md).
 
+`v1.6.441` fixes the same-origin, cross-tab authentication race and the OIDC
+site-access policy save regression. Web Console `1.6.118` separates explicit
+logout from passive authentication failures,
+serializes login commit and logout through a fail-closed cross-tab mutex, and
+adopts a newly committed session in every open tab without storing JWTs in Web
+Storage. Orchestration Engine `v0.183.303` binds new tokens to the committing
+browser generation, makes deletion idempotent, rejects mismatched stale-tab
+revocation, and serializes restricted-session replacement. Authentication
+Service `v0.4.37` distinguishes an OIDC identity-source change from a policy-only
+update, normalizes the allowlist, and consumes an actor-, purpose-, and
+request-digest-bound one-use MFA confirmation when access is broadened. See
+[v1.6.441 release notes](docs/releases/server-1.6.441.md).
+
 Docker Engine `29.4.1` through `29.7.2` is represented as one bounded SemVer
 compatibility interval, with `29.8.0` supported explicitly. Hosts on
 an in-range version such as `29.6.2` are therefore reported as supported.
@@ -89,7 +102,7 @@ remains excluded; modal and dropdown behavior stays in the reviewed
 first-party compatibility layer.
 
 The same release replaces every vulnerable Go 1.26.5 executable found by the
-finished-image scan with a Go 1.27.0 build: Authentication Service `0.4.36`,
+finished-image scan with a Go 1.27.0 build: Authentication Service `0.4.37`,
 Catalog Service `0.20.11`, Compose Executor `0.14.36`, Host Provisioner
 `0.39.7`, Secret Delivery API `0.3.1`, Usage Telemetry Agent `0.4.1`, Webhook
 Automation Service `0.10.1`, WebSocket Proxy `0.23.14`, vSphere CLI Bundle
@@ -174,7 +187,7 @@ The Web Console formats schema-validation field names without legacy String
 prototype extensions, so a missing localized field label cannot leave a
 container or service form stuck in the saving state.
 
-Web Console `1.6.116` preserves the Server `v1.6.358` authenticated visual and
+Web Console `1.6.118` preserves the Server `v1.6.358` authenticated visual and
 layout contract through a provenance-bound presentation layer while retaining
 Ember 7.2, the Bootstrap 5.3.8 JavaScript runtime, current security fixes, MFA,
 and adds permission-scoped incident filters and XLSX, CSV, and JSON export to
@@ -199,6 +212,25 @@ stable query-input routing applies to virtual-machine, load-balancer,
 external-service, and alias creation routes.
 Advanced key/value inputs also show the localized value hint instead of an
 untranslated key.
+Authentication ownership is now explicit per browser generation. Only a
+user-initiated logout can revoke the bound server token; stale 401 responses,
+403 permission failures, storage notifications, timers, route errors, and
+WebSocket disconnects cannot send token DELETE requests. A successful login
+commits the cookie before generation metadata, and other same-origin tabs
+validate and adopt that session without repeating OIDC, TOTP, or Passkey.
+JWTs remain in the cookie and per-tab memory only; localStorage stores only the
+non-secret generation, account ID, and commit time.
+OIDC site-access updates now follow the same explicit ownership boundary.
+Changing only `accessMode` or `allowedIdentities` on an already enabled,
+unchanged OIDC provider does not rerun discovery or require a fresh local
+recovery ceremony. Initial enablement, provider switches, and identity-source
+changes still require fresh local recovery. Broadening access consumes a
+single-use MFA confirmation bound to the administrator,
+`oidcAccessPolicyUpdate` purpose, and canonical request digest. `unrestricted`
+always stores an empty allowlist;
+restricted policies accept only deduplicated `oidc_user` and `oidc_group`
+principals. Stable API error codes distinguish recovery, MFA, and invalid
+identity failures.
 The shared resource-action menu closes before its selected action is
 dispatched, so opening account editing or another modal cannot leave the row
 menu layered above the form. The same lifecycle rule covers every resource
@@ -249,7 +281,7 @@ The release also patches the transitive build dependency `nanoid` to `3.3.18`,
 pins Node.js `24.20.0` and npm `12.0.2`, and fails closed when the current
 npm advisory service reports a Critical or High finding.
 
-Authentication Service `0.4.36` is installed from its checksum-verified public
+Authentication Service `0.4.37` is installed from its checksum-verified public
 release without replacing the established launch wrapper. The packaged image
 requires the reviewed archive digest, extracted-binary digest, exact source
 commit, static binary, and exact version output before publication.
@@ -273,7 +305,7 @@ volume and storage-driver validation.
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.440
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.441
 ```
 
 Keep operational image references in semantic `vMAJOR.MINOR.PATCH` form. The matching GitHub Release records the resolved digest for verification without exposing digest-qualified strings to the platform UI. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
@@ -285,7 +317,7 @@ without trusting arbitrary forwarded headers:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.440
+    image: ghcr.io/pasturestack/server:v1.6.441
     restart: unless-stopped
     ports:
       - "8080:8080"
