@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "release": "v1.6.440",
-  "generatedAt": "2026-09-12T03:30:48Z",
+  "release": "v1.6.441",
+  "generatedAt": "2026-09-15T07:07:00Z",
   "policy": {
     "allowedSeverities": [
       "LOW",
