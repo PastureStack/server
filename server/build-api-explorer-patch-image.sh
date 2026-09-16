@@ -17,10 +17,10 @@ revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.431@sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
-orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.305}
-orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.305.jar}
-orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-0dd4afba50f38f17044b84e052a335062fa7842503bd1e7edf7482ebf3470ee7}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-6c3fb21879dd5df01f222392ecb4c66b92b91db5}
+orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.306}
+orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.306.jar}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-101602f153271632caac133dd2b695f7903c0e3a7e7353ce356c7ccedda9ebb4}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-f96c3018d95a25390764bc586bd1dfddf761b470}
 api_explorer_release_base_url=${API_EXPLORER_RELEASE_BASE_URL:-https://github.com/PastureStack/api-explorer/releases/download}
 api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.18}
 api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
@@ -166,7 +166,7 @@ image_environment=$(docker image inspect "$image" \
 for marker in \
     CATTLE_RANCHER_SERVER_VERSION=v1.6.443 \
     CATTLE_API_UI_VERSION=1.1.18 \
-    CATTLE_CATTLE_VERSION=v0.183.305 \
+    CATTLE_CATTLE_VERSION=v0.183.306 \
     RC16_GO_AGENT_VERSION=0.13.27 \
     RC16_WINDOWS_AGENT_VERSION=0.13.27 \
     RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-0.13.27.tar.gz \
@@ -279,7 +279,7 @@ docker run --rm --entrypoint bash "$image" -lc '
     web_root=$(readlink -f /usr/share/cattle/war)
     test "${web_root}" = "/usr/share/cattle/${engine_hash}"
     resources_jar=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-resources-0.183.305.jar" -print -quit)
+        -name "cattle-resources-0.183.306.jar" -print -quit)
     test -n "${resources_jar}"
     unzip -p "${resources_jar}" db/core-124.xml |
         grep -F "pasturestack-catalog-pinned-commit" >/dev/null
@@ -290,6 +290,8 @@ docker run --rm --entrypoint bash "$image" -lc '
     app_config_jar=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
         -name "cattle-app-config-*.jar" -print -quit)
     test -n "${app_config_jar}"
+    unzip -p "${app_config_jar}" META-INF/cattle/iaas-api/defaults.properties |
+        grep -Fx "auth.service.external.id.types=github_user,github_org,github_team,shibboleth_user,shibboleth_group,ldap_user,ldap_group,oidc_user,oidc_group" >/dev/null
     unzip -p "${app_config_jar}" META-INF/cattle/api-server/defaults.properties |
         grep -Fx "supported.docker.range=~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0" >/dev/null
     unzip -p "${app_config_jar}" META-INF/cattle/api-server/defaults.properties |
@@ -423,9 +425,9 @@ docker run --rm --entrypoint bash "$image" -lc '
         /usr/share/cattle/war/translations/zh-tw.json >/dev/null
     unzip -p /usr/share/cattle/cattle.jar META-INF/MANIFEST.MF |
         tr -d "\r" |
-        grep -Fx "Implementation-Version: 0.183.305" >/dev/null
+        grep -Fx "Implementation-Version: 0.183.306" >/dev/null
     resources_jar=$(find /usr/share/cattle/war/WEB-INF/lib -maxdepth 1 -type f \
-        -name "cattle-resources-0.183.305.jar" -print -quit)
+        -name "cattle-resources-0.183.306.jar" -print -quit)
     test -n "${resources_jar}"
     unzip -p "${resources_jar}" schema/base/mfaOperation.json |
         grep -F "oidcAccessPolicyUpdate" >/dev/null
