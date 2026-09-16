@@ -25,7 +25,7 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.443` assembly consumes Orchestration Engine `v0.183.308`,
+The current `v1.6.444` assembly consumes Orchestration Engine `v0.183.309`,
 Web Console package `1.6.119`, Authentication Service `v0.4.38`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
 Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
@@ -55,11 +55,15 @@ operator, `oidcAccessPolicyUpdate` purpose, and canonical request digest.
 database. Restricted allowlists contain only deduplicated `oidc_user` and
 `oidc_group` principals, while stable error codes preserve the client contract.
 The same two identity types are present in the default external-identity list
-and generated project-member schema. Engine `v0.183.308` makes schema creation
+and generated project-member schema. Engine `v0.183.309` makes schema creation
 wait for completed configuration startup, loads the reviewed list from the
 packaged runtime defaults, then merges base and configured
 options in stable deduplicated order. Unknown types remain rejected, and the
 configured-provider state is restored from persisted settings after restart.
+The `/v1-auth` proxy preserves the caller's PastureStack authorization for an
+exact `POST /v1-auth/config`, so the actor-bound policy confirmation reaches
+the Authentication Service. Provider-backed reads continue to receive the
+external identity-provider token; unrelated proxy routes are unchanged.
 New browser tokens keep the create-only `clientSessionId` field through the
 dynamic authorization overlay and the frozen `base`, `superadmin`, and `token`
 v1 schemas. Explicit logout normalizes a cookie's bare key and a
