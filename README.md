@@ -11,7 +11,7 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.443` combines Orchestration Engine `0.183.308`, Node Agent `0.13.27`,
+`v1.6.444` combines Orchestration Engine `0.183.309`, Node Agent `0.13.27`,
 Authentication Service `0.4.38`, and the reviewed Ember 7.2 Web Console
 `1.6.119`.
 
@@ -101,6 +101,15 @@ update, suppresses the provider reload generation for the policy-only path,
 normalizes the allowlist, and consumes an actor-, purpose-, and
 request-digest-bound one-use MFA confirmation when access is broadened. See
 [v1.6.443 release notes](docs/releases/server-1.6.443.md).
+
+`v1.6.444` closes the remaining OIDC policy-save boundary defect. The proxy
+now preserves the authenticated PastureStack operator credential for
+`POST /v1-auth/config`; it continues to use the external identity-provider
+token only for provider-backed reads such as identity enrichment. A valid,
+actor-bound MFA confirmation can therefore reach the policy service instead
+of being replaced before verification. Other `/v1-auth` routes retain their
+existing provider-token behavior. See
+[v1.6.444 release notes](docs/releases/server-1.6.444.md).
 
 Docker Engine `29.4.1` through `29.7.2` is represented as one bounded SemVer
 compatibility interval, with `29.8.0` supported explicitly. Hosts on
@@ -325,7 +334,7 @@ volume and storage-driver validation.
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.443
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.444
 ```
 
 Keep operational image references in semantic `vMAJOR.MINOR.PATCH` form. The matching GitHub Release records the resolved digest for verification without exposing digest-qualified strings to the platform UI. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
@@ -337,7 +346,7 @@ without trusting arbitrary forwarded headers:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.443
+    image: ghcr.io/pasturestack/server:v1.6.444
     restart: unless-stopped
     ports:
       - "8080:8080"
