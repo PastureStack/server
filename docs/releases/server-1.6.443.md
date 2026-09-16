@@ -11,9 +11,9 @@ unchanged.
 - Web Console `1.6.119`, commit
   `82211b731a90cdf5d3e213ee70bff34f10f28a63`, artifact SHA-256
   `9079db43bbad557367285fdc0f75286fcf39ba54b57c7ee2adee9d4472774df7`.
-- Orchestration Engine `v0.183.307`, commit
-  `a058fc51fe4160496cfff4ace00b92ea32e3a281`, artifact SHA-256
-  `41a1c9c32cee1c76c51c25e2381408166a7b869f244a8718c82e7d8fe8d9c782`.
+- Orchestration Engine `v0.183.308`, commit
+  `299ecf9252671db336aa6fb84adb7407786857e1`, artifact SHA-256
+  `9535af2c2ad3635912f3cda32699c0756311e3d0fe7eeff34b52dc83a1e20275`.
 - Authentication Service `v0.4.38`, commit
   `d6689f6139b4f5edc99a5c3336b80da80f487e16`, release archive SHA-256
   `4715e014599684072fd80da0824db22b21fe40d34dd47a7db3acec66e8d7b29d`,
@@ -29,8 +29,10 @@ fail-closed cross-tab mutex. Passive
 401, storage, WebSocket, timer, and route errors never revoke a server token,
 and a stale tab cannot delete a newer generation's token. JWTs remain outside
 Web Storage. A matching explicit logout is idempotent and bound to the client
-session generation. Orchestration Engine 0.183.307 preserves the create-only
-`clientSessionId` through the shipped token authorization overlay and
+session generation. Orchestration Engine 0.183.308 preserves the create-only
+`clientSessionId` through both the shipped token authorization overlay and the
+frozen `base`, `superadmin`, and `token` v1 schemas, so neither `/v1/token` nor
+`/v2-beta/token` can silently downgrade a new token to legacy ownership. It
 normalizes both cookie bare keys and `Authorization: Bearer` values before the
 database ownership lookup. The assembled Server therefore revokes a matching
 explicit session while stale or malformed requests remain idempotent no-ops.
@@ -64,7 +66,7 @@ exception. The load-balancer service selector now writes through the owning
 `PortRule.serviceId`; editing PUT payloads and reloads preserve the selected
 backend.
 
-Orchestration Engine 0.183.307 makes the core schema factory wait for completed
+Orchestration Engine 0.183.308 makes the core schema factory wait for completed
 configuration startup and loads the reviewed external identity list from the
 packaged runtime defaults before parsing public schemas. The reviewed
 `oidc_user` and `oidc_group` defaults therefore appear in the integrated v1 and
@@ -77,7 +79,8 @@ allowlist. Provider presence is not an authorization bypass.
 
 The Server assembly verifies the Authentication Service release archive,
 Web Console tar, Orchestration Engine JAR, their source commits and SHA-256
-coordinates, the token session overlay, OIDC identity defaults, and policy
+coordinates, the token session overlay, all three frozen v1 token schemas,
+OIDC identity defaults, and policy
 error markers before publication. The source gate also verifies that v1.6.443 README,
 compatibility documentation, OpenVEX, vendor-pending register, and this release
 record all name the same immutable coordinates.
