@@ -32,10 +32,10 @@ web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.119.tar.gz}
 web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-9079db43bbad557367285fdc0f75286fcf39ba54b57c7ee2adee9d4472774df7}
 web_console_commit=${WEB_CONSOLE_COMMIT:-82211b731a90cdf5d3e213ee70bff34f10f28a63}
 authentication_service_release_base_url=${AUTHENTICATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/authentication-service/releases/download}
-authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.38}
-authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-d6689f6139b4f5edc99a5c3336b80da80f487e16}
-authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-4715e014599684072fd80da0824db22b21fe40d34dd47a7db3acec66e8d7b29d}
-authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-5e6111fc17f8dd352ca844f66bc8ce3ec0bc0782941de2890cdde2ec825d575f}
+authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.39}
+authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-3217b783222bcdf9a25ff0ba4a2a64a6b5e99c66}
+authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-b2def9ebdf819cefa731c1b0a37c904a317d4e3d040738beef3f118f8d8d4e00}
+authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-c28e083eeefc327b3ee58208e15946dd727e77150dced61ec743c28533985dba}
 websocket_proxy_release_base_url=${WEBSOCKET_PROXY_RELEASE_BASE_URL:-https://github.com/PastureStack/websocket-proxy/releases/download}
 websocket_proxy_version=${WEBSOCKET_PROXY_VERSION:-0.23.14}
 websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-3b5788bdc52f4edab0097a3d97afccf138c64089}
@@ -51,7 +51,7 @@ vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-bebcc1c02
 govc_binary_sha256=${GOVC_BINARY_SHA256:-f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.444}
+image=${IMAGE:-pasturestack-validation/server:v1.6.445}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -150,7 +150,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.444
+    v1.6.445
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -164,7 +164,7 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.444 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.445 \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION=v0.183.309 \
     RC16_GO_AGENT_VERSION=0.13.27 \
@@ -449,7 +449,7 @@ docker run --rm --entrypoint bash "$image" -lc '
         sha256sum -c -
     rm -f /tmp/hazelcast.jar
     cat <<'"'"'EOF'"'"' | sha256sum -c -
-5e6111fc17f8dd352ca844f66bc8ce3ec0bc0782941de2890cdde2ec825d575f  /usr/bin/authentication-service.real
+c28e083eeefc327b3ee58208e15946dd727e77150dced61ec743c28533985dba  /usr/bin/authentication-service.real
 ccfc75831678df31f58b327b3177da6f40d31603ab329af7bdf700a8513ea329  /usr/bin/catalog-service.real
 e5c517bc7beb6857c12a7df1ffee93d87499107e12ddeca758297b930f0bb4d1  /usr/bin/catalog-service-sqlite
 1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d  /usr/bin/compose-executor.real
@@ -475,7 +475,7 @@ EOF
         test -x "${binary}"
         grep -aF "go1.27.0" "${binary}" >/dev/null
     done
-    /usr/bin/authentication-service.real --version | grep -F "0.4.38" >/dev/null
+    /usr/bin/authentication-service.real --version | grep -F "0.4.39" >/dev/null
     for marker in \
         oidcAccessPolicyUpdate \
         LocalRecoveryRequired \
