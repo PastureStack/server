@@ -19,11 +19,11 @@ and an installed vulnerable implementation are not the same evidence.
   Main validation run `34137894997` and security run `34137895006` passed; the
   downloaded release archive and executable hashes match both main CI artifacts.
 - **Authentication Service:** the same module-level findings do not contain the
-  affected package in the pinned `v0.4.37` product. Source revision
-  `48c3f9e850b4f91f8ea8ee78bf7c3b206464a4cb`, release archive SHA-256
-  `5f749bc205443c27d696523ad470242365061bb25ab79fd1a09a1510465dbfa6`, and
+  affected package in the pinned `v0.4.38` product. Source revision
+  `d6689f6139b4f5edc99a5c3336b80da80f487e16`, release archive SHA-256
+  `4715e014599684072fd80da0824db22b21fe40d34dd47a7db3acec66e8d7b29d`, and
   extracted binary SHA-256
-  `11a61ce9c85350207374b1552dd60a0b44c87bea1a8727925ff5c286b8f3f47f`
+  `5e6111fc17f8dd352ca844f66bc8ce3ec0bc0782941de2890cdde2ec825d575f`
   import `md4` and `ripemd160` through
   LDAP/SAML dependencies, not `golang.org/x/crypto/ssh`. The exact module/package
   graph and the vendored source were checked. The v0.55.0 applicability statement
