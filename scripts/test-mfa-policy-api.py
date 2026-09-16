@@ -56,6 +56,22 @@ def main():
     def client_session_id():
         return f'{int(time.time() * 1000):013d}.{secrets.token_hex(32)}'
 
+    session_header = 'X-PastureStack-Client-Session-Id'
+
+    def verify_session_bound_token(api_root, issued_token, generation, label):
+        """Verify the observable ownership contract on one concrete API surface."""
+        call('DELETE', api_root + '/token/current', expected=(204,), bearer=issued_token,
+             extra_headers={session_header: client_session_id()})
+        check(label + '-mismatched-delete-preserves-token',
+              call('GET', api_root + '/accounts', bearer=issued_token).get('type') == 'collection')
+        call('DELETE', api_root + '/token/current', expected=(204,), bearer=issued_token,
+             extra_headers={session_header: generation})
+        call('GET', api_root + '/accounts', expected=(401,), bearer=issued_token)
+        check(label + '-matching-delete-revokes-token', True)
+        call('DELETE', api_root + '/token/current', expected=(204,), bearer=issued_token,
+             extra_headers={session_header: generation})
+        check(label + '-repeated-delete-is-idempotent', True)
+
     config = call('GET', '/v1-auth/config')
     assert config.get('enabled') is False, 'refusing an initialized authentication system'
     accounts = call('GET', api + '/accounts')['data']
@@ -237,15 +253,16 @@ def main():
           ('method', 'recoveryCode', 'securityConfirmation', 'methods', 'webAuthnOptions')))
     user_codes = enroll(normal_token)
     check('ordinary-user-step-up-flow', bool(confirm(user_codes, normal_token)))
-    session_header = 'X-PastureStack-Client-Session-Id'
-    call('DELETE', api + '/token/current', expected=(204,), bearer=normal_token,
-         extra_headers={session_header: client_session_id()})
-    check('mismatched-session-delete-preserves-token',
-          call('GET', api + '/accounts', bearer=normal_token).get('type') == 'collection')
-    call('DELETE', api + '/token/current', expected=(204,), bearer=normal_token,
-         extra_headers={session_header: normal_session})
-    call('GET', api + '/accounts', expected=(401,), bearer=normal_token)
-    check('matching-session-delete-revokes-token', True)
+    verify_session_bound_token('/v1', normal_token, normal_session, 'v1-session-bound-token')
+
+    v2_session = client_session_id()
+    v2_login = call('POST', '/v2-beta/token', {
+        'code': normal_name + ':' + password,
+        'authProvider': 'localAuthConfig',
+        'clientSessionId': v2_session,
+    }, bearer='')
+    verify_session_bound_token('/v2-beta', v2_login['jwt'], v2_session,
+                               'v2-session-bound-token')
     final_policy = call('GET', path)
     check('partial-updates-preserve-advanced-policy', all(final_policy.get(k) == v for k, v in policy.items()))
     for version in ('v1', 'v2-beta'):
