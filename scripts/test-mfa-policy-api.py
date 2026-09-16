@@ -77,7 +77,12 @@ def main():
     call('POST', '/v1/localauthconfigs', local)
     check('authenticated-administrator', call('GET', api + '/accounts').get('type') == 'collection')
 
-    token_fields = call('GET', api + '/schemas/token')['resourceFields']
+    # Token is registered by the v1 Extension schema factory.  The v2-beta
+    # token route is intentionally re-routed to the same resource manager, but
+    # it is not part of the v2 Core schema collection.  Inspect the owning
+    # schema here; the create/delete calls below still exercise the selected
+    # API version end to end.
+    token_fields = call('GET', '/v1/schemas/token')['resourceFields']
     client_session_field = token_fields['clientSessionId']
     check('token-client-session-create-contract', client_session_field['create']
           and not client_session_field['update'])
