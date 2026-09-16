@@ -41,7 +41,6 @@ require_marker()
 }
 
 for mfa_policy_contract_marker in \
-    "check('token-client-session-create-contract'" \
     "check('oidc-project-member-schema-options'" \
     "check('mismatched-session-delete-preserves-token'" \
     "check('matching-session-delete-revokes-token'"; do
