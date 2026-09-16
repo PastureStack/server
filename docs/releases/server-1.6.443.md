@@ -11,9 +11,9 @@ unchanged.
 - Web Console `1.6.119`, commit
   `82211b731a90cdf5d3e213ee70bff34f10f28a63`, artifact SHA-256
   `9079db43bbad557367285fdc0f75286fcf39ba54b57c7ee2adee9d4472774df7`.
-- Orchestration Engine `v0.183.305`, commit
-  `6c3fb21879dd5df01f222392ecb4c66b92b91db5`, artifact SHA-256
-  `0dd4afba50f38f17044b84e052a335062fa7842503bd1e7edf7482ebf3470ee7`.
+- Orchestration Engine `v0.183.306`, commit
+  `f96c3018d95a25390764bc586bd1dfddf761b470`, artifact SHA-256
+  `101602f153271632caac133dd2b695f7903c0e3a7e7353ce356c7ccedda9ebb4`.
 - Authentication Service `v0.4.38`, commit
   `d6689f6139b4f5edc99a5c3336b80da80f487e16`, release archive SHA-256
   `4715e014599684072fd80da0824db22b21fe40d34dd47a7db3acec66e8d7b29d`,
@@ -29,7 +29,7 @@ fail-closed cross-tab mutex. Passive
 401, storage, WebSocket, timer, and route errors never revoke a server token,
 and a stale tab cannot delete a newer generation's token. JWTs remain outside
 Web Storage. A matching explicit logout is idempotent and bound to the client
-session generation. Orchestration Engine 0.183.305 preserves the create-only
+session generation. Orchestration Engine 0.183.306 preserves the create-only
 `clientSessionId` through the shipped token authorization overlay, so the
 database binding used by that logout contract is present in the assembled
 Server rather than only in the base schema.
@@ -63,8 +63,9 @@ exception. The load-balancer service selector now writes through the owning
 `PortRule.serviceId`; editing PUT payloads and reloads preserve the selected
 backend.
 
-Orchestration Engine 0.183.305 makes the core schema factory wait for completed
-configuration startup before parsing public schemas. The reviewed
+Orchestration Engine 0.183.306 makes the core schema factory wait for completed
+configuration startup and loads the reviewed external identity list from the
+packaged runtime defaults before parsing public schemas. The reviewed
 `oidc_user` and `oidc_group` defaults therefore appear in the integrated v1 and
 v2-beta project-member options; base and configured values are merged in
 stable order without duplicates. It retains configured-provider restoration
