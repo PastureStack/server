@@ -11,7 +11,7 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.443` combines Orchestration Engine `0.183.304`, Node Agent `0.13.27`,
+`v1.6.443` combines Orchestration Engine `0.183.305`, Node Agent `0.13.27`,
 Authentication Service `0.4.38`, and the reviewed Ember 7.2 Web Console
 `1.6.119`.
 
@@ -85,10 +85,13 @@ logout from passive authentication failures,
 serializes login commit and logout through a fail-closed cross-tab mutex, and
 adopts a newly committed session in every open tab without storing JWTs in Web
 Storage. It also preserves structured top-level OIDC errors for the bounded MFA
-retry path. Orchestration Engine `v0.183.304` binds new tokens to the committing
+retry path. Orchestration Engine `v0.183.305` binds new tokens to the committing
 browser generation, makes deletion idempotent, rejects mismatched stale-tab
 revocation, serializes restricted-session replacement, and retains the
-`clientSessionId` create field in the shipped authorization overlay.
+`clientSessionId` create field in the shipped authorization overlay. Its core
+schema factory also waits for configuration startup before freezing public
+schemas, so `oidc_user` and `oidc_group` are present in the integrated v1 and
+v2-beta project-member options instead of only in the packaged defaults.
 Authentication
 Service `v0.4.38` distinguishes an OIDC identity-source change from a policy-only
 update, suppresses the provider reload generation for the policy-only path,
