@@ -14,7 +14,7 @@ runtime_vex=server/security/openvex.json
 runtime_vendor_pending=server/security/vendor-pending.json
 vendor_pending_validator=scripts/validate-vendor-pending-findings.sh
 release_notes=docs/releases/server-1.6.438.md
-current_release_notes=docs/releases/server-1.6.444.md
+current_release_notes=docs/releases/server-1.6.445.md
 host_api_repair=server/artifacts/repair-host-api-sha256.sh
 host_api_check=scripts/check-server-host-api-package.sh
 mfa_policy_smoke=scripts/test-mfa-policy-api.py
@@ -59,7 +59,7 @@ require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.431@sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
-    'org.opencontainers.image.version="v1.6.444"' \
+    'org.opencontainers.image.version="v1.6.445"' \
     SERVER_INCREMENTAL_RELEASE_VERSION_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.431"' \
@@ -68,7 +68,7 @@ require_marker "$release_dockerfile" \
     'org.opencontainers.image.base.digest="sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68"' \
     SERVER_INCREMENTAL_RELEASE_BASE_DIGEST_MISSING
 require_marker "$release_dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.444' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.445' \
     SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING
 require_marker "$release_dockerfile" \
     'COPY --from=release_artifacts /out/host-api-0.38.4.tar.gz /usr/share/cattle/artifacts/host-api-0.38.4.tar.gz' \
@@ -183,10 +183,10 @@ for release_engine_marker in \
 done
 for release_auth_marker in \
     'ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download' \
-    'ARG AUTHENTICATION_SERVICE_VERSION=0.4.38' \
-    'ARG AUTHENTICATION_SERVICE_COMMIT=d6689f6139b4f5edc99a5c3336b80da80f487e16' \
-    'ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=4715e014599684072fd80da0824db22b21fe40d34dd47a7db3acec66e8d7b29d' \
-    'ARG AUTHENTICATION_SERVICE_BINARY_SHA256=5e6111fc17f8dd352ca844f66bc8ce3ec0bc0782941de2890cdde2ec825d575f' \
+    'ARG AUTHENTICATION_SERVICE_VERSION=0.4.39' \
+    'ARG AUTHENTICATION_SERVICE_COMMIT=3217b783222bcdf9a25ff0ba4a2a64a6b5e99c66' \
+    'ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=b2def9ebdf819cefa731c1b0a37c904a317d4e3d040738beef3f118f8d8d4e00' \
+    'ARG AUTHENTICATION_SERVICE_BINARY_SHA256=c28e083eeefc327b3ee58208e15946dd727e77150dced61ec743c28533985dba' \
     'Authentication Service archive may not contain links' \
     'COPY --from=release_artifacts --chmod=0755 /out/authentication-service/authentication-service /usr/bin/authentication-service.real' \
     'ENV PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT=${AUTHENTICATION_SERVICE_COMMIT}' \
@@ -195,14 +195,14 @@ for release_auth_marker in \
         SERVER_INCREMENTAL_AUTHENTICATION_SERVICE_REPLACEMENT_MISSING
 done
 for release_auth_build_marker in \
-    'authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.38}' \
-    'authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-d6689f6139b4f5edc99a5c3336b80da80f487e16}' \
-    'authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-4715e014599684072fd80da0824db22b21fe40d34dd47a7db3acec66e8d7b29d}' \
-    'authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-5e6111fc17f8dd352ca844f66bc8ce3ec0bc0782941de2890cdde2ec825d575f}' \
+    'authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.39}' \
+    'authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-3217b783222bcdf9a25ff0ba4a2a64a6b5e99c66}' \
+    'authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-b2def9ebdf819cefa731c1b0a37c904a317d4e3d040738beef3f118f8d8d4e00}' \
+    'authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-c28e083eeefc327b3ee58208e15946dd727e77150dced61ec743c28533985dba}' \
     '--build-arg "AUTHENTICATION_SERVICE_VERSION=${authentication_service_version}"' \
     'PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT="${authentication_service_commit}"' \
-    '5e6111fc17f8dd352ca844f66bc8ce3ec0bc0782941de2890cdde2ec825d575f  /usr/bin/authentication-service.real' \
-    '/usr/bin/authentication-service.real --version | grep -F "0.4.38"'; do
+    'c28e083eeefc327b3ee58208e15946dd727e77150dced61ec743c28533985dba  /usr/bin/authentication-service.real' \
+    '/usr/bin/authentication-service.real --version | grep -F "0.4.39"'; do
     require_marker "$build_script" "$release_auth_build_marker" \
         SERVER_INCREMENTAL_AUTHENTICATION_SERVICE_BUILD_GATE_MISSING
 done
@@ -479,14 +479,14 @@ require_marker "$build_script" \
     'PASTURESTACK_CATALOG_COMMIT=e082033ba3c12b5f5cfcae93ff1d6f50d5440d07' \
     SERVER_CATALOG_VERSION_LABEL_IMAGE_GATE_MISSING
 for current_release_marker in \
-    '# Server v1.6.444' \
+    '# Server v1.6.445' \
     '`82211b731a90cdf5d3e213ee70bff34f10f28a63`' \
     '`9079db43bbad557367285fdc0f75286fcf39ba54b57c7ee2adee9d4472774df7`' \
     '`64b94f2a5c74ebf4ca3fa3737717ac02315d1565`' \
     '`f0feb5285146fd7b1f9f2cc4180913c8983dbc8a0edbc996972bec880eb97dfc`' \
-    '`d6689f6139b4f5edc99a5c3336b80da80f487e16`' \
-    '`4715e014599684072fd80da0824db22b21fe40d34dd47a7db3acec66e8d7b29d`' \
-    '`5e6111fc17f8dd352ca844f66bc8ce3ec0bc0782941de2890cdde2ec825d575f`' \
+    '`3217b783222bcdf9a25ff0ba4a2a64a6b5e99c66`' \
+    '`b2def9ebdf819cefa731c1b0a37c904a317d4e3d040738beef3f118f8d8d4e00`' \
+    '`c28e083eeefc327b3ee58208e15946dd727e77150dced61ec743c28533985dba`' \
     '`e082033ba3c12b5f5cfcae93ff1d6f50d5440d07`' \
     '## Root cause and correction' \
     '## Verification boundary' \
@@ -495,8 +495,8 @@ for current_release_marker in \
         SERVER_CURRENT_RELEASE_NOTES_IDENTITY_MISSING
 done
 for current_readme_marker in \
-    '`v1.6.444` combines Orchestration Engine `0.183.309`' \
-    'Authentication Service `0.4.38`' \
+    '`v1.6.445` combines Orchestration Engine `0.183.309`' \
+    'Authentication Service `0.4.39`' \
     'Web Console `1.6.119`' \
     'normalizes both cookie keys and `Authorization: Bearer`' \
     '`PortRule.serviceId`' \
@@ -510,7 +510,7 @@ done
 for current_compatibility_marker in \
     'Orchestration Engine `v0.183.309`' \
     'Web Console package `1.6.119`' \
-    'Authentication Service `v0.4.38`' \
+    'Authentication Service `v0.4.39`' \
     'standard `Authorization: Bearer` value' \
     'schema creation' \
     'stable deduplicated order' \
@@ -800,8 +800,8 @@ fi
 while IFS='|' read -r marker code; do
     require_marker "$dockerfile" "$marker" "$code"
 done <<'EOF'
-ARG AUTHENTICATION_SERVICE_VERSION=0.4.38|SERVER_AUTHENTICATION_SERVICE_VERSION_MISSING
-ARG AUTHENTICATION_SERVICE_BINARY_SHA256=5e6111fc17f8dd352ca844f66bc8ce3ec0bc0782941de2890cdde2ec825d575f|SERVER_AUTHENTICATION_SERVICE_HASH_MISSING
+ARG AUTHENTICATION_SERVICE_VERSION=0.4.39|SERVER_AUTHENTICATION_SERVICE_VERSION_MISSING
+ARG AUTHENTICATION_SERVICE_BINARY_SHA256=c28e083eeefc327b3ee58208e15946dd727e77150dced61ec743c28533985dba|SERVER_AUTHENTICATION_SERVICE_HASH_MISSING
 ARG CATALOG_SERVICE_VERSION=0.20.11|SERVER_CATALOG_SERVICE_VERSION_MISSING
 ARG CATALOG_SERVICE_BINARY_SHA256=ccfc75831678df31f58b327b3177da6f40d31603ab329af7bdf700a8513ea329|SERVER_CATALOG_SERVICE_HASH_MISSING
 ARG COMPOSE_EXECUTOR_VERSION=0.14.36|SERVER_COMPOSE_EXECUTOR_VERSION_MISSING
@@ -893,7 +893,7 @@ done
 
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.444"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.445"
   and (.statements | length) == 51
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -919,7 +919,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.444 >/dev/null
+    "$vendor_pending_fixture" v1.6.445 >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
 
@@ -995,4 +995,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.444 source_base=v1.6.364 release_base=v1.6.431 release_mode=engine-web-compose-incremental orchestration=0.183.309 engine_root_reuse=validated distributed_cache=5.7.4 vsphere_cli=0.55.2 api_explorer=1.1.18 web_console=1.6.119 authentication_service=0.4.38 websocket_proxy=0.23.14 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=modal-close-before-dispatch service_log_filters=service-scoped service_restart_events=explicit service_restart_policy=api-and-runtime-preserved console_workspace_origin=internal-dial-bound console_backend_retry=401-only,3-attempts platform_public_origin=authority-bound private_api_cache=no-store log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver hardware_payloads=create-and-upgrade-preserved v1_hardware_schema=container-and-launchConfig init_control=contained-separated service_create_completion=transient-service-collection-guarded docker_29_range=29.4.1..29.7.2+29.8.0 docker_29_6_2=supported docker_29_8_0=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-10 curl=8.18.0-1ubuntu2.5 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=8 vendor_pending_occurrences=22 perl=5.40.1-7ubuntu0.3 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 numeric_release_tags=enforced vex=openvex-0.2.0 artifact_scan=required legal_assets=complete auth_cross_tab_session_ownership=1 auth_passive_delete=0 auth_explicit_logout=bound-idempotent auth_token_transport=bare-or-bearer-normalized auth_concurrent_issuance=serialized auth_session_overlay=create-only auth_session_frozen_v1=base-superadmin-token oidc_policy_update=source-vs-policy-separated oidc_policy_discovery=source-change-only oidc_policy_allowlist=normalized-empty-capable oidc_policy_mfa=actor-purpose-digest-single-use oidc_policy_errors=stable-coded oidc_project_members=user-and-group-only external_service_health=writable-null-safe load_balancer_target=port-rule-persisted auth_config_proxy_identity=caller-platform-credential\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.445 source_base=v1.6.364 release_base=v1.6.431 release_mode=engine-web-compose-incremental orchestration=0.183.309 engine_root_reuse=validated distributed_cache=5.7.4 vsphere_cli=0.55.2 api_explorer=1.1.18 web_console=1.6.119 authentication_service=0.4.39 websocket_proxy=0.23.14 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=modal-close-before-dispatch service_log_filters=service-scoped service_restart_events=explicit service_restart_policy=api-and-runtime-preserved console_workspace_origin=internal-dial-bound console_backend_retry=401-only,3-attempts platform_public_origin=authority-bound private_api_cache=no-store log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver hardware_payloads=create-and-upgrade-preserved v1_hardware_schema=container-and-launchConfig init_control=contained-separated service_create_completion=transient-service-collection-guarded docker_29_range=29.4.1..29.7.2+29.8.0 docker_29_6_2=supported docker_29_8_0=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-10 curl=8.18.0-1ubuntu2.5 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=8 vendor_pending_occurrences=22 perl=5.40.1-7ubuntu0.3 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 numeric_release_tags=enforced vex=openvex-0.2.0 artifact_scan=required legal_assets=complete auth_cross_tab_session_ownership=1 auth_passive_delete=0 auth_explicit_logout=bound-idempotent auth_token_transport=bare-or-bearer-normalized auth_concurrent_issuance=serialized auth_session_overlay=create-only auth_session_frozen_v1=base-superadmin-token oidc_policy_update=source-vs-policy-separated oidc_policy_discovery=source-change-only oidc_policy_allowlist=normalized-explicit-empty-wire oidc_policy_mfa=actor-purpose-digest-single-use oidc_policy_errors=stable-coded oidc_project_members=user-and-group-only external_service_health=writable-null-safe load_balancer_target=port-rule-persisted auth_config_proxy_identity=caller-platform-credential\n'
