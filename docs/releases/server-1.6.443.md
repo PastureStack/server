@@ -1,19 +1,19 @@
 # Server v1.6.443
 
-PastureStack Server v1.6.443 completes the OIDC site-access policy fix while
-retaining the cross-tab session-ownership protection released in v1.6.442.
-The runtime change is limited to Authentication Service v0.4.38; the database
-schema, Web Console, Orchestration Engine, Catalog, network plugins, volumes,
-and deployment contract are unchanged.
+PastureStack Server v1.6.443 completes the OIDC site-access policy and browser
+session fixes, then closes the related API-hydration, load-balancer target, and
+OIDC project-member defects found during the v1.6.442 hotfix audit. The database
+schema, Catalog, network plugins, volumes, and deployment contract are
+unchanged.
 
 ## Immutable component coordinates
 
-- Web Console `1.6.118`, commit
-  `63ff73bc26103ab32de5ba30768391caa3af9f6a`, artifact SHA-256
-  `4ffbfcb787ca28651a7dcb59e294bd236d5d1a35a0087ec33a3f375ecd1b51b4`.
-- Orchestration Engine `v0.183.303`, commit
-  `accb664b674fd0391e858bfd9a7748641e6440ab`, artifact SHA-256
-  `6b26237379fca106500dedf310bb7d43c09a25e08c0ff421a0b3468d6e4a647b`.
+- Web Console `1.6.119`, commit
+  `82211b731a90cdf5d3e213ee70bff34f10f28a63`, artifact SHA-256
+  `9079db43bbad557367285fdc0f75286fcf39ba54b57c7ee2adee9d4472774df7`.
+- Orchestration Engine `v0.183.304`, commit
+  `6a682c94a8f501af2d3fb1148536efe2e3faacea`, artifact SHA-256
+  `96ad037754fcc671694966d9ec51f930f45fd2c623d4d792d4a358f1a7b84b40`.
 - Authentication Service `v0.4.38`, commit
   `d6689f6139b4f5edc99a5c3336b80da80f487e16`, release archive SHA-256
   `4715e014599684072fd80da0824db22b21fe40d34dd47a7db3acec66e8d7b29d`,
@@ -24,12 +24,15 @@ and deployment contract are unchanged.
 
 ## Browser session ownership
 
-Web Console 1.6.118 and Orchestration Engine 0.183.303 are unchanged. Login
-commit and explicit logout use the same fail-closed cross-tab mutex, passive
+Web Console 1.6.119 keeps login commit and explicit logout under the same
+fail-closed cross-tab mutex. Passive
 401, storage, WebSocket, timer, and route errors never revoke a server token,
 and a stale tab cannot delete a newer generation's token. JWTs remain outside
 Web Storage. A matching explicit logout is idempotent and bound to the client
-session generation.
+session generation. Orchestration Engine 0.183.304 preserves the create-only
+`clientSessionId` through the shipped token authorization overlay, so the
+database binding used by that logout contract is present in the assembled
+Server rather than only in the base schema.
 
 ## OIDC site-access policy updates
 
@@ -48,11 +51,30 @@ single-use `oidcAccessPolicyUpdate` MFA confirmation bound to the actor,
 purpose, and canonical request digest. `unrestricted` always stores an empty
 allowlist.
 
+Web Console 1.6.119 accepts stable Authentication Service errors both at the
+transport wrapper and top level. MFA request digests therefore reach the same
+single-confirmation, one-retry path instead of collapsing to a generic error.
+
+## API hydration, load-balancer targets, and OIDC identities
+
+External-service `healthState` is writable model data again, so healthy,
+unhealthy, and `null` API values hydrate without a computed-property setter
+exception. The load-balancer service selector now writes through the owning
+`PortRule.serviceId`; editing PUT payloads and reloads preserve the selected
+backend.
+
+Orchestration Engine 0.183.304 adds `oidc_user` and `oidc_group` to the reviewed
+external identity defaults and generated project-member options. It restores
+configured-provider state from persisted settings and rejects unknown types
+outside the configured allowlist. Provider presence is not an authorization
+bypass.
+
 ## Server-side compatibility guard
 
 The Server assembly verifies the Authentication Service release archive,
-extracted binary, source commit, static version output, and policy error
-markers before publication. The source gate also verifies that v1.6.443 README,
+Web Console tar, Orchestration Engine JAR, their source commits and SHA-256
+coordinates, the token session overlay, OIDC identity defaults, and policy
+error markers before publication. The source gate also verifies that v1.6.443 README,
 compatibility documentation, OpenVEX, vendor-pending register, and this release
 record all name the same immutable coordinates.
 
@@ -68,8 +90,9 @@ finding, secret, checksum mismatch, or release-asset mismatch.
 Upgrade by changing only the image tag to `v1.6.443`, keeping the existing
 environment variables, named volumes, restart policy, AppArmor policy, HTTPS
 origin, OIDC settings, and firewall architecture. Verify `/ping`, one complete
-OIDC login, authenticated API access, and a policy-only save before removing
-the prior image. Roll back by stopping v1.6.443 and starting the preserved
+OIDC login, authenticated API access, a policy-only save, project membership,
+an external-service reload, and a load-balancer target edit/readback before
+removing the prior image. Roll back by stopping v1.6.443 and starting the preserved
 v1.6.442 image with the same volumes and configuration; this patch introduces
 no database migration.
 

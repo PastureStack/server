@@ -25,8 +25,8 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.443` assembly consumes Orchestration Engine `v0.183.303`,
-Web Console package `1.6.118`, Authentication Service `v0.4.38`, API Explorer
+The current `v1.6.443` assembly consumes Orchestration Engine `v0.183.304`,
+Web Console package `1.6.119`, Authentication Service `v0.4.38`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
 Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
 `v5.7.4`, and Catalog Templates at commit
@@ -54,6 +54,15 @@ operator, `oidcAccessPolicyUpdate` purpose, and canonical request digest.
 `unrestricted` is represented with an empty allowlist in both the API and
 database. Restricted allowlists contain only deduplicated `oidc_user` and
 `oidc_group` principals, while stable error codes preserve the client contract.
+The same two identity types are present in the default external-identity list
+and generated project-member schema. Unknown types remain rejected, and the
+configured-provider state is restored from persisted settings after restart.
+New browser tokens keep the create-only `clientSessionId` field through the
+authorization overlay; mismatched generations cannot revoke them.
+
+External-service `healthState` remains writable API data, including `null`.
+Load-balancer editing persists the chosen target through
+`PortRule.serviceId`; this changes no load-balancer runtime or API shape.
 
 Deployments that terminate TLS before the Server container may set
 `PROXY_PLATFORM_PUBLIC_ORIGIN` to one exact public HTTP(S) origin. The proxy
