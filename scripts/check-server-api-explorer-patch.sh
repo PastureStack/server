@@ -44,6 +44,10 @@ for mfa_policy_contract_marker in \
     "check('oidc-project-member-schema-options'" \
     "verify_session_bound_token('/v1', normal_token, normal_session" \
     "verify_session_bound_token('/v2-beta', v2_login['jwt'], v2_session" \
+    "assert isinstance(issued_token, str) and issued_token" \
+    "'authProvider': 'mfa'" \
+    "'clientSessionId': v2_session" \
+    "check('v2-mfa-session-generation-preserved'" \
     "check(label + '-mismatched-delete-preserves-token'" \
     "check(label + '-matching-delete-revokes-token'" \
     "check(label + '-repeated-delete-is-idempotent'"; do

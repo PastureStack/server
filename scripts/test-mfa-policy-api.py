@@ -60,6 +60,7 @@ def main():
 
     def verify_session_bound_token(api_root, issued_token, generation, label):
         """Verify the observable ownership contract on one concrete API surface."""
+        assert isinstance(issued_token, str) and issued_token, label + '-missing-issued-token'
         call('DELETE', api_root + '/token/current', expected=(204,), bearer=issued_token,
              extra_headers={session_header: client_session_id()})
         check(label + '-mismatched-delete-preserves-token',
@@ -256,11 +257,21 @@ def main():
     verify_session_bound_token('/v1', normal_token, normal_session, 'v1-session-bound-token')
 
     v2_session = client_session_id()
-    v2_login = call('POST', '/v2-beta/token', {
+    v2_challenge = call('POST', '/v2-beta/token', {
         'code': normal_name + ':' + password,
         'authProvider': 'localAuthConfig',
         'clientSessionId': v2_session,
     }, bearer='')
+    assert v2_challenge.get('mfaRequired') is True, 'v2 login did not enter MFA'
+    assert v2_challenge.get('mfaChallengeId'), 'v2 MFA challenge ID is missing'
+    v2_login = call('POST', '/v2-beta/token', {
+        'code': v2_challenge['mfaChallengeId'],
+        'authProvider': 'mfa',
+        'mfaMethod': 'recoveryCode',
+        'recoveryCode': user_codes.pop(),
+        'clientSessionId': v2_session,
+    }, bearer='')
+    check('v2-mfa-session-generation-preserved', bool(v2_login.get('jwt')))
     verify_session_bound_token('/v2-beta', v2_login['jwt'], v2_session,
                                'v2-session-bound-token')
     final_policy = call('GET', path)
