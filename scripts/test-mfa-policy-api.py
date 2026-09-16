@@ -29,8 +29,10 @@ def main():
     token = None
     passed = []
 
-    def call(method, path, data=None, expected=(200, 201, 202), bearer=None):
+    def call(method, path, data=None, expected=(200, 201, 202), bearer=None,
+             extra_headers=None):
         headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+        headers.update(extra_headers or {})
         auth = token if bearer is None else bearer
         if auth:
             headers['Authorization'] = 'Bearer ' + auth
@@ -44,12 +46,15 @@ def main():
         finally:
             connection.close()
         assert status in expected, f'{method} {path}: unexpected HTTP {status}'
-        return json.loads(content)
+        return json.loads(content) if content else {}
 
     def check(name, condition):
         assert condition, name
         passed.append(name)
         print('PASS ' + name, flush=True)
+
+    def client_session_id():
+        return f'{int(time.time() * 1000):013d}.{secrets.token_hex(32)}'
 
     config = call('GET', '/v1-auth/config')
     assert config.get('enabled') is False, 'refusing an initialized authentication system'
@@ -61,11 +66,25 @@ def main():
     local = {'username': username, 'password': password, 'name': 'Disposable MFA QA',
              'accessMode': 'unrestricted', 'enabled': False}
     call('POST', '/v1/localauthconfigs', local)
-    login = call('POST', '/v1/token', {'code': username + ':' + password, 'authProvider': 'localAuthConfig'})
+    administrator_session = client_session_id()
+    login = call('POST', '/v1/token', {
+        'code': username + ':' + password,
+        'authProvider': 'localAuthConfig',
+        'clientSessionId': administrator_session,
+    })
     token = login['jwt']
     local['enabled'] = True
     call('POST', '/v1/localauthconfigs', local)
     check('authenticated-administrator', call('GET', api + '/accounts').get('type') == 'collection')
+
+    token_fields = call('GET', api + '/schemas/token')['resourceFields']
+    client_session_field = token_fields['clientSessionId']
+    check('token-client-session-create-contract', client_session_field['create']
+          and not client_session_field['update'])
+    project_member_fields = call('GET', api + '/schemas/projectmember')['resourceFields']
+    project_member_types = set(project_member_fields['externalIdType']['options'])
+    check('oidc-project-member-schema-options',
+          {'oidc_user', 'oidc_group'} <= project_member_types)
 
     schema = call('GET', api + '/schemas/mfasettings')
     fields = schema['resourceFields']
@@ -203,7 +222,12 @@ def main():
         time.sleep(0.5)
     else:
         raise AssertionError('disposable credential did not activate')
-    normal_login = call('POST', '/v1/token', {'code': normal_name + ':' + password, 'authProvider': 'localAuthConfig'}, bearer='')
+    normal_session = client_session_id()
+    normal_login = call('POST', '/v1/token', {
+        'code': normal_name + ':' + password,
+        'authProvider': 'localAuthConfig',
+        'clientSessionId': normal_session,
+    }, bearer='')
     normal_token = normal_login['jwt']
     call('GET', path, expected=(403, 404), bearer=normal_token)
     call('PUT', path, {'issuer': 'User must not save'}, expected=(403, 404, 405), bearer=normal_token)
@@ -213,6 +237,15 @@ def main():
           ('method', 'recoveryCode', 'securityConfirmation', 'methods', 'webAuthnOptions')))
     user_codes = enroll(normal_token)
     check('ordinary-user-step-up-flow', bool(confirm(user_codes, normal_token)))
+    session_header = 'X-PastureStack-Client-Session-Id'
+    call('DELETE', api + '/token/current', expected=(204,), bearer=normal_token,
+         extra_headers={session_header: client_session_id()})
+    check('mismatched-session-delete-preserves-token',
+          call('GET', api + '/accounts', bearer=normal_token).get('type') == 'collection')
+    call('DELETE', api + '/token/current', expected=(204,), bearer=normal_token,
+         extra_headers={session_header: normal_session})
+    call('GET', api + '/accounts', expected=(401,), bearer=normal_token)
+    check('matching-session-delete-revokes-token', True)
     final_policy = call('GET', path)
     check('partial-updates-preserve-advanced-policy', all(final_policy.get(k) == v for k, v in policy.items()))
     for version in ('v1', 'v2-beta'):

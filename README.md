@@ -11,9 +11,9 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.443` combines Orchestration Engine `0.183.303`, Node Agent `0.13.27`,
+`v1.6.443` combines Orchestration Engine `0.183.304`, Node Agent `0.13.27`,
 Authentication Service `0.4.38`, and the reviewed Ember 7.2 Web Console
-`1.6.118`.
+`1.6.119`.
 
 The inherited `v1.6.429` runtime repairs the embedded Host API `0.38.4`
 package for fresh host registration. The original executable and installer
@@ -80,13 +80,16 @@ launch configuration before scheduling a Catalog stack rollback. See
 
 `v1.6.443` retains the same-origin, cross-tab authentication fix from v1.6.442
 and completes the OIDC site-access policy save regression. Web Console
-`1.6.118` separates explicit
+`1.6.119` separates explicit
 logout from passive authentication failures,
 serializes login commit and logout through a fail-closed cross-tab mutex, and
 adopts a newly committed session in every open tab without storing JWTs in Web
-Storage. Orchestration Engine `v0.183.303` binds new tokens to the committing
+Storage. It also preserves structured top-level OIDC errors for the bounded MFA
+retry path. Orchestration Engine `v0.183.304` binds new tokens to the committing
 browser generation, makes deletion idempotent, rejects mismatched stale-tab
-revocation, and serializes restricted-session replacement. Authentication
+revocation, serializes restricted-session replacement, and retains the
+`clientSessionId` create field in the shipped authorization overlay.
+Authentication
 Service `v0.4.38` distinguishes an OIDC identity-source change from a policy-only
 update, suppresses the provider reload generation for the policy-only path,
 normalizes the allowlist, and consumes an actor-, purpose-, and
@@ -189,7 +192,7 @@ The Web Console formats schema-validation field names without legacy String
 prototype extensions, so a missing localized field label cannot leave a
 container or service form stuck in the saving state.
 
-Web Console `1.6.118` preserves the Server `v1.6.358` authenticated visual and
+Web Console `1.6.119` preserves the Server `v1.6.358` authenticated visual and
 layout contract through a provenance-bound presentation layer while retaining
 Ember 7.2, the Bootstrap 5.3.8 JavaScript runtime, current security fixes, MFA,
 and adds permission-scoped incident filters and XLSX, CSV, and JSON export to
@@ -233,6 +236,15 @@ always stores an empty allowlist;
 restricted policies accept only deduplicated `oidc_user` and `oidc_group`
 principals. Stable API error codes distinguish recovery, MFA, and invalid
 identity failures.
+The Engine advertises `oidc_user` and `oidc_group` in the default external
+identity and `projectMember.externalIdType` contracts, restores provider state
+from persisted settings after restart, and rejects types outside the configured
+allowlist instead of treating provider presence as an unrestricted bypass.
+External-service API hydration now stores `healthState` as writable model data,
+including `null`, so direct reload cannot fail on a getter-only property. The
+load-balancer service selector writes through the owning `PortRule.serviceId`;
+the selected backend therefore survives editing PUT, reload, and subsequent
+editing instead of remaining a DOM-only value.
 The shared resource-action menu closes before its selected action is
 dispatched, so opening account editing or another modal cannot leave the row
 menu layered above the form. The same lifecycle rule covers every resource

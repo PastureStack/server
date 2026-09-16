@@ -40,6 +40,15 @@ require_marker()
     fi
 }
 
+for mfa_policy_contract_marker in \
+    "check('token-client-session-create-contract'" \
+    "check('oidc-project-member-schema-options'" \
+    "check('mismatched-session-delete-preserves-token'" \
+    "check('matching-session-delete-revokes-token'"; do
+    require_marker "$mfa_policy_smoke" "$mfa_policy_contract_marker" \
+        SERVER_MFA_POLICY_RUNTIME_CONTRACT_MISSING
+done
+
 require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.431@sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
@@ -65,10 +74,10 @@ require_marker "$publish_workflow" \
     'bash source/scripts/check-server-host-api-package.sh' \
     SERVER_HOST_API_RELEASE_CHECK_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.118' \
+    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.119' \
     SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=4ffbfcb787ca28651a7dcb59e294bd236d5d1a35a0087ec33a3f375ecd1b51b4' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=9079db43bbad557367285fdc0f75286fcf39ba54b57c7ee2adee9d4472774df7' \
     SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING
 for release_proxy_marker in \
     'ARG WEBSOCKET_PROXY_VERSION=0.23.14' \
@@ -148,13 +157,16 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 for release_engine_marker in \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.303' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.303.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=6b26237379fca106500dedf310bb7d43c09a25e08c0ff421a0b3468d6e4a647b' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=accb664b674fd0391e858bfd9a7748641e6440ab' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.304' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.304.jar' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=96ad037754fcc671694966d9ec51f930f45fd2c623d4d792d4a358f1a7b84b40' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=6a682c94a8f501af2d3fb1148536efe2e3faacea' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
-    "grep -Fx 'Implementation-Version: 0.183.303'" \
-    'ENV CATTLE_CATTLE_VERSION=v0.183.303' \
+    "grep -Fx 'Implementation-Version: 0.183.304'" \
+    'ENV CATTLE_CATTLE_VERSION=v0.183.304' \
+    'schema/token/token-auth.json' \
+    '"token.clientSessionId": "cro"' \
+    'auth.service.external.id.types=github_user,github_org,github_team,shibboleth_user,shibboleth_group,ldap_user,ldap_group,oidc_user,oidc_group' \
     'ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}' \
     'ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}'; do
     require_marker "$release_dockerfile" "$release_engine_marker" \
@@ -421,7 +433,7 @@ require_marker "$build_script" \
     'PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}"' \
     SERVER_WEB_CONSOLE_RUNTIME_HASH_GATE_MISSING
 require_marker "$build_script" \
-    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.118"' \
+    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.119"' \
     SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING
 require_marker "$build_script" \
     'test "$(/usr/bin/compose-executor.real --version)" =' \
@@ -459,10 +471,10 @@ require_marker "$build_script" \
     SERVER_CATALOG_VERSION_LABEL_IMAGE_GATE_MISSING
 for current_release_marker in \
     '# Server v1.6.443' \
-    '`63ff73bc26103ab32de5ba30768391caa3af9f6a`' \
-    '`4ffbfcb787ca28651a7dcb59e294bd236d5d1a35a0087ec33a3f375ecd1b51b4`' \
-    '`accb664b674fd0391e858bfd9a7748641e6440ab`' \
-    '`6b26237379fca106500dedf310bb7d43c09a25e08c0ff421a0b3468d6e4a647b`' \
+    '`82211b731a90cdf5d3e213ee70bff34f10f28a63`' \
+    '`9079db43bbad557367285fdc0f75286fcf39ba54b57c7ee2adee9d4472774df7`' \
+    '`6a682c94a8f501af2d3fb1148536efe2e3faacea`' \
+    '`96ad037754fcc671694966d9ec51f930f45fd2c623d4d792d4a358f1a7b84b40`' \
     '`d6689f6139b4f5edc99a5c3336b80da80f487e16`' \
     '`4715e014599684072fd80da0824db22b21fe40d34dd47a7db3acec66e8d7b29d`' \
     '`5e6111fc17f8dd352ca844f66bc8ce3ec0bc0782941de2890cdde2ec825d575f`' \
@@ -474,17 +486,19 @@ for current_release_marker in \
         SERVER_CURRENT_RELEASE_NOTES_IDENTITY_MISSING
 done
 for current_readme_marker in \
-    '`v1.6.443` combines Orchestration Engine `0.183.303`' \
+    '`v1.6.443` combines Orchestration Engine `0.183.304`' \
     'Authentication Service `0.4.38`' \
-    'Web Console `1.6.118`' \
+    'Web Console `1.6.119`' \
+    '`PortRule.serviceId`' \
+    'External-service API hydration now stores `healthState` as writable model data' \
     '`oidcAccessPolicyUpdate` purpose' \
     'always stores an empty allowlist'; do
     require_marker README.md "$current_readme_marker" \
         SERVER_CURRENT_README_IDENTITY_MISSING
 done
 for current_compatibility_marker in \
-    'Orchestration Engine `v0.183.303`' \
-    'Web Console package `1.6.118`' \
+    'Orchestration Engine `v0.183.304`' \
+    'Web Console package `1.6.119`' \
     'Authentication Service `v0.4.38`' \
     '`unrestricted` is represented with an empty allowlist'; do
     require_marker COMPATIBILITY.md "$current_compatibility_marker" \
@@ -967,4 +981,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.443 source_base=v1.6.364 release_base=v1.6.431 release_mode=engine-web-compose-incremental orchestration=0.183.303 engine_root_reuse=validated distributed_cache=5.7.4 vsphere_cli=0.55.2 api_explorer=1.1.18 web_console=1.6.118 authentication_service=0.4.38 websocket_proxy=0.23.14 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=modal-close-before-dispatch service_log_filters=service-scoped service_restart_events=explicit service_restart_policy=api-and-runtime-preserved console_workspace_origin=internal-dial-bound console_backend_retry=401-only,3-attempts platform_public_origin=authority-bound private_api_cache=no-store log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver hardware_payloads=create-and-upgrade-preserved v1_hardware_schema=container-and-launchConfig init_control=contained-separated service_create_completion=transient-service-collection-guarded docker_29_range=29.4.1..29.7.2+29.8.0 docker_29_6_2=supported docker_29_8_0=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-10 curl=8.18.0-1ubuntu2.5 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=8 vendor_pending_occurrences=22 perl=5.40.1-7ubuntu0.3 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 numeric_release_tags=enforced vex=openvex-0.2.0 artifact_scan=required legal_assets=complete auth_cross_tab_session_ownership=1 auth_passive_delete=0 auth_explicit_logout=bound-idempotent auth_concurrent_issuance=serialized oidc_policy_update=source-vs-policy-separated oidc_policy_discovery=source-change-only oidc_policy_allowlist=normalized-empty-capable oidc_policy_mfa=actor-purpose-digest-single-use oidc_policy_errors=stable-coded\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.443 source_base=v1.6.364 release_base=v1.6.431 release_mode=engine-web-compose-incremental orchestration=0.183.304 engine_root_reuse=validated distributed_cache=5.7.4 vsphere_cli=0.55.2 api_explorer=1.1.18 web_console=1.6.119 authentication_service=0.4.38 websocket_proxy=0.23.14 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=modal-close-before-dispatch service_log_filters=service-scoped service_restart_events=explicit service_restart_policy=api-and-runtime-preserved console_workspace_origin=internal-dial-bound console_backend_retry=401-only,3-attempts platform_public_origin=authority-bound private_api_cache=no-store log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver hardware_payloads=create-and-upgrade-preserved v1_hardware_schema=container-and-launchConfig init_control=contained-separated service_create_completion=transient-service-collection-guarded docker_29_range=29.4.1..29.7.2+29.8.0 docker_29_6_2=supported docker_29_8_0=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-10 curl=8.18.0-1ubuntu2.5 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=8 vendor_pending_occurrences=22 perl=5.40.1-7ubuntu0.3 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 numeric_release_tags=enforced vex=openvex-0.2.0 artifact_scan=required legal_assets=complete auth_cross_tab_session_ownership=1 auth_passive_delete=0 auth_explicit_logout=bound-idempotent auth_concurrent_issuance=serialized auth_session_overlay=create-only oidc_policy_update=source-vs-policy-separated oidc_policy_discovery=source-change-only oidc_policy_allowlist=normalized-empty-capable oidc_policy_mfa=actor-purpose-digest-single-use oidc_policy_errors=stable-coded oidc_project_members=user-and-group-only external_service_health=writable-null-safe load_balancer_target=port-rule-persisted\n'
