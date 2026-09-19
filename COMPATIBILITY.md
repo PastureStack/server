@@ -25,8 +25,8 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.445` assembly consumes Orchestration Engine `v0.183.309`,
-Web Console package `1.6.119`, Authentication Service `v0.4.39`, API Explorer
+The current `v1.6.446` assembly consumes Orchestration Engine `v0.183.309`,
+Web Console package `1.6.120`, Authentication Service `v0.4.39`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
 Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
 `v5.7.4`, and Catalog Templates at commit
@@ -71,6 +71,13 @@ dynamic authorization overlay and the frozen `base`, `superadmin`, and `token`
 v1 schemas. Explicit logout normalizes a cookie's bare key and a
 standard `Authorization: Bearer` value to the same database key; mismatched
 generations and unsupported authorization schemes cannot revoke the token.
+Cookie and session-generation reads, login commit, and explicit logout share
+one origin-level mutex. A tab captures its generation when starting requests,
+timers, and subscriptions; stale passive failures stop their own work and
+adopt the newer committed session without clearing shared state. Storage and
+sanitized BroadcastChannel events carry no token material and converge through
+one serialized reconciliation path. An explicit logout is the only browser
+path allowed to revoke the bound token.
 
 External-service `healthState` remains writable API data, including `null`.
 Load-balancer editing persists the chosen target through

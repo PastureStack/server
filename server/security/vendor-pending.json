@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "release": "v1.6.445",
-  "generatedAt": "2026-09-16T13:48:31Z",
+  "release": "v1.6.446",
+  "generatedAt": "2026-09-19T21:00:52Z",
   "policy": {
     "allowedSeverities": [
       "LOW",
@@ -18,7 +18,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-13608",
-      "reviewAfter": "2026-09-18",
+      "reviewAfter": "2026-10-20",
       "packages": [
         { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
         { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
@@ -30,7 +30,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-18924",
-      "reviewAfter": "2026-09-18",
+      "reviewAfter": "2026-10-20",
       "packages": [
         { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
         { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
@@ -42,7 +42,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-19931",
-      "reviewAfter": "2026-09-18",
+      "reviewAfter": "2026-10-20",
       "packages": [
         { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
         { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
@@ -54,7 +54,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-80229",
-      "reviewAfter": "2026-09-18",
+      "reviewAfter": "2026-10-20",
       "packages": [
         { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
         { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
@@ -66,7 +66,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-80230",
-      "reviewAfter": "2026-09-18",
+      "reviewAfter": "2026-10-20",
       "packages": [
         { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
         { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
@@ -78,7 +78,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-80255",
-      "reviewAfter": "2026-09-18",
+      "reviewAfter": "2026-10-20",
       "packages": [
         { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
         { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
@@ -90,7 +90,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-82209",
-      "reviewAfter": "2026-09-18",
+      "reviewAfter": "2026-10-20",
       "packages": [
         { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
         { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
@@ -102,7 +102,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-85091",
-      "reviewAfter": "2026-09-18",
+      "reviewAfter": "2026-10-20",
       "packages": [
         { "name": "zlib1g", "installedVersion": "1:1.3.dfsg+really1.3.1-1ubuntu3.1" }
       ]
