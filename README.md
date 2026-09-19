@@ -439,7 +439,13 @@ Process supervision uses the unchanged official s6-overlay `v1.19.1.1` AMD64 rel
 
 Binary-only compatibility archives are accompanied by the deterministic `pasturestack-runtime-licenses-1.6.278.tar.xz` release asset. It maps every flat Runtime asset to an exact public source commit, preserves tracked license, notice, patent, privacy, and origin files, includes legal files already embedded in archives, and carries its own internal checksum list. The Server image verifies and installs this bundle under `/usr/share/licenses/pasturestack-runtime`.
 
-Automatic CI/CD triggers remain disabled. Release preparation and publication use manually dispatched, gated GitHub workflows so public runners carry the build load without running on every push. Publication is not a production-readiness claim.
+Automatic CI/CD triggers remain disabled. The single current publication
+entrypoint is the manually dispatched `Publish Current Server` workflow
+(`.github/workflows/publish-current-server.yml`). It runs source gates, builds
+the exact merged commit, compares and flattens the runtime, starts and restarts
+the candidate, scans the merged root filesystem, creates the SBOM, publishes
+the immutable image, and records release evidence. Publication is not a
+production-readiness claim.
 
 ## Build and validation
 
