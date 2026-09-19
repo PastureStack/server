@@ -11,8 +11,8 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.446` combines Orchestration Engine `0.183.309`, Node Agent `0.13.27`,
-Authentication Service `0.4.39`, and the reviewed Ember 7.2 Web Console
+`v1.6.447` combines Orchestration Engine `0.183.309`, Node Agent `0.13.27`,
+Authentication Service `0.4.40`, and the reviewed Ember 7.2 Web Console
 `1.6.120`.
 
 The inherited `v1.6.429` runtime repairs the embedded Host API `0.38.4`
@@ -132,6 +132,16 @@ explicit logout remains generation-bound and coalesced to one DELETE. No JWT,
 OTP, OIDC code, or session secret is stored in Web Storage. See
 [v1.6.446 release notes](docs/releases/server-1.6.446.md).
 
+`v1.6.447` fixes restart persistence for the OIDC site-access policy.
+Authentication Service `0.4.40` treats legacy provider settings as a one-time
+migration source only until the encrypted `auth.config` object exists. After
+that boundary, the common access mode and allowlist are authoritative, so an
+authentication-service process restart or complete Server container restart
+cannot copy absent legacy OIDC keys over a saved restricted or unrestricted
+policy. Existing installations whose restricted allowlist was already cleared
+must save the intended policy once after upgrading; subsequent restarts retain
+it. See [v1.6.447 release notes](docs/releases/server-1.6.447.md).
+
 Docker Engine `29.4.1` through `29.7.2` is represented as one bounded SemVer
 compatibility interval, with `29.8.0` supported explicitly. Hosts on
 an in-range version such as `29.6.2` are therefore reported as supported.
@@ -143,7 +153,7 @@ remains excluded; modal and dropdown behavior stays in the reviewed
 first-party compatibility layer.
 
 The same release replaces every vulnerable Go 1.26.5 executable found by the
-finished-image scan with a Go 1.27.0 build: Authentication Service `0.4.39`,
+finished-image scan with a Go 1.27.0 build: Authentication Service `0.4.40`,
 Catalog Service `0.20.11`, Compose Executor `0.14.36`, Host Provisioner
 `0.39.7`, Secret Delivery API `0.3.1`, Usage Telemetry Agent `0.4.1`, Webhook
 Automation Service `0.10.1`, WebSocket Proxy `0.23.14`, vSphere CLI Bundle
@@ -158,7 +168,9 @@ advisories across three installed packages. Canonical still marks all seven as
 needing evaluation and publishes no fixed package revision, so the release
 does not claim they are fixed or unaffected. Their 21 exact occurrences are
 kept in the release SBOM evidence and the expiring
-`server/security/vendor-pending.json` register. Publication still fails on any
+`server/security/vendor-pending.json` register. One additional Medium zlib
+finding is likewise vendor-pending, for a total of eight tracked findings and
+22 package occurrences. Publication still fails on any
 Critical or High finding, any available-but-unapplied fix, any unregistered or
 changed occurrence, an expired review date, or any detected secret.
 
@@ -331,7 +343,7 @@ The release also patches the transitive build dependency `nanoid` to `3.3.18`,
 pins Node.js `24.20.0` and npm `12.0.2`, and fails closed when the current
 npm advisory service reports a Critical or High finding.
 
-Authentication Service `0.4.39` is installed from its checksum-verified public
+Authentication Service `0.4.40` is installed from its checksum-verified public
 release without replacing the established launch wrapper. The packaged image
 requires the reviewed archive digest, extracted-binary digest, exact source
 commit, static binary, and exact version output before publication.
@@ -355,7 +367,7 @@ volume and storage-driver validation.
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.446
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.447
 ```
 
 Keep operational image references in semantic `vMAJOR.MINOR.PATCH` form. The matching GitHub Release records the resolved digest for verification without exposing digest-qualified strings to the platform UI. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
@@ -367,7 +379,7 @@ without trusting arbitrary forwarded headers:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.446
+    image: ghcr.io/pasturestack/server:v1.6.447
     restart: unless-stopped
     ports:
       - "8080:8080"
