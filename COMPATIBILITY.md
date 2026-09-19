@@ -25,8 +25,8 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.447` assembly consumes Orchestration Engine `v0.183.309`,
-Web Console package `1.6.120`, Authentication Service `v0.4.40`, API Explorer
+The current `v1.6.448` assembly consumes Orchestration Engine `v0.183.309`,
+Web Console package `1.6.120`, Authentication Service `v0.4.41`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
 Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
 `v5.7.4`, and Catalog Templates at commit
@@ -47,7 +47,9 @@ and upgrade validation or Docker conversion path.
 
 OIDC configuration retains a strict source-versus-policy boundary. An already
 enabled provider can change only its site access policy without repeating
-discovery or local-recovery initialization; a first enablement, provider
+discovery or local-recovery initialization. The same comparison is applied to
+the platform-setting reload event emitted after the save, so the event cannot
+reinitialize an unchanged live provider. Startup, a first enablement, provider
 switch, or identity-source change still requires fresh local recovery.
 Broadening access requires the existing one-use MFA confirmation bound to the
 operator, `oidcAccessPolicyUpdate` purpose, and canonical request digest.
