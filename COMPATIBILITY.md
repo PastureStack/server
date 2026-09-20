@@ -25,8 +25,8 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.449` assembly consumes Orchestration Engine `v0.183.309`,
-Web Console package `1.6.121`, Authentication Service `v0.4.41`, API Explorer
+The current `v1.6.450` assembly consumes Orchestration Engine `v0.183.309`,
+Web Console package `1.6.122`, Authentication Service `v0.4.41`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
 Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
 `v5.7.4`, and Catalog Templates at commit
@@ -91,6 +91,15 @@ login-options object with no identity is an unauthenticated response. The
 console normalizes it to its local 401 contract, clears only an unchanged
 Cookie and generation under the authentication mutex, and routes to login
 without a passive DELETE or reload loop.
+Promise/callback interoperability uses one RSVP-based adapter for
+`PromiseToCb`, authenticated-route lookup, and settings loading. Task factories
+start in a deferred RSVP turn, so synchronous throws, thenables, plain values,
+and Promises share one settlement contract; callback exceptions cannot enter a
+second error callback. The 27 `NewOrEdit` consumers share one awaitable,
+owner-bound save lifecycle covering validation, persistence, success hooks,
+error hooks, completion callbacks, and cleanup. A pre-existing `saving=true`
+lock is never claimed or cleared by a duplicate submission. Environment member
+loading uses the supported `followLink('projectMembers')` store boundary.
 
 External-service `healthState` remains writable API data, including `null`.
 Load-balancer editing persists the chosen target through
