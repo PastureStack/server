@@ -1,5 +1,10 @@
 # Server v1.6.452
 
+> Post-release status: superseded. The six-account incognito OIDC matrix still
+> failed because the Engine later treated its own stable `rancher_id` as an
+> external provider identity. v1.6.453 corrects that separate internal
+> boundary. v1.6.452 must not be treated as passing the runtime OIDC matrix.
+
 PastureStack Server v1.6.452 removes the remaining timing-sensitive OpenID
 Connect token-boundary check with an upgrade-safe validation boundary. It
 packages Orchestration Engine 0.183.311 with
