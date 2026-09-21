@@ -11,8 +11,8 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.450` combines Orchestration Engine `0.183.309`, Node Agent `0.13.27`,
-Authentication Service `0.4.41`, and the reviewed Ember 7.2 Web Console
+`v1.6.451` combines Orchestration Engine `0.183.310`, Node Agent `0.13.27`,
+Authentication Service `0.4.42`, and the reviewed Ember 7.2 Web Console
 `1.6.122`.
 
 The inherited `v1.6.429` runtime repairs the embedded Host API `0.38.4`
@@ -176,6 +176,16 @@ save hooks and cleanup, and uses explicit ownership so duplicate submissions
 cannot clear another operation's saving lock. See
 [v1.6.450 release notes](docs/releases/server-1.6.450.md).
 
+`v1.6.451` repairs the OpenID Connect identity contract on upgraded
+installations. Authentication Service `0.4.42` reconciles the non-secret
+provider contract at startup and after policy-only saves without rediscovery
+or rewriting the client secret. Orchestration Engine `0.183.310` keeps the
+reviewed `oidc_user` and `oidc_group` types available when an older database
+override omits them, while still requiring a configured provider and rejecting
+unknown identity types. Both the generated schema and frozen `/v1`
+project-member schema expose the same options. See
+[v1.6.451 release notes](docs/releases/server-1.6.451.md).
+
 Docker Engine `29.4.1` through `29.7.2` is represented as one bounded SemVer
 compatibility interval, with `29.8.0` supported explicitly. Hosts on
 an in-range version such as `29.6.2` are therefore reported as supported.
@@ -187,7 +197,7 @@ remains excluded; modal and dropdown behavior stays in the reviewed
 first-party compatibility layer.
 
 The same release replaces every vulnerable Go 1.26.5 executable found by the
-finished-image scan with a Go 1.27.0 build: Authentication Service `0.4.41`,
+finished-image scan with a Go 1.27.0 build: Authentication Service `0.4.42`,
 Catalog Service `0.20.11`, Compose Executor `0.14.36`, Host Provisioner
 `0.39.7`, Secret Delivery API `0.3.1`, Usage Telemetry Agent `0.4.1`, Webhook
 Automation Service `0.10.1`, WebSocket Proxy `0.23.14`, vSphere CLI Bundle
@@ -377,7 +387,7 @@ The release also patches the transitive build dependency `nanoid` to `3.3.18`,
 pins Node.js `24.20.0` and npm `12.0.2`, and fails closed when the current
 npm advisory service reports a Critical or High finding.
 
-Authentication Service `0.4.41` is installed from its checksum-verified public
+Authentication Service `0.4.42` is installed from its checksum-verified public
 release without replacing the established launch wrapper. The packaged image
 requires the reviewed archive digest, extracted-binary digest, exact source
 commit, static binary, and exact version output before publication.
@@ -401,7 +411,7 @@ volume and storage-driver validation.
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.450
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.451
 ```
 
 Keep operational image references in semantic `vMAJOR.MINOR.PATCH` form. The matching GitHub Release records the resolved digest for verification without exposing digest-qualified strings to the platform UI. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
@@ -413,7 +423,7 @@ without trusting arbitrary forwarded headers:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.450
+    image: ghcr.io/pasturestack/server:v1.6.451
     restart: unless-stopped
     ports:
       - "8080:8080"
