@@ -1,5 +1,12 @@
 # Server v1.6.453
 
+> Post-release status: superseded. Fresh Authentik users no longer failed the
+> external identity-type boundary, but the first account reached MFA while its
+> asynchronous `account.create` process was still in `registering`. MFA
+> correctly rejected that inactive account. v1.6.454 makes account activation
+> synchronous before MFA; v1.6.453 must not be treated as passing the fresh-user
+> runtime matrix.
+
 PastureStack Server v1.6.453 completes the upgrade-safe OpenID Connect token
 identity boundary. It packages Orchestration Engine 0.183.312 with
 Authentication Service 0.4.42 and Web Console 1.6.122 while preserving the
