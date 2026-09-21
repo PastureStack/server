@@ -25,7 +25,7 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.456` assembly consumes Orchestration Engine `v0.183.315`,
+The current `v1.6.457` assembly consumes Orchestration Engine `v0.183.316`,
 Web Console package `1.6.122`, Authentication Service `v0.4.42`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
 Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
@@ -103,6 +103,12 @@ not accepted by login-identity lookup. A historical link owned by the built-in
 external ID, derived link digest, and target account identity all match. Links
 owned by another real account remain fail-closed and require the explicit
 reassignment workflow.
+Engine `v0.183.316` keeps the existing local administrator recovery path usable
+when the external provider is configured with required site access. The
+exception is limited to a server-encrypted local-auth payload whose stable
+principal is revalidated as an active administrator while platform security
+and local recovery are enabled. Ordinary OIDC sessions continue through the
+unchanged user or group allow-list.
 Legacy provider settings are imported only while the encrypted `auth.config`
 object does not exist. After that one-time migration boundary, the common
 access-mode and allowlist settings are authoritative; service and Server
