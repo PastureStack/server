@@ -57,16 +57,16 @@ for mfa_policy_contract_marker in \
 done
 
 require_marker "$release_dockerfile" \
-    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.431@sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68' \
+    'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.version="v1.6.461"' \
     SERVER_INCREMENTAL_RELEASE_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.431"' \
+    'org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460"' \
     SERVER_INCREMENTAL_RELEASE_BASE_NAME_MISSING
 require_marker "$release_dockerfile" \
-    'org.opencontainers.image.base.digest="sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68"' \
+    'org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"' \
     SERVER_INCREMENTAL_RELEASE_BASE_DIGEST_MISSING
 require_marker "$release_dockerfile" \
     'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.461' \
@@ -267,7 +267,7 @@ require_marker "$dockerfile" \
 require_marker "$dockerfile" \
     'ARG UBUNTU_SNAPSHOT=20260910T100000Z' \
     SERVER_API_EXPLORER_PATCH_UBUNTU_SNAPSHOT_NOT_CURRENT
-for bootstrap_dockerfile in "$dockerfile" "$release_dockerfile" "$core_dockerfile"; do
+for bootstrap_dockerfile in "$dockerfile" "$core_dockerfile"; do
     require_marker "$bootstrap_dockerfile" \
         'https://security.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb' \
         SERVER_CA_CERTIFICATES_OFFICIAL_BOOTSTRAP_SOURCE_MISSING
@@ -276,16 +276,16 @@ for bootstrap_dockerfile in "$dockerfile" "$release_dockerfile" "$core_dockerfil
         SERVER_CA_CERTIFICATES_BOOTSTRAP_HASH_MISSING
 done
 if grep -Fq 'https://launchpad.net/ubuntu/+archive/primary/+files/' \
-    "$dockerfile" "$release_dockerfile" "$core_dockerfile"; then
+    "$dockerfile" "$core_dockerfile"; then
     echo 'SERVER_CA_CERTIFICATES_MUTABLE_BOOTSTRAP_SOURCE_BLOCKED' >&2
     exit 1
 fi
 if grep -Fq '/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb' \
-    "$dockerfile" "$release_dockerfile" "$core_dockerfile" && \
+    "$dockerfile" "$core_dockerfile" && \
    grep -Fq 'https://snapshot.ubuntu.com/ubuntu/' \
-    "$dockerfile" "$release_dockerfile" "$core_dockerfile"; then
+    "$dockerfile" "$core_dockerfile"; then
     if grep -F 'https://snapshot.ubuntu.com/ubuntu/' \
-        "$dockerfile" "$release_dockerfile" "$core_dockerfile" | \
+        "$dockerfile" "$core_dockerfile" | \
        grep -Fq '/pool/main/c/ca-certificates/'; then
         echo 'SERVER_CA_CERTIFICATES_SNAPSHOT_POOL_BOOTSTRAP_BLOCKED' >&2
         exit 1
@@ -599,10 +599,8 @@ for official_package_marker in \
     '"perl-modules-5.40=${PERL_PACKAGE_VERSION}"'; do
     require_marker "$dockerfile" "$official_package_marker" \
         SERVER_UBUNTU_OFFICIAL_SECURITY_PACKAGE_GATE_MISSING
-    require_marker "$release_dockerfile" "$official_package_marker" \
-        SERVER_INCREMENTAL_UBUNTU_OFFICIAL_SECURITY_PACKAGE_GATE_MISSING
 done
-for security_dockerfile in "$dockerfile" "$release_dockerfile"; do
+for security_dockerfile in "$dockerfile"; do
     require_marker "$security_dockerfile" \
         'ARG UBUNTU_SNAPSHOT=20260910T100000Z' \
         SERVER_UBUNTU_SECURITY_SNAPSHOT_MISSING
@@ -625,6 +623,11 @@ for security_dockerfile in "$dockerfile" "$release_dockerfile"; do
         'dpkg -i packages/*.deb' \
         SERVER_UBUNTU_SECURITY_FINAL_INSTALL_MISSING
 done
+if grep -Eq 'ubuntu_security_packages|pasturestack-ubuntu-security|UBUNTU_SNAPSHOT' \
+    "$release_dockerfile"; then
+    echo 'SERVER_INCREMENTAL_RELEASE_REBUILDS_UNCHANGED_UBUNTU_PACKAGES' >&2
+    exit 1
+fi
 require_marker "$build_script" \
     'PASTURESTACK_CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.5' \
     SERVER_CURL_IMAGE_VERSION_GATE_MISSING
@@ -890,7 +893,7 @@ require_marker "$dockerfile" \
     'org.opencontainers.image.base.digest="sha256:98ace6dd822f883f2f161f8e7c3191d45cc1f1aef6d2cb6de281cfb1d93237e5"' \
     SERVER_API_EXPLORER_PATCH_BASE_DIGEST_MISSING
 require_marker "$build_script" \
-    'ghcr.io/pasturestack/server:v1.6.431@sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68' \
+    'ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403' \
     SERVER_API_EXPLORER_PATCH_BUILD_BASE_DIGEST_MISSING
 
 if grep -RInE '(^|[^[:alnum:]])[A-Za-z]:\\Users\\|/home/[^/[:space:]]+/|(^|[^[:digit:]])10[.][[:digit:]]{1,3}[.][[:digit:]]{1,3}[.][[:digit:]]{1,3}([^[:digit:]]|$)|[[:alnum:]._%+-]+@[[:alnum:].-]+[.][[:alpha:]]{2,}' \
@@ -960,7 +963,7 @@ for marker in \
     '.features["containerd-snapshotter"] = true' \
     "grep -F 'io.containerd.snapshotter.v1'" \
     'PASTURESTACK_BUILD_NO_CACHE=1 IMAGE="$LAYERED_CANDIDATE_IMAGE"' \
-    'SERVER_LAYERED_BUILD_OK base_layers=%s source_layers=%s maximum=32 base=v1.6.431' \
+    'SERVER_LAYERED_BUILD_OK base_layers=%s source_layers=%s maximum=32 base=v1.6.460' \
     'python3 source/scripts/flatten-server-image.py' \
     'SERVER_IMAGE_FLATTEN_OK' \
     'SERVER_REGISTRY_LAYER_OK release=%s layers=1' \
@@ -1027,4 +1030,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.461 source_base=v1.6.364 release_base=v1.6.431 release_mode=engine-web-compose-incremental orchestration=0.183.318 engine_root_reuse=validated distributed_cache=5.7.4 vsphere_cli=0.55.2 api_explorer=1.1.18 web_console=1.6.125 authentication_service=0.4.42 websocket_proxy=0.23.14 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=modal-close-before-dispatch service_log_filters=service-scoped service_restart_events=explicit service_restart_policy=api-and-runtime-preserved console_workspace_origin=internal-dial-bound console_backend_retry=401-only,3-attempts platform_public_origin=authority-bound private_api_cache=no-store log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver hardware_payloads=create-and-upgrade-preserved v1_hardware_schema=container-and-launchConfig init_control=contained-separated service_create_completion=transient-service-collection-guarded docker_29_range=29.4.1..29.7.2+29.8.0 docker_29_6_2=supported docker_29_8_0=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-10 curl=8.18.0-1ubuntu2.5 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=8 vendor_pending_occurrences=22 perl=5.40.1-7ubuntu0.3 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 numeric_release_tags=enforced vex=openvex-0.2.0 artifact_scan=required legal_assets=complete auth_cross_tab_session_ownership=mutex-storage-broadcast auth_initial_401_recovery=transition-or-direct auth_current_token_identity=required auth_expired_session_recovery=login-no-reload auth_passive_delete=0 auth_explicit_logout=bound-idempotent auth_token_transport=bare-or-bearer-normalized auth_concurrent_issuance=serialized auth_session_overlay=create-only auth_session_frozen_v1=base-superadmin-token oidc_policy_update=source-vs-policy-separated oidc_policy_discovery=source-change-and-event-reload-only oidc_policy_allowlist=normalized-explicit-empty-wire oidc_policy_restart=canonical-auth-config-bound oidc_policy_mfa=actor-purpose-digest-single-use oidc_policy_errors=stable-coded oidc_project_members=user-and-group-only oidc_contract_reconcile=startup-and-policy oidc_project_member_schema=frozen-v1-core-options-scoped-merge oidc_token_identity=validated-before-mutation-owned-stable-account oidc_identity_link_owner=explicit-and-verified legacy_token_link_repair=exact-match-only oidc_local_recovery_required=active-admin-only oidc_account_activation=sync-before-mfa oidc_matrix=multi-account-role-operation default_project=shared-idempotent-role-preserving oidc_restricted_access=stable-account-membership-required-allowlist-only permission_matrix=v1-v2-schema-and-direct-route account_identity=exact-auth-identity-links external_service_health=writable-null-safe load_balancer_target=port-rule-persisted auth_config_proxy_identity=caller-platform-credential ui_async_adapter=rsvp-deferred-exactly-once ui_save_lifecycle=owner-locked-single-promise project_members_link=followLink\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.461 source_base=v1.6.364 release_base=v1.6.460 release_mode=web-console-component-incremental orchestration=0.183.318 engine_root_reuse=validated distributed_cache=5.7.4 vsphere_cli=0.55.2 api_explorer=1.1.18 web_console=1.6.125 authentication_service=0.4.42 websocket_proxy=0.23.14 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=modal-close-before-dispatch service_log_filters=service-scoped service_restart_events=explicit service_restart_policy=api-and-runtime-preserved console_workspace_origin=internal-dial-bound console_backend_retry=401-only,3-attempts platform_public_origin=authority-bound private_api_cache=no-store log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver hardware_payloads=create-and-upgrade-preserved v1_hardware_schema=container-and-launchConfig init_control=contained-separated service_create_completion=transient-service-collection-guarded docker_29_range=29.4.1..29.7.2+29.8.0 docker_29_6_2=supported docker_29_8_0=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-10-reused-from-v1.6.460 curl=8.18.0-1ubuntu2.5 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=8 vendor_pending_occurrences=22 perl=5.40.1-7ubuntu0.3 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 numeric_release_tags=enforced vex=openvex-0.2.0 artifact_scan=required legal_assets=complete auth_cross_tab_session_ownership=mutex-storage-broadcast auth_initial_401_recovery=transition-or-direct auth_current_token_identity=required auth_expired_session_recovery=login-no-reload auth_passive_delete=0 auth_explicit_logout=bound-idempotent auth_token_transport=bare-or-bearer-normalized auth_concurrent_issuance=serialized auth_session_overlay=create-only auth_session_frozen_v1=base-superadmin-token oidc_policy_update=source-vs-policy-separated oidc_policy_discovery=source-change-and-event-reload-only oidc_policy_allowlist=normalized-explicit-empty-wire oidc_policy_restart=canonical-auth-config-bound oidc_policy_mfa=actor-purpose-digest-single-use oidc_policy_errors=stable-coded oidc_project_members=user-and-group-only oidc_contract_reconcile=startup-and-policy oidc_project_member_schema=frozen-v1-core-options-scoped-merge oidc_token_identity=validated-before-mutation-owned-stable-account oidc_identity_link_owner=explicit-and-verified legacy_token_link_repair=exact-match-only oidc_local_recovery_required=active-admin-only oidc_account_activation=sync-before-mfa oidc_matrix=multi-account-role-operation default_project=shared-idempotent-role-preserving oidc_restricted_access=stable-account-membership-required-allowlist-only permission_matrix=v1-v2-schema-and-direct-route account_identity=exact-auth-identity-links external_service_health=writable-null-safe load_balancer_target=port-rule-persisted auth_config_proxy_identity=caller-platform-credential ui_async_adapter=rsvp-deferred-exactly-once ui_save_lifecycle=owner-locked-single-promise project_members_link=followLink\n'

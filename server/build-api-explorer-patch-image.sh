@@ -15,7 +15,7 @@ fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
-base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.431@sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68}
+base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
 orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.318}
 orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-orchestration-engine-0.183.318.jar}
@@ -84,7 +84,7 @@ build_options=()
 [[ "$vsphere_cli_bundle_commit" =~ ^[0-9a-f]{40}$ ]]
 [[ "$vsphere_cli_bundle_archive_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$govc_binary_sha256" =~ ^[0-9a-f]{64}$ ]]
-[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.431@sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68 ]]
+[[ "$base_image" == ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403 ]]
 for release_base_url in "$orchestration_engine_release_base_url" "$api_explorer_release_base_url" "$web_console_release_base_url" "$authentication_service_release_base_url" "$websocket_proxy_release_base_url"; do
 case "$release_base_url" in
     https://*) ;;
@@ -156,10 +156,10 @@ test "$(docker image inspect "$image" \
     "$revision"
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.base.name"}}')" = \
-    ghcr.io/pasturestack/server:v1.6.431
+    ghcr.io/pasturestack/server:v1.6.460
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.base.digest"}}')" = \
-    sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68
+    sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403
 
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
