@@ -6,6 +6,7 @@ cd "$repo_root"
 
 dockerfile=server/Dockerfile.api-explorer-patch
 release_dockerfile=server/Dockerfile.web-compose-release
+core_dockerfile=server/Dockerfile
 build_script=server/build-api-explorer-patch-image.sh
 publish_workflow=.github/workflows/publish-current-server.yml
 cattle_script=server/artifacts/cattle.sh
@@ -19,7 +20,7 @@ host_api_repair=server/artifacts/repair-host-api-sha256.sh
 host_api_check=scripts/check-server-host-api-package.sh
 mfa_policy_smoke=scripts/test-mfa-policy-api.py
 
-for path in "$dockerfile" "$release_dockerfile" "$build_script" "$publish_workflow" "$cattle_script" \
+for path in "$dockerfile" "$release_dockerfile" "$core_dockerfile" "$build_script" "$publish_workflow" "$cattle_script" \
     "$coreutils_patch" "$runtime_vex" "$runtime_vendor_pending" \
     "$vendor_pending_validator" \
     "$release_notes" "$current_release_notes" "$host_api_repair" "$host_api_check" \
@@ -266,19 +267,30 @@ require_marker "$dockerfile" \
 require_marker "$dockerfile" \
     'ARG UBUNTU_SNAPSHOT=20260910T100000Z' \
     SERVER_API_EXPLORER_PATCH_UBUNTU_SNAPSHOT_NOT_CURRENT
-for snapshot_dockerfile in "$dockerfile" "$release_dockerfile"; do
-    require_marker "$snapshot_dockerfile" \
-        'https://snapshot.ubuntu.com/ubuntu/20260910T100000Z/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb' \
-        SERVER_CA_CERTIFICATES_IMMUTABLE_BOOTSTRAP_SOURCE_MISSING
+for bootstrap_dockerfile in "$dockerfile" "$release_dockerfile" "$core_dockerfile"; do
+    require_marker "$bootstrap_dockerfile" \
+        'https://security.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb' \
+        SERVER_CA_CERTIFICATES_OFFICIAL_BOOTSTRAP_SOURCE_MISSING
+    require_marker "$bootstrap_dockerfile" \
+        'ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90' \
+        SERVER_CA_CERTIFICATES_BOOTSTRAP_HASH_MISSING
 done
 if grep -Fq 'https://launchpad.net/ubuntu/+archive/primary/+files/' \
-    "$dockerfile" "$release_dockerfile"; then
+    "$dockerfile" "$release_dockerfile" "$core_dockerfile"; then
     echo 'SERVER_CA_CERTIFICATES_MUTABLE_BOOTSTRAP_SOURCE_BLOCKED' >&2
     exit 1
 fi
-require_marker "$dockerfile" \
-    'ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90' \
-    SERVER_CA_CERTIFICATES_BOOTSTRAP_HASH_MISSING
+if grep -Fq '/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb' \
+    "$dockerfile" "$release_dockerfile" "$core_dockerfile" && \
+   grep -Fq 'https://snapshot.ubuntu.com/ubuntu/' \
+    "$dockerfile" "$release_dockerfile" "$core_dockerfile"; then
+    if grep -F 'https://snapshot.ubuntu.com/ubuntu/' \
+        "$dockerfile" "$release_dockerfile" "$core_dockerfile" | \
+       grep -Fq '/pool/main/c/ca-certificates/'; then
+        echo 'SERVER_CA_CERTIFICATES_SNAPSHOT_POOL_BOOTSTRAP_BLOCKED' >&2
+        exit 1
+    fi
+fi
 require_marker "$dockerfile" \
     'org.opencontainers.image.version="v1.6.428"' \
     SERVER_API_EXPLORER_PATCH_VERSION_MISSING
