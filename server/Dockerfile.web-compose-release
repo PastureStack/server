@@ -84,9 +84,9 @@ ARG SOURCE_DATE_EPOCH
 COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host-api-sha256
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.122
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.122.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=c50ace84d94575c7869dd2c01ff9e741d3ebd54a656ec23d5a94dfeda6e79dba
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.123
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.123.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=be9aa07ac82548c6c538850fae1a08482c06a3fafb78efe4d0fe74808d411a4a
 ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -96,9 +96,9 @@ ARG WEBSOCKET_PROXY_VERSION=0.23.14
 ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=c55108c3dbfd8e6579fc768a1988920db83c6f605ca1284b60edf92ae8d0160e
 ARG WEBSOCKET_PROXY_BINARY_SHA256=efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
-ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.316
-ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.316.jar
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=5439563f2e2c1be5ac0e00965080a06df92f35680c816d4e9219a1a1f903d161
+ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.317
+ARG ORCHESTRATION_ENGINE_ARTIFACT=orchestration-engine-0.183.317.jar
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=24d143a2ba674ad0a62bd22c610354ba4e89ab9e84bf5e57eb5d894142c30d01
 ARG COMPOSE_EXECUTOR_VERSION=0.14.36
 ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66
 ARG COMPOSE_EXECUTOR_BINARY_SHA256=1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d
@@ -288,9 +288,9 @@ ARG UBUNTU_SNAPSHOT=20260910T100000Z
 ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.5
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.122
-ARG WEB_CONSOLE_ARTIFACT_SHA256=c50ace84d94575c7869dd2c01ff9e741d3ebd54a656ec23d5a94dfeda6e79dba
-ARG WEB_CONSOLE_COMMIT=fac6b1f90adf8f6524f6f0745a7f54605cfa6071
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.123
+ARG WEB_CONSOLE_ARTIFACT_SHA256=be9aa07ac82548c6c538850fae1a08482c06a3fafb78efe4d0fe74808d411a4a
+ARG WEB_CONSOLE_COMMIT=78705efff4b6b850d4ae9f6b06e90e0a62165311
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_COMMIT=5589ef8fda68ae56e1afd64096965d452ee8a17e
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -299,8 +299,8 @@ ARG WEBSOCKET_PROXY_VERSION=0.23.14
 ARG WEBSOCKET_PROXY_COMMIT=3b5788bdc52f4edab0097a3d97afccf138c64089
 ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=c55108c3dbfd8e6579fc768a1988920db83c6f605ca1284b60edf92ae8d0160e
 ARG WEBSOCKET_PROXY_BINARY_SHA256=efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=5439563f2e2c1be5ac0e00965080a06df92f35680c816d4e9219a1a1f903d161
-ARG ORCHESTRATION_ENGINE_COMMIT=023a95f542f037617fb4de5a528dd02c73b28d7c
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=24d143a2ba674ad0a62bd22c610354ba4e89ab9e84bf5e57eb5d894142c30d01
+ARG ORCHESTRATION_ENGINE_COMMIT=aeca90a9699089b68691dd863b7fff2ad4744a64
 ARG COMPOSE_EXECUTOR_VERSION=0.14.36
 ARG COMPOSE_EXECUTOR_COMMIT=e85545a1bc34cb5c42db62ff90dd82b7ff9f5838
 ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66
@@ -364,7 +364,7 @@ RUN set -eux; \
         exit 1; \
     fi; \
     unzip -p "${archive}" META-INF/MANIFEST.MF | tr -d '\r' | \
-        grep -Fx 'Implementation-Version: 0.183.316' >/dev/null; \
+        grep -Fx 'Implementation-Version: 0.183.317' >/dev/null; \
     test "$(grep -Ec '^WEB-INF/lib/hazelcast-5\.7\.4\.jar$' "${listing}")" -eq 1; \
     ! grep -Eq '^WEB-INF/lib/hazelcast-(5\.7\.[0-3]|5\.7\.3-pasturestack\.[0-9]+)([.-]|\.jar$)' "${listing}"; \
     old_web_root="$(readlink -f /usr/share/cattle/war)"; \
@@ -394,7 +394,7 @@ RUN set -eux; \
         test -d "${new_web_root}/WEB-INF/lib"; \
     fi; \
     resources_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name 'cattle-resources-0.183.316.jar' -print -quit)"; \
+        -name 'cattle-resources-0.183.317.jar' -print -quit)"; \
     test -n "${resources_jar}"; \
     unzip -p "${resources_jar}" schema/base/mfaOperation.json | \
         grep -F 'oidcAccessPolicyUpdate' >/dev/null; \
@@ -413,7 +413,7 @@ RUN set -eux; \
             grep -F "\"${oidc_type}\"" >/dev/null; \
     done; \
     app_config_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name 'cattle-app-config-0.183.316.jar' -print -quit)"; \
+        -name 'cattle-app-config-0.183.317.jar' -print -quit)"; \
     test -n "${app_config_jar}"; \
     unzip -p "${app_config_jar}" META-INF/cattle/iaas-api/defaults.properties | \
         grep -Fx 'auth.service.external.id.types=github_user,github_org,github_team,shibboleth_user,shibboleth_group,ldap_user,ldap_group,oidc_user,oidc_group' >/dev/null; \
@@ -544,13 +544,13 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.457" \
+      org.opencontainers.image.version="v1.6.458" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.431" \
       org.opencontainers.image.base.digest="sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.457
-ENV CATTLE_CATTLE_VERSION=v0.183.316
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.458
+ENV CATTLE_CATTLE_VERSION=v0.183.317
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_PACKAGE_VERSION=${CURL_PACKAGE_VERSION}
 ENV PASTURESTACK_GLIBC_CVE_2026_18374_FIX=not-in-execute-path

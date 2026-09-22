@@ -11,9 +11,9 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.457` combines Orchestration Engine `0.183.316`, Node Agent `0.13.27`,
+`v1.6.458` combines Orchestration Engine `0.183.317`, Node Agent `0.13.27`,
 Authentication Service `0.4.42`, and the reviewed Ember 7.2 Web Console
-`1.6.122`.
+`1.6.123`.
 
 The inherited `v1.6.429` runtime repairs the embedded Host API `0.38.4`
 package for fresh host registration. The original executable and installer
@@ -243,6 +243,15 @@ enabled. Normal OIDC users remain subject to the configured user or group
 allow-list, so the recovery path does not weaken external site policy. See
 [v1.6.457 release notes](docs/releases/server-1.6.457.md).
 
+`v1.6.458` reconciles successful local and OpenID Connect logins into the
+single `adminProject` Default environment identified by its stable UUID.
+Existing direct and group roles remain authoritative, including explicit
+`noaccess`; existing personal environments and workloads are preserved. Web
+Console `1.6.123` applies the effective project schema to both visible workload
+controls and direct create or upgrade URLs, and account administration displays
+each account's exact local or OIDC identity links. See
+[v1.6.458 release notes](docs/releases/server-1.6.458.md).
+
 Docker Engine `29.4.1` through `29.7.2` is represented as one bounded SemVer
 compatibility interval, with `29.8.0` supported explicitly. Hosts on
 an in-range version such as `29.6.2` are therefore reported as supported.
@@ -341,7 +350,7 @@ The Web Console formats schema-validation field names without legacy String
 prototype extensions, so a missing localized field label cannot leave a
 container or service form stuck in the saving state.
 
-Web Console `1.6.122` preserves the Server `v1.6.358` authenticated visual and
+Web Console `1.6.123` preserves the Server `v1.6.358` authenticated visual and
 layout contract through a provenance-bound presentation layer while retaining
 Ember 7.2, the Bootstrap 5.3.8 JavaScript runtime, current security fixes, MFA,
 and adds permission-scoped incident filters and XLSX, CSV, and JSON export to
@@ -352,6 +361,12 @@ The service resource form keeps the init checkbox in its own field instead of
 overlapping the process-limit input, and create plus upgrade requests retain
 the complete shared-memory, runtime, CPU, device, GPU, and advanced-option
 payload rather than silently dropping hardware settings.
+Workload creation and upgrade controls now use the same effective-schema
+permission decision as their direct routes. Catalog management also requires
+the project management action link, and switching environments recomputes all
+capabilities. Account administration loads each account's exact
+`authIdentityLink` collection so local and OpenID Connect names, descriptions,
+and identities are no longer inferred from another account.
 First-time service creation and service upgrade pass receiver-bound completion
 callbacks through the shared form. While the API store merges a newly created
 resource, the live service collection can briefly contain an unreadable entry;
@@ -468,7 +483,7 @@ volume and storage-driver validation.
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.457
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.458
 ```
 
 Keep operational image references in semantic `vMAJOR.MINOR.PATCH` form. The matching GitHub Release records the resolved digest for verification without exposing digest-qualified strings to the platform UI. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
@@ -480,7 +495,7 @@ without trusting arbitrary forwarded headers:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.457
+    image: ghcr.io/pasturestack/server:v1.6.458
     restart: unless-stopped
     ports:
       - "8080:8080"
