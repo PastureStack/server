@@ -65,6 +65,14 @@ server additionally checks the rendered account inventory, absence of passive
 token deletion, one explicit session-bound logout, and unchanged permission
 sentinels.
 
+The CA bootstrap package remains Ubuntu's
+`ca-certificates_20260601~26.04.1_all.deb` with the published SHA-256
+`6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90`.
+It is fetched from Ubuntu's official security archive with Docker's mandatory
+checksum verification. This avoids an observed snapshot endpoint response that
+did not match Ubuntu's published package bytes; the remaining APT transaction
+continues to use the signed, dated Ubuntu snapshot.
+
 ## Upgrade and rollback
 
 Upgrade from v1.6.460 by changing only the image tag to `v1.6.461`. Preserve
