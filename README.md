@@ -263,7 +263,9 @@ Web Console `1.6.125`. A missing identity-link record for one inactive
 historical account is isolated to that row and uses its embedded identity
 fallback; it no longer redirects the entire account inventory to the failure
 page. Authorization, authentication, transport, and server failures other than
-HTTP 404 remain fail-visible. See
+HTTP 404 remain fail-visible. Its component-only assembly reuses the
+digest-pinned, one-layer `v1.6.460` runtime and does not reinstall identical
+Ubuntu packages during this Web Console-only patch. See
 [v1.6.461 release notes](docs/releases/server-1.6.461.md).
 
 Docker Engine `29.4.1` through `29.7.2` is represented as one bounded SemVer

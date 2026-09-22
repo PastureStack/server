@@ -1,62 +1,6 @@
 # syntax=docker/dockerfile:1.7
 ARG ARTIFACT_HELPER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452
-ARG UBUNTU_SECURITY_IMAGE=ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b
-ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.431@sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68
-
-FROM ${UBUNTU_SECURITY_IMAGE} AS ubuntu_security_packages
-
-ARG UBUNTU_SNAPSHOT=20260910T100000Z
-ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.5
-ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
-ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-
-ENV DEBIAN_FRONTEND=noninteractive
-WORKDIR /build
-ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90 \
-    https://security.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb \
-    /tmp/ca-certificates.deb
-RUN set -eux; \
-    mkdir -p /tmp/ca-bootstrap /etc/ssl/certs; \
-    dpkg-deb --extract /tmp/ca-certificates.deb /tmp/ca-bootstrap; \
-    find /tmp/ca-bootstrap/usr/share/ca-certificates -type f -name '*.crt' | \
-      LC_ALL=C sort | while IFS= read -r certificate; do sed -e '$a\' "${certificate}"; done \
-      > /etc/ssl/certs/ca-certificates.crt; \
-    rm -rf /tmp/ca-bootstrap /tmp/ca-certificates.deb; \
-    rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; \
-    printf 'Types: deb\nURIs: https://snapshot.ubuntu.com/ubuntu/%s\nSuites: resolute resolute-updates resolute-backports resolute-security\nComponents: main universe restricted multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nSnapshot: no\n' "${UBUNTU_SNAPSHOT}" > /etc/apt/sources.list.d/pasturestack-snapshot.sources; \
-    printf 'Acquire::Retries "5";\nAcquire::https::CaInfo "/etc/ssl/certs/ca-certificates.crt";\nAcquire::https::Verify-Peer "true";\nAcquire::https::Verify-Host "true";\nAcquire::AllowInsecureRepositories "false";\nAPT::Get::AllowUnauthenticated "false";\n' > /etc/apt/apt.conf.d/80pasturestack-snapshot; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends ca-certificates tar; \
-    mkdir -p /out/packages; \
-    cd /out/packages; \
-    apt-get download \
-      "curl=${CURL_PACKAGE_VERSION}" \
-      "libcurl3t64-gnutls=${CURL_PACKAGE_VERSION}" \
-      "libcurl4t64=${CURL_PACKAGE_VERSION}" \
-      "libc6=${GLIBC_PACKAGE_VERSION}" \
-      "libc-bin=${GLIBC_PACKAGE_VERSION}" \
-      "libc-gconv-modules-extra=${GLIBC_PACKAGE_VERSION}" \
-      "libperl5.40=${PERL_PACKAGE_VERSION}" \
-      "perl=${PERL_PACKAGE_VERSION}" \
-      "perl-base=${PERL_PACKAGE_VERSION}" \
-      "perl-modules-5.40=${PERL_PACKAGE_VERSION}"; \
-    for package in curl libcurl3t64-gnutls libcurl4t64 libc6 libc-bin libc-gconv-modules-extra libperl5.40 perl perl-base perl-modules-5.40; do \
-      package_file="$(find . -maxdepth 1 -type f -name "${package}_*.deb" -print)"; \
-      test -n "${package_file}"; \
-      test "$(printf '%s\n' "${package_file}" | wc -l)" -eq 1; \
-      test "$(dpkg-deb -f "${package_file}" Package)" = "${package}"; \
-      case "${package}" in \
-        curl|libcurl3t64-gnutls|libcurl4t64) expected_version="${CURL_PACKAGE_VERSION}" ;; \
-        libc6|libc-bin|libc-gconv-modules-extra) expected_version="${GLIBC_PACKAGE_VERSION}" ;; \
-        *) expected_version="${PERL_PACKAGE_VERSION}" ;; \
-      esac; \
-      test "$(dpkg-deb -f "${package_file}" Version)" = "${expected_version}"; \
-      architecture="$(dpkg-deb -f "${package_file}" Architecture)"; \
-      test "${architecture}" = amd64 || { test "${package}" = perl-modules-5.40 && test "${architecture}" = all; }; \
-    done; \
-    cp /usr/bin/tar /out/tar; \
-    cd /out; \
-    sha256sum packages/*.deb tar > SHA256SUMS
+ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403
 
 FROM ${ARTIFACT_HELPER_IMAGE} AS console_broker_build
 
@@ -284,7 +228,6 @@ FROM ${BASE_IMAGE}
 
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
-ARG UBUNTU_SNAPSHOT=20260910T100000Z
 ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.5
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
@@ -310,7 +253,6 @@ ARG VSPHERE_CLI_BUNDLE_COMMIT=c4b27e87aa0dacce432a2c6108ee0752319e6d5b
 ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=bebcc1c0275072ac40b5bc9b80f914c40a7f0431fffebc2c06fe34a34c33a57c
 ARG GOVC_BINARY_SHA256=f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31
 
-COPY --from=ubuntu_security_packages /out/ /tmp/pasturestack-ubuntu-security/
 COPY --from=release_artifacts /out/web-console/ /tmp/pasturestack-web-console/
 COPY --from=release_artifacts --chmod=0755 /out/authentication-service/authentication-service /usr/bin/authentication-service.real
 COPY --from=release_artifacts --chmod=0755 /out/websocket-proxy/websocket-proxy /usr/bin/websocket-proxy.real
@@ -329,24 +271,6 @@ COPY patches/db/core-124.xml /tmp/pasturestack-server-overlays/db/core-124.xml
 COPY patches/PatchV1GlobalSubscribe.java /tmp/pasturestack-server-overlays/PatchV1GlobalSubscribe.java
 COPY --chmod=0755 bin/entry /usr/bin/entry
 COPY --chmod=0755 artifacts/cattle.sh artifacts/mysql.sh artifacts/performance-env.sh /usr/share/cattle/
-
-RUN set -eux; \
-    cd /tmp/pasturestack-ubuntu-security; \
-    sha256sum -c SHA256SUMS; \
-    install -o 0 -g 0 -m 0755 tar /usr/bin/tar; \
-    dpkg -i packages/*.deb; \
-    for package in curl libcurl3t64-gnutls libcurl4t64; do \
-      test "$(dpkg-query -W -f='${Version}' "${package}")" = "${CURL_PACKAGE_VERSION}"; \
-    done; \
-    for package in libc6 libc-bin libc-gconv-modules-extra; do \
-      test "$(dpkg-query -W -f='${Version}' "${package}")" = "${GLIBC_PACKAGE_VERSION}"; \
-    done; \
-    for package in libperl5.40 perl perl-base perl-modules-5.40; do \
-      test "$(dpkg-query -W -f='${Version}' "${package}")" = "${PERL_PACKAGE_VERSION}"; \
-    done; \
-    cd /; \
-    rm -rf /tmp/pasturestack-ubuntu-security; \
-    rm -f /usr/bin/tar
 
 RUN set -eux; \
     test -n "${SOURCE_DATE_EPOCH}"; \
@@ -546,8 +470,8 @@ LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.licenses="Apache-2.0" \
       org.opencontainers.image.version="v1.6.461" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
-      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.431" \
-      org.opencontainers.image.base.digest="sha256:ebe1e3fe18f95d7ec5f5028414472f1a0f5a8d805e2cb4511f5d4e886006bc68"
+      org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460" \
+      org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"
 
 ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.461
 ENV CATTLE_CATTLE_VERSION=v0.183.318
