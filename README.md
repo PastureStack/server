@@ -11,9 +11,9 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.460` combines Orchestration Engine `0.183.318`, Node Agent `0.13.27`,
+`v1.6.461` combines Orchestration Engine `0.183.318`, Node Agent `0.13.27`,
 Authentication Service `0.4.42`, and the reviewed Ember 7.2 Web Console
-`1.6.124`.
+`1.6.125`.
 
 The inherited `v1.6.429` runtime repairs the embedded Host API `0.38.4`
 package for fresh host registration. The original executable and installer
@@ -258,6 +258,14 @@ project membership is admitted without adding that stable membership to
 required-site allow-list evaluation. See
 [v1.6.460 release notes](docs/releases/server-1.6.460.md).
 
+`v1.6.461` retains that permission model and updates account administration to
+Web Console `1.6.125`. A missing identity-link record for one inactive
+historical account is isolated to that row and uses its embedded identity
+fallback; it no longer redirects the entire account inventory to the failure
+page. Authorization, authentication, transport, and server failures other than
+HTTP 404 remain fail-visible. See
+[v1.6.461 release notes](docs/releases/server-1.6.461.md).
+
 Docker Engine `29.4.1` through `29.7.2` is represented as one bounded SemVer
 compatibility interval, with `29.8.0` supported explicitly. Hosts on
 an in-range version such as `29.6.2` are therefore reported as supported.
@@ -356,7 +364,7 @@ The Web Console formats schema-validation field names without legacy String
 prototype extensions, so a missing localized field label cannot leave a
 container or service form stuck in the saving state.
 
-Web Console `1.6.124` preserves the Server `v1.6.358` authenticated visual and
+Web Console `1.6.125` preserves the Server `v1.6.358` authenticated visual and
 layout contract through a provenance-bound presentation layer while retaining
 Ember 7.2, the Bootstrap 5.3.8 JavaScript runtime, current security fixes, MFA,
 and adds permission-scoped incident filters and XLSX, CSV, and JSON export to
@@ -372,7 +380,9 @@ permission decision as their direct routes. Catalog management also requires
 the project management action link, and switching environments recomputes all
 capabilities. Account administration loads each account's exact
 `authIdentityLink` collection so local and OpenID Connect names, descriptions,
-and identities are no longer inferred from another account.
+and identities are no longer inferred from another account. An expected
+`AccountNotFound` for an inactive historical row now falls back only that row;
+all other lookup failures remain diagnosable.
 First-time service creation and service upgrade pass receiver-bound completion
 callbacks through the shared form. While the API store merges a newly created
 resource, the live service collection can briefly contain an unreadable entry;
@@ -489,7 +499,7 @@ volume and storage-driver validation.
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.460
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.461
 ```
 
 Keep operational image references in semantic `vMAJOR.MINOR.PATCH` form. The matching GitHub Release records the resolved digest for verification without exposing digest-qualified strings to the platform UI. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
@@ -501,7 +511,7 @@ without trusting arbitrary forwarded headers:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.460
+    image: ghcr.io/pasturestack/server:v1.6.461
     restart: unless-stopped
     ports:
       - "8080:8080"
