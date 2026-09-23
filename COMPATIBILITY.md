@@ -25,7 +25,7 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.462` assembly consumes Orchestration Engine `v0.183.319`,
+The current `v1.6.463` assembly consumes Orchestration Engine `v0.183.320`,
 Web Console package `1.6.126`, Authentication Service `v0.4.42`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
 Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
@@ -128,6 +128,13 @@ active direct, group, and stable-identity memberships and creates a baseline
 member only while holding the same project lock used by administrator member
 updates. Existing owner, member, restricted, readonly, and noaccess decisions
 remain authoritative under concurrent login and policy changes.
+Engine `v0.183.320` checks project-member collection requests against the
+requested project before loading members. A token authorized for project A
+cannot use that project's `X-API-Project-Id` header to list project B's members
+through `?projectId=B` on either `/v1/projectMembers` or
+`/v2-beta/projectMembers`; unauthorized and malformed project IDs return 404.
+Authorized collections and direct member-ID access retain their established
+project checks.
 Web Console `1.6.126` uses the effective per-project schema for workload create
 and upgrade controls as well as direct routes. A missing POST or PUT method
 therefore cannot be bypassed by typing the route, and a project switch forces
