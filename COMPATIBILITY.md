@@ -8,7 +8,7 @@ The catalog helper is packaged and installed as `catalog-service` and `catalog-s
 
 The authentication helper follows the same boundary: the GitHub Release asset and actual executable use `authentication-service`, while the preserved supervisor-facing executable name exists only as a compatibility wrapper.
 
-Server `v1.6.428` keeps the platform account as the authorization principal
+PastureStack keeps the platform account as the authorization principal
 and treats local credentials and external identities as explicit login links.
 Provider changes therefore preserve the account identifier, direct project
 memberships, and administrator role. OpenID Connect links use exact issuer and
@@ -25,8 +25,8 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.461` assembly consumes Orchestration Engine `v0.183.318`,
-Web Console package `1.6.125`, Authentication Service `v0.4.42`, API Explorer
+The current `v1.6.462` assembly consumes Orchestration Engine `v0.183.319`,
+Web Console package `1.6.126`, Authentication Service `v0.4.42`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
 Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
 `v5.7.4`, and Catalog Templates at commit
@@ -123,7 +123,12 @@ existing project membership, including the shared Default membership, without
 weakening required mode: required mode continues to admit only the configured
 OIDC user or group allow-list (plus the separately guarded local recovery
 administrator). Inactive or unresolved accounts still fail closed.
-Web Console `1.6.125` uses the effective per-project schema for workload create
+Engine `v0.183.319` makes shared-Default reconciliation atomic. It checks all
+active direct, group, and stable-identity memberships and creates a baseline
+member only while holding the same project lock used by administrator member
+updates. Existing owner, member, restricted, readonly, and noaccess decisions
+remain authoritative under concurrent login and policy changes.
+Web Console `1.6.126` uses the effective per-project schema for workload create
 and upgrade controls as well as direct routes. A missing POST or PUT method
 therefore cannot be bypassed by typing the route, and a project switch forces
 capability re-evaluation. Account administration reads exact per-account
@@ -136,6 +141,13 @@ Each readable account still receives an exact `authIdentityLink` lookup. HTTP
 404 for an inactive historical account is isolated to that row and uses the
 embedded identity fallback; 401, 403, 5xx, transport, and unexpected failures
 continue to reject the route.
+An authenticated account with no active environment is a valid empty state.
+The console clears stale project scope, skips project-scoped collections until
+an authorized environment exists, and does not loop on an obsolete direct
+URL. Account names prefer authoritative identity links in the order name,
+login, then external ID; a missing link falls back to the embedded identity.
+Descriptions remain account data, and display-only identity links are never
+serialized in an account update.
 Legacy provider settings are imported only while the encrypted `auth.config`
 object does not exist. After that one-time migration boundary, the common
 access-mode and allowlist settings are authoritative; service and Server

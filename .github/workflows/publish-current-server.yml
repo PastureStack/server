@@ -454,6 +454,68 @@ jobs:
           digest="$(docker buildx imagetools inspect "$TARGET_IMAGE" \
             --format '{{.Manifest.Digest}}')"
           [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+          digest_sha256="${digest#sha256:}"
+          image_purl="pkg:oci/server@sha256%3A${digest_sha256}?repository_url=ghcr.io%2Fpasturestack%2Fserver&tag=${RELEASE_TAG}"
+          sbom="$RUNNER_TEMP/server-evidence/server.cdx.json"
+          sbom_tmp="$RUNNER_TEMP/server-evidence/server.cdx.tmp.json"
+          jq \
+            --arg name 'ghcr.io/pasturestack/server' \
+            --arg release "$RELEASE_TAG" \
+            --arg digest "$digest_sha256" \
+            --arg purl "$image_purl" \
+            --arg source "$SOURCE_SHA" '
+              (.metadata.component["bom-ref"] // "") as $old_ref
+              | .metadata = (.metadata // {})
+              | .metadata.component = {
+                  "type": "container",
+                  "bom-ref": $purl,
+                  "name": $name,
+                  "version": $release,
+                  "purl": $purl,
+                  "hashes": [{"alg": "SHA-256", "content": $digest}],
+                  "properties": [
+                    {
+                      "name": "org.opencontainers.image.revision",
+                      "value": $source
+                    },
+                    {
+                      "name": "org.opencontainers.image.ref.name",
+                      "value": ($name + ":" + $release)
+                    }
+                  ]
+                }
+              | if (.dependencies | type) == "array" then
+                  .dependencies |= map(
+                    .ref = (if .ref == $old_ref then $purl else .ref end)
+                    | if (.dependsOn | type) == "array" then
+                        .dependsOn |= map(if . == $old_ref then $purl else . end)
+                      else
+                        .
+                      end
+                  )
+                else
+                  .
+                end
+            ' "$sbom" >"$sbom_tmp"
+          mv "$sbom_tmp" "$sbom"
+          jq -e \
+            --arg release "$RELEASE_TAG" \
+            --arg digest "$digest_sha256" \
+            --arg purl "$image_purl" '
+              .bomFormat == "CycloneDX"
+              and .metadata.component.type == "container"
+              and .metadata.component.name == "ghcr.io/pasturestack/server"
+              and .metadata.component.version == $release
+              and .metadata.component.purl == $purl
+              and .metadata.component["bom-ref"] == $purl
+              and (.metadata.component.hashes | length) == 1
+              and .metadata.component.hashes[0].alg == "SHA-256"
+              and .metadata.component.hashes[0].content == $digest
+              and ([.dependencies[]? | select(.ref == $purl)] | length) == 1
+            ' "$sbom" >/dev/null
+          printf 'SERVER_SBOM_IDENTITY_OK release=%s image=%s digest=%s purl=%s\n' \
+            "$RELEASE_TAG" "$TARGET_IMAGE" "$digest" "$image_purl" |
+            tee "$RUNNER_TEMP/server-evidence/sbom-identity.txt"
           docker buildx imagetools inspect --raw "$TARGET_IMAGE" |
             jq -e \
               '.schemaVersion == 2 and (.config.digest | test("^sha256:[0-9a-f]{64}$")) and (.layers | length) == 1' \
@@ -507,6 +569,7 @@ jobs:
               release-notes.md \
               reverse-proxy-after-restart.txt \
               reverse-proxy-before-restart.txt \
+              sbom-identity.txt \
               security-summary.txt \
               server.openvex.json \
               server.vendor-pending.json \
@@ -536,6 +599,7 @@ jobs:
             "$evidence/release-notes.md" \
             "$evidence/reverse-proxy-after-restart.txt" \
             "$evidence/reverse-proxy-before-restart.txt" \
+            "$evidence/sbom-identity.txt" \
             "$evidence/security-summary.txt" \
             "$evidence/server.openvex.json" \
             "$evidence/server.vendor-pending.json" \
