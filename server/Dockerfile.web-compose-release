@@ -28,9 +28,9 @@ ARG SOURCE_DATE_EPOCH
 COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host-api-sha256
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.126
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.126.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=a278904a10ce757510ed516507bd3926b02bab42a52a27bd153ff5e94e2998aa
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.127
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.127.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=dcaaad16bbdf38c82af1cecb9cfc0867dcceab76503f632e151da6a17952f852
 ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -231,9 +231,9 @@ ARG PASTURESTACK_SERVER_REVISION
 ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.5
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.126
-ARG WEB_CONSOLE_ARTIFACT_SHA256=a278904a10ce757510ed516507bd3926b02bab42a52a27bd153ff5e94e2998aa
-ARG WEB_CONSOLE_COMMIT=5cba85d3ab954c416b86910f760f987ec2bfc526
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.127
+ARG WEB_CONSOLE_ARTIFACT_SHA256=dcaaad16bbdf38c82af1cecb9cfc0867dcceab76503f632e151da6a17952f852
+ARG WEB_CONSOLE_COMMIT=0f21118a871a1b72558a2fa11b4f33675fd6ae15
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_COMMIT=5589ef8fda68ae56e1afd64096965d452ee8a17e
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -433,6 +433,16 @@ RUN set -eux; \
     done; \
     grep -F '"formResources.addUlimit":"新增限制"' \
         "${web_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"viewEditProject.error.projectUnavailable":"找不到此環境' \
+        "${web_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"viewEditProject.error.membersNotSaved":"成員變更未完成' \
+        "${web_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"viewEditProject.error.loadFailed":"暫時無法載入環境資料' \
+        "${web_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"viewEditProject.error.projectFailed":"環境設定未儲存：伺服器暫時無法處理' \
+        "${web_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"inputIdentity.error.forbidden":"您沒有權限搜尋' \
+        "${web_root}/translations/zh-tw.json" >/dev/null; \
     ui_entry="$(find "${web_root}/assets" -maxdepth 1 -type f -name 'ui-*.js' -print -quit)"; \
     test -n "${ui_entry}"; \
     for marker in \
@@ -468,12 +478,12 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.463" \
+      org.opencontainers.image.version="v1.6.464" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460" \
       org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.463
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.464
 ENV CATTLE_CATTLE_VERSION=v0.183.320
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_PACKAGE_VERSION=${CURL_PACKAGE_VERSION}
