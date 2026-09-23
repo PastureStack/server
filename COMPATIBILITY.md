@@ -25,8 +25,8 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.463` assembly consumes Orchestration Engine `v0.183.320`,
-Web Console package `1.6.126`, Authentication Service `v0.4.42`, API Explorer
+The current `v1.6.464` assembly consumes Orchestration Engine `v0.183.320`,
+Web Console package `1.6.127`, Authentication Service `v0.4.42`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
 Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
 `v5.7.4`, and Catalog Templates at commit
@@ -135,7 +135,7 @@ through `?projectId=B` on either `/v1/projectMembers` or
 `/v2-beta/projectMembers`; unauthorized and malformed project IDs return 404.
 Authorized collections and direct member-ID access retain their established
 project checks.
-Web Console `1.6.126` uses the effective per-project schema for workload create
+Web Console `1.6.127` uses the effective per-project schema for workload create
 and upgrade controls as well as direct routes. A missing POST or PUT method
 therefore cannot be bypassed by typing the route, and a project switch forces
 capability re-evaluation. Account administration reads exact per-account
@@ -148,6 +148,14 @@ Each readable account still receives an exact `authIdentityLink` lookup. HTTP
 404 for an inactive historical account is isolated to that row and uses the
 embedded identity fallback; 401, 403, 5xx, transport, and unexpected failures
 continue to reject the route.
+Environment view and edit use the project `projectMembers` link, so member
+reads follow the same project authorization boundary. A 403 or 404 during the
+project or member load is shown as a localized access or not-found message.
+Server failures during environment load show a localized retry message instead
+of the raw response.
+Save failures identify whether the project, members, or network policy failed;
+the form warns that an earlier save step may already have completed. Identity
+search distinguishes a zero-result lookup from 401, 403, and server failure.
 An authenticated account with no active environment is a valid empty state.
 The console clears stale project scope, skips project-scoped collections until
 an authorized environment exists, and does not loop on an obsolete direct

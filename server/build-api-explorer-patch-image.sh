@@ -27,10 +27,10 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
 api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.126}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.126.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-a278904a10ce757510ed516507bd3926b02bab42a52a27bd153ff5e94e2998aa}
-web_console_commit=${WEB_CONSOLE_COMMIT:-5cba85d3ab954c416b86910f760f987ec2bfc526}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.127}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.127.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-dcaaad16bbdf38c82af1cecb9cfc0867dcceab76503f632e151da6a17952f852}
+web_console_commit=${WEB_CONSOLE_COMMIT:-0f21118a871a1b72558a2fa11b4f33675fd6ae15}
 authentication_service_release_base_url=${AUTHENTICATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/authentication-service/releases/download}
 authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.42}
 authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-5589ef8fda68ae56e1afd64096965d452ee8a17e}
@@ -51,7 +51,7 @@ vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-bebcc1c02
 govc_binary_sha256=${GOVC_BINARY_SHA256:-f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.463}
+image=${IMAGE:-pasturestack-validation/server:v1.6.464}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -150,7 +150,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.463
+    v1.6.464
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -164,7 +164,7 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.463 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.464 \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION=v0.183.320 \
     RC16_GO_AGENT_VERSION=0.13.27 \
@@ -326,7 +326,7 @@ docker run --rm --entrypoint bash "$image" -lc 'test -x /usr/bin/websocket-proxy
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.126"
+    test "$(cat "${web_root}/VERSION.txt")" = "1.6.127"
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     test ! -e "${web_root}/translations/none.json"
     test -z "$(find "${web_root}" -type f -name "*.map" -print -quit)"
@@ -370,6 +370,11 @@ docker run --rm --entrypoint bash "$image" -lc '
         "${web_root}/translations/zh-tw.json" >/dev/null
     grep -F "篩選服務日誌" "${web_root}/translations/zh-tw.json" >/dev/null
     grep -F "開始時間必須早於結束時間" "${web_root}/translations/zh-tw.json" >/dev/null
+    grep -F "\"viewEditProject.error.projectUnavailable\":\"找不到此環境" "${web_root}/translations/zh-tw.json" >/dev/null
+    grep -F "\"viewEditProject.error.membersNotSaved\":\"成員變更未完成" "${web_root}/translations/zh-tw.json" >/dev/null
+    grep -F "\"viewEditProject.error.loadFailed\":\"暫時無法載入環境資料" "${web_root}/translations/zh-tw.json" >/dev/null
+    grep -F "\"viewEditProject.error.projectFailed\":\"環境設定未儲存：伺服器暫時無法處理" "${web_root}/translations/zh-tw.json" >/dev/null
+    grep -F "\"inputIdentity.error.forbidden\":\"您沒有權限搜尋" "${web_root}/translations/zh-tw.json" >/dev/null
     for locale in de-de fa-ir fil-ph fr-fr hu-hu ja-jp ko-kr pt-br ru-ru uk-ua zh-hans zh-tw; do
         locale_file="${web_root}/translations/${locale}.json"
         grep -F "\"auditLogsPage.filterBuilder.title\":" "${locale_file}" >/dev/null

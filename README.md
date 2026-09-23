@@ -11,9 +11,9 @@ PastureStack is an independent community effort to preserve, audit, and moderniz
 This is a compatibility-focused modernization project. Existing Ubuntu 26.04,
 Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
-`v1.6.463` combines Orchestration Engine `0.183.320`, Node Agent `0.13.27`,
+`v1.6.464` combines Orchestration Engine `0.183.320`, Node Agent `0.13.27`,
 Authentication Service `0.4.42`, and the reviewed Ember 7.2 Web Console
-`1.6.126`.
+`1.6.127`.
 
 The inherited `v1.6.429` runtime repairs the embedded Host API `0.38.4`
 package for fresh host registration. The original executable and installer
@@ -288,6 +288,13 @@ an authorized `X-API-Project-Id` header with a different `projectId` query.
 Web Console remains at `1.6.126`. See
 [v1.6.463 release notes](docs/releases/server-1.6.463.md).
 
+`v1.6.464` keeps the Engine authorization boundary and updates Web Console
+`1.6.127`. Environment view and edit failures distinguish missing or forbidden
+project and member data from a server failure. The save form explains when
+only part of an edit may have been stored. Identity search separates a
+missing match, expired session, forbidden search, and a server failure. See
+[v1.6.464 release notes](docs/releases/server-1.6.464.md).
+
 Docker Engine `29.4.1` through `29.7.2` is represented as one bounded SemVer
 compatibility interval, with `29.8.0` supported explicitly. Hosts on
 an in-range version such as `29.6.2` are therefore reported as supported.
@@ -386,7 +393,7 @@ The Web Console formats schema-validation field names without legacy String
 prototype extensions, so a missing localized field label cannot leave a
 container or service form stuck in the saving state.
 
-Web Console `1.6.126` preserves the Server `v1.6.358` authenticated visual and
+Web Console `1.6.127` preserves the Server `v1.6.358` authenticated visual and
 layout contract through a provenance-bound presentation layer while retaining
 Ember 7.2, the Bootstrap 5.3.8 JavaScript runtime, current security fixes, MFA,
 and adds permission-scoped incident filters and XLSX, CSV, and JSON export to
@@ -521,7 +528,7 @@ volume and storage-driver validation.
 The versioned image is public and does not require a registry login:
 
 ```sh
-docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.463
+docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 ghcr.io/pasturestack/server:v1.6.464
 ```
 
 Keep operational image references in semantic `vMAJOR.MINOR.PATCH` form. The matching GitHub Release records the resolved digest for verification without exposing digest-qualified strings to the platform UI. Persistent database and platform state use the image-declared Docker volumes; manage or bind those volumes explicitly before relying on the container for durable workloads.
@@ -533,7 +540,7 @@ without trusting arbitrary forwarded headers:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.463
+    image: ghcr.io/pasturestack/server:v1.6.464
     restart: unless-stopped
     ports:
       - "8080:8080"
