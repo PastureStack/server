@@ -17,7 +17,8 @@ vendor_pending_validator=scripts/validate-vendor-pending-findings.sh
 release_notes=docs/releases/server-1.6.438.md
 previous_release_notes=docs/releases/server-1.6.462.md
 last_release_notes=docs/releases/server-1.6.463.md
-current_release_notes=docs/releases/server-1.6.466.md
+prior_release_notes=docs/releases/server-1.6.466.md
+current_release_notes=docs/releases/server-1.6.467.md
 host_api_repair=server/artifacts/repair-host-api-sha256.sh
 host_api_check=scripts/check-server-host-api-package.sh
 mfa_policy_smoke=scripts/test-mfa-policy-api.py
@@ -25,15 +26,15 @@ mfa_policy_smoke=scripts/test-mfa-policy-api.py
 for path in "$dockerfile" "$release_dockerfile" "$core_dockerfile" "$build_script" "$publish_workflow" "$cattle_script" \
     "$coreutils_patch" "$runtime_vex" "$runtime_vendor_pending" \
     "$vendor_pending_validator" \
-    "$release_notes" "$previous_release_notes" "$last_release_notes" "$current_release_notes" "$host_api_repair" "$host_api_check" \
+    "$release_notes" "$previous_release_notes" "$last_release_notes" "$prior_release_notes" "$current_release_notes" "$host_api_repair" "$host_api_check" \
     "$mfa_policy_smoke"; do
     test -f "$path"
 done
 
 bash -n "$host_api_repair" "$host_api_check"
 
-if grep -Fq '__WEB_CONSOLE_1_6_128_' "$release_dockerfile" "$build_script"; then
-    echo 'SERVER_WEB_CONSOLE_RELEASE_COORDINATES_PENDING' >&2
+if grep -Eq '__WEB_CONSOLE_|__ORCHESTRATION_ENGINE_' "$release_dockerfile" "$build_script"; then
+    echo 'SERVER_COMPONENT_RELEASE_COORDINATES_PENDING' >&2
     exit 1
 fi
 
@@ -67,7 +68,7 @@ require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
-    'org.opencontainers.image.version="v1.6.466"' \
+    'org.opencontainers.image.version="v1.6.467"' \
     SERVER_INCREMENTAL_RELEASE_VERSION_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460"' \
@@ -76,7 +77,7 @@ require_marker "$release_dockerfile" \
     'org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"' \
     SERVER_INCREMENTAL_RELEASE_BASE_DIGEST_MISSING
 require_marker "$release_dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.466' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.467' \
     SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING
 require_marker "$release_dockerfile" \
     'COPY --from=release_artifacts /out/host-api-0.38.4.tar.gz /usr/share/cattle/artifacts/host-api-0.38.4.tar.gz' \
@@ -88,16 +89,16 @@ require_marker "$publish_workflow" \
     'bash source/scripts/check-server-host-api-package.sh' \
     SERVER_HOST_API_RELEASE_CHECK_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.129' \
+    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.130' \
     SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=3cea709fc2b09f0088371b6ba3e4b5cff0e1b1ca54dbc76295668b2d8696580e' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=c07a6efce72ef0b3c169999edfdb9f6b1bad1d90cecb4fd6b07f827fb441aacc' \
     SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=71fe325071e8a93a09c3eba122509e58caf4272a' \
+    'ARG WEB_CONSOLE_COMMIT=d3d6d8a782625b942a86c41b6d83fb24ca22bde7' \
     SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING
 require_marker "$build_script" \
-    'web_console_commit=${WEB_CONSOLE_COMMIT:-71fe325071e8a93a09c3eba122509e58caf4272a}' \
+    'web_console_commit=${WEB_CONSOLE_COMMIT:-d3d6d8a782625b942a86c41b6d83fb24ca22bde7}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING
 for release_proxy_marker in \
     'ARG WEBSOCKET_PROXY_VERSION=0.23.14' \
@@ -185,6 +186,12 @@ require_marker "$release_dockerfile" \
 require_marker "$release_dockerfile" \
     '"viewEditProject.error.projectFailed":"環境設定未儲存：伺服器暫時無法處理' \
     SERVER_ENVIRONMENT_SAVE_FAILURE_TRANSLATION_GATE_MISSING
+require_marker "$release_dockerfile" \
+    '"resourceLoadError.stackUnavailable":"找不到此應用堆疊' \
+    SERVER_STACK_ACCESS_TRANSLATION_GATE_MISSING
+require_marker "$release_dockerfile" \
+    '"resourceLoadError.accountsUnavailable":"無法載入帳號資料' \
+    SERVER_ACCOUNT_ACCESS_TRANSLATION_GATE_MISSING
 require_marker "$build_script" \
     'viewEditProject.error.projectUnavailable' \
     SERVER_ENVIRONMENT_ACCESS_RUNTIME_GATE_MISSING
@@ -201,22 +208,25 @@ require_marker "$build_script" \
     'inputIdentity.error.forbidden' \
     SERVER_IDENTITY_SEARCH_RUNTIME_GATE_MISSING
 require_marker "$build_script" \
+    'resourceLoadError.stackUnavailable' \
+    SERVER_STACK_ACCESS_RUNTIME_GATE_MISSING
+require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.466}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.467}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'CATTLE_RANCHER_SERVER_VERSION=v1.6.466' \
+    'CATTLE_RANCHER_SERVER_VERSION=v1.6.467' \
     SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING
 for release_engine_marker in \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.321' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.322' \
     'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=1be55ad6395989e4b73de102ef0db730ac6d5c378daef7a2f521ad74c85121ed' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=2adfd0f0338cf6ae637ceb36532e965ccf8ddb4e' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=4dcf6a774ab62d67701d796ca1da0bbaeacc17087ffae94197a55336e98a8373' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=5a417e41f9dcf97e74c5139471900f93044579cb' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
-    "grep -Fx 'Implementation-Version: 0.183.321'" \
-    'ENV CATTLE_CATTLE_VERSION=v0.183.321' \
+    "grep -Fx 'Implementation-Version: 0.183.322'" \
+    'ENV CATTLE_CATTLE_VERSION=v0.183.322' \
     'schema/token/token-auth.json' \
     '"token.clientSessionId": "cro"' \
     'for frozen_token_schema in base superadmin token' \
@@ -231,12 +241,12 @@ for release_engine_marker in \
         SERVER_INCREMENTAL_ENGINE_REPLACEMENT_MISSING
 done
 for release_engine_build_marker in \
-    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.321}' \
+    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.322}' \
     'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}' \
-    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-1be55ad6395989e4b73de102ef0db730ac6d5c378daef7a2f521ad74c85121ed}' \
-    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-2adfd0f0338cf6ae637ceb36532e965ccf8ddb4e}' \
-    'CATTLE_CATTLE_VERSION=v0.183.321' \
-    'cattle-resources-0.183.321.jar'; do
+    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-4dcf6a774ab62d67701d796ca1da0bbaeacc17087ffae94197a55336e98a8373}' \
+    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-5a417e41f9dcf97e74c5139471900f93044579cb}' \
+    'CATTLE_CATTLE_VERSION=v0.183.322' \
+    'cattle-resources-0.183.322.jar'; do
     require_marker "$build_script" "$release_engine_build_marker" \
         SERVER_INCREMENTAL_ENGINE_BUILD_COORDINATE_MISSING
 done
@@ -519,7 +529,7 @@ require_marker "$build_script" \
     'PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}"' \
     SERVER_WEB_CONSOLE_RUNTIME_HASH_GATE_MISSING
 require_marker "$build_script" \
-    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.129"' \
+    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.130"' \
     SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING
 require_marker "$build_script" \
     'test "$(/usr/bin/compose-executor.real --version)" =' \
@@ -581,24 +591,23 @@ for previous_release_marker in \
         SERVER_PREVIOUS_RELEASE_NOTES_IDENTITY_MISSING
 done
 for current_release_marker in \
-    '# Server v1.6.466' \
-    'Orchestration Engine remains `v0.183.321`' \
-    'Web Console: `1.6.129`' \
-    'Authentication Service remains' \
-    '`setmembers` action' \
-    'network-policy controls use the network' \
-    'rollback selects the preserved `v1.6.465` image'; do
+    '# Server v1.6.467' \
+    'Orchestration Engine `v0.183.322`' \
+    'Web Console' \
+    '`1.6.130`' \
+    'permission matrix' \
+    'Rollback selects the preserved'; do
     require_marker "$current_release_notes" "$current_release_marker" \
         SERVER_CURRENT_RELEASE_NOTES_IDENTITY_MISSING
 done
 for current_readme_marker in \
-    '`v1.6.466` combines Orchestration Engine `0.183.321`' \
-    '[v1.6.466 release notes](docs/releases/server-1.6.466.md)' \
+    '`v1.6.467` combines Orchestration Engine `0.183.322`' \
+    '[v1.6.467 release notes](docs/releases/server-1.6.467.md)' \
     'single `adminProject` Default' \
     'effective-schema' \
     'local recovery administrator' \
     'Authentication Service `0.4.42`' \
-    'Web Console `1.6.129`' \
+    'Web Console `1.6.130`' \
     'zero-environment' \
     'The release matrix compares complete v1 and' \
     'v2-beta project and stack sets' \
@@ -614,14 +623,14 @@ for current_readme_marker in \
         SERVER_CURRENT_README_IDENTITY_MISSING
 done
 for current_compatibility_marker in \
-    'The current `v1.6.466` assembly consumes Orchestration Engine `v0.183.321`' \
+    'The current `v1.6.467` assembly consumes Orchestration Engine `v0.183.322`' \
     'Engine `v0.183.321` excludes inactive or removed project-member rows' \
     'Engine `v0.183.320` checks project-member collection requests' \
     'Engine `v0.183.319` makes shared-Default reconciliation atomic.' \
     'single `adminProject` Default' \
     'effective per-project schema' \
     'local administrator recovery path' \
-    'Web Console package `1.6.129`' \
+    'Web Console package `1.6.130`' \
     'shared-Default reconciliation atomic' \
     'valid empty state' \
     'Authentication Service `v0.4.42`' \
@@ -1012,7 +1021,7 @@ done
 
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.466"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.467"
   and (.statements | length) == 51
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -1038,7 +1047,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.466 >/dev/null
+    "$vendor_pending_fixture" v1.6.467 >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
 
@@ -1126,4 +1135,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.466 source_base=v1.6.364 release_base=v1.6.460 release_mode=web-console-and-engine-component-incremental orchestration=0.183.321 engine_root_reuse=validated distributed_cache=5.7.4 vsphere_cli=0.55.2 api_explorer=1.1.18 web_console=1.6.129 authentication_service=0.4.42 websocket_proxy=0.23.14 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=modal-close-before-dispatch service_log_filters=service-scoped service_restart_events=explicit service_restart_policy=api-and-runtime-preserved console_workspace_origin=internal-dial-bound console_backend_retry=401-only,3-attempts platform_public_origin=authority-bound private_api_cache=no-store log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver hardware_payloads=create-and-upgrade-preserved v1_hardware_schema=container-and-launchConfig init_control=contained-separated service_create_completion=transient-service-collection-guarded docker_29_range=29.4.1..29.7.2+29.8.0 docker_29_6_2=supported docker_29_8_0=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-10-reused-from-v1.6.460 curl=8.18.0-1ubuntu2.5 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=8 vendor_pending_occurrences=22 perl=5.40.1-7ubuntu0.3 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 numeric_release_tags=enforced vex=openvex-0.2.0 artifact_scan=required legal_assets=complete sbom_identity=image-name-version-digest-purl auth_cross_tab_session_ownership=mutex-storage-broadcast auth_initial_401_recovery=transition-or-direct auth_current_token_identity=required auth_expired_session_recovery=login-no-reload auth_passive_delete=0 auth_explicit_logout=bound-idempotent auth_token_transport=bare-or-bearer-normalized auth_concurrent_issuance=serialized auth_session_overlay=create-only auth_session_frozen_v1=base-superadmin-token oidc_policy_update=source-vs-policy-separated oidc_policy_discovery=source-change-and-event-reload-only oidc_policy_allowlist=normalized-explicit-empty-wire oidc_policy_restart=canonical-auth-config-bound oidc_policy_mfa=actor-purpose-digest-single-use oidc_policy_errors=stable-coded oidc_project_members=user-and-group-only oidc_contract_reconcile=startup-and-policy oidc_project_member_schema=frozen-v1-core-options-scoped-merge oidc_token_identity=validated-before-mutation-owned-stable-account oidc_identity_link_owner=explicit-and-verified legacy_token_link_repair=exact-match-only oidc_local_recovery_required=active-admin-only oidc_account_activation=sync-before-mfa oidc_matrix=direct-and-group-exact-set-zero-project account_identity=authoritative-links-display-only external_service_health=writable-null-safe load_balancer_target=port-rule-persisted auth_config_proxy_identity=caller-platform-credential ui_async_adapter=rsvp-deferred-exactly-once ui_save_lifecycle=owner-locked-single-promise project_members_link=followLink\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.467 source_base=v1.6.364 release_base=v1.6.460 release_mode=web-console-and-engine-component-incremental orchestration=0.183.322 engine_root_reuse=validated distributed_cache=5.7.4 vsphere_cli=0.55.2 api_explorer=1.1.18 web_console=1.6.130 authentication_service=0.4.42 websocket_proxy=0.23.14 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=modal-close-before-dispatch service_log_filters=service-scoped service_restart_events=explicit service_restart_policy=api-and-runtime-preserved console_workspace_origin=internal-dial-bound console_backend_retry=401-only,3-attempts platform_public_origin=authority-bound private_api_cache=no-store log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver hardware_payloads=create-and-upgrade-preserved v1_hardware_schema=container-and-launchConfig init_control=contained-separated service_create_completion=transient-service-collection-guarded docker_29_range=29.4.1..29.7.2+29.8.0 docker_29_6_2=supported docker_29_8_0=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-10-reused-from-v1.6.460 curl=8.18.0-1ubuntu2.5 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=8 vendor_pending_occurrences=22 perl=5.40.1-7ubuntu0.3 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 numeric_release_tags=enforced vex=openvex-0.2.0 artifact_scan=required legal_assets=complete sbom_identity=image-name-version-digest-purl auth_cross_tab_session_ownership=mutex-storage-broadcast auth_initial_401_recovery=transition-or-direct auth_current_token_identity=required auth_expired_session_recovery=login-no-reload auth_passive_delete=0 auth_explicit_logout=bound-idempotent auth_token_transport=bare-or-bearer-normalized auth_concurrent_issuance=serialized auth_session_overlay=create-only auth_session_frozen_v1=base-superadmin-token oidc_policy_update=source-vs-policy-separated oidc_policy_discovery=source-change-and-event-reload-only oidc_policy_allowlist=normalized-explicit-empty-wire oidc_policy_restart=canonical-auth-config-bound oidc_policy_mfa=actor-purpose-digest-single-use oidc_policy_errors=stable-coded oidc_project_members=user-and-group-only oidc_contract_reconcile=startup-and-policy oidc_project_member_schema=frozen-v1-core-options-scoped-merge oidc_token_identity=validated-before-mutation-owned-stable-account oidc_identity_link_owner=explicit-and-verified legacy_token_link_repair=exact-match-only oidc_local_recovery_required=active-admin-only oidc_account_activation=sync-before-mfa oidc_matrix=direct-and-group-exact-set-zero-project account_identity=authoritative-links-display-only external_service_health=writable-null-safe load_balancer_target=port-rule-persisted auth_config_proxy_identity=caller-platform-credential ui_async_adapter=rsvp-deferred-exactly-once ui_save_lifecycle=owner-locked-single-promise project_members_link=followLink\n'
