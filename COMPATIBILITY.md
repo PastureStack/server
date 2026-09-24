@@ -25,8 +25,8 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.466` assembly consumes Orchestration Engine `v0.183.321`,
-Web Console package `1.6.129`, Authentication Service `v0.4.42`, API Explorer
+The current `v1.6.467` assembly consumes Orchestration Engine `v0.183.322`,
+Web Console package `1.6.130`, Authentication Service `v0.4.42`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
 Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
 `v5.7.4`, and Catalog Templates at commit
@@ -141,7 +141,7 @@ still require the caller to have access to the row's project, and an ID from
 another project remains unavailable. This applies equally to `/v1` and
 `/v2-beta`; a removed row is not exposed merely because its database ID still
 exists.
-Web Console `1.6.129` uses the effective per-project schema for workload create
+Web Console `1.6.130` uses the effective per-project schema for workload create
 and upgrade controls as well as direct routes. A missing POST or PUT method
 therefore cannot be bypassed by typing the route, and a project switch forces
 capability re-evaluation. Account administration reads exact per-account
