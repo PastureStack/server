@@ -13,7 +13,7 @@ Java 25, MariaDB, modern Docker, non-root runtime, artifact-integrity,
 authentication, WebSocket, backup/restore, and test work is retained. Server
 `v1.6.466` combines Orchestration Engine `0.183.321`, Node Agent `0.13.27`,
 Authentication Service `0.4.42`, and the reviewed Ember 7.2 Web Console
-`1.6.128`.
+`1.6.129`.
 
 The inherited `v1.6.429` runtime repairs the embedded Host API `0.38.4`
 package for fresh host registration. The original executable and installer
@@ -305,8 +305,9 @@ active-ID control for each API version. See
 `v1.6.466` updates the environment editor to use each resource's advertised
 API capability. Direct `?editing=true` navigation no longer exposes member
 add, role, or remove controls without `setmembers`; network controls require
-their own update link. A fully read-only form keeps an exit action but cannot
-submit a misleading save. See
+their own update link. A network-only editor has a discoverable Edit entry on
+the environment detail page. A fully read-only form keeps an exit action but
+cannot submit a misleading save. See
 [v1.6.466 release notes](docs/releases/server-1.6.466.md).
 
 Docker Engine `29.4.1` through `29.7.2` is represented as one bounded SemVer
@@ -407,7 +408,7 @@ The Web Console formats schema-validation field names without legacy String
 prototype extensions, so a missing localized field label cannot leave a
 container or service form stuck in the saving state.
 
-Web Console `1.6.128` preserves the Server `v1.6.358` authenticated visual and
+Web Console `1.6.129` preserves the Server `v1.6.358` authenticated visual and
 layout contract through a provenance-bound presentation layer while retaining
 Ember 7.2, the Bootstrap 5.3.8 JavaScript runtime, current security fixes, MFA,
 and adds permission-scoped incident filters and XLSX, CSV, and JSON export to

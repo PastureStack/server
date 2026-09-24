@@ -1,18 +1,19 @@
 # Server v1.6.466
 
-This patch updates Web Console to `1.6.128` for capability-bound environment
+This patch updates Web Console to `1.6.129` for capability-bound environment
 editing. On a direct `?editing=true` URL, member add/change/remove controls
 now require the project's `setmembers` action, project metadata uses its own
 update action, and network-policy controls use the network's update action.
-The save path follows the same boundaries. A page without writable controls
+The detail page exposes an Edit entry for network-only capability. The save
+path follows the same boundaries. A page without writable controls
 retains Cancel without offering a misleading Save. No backend authorization,
 database schema, or deployment configuration changes are introduced.
 
 ## Component and release coordinates
 
-- Web Console: `1.6.128`, source commit
-  `c8fb056eb824bd2772739373e76688a26bc313d6`, artifact SHA-256
-  `13e7fc1e12336a6b2519ffe2c37552a19596a391de92b32ac626c948a0c0a868`.
+- Web Console: `1.6.129`, source commit
+  `71fe325071e8a93a09c3eba122509e58caf4272a`; official artifact SHA-256
+  `3cea709fc2b09f0088371b6ba3e4b5cff0e1b1ca54dbc76295668b2d8696580e`.
 - Orchestration Engine remains `v0.183.321`; Authentication Service remains
   `v0.4.42`. All other components and the digest-pinned `v1.6.460` runtime
   base remain as in [Server v1.6.465](server-1.6.465.md).

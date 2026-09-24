@@ -27,10 +27,10 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
 api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.128}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.128.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-13e7fc1e12336a6b2519ffe2c37552a19596a391de92b32ac626c948a0c0a868}
-web_console_commit=${WEB_CONSOLE_COMMIT:-c8fb056eb824bd2772739373e76688a26bc313d6}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.129}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.129.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-3cea709fc2b09f0088371b6ba3e4b5cff0e1b1ca54dbc76295668b2d8696580e}
+web_console_commit=${WEB_CONSOLE_COMMIT:-71fe325071e8a93a09c3eba122509e58caf4272a}
 authentication_service_release_base_url=${AUTHENTICATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/authentication-service/releases/download}
 authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.42}
 authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-5589ef8fda68ae56e1afd64096965d452ee8a17e}
@@ -326,7 +326,7 @@ docker run --rm --entrypoint bash "$image" -lc 'test -x /usr/bin/websocket-proxy
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.128"
+    test "$(cat "${web_root}/VERSION.txt")" = "1.6.129"
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     test ! -e "${web_root}/translations/none.json"
     test -z "$(find "${web_root}" -type f -name "*.map" -print -quit)"

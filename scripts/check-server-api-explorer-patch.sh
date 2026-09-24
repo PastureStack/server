@@ -88,16 +88,16 @@ require_marker "$publish_workflow" \
     'bash source/scripts/check-server-host-api-package.sh' \
     SERVER_HOST_API_RELEASE_CHECK_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.128' \
+    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.129' \
     SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=13e7fc1e12336a6b2519ffe2c37552a19596a391de92b32ac626c948a0c0a868' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=3cea709fc2b09f0088371b6ba3e4b5cff0e1b1ca54dbc76295668b2d8696580e' \
     SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=c8fb056eb824bd2772739373e76688a26bc313d6' \
+    'ARG WEB_CONSOLE_COMMIT=71fe325071e8a93a09c3eba122509e58caf4272a' \
     SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING
 require_marker "$build_script" \
-    'web_console_commit=${WEB_CONSOLE_COMMIT:-c8fb056eb824bd2772739373e76688a26bc313d6}' \
+    'web_console_commit=${WEB_CONSOLE_COMMIT:-71fe325071e8a93a09c3eba122509e58caf4272a}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING
 for release_proxy_marker in \
     'ARG WEBSOCKET_PROXY_VERSION=0.23.14' \
@@ -519,7 +519,7 @@ require_marker "$build_script" \
     'PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}"' \
     SERVER_WEB_CONSOLE_RUNTIME_HASH_GATE_MISSING
 require_marker "$build_script" \
-    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.128"' \
+    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.129"' \
     SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING
 require_marker "$build_script" \
     'test "$(/usr/bin/compose-executor.real --version)" =' \
@@ -583,7 +583,7 @@ done
 for current_release_marker in \
     '# Server v1.6.466' \
     'Orchestration Engine remains `v0.183.321`' \
-    'Web Console: `1.6.128`' \
+    'Web Console: `1.6.129`' \
     'Authentication Service remains' \
     '`setmembers` action' \
     'network-policy controls use the network' \
@@ -598,7 +598,7 @@ for current_readme_marker in \
     'effective-schema' \
     'local recovery administrator' \
     'Authentication Service `0.4.42`' \
-    'Web Console `1.6.128`' \
+    'Web Console `1.6.129`' \
     'zero-environment' \
     'The release matrix compares complete v1 and' \
     'v2-beta project and stack sets' \
@@ -621,7 +621,7 @@ for current_compatibility_marker in \
     'single `adminProject` Default' \
     'effective per-project schema' \
     'local administrator recovery path' \
-    'Web Console package `1.6.128`' \
+    'Web Console package `1.6.129`' \
     'shared-Default reconciliation atomic' \
     'valid empty state' \
     'Authentication Service `v0.4.42`' \
@@ -1126,4 +1126,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.466 source_base=v1.6.364 release_base=v1.6.460 release_mode=web-console-and-engine-component-incremental orchestration=0.183.321 engine_root_reuse=validated distributed_cache=5.7.4 vsphere_cli=0.55.2 api_explorer=1.1.18 web_console=1.6.128 authentication_service=0.4.42 websocket_proxy=0.23.14 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=modal-close-before-dispatch service_log_filters=service-scoped service_restart_events=explicit service_restart_policy=api-and-runtime-preserved console_workspace_origin=internal-dial-bound console_backend_retry=401-only,3-attempts platform_public_origin=authority-bound private_api_cache=no-store log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver hardware_payloads=create-and-upgrade-preserved v1_hardware_schema=container-and-launchConfig init_control=contained-separated service_create_completion=transient-service-collection-guarded docker_29_range=29.4.1..29.7.2+29.8.0 docker_29_6_2=supported docker_29_8_0=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-10-reused-from-v1.6.460 curl=8.18.0-1ubuntu2.5 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=8 vendor_pending_occurrences=22 perl=5.40.1-7ubuntu0.3 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 numeric_release_tags=enforced vex=openvex-0.2.0 artifact_scan=required legal_assets=complete sbom_identity=image-name-version-digest-purl auth_cross_tab_session_ownership=mutex-storage-broadcast auth_initial_401_recovery=transition-or-direct auth_current_token_identity=required auth_expired_session_recovery=login-no-reload auth_passive_delete=0 auth_explicit_logout=bound-idempotent auth_token_transport=bare-or-bearer-normalized auth_concurrent_issuance=serialized auth_session_overlay=create-only auth_session_frozen_v1=base-superadmin-token oidc_policy_update=source-vs-policy-separated oidc_policy_discovery=source-change-and-event-reload-only oidc_policy_allowlist=normalized-explicit-empty-wire oidc_policy_restart=canonical-auth-config-bound oidc_policy_mfa=actor-purpose-digest-single-use oidc_policy_errors=stable-coded oidc_project_members=user-and-group-only oidc_contract_reconcile=startup-and-policy oidc_project_member_schema=frozen-v1-core-options-scoped-merge oidc_token_identity=validated-before-mutation-owned-stable-account oidc_identity_link_owner=explicit-and-verified legacy_token_link_repair=exact-match-only oidc_local_recovery_required=active-admin-only oidc_account_activation=sync-before-mfa oidc_matrix=direct-and-group-exact-set-zero-project account_identity=authoritative-links-display-only external_service_health=writable-null-safe load_balancer_target=port-rule-persisted auth_config_proxy_identity=caller-platform-credential ui_async_adapter=rsvp-deferred-exactly-once ui_save_lifecycle=owner-locked-single-promise project_members_link=followLink\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.466 source_base=v1.6.364 release_base=v1.6.460 release_mode=web-console-and-engine-component-incremental orchestration=0.183.321 engine_root_reuse=validated distributed_cache=5.7.4 vsphere_cli=0.55.2 api_explorer=1.1.18 web_console=1.6.129 authentication_service=0.4.42 websocket_proxy=0.23.14 compose_executor=0.14.36 node_agent=0.13.27 node_agent_checksums=sha1,sha256 host_stats_charts=route-independent-shared-stream resource_actions=modal-close-before-dispatch service_log_filters=service-scoped service_restart_events=explicit service_restart_policy=api-and-runtime-preserved console_workspace_origin=internal-dial-bound console_backend_retry=401-only,3-attempts platform_public_origin=authority-bound private_api_cache=no-store log_time_presets=month,all audit_log_filters=permission-scoped audit_log_all_time=explicit audit_log_locales=13 audit_calendar_localized=1 footer_menus_bounded=1 resource_layout=attached-responsive audit_auth_ip_header=wrapped audit_identity_default_width=150 audit_auth_ip_default_width=300 audit_log_exports=xlsx,csv,json dropdown_destination=1 locale_compatibility=1 operator_state=1 login_experience=1 classic_layout=server-v1.6.358-visual-only catalog_labels=plain-semver hardware_payloads=create-and-upgrade-preserved v1_hardware_schema=container-and-launchConfig init_control=contained-separated service_create_completion=transient-service-collection-guarded docker_29_range=29.4.1..29.7.2+29.8.0 docker_29_6_2=supported docker_29_8_0=supported bootstrap=5.3.8 bootstrap_icons=1.13.1 bootstrap_javascript=0 runtime_go=1.27.0 ubuntu_security_refresh=2026-09-10-reused-from-v1.6.460 curl=8.18.0-1ubuntu2.5 glibc=2.43-2ubuntu2.4 glibc_cve_2026_18374=not-in-execute-path upstream_package_review_pending=8 vendor_pending_occurrences=22 perl=5.40.1-7ubuntu0.3 coreutils_uniq=9.11+d64e35a8 openssl=3.5.8 zlib=1.3.2 diff3=removed source_build_mode=removed runtime_tar=removed ssh_client=removed mount_helpers=removed runtime_digest_coordinates=1 numeric_release_tags=enforced vex=openvex-0.2.0 artifact_scan=required legal_assets=complete sbom_identity=image-name-version-digest-purl auth_cross_tab_session_ownership=mutex-storage-broadcast auth_initial_401_recovery=transition-or-direct auth_current_token_identity=required auth_expired_session_recovery=login-no-reload auth_passive_delete=0 auth_explicit_logout=bound-idempotent auth_token_transport=bare-or-bearer-normalized auth_concurrent_issuance=serialized auth_session_overlay=create-only auth_session_frozen_v1=base-superadmin-token oidc_policy_update=source-vs-policy-separated oidc_policy_discovery=source-change-and-event-reload-only oidc_policy_allowlist=normalized-explicit-empty-wire oidc_policy_restart=canonical-auth-config-bound oidc_policy_mfa=actor-purpose-digest-single-use oidc_policy_errors=stable-coded oidc_project_members=user-and-group-only oidc_contract_reconcile=startup-and-policy oidc_project_member_schema=frozen-v1-core-options-scoped-merge oidc_token_identity=validated-before-mutation-owned-stable-account oidc_identity_link_owner=explicit-and-verified legacy_token_link_repair=exact-match-only oidc_local_recovery_required=active-admin-only oidc_account_activation=sync-before-mfa oidc_matrix=direct-and-group-exact-set-zero-project account_identity=authoritative-links-display-only external_service_health=writable-null-safe load_balancer_target=port-rule-persisted auth_config_proxy_identity=caller-platform-credential ui_async_adapter=rsvp-deferred-exactly-once ui_save_lifecycle=owner-locked-single-promise project_members_link=followLink\n'
