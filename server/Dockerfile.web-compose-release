@@ -28,9 +28,9 @@ ARG SOURCE_DATE_EPOCH
 COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host-api-sha256
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.132
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.132.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=ffb000508cb08a149e34633121aec25f4dab022967c1f4cdf917260061f0dace
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.133
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.133.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=bfb550fa160e3e55a89339793f5d5e715eee7cf89da56c8e1a7a220561aca9ec
 ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -97,6 +97,7 @@ RUN set -eux; \
     grep -aF 'footer-dropdown' "${ui_entry}" >/dev/null; \
     grep -aF 'resource-host-guidance' "${ui_entry}" >/dev/null; \
     grep -aF 'resource-advanced-grid' "${ui_entry}" >/dev/null; \
+    grep -aF 'hostsPage.permissionDenied' "${ui_entry}" >/dev/null; \
     for theme_asset in ui-light.css ui-light.rtl.css ui-dark.css ui-dark.rtl.css; do \
         theme_path="${package_root}/assets/${theme_asset}"; \
         grep -F 'footer .footer-dropdown .dropdown-menu' "${theme_path}" >/dev/null; \
@@ -105,8 +106,11 @@ RUN set -eux; \
     done; \
     grep -F '"formResources.addUlimit":"新增限制"' \
         "${package_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
+        "${package_root}/translations/zh-tw.json" >/dev/null; \
     for locale_file in "${package_root}"/translations/*.json; do \
         grep -F '"formResources.addUlimit":' "${locale_file}" >/dev/null; \
+        grep -F '"hostsPage.permissionDenied":' "${locale_file}" >/dev/null; \
     done; \
     cp -a "${package_root}/." /out/web-console/; \
     auth_archive=/tmp/authentication-service.tar.xz; \
@@ -231,9 +235,9 @@ ARG PASTURESTACK_SERVER_REVISION
 ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.5
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.132
-ARG WEB_CONSOLE_ARTIFACT_SHA256=ffb000508cb08a149e34633121aec25f4dab022967c1f4cdf917260061f0dace
-ARG WEB_CONSOLE_COMMIT=4c31bf8b11c6924c2415f7b178afafc2e18b696e
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.133
+ARG WEB_CONSOLE_ARTIFACT_SHA256=bfb550fa160e3e55a89339793f5d5e715eee7cf89da56c8e1a7a220561aca9ec
+ARG WEB_CONSOLE_COMMIT=193d9ca09da813c82a0caab4f2aa66e03309d4ef
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_COMMIT=5589ef8fda68ae56e1afd64096965d452ee8a17e
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -433,6 +437,8 @@ RUN set -eux; \
     done; \
     grep -F '"formResources.addUlimit":"新增限制"' \
         "${web_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
+        "${web_root}/translations/zh-tw.json" >/dev/null; \
     grep -F '"viewEditProject.error.projectUnavailable":"找不到此環境' \
         "${web_root}/translations/zh-tw.json" >/dev/null; \
     grep -F '"viewEditProject.error.membersNotSaved":"成員變更未完成' \
@@ -449,6 +455,7 @@ RUN set -eux; \
         "${web_root}/translations/zh-tw.json" >/dev/null; \
     ui_entry="$(find "${web_root}/assets" -maxdepth 1 -type f -name 'ui-*.js' -print -quit)"; \
     test -n "${ui_entry}"; \
+    grep -aF 'hostsPage.permissionDenied' "${ui_entry}" >/dev/null; \
     for marker in \
         oidcAccessPolicyUpdate \
         LocalRecoveryRequired \
@@ -483,12 +490,12 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.469" \
+      org.opencontainers.image.version="v1.6.470" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460" \
       org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.469
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.470
 ENV CATTLE_CATTLE_VERSION=v0.183.322
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_PACKAGE_VERSION=${CURL_PACKAGE_VERSION}

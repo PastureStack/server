@@ -25,8 +25,8 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.469` assembly consumes Orchestration Engine `v0.183.322`,
-Web Console package `1.6.132`, Authentication Service `v0.4.42`, API Explorer
+The current `v1.6.470` assembly consumes Orchestration Engine `v0.183.322`,
+Web Console package `1.6.133`, Authentication Service `v0.4.42`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
 Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
 `v5.7.4`, and Catalog Templates at commit
@@ -178,6 +178,14 @@ URL. Account names prefer authoritative identity links in the order name,
 login, then external ID; a missing link falls back to the embedded identity.
 Descriptions remain account data, and display-only identity links are never
 serialized in an account update.
+Web Console `1.6.133` applies the active project's effective host POST schema
+to host creation and cloning. A direct Add Host URL without that permission
+shows a 403 before registration data loads; responses from an earlier project
+selection cannot restore stale permissions. Project details wait for the
+selected project before reading its network and policy. Host access errors use
+localized text across all 13 console locales and remain readable in narrow
+and right-to-left layouts. This release changes no backend API or
+authentication contract.
 Legacy provider settings are imported only while the encrypted `auth.config`
 object does not exist. After that one-time migration boundary, the common
 access-mode and allowlist settings are authoritative; service and Server
