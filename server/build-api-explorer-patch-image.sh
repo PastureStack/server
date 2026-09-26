@@ -27,10 +27,10 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
 api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.135}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.135.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-39b1efd27d6a6998cff1ee4555b35824f285a620cb6eb7220e1c5c746108d462}
-web_console_commit=${WEB_CONSOLE_COMMIT:-346795fa771f6f4418af36361d09badbf55becea}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.136}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.136.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-a799de25353c1dd0452191681f628514dc83346e6d561028dd5a1ff71863cf62}
+web_console_commit=${WEB_CONSOLE_COMMIT:-f7ae5e18db876b829876d0ef1849d584849bcd84}
 authentication_service_release_base_url=${AUTHENTICATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/authentication-service/releases/download}
 authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.42}
 authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-5589ef8fda68ae56e1afd64096965d452ee8a17e}
@@ -51,7 +51,7 @@ vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-bebcc1c02
 govc_binary_sha256=${GOVC_BINARY_SHA256:-f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.470}
+image=${IMAGE:-pasturestack-validation/server:v1.6.471}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -150,7 +150,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.470
+    v1.6.471
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -164,7 +164,7 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.470 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.471 \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION=v0.183.323 \
     RC16_GO_AGENT_VERSION=0.13.27 \
@@ -327,12 +327,14 @@ docker run --rm --entrypoint bash "$image" -lc 'test -x /usr/bin/websocket-proxy
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.135"
+    test "$(cat "${web_root}/VERSION.txt")" = "1.6.136"
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     test ! -e "${web_root}/translations/none.json"
     test -z "$(find "${web_root}" -type f -name "*.map" -print -quit)"
     ui_entry=$(find "${web_root}/assets" -maxdepth 1 -type f -name "ui-*.js" -print -quit)
     test -n "${ui_entry}"
+    grep -aF "dropdown-menu project-menu" "${ui_entry}" >/dev/null
+    ! grep -aF "dropdown-menu-end project-menu" "${ui_entry}" >/dev/null
     for marker in \
         audit-log-filter-panel \
         service-log-filter-panel \
@@ -358,6 +360,8 @@ docker run --rm --entrypoint bash "$image" -lc '
     done
     grep -aF "ember-basic-dropdown-wormhole" "${web_root}"/assets/*.js >/dev/null
     for theme_asset in ui-light.css ui-light.rtl.css ui-dark.css ui-dark.rtl.css; do
+        grep -F -A 18 "HEADER NAV.navbar .project-btn .dropdown-menu.project-menu {" "${web_root}/assets/${theme_asset}" | grep -Fx "  max-width: calc(100vw - 68px);" >/dev/null
+        grep -F -A 18 "HEADER NAV.navbar .project-btn .dropdown-menu.project-menu {" "${web_root}/assets/${theme_asset}" | grep -Fx "  overflow-wrap: anywhere;" >/dev/null
         grep -F ".audit-log-filter-panel" "${web_root}/assets/${theme_asset}" >/dev/null
         grep -F ".audit-log-filter-primary-grid" "${web_root}/assets/${theme_asset}" >/dev/null
         grep -F ".audit-log-filter-condition" "${web_root}/assets/${theme_asset}" >/dev/null
@@ -367,6 +371,16 @@ docker run --rm --entrypoint bash "$image" -lc '
         grep -F ".form-resources .resource-advanced-content.resource-advanced-grid" "${web_root}/assets/${theme_asset}" >/dev/null
         grep -F "table.audit-log-results-table[data-resizable-columns=true]:not(.table-column-measuring) > thead > th.audit-log-auth-ip-heading" "${web_root}/assets/${theme_asset}" >/dev/null
         grep -F -A 6 "table.audit-log-results-table[data-resizable-columns=true]:not(.table-column-measuring) > thead > th.audit-log-auth-ip-heading" "${web_root}/assets/${theme_asset}" | grep -F "white-space: normal;" >/dev/null
+    done
+    for theme in light dark; do
+        normal_css="${web_root}/assets/ui-${theme}.css"
+        rtl_css="${web_root}/assets/ui-${theme}.rtl.css"
+        grep -F -A 8 "HEADER NAV.navbar .project-btn .dropdown-menu.project-menu {" "${normal_css}" | grep -Fx "  left: 0;" >/dev/null
+        grep -F -A 8 "HEADER NAV.navbar .project-btn .dropdown-menu.project-menu {" "${normal_css}" | grep -Fx "  right: auto;" >/dev/null
+        grep -F -A 8 "HEADER NAV.navbar .project-btn .dropdown-menu.project-menu {" "${rtl_css}" | grep -Fx "  right: 0;" >/dev/null
+        grep -F -A 8 "HEADER NAV.navbar .project-btn .dropdown-menu.project-menu {" "${rtl_css}" | grep -Fx "  left: auto;" >/dev/null
+        grep -F -A 4 "html[dir=rtl] .fail-whale .error {" "${rtl_css}" | grep -Fx "  direction: rtl;" >/dev/null
+        grep -F -A 4 "html[dir=rtl] .fail-whale .error {" "${rtl_css}" | grep -Fx "  text-align: right;" >/dev/null
     done
     grep -F "篩選稽核日誌" "${web_root}/translations/zh-tw.json" >/dev/null
     grep -F "\"formResources.addUlimit\":\"新增限制\"" \

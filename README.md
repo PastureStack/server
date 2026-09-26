@@ -13,15 +13,18 @@ boundary.
 
 ## Current release
 
-Server [`v1.6.470`](https://github.com/PastureStack/server/releases/tag/v1.6.470)
+Server [`v1.6.471`](https://github.com/PastureStack/server/releases/tag/v1.6.471)
 packages Orchestration Engine `0.183.323`, Node Agent `0.13.27`,
-Authentication Service `0.4.42`, and Web Console `1.6.135`. Host creation and
-cloning follow the selected project's effective host-create permission, while
-the environment switcher includes every active environment for site
-administrators. Other users retain their authorized environment list. The
-engine carries FreeMarker `2.3.35`; the runtime refreshes Ubuntu's curl
-packages to the patched `8.18.0-1ubuntu2.7` revision. Read the
-[v1.6.470 notes](docs/releases/server-1.6.470.md) and
+Authentication Service `0.4.42`, and Web Console `1.6.136`. The console bounds
+the environment-switcher menu in left-to-right and right-to-left views and
+corrects the Persian failure-page direction. On console load it rechecks a
+stored environment selection, and the management page refreshes its list so
+revoked entries disappear after refresh. An already open view updates on
+reinitialization or an explicit environment switch. Site administrators can
+still switch to every active environment. The engine
+carries FreeMarker `2.3.35`, and the runtime retains signed Ubuntu curl
+`8.18.0-1ubuntu2.7`. Read the
+[v1.6.471 notes](docs/releases/server-1.6.471.md) and
 [earlier releases](https://github.com/PastureStack/server/releases) for the
 exact scope, validation, and upgrade history.
 
@@ -47,7 +50,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.470
+  ghcr.io/pasturestack/server:v1.6.471
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -56,7 +59,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.470
+    image: ghcr.io/pasturestack/server:v1.6.471
     restart: unless-stopped
     ports:
       - "8080:8080"
