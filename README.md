@@ -14,12 +14,14 @@ boundary.
 ## Current release
 
 Server [`v1.6.470`](https://github.com/PastureStack/server/releases/tag/v1.6.470)
-packages Orchestration Engine `0.183.322`, Node Agent `0.13.27`,
-Authentication Service `0.4.42`, and Web Console `1.6.133`. Host creation and
-cloning now follow the selected project's effective host-create permission;
-an unauthorized direct Add Host URL shows an access error before registration
-loads. Project details wait for the selected project before reading its network
-policy. Read the [v1.6.470 notes](docs/releases/server-1.6.470.md) and
+packages Orchestration Engine `0.183.323`, Node Agent `0.13.27`,
+Authentication Service `0.4.42`, and Web Console `1.6.135`. Host creation and
+cloning follow the selected project's effective host-create permission, while
+the environment switcher includes every active environment for site
+administrators. Other users retain their authorized environment list. The
+engine carries FreeMarker `2.3.35`; the runtime refreshes Ubuntu's curl
+packages to the patched `8.18.0-1ubuntu2.7` revision. Read the
+[v1.6.470 notes](docs/releases/server-1.6.470.md) and
 [earlier releases](https://github.com/PastureStack/server/releases) for the
 exact scope, validation, and upgrade history.
 
