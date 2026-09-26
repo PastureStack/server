@@ -13,13 +13,13 @@ boundary.
 
 ## Current release
 
-Server [`v1.6.469`](https://github.com/PastureStack/server/releases/tag/v1.6.469)
+Server [`v1.6.470`](https://github.com/PastureStack/server/releases/tag/v1.6.470)
 packages Orchestration Engine `0.183.322`, Node Agent `0.13.27`,
-Authentication Service `0.4.42`, and Web Console `1.6.132`. The release
-corrects the environment editor's project-scoped network lookup. The prior
-releases in this series also refined permission-scoped editing, account
-administration, and interrupted account-network cleanup. Read the
-[v1.6.469 notes](docs/releases/server-1.6.469.md) and
+Authentication Service `0.4.42`, and Web Console `1.6.133`. Host creation and
+cloning now follow the selected project's effective host-create permission;
+an unauthorized direct Add Host URL shows an access error before registration
+loads. Project details wait for the selected project before reading its network
+policy. Read the [v1.6.470 notes](docs/releases/server-1.6.470.md) and
 [earlier releases](https://github.com/PastureStack/server/releases) for the
 exact scope, validation, and upgrade history.
 
@@ -45,7 +45,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.469
+  ghcr.io/pasturestack/server:v1.6.470
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -54,7 +54,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.469
+    image: ghcr.io/pasturestack/server:v1.6.470
     restart: unless-stopped
     ports:
       - "8080:8080"
