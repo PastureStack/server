@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1.7
 ARG ARTIFACT_HELPER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452
+ARG UBUNTU_SECURITY_IMAGE=ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b
 ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403
 
 FROM ${ARTIFACT_HELPER_IMAGE} AS console_broker_build
@@ -28,9 +29,9 @@ ARG SOURCE_DATE_EPOCH
 COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host-api-sha256
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.133
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.133.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=bfb550fa160e3e55a89339793f5d5e715eee7cf89da56c8e1a7a220561aca9ec
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.135
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.135.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=39b1efd27d6a6998cff1ee4555b35824f285a620cb6eb7220e1c5c746108d462
 ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -40,9 +41,9 @@ ARG WEBSOCKET_PROXY_VERSION=0.23.14
 ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=c55108c3dbfd8e6579fc768a1988920db83c6f605ca1284b60edf92ae8d0160e
 ARG WEBSOCKET_PROXY_BINARY_SHA256=efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
-ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.322
+ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.323
 ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=4dcf6a774ab62d67701d796ca1da0bbaeacc17087ffae94197a55336e98a8373
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=ac5644352ee053dcfd6bf930a106c1d439af66f3d0f44c2da2cd961b6de1a0dc
 ARG COMPOSE_EXECUTOR_VERSION=0.14.36
 ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66
 ARG COMPOSE_EXECUTOR_BINARY_SHA256=1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d
@@ -228,16 +229,58 @@ RUN set -eux; \
     sha256sum -c 301025de31c07073cc03efa17e1ab8ef/SHA256SUMS; \
     sha256sum /out/host-api-0.38.4.tar.gz
 
+FROM ${UBUNTU_SECURITY_IMAGE} AS curl_security_packages
+
+ARG UBUNTU_CURL_SNAPSHOT=20260926T000000Z
+ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7
+ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /build
+ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90 \
+    https://security.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb \
+    /tmp/ca-certificates.deb
+RUN set -eux; \
+    mkdir -p /tmp/ca-bootstrap /etc/ssl/certs; \
+    dpkg-deb --extract /tmp/ca-certificates.deb /tmp/ca-bootstrap; \
+    find /tmp/ca-bootstrap/usr/share/ca-certificates -type f -name '*.crt' | \
+      LC_ALL=C sort | while IFS= read -r certificate; do sed -e '$a\' "${certificate}"; done \
+      > /etc/ssl/certs/ca-certificates.crt; \
+    rm -rf /tmp/ca-bootstrap /tmp/ca-certificates.deb; \
+    rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; \
+    printf 'Types: deb\nURIs: https://snapshot.ubuntu.com/ubuntu/%s\nSuites: resolute resolute-updates resolute-backports resolute-security\nComponents: main universe restricted multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nSnapshot: no\n' "${UBUNTU_CURL_SNAPSHOT}" \
+      > /etc/apt/sources.list.d/pasturestack-snapshot.sources; \
+    printf 'Acquire::Retries "5";\nAcquire::https::CaInfo "/etc/ssl/certs/ca-certificates.crt";\nAcquire::https::Verify-Peer "true";\nAcquire::https::Verify-Host "true";\nAcquire::AllowInsecureRepositories "false";\nAPT::Get::AllowUnauthenticated "false";\n' \
+      > /etc/apt/apt.conf.d/80pasturestack-snapshot; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends ca-certificates tar; \
+    mkdir -p /out/packages; \
+    cd /out/packages; \
+    apt-get download \
+      "curl=${CURL_PACKAGE_VERSION}" \
+      "libcurl3t64-gnutls=${CURL_PACKAGE_VERSION}" \
+      "libcurl4t64=${CURL_PACKAGE_VERSION}"; \
+    for package in curl libcurl3t64-gnutls libcurl4t64; do \
+      package_file="$(find . -maxdepth 1 -type f -name "${package}_*.deb" -print)"; \
+      test -n "${package_file}"; \
+      test "$(printf '%s\n' "${package_file}" | wc -l)" -eq 1; \
+      test "$(dpkg-deb -f "${package_file}" Package)" = "${package}"; \
+      test "$(dpkg-deb -f "${package_file}" Version)" = "${CURL_PACKAGE_VERSION}"; \
+      test "$(dpkg-deb -f "${package_file}" Architecture)" = amd64; \
+    done; \
+    cp /usr/bin/tar /out/tar; \
+    cd /out; \
+    sha256sum packages/*.deb tar > SHA256SUMS
+
 FROM ${BASE_IMAGE}
 
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
-ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.5
+ARG UBUNTU_CURL_SNAPSHOT=20260926T000000Z
+ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.133
-ARG WEB_CONSOLE_ARTIFACT_SHA256=bfb550fa160e3e55a89339793f5d5e715eee7cf89da56c8e1a7a220561aca9ec
-ARG WEB_CONSOLE_COMMIT=193d9ca09da813c82a0caab4f2aa66e03309d4ef
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.135
+ARG WEB_CONSOLE_ARTIFACT_SHA256=39b1efd27d6a6998cff1ee4555b35824f285a620cb6eb7220e1c5c746108d462
+ARG WEB_CONSOLE_COMMIT=346795fa771f6f4418af36361d09badbf55becea
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_COMMIT=5589ef8fda68ae56e1afd64096965d452ee8a17e
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -246,8 +289,8 @@ ARG WEBSOCKET_PROXY_VERSION=0.23.14
 ARG WEBSOCKET_PROXY_COMMIT=3b5788bdc52f4edab0097a3d97afccf138c64089
 ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=c55108c3dbfd8e6579fc768a1988920db83c6f605ca1284b60edf92ae8d0160e
 ARG WEBSOCKET_PROXY_BINARY_SHA256=efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=4dcf6a774ab62d67701d796ca1da0bbaeacc17087ffae94197a55336e98a8373
-ARG ORCHESTRATION_ENGINE_COMMIT=5a417e41f9dcf97e74c5139471900f93044579cb
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=ac5644352ee053dcfd6bf930a106c1d439af66f3d0f44c2da2cd961b6de1a0dc
+ARG ORCHESTRATION_ENGINE_COMMIT=5dd2bc06ee644efa0732cbeb11a65edbae3b445e
 ARG COMPOSE_EXECUTOR_VERSION=0.14.36
 ARG COMPOSE_EXECUTOR_COMMIT=e85545a1bc34cb5c42db62ff90dd82b7ff9f5838
 ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66
@@ -256,6 +299,19 @@ ARG VSPHERE_CLI_BUNDLE_VERSION=0.55.2
 ARG VSPHERE_CLI_BUNDLE_COMMIT=c4b27e87aa0dacce432a2c6108ee0752319e6d5b
 ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=bebcc1c0275072ac40b5bc9b80f914c40a7f0431fffebc2c06fe34a34c33a57c
 ARG GOVC_BINARY_SHA256=f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31
+
+COPY --from=curl_security_packages /out/ /tmp/pasturestack-curl-security/
+COPY --from=curl_security_packages /out/tar /usr/bin/tar
+RUN set -eux; \
+    cd /tmp/pasturestack-curl-security; \
+    sha256sum -c SHA256SUMS; \
+    dpkg -i packages/*.deb; \
+    for package in curl libcurl3t64-gnutls libcurl4t64; do \
+        test "$(dpkg-query -W -f='${Version}' "${package}")" = "${CURL_PACKAGE_VERSION}"; \
+    done; \
+    cd /; \
+    rm -rf /tmp/pasturestack-curl-security; \
+    rm -f /usr/bin/tar
 
 COPY --from=release_artifacts /out/web-console/ /tmp/pasturestack-web-console/
 COPY --from=release_artifacts --chmod=0755 /out/authentication-service/authentication-service /usr/bin/authentication-service.real
@@ -292,7 +348,9 @@ RUN set -eux; \
         exit 1; \
     fi; \
     unzip -p "${archive}" META-INF/MANIFEST.MF | tr -d '\r' | \
-        grep -Fx 'Implementation-Version: 0.183.322' >/dev/null; \
+        grep -Fx 'Implementation-Version: 0.183.323' >/dev/null; \
+    test "$(grep -Ec '^WEB-INF/lib/freemarker-2\.3\.35\.jar$' "${listing}")" -eq 1; \
+    ! grep -Eq '^WEB-INF/lib/freemarker-2\.3\.(3[0-4]|[0-2][0-9])\.jar$' "${listing}"; \
     test "$(grep -Ec '^WEB-INF/lib/hazelcast-5\.7\.4\.jar$' "${listing}")" -eq 1; \
     ! grep -Eq '^WEB-INF/lib/hazelcast-(5\.7\.[0-3]|5\.7\.3-pasturestack\.[0-9]+)([.-]|\.jar$)' "${listing}"; \
     old_web_root="$(readlink -f /usr/share/cattle/war)"; \
@@ -322,7 +380,7 @@ RUN set -eux; \
         test -d "${new_web_root}/WEB-INF/lib"; \
     fi; \
     resources_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name 'cattle-resources-0.183.322.jar' -print -quit)"; \
+        -name 'cattle-resources-0.183.323.jar' -print -quit)"; \
     test -n "${resources_jar}"; \
     unzip -p "${resources_jar}" schema/base/mfaOperation.json | \
         grep -F 'oidcAccessPolicyUpdate' >/dev/null; \
@@ -341,7 +399,7 @@ RUN set -eux; \
             grep -F "\"${oidc_type}\"" >/dev/null; \
     done; \
     app_config_jar="$(find "${new_web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name 'cattle-app-config-0.183.322.jar' -print -quit)"; \
+        -name 'cattle-app-config-0.183.323.jar' -print -quit)"; \
     test -n "${app_config_jar}"; \
     unzip -p "${app_config_jar}" META-INF/cattle/iaas-api/defaults.properties | \
         grep -Fx 'auth.service.external.id.types=github_user,github_org,github_team,shibboleth_user,shibboleth_group,ldap_user,ldap_group,oidc_user,oidc_group' >/dev/null; \
@@ -496,8 +554,9 @@ LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"
 
 ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.470
-ENV CATTLE_CATTLE_VERSION=v0.183.322
+ENV CATTLE_CATTLE_VERSION=v0.183.323
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
+ENV PASTURESTACK_CURL_SECURITY_SNAPSHOT=${UBUNTU_CURL_SNAPSHOT}
 ENV PASTURESTACK_CURL_PACKAGE_VERSION=${CURL_PACKAGE_VERSION}
 ENV PASTURESTACK_GLIBC_CVE_2026_18374_FIX=not-in-execute-path
 ENV PASTURESTACK_GLIBC_PACKAGE_VERSION=${GLIBC_PACKAGE_VERSION}

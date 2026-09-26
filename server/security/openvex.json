@@ -55,17 +55,17 @@
       },
       "products": [
         {
-          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.5?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.7?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.5?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.7?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.5?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.7?arch=amd64&distro=ubuntu-26.04"
         }
       ],
       "status": "fixed",
-      "impact_statement": "The final runtime installs the Ubuntu 26.04 security update 8.18.0-1ubuntu2.5 for curl and both shipped libcurl variants from the signed 2026-09-10 snapshot, and enforces the exact installed versions during image assembly and post-build validation."
+      "impact_statement": "The final runtime installs Ubuntu 26.04 curl and both shipped libcurl variants at 8.18.0-1ubuntu2.7, including the 2026-09-24 security update, and enforces the exact installed versions during image assembly and post-build validation."
     },
     {
       "vulnerability": {

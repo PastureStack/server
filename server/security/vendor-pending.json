@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "release": "v1.6.470",
-  "generatedAt": "2026-09-23T02:30:19Z",
+  "generatedAt": "2026-09-26T19:31:57Z",
   "policy": {
     "allowedSeverities": [
       "LOW",
@@ -14,90 +14,6 @@
   },
   "findings": [
     {
-      "vulnerabilityId": "CVE-2026-13608",
-      "severity": "MEDIUM",
-      "vendorStatus": "needs-evaluation",
-      "source": "https://ubuntu.com/security/CVE-2026-13608",
-      "reviewAfter": "2026-10-20",
-      "packages": [
-        { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
-        { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
-        { "name": "libcurl4t64", "installedVersion": "8.18.0-1ubuntu2.5" }
-      ]
-    },
-    {
-      "vulnerabilityId": "CVE-2026-18924",
-      "severity": "MEDIUM",
-      "vendorStatus": "needs-evaluation",
-      "source": "https://ubuntu.com/security/CVE-2026-18924",
-      "reviewAfter": "2026-10-20",
-      "packages": [
-        { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
-        { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
-        { "name": "libcurl4t64", "installedVersion": "8.18.0-1ubuntu2.5" }
-      ]
-    },
-    {
-      "vulnerabilityId": "CVE-2026-19931",
-      "severity": "MEDIUM",
-      "vendorStatus": "needs-evaluation",
-      "source": "https://ubuntu.com/security/CVE-2026-19931",
-      "reviewAfter": "2026-10-20",
-      "packages": [
-        { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
-        { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
-        { "name": "libcurl4t64", "installedVersion": "8.18.0-1ubuntu2.5" }
-      ]
-    },
-    {
-      "vulnerabilityId": "CVE-2026-80229",
-      "severity": "MEDIUM",
-      "vendorStatus": "needs-evaluation",
-      "source": "https://ubuntu.com/security/CVE-2026-80229",
-      "reviewAfter": "2026-10-20",
-      "packages": [
-        { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
-        { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
-        { "name": "libcurl4t64", "installedVersion": "8.18.0-1ubuntu2.5" }
-      ]
-    },
-    {
-      "vulnerabilityId": "CVE-2026-80230",
-      "severity": "MEDIUM",
-      "vendorStatus": "needs-evaluation",
-      "source": "https://ubuntu.com/security/CVE-2026-80230",
-      "reviewAfter": "2026-10-20",
-      "packages": [
-        { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
-        { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
-        { "name": "libcurl4t64", "installedVersion": "8.18.0-1ubuntu2.5" }
-      ]
-    },
-    {
-      "vulnerabilityId": "CVE-2026-80255",
-      "severity": "MEDIUM",
-      "vendorStatus": "needs-evaluation",
-      "source": "https://ubuntu.com/security/CVE-2026-80255",
-      "reviewAfter": "2026-10-20",
-      "packages": [
-        { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
-        { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
-        { "name": "libcurl4t64", "installedVersion": "8.18.0-1ubuntu2.5" }
-      ]
-    },
-    {
-      "vulnerabilityId": "CVE-2026-82209",
-      "severity": "MEDIUM",
-      "vendorStatus": "needs-evaluation",
-      "source": "https://ubuntu.com/security/CVE-2026-82209",
-      "reviewAfter": "2026-10-20",
-      "packages": [
-        { "name": "curl", "installedVersion": "8.18.0-1ubuntu2.5" },
-        { "name": "libcurl3t64-gnutls", "installedVersion": "8.18.0-1ubuntu2.5" },
-        { "name": "libcurl4t64", "installedVersion": "8.18.0-1ubuntu2.5" }
-      ]
-    },
-    {
       "vulnerabilityId": "CVE-2026-85091",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
@@ -105,6 +21,29 @@
       "reviewAfter": "2026-10-20",
       "packages": [
         { "name": "zlib1g", "installedVersion": "1:1.3.dfsg+really1.3.1-1ubuntu3.1" }
+      ]
+    },
+    {
+      "vulnerabilityId": "CVE-2026-89092",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-89092",
+      "reviewAfter": "2026-10-20",
+      "packages": [
+        { "name": "libc-bin", "installedVersion": "2.43-2ubuntu2.4" },
+        { "name": "libc-gconv-modules-extra", "installedVersion": "2.43-2ubuntu2.4" },
+        { "name": "libc6", "installedVersion": "2.43-2ubuntu2.4" }
+      ]
+    },
+    {
+      "vulnerabilityId": "CVE-2026-89161",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-89161",
+      "reviewAfter": "2026-10-20",
+      "packages": [
+        { "name": "libpcre2-8-0", "installedVersion": "10.46-1build1" },
+        { "name": "libpcre2-posix3", "installedVersion": "10.46-1build1" }
       ]
     }
   ]
