@@ -31,6 +31,18 @@ visibility, English/Traditional Chinese feedback, and zero unintended writes.
 The prior `v1.6.478` API direct-ID matrix remains historical evidence; it is
 not a substitute for `v1.6.479` browser acceptance.
 
+## Post-release isolated QA finding
+
+Registry Add failed its UI check for the superadministrator, owner, member, and
+restricted roles even though the scoped `registry` and `registryCredential`
+schemas both offered POST. Readonly and no-access denial checks passed, as did
+the Secret and Certificate checks in English and Traditional Chinese. The
+schema cache used a lower-case ID; capability lookup returned false for the
+camel-case form and true for the lower-case form. This was not a loading race,
+and the failed Registry flow caused no resource writes. Web Console `1.6.145`
+addresses this false denial; `v1.6.479` must not be marked as passing the full
+Registry Add browser matrix.
+
 ## Upgrade and rollback
 
 After release verification, select the immutable numeric tag
