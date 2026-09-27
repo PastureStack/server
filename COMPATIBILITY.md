@@ -25,8 +25,8 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.474` assembly consumes Orchestration Engine `v0.183.323`,
-Web Console package `1.6.139`, Webhook Automation Service `v0.10.3`,
+The current `v1.6.475` assembly consumes Orchestration Engine `v0.183.325`,
+Web Console package `1.6.140`, Webhook Automation Service `v0.10.3`,
 Authentication Service `v0.4.42`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
 Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
@@ -223,8 +223,17 @@ These separate API writes are not atomic. Webhook Automation Service `v0.10.3`
 returns role-specific Receiver schema methods for both schema endpoints and
 marks those responses private and non-cacheable; stored receivers and existing
 routes are unchanged.
-Orchestration Engine `v0.183.323` packages FreeMarker `2.3.35` exactly once.
-Server `v1.6.474` retains the signed Ubuntu 26.04 curl security revision
+Orchestration Engine `v0.183.325` exposes `projectTemplate.isPublic` read-only
+to non-admin v1 readers, omits remove actions for public or non-owned templates,
+and keeps direct non-admin mutations owner-scoped. Web Console `1.6.140` shows
+ProjectTemplate edit/remove only for administrators or an exact, non-empty
+template owner account ID match; direct edit routes check ownership again.
+Its sortable-table controls reflow at narrow widths, and closing an API-key
+modal before delayed focus runs no longer targets a destroyed input. Role
+labels alone do not establish Container write capabilities: use each account's
+effective project schema methods when validating the controls and API writes.
+Orchestration Engine `v0.183.325` packages FreeMarker `2.3.35` exactly once.
+Server `v1.6.475` retains the signed Ubuntu 26.04 curl security revision
 `8.18.0-1ubuntu2.7` without replacing the preserved runtime base.
 Legacy provider settings are imported only while the encrypted `auth.config`
 object does not exist. After that one-time migration boundary, the common
