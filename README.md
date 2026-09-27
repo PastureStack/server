@@ -11,6 +11,15 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.481 source candidate
+
+Server `v1.6.481` packages Web Console `1.6.146` with the unchanged Engine and
+other components from `v1.6.480`. Required-field errors on the Secret,
+Certificate, and Registry forms use their visible translated labels. The
+encrypted-private-key error is localized as well. See the
+[v1.6.481 candidate notes](docs/releases/server-1.6.481.md) for the scoped
+validation and isolated `8080` QA still required before acceptance.
+
 ## v1.6.480 release
 
 Server `v1.6.480`

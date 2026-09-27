@@ -27,10 +27,10 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
 api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.145}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.145.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-fa040adff35162fec11e6400180a913af9847db1798c6ead6111f539a4436e39}
-web_console_commit=${WEB_CONSOLE_COMMIT:-c130a081257b14d1a547ca13c3a16aa0d802d435}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.146}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.146.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-1489c69edfbb531f021ed34aca014bb17d70d8f1a2aacbddc3b3af8b7a317dd6}
+web_console_commit=${WEB_CONSOLE_COMMIT:-97e52e09569681f7452942d0775f0ddac2d5e67e}
 authentication_service_release_base_url=${AUTHENTICATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/authentication-service/releases/download}
 authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.42}
 authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-5589ef8fda68ae56e1afd64096965d452ee8a17e}
@@ -56,7 +56,7 @@ vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-bebcc1c02
 govc_binary_sha256=${GOVC_BINARY_SHA256:-f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.480}
+image=${IMAGE:-pasturestack-validation/server:v1.6.481}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -164,7 +164,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.480
+    v1.6.481
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -178,7 +178,7 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.480 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.481 \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION=v0.183.326 \
     RC16_GO_AGENT_VERSION=0.13.27 \
@@ -344,7 +344,7 @@ docker run --rm --entrypoint bash "$image" -lc 'test -x /usr/bin/websocket-proxy
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.145"
+    test "$(cat "${web_root}/VERSION.txt")" = "1.6.146"
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     test ! -e "${web_root}/translations/none.json"
     test -z "$(find "${web_root}" -type f -name "*.map" -print -quit)"
@@ -421,6 +421,18 @@ docker run --rm --entrypoint bash "$image" -lc '
         grep -F "\"containersPage.permissionDenied\":" "${locale_file}" >/dev/null
         grep -F "\"hookPage.receiver.permissionDenied\":" "${locale_file}" >/dev/null
         grep -F "\"hookPage.receiver.editPermissionDenied\":" "${locale_file}" >/dev/null
+        for validation_label in \
+            formNameDescription.name.label \
+            formNameDescription.description.label \
+            newSecret.value.label \
+            inputCertificate.cert.label \
+            inputCertificate.key.label \
+            certificatesPage.encryptedKeyError \
+            registriesPage.new.form.custom.labelText \
+            registriesPage.new.form.username.labelText \
+            registriesPage.new.form.password.labelText; do
+            grep -F "\"${validation_label}\":" "${locale_file}" >/dev/null
+        done
     done
     grep -F "篩選服務日誌" "${web_root}/translations/zh-tw.json" >/dev/null
     grep -F "開始時間必須早於結束時間" "${web_root}/translations/zh-tw.json" >/dev/null

@@ -25,7 +25,10 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The published `v1.6.480` release consumes Orchestration Engine `v0.183.326`,
+The `v1.6.481` source candidate changes only Web Console packaging to
+`1.6.146`. Its required-field feedback uses the visible translated label on
+Secret, Certificate, and Registry forms. The published `v1.6.480` release
+consumes Orchestration Engine `v0.183.326`,
 Web Console package `1.6.145`, Webhook Automation Service `v0.10.3`,
 Authentication Service `v0.4.42`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
