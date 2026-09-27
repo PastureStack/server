@@ -5,8 +5,9 @@ versioned releases. Public images and Release assets exist only for tags whose
 published checksums, SBOM, licenses, anonymous-download checks, and isolated
 runtime gates have passed.
 
-## Current release
+## Release notes
 
+- [Server v1.6.480 source candidate](releases/server-1.6.480.md)
 - [Server v1.6.479](releases/server-1.6.479.md)
 - [Server v1.6.478](releases/server-1.6.478.md)
 - [Server v1.6.477](releases/server-1.6.477.md)
