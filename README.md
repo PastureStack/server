@@ -11,6 +11,18 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.482 source candidate
+
+Server `v1.6.482` packages Web Console `1.6.147` with the unchanged Engine and
+other components from published `v1.6.481`. Service Edit now submits only
+`name`, `description`, and `scale` instead of its cloned launch configuration
+and upgrade strategy. The scale form preserves an initial zero, while its
+separate quick action sends only `scale` after the debounce. See the
+[v1.6.482 candidate notes](docs/releases/server-1.6.482.md) for exact inputs
+and still-required Server build and isolated `8080` acceptance. This source
+candidate is not a published Server image; the quick start below remains on
+`v1.6.481`.
+
 ## v1.6.481 release
 
 Server `v1.6.481` packages Web Console `1.6.146` with the unchanged Engine and
