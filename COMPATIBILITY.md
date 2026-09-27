@@ -25,8 +25,8 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.476` assembly consumes Orchestration Engine `v0.183.326`,
-Web Console package `1.6.141`, Webhook Automation Service `v0.10.3`,
+The current `v1.6.477` assembly consumes Orchestration Engine `v0.183.326`,
+Web Console package `1.6.142`, Webhook Automation Service `v0.10.3`,
 Authentication Service `v0.4.42`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
 Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
@@ -243,6 +243,12 @@ Web Console `1.6.141` gives the same localized denial on ProjectTemplate
 direct-edit routes for 403, 404, and owner mismatch while retaining 401
 session recovery. Failed API-key saves display the existing API error inside
 the modal without rendering key values.
+Web Console `1.6.142` keeps server-issued Receiver URLs and lifecycle state
+out of cloned create requests, clears inherited catalog identity on new
+private ProjectTemplates, and reports inaccessible direct environment routes
+without revealing whether an ID exists. Container table actions remain within
+their visible scroll host while data columns keep their own width in LTR,
+RTL, narrow panels, and desktop-to-mobile resize transitions.
 Legacy provider settings are imported only while the encrypted `auth.config`
 object does not exist. After that one-time migration boundary, the common
 access-mode and allowlist settings are authoritative; service and Server

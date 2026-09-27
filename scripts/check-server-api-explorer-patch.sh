@@ -18,7 +18,7 @@ release_notes=docs/releases/server-1.6.438.md
 previous_release_notes=docs/releases/server-1.6.462.md
 last_release_notes=docs/releases/server-1.6.463.md
 prior_release_notes=docs/releases/server-1.6.466.md
-current_release_notes=docs/releases/server-1.6.476.md
+current_release_notes=docs/releases/server-1.6.477.md
 host_api_repair=server/artifacts/repair-host-api-sha256.sh
 host_api_check=scripts/check-server-host-api-package.sh
 mfa_policy_smoke=scripts/test-mfa-policy-api.py
@@ -68,7 +68,7 @@ require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
-    'org.opencontainers.image.version="v1.6.476"' \
+    'org.opencontainers.image.version="v1.6.477"' \
     SERVER_INCREMENTAL_RELEASE_VERSION_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460"' \
@@ -77,7 +77,7 @@ require_marker "$release_dockerfile" \
     'org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"' \
     SERVER_INCREMENTAL_RELEASE_BASE_DIGEST_MISSING
 require_marker "$release_dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.476' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.477' \
     SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING
 require_marker "$release_dockerfile" \
     'COPY --from=release_artifacts /out/host-api-0.38.4.tar.gz /usr/share/cattle/artifacts/host-api-0.38.4.tar.gz' \
@@ -89,16 +89,16 @@ require_marker "$publish_workflow" \
     'bash source/scripts/check-server-host-api-package.sh' \
     SERVER_HOST_API_RELEASE_CHECK_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.141' \
+    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.142' \
     SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.141.tar.gz' \
+    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.142.tar.gz' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=3643944c1c9ed098a030ec8947f0b33e290c09d49257bd51e8401cc0196fe2f3' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=26bce780df81fb91f525f994729501394ae21672eed2be3ea5e378bf38eb41cc' \
     SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=9a8bb1166a076d08962cd0a653c7233e2166b11d' \
+    'ARG WEB_CONSOLE_COMMIT=4a056b75c41881743dbfbdc7c4bbee5cf2214123' \
     SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING
 require_marker "$release_dockerfile" \
     "grep -aF 'hostsPage.permissionDenied'" \
@@ -107,16 +107,16 @@ require_marker "$release_dockerfile" \
     '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ZH_TW_PERMISSION_MESSAGE_MISSING
 require_marker "$build_script" \
-    'web_console_commit=${WEB_CONSOLE_COMMIT:-9a8bb1166a076d08962cd0a653c7233e2166b11d}' \
+    'web_console_commit=${WEB_CONSOLE_COMMIT:-4a056b75c41881743dbfbdc7c4bbee5cf2214123}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING
 require_marker "$build_script" \
-    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.141}' \
+    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.142}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.141.tar.gz}' \
+    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.142.tar.gz}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING
 require_marker "$build_script" \
-    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-3643944c1c9ed098a030ec8947f0b33e290c09d49257bd51e8401cc0196fe2f3}' \
+    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-26bce780df81fb91f525f994729501394ae21672eed2be3ea5e378bf38eb41cc}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING
 require_marker "$build_script" \
     'hostsPage.permissionDenied' \
@@ -280,10 +280,10 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.476}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.477}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'CATTLE_RANCHER_SERVER_VERSION=v1.6.476' \
+    'CATTLE_RANCHER_SERVER_VERSION=v1.6.477' \
     SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING
 for release_engine_marker in \
     'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.326' \
@@ -606,7 +606,7 @@ require_marker "$build_script" \
     'PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}"' \
     SERVER_WEB_CONSOLE_RUNTIME_HASH_GATE_MISSING
 require_marker "$build_script" \
-    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.141"' \
+    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.142"' \
     SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING
 require_marker "$release_dockerfile" \
     "grep -aF 'pod-empty-message text-center text-muted'" \
@@ -701,60 +701,61 @@ for previous_release_marker in \
         SERVER_PREVIOUS_RELEASE_NOTES_IDENTITY_MISSING
 done
 for current_release_marker in \
-    '# Server v1.6.476' \
+    '# Server v1.6.477' \
     'Orchestration Engine `v0.183.326`' \
     'Web Console' \
-    '`1.6.141`' \
-    '`9a8bb1166a076d08962cd0a653c7233e2166b11d`' \
-    '`3643944c1c9ed098a030ec8947f0b33e290c09d49257bd51e8401cc0196fe2f3`' \
+    '`1.6.142`' \
+    '`4a056b75c41881743dbfbdc7c4bbee5cf2214123`' \
+    '`26bce780df81fb91f525f994729501394ae21672eed2be3ea5e378bf38eb41cc`' \
     '`66160dfc1d9d134d1c9c85b4f2908c3f07f99365`' \
     '`6427120ef0047deb0c436a5cd9167a9afb3a2fb3075123b50340ec1216a5fe81`' \
     'Webhook Automation Service' \
     '`0.10.3`' \
-    'projectTemplate.isPublic' \
-    'frozen `/v1` non-admin user schema' \
-    '403, 404, and owner mismatch' \
-    '401 still follows the' \
-    'without exposing key values' \
+    'Receiver cloning' \
+    'server-issued' \
+    'ProjectTemplate' \
+    'localized' \
+    'LTR and RTL' \
     'SBOM identity' \
     'Rollback selects the preserved'; do
     require_marker "$current_release_notes" "$current_release_marker" \
         SERVER_CURRENT_RELEASE_NOTES_IDENTITY_MISSING
 done
 for current_readme_marker in \
-    'Server [`v1.6.476`](https://github.com/PastureStack/server/releases/tag/v1.6.476)' \
-    'Web Console `1.6.141`' \
+    'Server [`v1.6.477`](https://github.com/PastureStack/server/releases/tag/v1.6.477)' \
+    'Web Console `1.6.142`' \
     'Service `0.10.3`' \
     'ProjectTemplate writes remain owner-scoped' \
-    '[v1.6.476 notes](docs/releases/server-1.6.476.md)' \
-    'ghcr.io/pasturestack/server:v1.6.476'; do
+    '[v1.6.477 notes](docs/releases/server-1.6.477.md)' \
+    'ghcr.io/pasturestack/server:v1.6.477'; do
     require_marker README.md "$current_readme_marker" \
         SERVER_CURRENT_README_IDENTITY_MISSING
 done
 require_marker docs/README.md \
-    '[Server v1.6.476](releases/server-1.6.476.md)' \
+    '[Server v1.6.477](releases/server-1.6.477.md)' \
     SERVER_CURRENT_DOC_INDEX_MISSING
 require_marker docs/hosts/README.md \
-    'PastureStack Server `v1.6.476` recognizes' \
+    'PastureStack Server `v1.6.477` recognizes' \
     SERVER_CURRENT_HOST_DOC_MISSING
 require_marker docs/performance/README.md \
-    'image: ghcr.io/pasturestack/server:v1.6.476' \
+    'image: ghcr.io/pasturestack/server:v1.6.477' \
     SERVER_CURRENT_PERFORMANCE_DOC_MISSING
 for current_compatibility_marker in \
-    'The current `v1.6.476` assembly consumes Orchestration Engine `v0.183.326`' \
+    'The current `v1.6.477` assembly consumes Orchestration Engine `v0.183.326`' \
     'Engine `v0.183.321` excludes inactive or removed project-member rows' \
     'Engine `v0.183.320` checks project-member collection requests' \
     'Engine `v0.183.319` makes shared-Default reconciliation atomic.' \
     'single `adminProject` Default' \
     'effective per-project schema' \
     'local administrator recovery path' \
-    'Web Console package `1.6.141`' \
+    'Web Console package `1.6.142`' \
     'Webhook Automation Service `v0.10.3`' \
     'Web Console `1.6.139` reads project schema methods' \
     'Web Console `1.6.140` shows' \
     'its frozen `/v1` non-admin user schema omits the field' \
     'Orchestration Engine `v0.183.326` restores the read-only' \
     'Web Console `1.6.141` gives the same localized denial' \
+    'Web Console `1.6.142` keeps server-issued Receiver URLs' \
     'projectTemplate.isPublic' \
     'Web Console `1.6.135` requests the full active environment collection' \
     'Web Console `1.6.136` bounds the environment-switcher menu' \
@@ -1175,7 +1176,7 @@ done
 
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.476"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.477"
   and (.statements | length) == 51
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -1201,7 +1202,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.476 >/dev/null
+    "$vendor_pending_fixture" v1.6.477 >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
 
@@ -1289,4 +1290,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.476 base=v1.6.460 engine=0.183.326 web_console=1.6.141 webhook_automation_service=0.10.3 authentication_service=0.4.42 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.477 base=v1.6.460 engine=0.183.326 web_console=1.6.142 webhook_automation_service=0.10.3 authentication_service=0.4.42 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
