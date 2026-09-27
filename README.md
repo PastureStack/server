@@ -11,14 +11,20 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
-## v1.6.481 source candidate
+## v1.6.481 release
 
 Server `v1.6.481` packages Web Console `1.6.146` with the unchanged Engine and
 other components from `v1.6.480`. Required-field errors on the Secret,
 Certificate, and Registry forms use their visible translated labels. The
 encrypted-private-key error is localized as well. See the
-[v1.6.481 candidate notes](docs/releases/server-1.6.481.md) for the scoped
-validation and isolated `8080` QA still required before acceptance.
+[v1.6.481 notes](docs/releases/server-1.6.481.md) for the exact scope and
+isolated `8080` QA still required for browser and write acceptance.
+
+The published image is
+`ghcr.io/pasturestack/server@sha256:013eb045ed669344a67b8ac85d2ce56193abb74f34628281dec503dced8ab415`,
+built from signed Server source `9c6914cda01a48dda4fb38f62d1a3f0c4db10be8`.
+Publication does not accept the pending isolated `8080` localized validation
+and six-role write matrix.
 
 ## v1.6.480 release
 
@@ -69,7 +75,7 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-The `v1.6.480` release checks passed and its numeric tag is public; a registry
+The `v1.6.481` release checks passed and its numeric tag is public; a registry
 login is not required. Use a fixed
 semantic version tag and explicitly retain the database and platform volumes:
 
@@ -78,7 +84,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.480
+  ghcr.io/pasturestack/server:v1.6.481
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -87,7 +93,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.480
+    image: ghcr.io/pasturestack/server:v1.6.481
     restart: unless-stopped
     ports:
       - "8080:8080"

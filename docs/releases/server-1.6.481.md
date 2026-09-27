@@ -1,6 +1,6 @@
-# Server v1.6.481 source candidate
+# Server v1.6.481
 
-This candidate assembles Web Console `1.6.146` with the unchanged
+This release assembles Web Console `1.6.146` with the unchanged
 Orchestration Engine `v0.183.326` on the Server `v1.6.460` runtime base. All
 other component coordinates remain those of published Server `v1.6.480`.
 
@@ -21,8 +21,14 @@ The Web Console `1.6.146` source commit is
 release archive SHA-256 is
 `1489c69edfbb531f021ed34aca014bb17d70d8f1a2aacbddc3b3af8b7a317dd6`.
 
-Source and image gates must verify the Web Console package version and the
-required label and encrypted-key error keys in all 13 bundled locales.
+The [publication run](https://github.com/PastureStack/server/actions/runs/36346546767)
+passed source and final-image gates, including the Web Console package version
+and nine required label and encrypted-key error keys in all 13 bundled locales.
+Its isolated candidate returned `HTTP 200` / `pong` before and after restart.
+It published signed Server source `9c6914cda01a48dda4fb38f62d1a3f0c4db10be8`
+as `ghcr.io/pasturestack/server@sha256:013eb045ed669344a67b8ac85d2ce56193abb74f34628281dec503dced8ab415`
+(numeric tag `v1.6.481`).
+
 Separate isolated `8080` QA must compare the complete visible required-field
 labels and encrypted-key error in English, Traditional Chinese, and Japanese
 on the affected forms. It must also recheck Secret, Certificate, and Registry
@@ -31,5 +37,5 @@ restricted, readonly, and no-access-to-matrix-project roles, plus scoped POST
 capabilities and zero unintended writes. Retain the current QA container's
 runtime configuration, volumes, and a stopped rollback container; verify
 startup and one restart. Neither `v1.6.479` nor the still-pending `v1.6.480`
-browser matrix is acceptance evidence for this candidate. Production deployment
+browser matrix is acceptance evidence for this release. Production deployment
 to `stack.ascdc.tw` is outside this QA run.

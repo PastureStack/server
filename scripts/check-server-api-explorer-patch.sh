@@ -762,13 +762,16 @@ for published_release_marker in \
         SERVER_V480_PUBLICATION_RECORD_MISSING
 done
 for current_release_marker in \
-    '# Server v1.6.481 source candidate' \
+    '# Server v1.6.481' \
     'Orchestration Engine `v0.183.326`' \
     'Web Console `1.6.146`' \
     '`66160dfc1d9d134d1c9c85b4f2908c3f07f99365`' \
     '`6427120ef0047deb0c436a5cd9167a9afb3a2fb3075123b50340ec1216a5fe81`' \
     '`97e52e09569681f7452942d0775f0ddac2d5e67e`' \
     '`1489c69edfbb531f021ed34aca014bb17d70d8f1a2aacbddc3b3af8b7a317dd6`' \
+    '`9c6914cda01a48dda4fb38f62d1a3f0c4db10be8`' \
+    'ghcr.io/pasturestack/server@sha256:013eb045ed669344a67b8ac85d2ce56193abb74f34628281dec503dced8ab415' \
+    'HTTP 200' \
     'visible,' \
     'translated form label' \
     'Traditional' \
@@ -782,38 +785,40 @@ done
 for current_readme_marker in \
     'Server `v1.6.481` packages Web Console `1.6.146`' \
     'Required-field errors on the Secret' \
-    '[v1.6.481 candidate notes](docs/releases/server-1.6.481.md)' \
+    '[v1.6.481 notes](docs/releases/server-1.6.481.md)' \
+    'ghcr.io/pasturestack/server@sha256:013eb045ed669344a67b8ac85d2ce56193abb74f34628281dec503dced8ab415' \
+    '`9c6914cda01a48dda4fb38f62d1a3f0c4db10be8`' \
     'Web Console `1.6.145`' \
     'Service `0.10.3`' \
     'ProjectTemplate writes remain owner-scoped' \
     '[v1.6.480 notes](docs/releases/server-1.6.480.md)' \
-    'ghcr.io/pasturestack/server:v1.6.480'; do
+    'ghcr.io/pasturestack/server:v1.6.481'; do
     require_marker README.md "$current_readme_marker" \
         SERVER_CURRENT_README_IDENTITY_MISSING
 done
 require_marker docs/README.md \
-    '[Server v1.6.481 source candidate](releases/server-1.6.481.md)' \
+    '[Server v1.6.481](releases/server-1.6.481.md)' \
     SERVER_CURRENT_DOC_INDEX_MISSING
 require_marker docs/README.md \
     '[Server v1.6.480](releases/server-1.6.480.md)' \
     SERVER_V480_DOC_INDEX_MISSING
 require_marker docs/hosts/README.md \
-    'PastureStack Server `v1.6.480` recognizes' \
+    'PastureStack Server `v1.6.481` recognizes' \
     SERVER_CURRENT_HOST_DOC_MISSING
 require_marker docs/performance/README.md \
-    'image: ghcr.io/pasturestack/server:v1.6.480' \
+    'image: ghcr.io/pasturestack/server:v1.6.481' \
     SERVER_CURRENT_PERFORMANCE_DOC_MISSING
 for current_compatibility_marker in \
-    'The `v1.6.481` source candidate changes only Web Console packaging to' \
-    '`1.6.146`.' \
-    'The published `v1.6.480` release' \
+    'The published `v1.6.481` release consumes Orchestration Engine `v0.183.326`' \
+    'Web Console package `1.6.146`' \
+    'ghcr.io/pasturestack/server@sha256:013eb045ed669344a67b8ac85d2ce56193abb74f34628281dec503dced8ab415' \
+    'the isolated `8080` browser and six-role write matrix remains pending' \
     'Engine `v0.183.321` excludes inactive or removed project-member rows' \
     'Engine `v0.183.320` checks project-member collection requests' \
     'Engine `v0.183.319` makes shared-Default reconciliation atomic.' \
     'single `adminProject` Default' \
     'effective per-project schema' \
     'local administrator recovery path' \
-    'Web Console package `1.6.145`' \
     'Webhook Automation Service `v0.10.3`' \
     'Web Console `1.6.139` reads project schema methods' \
     'Web Console `1.6.140` shows' \
