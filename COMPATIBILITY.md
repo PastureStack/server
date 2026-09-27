@@ -25,8 +25,8 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.473` assembly consumes Orchestration Engine `v0.183.323`,
-Web Console package `1.6.138`, Webhook Automation Service `v0.10.2`,
+The current `v1.6.474` assembly consumes Orchestration Engine `v0.183.323`,
+Web Console package `1.6.139`, Webhook Automation Service `v0.10.3`,
 Authentication Service `v0.4.42`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
 Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
@@ -215,8 +215,16 @@ Webhook Automation Service `v0.10.2` requires the trusted project header to
 match a receiver management request and confines receiver lookup, deletion,
 name checks, and key or signed-JWT execution to `webhookReceiver` objects.
 The internal `/usr/bin/webhook-service` compatibility link is preserved.
+Web Console `1.6.139` reads project schema methods before showing Container,
+project API-key, or Receiver Hook write controls. Its Container edit modal waits
+for primary, port, and link saves; a failed port or link update restores that
+field and leaves the modal open, while successful peer updates are not retried.
+These separate API writes are not atomic. Webhook Automation Service `v0.10.3`
+returns role-specific Receiver schema methods for both schema endpoints and
+marks those responses private and non-cacheable; stored receivers and existing
+routes are unchanged.
 Orchestration Engine `v0.183.323` packages FreeMarker `2.3.35` exactly once.
-Server `v1.6.473` retains the signed Ubuntu 26.04 curl security revision
+Server `v1.6.474` retains the signed Ubuntu 26.04 curl security revision
 `8.18.0-1ubuntu2.7` without replacing the preserved runtime base.
 Legacy provider settings are imported only while the encrypted `auth.config`
 object does not exist. After that one-time migration boundary, the common

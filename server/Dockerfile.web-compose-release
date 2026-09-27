@@ -29,9 +29,9 @@ ARG SOURCE_DATE_EPOCH
 COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host-api-sha256
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.138
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.138.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=e5b2ffb3831fca2562ba3d545e0ff2690cf7b156b70b18c05cf73b10ec6cfa27
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.139
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.139.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=18d21b29e7da7695cda6c4bd4091d0afc1aea960f568b0043f0c5d6403873634
 ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -41,9 +41,9 @@ ARG WEBSOCKET_PROXY_VERSION=0.23.14
 ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=c55108c3dbfd8e6579fc768a1988920db83c6f605ca1284b60edf92ae8d0160e
 ARG WEBSOCKET_PROXY_BINARY_SHA256=efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d
 ARG WEBHOOK_AUTOMATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/webhook-automation-service/releases/download
-ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.2
-ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=fb2e4185b783ca58c171abef84fd5fa3e1451696c526ce25b7330445adcdcce7
-ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=9f0a5f633b7c96e48d5b6a47b7e0bd2520df0731cb906c8e1f0a6308b52ba4ba
+ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.3
+ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=6babbc18cee9a192009cfadcd143e6b9a5f2b550c4dc419781f3e3657caa022a
+ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=9094f3b2527762a3e683b02d93aa00e52618e902cd409e72e34553d98d98a609
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
 ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.323
 ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar
@@ -187,7 +187,7 @@ RUN set -eux; \
     chmod 0755 /out/webhook-automation-service/webhook-automation-service; \
     /out/webhook-automation-service/webhook-automation-service --version | \
         grep -Fx "webhook-automation-service version ${WEBHOOK_AUTOMATION_SERVICE_VERSION}"; \
-    grep -Fx 'Release source commit: 7e8bdcd4b6b9456116a4b2e2c9c40e501b456366' \
+    grep -Fx 'Release source commit: fbcc0ca07e42e9b21bda18031d0848192ec2f9a1' \
         /out/webhook-automation-service/webhook-automation-service-SOURCES.txt; \
     compose_archive=/tmp/compose-executor.gz; \
     curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
@@ -314,9 +314,9 @@ ARG UBUNTU_CURL_SNAPSHOT=20260926T000000Z
 ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.138
-ARG WEB_CONSOLE_ARTIFACT_SHA256=e5b2ffb3831fca2562ba3d545e0ff2690cf7b156b70b18c05cf73b10ec6cfa27
-ARG WEB_CONSOLE_COMMIT=538795125b0c1815c5e662449146ca670529e2fc
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.139
+ARG WEB_CONSOLE_ARTIFACT_SHA256=18d21b29e7da7695cda6c4bd4091d0afc1aea960f568b0043f0c5d6403873634
+ARG WEB_CONSOLE_COMMIT=7683aa5095b5b6608dafea1b1f49f8d35dec20dc
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_COMMIT=5589ef8fda68ae56e1afd64096965d452ee8a17e
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -325,10 +325,10 @@ ARG WEBSOCKET_PROXY_VERSION=0.23.14
 ARG WEBSOCKET_PROXY_COMMIT=3b5788bdc52f4edab0097a3d97afccf138c64089
 ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=c55108c3dbfd8e6579fc768a1988920db83c6f605ca1284b60edf92ae8d0160e
 ARG WEBSOCKET_PROXY_BINARY_SHA256=efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d
-ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.2
-ARG WEBHOOK_AUTOMATION_SERVICE_COMMIT=7e8bdcd4b6b9456116a4b2e2c9c40e501b456366
-ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=fb2e4185b783ca58c171abef84fd5fa3e1451696c526ce25b7330445adcdcce7
-ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=9f0a5f633b7c96e48d5b6a47b7e0bd2520df0731cb906c8e1f0a6308b52ba4ba
+ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.3
+ARG WEBHOOK_AUTOMATION_SERVICE_COMMIT=fbcc0ca07e42e9b21bda18031d0848192ec2f9a1
+ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=6babbc18cee9a192009cfadcd143e6b9a5f2b550c4dc419781f3e3657caa022a
+ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=9094f3b2527762a3e683b02d93aa00e52618e902cd409e72e34553d98d98a609
 ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=ac5644352ee053dcfd6bf930a106c1d439af66f3d0f44c2da2cd961b6de1a0dc
 ARG ORCHESTRATION_ENGINE_COMMIT=5dd2bc06ee644efa0732cbeb11a65edbae3b445e
 ARG COMPOSE_EXECUTOR_VERSION=0.14.36
@@ -543,6 +543,12 @@ RUN set -eux; \
         "${web_root}/translations/zh-tw.json" >/dev/null; \
     grep -F '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
         "${web_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"containersPage.permissionDenied":"您沒有權限在此環境中新增容器。"' \
+        "${web_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"hookPage.receiver.permissionDenied":"您沒有權限在此環境中新增接收端 Webhook。"' \
+        "${web_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"hookPage.receiver.editPermissionDenied":"此環境不提供編輯接收端 Webhook 的功能。"' \
+        "${web_root}/translations/zh-tw.json" >/dev/null; \
     grep -F '"viewEditProject.error.projectUnavailable":"找不到此環境' \
         "${web_root}/translations/zh-tw.json" >/dev/null; \
     grep -F '"viewEditProject.error.membersNotSaved":"成員變更未完成' \
@@ -559,7 +565,13 @@ RUN set -eux; \
         "${web_root}/translations/zh-tw.json" >/dev/null; \
     ui_entry="$(find "${web_root}/assets" -maxdepth 1 -type f -name 'ui-*.js' -print -quit)"; \
     test -n "${ui_entry}"; \
-    grep -aF 'hostsPage.permissionDenied' "${ui_entry}" >/dev/null; \
+    for permission_key in \
+        hostsPage.permissionDenied \
+        containersPage.permissionDenied \
+        hookPage.receiver.permissionDenied \
+        hookPage.receiver.editPermissionDenied; do \
+        grep -aF "${permission_key}" "${ui_entry}" >/dev/null; \
+    done; \
     grep -aF 'pod-empty-message text-center text-muted' "${ui_entry}" >/dev/null; \
     for marker in \
         oidcAccessPolicyUpdate \
@@ -603,12 +615,12 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.473" \
+      org.opencontainers.image.version="v1.6.474" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460" \
       org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.473
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.474
 ENV CATTLE_CATTLE_VERSION=v0.183.323
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_SECURITY_SNAPSHOT=${UBUNTU_CURL_SNAPSHOT}
