@@ -11,9 +11,9 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
-## v1.6.480 source candidate
+## v1.6.480 release
 
-The Server `v1.6.480` source candidate
+Server `v1.6.480`
 packages Orchestration Engine `0.183.326`, Node Agent `0.13.27`,
 Authentication Service `0.4.42`, Web Console `1.6.145`, and Webhook Automation
 Service `0.10.3`. Web Console `1.6.145` resolves create capabilities across
@@ -40,6 +40,12 @@ runtime retains signed Ubuntu curl `8.18.0-1ubuntu2.7`. Read the
 [earlier releases](https://github.com/PastureStack/server/releases) for the
 exact scope, validation, and upgrade history.
 
+The published image is
+`ghcr.io/pasturestack/server@sha256:e388b0bddb4cca5a5116ba6862c6c0fffc29ee36b072d577759c43680bb87d39`,
+built from signed Server source `ea5cb9f52ddbeb7286f1d0f3706d5f516079f508`.
+Publication does not accept the pending isolated `8080` Registry Add role and
+write matrix.
+
 Docker Engine `29.4.1` through `29.7.2` is supported as a bounded SemVer
 interval, and `29.8.0` is supported explicitly. The effective compatibility
 setting is the API's `activeValue`: a value saved in the database can override
@@ -54,8 +60,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-After the `v1.6.480` release checks pass and its numeric tag is published, the
-versioned image is public and a registry login is not required. Use a fixed
+The `v1.6.480` release checks passed and its numeric tag is public; a registry
+login is not required. Use a fixed
 semantic version tag and explicitly retain the database and platform volumes:
 
 ```sh

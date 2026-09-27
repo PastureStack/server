@@ -25,7 +25,7 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The `v1.6.480` source assembly consumes Orchestration Engine `v0.183.326`,
+The published `v1.6.480` release consumes Orchestration Engine `v0.183.326`,
 Web Console package `1.6.145`, Webhook Automation Service `v0.10.3`,
 Authentication Service `v0.4.42`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
@@ -35,8 +35,11 @@ Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, di
 `pinned_commit` first and leaves the last indexed `commit` untouched until
 Catalog Service has rebuilt the template index; pre-advancing both values can
 preserve a stale nonempty index. Operational container references must use
-numeric semantic version tags; image digests are retained only in
-release-verification evidence. Web Console packaging must retain its
+numeric semantic version tags. The verified release identity is signed Server
+source `ea5cb9f52ddbeb7286f1d0f3706d5f516079f508` and immutable image
+`ghcr.io/pasturestack/server@sha256:e388b0bddb4cca5a5116ba6862c6c0fffc29ee36b072d577759c43680bb87d39`.
+The isolated `8080` Registry Add role and write matrix remains pending. Web
+Console packaging must retain its
 fingerprinted `/assets/ui*.js` entry, and API Explorer must retain
 `/api-ui/ui.min.js` and `/api-ui/ui.min.css`.
 
