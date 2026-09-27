@@ -29,9 +29,9 @@ ARG SOURCE_DATE_EPOCH
 COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host-api-sha256
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.137
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.137.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=bf861f10815c0e670240fec4f502c28a4037b4fba0fb0e775999ef4eff804724
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.138
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.138.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=e5b2ffb3831fca2562ba3d545e0ff2690cf7b156b70b18c05cf73b10ec6cfa27
 ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -40,6 +40,10 @@ ARG WEBSOCKET_PROXY_RELEASE_BASE_URL=https://github.com/PastureStack/websocket-p
 ARG WEBSOCKET_PROXY_VERSION=0.23.14
 ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=c55108c3dbfd8e6579fc768a1988920db83c6f605ca1284b60edf92ae8d0160e
 ARG WEBSOCKET_PROXY_BINARY_SHA256=efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d
+ARG WEBHOOK_AUTOMATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/webhook-automation-service/releases/download
+ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.2
+ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=fb2e4185b783ca58c171abef84fd5fa3e1451696c526ce25b7330445adcdcce7
+ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=9f0a5f633b7c96e48d5b6a47b7e0bd2520df0731cb906c8e1f0a6308b52ba4ba
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
 ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.323
 ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar
@@ -156,6 +160,35 @@ RUN set -eux; \
     tar --no-same-owner --no-same-permissions -xJf "${websocket_archive}" -C /out/websocket-proxy; \
     echo "${WEBSOCKET_PROXY_BINARY_SHA256}  /out/websocket-proxy/websocket-proxy" | sha256sum -c -; \
     chmod 0755 /out/websocket-proxy/websocket-proxy; \
+    webhook_archive=/tmp/webhook-automation-service.tar.xz; \
+    webhook_listing=/tmp/webhook-automation-service-files.txt; \
+    webhook_expected=/tmp/webhook-automation-service-expected.txt; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
+        --connect-timeout 10 --max-time 300 \
+        -o "${webhook_archive}" \
+        "${WEBHOOK_AUTOMATION_SERVICE_RELEASE_BASE_URL%/}/v${WEBHOOK_AUTOMATION_SERVICE_VERSION}/webhook-automation-service-${WEBHOOK_AUTOMATION_SERVICE_VERSION}-linux-amd64.tar.xz"; \
+    echo "${WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256}  ${webhook_archive}" | sha256sum -c -; \
+    tar -tJf "${webhook_archive}" >"${webhook_listing}"; \
+    printf '%s\n' \
+        webhook-automation-service \
+        webhook-automation-service-COMPATIBILITY.md \
+        webhook-automation-service-LICENSES.txt \
+        webhook-automation-service-SOURCES.txt \
+        webhook-automation-service-THIRD-PARTY-NOTICES.md | LC_ALL=C sort >"${webhook_expected}"; \
+    LC_ALL=C sort "${webhook_listing}" | cmp "${webhook_expected}" -; \
+    if tar -tvJf "${webhook_archive}" | grep -Eq '^[lh]'; then \
+        echo 'Webhook Automation Service archive may not contain links' >&2; \
+        exit 1; \
+    fi; \
+    mkdir -p /out/webhook-automation-service; \
+    tar --no-same-owner --no-same-permissions -xJf "${webhook_archive}" \
+        -C /out/webhook-automation-service; \
+    echo "${WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256}  /out/webhook-automation-service/webhook-automation-service" | sha256sum -c -; \
+    chmod 0755 /out/webhook-automation-service/webhook-automation-service; \
+    /out/webhook-automation-service/webhook-automation-service --version | \
+        grep -Fx "webhook-automation-service version ${WEBHOOK_AUTOMATION_SERVICE_VERSION}"; \
+    grep -Fx 'Release source commit: 7e8bdcd4b6b9456116a4b2e2c9c40e501b456366' \
+        /out/webhook-automation-service/webhook-automation-service-SOURCES.txt; \
     compose_archive=/tmp/compose-executor.gz; \
     curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
         --connect-timeout 10 --max-time 300 \
@@ -281,9 +314,9 @@ ARG UBUNTU_CURL_SNAPSHOT=20260926T000000Z
 ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.137
-ARG WEB_CONSOLE_ARTIFACT_SHA256=bf861f10815c0e670240fec4f502c28a4037b4fba0fb0e775999ef4eff804724
-ARG WEB_CONSOLE_COMMIT=e49090320f3f0f9919d652591d32b125458cb787
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.138
+ARG WEB_CONSOLE_ARTIFACT_SHA256=e5b2ffb3831fca2562ba3d545e0ff2690cf7b156b70b18c05cf73b10ec6cfa27
+ARG WEB_CONSOLE_COMMIT=538795125b0c1815c5e662449146ca670529e2fc
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_COMMIT=5589ef8fda68ae56e1afd64096965d452ee8a17e
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -292,6 +325,10 @@ ARG WEBSOCKET_PROXY_VERSION=0.23.14
 ARG WEBSOCKET_PROXY_COMMIT=3b5788bdc52f4edab0097a3d97afccf138c64089
 ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=c55108c3dbfd8e6579fc768a1988920db83c6f605ca1284b60edf92ae8d0160e
 ARG WEBSOCKET_PROXY_BINARY_SHA256=efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d
+ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.2
+ARG WEBHOOK_AUTOMATION_SERVICE_COMMIT=7e8bdcd4b6b9456116a4b2e2c9c40e501b456366
+ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=fb2e4185b783ca58c171abef84fd5fa3e1451696c526ce25b7330445adcdcce7
+ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=9f0a5f633b7c96e48d5b6a47b7e0bd2520df0731cb906c8e1f0a6308b52ba4ba
 ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=ac5644352ee053dcfd6bf930a106c1d439af66f3d0f44c2da2cd961b6de1a0dc
 ARG ORCHESTRATION_ENGINE_COMMIT=5dd2bc06ee644efa0732cbeb11a65edbae3b445e
 ARG COMPOSE_EXECUTOR_VERSION=0.14.36
@@ -319,6 +356,10 @@ RUN set -eux; \
 COPY --from=release_artifacts /out/web-console/ /tmp/pasturestack-web-console/
 COPY --from=release_artifacts --chmod=0755 /out/authentication-service/authentication-service /usr/bin/authentication-service.real
 COPY --from=release_artifacts --chmod=0755 /out/websocket-proxy/websocket-proxy /usr/bin/websocket-proxy.real
+
+COPY --from=release_artifacts --chmod=0755 /out/webhook-automation-service/webhook-automation-service /usr/bin/webhook-automation-service
+
+COPY --from=release_artifacts /out/webhook-automation-service/webhook-automation-service-COMPATIBILITY.md /out/webhook-automation-service/webhook-automation-service-LICENSES.txt /out/webhook-automation-service/webhook-automation-service-SOURCES.txt /out/webhook-automation-service/webhook-automation-service-THIRD-PARTY-NOTICES.md /usr/share/licenses/pasturestack/webhook-automation-service/
 COPY --from=release_artifacts --chmod=0755 /out/compose-executor /usr/bin/compose-executor.real
 COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar
 COPY --from=release_artifacts /out/host-api-0.38.4.tar.gz /usr/share/cattle/artifacts/host-api-0.38.4.tar.gz
@@ -541,6 +582,14 @@ RUN set -eux; \
     echo "${WEBSOCKET_PROXY_BINARY_SHA256}  /usr/bin/websocket-proxy.real" | sha256sum -c -; \
     /usr/bin/websocket-proxy.real --help 2>&1 | grep -F -- '-platform-public-origin' >/dev/null; \
     touch -d "@${SOURCE_DATE_EPOCH}" /usr/bin/websocket-proxy.real; \
+    echo "${WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256}  /usr/bin/webhook-automation-service" | sha256sum -c -; \
+    test "$(/usr/bin/webhook-automation-service --version)" = "webhook-automation-service version ${WEBHOOK_AUTOMATION_SERVICE_VERSION}"; \
+    test "$(readlink -f /usr/bin/webhook-service)" = /usr/bin/webhook-automation-service; \
+    for name in COMPATIBILITY.md LICENSES.txt SOURCES.txt THIRD-PARTY-NOTICES.md; do \
+        test -s "/usr/share/licenses/pasturestack/webhook-automation-service/webhook-automation-service-${name}"; \
+    done; \
+    grep -Fx "Release source commit: ${WEBHOOK_AUTOMATION_SERVICE_COMMIT}" \
+        /usr/share/licenses/pasturestack/webhook-automation-service/webhook-automation-service-SOURCES.txt >/dev/null; \
     echo "${COMPOSE_EXECUTOR_BINARY_SHA256}  /usr/bin/compose-executor.real" | sha256sum -c -; \
     compose_version_output="$(/usr/bin/compose-executor.real --version 2>&1)"; \
     test "${compose_version_output}" = "pasturestack-compose version ${COMPOSE_EXECUTOR_VERSION}"; \
@@ -554,12 +603,12 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.472" \
+      org.opencontainers.image.version="v1.6.473" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460" \
       org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.472
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.473
 ENV CATTLE_CATTLE_VERSION=v0.183.323
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_SECURITY_SNAPSHOT=${UBUNTU_CURL_SNAPSHOT}
@@ -580,6 +629,10 @@ ENV PASTURESTACK_WEBSOCKET_PROXY_VERSION=${WEBSOCKET_PROXY_VERSION}
 ENV PASTURESTACK_WEBSOCKET_PROXY_COMMIT=${WEBSOCKET_PROXY_COMMIT}
 ENV PASTURESTACK_WEBSOCKET_PROXY_ARCHIVE_SHA256=${WEBSOCKET_PROXY_ARCHIVE_SHA256}
 ENV PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256=${WEBSOCKET_PROXY_BINARY_SHA256}
+ENV PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_VERSION=${WEBHOOK_AUTOMATION_SERVICE_VERSION}
+ENV PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_COMMIT=${WEBHOOK_AUTOMATION_SERVICE_COMMIT}
+ENV PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=${WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256}
+ENV PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=${WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256}
 ENV PASTURESTACK_COMPOSE_EXECUTOR_VERSION=${COMPOSE_EXECUTOR_VERSION}
 ENV PASTURESTACK_COMPOSE_EXECUTOR_COMMIT=${COMPOSE_EXECUTOR_COMMIT}
 ENV PASTURESTACK_COMPOSE_EXECUTOR_ARCHIVE_SHA256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256}
