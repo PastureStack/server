@@ -13,10 +13,13 @@ boundary.
 
 ## Current release
 
-Server [`v1.6.478`](https://github.com/PastureStack/server/releases/tag/v1.6.478)
+Server [`v1.6.479`](https://github.com/PastureStack/server/releases/tag/v1.6.479)
 packages Orchestration Engine `0.183.326`, Node Agent `0.13.27`,
-Authentication Service `0.4.42`, Web Console `1.6.143`, and Webhook Automation
-Service `0.10.3`. ProjectTemplate writes remain owner-scoped for non-admins:
+Authentication Service `0.4.42`, Web Console `1.6.144`, and Webhook Automation
+Service `0.10.3`. Secret, Certificate, and Registry Add controls now follow the
+current environment's create capability, and direct Add routes show a localized
+403 instead of an unauthorized form. Secret Edit follows its update action link.
+ProjectTemplate writes remain owner-scoped for non-admins:
 the Web Console shows edit/remove only for an exact owner account ID match or
 an administrator, while the Engine exposes `isPublic` read-only in the frozen
 `/v1` user schema and omits misleading remove actions. Direct edit denial
@@ -32,7 +35,7 @@ stacks; new-resource clones omit server-owned identity and lifecycle fields.
 Receiver clones omit inactive driver configuration and block unsupported drivers.
 The engine carries FreeMarker `2.3.35`, and the
 runtime retains signed Ubuntu curl `8.18.0-1ubuntu2.7`. Read the
-[v1.6.478 notes](docs/releases/server-1.6.478.md) and
+[v1.6.479 notes](docs/releases/server-1.6.479.md) and
 [earlier releases](https://github.com/PastureStack/server/releases) for the
 exact scope, validation, and upgrade history.
 
@@ -58,7 +61,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.478
+  ghcr.io/pasturestack/server:v1.6.479
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -67,7 +70,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.478
+    image: ghcr.io/pasturestack/server:v1.6.479
     restart: unless-stopped
     ports:
       - "8080:8080"

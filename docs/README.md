@@ -7,6 +7,7 @@ runtime gates have passed.
 
 ## Current release
 
+- [Server v1.6.479](releases/server-1.6.479.md)
 - [Server v1.6.478](releases/server-1.6.478.md)
 - [Server v1.6.477](releases/server-1.6.477.md)
 - [Server v1.6.476](releases/server-1.6.476.md)
