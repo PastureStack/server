@@ -29,9 +29,9 @@ ARG SOURCE_DATE_EPOCH
 COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host-api-sha256
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.145
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.145.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=fa040adff35162fec11e6400180a913af9847db1798c6ead6111f539a4436e39
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.146
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.146.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=1489c69edfbb531f021ed34aca014bb17d70d8f1a2aacbddc3b3af8b7a317dd6
 ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -120,6 +120,18 @@ RUN set -eux; \
     for locale_file in "${package_root}"/translations/*.json; do \
         grep -F '"formResources.addUlimit":' "${locale_file}" >/dev/null; \
         grep -F '"hostsPage.permissionDenied":' "${locale_file}" >/dev/null; \
+        for validation_label in \
+            formNameDescription.name.label \
+            formNameDescription.description.label \
+            newSecret.value.label \
+            inputCertificate.cert.label \
+            inputCertificate.key.label \
+            certificatesPage.encryptedKeyError \
+            registriesPage.new.form.custom.labelText \
+            registriesPage.new.form.username.labelText \
+            registriesPage.new.form.password.labelText; do \
+            grep -F "\"${validation_label}\":" "${locale_file}" >/dev/null; \
+        done; \
     done; \
     cp -a "${package_root}/." /out/web-console/; \
     auth_archive=/tmp/authentication-service.tar.xz; \
@@ -315,9 +327,9 @@ ARG UBUNTU_CURL_SNAPSHOT=20260926T000000Z
 ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.145
-ARG WEB_CONSOLE_ARTIFACT_SHA256=fa040adff35162fec11e6400180a913af9847db1798c6ead6111f539a4436e39
-ARG WEB_CONSOLE_COMMIT=c130a081257b14d1a547ca13c3a16aa0d802d435
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.146
+ARG WEB_CONSOLE_ARTIFACT_SHA256=1489c69edfbb531f021ed34aca014bb17d70d8f1a2aacbddc3b3af8b7a317dd6
+ARG WEB_CONSOLE_COMMIT=97e52e09569681f7452942d0775f0ddac2d5e67e
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_COMMIT=5589ef8fda68ae56e1afd64096965d452ee8a17e
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -616,12 +628,12 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.480" \
+      org.opencontainers.image.version="v1.6.481" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460" \
       org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.480
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.481
 ENV CATTLE_CATTLE_VERSION=v0.183.326
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_SECURITY_SNAPSHOT=${UBUNTU_CURL_SNAPSHOT}
