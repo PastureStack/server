@@ -25,8 +25,8 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The current `v1.6.475` assembly consumes Orchestration Engine `v0.183.325`,
-Web Console package `1.6.140`, Webhook Automation Service `v0.10.3`,
+The current `v1.6.476` assembly consumes Orchestration Engine `v0.183.326`,
+Web Console package `1.6.141`, Webhook Automation Service `v0.10.3`,
 Authentication Service `v0.4.42`, API Explorer
 `v1.1.18`, Compose Executor `v0.14.36`, Node Agent `v0.13.27`, Load Balancer Service `v0.9.27`, Catalog
 Service `v0.20.11`, WebSocket Proxy `v0.23.14`, vSphere CLI Bundle `v0.55.2`, distributed cache runtime
@@ -224,8 +224,9 @@ returns role-specific Receiver schema methods for both schema endpoints and
 marks those responses private and non-cacheable; stored receivers and existing
 routes are unchanged.
 Orchestration Engine `v0.183.325` exposes `projectTemplate.isPublic` read-only
-to non-admin v1 readers, omits remove actions for public or non-owned templates,
-and keeps direct non-admin mutations owner-scoped. Web Console `1.6.140` shows
+in its core schema, but its frozen `/v1` non-admin user schema omits the field.
+It omits remove actions for public or non-owned templates and keeps direct
+non-admin mutations owner-scoped. Web Console `1.6.140` shows
 ProjectTemplate edit/remove only for administrators or an exact, non-empty
 template owner account ID match; direct edit routes check ownership again.
 Its sortable-table controls reflow at narrow widths, and closing an API-key
@@ -235,6 +236,13 @@ effective project schema methods when validating the controls and API writes.
 Orchestration Engine `v0.183.325` packages FreeMarker `2.3.35` exactly once.
 Server `v1.6.475` retains the signed Ubuntu 26.04 curl security revision
 `8.18.0-1ubuntu2.7` without replacing the preserved runtime base.
+Orchestration Engine `v0.183.326` restores the read-only `projectTemplate.isPublic`
+field in the frozen `/v1` non-admin user schema, matching `/v2-beta`; the
+administrator's create/update schema and stored data are unchanged.
+Web Console `1.6.141` gives the same localized denial on ProjectTemplate
+direct-edit routes for 403, 404, and owner mismatch while retaining 401
+session recovery. Failed API-key saves display the existing API error inside
+the modal without rendering key values.
 Legacy provider settings are imported only while the encrypted `auth.config`
 object does not exist. After that one-time migration boundary, the common
 access-mode and allowlist settings are authoritative; service and Server
