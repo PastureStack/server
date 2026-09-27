@@ -17,20 +17,20 @@ revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
-orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.323}
+orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.325}
 orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}
-orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-ac5644352ee053dcfd6bf930a106c1d439af66f3d0f44c2da2cd961b6de1a0dc}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-5dd2bc06ee644efa0732cbeb11a65edbae3b445e}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-9ce9358d91ff002c0b64a8c1efd037b26f43ccbe11508a1446760f3baffcb564}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-60aabb3b3c95ab2ed62535a49606a287e037f2fe}
 api_explorer_release_base_url=${API_EXPLORER_RELEASE_BASE_URL:-https://github.com/PastureStack/api-explorer/releases/download}
 api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.18}
 api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
 api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.139}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.139.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-18d21b29e7da7695cda6c4bd4091d0afc1aea960f568b0043f0c5d6403873634}
-web_console_commit=${WEB_CONSOLE_COMMIT:-7683aa5095b5b6608dafea1b1f49f8d35dec20dc}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.140}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.140.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-dacf7353a1e72e933ac883c3e4c5521e12bb9017706475a7d94f2803c5b5b216}
+web_console_commit=${WEB_CONSOLE_COMMIT:-238cdd1638c308baa5052e033c070cf0c7b9a314}
 authentication_service_release_base_url=${AUTHENTICATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/authentication-service/releases/download}
 authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.42}
 authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-5589ef8fda68ae56e1afd64096965d452ee8a17e}
@@ -56,7 +56,7 @@ vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-bebcc1c02
 govc_binary_sha256=${GOVC_BINARY_SHA256:-f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.474}
+image=${IMAGE:-pasturestack-validation/server:v1.6.475}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -164,7 +164,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.474
+    v1.6.475
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -178,9 +178,9 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.474 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.475 \
     CATTLE_API_UI_VERSION=1.1.18 \
-    CATTLE_CATTLE_VERSION=v0.183.323 \
+    CATTLE_CATTLE_VERSION=v0.183.325 \
     RC16_GO_AGENT_VERSION=0.13.27 \
     RC16_WINDOWS_AGENT_VERSION=0.13.27 \
     RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-0.13.27.tar.gz \
@@ -297,7 +297,7 @@ docker run --rm --entrypoint bash "$image" -lc '
     web_root=$(readlink -f /usr/share/cattle/war)
     test "${web_root}" = "/usr/share/cattle/${engine_hash}"
     resources_jar=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-resources-0.183.323.jar" -print -quit)
+        -name "cattle-resources-0.183.325.jar" -print -quit)
     test -n "${resources_jar}"
     unzip -p "${resources_jar}" db/core-124.xml |
         grep -F "pasturestack-catalog-pinned-commit" >/dev/null
@@ -344,7 +344,7 @@ docker run --rm --entrypoint bash "$image" -lc 'test -x /usr/bin/websocket-proxy
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.139"
+    test "$(cat "${web_root}/VERSION.txt")" = "1.6.140"
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     test ! -e "${web_root}/translations/none.json"
     test -z "$(find "${web_root}" -type f -name "*.map" -print -quit)"
@@ -487,10 +487,10 @@ docker run --rm --entrypoint bash "$image" -lc '
         /usr/share/cattle/war/translations/zh-tw.json >/dev/null
     unzip -p /usr/share/cattle/cattle.jar META-INF/MANIFEST.MF |
         tr -d "\r" |
-        grep -Fx "Implementation-Version: 0.183.323" >/dev/null
+        grep -Fx "Implementation-Version: 0.183.325" >/dev/null
     test "$(find /usr/share/cattle/war/WEB-INF/lib -maxdepth 1 -type f -name "freemarker-2.3.35.jar" | wc -l)" -eq 1
     resources_jar=$(find /usr/share/cattle/war/WEB-INF/lib -maxdepth 1 -type f \
-        -name "cattle-resources-0.183.323.jar" -print -quit)
+        -name "cattle-resources-0.183.325.jar" -print -quit)
     test -n "${resources_jar}"
     unzip -p "${resources_jar}" schema/base/mfaOperation.json |
         grep -F "oidcAccessPolicyUpdate" >/dev/null
