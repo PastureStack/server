@@ -11,6 +11,21 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.483 release
+
+Server `v1.6.483` packages Web Console `1.6.149` with the unchanged Engine and
+other components from `v1.6.482`. Secret Edit shows its immutable name
+read-only and sends only the editable description. New Secret, Certificate,
+and Registry resources refresh their server action links after creation.
+Registry credential failures no longer repeat the parent Registry POST; an
+uncertain write stays visible for deliberate recovery. The
+[v1.6.483 notes](docs/releases/server-1.6.483.md) record exact source and
+artifact coordinates, validation, isolated QA, and rollback boundaries.
+
+This source candidate is not a production deployment. The Quick start below
+continues to use the latest published tag until the new immutable image and
+isolated browser write check have passed.
+
 ## v1.6.482 release
 
 Server `v1.6.482` packages Web Console `1.6.147` with the unchanged Engine and
