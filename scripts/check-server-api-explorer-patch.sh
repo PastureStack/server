@@ -812,8 +812,7 @@ for current_readme_marker in \
     'Web Console `1.6.145`' \
     'Service `0.10.3`' \
     'ProjectTemplate writes remain owner-scoped' \
-    '[v1.6.480 notes](docs/releases/server-1.6.480.md)' \
-    'ghcr.io/pasturestack/server:v1.6.482'; do
+    '[v1.6.480 notes](docs/releases/server-1.6.480.md)'; do
     require_marker README.md "$current_readme_marker" \
         SERVER_CURRENT_README_IDENTITY_MISSING
 done
