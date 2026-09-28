@@ -25,11 +25,17 @@ The established `telemetry.opt`, `service.package.telemetry.url`, and `/v1-telem
 
 The `webhook.service.*`, `service.package.webhook.service.url`, `/v1-webhooks`, and four established driver identifiers also remain internal compatibility data. Server installs the neutral `webhook-automation-service` executable and retains `/usr/bin/webhook-service` only as an internal rollback link. The public asset and license destination use the neutral name, and the child process receives only the RSA public verification key.
 
-The `v1.6.482` source candidate changes only Web Console packaging to
+The published `v1.6.482` release changes only Web Console packaging to
 `1.6.147`. Service Edit sends just `name`, `description`, and `scale` instead
 of the cloned launch configuration or upgrade strategy; the separate quick
 scale action sends only `scale`. The Server API and stored-resource contracts
-are unchanged. Server build and isolated `8080` acceptance remain pending.
+are unchanged. Its verified release identity is Server source
+`3d909952d31e8577793acb7e402e10b883e1c8a6` and immutable image
+`ghcr.io/pasturestack/server@sha256:e3ac65290f17981201a6cf2857e0f6def3eb79974746bc7110357fd87869a609`.
+Isolated `8080` deployment and restart are healthy with Web Console `1.6.147`;
+a bounded owner-browser run passed Service Edit Cancel, Save, and injected
+`503` retry, plus Container and Service Remove Cancel/Confirm. The six-role
+permission matrix remains a separate validation scope.
 
 The published `v1.6.481` release consumes Orchestration Engine `v0.183.326`,
 Web Console package `1.6.146`, Webhook Automation Service `v0.10.3`,
