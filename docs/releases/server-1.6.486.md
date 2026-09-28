@@ -26,8 +26,18 @@ Stack/Service/Container blank-name errors at desktop and narrow widths, with
 zero writes on invalid submission. Do not infer a complete all-resource ID
 write-permission matrix from that localized check.
 
-The reviewed OpenVEX and vendor-pending finding sets are carried forward
-with new document identities; this is not a new vulnerability assessment.
+The OpenVEX statements are carried forward with a new document identity.
+Official publish run `36448043632` stopped at the exact-set
+merged-rootfs vulnerability gate before publishing an image: Trivy `0.74.0`
+reported two additional unresolved Medium occurrences of `CVE-2026-86145`
+in Ubuntu 26.04 `libpcre2-8-0` and `libpcre2-posix3` at `10.46-1build1`,
+both with no `FixedVersion`. The vendor-pending register now records those
+exact package/CVE pairs for review by 2026-10-20; the unfiltered scan and
+exact-set gate remain required. [Canonical marks the Ubuntu 26.04 pcre2
+package vulnerable](https://ubuntu.com/security/CVE-2026-86145); the
+register's `needs-evaluation` is this project's expiring review state, not
+Canonical's package status. This does not claim the issue is fixed or absent.
+
 Rollback uses the previous immutable Server `v1.6.485` digest with the same
 volumes, origin, restart policy, and AppArmor configuration. Production
 `stack.ascdc.tw` is outside this isolated QA rollout.
