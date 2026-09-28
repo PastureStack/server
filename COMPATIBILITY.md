@@ -33,7 +33,9 @@ are unchanged. Its verified release identity is Server source
 `3d909952d31e8577793acb7e402e10b883e1c8a6` and immutable image
 `ghcr.io/pasturestack/server@sha256:e3ac65290f17981201a6cf2857e0f6def3eb79974746bc7110357fd87869a609`.
 Isolated `8080` deployment and restart are healthy with Web Console `1.6.147`;
-browser write acceptance remains pending.
+a bounded owner-browser run passed Service Edit Cancel, Save, and injected
+`503` retry, plus Container and Service Remove Cancel/Confirm. The six-role
+permission matrix remains a separate validation scope.
 
 The published `v1.6.481` release consumes Orchestration Engine `v0.183.326`,
 Web Console package `1.6.146`, Webhook Automation Service `v0.10.3`,

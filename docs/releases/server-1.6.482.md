@@ -31,10 +31,14 @@ as `ghcr.io/pasturestack/server@sha256:e3ac65290f17981201a6cf2857e0f6def3eb79974
 
 The separate isolated `8080` QA deployment of `v1.6.482` is healthy on first
 start and after restart, displays Web Console `1.6.147`, and retains the
-previous stopped rollback container. Browser write acceptance remains pending:
-QA must use fresh, directly adopted Stack, Service, and Container IDs, then
-confirm Service Edit Cancel, an exact three-field Save with a single injected
-failure and retry, and same-page Service Remove Cancel/Confirm. The bounded
-run must also confirm Container Remove and restore its owned fixture without
-deleting baseline resources. Publication and deployment health do not establish
-that these UI writes succeed. Production deployment is outside this QA run.
+previous stopped rollback container. A fresh, directly adopted Stack, Service,
+and Container owner-browser run passed Service Edit Cancel and Save with one
+injected `503` error and successful retry, plus same-page Container and Service
+Remove Cancel/Confirm. It observed two successful Service PUTs, a
+`setservicelinks` POST returning the injected `503` then `200`, and one `200`
+DELETE each for the owned Container and Service. The run recorded no page
+errors or route boundary failures and restored its baseline with no cleanup
+remaining. Workspace-local evidence is at
+`.qa-evidence/write-ui-supplement-v1.6.482/20260928T001857Z-f80439/result.json`
+and the adjacent `supplement-browser.json`. This bounded owner-browser result
+does not establish the six-role permission matrix or production readiness.

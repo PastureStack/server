@@ -25,8 +25,10 @@ The published image is
 `ghcr.io/pasturestack/server@sha256:e3ac65290f17981201a6cf2857e0f6def3eb79974746bc7110357fd87869a609`,
 built from Server source `3d909952d31e8577793acb7e402e10b883e1c8a6`.
 The isolated QA deployment is healthy before and after restart and displays Web
-Console `1.6.147`; Service Edit/Remove and Container Remove browser write
-acceptance remains pending. No production deployment is claimed.
+Console `1.6.147`. A bounded owner-browser run on fresh resource IDs passed
+Service Edit Cancel, Save, and an injected `503` error with retry, plus Container
+and Service Remove Cancel/Confirm; it restored the baseline. This run does not
+establish the six-role permission matrix or production readiness.
 
 ## v1.6.481 release
 
