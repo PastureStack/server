@@ -13,10 +13,12 @@ boundary.
 
 ## v1.6.483 release
 
-Server `v1.6.483` packages Web Console `1.6.148` with the unchanged Engine and
-other components from `v1.6.482`. Secret Edit now shows the immutable name
-read-only and sends only its editable description, including an explicit empty
-string when cleared. A failed save stays in the modal with an error. The
+Server `v1.6.483` packages Web Console `1.6.149` with the unchanged Engine and
+other components from `v1.6.482`. Secret Edit shows its immutable name
+read-only and sends only the editable description. New Secret, Certificate,
+and Registry resources refresh their server action links after creation.
+Registry credential failures no longer repeat the parent Registry POST; an
+uncertain write stays visible for deliberate recovery. The
 [v1.6.483 notes](docs/releases/server-1.6.483.md) record exact source and
 artifact coordinates, validation, isolated QA, and rollback boundaries.
 

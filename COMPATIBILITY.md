@@ -19,12 +19,14 @@ or audit history.
 
 Machine management uses the neutral `machine-driver-bundle` asset, and vSphere operations use the neutral `vsphere-cli-bundle` asset. The externally defined executable names inside those archives are compatibility interfaces, not PastureStack branding. Artifact, license, and command-surface checks must pass before assembly; real provider and authenticated vSphere lifecycles still require isolated integration tests.
 
-Server `v1.6.483` packages Web Console `1.6.148`. Secret Edit follows the
+Server `v1.6.483` packages Web Console `1.6.149`. Secret Edit follows the
 effective Secret schema: `name` and stored `value` remain immutable, while
 only `description` is submitted on save, including an explicit empty string
 when the user clears it. The Server API, authorization, Engine, and stored
-resource formats are unchanged from `v1.6.482`; browser write acceptance
-remains an independent isolated `8080` check.
+resource formats are unchanged from `v1.6.482`. New Registry,
+RegistryCredential, Certificate, and Secret action links are refreshed by ID
+after creation; ambiguous RegistryCredential writes are not repeated.
+Browser write acceptance remains an independent isolated `8080` check.
 
 Secret payload operations use the neutral `secret-delivery-api` asset. The preserved engine still invokes the historical `secrets-api` executable and `/v1-secrets` routes, so Server supplies that filename only as an internal symlink while keeping the public artifact, primary executable, source repository, and license destination under the PastureStack name. Existing database key names and encrypted payload formats remain compatibility data and must survive upgrade and rollback testing.
 

@@ -124,16 +124,16 @@ require_marker "$publish_workflow" \
     'bash source/scripts/check-server-host-api-package.sh' \
     SERVER_HOST_API_RELEASE_CHECK_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.148' \
+    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.149' \
     SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.148.tar.gz' \
+    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.149.tar.gz' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=34e9d327a115cd6833b35bc379534e9695e37d914bf7e8ab8de52a0a405901bd' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=c8ff45db07d5db4599fbbaa6665f7bffe2977b09a907d493793f4becaa3c31d2' \
     SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=755fc0b04a0eaa83663331463ee286b4f104b63c' \
+    'ARG WEB_CONSOLE_COMMIT=b3139aced7227eab97d6034a4d97440d5823265b' \
     SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING
 require_marker "$release_dockerfile" \
     "grep -aF 'hostsPage.permissionDenied'" \
@@ -142,16 +142,16 @@ require_marker "$release_dockerfile" \
     '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ZH_TW_PERMISSION_MESSAGE_MISSING
 require_marker "$build_script" \
-    'web_console_commit=${WEB_CONSOLE_COMMIT:-755fc0b04a0eaa83663331463ee286b4f104b63c}' \
+    'web_console_commit=${WEB_CONSOLE_COMMIT:-b3139aced7227eab97d6034a4d97440d5823265b}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING
 require_marker "$build_script" \
-    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.148}' \
+    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.149}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.148.tar.gz}' \
+    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.149.tar.gz}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING
 require_marker "$build_script" \
-    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-34e9d327a115cd6833b35bc379534e9695e37d914bf7e8ab8de52a0a405901bd}' \
+    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-c8ff45db07d5db4599fbbaa6665f7bffe2977b09a907d493793f4becaa3c31d2}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING
 for validation_label in \
     formNameDescription.name.label \
@@ -663,7 +663,7 @@ require_marker "$build_script" \
     'PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}"' \
     SERVER_WEB_CONSOLE_RUNTIME_HASH_GATE_MISSING
 require_marker "$build_script" \
-    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.148"' \
+    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.149"' \
     SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING
 require_marker "$release_dockerfile" \
     "grep -aF 'pod-empty-message text-center text-muted'" \
@@ -785,12 +785,12 @@ done
 for current_release_marker in \
     '# Server v1.6.483' \
     '`v0.183.326` and the other component coordinates' \
-    'Web Console `1.6.148`' \
+    'Web Console `1.6.149`' \
     '`66160dfc1d9d134d1c9c85b4f2908c3f07f99365`' \
     '`6427120ef0047deb0c436a5cd9167a9afb3a2fb3075123b50340ec1216a5fe81`' \
-    '`755fc0b04a0eaa83663331463ee286b4f104b63c`' \
-    '`34e9d327a115cd6833b35bc379534e9695e37d914bf7e8ab8de52a0a405901bd`' \
-    '`VERSION.txt=1.6.148`' \
+    '`b3139aced7227eab97d6034a4d97440d5823265b`' \
+    '`c8ff45db07d5db4599fbbaa6665f7bffe2977b09a907d493793f4becaa3c31d2`' \
+    '`VERSION.txt=1.6.149`' \
     'only `description`' \
     'six-role permission' \
     'No production deployment'; do
@@ -799,9 +799,9 @@ for current_release_marker in \
 done
 for current_readme_marker in \
     '## v1.6.483 release' \
-    'Server `v1.6.483` packages Web Console `1.6.148`' \
+    'Server `v1.6.483` packages Web Console `1.6.149`' \
     '[v1.6.483 notes](docs/releases/server-1.6.483.md)' \
-    'only its editable description' \
+    'sends only the editable description' \
     '## v1.6.482 release' \
     'ghcr.io/pasturestack/server@sha256:e3ac65290f17981201a6cf2857e0f6def3eb79974746bc7110357fd87869a609' \
     'Server `v1.6.481` packages Web Console `1.6.146`' \
@@ -835,7 +835,7 @@ require_marker docs/performance/README.md \
     'image: ghcr.io/pasturestack/server:v1.6.483' \
     SERVER_CURRENT_PERFORMANCE_DOC_MISSING
 for current_compatibility_marker in \
-    'Server `v1.6.483` packages Web Console `1.6.148`.' \
+    'Server `v1.6.483` packages Web Console `1.6.149`.' \
     'only `description` is submitted on save' \
     'resource formats are unchanged from `v1.6.482`' \
     'The published `v1.6.482` release changes only Web Console packaging to' \
@@ -1395,4 +1395,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.483 base=v1.6.460 engine=0.183.326 web_console=1.6.148 webhook_automation_service=0.10.3 authentication_service=0.4.42 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.483 base=v1.6.460 engine=0.183.326 web_console=1.6.149 webhook_automation_service=0.10.3 authentication_service=0.4.42 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
