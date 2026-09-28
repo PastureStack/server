@@ -7,6 +7,7 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.486](releases/server-1.6.486.md)
 - [Server v1.6.485](releases/server-1.6.485.md)
 - [Server v1.6.484](releases/server-1.6.484.md)
 - [Server v1.6.483](releases/server-1.6.483.md)
