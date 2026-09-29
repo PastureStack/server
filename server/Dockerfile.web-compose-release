@@ -139,13 +139,13 @@ RUN set -eux; \
         for permission_key in routePermission.title routePermission.denied routePermission.updateDenied; do \
             grep -F "\"${permission_key}\":" "${locale_file}" >/dev/null; \
         done; \
+        for load_key in serviceUnavailable serviceFailed secretsUnavailable secretsFailed; do \
+            grep -F "\"resourceLoadError.${load_key}\":" "${locale_file}" >/dev/null; \
+        done; \
     done; \
     for locale_file in "${package_root}"/translations/*.json; do \
         grep -F '"formResources.addUlimit":' "${locale_file}" >/dev/null; \
         grep -F '"hostsPage.permissionDenied":' "${locale_file}" >/dev/null; \
-        for load_key in serviceUnavailable serviceFailed secretsUnavailable secretsFailed; do \
-            grep -F "\"resourceLoadError.${load_key}\":" "${locale_file}" >/dev/null; \
-        done; \
         for validation_label in \
             formNameDescription.name.label \
             formNameDescription.description.label \
