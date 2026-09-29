@@ -13,11 +13,15 @@ boundary.
 
 ## v1.6.492
 
-Server `v1.6.492` is being prepared to package Web Console `1.6.158`.
+Server `v1.6.492` packages Web Console `1.6.158`.
 That version localizes Service direct-ID and Secrets load failures, and
 unavailable responses to save or action requests, including HTTP 405. The
-official Web Console archive is pinned; the packaged Server image remains
-pending. See the
+published image is
+`ghcr.io/pasturestack/server:v1.6.492@sha256:a50d7859aebb7d08b62a237e42e1323b3da3b9cef51ab8028d4c730d2dd87a03`.
+The release workflow passed candidate start, restart and security gates;
+isolated 8080 deployment passed its startup/restart and baseline checks.
+Broader role/resource and packaged browser acceptance are tracked separately,
+and this is not a formal company-site deployment. See the
 [v1.6.492 notes](docs/releases/server-1.6.492.md) for the exact source and
 verification boundary.
 
@@ -194,16 +198,16 @@ bootstrap runtime and privileged Windows VM testing. See
 ## Quick start
 
 Before deploying, verify the `v1.6.492` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases). Do not use
-this source-tree example until that release exists. A registry login is not
-required. Pin the version and retain the database and platform volumes:
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.492).
+A registry login is not required. Pin the version and retain the database and
+platform volumes:
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.492
+  ghcr.io/pasturestack/server:v1.6.492@sha256:a50d7859aebb7d08b62a237e42e1323b3da3b9cef51ab8028d4c730d2dd87a03
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -212,7 +216,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.492
+    image: ghcr.io/pasturestack/server:v1.6.492@sha256:a50d7859aebb7d08b62a237e42e1323b3da3b9cef51ab8028d4c730d2dd87a03
     restart: unless-stopped
     ports:
       - "8080:8080"
