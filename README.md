@@ -11,6 +11,14 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.489
+
+Server `v1.6.489` packages the reviewed Web Console `1.6.155` source and
+archive with notification placement below the navbar and a viewport width
+bound for the growl close control. See
+[v1.6.489 notes](docs/releases/server-1.6.489.md) for the exact source and
+artifact identity and the packaged-image and browser acceptance criteria.
+
 ## v1.6.488
 
 Server `v1.6.488` packages Web Console `1.6.154`. Direct Stack and Service
@@ -152,7 +160,7 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.488` numeric tag and immutable digest in
+Before deploying, verify the `v1.6.489` numeric tag and immutable digest in
 [Server releases](https://github.com/PastureStack/server/releases). Do not use
 this source-tree example until that release exists. A registry login is not
 required. Pin the version and retain the database and platform volumes:
@@ -162,7 +170,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.488
+  ghcr.io/pasturestack/server:v1.6.489
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -171,7 +179,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.488
+    image: ghcr.io/pasturestack/server:v1.6.489
     restart: unless-stopped
     ports:
       - "8080:8080"
