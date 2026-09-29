@@ -11,6 +11,17 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.491
+
+Server `v1.6.491` is being prepared to package Web Console `1.6.157`. Its
+authenticated notice mount now runs when the component enters the page, so a
+fresh direct-URL permission denial can move into the page flow without waiting
+for another route transition. The successful Web Console main CI archive SHA-256
+is pinned; the published release asset and packaged Server browser acceptance
+remain pending. See the
+[v1.6.491 notes](docs/releases/server-1.6.491.md) for the exact source and
+verification boundary.
+
 ## v1.6.490
 
 Server `v1.6.490` packages Web Console `1.6.156`, which places authenticated
@@ -169,7 +180,7 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.490` numeric tag and immutable digest in
+Before deploying, verify the `v1.6.491` numeric tag and immutable digest in
 [Server releases](https://github.com/PastureStack/server/releases). Do not use
 this source-tree example until that release exists. A registry login is not
 required. Pin the version and retain the database and platform volumes:
@@ -179,7 +190,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.490
+  ghcr.io/pasturestack/server:v1.6.491
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -188,7 +199,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.490
+    image: ghcr.io/pasturestack/server:v1.6.491
     restart: unless-stopped
     ports:
       - "8080:8080"
