@@ -9,8 +9,7 @@ The Web Console main CI `web-console-1.6.157.tar.gz` artifact SHA-256 is
 `ba1724c8a2e3d204c6f1527c7880cd361f3e307863133a1d1ba45120fce53a3f`.
 Web Console main validation run `36622118528` passed. The archive checksum
 and `VERSION.txt=1.6.157` were verified before this Server source preparation.
-The published Web Console release asset must match this checksum before the
-Server image build.
+The published Web Console release asset was read back with the same SHA-256.
 
 The prior `v1.6.490` image packages Web Console `1.6.156`. In isolated 8080
 browser QA, a readonly user's fresh direct visit to `/apps/stacks/add` showed

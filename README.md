@@ -16,9 +16,9 @@ boundary.
 Server `v1.6.491` is being prepared to package Web Console `1.6.157`. Its
 authenticated notice mount now runs when the component enters the page, so a
 fresh direct-URL permission denial can move into the page flow without waiting
-for another route transition. The successful Web Console main CI archive SHA-256
-is pinned; the published release asset and packaged Server browser acceptance
-remain pending. See the
+for another route transition. The published Web Console release asset matches
+the pinned archive SHA-256; packaged Server image and browser acceptance remain
+pending. See the
 [v1.6.491 notes](docs/releases/server-1.6.491.md) for the exact source and
 verification boundary.
 
