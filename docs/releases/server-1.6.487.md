@@ -32,6 +32,7 @@ not proof of a `v1.6.487` image, browser acceptance, or six-role QA.
 The Server OpenVEX identity and vendor-pending register advance with this
 release. Ubuntu findings without an upstream fix remain registered for review
 and subject to the exact-set image scan; this patch does not claim they are
-fixed. Use the previous immutable `v1.6.486` digest as the isolated 8080
-rollback image with the same named volumes and runtime settings. The formal
+fixed. Use previous image
+`ghcr.io/pasturestack/server:v1.6.486@sha256:fd33dba09cf3445ad3015ae8b0ecdb7302a97b45829d9c31ed222fbc19ba9ffb`
+as the isolated 8080 rollback with the same named volumes and runtime settings. The formal
 `stack.ascdc.tw` deployment is outside this release rollout.
