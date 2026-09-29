@@ -29,9 +29,9 @@ ARG SOURCE_DATE_EPOCH
 COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host-api-sha256
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.155
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.155.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=fb4591618bfd782dc05932b401296c40d91785a2c7eb20218d29086850500d8f
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.156
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.156.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=8ddb875fe374c8893bbdde4ee595d3cc9502e24dc30832b866404c12fc2cacd2
 ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -104,6 +104,7 @@ RUN set -eux; \
     grep -aF 'resource-host-guidance' "${ui_entry}" >/dev/null; \
     grep -aF 'resource-advanced-grid' "${ui_entry}" >/dev/null; \
     grep -aF 'hostsPage.permissionDenied' "${ui_entry}" >/dev/null; \
+    grep -aF 'growl-mount' "${ui_entry}" >/dev/null; \
     for permission_key in routePermission.title routePermission.denied routePermission.updateDenied; do \
         grep -aF "${permission_key}" "${ui_entry}" >/dev/null; \
     done; \
@@ -112,6 +113,7 @@ RUN set -eux; \
         theme_path="${package_root}/assets/${theme_asset}"; \
         grep -F -A 2 ".jGrowl.top-right {" "${theme_path}" | grep -Fx "  top: 45px;" >/dev/null; \
         grep -F -A 4 ".jGrowl .jGrowl-closer {" "${theme_path}" | grep -Fx "  max-width: calc(100vw - 20px);" >/dev/null; \
+        grep -F -A 5 "#growl-mount .jGrowl.top-right {" "${theme_path}" | grep -Fx "  position: static;" >/dev/null; \
         grep -F -A 3 '.pods .pod-empty-message {' "${theme_path}" | grep -Fx '  white-space: normal;' >/dev/null; \
         grep -F -A 3 '.pods .pod-empty-message {' "${theme_path}" | grep -Fx '  overflow-wrap: anywhere;' >/dev/null; \
         grep -F 'footer .footer-dropdown .dropdown-menu' "${theme_path}" >/dev/null; \
@@ -345,9 +347,9 @@ ARG UBUNTU_CURL_SNAPSHOT=20260926T000000Z
 ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.155
-ARG WEB_CONSOLE_ARTIFACT_SHA256=fb4591618bfd782dc05932b401296c40d91785a2c7eb20218d29086850500d8f
-ARG WEB_CONSOLE_COMMIT=20ed369c6f9600fc063b6ff8f3587de70ae838ff
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.156
+ARG WEB_CONSOLE_ARTIFACT_SHA256=8ddb875fe374c8893bbdde4ee595d3cc9502e24dc30832b866404c12fc2cacd2
+ARG WEB_CONSOLE_COMMIT=29cda4fd9239e159ff46769cf7db4318c6406d0f
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_COMMIT=5589ef8fda68ae56e1afd64096965d452ee8a17e
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -562,10 +564,14 @@ RUN set -eux; \
     test "$(cat "${web_root}/VERSION.txt")" = "${WEB_CONSOLE_RELEASE_TAG}"; \
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name '*.json' | wc -l)" -eq 13; \
     test -z "$(find "${web_root}" -type f -name '*.map' -print -quit)"; \
+    ui_entry="$(find "${web_root}/assets" -maxdepth 1 -type f -name 'ui-*.js' -print -quit)"; \
+    test -n "${ui_entry}"; \
+    grep -aF 'growl-mount' "${ui_entry}" >/dev/null; \
     for theme_asset in ui-light.css ui-light.rtl.css ui-dark.css ui-dark.rtl.css; do \
         theme_path="${web_root}/assets/${theme_asset}"; \
         grep -F -A 2 ".jGrowl.top-right {" "${theme_path}" | grep -Fx "  top: 45px;" >/dev/null; \
         grep -F -A 4 ".jGrowl .jGrowl-closer {" "${theme_path}" | grep -Fx "  max-width: calc(100vw - 20px);" >/dev/null; \
+        grep -F -A 5 "#growl-mount .jGrowl.top-right {" "${theme_path}" | grep -Fx "  position: static;" >/dev/null; \
         grep -F -A 3 '.pods .pod-empty-message {' "${theme_path}" | grep -Fx '  white-space: normal;' >/dev/null; \
         grep -F -A 3 '.pods .pod-empty-message {' "${theme_path}" | grep -Fx '  overflow-wrap: anywhere;' >/dev/null; \
         grep -F 'footer .footer-dropdown .dropdown-menu' "${theme_path}" >/dev/null; \
@@ -663,12 +669,12 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.489" \
+      org.opencontainers.image.version="v1.6.490" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460" \
       org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.489
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.490
 ENV CATTLE_CATTLE_VERSION=v0.183.326
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_SECURITY_SNAPSHOT=${UBUNTU_CURL_SNAPSHOT}

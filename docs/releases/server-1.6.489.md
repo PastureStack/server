@@ -26,6 +26,12 @@ need not be rerun for this CSS change unless those checks reveal a permission
 regression. The Server release record carries the resulting image identity
 and acceptance evidence.
 
+Post-release isolated QA 8080 checked the packaged `v1.6.489` image. The
+notice cleared the navbar and the direct-create permission cases passed, but
+screenshots showed it still covered the 375px page title and the 1440px sort
+controls. Therefore the notification layout was not accepted; Web Console
+`1.6.156` and Server `v1.6.490` address this shared placement defect.
+
 The Server OpenVEX identity and vendor-pending register advance with this
 release. Existing Ubuntu findings remain registered for exact-set image scan
 and review; this patch does not claim they are fixed. Retain the previous
