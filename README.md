@@ -13,12 +13,15 @@ boundary.
 
 ## v1.6.491
 
-Server `v1.6.491` is being prepared to package Web Console `1.6.157`. Its
+Server `v1.6.491` packages Web Console `1.6.157`. Its
 authenticated notice mount now runs when the component enters the page, so a
 fresh direct-URL permission denial can move into the page flow without waiting
 for another route transition. The published Web Console release asset matches
-the pinned archive SHA-256; packaged Server image and browser acceptance remain
-pending. See the
+the pinned archive SHA-256. The Server image is published at
+`ghcr.io/pasturestack/server:v1.6.491@sha256:c484d298e5bde93b51b44acd476a725bbaa471959d1079d19331c01bc55f8705`.
+Isolated 8080 QA passed 14 scoped Stack and Service direct-create notice cases
+with zero resource writes; it does not establish the broader role/resource
+matrix or formal company-site deployment. See the
 [v1.6.491 notes](docs/releases/server-1.6.491.md) for the exact source and
 verification boundary.
 
