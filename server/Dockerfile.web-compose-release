@@ -29,9 +29,9 @@ ARG SOURCE_DATE_EPOCH
 COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host-api-sha256
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.153
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.153.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=21a4a3ddfe7e79cb3b7189d8ce8854271470a50193d6ab30a2124dd17f72c910
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.154
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.154.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=c36a8e2cb06f62439359c9b05ad7eb7d76405f54de7800db4c3fea7cde77440e
 ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -104,6 +104,9 @@ RUN set -eux; \
     grep -aF 'resource-host-guidance' "${ui_entry}" >/dev/null; \
     grep -aF 'resource-advanced-grid' "${ui_entry}" >/dev/null; \
     grep -aF 'hostsPage.permissionDenied' "${ui_entry}" >/dev/null; \
+    for permission_key in routePermission.title routePermission.denied routePermission.updateDenied; do \
+        grep -aF "${permission_key}" "${ui_entry}" >/dev/null; \
+    done; \
     grep -aF 'pod-empty-message text-center text-muted' "${ui_entry}" >/dev/null; \
     for theme_asset in ui-light.css ui-light.rtl.css ui-dark.css ui-dark.rtl.css; do \
         theme_path="${package_root}/assets/${theme_asset}"; \
@@ -117,6 +120,18 @@ RUN set -eux; \
         "${package_root}/translations/zh-tw.json" >/dev/null; \
     grep -F '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
         "${package_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"routePermission.title":"無法執行此操作"' \
+        "${package_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"routePermission.denied":"您沒有權限在此環境中建立此資源。"' \
+        "${package_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"routePermission.updateDenied":"您沒有權限在此環境中更新此資源。"' \
+        "${package_root}/translations/zh-tw.json" >/dev/null; \
+    for permission_locale in en-us zh-tw ja-jp; do \
+        locale_file="${package_root}/translations/${permission_locale}.json"; \
+        for permission_key in routePermission.title routePermission.denied routePermission.updateDenied; do \
+            grep -F "\"${permission_key}\":" "${locale_file}" >/dev/null; \
+        done; \
+    done; \
     for locale_file in "${package_root}"/translations/*.json; do \
         grep -F '"formResources.addUlimit":' "${locale_file}" >/dev/null; \
         grep -F '"hostsPage.permissionDenied":' "${locale_file}" >/dev/null; \
@@ -328,9 +343,9 @@ ARG UBUNTU_CURL_SNAPSHOT=20260926T000000Z
 ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.153
-ARG WEB_CONSOLE_ARTIFACT_SHA256=21a4a3ddfe7e79cb3b7189d8ce8854271470a50193d6ab30a2124dd17f72c910
-ARG WEB_CONSOLE_COMMIT=2c1ac7b112cd82d4335d320880822b2a4a9b1ae8
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.154
+ARG WEB_CONSOLE_ARTIFACT_SHA256=c36a8e2cb06f62439359c9b05ad7eb7d76405f54de7800db4c3fea7cde77440e
+ARG WEB_CONSOLE_COMMIT=f381a9fb29b54c1b7c18e453c001a93ff1d6a531
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_COMMIT=5589ef8fda68ae56e1afd64096965d452ee8a17e
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -557,6 +572,12 @@ RUN set -eux; \
         "${web_root}/translations/zh-tw.json" >/dev/null; \
     grep -F '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
         "${web_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"routePermission.title":"無法執行此操作"' \
+        "${web_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"routePermission.denied":"您沒有權限在此環境中建立此資源。"' \
+        "${web_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"routePermission.updateDenied":"您沒有權限在此環境中更新此資源。"' \
+        "${web_root}/translations/zh-tw.json" >/dev/null; \
     grep -F '"containersPage.permissionDenied":"您沒有權限在此環境中新增容器。"' \
         "${web_root}/translations/zh-tw.json" >/dev/null; \
     grep -F '"hookPage.receiver.permissionDenied":"您沒有權限在此環境中新增接收端 Webhook。"' \
@@ -583,8 +604,17 @@ RUN set -eux; \
         hostsPage.permissionDenied \
         containersPage.permissionDenied \
         hookPage.receiver.permissionDenied \
-        hookPage.receiver.editPermissionDenied; do \
+        hookPage.receiver.editPermissionDenied \
+        routePermission.title \
+        routePermission.denied \
+        routePermission.updateDenied; do \
         grep -aF "${permission_key}" "${ui_entry}" >/dev/null; \
+    done; \
+    for permission_locale in en-us zh-tw ja-jp; do \
+        locale_file="${web_root}/translations/${permission_locale}.json"; \
+        for permission_key in routePermission.title routePermission.denied routePermission.updateDenied; do \
+            grep -F "\"${permission_key}\":" "${locale_file}" >/dev/null; \
+        done; \
     done; \
     grep -aF 'pod-empty-message text-center text-muted' "${ui_entry}" >/dev/null; \
     for marker in \
@@ -629,12 +659,12 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.487" \
+      org.opencontainers.image.version="v1.6.488" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460" \
       org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.487
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.488
 ENV CATTLE_CATTLE_VERSION=v0.183.326
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_SECURITY_SNAPSHOT=${UBUNTU_CURL_SNAPSHOT}
