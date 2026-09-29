@@ -29,9 +29,9 @@ ARG SOURCE_DATE_EPOCH
 COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host-api-sha256
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.157
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.157.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=ba1724c8a2e3d204c6f1527c7880cd361f3e307863133a1d1ba45120fce53a3f
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.158
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.158.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=286833d3313c5bc04469a8fafd41bab7de1c4b60527f91aae9eef8a4016b17f6
 ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -104,6 +104,10 @@ RUN set -eux; \
     grep -aF 'resource-host-guidance' "${ui_entry}" >/dev/null; \
     grep -aF 'resource-advanced-grid' "${ui_entry}" >/dev/null; \
     grep -aF 'hostsPage.permissionDenied' "${ui_entry}" >/dev/null; \
+    grep -aF 'resourceLoadError.serviceUnavailable' "${ui_entry}" >/dev/null; \
+    grep -aF 'resourceLoadError.serviceFailed' "${ui_entry}" >/dev/null; \
+    grep -aF 'resourceLoadError.secretsUnavailable' "${ui_entry}" >/dev/null; \
+    grep -aF 'resourceLoadError.secretsFailed' "${ui_entry}" >/dev/null; \
     grep -aF 'growl-mount' "${ui_entry}" >/dev/null; \
     for permission_key in routePermission.title routePermission.denied routePermission.updateDenied; do \
         grep -aF "${permission_key}" "${ui_entry}" >/dev/null; \
@@ -139,6 +143,9 @@ RUN set -eux; \
     for locale_file in "${package_root}"/translations/*.json; do \
         grep -F '"formResources.addUlimit":' "${locale_file}" >/dev/null; \
         grep -F '"hostsPage.permissionDenied":' "${locale_file}" >/dev/null; \
+        for load_key in serviceUnavailable serviceFailed secretsUnavailable secretsFailed; do \
+            grep -F "\"resourceLoadError.${load_key}\":" "${locale_file}" >/dev/null; \
+        done; \
         for validation_label in \
             formNameDescription.name.label \
             formNameDescription.description.label \
@@ -347,9 +354,9 @@ ARG UBUNTU_CURL_SNAPSHOT=20260926T000000Z
 ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.157
-ARG WEB_CONSOLE_ARTIFACT_SHA256=ba1724c8a2e3d204c6f1527c7880cd361f3e307863133a1d1ba45120fce53a3f
-ARG WEB_CONSOLE_COMMIT=3f2760da44d25fcc277a627e843fb0c088972ec6
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.158
+ARG WEB_CONSOLE_ARTIFACT_SHA256=286833d3313c5bc04469a8fafd41bab7de1c4b60527f91aae9eef8a4016b17f6
+ARG WEB_CONSOLE_COMMIT=4c99e4803d594a6bc7c340aefc686d34e4ea0f87
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_COMMIT=5589ef8fda68ae56e1afd64096965d452ee8a17e
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -606,6 +613,10 @@ RUN set -eux; \
         "${web_root}/translations/zh-tw.json" >/dev/null; \
     grep -F '"resourceLoadError.stackUnavailable":"找不到此應用堆疊' \
         "${web_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"resourceLoadError.serviceUnavailable":"找不到此服務' \
+        "${web_root}/translations/zh-tw.json" >/dev/null; \
+    grep -F '"resourceLoadError.secretsUnavailable":"無法載入機密資料' \
+        "${web_root}/translations/zh-tw.json" >/dev/null; \
     grep -F '"resourceLoadError.accountsUnavailable":"無法載入帳號資料' \
         "${web_root}/translations/zh-tw.json" >/dev/null; \
     ui_entry="$(find "${web_root}/assets" -maxdepth 1 -type f -name 'ui-*.js' -print -quit)"; \
@@ -632,8 +643,16 @@ RUN set -eux; \
         LocalRecoveryRequired \
         MfaConfirmationRequired \
         InvalidAllowedIdentity \
-        resourceLoadError.stackUnavailable; do \
+        resourceLoadError.stackUnavailable \
+        resourceLoadError.serviceUnavailable \
+        resourceLoadError.serviceFailed \
+        resourceLoadError.secretsUnavailable \
+        resourceLoadError.secretsFailed; do \
         grep -aF "${marker}" "${ui_entry}" >/dev/null; \
+    done; \
+    for load_key in serviceUnavailable serviceFailed secretsUnavailable secretsFailed; do \
+        grep -F "\"resourceLoadError.${load_key}\":" \
+            "${web_root}/translations/zh-tw.json" >/dev/null; \
     done; \
     echo "${AUTHENTICATION_SERVICE_BINARY_SHA256}  /usr/bin/authentication-service.real" | sha256sum -c -; \
     /usr/bin/authentication-service.real --version | \
@@ -669,12 +688,12 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.491" \
+      org.opencontainers.image.version="v1.6.492" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460" \
       org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.491
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.492
 ENV CATTLE_CATTLE_VERSION=v0.183.326
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_SECURITY_SNAPSHOT=${UBUNTU_CURL_SNAPSHOT}
