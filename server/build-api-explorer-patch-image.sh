@@ -472,13 +472,18 @@ docker run --rm --entrypoint bash "$image" -lc '
     for locale in de-de fa-ir fil-ph fr-fr hu-hu ja-jp ko-kr pt-br ru-ru uk-ua zh-hans zh-tw; do
         locale_file="${web_root}/translations/${locale}.json"
         grep -F "\"hostsPage.permissionDenied\":" "${locale_file}" >/dev/null
-        for load_key in serviceUnavailable serviceFailed secretsUnavailable secretsFailed; do
-            grep -F "\"resourceLoadError.${load_key}\":" "${locale_file}" >/dev/null
-        done
         grep -F "\"auditLogsPage.filterBuilder.title\":" "${locale_file}" >/dev/null
         grep -F "\"auditLogsPage.filterBuilder.timeDialog.calendar.today\":" "${locale_file}" >/dev/null
         ! grep -F "\"auditLogsPage.filterBuilder.title\":\"Filter audit logs\"" "${locale_file}" >/dev/null
         ! grep -F "\"auditLogsPage.filterBuilder.timeDialog.calendar.today\":\"Today\"" "${locale_file}" >/dev/null
+    done
+    # The new load-error strings are translated in the supported QA locales;
+    # ember-intl uses en-us as the base locale for other translations.
+    for locale in en-us zh-tw ja-jp; do
+        locale_file="${web_root}/translations/${locale}.json"
+        for load_key in serviceUnavailable serviceFailed secretsUnavailable secretsFailed; do
+            grep -F "\"resourceLoadError.${load_key}\":" "${locale_file}" >/dev/null
+        done
     done
     grep -F "\"auditLogsPage.filterBuilder.timeDialog.calendar.today\":\"Today\"" "${web_root}/translations/en-us.json" >/dev/null
 '
