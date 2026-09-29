@@ -27,10 +27,10 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
 api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.153}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.153.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-21a4a3ddfe7e79cb3b7189d8ce8854271470a50193d6ab30a2124dd17f72c910}
-web_console_commit=${WEB_CONSOLE_COMMIT:-2c1ac7b112cd82d4335d320880822b2a4a9b1ae8}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.154}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.154.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-c36a8e2cb06f62439359c9b05ad7eb7d76405f54de7800db4c3fea7cde77440e}
+web_console_commit=${WEB_CONSOLE_COMMIT:-f381a9fb29b54c1b7c18e453c001a93ff1d6a531}
 authentication_service_release_base_url=${AUTHENTICATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/authentication-service/releases/download}
 authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.42}
 authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-5589ef8fda68ae56e1afd64096965d452ee8a17e}
@@ -56,7 +56,7 @@ vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-bebcc1c02
 govc_binary_sha256=${GOVC_BINARY_SHA256:-f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.487}
+image=${IMAGE:-pasturestack-validation/server:v1.6.488}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -164,7 +164,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.487
+    v1.6.488
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -178,7 +178,7 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.487 \
+    CATTLE_RANCHER_SERVER_VERSION=v1.6.488 \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION=v0.183.326 \
     RC16_GO_AGENT_VERSION=0.13.27 \
@@ -344,7 +344,7 @@ docker run --rm --entrypoint bash "$image" -lc 'test -x /usr/bin/websocket-proxy
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.153"
+    test "$(cat "${web_root}/VERSION.txt")" = "1.6.154"
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     test ! -e "${web_root}/translations/none.json"
     test -z "$(find "${web_root}" -type f -name "*.map" -print -quit)"
@@ -376,6 +376,9 @@ docker run --rm --entrypoint bash "$image" -lc '
         containersPage.permissionDenied \
         hookPage.receiver.permissionDenied \
         hookPage.receiver.editPermissionDenied \
+        routePermission.title \
+        routePermission.denied \
+        routePermission.updateDenied \
         _notlike; do
         grep -aF "${marker}" "${ui_entry}" >/dev/null
     done
@@ -410,6 +413,18 @@ docker run --rm --entrypoint bash "$image" -lc '
         "${web_root}/translations/zh-tw.json" >/dev/null
     grep -F "\"hostsPage.permissionDenied\":\"您沒有權限在此環境中新增主機。\"" \
         "${web_root}/translations/zh-tw.json" >/dev/null
+    grep -F "\"routePermission.title\":\"無法執行此操作\"" \
+        "${web_root}/translations/zh-tw.json" >/dev/null
+    grep -F "\"routePermission.denied\":\"您沒有權限在此環境中建立此資源。\"" \
+        "${web_root}/translations/zh-tw.json" >/dev/null
+    grep -F "\"routePermission.updateDenied\":\"您沒有權限在此環境中更新此資源。\"" \
+        "${web_root}/translations/zh-tw.json" >/dev/null
+    for permission_locale in en-us zh-tw ja-jp; do
+        locale_file="${web_root}/translations/${permission_locale}.json"
+        for permission_key in routePermission.title routePermission.denied routePermission.updateDenied; do
+            grep -F "\"${permission_key}\":" "${locale_file}" >/dev/null
+        done
+    done
     grep -F "\"containersPage.permissionDenied\":\"您沒有權限在此環境中新增容器。\"" \
         "${web_root}/translations/zh-tw.json" >/dev/null
     grep -F "\"hookPage.receiver.permissionDenied\":\"您沒有權限在此環境中新增接收端 Webhook。\"" \
