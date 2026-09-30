@@ -2,6 +2,21 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
+Server source target `v1.6.494` pins Orchestration Engine `v0.183.327` and
+Web Console `1.6.160`; both component releases are published and hash-verified.
+Server artifact gates and isolated Certificate QA remain pending. Certificate name-only and description-only
+updates omit `cert` without replacing stored certificate or private-key data.
+Explicit null, empty and malformed `cert` values still receive the established
+422 / InvalidFormat response, and create validation is unchanged. Certificate
+DELETE and remove actions reject alternate and default references from
+non-removed load balancer services in the certificate's account with the
+existing 405 / InvalidAction response. The console explains only the known
+certificate-in-use response in English, Traditional Chinese and Japanese;
+403 and 404 remain neutral, without service names or IDs. API shapes,
+authorization, key masking, database formats and authentication/session
+behavior are preserved. No database migration is required. All other packaging
+coordinates and runtime security gates are retained from `v1.6.493`.
+
 Preferred product-facing coordinates use `PastureStack/*`, `ghcr.io/pasturestack/*`, `PLATFORM_*`, and `PASTURESTACK_*`. Historical identifiers remain only where existing databases, agents, clients, templates, or upgrade tooling consume them. They must not be mechanically removed.
 
 The catalog helper is packaged and installed as `catalog-service` and `catalog-service-sqlite`. The historical executable path remains only as a compatibility wrapper because the preserved service supervisor and persisted settings still invoke it. Release assets must use the PastureStack filename `catalog-service-<version>.tar.xz`; compatibility aliases must never leak back into the public asset name.
