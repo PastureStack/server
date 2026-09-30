@@ -366,8 +366,10 @@ RUN set -eux; \
     test "$(dpkg-deb -f "${package_file}" Architecture)" = amd64; \
     dpkg-deb --extract "${package_file}" /tmp/libdbi-perl-runtime; \
     cd /tmp/libdbi-perl-runtime; \
-    find usr -type f \( -name DBI.pm -o -name DBI.so \) -print | \
-      LC_ALL=C sort | xargs sha256sum > /out/libdbi-perl-runtime.sha256; \
+    sha256sum \
+      usr/lib/x86_64-linux-gnu/perl5/5.40/DBI.pm \
+      usr/lib/x86_64-linux-gnu/perl5/5.40/auto/DBI/DBI.so \
+      > /out/libdbi-perl-runtime.sha256; \
     test "$(wc -l < /out/libdbi-perl-runtime.sha256)" -eq 2; \
     cd /tmp/openssl-runtime; \
     sha256sum \
