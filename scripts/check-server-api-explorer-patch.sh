@@ -1116,6 +1116,8 @@ for release_libdbi_security_marker in \
     'ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.3' \
     'apt-get download "libdbi-perl=${LIBDBI_PERL_PACKAGE_VERSION}"' \
     'dpkg-deb --extract "${package_file}" /tmp/libdbi-perl-runtime' \
+    'usr/lib/x86_64-linux-gnu/perl5/5.40/DBI.pm' \
+    'usr/lib/x86_64-linux-gnu/perl5/5.40/auto/DBI/DBI.so' \
     'test "$(wc -l < /out/libdbi-perl-runtime.sha256)" -eq 2' \
     'sha256sum -c /usr/share/pasturestack/security/libdbi-perl-runtime.sha256' \
     'ENV PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=${LIBDBI_PERL_PACKAGE_VERSION}'; do
