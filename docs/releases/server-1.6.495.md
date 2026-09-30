@@ -62,14 +62,16 @@ The Web Console numeric tag is `1.6.161`, with source
 [Official validation run 36738408143](https://github.com/PastureStack/web-console/actions/runs/36738408143)
 passed 738/738 tests and produced two byte-identical archives. Focused native
 editor tests passed 25/25; locale gates reported zero missing, orphan or invalid
-ICU keys. Publication must use a new immutable
-Server tag and digest; `v1.6.494` must not be overwritten.
+ICU keys. Publication used the new immutable Server tag and digest above;
+`v1.6.494` was not overwritten.
 
-The failed native browser receipt remains a failure. Fresh owner and member
-browser checks must verify Cancel, metadata Save, refresh, unchanged stored
-certificate/key material and the in-use delete explanation. Component tests,
-image publication and startup do not establish browser acceptance or completion
-of the broader resource/role matrix. No company-site deployment is authorized.
+Scoped owner/member browser checks on isolated `8080` passed Cancel, metadata
+Save, refresh and the in-use delete explanation using the actual editor, with
+stored certificate/key material preserved. Four exact-owned fixture deletes
+completed with API/DB terminal readback and unrelated-row protection.
+Earlier HOLD receipts remain HOLD: current scoped cleanup does not resolve
+their historical foreign-baseline uncertainty. The broader resource/role matrix
+remains INCOMPLETE. No company-site deployment is authorized.
 
 For an isolated upgrade, preserve the current environment variables, named
 volumes, restart policy, AppArmor configuration and HTTPS origin. Retain
