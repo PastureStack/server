@@ -1061,22 +1061,32 @@ if grep -Eq 'ubuntu_security_packages|pasturestack-ubuntu-security|UBUNTU_SNAPSH
     exit 1
 fi
 for release_curl_security_marker in \
-    'FROM ${UBUNTU_SECURITY_IMAGE} AS curl_security_packages' \
-    'ARG UBUNTU_CURL_SNAPSHOT=20260926T000000Z' \
+    'FROM ${UBUNTU_SECURITY_IMAGE} AS runtime_security_packages' \
+    'ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20260930T000000Z' \
     'ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7' \
+    'ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.6' \
     'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg' \
     'Acquire::AllowInsecureRepositories "false"' \
     'APT::Get::AllowUnauthenticated "false"' \
-    'COPY --from=curl_security_packages /out/ /tmp/pasturestack-curl-security/' \
+    'COPY --from=runtime_security_packages /out/ /tmp/pasturestack-runtime-security/' \
     'sha256sum -c SHA256SUMS' \
     'dpkg -i packages/*.deb' \
     'test "$(dpkg-query -W -f=' \
-    'ENV PASTURESTACK_CURL_SECURITY_SNAPSHOT=${UBUNTU_CURL_SNAPSHOT}'; do
+    'ENV PASTURESTACK_CURL_SECURITY_SNAPSHOT=${UBUNTU_RUNTIME_SECURITY_SNAPSHOT}' \
+    '"openssl=${OPENSSL_PACKAGE_VERSION}"' \
+    '"libssl3t64=${OPENSSL_PACKAGE_VERSION}"' \
+    '"openssl-provider-legacy=${OPENSSL_PACKAGE_VERSION}"' \
+    'dpkg-deb --extract "${package_file}" /tmp/openssl-runtime' \
+    'sha256sum packages/*.deb tar openssl-runtime.sha256 > SHA256SUMS' \
+    'sha256sum -c /usr/share/pasturestack/security/openssl-runtime.sha256' \
+    'ENV PASTURESTACK_OPENSSL_VERSION=3.5.5' \
+    'ENV PASTURESTACK_OPENSSL_PACKAGE_VERSION=${OPENSSL_PACKAGE_VERSION}' \
+    'ENV PASTURESTACK_OPENSSL_SECURITY_SNAPSHOT=${UBUNTU_RUNTIME_SECURITY_SNAPSHOT}'; do
     require_marker "$release_dockerfile" "$release_curl_security_marker" \
         SERVER_INCREMENTAL_CURL_SECURITY_REFRESH_MISSING
 done
 require_marker "$build_script" \
-    'PASTURESTACK_CURL_SECURITY_SNAPSHOT=20260926T000000Z' \
+    'PASTURESTACK_CURL_SECURITY_SNAPSHOT=20260930T000000Z' \
     SERVER_CURL_IMAGE_SNAPSHOT_GATE_MISSING
 require_marker "$build_script" \
     'PASTURESTACK_CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7' \
@@ -1189,8 +1199,24 @@ require_marker "$dockerfile" \
     'ENV PASTURESTACK_DIFF3_HARDENING=removed' \
     SERVER_DIFF3_REMOVAL_IDENTITY_MISSING
 require_marker "$build_script" \
-    'openssl version | grep -F "OpenSSL 3.5.8 25 Aug 2026"' \
+    'openssl version | grep -E "^OpenSSL 3\\.5\\.5 .*\\(Library: OpenSSL 3\\.5\\.5 "' \
     SERVER_OPENSSL_IMAGE_VERSION_GATE_MISSING
+for openssl_image_marker in \
+    'PASTURESTACK_OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.6' \
+    'PASTURESTACK_OPENSSL_SECURITY_SNAPSHOT=20260930T000000Z' \
+    'sha256sum -c /usr/share/pasturestack/security/openssl-runtime.sha256' \
+    'test "$(wc -l < /usr/share/pasturestack/security/openssl-runtime.sha256)" -eq 7' \
+    'ldd -r "$target"' \
+    'openssl dgst -provider default -provider legacy -md4'; do
+    require_marker "$build_script" "$openssl_image_marker" \
+        SERVER_OPENSSL_OFFICIAL_PACKAGE_GATE_MISSING
+done
+test -f scripts/test-server-openssl-tls.sh
+bash -n scripts/test-server-openssl-tls.sh
+require_marker "$build_script" '< scripts/test-server-openssl-tls.sh' \
+    SERVER_OPENSSL_TLS_COMPATIBILITY_GATE_MISSING
+require_marker "$build_script" 'docker run --rm -i --network none --entrypoint bash "$image" -s' \
+    SERVER_OPENSSL_TLS_STDIN_GATE_MISSING
 require_marker "$build_script" \
     'test "$(openssl version -d)" = "OPENSSLDIR: \"/usr/lib/ssl\""' \
     SERVER_OPENSSL_IMAGE_OPENSSLDIR_GATE_MISSING

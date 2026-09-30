@@ -2,8 +2,8 @@
   "@context": "https://openvex.dev/ns/v0.2.0",
   "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.493",
   "author": "PastureStack Security",
-  "timestamp": "2026-09-28T11:43:06Z",
-  "version": 43,
+  "timestamp": "2026-09-30T08:30:00Z",
+  "version": 44,
   "statements": [
     {
       "vulnerability": {
@@ -151,17 +151,17 @@
       },
       "products": [
         {
-          "@id": "pkg:deb/ubuntu/libssl3t64@3.5.5-1ubuntu3.4?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/libssl3t64@3.5.5-1ubuntu3.6?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/openssl@3.5.5-1ubuntu3.4?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/openssl@3.5.5-1ubuntu3.6?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/openssl-provider-legacy@3.5.5-1ubuntu3.4?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/openssl-provider-legacy@3.5.5-1ubuntu3.6?arch=amd64&distro=ubuntu-26.04"
         }
       ],
       "status": "fixed",
-      "impact_statement": "Ubuntu USN-8678-1 identifies 3.5.5-1ubuntu3.4 as the fixed Ubuntu 26.04 package version; the final runtime enforces that exact minimum."
+      "impact_statement": "The final runtime installs and verifies Ubuntu 26.04 OpenSSL packages at 3.5.5-1ubuntu3.6, which includes the USN-8678-1 fix and the subsequent USN-8847-1 fixes. SHA-256 checksums extracted from the signed official packages must match all seven package-owned CLI, library, engine and legacy provider files in the final image."
     },
     {
       "vulnerability": {
@@ -169,17 +169,17 @@
       },
       "products": [
         {
-          "@id": "pkg:deb/ubuntu/libssl3t64@3.5.5-1ubuntu3.4?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/libssl3t64@3.5.5-1ubuntu3.6?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/openssl@3.5.5-1ubuntu3.4?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/openssl@3.5.5-1ubuntu3.6?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/openssl-provider-legacy@3.5.5-1ubuntu3.4?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/openssl-provider-legacy@3.5.5-1ubuntu3.6?arch=amd64&distro=ubuntu-26.04"
         }
       ],
       "status": "fixed",
-      "impact_statement": "The package database still describes the Ubuntu base layer, but the active OpenSSL CLI, libcrypto, libssl, engines, and legacy provider are replaced with verified upstream OpenSSL 3.5.8, the first 3.5 LTS release containing the fix, and their runtime paths and linkage are validated in the final image."
+      "impact_statement": "Ubuntu identifies 3.5.5-1ubuntu3.5 as fixed for CVE-2026-75803. The final runtime installs the subsequent official 3.5.5-1ubuntu3.6 packages from a signed snapshot, replacing the former upstream 3.5.8 CLI, libraries, engines and legacy provider. Installed versions, package-owned bytes, provider paths and curl/MariaDB linkage are validated; no package-metadata-only replacement is accepted."
     },
     {
       "vulnerability": {

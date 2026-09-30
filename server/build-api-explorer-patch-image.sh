@@ -190,7 +190,7 @@ for marker in \
     PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256="${orchestration_engine_artifact_sha256}" \
     PASTURESTACK_RUNTIME_GO_VERSION=1.27.0 \
     PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10 \
-    PASTURESTACK_CURL_SECURITY_SNAPSHOT=20260926T000000Z \
+    PASTURESTACK_CURL_SECURITY_SNAPSHOT=20260930T000000Z \
     PASTURESTACK_CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7 \
     PASTURESTACK_GLIBC_CVE_2026_18374_FIX=not-in-execute-path \
     PASTURESTACK_GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4 \
@@ -199,7 +199,9 @@ for marker in \
     PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11 \
     PASTURESTACK_COREUTILS_UNIQ_FIX=d64e35a8a4c0e4608321433e0d84d917e4e36371 \
     PASTURESTACK_ZLIB_VERSION=1.3.2 \
-    PASTURESTACK_OPENSSL_VERSION=3.5.8 \
+    PASTURESTACK_OPENSSL_VERSION=3.5.5 \
+    PASTURESTACK_OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.6 \
+    PASTURESTACK_OPENSSL_SECURITY_SNAPSHOT=20260930T000000Z \
     PASTURESTACK_DIFF3_HARDENING=removed \
     PASTURESTACK_SSH_CLIENT_HARDENING=client-removed \
     PASTURESTACK_PRIVILEGED_MOUNT_HELPERS=removed \
@@ -662,11 +664,22 @@ EOF
     cmp /tmp/uniq-expected /tmp/uniq-output
     grep -aF "1.3.2" /usr/lib/x86_64-linux-gnu/libz.so.1.3.2 >/dev/null
     ldd /usr/sbin/mariadbd | grep -F "/usr/lib/x86_64-linux-gnu/libz.so.1" >/dev/null
-    openssl version | grep -F "OpenSSL 3.5.8 25 Aug 2026" >/dev/null
+    for package in openssl libssl3t64 openssl-provider-legacy; do
+        test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${package}")" = 3.5.5-1ubuntu3.6
+    done
+    cd /
+    test "$(wc -l < /usr/share/pasturestack/security/openssl-runtime.sha256)" -eq 7
+    sha256sum -c /usr/share/pasturestack/security/openssl-runtime.sha256
+    openssl version | grep -E "^OpenSSL 3\\.5\\.5 .*\\(Library: OpenSSL 3\\.5\\.5 " >/dev/null
     test "$(openssl version -d)" = "OPENSSLDIR: \"/usr/lib/ssl\""
     test "$(openssl version -e)" = "ENGINESDIR: \"/usr/lib/x86_64-linux-gnu/engines-3\""
     test "$(openssl version -m)" = "MODULESDIR: \"/usr/lib/x86_64-linux-gnu/ossl-modules\""
     openssl list -providers -provider legacy | grep -F "OpenSSL Legacy Provider" >/dev/null
+    printf abc | openssl dgst -provider default -provider legacy -md4 | grep -F a448017aaf21d8525fc10ae87aa6729d >/dev/null
+    for target in /usr/bin/curl /usr/sbin/mariadbd /usr/bin/mariadb /usr/lib/x86_64-linux-gnu/libssh2.so.1; do
+        linkage=$(ldd -r "$target" 2>&1)
+        ! printf "%s\n" "$linkage" | grep -E "not found|undefined symbol"
+    done
     ldd /usr/bin/curl | grep -F "/usr/lib/x86_64-linux-gnu/libssl.so.3" >/dev/null
     ldd /usr/bin/curl | grep -F "/usr/lib/x86_64-linux-gnu/libcrypto.so.3" >/dev/null
     ldd /usr/sbin/mariadbd | grep -F "/usr/lib/x86_64-linux-gnu/libssl.so.3" >/dev/null
@@ -714,6 +727,9 @@ EOF
         exit 1
     fi
 '
+
+docker run --rm -i --network none --entrypoint bash "$image" -s \
+    < scripts/test-server-openssl-tls.sh
 
 printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s authentication_service=%s authentication_service_commit=%s authentication_service_archive_sha256=%s authentication_service_binary_sha256=%s websocket_proxy=%s websocket_proxy_commit=%s websocket_proxy_archive_sha256=%s websocket_proxy_binary_sha256=%s compose_executor=%s compose_executor_commit=%s compose_executor_archive_sha256=%s compose_executor_binary_sha256=%s vsphere_cli=%s vsphere_cli_commit=%s vsphere_cli_archive_sha256=%s govc_binary_sha256=%s runtime_go=1.27.0 orchestration_updated=1 wrappers_pinned=1 audit_log_filters=1 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 vendor_pending=exact-set artifact_scan=required\n' \
     "$image" "$revision" "$base_image" "${orchestration_engine_release_tag#v}" \

@@ -16,7 +16,10 @@ boundary.
 The next Server candidate packages Web Console `1.6.159`, which preserves
 existing Registry passwords on username-only edits and explains that a blank
 password input keeps the current password. Project and exact-resource update
-checks remain unchanged. The source is being prepared for
+checks remain unchanged. A signed Ubuntu package refresh also replaces the
+inherited OpenSSL CLI, libraries, engines and provider with the official
+`3.5.5-1ubuntu3.6` security fix; the failed first candidate was not published.
+The source is being prepared for
 `ghcr.io/pasturestack/server:v1.6.493`; no image publication or packaged browser
 acceptance is claimed yet. Continue using the published release below until
 its replacement digest is verified. See the
