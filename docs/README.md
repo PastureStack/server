@@ -7,7 +7,7 @@ runtime gates have passed.
 
 ## Release notes
 
-- [Server v1.6.495](releases/server-1.6.495.md) — published Certificate editor fix and official DBI security update; isolated start/restart verified, browser/matrix acceptance separate
+- [Server v1.6.495](releases/server-1.6.495.md) — published Certificate editor fix and official DBI security update; isolated start/restart and scoped owner/member Certificate browser checks verified, broader matrix INCOMPLETE
 - [Server v1.6.494](releases/server-1.6.494.md) — published artifact and isolated start/restart verified; Certificate QA pending
 - [Server v1.6.493](releases/server-1.6.493.md)
 - [Server v1.6.492](releases/server-1.6.492.md)

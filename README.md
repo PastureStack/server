@@ -26,8 +26,11 @@ filesystem layer; the unchanged security gate reports 52 raw findings and eight
 exact Medium vendor-pending package findings after VEX, with zero untracked,
 Critical/High, fixed-available or secret findings. This is not a zero-CVE claim.
 Isolated `8080` first start/restart passed with unchanged runtime settings and
-database-count baselines. Certificate browser acceptance and the broader
-resource/role matrix are separate. No company-site deployment is authorized.
+database-count baselines. Scoped owner/member Certificate browser checks passed
+on isolated `8080`, including Cancel, metadata Save, refresh and the in-use
+delete explanation. Earlier HOLD receipts remain HOLD; current scoped evidence
+does not resolve their historical foreign-baseline uncertainty. The broader
+resource/role matrix remains INCOMPLETE. No company-site deployment is authorized.
 See the [v1.6.495 notes](docs/releases/server-1.6.495.md) and retain `v1.6.494`
 with the original volumes/settings for rollback.
 
