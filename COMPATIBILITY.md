@@ -2,16 +2,32 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
-Server source target `v1.6.494` pins Orchestration Engine `v0.183.327` and
+Published Server `v1.6.494` pins Orchestration Engine `v0.183.327` and
 Web Console `1.6.160`; both component releases are published and hash-verified.
-Server artifact gates and isolated Certificate QA remain pending. Certificate name-only and description-only
+The official image is
+`ghcr.io/pasturestack/server:v1.6.494@sha256:9d1ddbe6f0c3fa11fefc141e14f419163c7bd14609163373d898ab0a857d790c`,
+from source `c3b50ad6891ebbde4612e89dd5a1114bc731431c` and successful
+[publication run `36704785404`](https://github.com/PastureStack/server/actions/runs/36704785404).
+Its single-layer image and 22 checksummed assets were independently read back.
+The security gate retains 52 raw findings and eight exact Medium
+vendor-pending package findings after VEX, with zero untracked, Critical/High,
+fixed-available or secret findings; it does not assert zero CVEs.
+Isolated `8080` deployment start/restart passed with unchanged runtime and
+database-count baselines. Certificate API/browser acceptance and the broader
+resource/role matrix remain pending. Retain the immutable `v1.6.493` image and
+original volumes/settings for rollback; that image retains the Certificate defects.
+
+Certificate name-only and description-only
 updates omit `cert` without replacing stored certificate or private-key data.
-Explicit null, empty and malformed `cert` values still receive the established
-422 / InvalidFormat response, and create validation is unchanged. Certificate
+Explicit null `cert` values are rejected by the existing non-nullable API schema
+with 422 / NotNullable; empty and malformed non-null values receive
+422 / InvalidFormat. Create validation is unchanged. Certificate
 DELETE and remove actions reject alternate and default references from
 non-removed load balancer services in the certificate's account with the
 existing 405 / InvalidAction response. The console explains only the known
 certificate-in-use response in English, Traditional Chinese and Japanese;
+public action names remain case-sensitive: undeclared `ReMoVe` receives
+422 / InvalidAction during schema validation, not the reference guard's 405.
 403 and 404 remain neutral, without service names or IDs. API shapes,
 authorization, key masking, database formats and authentication/session
 behavior are preserved. No database migration is required. All other packaging
