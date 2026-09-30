@@ -11,19 +11,29 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
-## v1.6.494 — source target
+## v1.6.494
 
-Source target `v1.6.494` pins Orchestration Engine `0.183.327` and Web
-Console `1.6.160` for Certificate metadata edits and load-balancer reference
-protection. The component candidates passed their normal CI gates and their
-source changes are merged; numeric component releases and their asset hashes
-have been independently read back. The new Server artifact remains pending.
-There is no published `v1.6.494` image or accepted
-`8080` Certificate QA result in this preparation. The `v1.6.493` runtime base,
-JDK, official OpenSSL security packages, security thresholds and all other
-component coordinates are retained. See the [v1.6.494 source target
-notes](docs/releases/server-1.6.494.md) for exact candidate hashes and remaining
-acceptance boundaries. Quick Start below uses the published `v1.6.493` image.
+Server `v1.6.494` packages Orchestration Engine `0.183.327` and Web Console
+`1.6.160` for Certificate metadata edits and load-balancer reference protection.
+The immutable published image is
+`ghcr.io/pasturestack/server:v1.6.494@sha256:9d1ddbe6f0c3fa11fefc141e14f419163c7bd14609163373d898ab0a857d790c`,
+built from Server source `c3b50ad6891ebbde4612e89dd5a1114bc731431c`.
+Official [publication run `36704785404`](https://github.com/PastureStack/server/actions/runs/36704785404)
+passed source, start/restart, security, checksum and publication gates. The 22
+checksummed assets and checksum manifest match their published digests; the
+final image has one filesystem layer. The merged-rootfs scan reports 52 raw
+findings and the exact eight Medium vendor-pending package findings after VEX,
+with zero untracked, Critical/High, fixed-available or secret findings. This is
+not a zero-CVE claim.
+
+Isolated `8080` deployment start/restart passed with an unchanged runtime
+contract and tracked database-count baselines. Certificate API/browser acceptance remains
+pending; this does not complete the broader resource/role matrix or establish
+a company-site deployment. The runtime base, JDK, official OpenSSL security
+packages, security thresholds and all other component coordinates are retained
+from `v1.6.493`. Retain that immutable image and its original named volumes for
+rollback. See the [v1.6.494 notes](docs/releases/server-1.6.494.md) for exact
+component hashes and remaining acceptance boundaries.
 
 ## v1.6.493
 
@@ -229,8 +239,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.493` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.493).
+Before deploying, verify the `v1.6.494` numeric tag and immutable digest in
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.494).
 A registry login is not required. Pin the version and retain the database and
 platform volumes:
 
@@ -239,7 +249,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.493@sha256:61067362a2d91b791c7e80cb2ec4a5a907bc03884774d2019dccf1bf0e29788f
+  ghcr.io/pasturestack/server:v1.6.494@sha256:9d1ddbe6f0c3fa11fefc141e14f419163c7bd14609163373d898ab0a857d790c
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -248,7 +258,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.493@sha256:61067362a2d91b791c7e80cb2ec4a5a907bc03884774d2019dccf1bf0e29788f
+    image: ghcr.io/pasturestack/server:v1.6.494@sha256:9d1ddbe6f0c3fa11fefc141e14f419163c7bd14609163373d898ab0a857d790c
     restart: unless-stopped
     ports:
       - "8080:8080"

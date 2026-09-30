@@ -21,6 +21,7 @@ prior_release_notes=docs/releases/server-1.6.466.md
 current_release_notes=docs/releases/server-1.6.483.md
 next_release_notes=docs/releases/server-1.6.494.md
 published_release_notes=docs/releases/server-1.6.482.md
+official_image_reference=ghcr.io/pasturestack/server:v1.6.494@sha256:9d1ddbe6f0c3fa11fefc141e14f419163c7bd14609163373d898ab0a857d790c
 host_api_repair=server/artifacts/repair-host-api-sha256.sh
 host_api_check=scripts/check-server-host-api-package.sh
 mfa_policy_smoke=scripts/test-mfa-policy-api.py
@@ -97,7 +98,9 @@ require_marker()
 
 for next_release_marker in \
     '# Server v1.6.494' \
-    'Source target; component releases verified; Server artifact pending.' \
+    'Published Server artifact verified.' \
+    '`c3b50ad6891ebbde4612e89dd5a1114bc731431c`' \
+    'publication run `36704785404`' \
     'Orchestration Engine `v0.183.327`' \
     '`dce2f2473ffea1510fe10676a771eb1fe5d0b161`' \
     '`c6d4c3003a19db19d1be73e69aa52358a0a4166bf726cbefe7e2ab9ed5664b56`' \
@@ -109,7 +112,11 @@ for next_release_marker in \
     'VERSION.txt=1.6.160' \
     'validation run `36702030007`'; do
     require_marker "$next_release_notes" "$next_release_marker" \
-        SERVER_NEXT_RELEASE_PREPARATION_MISSING
+        SERVER_PUBLISHED_RELEASE_EVIDENCE_MISSING
+done
+for official_identity_doc in README.md COMPATIBILITY.md "$next_release_notes"; do
+    require_marker "$official_identity_doc" "$official_image_reference" \
+        SERVER_OFFICIAL_IMMUTABLE_IMAGE_MISSING
 done
 require_marker README.md '## v1.6.494' \
     SERVER_CURRENT_README_MISSING
@@ -117,7 +124,9 @@ require_marker README.md '## v1.6.491' \
     SERVER_PREVIOUS_README_MISSING
 require_marker README.md '## v1.6.487' \
     SERVER_LAST_PUBLISHED_README_MISSING
-require_marker README.md 'ghcr.io/pasturestack/server:v1.6.493' \
+require_marker README.md "  $official_image_reference" \
+    SERVER_LATEST_PUBLISHED_QUICK_START_MISSING
+require_marker README.md "    image: $official_image_reference" \
     SERVER_LATEST_PUBLISHED_QUICK_START_MISSING
 require_marker docs/README.md \
     '[Server v1.6.494](releases/server-1.6.494.md)' \

@@ -7,7 +7,7 @@ runtime gates have passed.
 
 ## Release notes
 
-- [Server v1.6.494](releases/server-1.6.494.md) — source target; component releases verified, Server artifact pending
+- [Server v1.6.494](releases/server-1.6.494.md) — published artifact and isolated start/restart verified; Certificate QA pending
 - [Server v1.6.493](releases/server-1.6.493.md)
 - [Server v1.6.492](releases/server-1.6.492.md)
 - [Server v1.6.491](releases/server-1.6.491.md)
