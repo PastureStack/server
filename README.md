@@ -11,19 +11,23 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
-## v1.6.493 candidate
+## v1.6.493
 
-The next Server candidate packages Web Console `1.6.159`, which preserves
+Server `v1.6.493` packages Web Console `1.6.159`, which preserves
 existing Registry passwords on username-only edits and explains that a blank
 password input keeps the current password. Project and exact-resource update
 checks remain unchanged. A signed Ubuntu package refresh also replaces the
 inherited OpenSSL CLI, libraries, engines and provider with the official
 `3.5.5-1ubuntu3.6` security fix; the failed first candidate was not published.
-The source is being prepared for
-`ghcr.io/pasturestack/server:v1.6.493`; no image publication or packaged browser
-acceptance is claimed yet. Continue using the published release below until
-its replacement digest is verified. See the
-[v1.6.493 candidate notes](docs/releases/server-1.6.493.md).
+The immutable published image is
+`ghcr.io/pasturestack/server:v1.6.493@sha256:61067362a2d91b791c7e80cb2ec4a5a907bc03884774d2019dccf1bf0e29788f`,
+built from signed Server source `dc17c6f44e0624f0be324bfa0e682bb063674219`.
+Official start/restart, runtime security, checksums and component gates passed;
+the final image has one filesystem layer. Isolated 8080 start/restart and scoped
+Registry credential browser save, password preservation, three-language
+control bounds and exact-ID authorization passed. Broader role/resource and
+workflow acceptance remains separate; this is not a formal company-site
+deployment. See the [v1.6.493 notes](docs/releases/server-1.6.493.md).
 
 ## v1.6.492
 
@@ -211,8 +215,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.492` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.492).
+Before deploying, verify the `v1.6.493` numeric tag and immutable digest in
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.493).
 A registry login is not required. Pin the version and retain the database and
 platform volumes:
 
@@ -221,7 +225,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.492@sha256:a50d7859aebb7d08b62a237e42e1323b3da3b9cef51ab8028d4c730d2dd87a03
+  ghcr.io/pasturestack/server:v1.6.493@sha256:61067362a2d91b791c7e80cb2ec4a5a907bc03884774d2019dccf1bf0e29788f
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -230,7 +234,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.492@sha256:a50d7859aebb7d08b62a237e42e1323b3da3b9cef51ab8028d4c730d2dd87a03
+    image: ghcr.io/pasturestack/server:v1.6.493@sha256:61067362a2d91b791c7e80cb2ec4a5a907bc03884774d2019dccf1bf0e29788f
     restart: unless-stopped
     ports:
       - "8080:8080"
