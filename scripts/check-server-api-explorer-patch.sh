@@ -22,7 +22,7 @@ current_release_notes=docs/releases/server-1.6.483.md
 next_release_notes=docs/releases/server-1.6.494.md
 candidate_release_notes=docs/releases/server-1.6.495.md
 published_release_notes=docs/releases/server-1.6.482.md
-official_image_reference=ghcr.io/pasturestack/server:v1.6.494@sha256:9d1ddbe6f0c3fa11fefc141e14f419163c7bd14609163373d898ab0a857d790c
+official_image_reference=ghcr.io/pasturestack/server:v1.6.495@sha256:ffd4d1c2a208b0bce3f9f961500ddebfdf7024bbddcf2d1e156cdbe76d30ba56
 host_api_repair=server/artifacts/repair-host-api-sha256.sh
 host_api_check=scripts/check-server-host-api-package.sh
 mfa_policy_smoke=scripts/test-mfa-policy-api.py
@@ -115,11 +115,11 @@ for next_release_marker in \
     require_marker "$next_release_notes" "$next_release_marker" \
         SERVER_PUBLISHED_RELEASE_EVIDENCE_MISSING
 done
-for official_identity_doc in README.md COMPATIBILITY.md "$next_release_notes"; do
+for official_identity_doc in README.md COMPATIBILITY.md "$candidate_release_notes"; do
     require_marker "$official_identity_doc" "$official_image_reference" \
         SERVER_OFFICIAL_IMMUTABLE_IMAGE_MISSING
 done
-require_marker README.md '## v1.6.494' \
+require_marker README.md '## v1.6.495' \
     SERVER_CURRENT_README_MISSING
 require_marker README.md '## v1.6.491' \
     SERVER_PREVIOUS_README_MISSING
@@ -130,7 +130,7 @@ require_marker README.md "  $official_image_reference" \
 require_marker README.md "    image: $official_image_reference" \
     SERVER_LATEST_PUBLISHED_QUICK_START_MISSING
 require_marker docs/README.md \
-    '[Server v1.6.494](releases/server-1.6.494.md)' \
+    '[Server v1.6.495](releases/server-1.6.495.md)' \
     SERVER_NEXT_DOC_INDEX_MISSING
 
 for candidate_release_marker in \
