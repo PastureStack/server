@@ -11,6 +11,15 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.495 preparation
+
+The next patch packages Web Console `1.6.161` to fix existing Certificate
+metadata edits blocked by a masked private key. It does not change API
+authorization, authentication or stored certificate material. This image is
+not yet published or browser-accepted; the installation examples below still
+pin the verified `v1.6.494` artifact. See the
+[v1.6.495 preparation notes](docs/releases/server-1.6.495.md).
+
 ## v1.6.494
 
 Server `v1.6.494` packages Orchestration Engine `0.183.327` and Web Console
