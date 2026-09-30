@@ -11,6 +11,17 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.493 candidate
+
+The next Server candidate packages Web Console `1.6.159`, which preserves
+existing Registry passwords on username-only edits and explains that a blank
+password input keeps the current password. Project and exact-resource update
+checks remain unchanged. The source is being prepared for
+`ghcr.io/pasturestack/server:v1.6.493`; no image publication or packaged browser
+acceptance is claimed yet. Continue using the published release below until
+its replacement digest is verified. See the
+[v1.6.493 candidate notes](docs/releases/server-1.6.493.md).
+
 ## v1.6.492
 
 Server `v1.6.492` packages Web Console `1.6.158`.
