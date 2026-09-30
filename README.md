@@ -11,6 +11,20 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.494 — source target
+
+Source target `v1.6.494` pins Orchestration Engine `0.183.327` and Web
+Console `1.6.160` for Certificate metadata edits and load-balancer reference
+protection. The component candidates passed their normal CI gates and their
+source changes are merged; numeric component releases and their asset hashes
+have been independently read back. The new Server artifact remains pending.
+There is no published `v1.6.494` image or accepted
+`8080` Certificate QA result in this preparation. The `v1.6.493` runtime base,
+JDK, official OpenSSL security packages, security thresholds and all other
+component coordinates are retained. See the [v1.6.494 source target
+notes](docs/releases/server-1.6.494.md) for exact candidate hashes and remaining
+acceptance boundaries. Quick Start below uses the published `v1.6.493` image.
+
 ## v1.6.493
 
 Server `v1.6.493` packages Web Console `1.6.159`, which preserves
