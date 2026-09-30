@@ -1,9 +1,23 @@
 # Server v1.6.495
 
-Preparation only; this image is not yet published or accepted. This patch
+Published Server artifact verified. This patch
 packages Web Console `1.6.161` for the existing Certificate editor. The
 Orchestration Engine remains `v0.183.327`; all other platform component coordinates,
 runtime configuration, security policy and storage contracts remain unchanged.
+
+The immutable published image is
+`ghcr.io/pasturestack/server:v1.6.495@sha256:ffd4d1c2a208b0bce3f9f961500ddebfdf7024bbddcf2d1e156cdbe76d30ba56`,
+from signed source `512d4b2377e34ce04a33266af19b62ed45949eda`.
+[Publication run `36744673716`](https://github.com/PastureStack/server/actions/runs/36744673716)
+completed successfully. Independent readback verified all 22 checksummed
+assets, the checksum manifest, public tag/digest identity and component source
+and archive hashes. The final image has one filesystem layer. Candidate and
+isolated `8080` first start/restart returned `HTTP 200` / `pong`; the isolated
+runtime contract and all five tracked database counts were unchanged.
+The unchanged merged-rootfs security gate reports 52 raw findings and the exact
+eight Medium vendor-pending package findings across four CVEs after VEX, with
+zero untracked, Critical/High, fixed-available or secret findings. The next
+vendor review is `2026-10-20`; this is not a zero-CVE claim.
 
 The first candidate was blocked before publication by the unchanged security
 gate: Ubuntu had published fixes for `CVE-2026-73193` and `CVE-2026-73194`.
@@ -15,6 +29,12 @@ update, not a runtime patch or a vulnerability exception. Findings without an
 official fix remain tracked separately; fixed-available findings still block
 publication. See [Ubuntu CVE-2026-73193](https://ubuntu.com/security/CVE-2026-73193)
 and [Ubuntu CVE-2026-73194](https://ubuntu.com/security/CVE-2026-73194).
+
+A subsequent candidate stopped before publication because a filename search
+also matched the package's `Bundle/DBI.pm` index. The manifest now identifies
+the two actual Perl 5.40 runtime files explicitly; a real-package check and
+missing-native-library negative check passed before rebuilding. The final
+image retains exact-version, complete-package SHA-256 and module-load gates.
 
 ## Reproduced defect and narrow fix
 

@@ -2,13 +2,21 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
-Server `v1.6.495` preparation changes the Web Console Certificate editor and
+Published Server `v1.6.495` changes the Web Console Certificate editor and
 installs Ubuntu's official `libdbi-perl` `1.647-1ubuntu0.26.04.3` security fix.
 An existing matching certificate with a masked key and unchanged certificate
 and chain may submit only name/description. New or replacement material keeps
 full validation. No global write-only exemption, API permission change or
-stored-data migration is introduced. Publication and browser acceptance remain
-pending; see [the preparation notes](docs/releases/server-1.6.495.md).
+stored-data migration is introduced. The immutable image is
+`ghcr.io/pasturestack/server:v1.6.495@sha256:ffd4d1c2a208b0bce3f9f961500ddebfdf7024bbddcf2d1e156cdbe76d30ba56`,
+from signed source `512d4b2377e34ce04a33266af19b62ed45949eda` and successful
+[publication run `36744673716`](https://github.com/PastureStack/server/actions/runs/36744673716).
+It pins Web Console `1.6.161` and the unchanged Engine `v0.183.327`.
+Independent assets/image readback and isolated first start/restart passed;
+runtime settings and database-count baselines were preserved. The one-layer
+runtime scan retains 52 raw findings and eight exact Medium vendor-pending
+package findings after VEX, not a zero-CVE claim. Browser and broader
+resource/role acceptance remain separate; see [the release notes](docs/releases/server-1.6.495.md).
 
 Published Server `v1.6.494` pins Orchestration Engine `v0.183.327` and
 Web Console `1.6.160`; both component releases are published and hash-verified.
