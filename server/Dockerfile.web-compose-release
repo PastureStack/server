@@ -310,6 +310,7 @@ FROM ${UBUNTU_SECURITY_IMAGE} AS runtime_security_packages
 ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20260930T000000Z
 ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7
 ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.6
+ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.3
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /build
 ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90 \
@@ -356,6 +357,18 @@ RUN set -eux; \
       test "$(dpkg-deb -f "${package_file}" Architecture)" = amd64; \
       dpkg-deb --extract "${package_file}" /tmp/openssl-runtime; \
     done; \
+    apt-get download "libdbi-perl=${LIBDBI_PERL_PACKAGE_VERSION}"; \
+    package_file="$(find . -maxdepth 1 -type f -name 'libdbi-perl_*.deb' -print)"; \
+    test -n "${package_file}"; \
+    test "$(printf '%s\n' "${package_file}" | wc -l)" -eq 1; \
+    test "$(dpkg-deb -f "${package_file}" Package)" = libdbi-perl; \
+    test "$(dpkg-deb -f "${package_file}" Version)" = "${LIBDBI_PERL_PACKAGE_VERSION}"; \
+    test "$(dpkg-deb -f "${package_file}" Architecture)" = amd64; \
+    dpkg-deb --extract "${package_file}" /tmp/libdbi-perl-runtime; \
+    cd /tmp/libdbi-perl-runtime; \
+    find usr -type f \( -name DBI.pm -o -name DBI.so \) -print | \
+      LC_ALL=C sort | xargs sha256sum > /out/libdbi-perl-runtime.sha256; \
+    test "$(wc -l < /out/libdbi-perl-runtime.sha256)" -eq 2; \
     cd /tmp/openssl-runtime; \
     sha256sum \
       usr/bin/openssl \
@@ -368,7 +381,7 @@ RUN set -eux; \
       > /out/openssl-runtime.sha256; \
     cp /usr/bin/tar /out/tar; \
     cd /out; \
-    sha256sum packages/*.deb tar openssl-runtime.sha256 > SHA256SUMS
+    sha256sum packages/*.deb tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 > SHA256SUMS
 
 FROM ${BASE_IMAGE}
 
@@ -377,6 +390,7 @@ ARG PASTURESTACK_SERVER_REVISION
 ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20260930T000000Z
 ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7
 ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.6
+ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.3
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
 ARG WEB_CONSOLE_RELEASE_TAG=1.6.161
@@ -417,8 +431,13 @@ RUN set -eux; \
     for package in openssl libssl3t64 openssl-provider-legacy; do \
         test "$(dpkg-query -W -f='${Version}' "${package}")" = "${OPENSSL_PACKAGE_VERSION}"; \
     done; \
+    test "$(dpkg-query -W -f='${Version}' libdbi-perl)" = "${LIBDBI_PERL_PACKAGE_VERSION}"; \
+    install -D -m 0644 libdbi-perl-runtime.sha256 /usr/share/pasturestack/security/libdbi-perl-runtime.sha256; \
     install -D -m 0644 openssl-runtime.sha256 /usr/share/pasturestack/security/openssl-runtime.sha256; \
     cd /; \
+    test "$(wc -l < /usr/share/pasturestack/security/libdbi-perl-runtime.sha256)" -eq 2; \
+    sha256sum -c /usr/share/pasturestack/security/libdbi-perl-runtime.sha256; \
+    perl -MDBI -e 'die "Unexpected DBI runtime version\n" unless $DBI::VERSION eq "1.647"'; \
     test "$(wc -l < /usr/share/pasturestack/security/openssl-runtime.sha256)" -eq 7; \
     sha256sum -c /usr/share/pasturestack/security/openssl-runtime.sha256; \
     openssl version | grep -E '^OpenSSL 3\.5\.5 .*\(Library: OpenSSL 3\.5\.5 '; \
@@ -736,6 +755,7 @@ ENV PASTURESTACK_OPENSSL_SECURITY_SNAPSHOT=${UBUNTU_RUNTIME_SECURITY_SNAPSHOT}
 ENV PASTURESTACK_GLIBC_CVE_2026_18374_FIX=not-in-execute-path
 ENV PASTURESTACK_GLIBC_PACKAGE_VERSION=${GLIBC_PACKAGE_VERSION}
 ENV PASTURESTACK_PERL_PACKAGE_VERSION=${PERL_PACKAGE_VERSION}
+ENV PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=${LIBDBI_PERL_PACKAGE_VERSION}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}
 ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}

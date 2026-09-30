@@ -16,6 +16,8 @@ boundary.
 The next patch packages Web Console `1.6.161` to fix existing Certificate
 metadata edits blocked by a masked private key. It does not change API
 authorization, authentication or stored certificate material. This image is
+also refreshed to Ubuntu's official `libdbi-perl` `1.647-1ubuntu0.26.04.3`
+security fix; the first candidate was blocked, not published. It is
 not yet published or browser-accepted; the installation examples below still
 pin the verified `v1.6.494` artifact. See the
 [v1.6.495 preparation notes](docs/releases/server-1.6.495.md).
