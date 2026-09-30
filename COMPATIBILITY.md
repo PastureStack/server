@@ -2,7 +2,8 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
-Server `v1.6.495` preparation changes only the Web Console Certificate editor.
+Server `v1.6.495` preparation changes the Web Console Certificate editor and
+installs Ubuntu's official `libdbi-perl` `1.647-1ubuntu0.26.04.3` security fix.
 An existing matching certificate with a masked key and unchanged certificate
 and chain may submit only name/description. New or replacement material keeps
 full validation. No global write-only exemption, API permission change or

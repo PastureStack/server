@@ -2,8 +2,19 @@
 
 Preparation only; this image is not yet published or accepted. This patch
 packages Web Console `1.6.161` for the existing Certificate editor. The
-Orchestration Engine remains `v0.183.327`; all other component coordinates,
+Orchestration Engine remains `v0.183.327`; all other platform component coordinates,
 runtime configuration, security policy and storage contracts remain unchanged.
+
+The first candidate was blocked before publication by the unchanged security
+gate: Ubuntu had published fixes for `CVE-2026-73193` and `CVE-2026-73194`.
+The package stage now installs official `libdbi-perl`
+`1.647-1ubuntu0.26.04.3` from the signed `20260930T000000Z` Ubuntu snapshot.
+Both the Perl module and its native DBI library are SHA-256 checked against the
+downloaded package and loaded in the final image. This is an official package
+update, not a runtime patch or a vulnerability exception. Findings without an
+official fix remain tracked separately; fixed-available findings still block
+publication. See [Ubuntu CVE-2026-73193](https://ubuntu.com/security/CVE-2026-73193)
+and [Ubuntu CVE-2026-73194](https://ubuntu.com/security/CVE-2026-73194).
 
 ## Reproduced defect and narrow fix
 

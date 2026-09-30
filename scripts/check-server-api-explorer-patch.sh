@@ -1104,13 +1104,31 @@ for release_curl_security_marker in \
     '"libssl3t64=${OPENSSL_PACKAGE_VERSION}"' \
     '"openssl-provider-legacy=${OPENSSL_PACKAGE_VERSION}"' \
     'dpkg-deb --extract "${package_file}" /tmp/openssl-runtime' \
-    'sha256sum packages/*.deb tar openssl-runtime.sha256 > SHA256SUMS' \
+    'sha256sum packages/*.deb tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 > SHA256SUMS' \
     'sha256sum -c /usr/share/pasturestack/security/openssl-runtime.sha256' \
     'ENV PASTURESTACK_OPENSSL_VERSION=3.5.5' \
     'ENV PASTURESTACK_OPENSSL_PACKAGE_VERSION=${OPENSSL_PACKAGE_VERSION}' \
     'ENV PASTURESTACK_OPENSSL_SECURITY_SNAPSHOT=${UBUNTU_RUNTIME_SECURITY_SNAPSHOT}'; do
     require_marker "$release_dockerfile" "$release_curl_security_marker" \
         SERVER_INCREMENTAL_CURL_SECURITY_REFRESH_MISSING
+done
+for release_libdbi_security_marker in \
+    'ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.3' \
+    'apt-get download "libdbi-perl=${LIBDBI_PERL_PACKAGE_VERSION}"' \
+    'dpkg-deb --extract "${package_file}" /tmp/libdbi-perl-runtime' \
+    'test "$(wc -l < /out/libdbi-perl-runtime.sha256)" -eq 2' \
+    'sha256sum -c /usr/share/pasturestack/security/libdbi-perl-runtime.sha256' \
+    'ENV PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=${LIBDBI_PERL_PACKAGE_VERSION}'; do
+    require_marker "$release_dockerfile" "$release_libdbi_security_marker" \
+        SERVER_LIBDBI_PERL_OFFICIAL_SECURITY_REFRESH_MISSING
+done
+for runtime_libdbi_security_marker in \
+    'PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.3' \
+    'sha256sum -c /usr/share/pasturestack/security/libdbi-perl-runtime.sha256' \
+    'test "$(wc -l < /usr/share/pasturestack/security/libdbi-perl-runtime.sha256)" -eq 2' \
+    'Unexpected DBI runtime version'; do
+    require_marker "$build_script" "$runtime_libdbi_security_marker" \
+        SERVER_LIBDBI_PERL_RUNTIME_GATE_MISSING
 done
 require_marker "$build_script" \
     'PASTURESTACK_CURL_SECURITY_SNAPSHOT=20260930T000000Z' \
