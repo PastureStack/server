@@ -7,6 +7,7 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.496](releases/server-1.6.496.md) — candidate Web Console 1.6.162 packaging; artifact and isolated runtime acceptance pending, desktop-only fixes, broader matrix INCOMPLETE
 - [Server v1.6.495](releases/server-1.6.495.md) — published Certificate editor fix and official DBI security update; isolated start/restart and scoped owner/member Certificate browser checks verified, broader matrix INCOMPLETE
 - [Server v1.6.494](releases/server-1.6.494.md) — published artifact and isolated start/restart verified; Certificate QA pending
 - [Server v1.6.493](releases/server-1.6.493.md)
