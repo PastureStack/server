@@ -1,14 +1,19 @@
 # Server v1.6.497
 
-SOURCE-ONLY ASSEMBLY CANDIDATE — Server publication pending. No Server497 build,
-image digest, Release assets, runtime start/restart, deployment or packaged
-native-browser acceptance is claimed. The published immutable `v1.6.496` image
-remains the installation and rollback reference; its historical evidence is
-unchanged. This candidate does not promote historical HOLD receipts.
+Published Server `v1.6.497` is the immutable image
+`ghcr.io/pasturestack/server:v1.6.497@sha256:1a1f05415e50d2ea337140d89063c6d7ae993140befa5aa79c5c83922990021d`,
+from source `80d97523052aa86ec761ade8ec487c382a8d5e1d`.
+[Official publication run `36836319609`](https://github.com/PastureStack/server/actions/runs/36836319609)
+and independent public assets/GHCR readback passed. QA `8080` now runs the
+immutable `v1.6.497` / Web Console `1.6.164` deployment; first start/restart passed.
+Packaged native Receiver browser acceptance remains pending. Publication does
+not promote historical HOLD receipts. Preserve the nearest `v1.6.496` QA rollback
+with its original named volumes/settings; the `v1.6.495` image and backups remain
+retained.
 
 ## Official Web Console input
 
-This candidate pins the officially published Web Console `1.6.164`:
+This release pins the officially published Web Console `1.6.164`:
 
 - Numeric release/tag: `1.6.164`.
 - Validated artifact source: `c3c0779d930d4d0367ec0517166ca21f6b3dc6d4`.
@@ -51,16 +56,44 @@ Other platform pins, runtime packages, Compose, AppArmor, nftables, database,
 authentication, OIDC and MFA contracts are unchanged. Only the VEX/tracker
 release identity changes to `v1.6.497`; all 51 VEX statements and the exact
 vendor-pending set of eight Medium plus six Low package findings are retained,
-including their original vendor status and review dates. No new scan result,
-raw finding count or zero-CVE result is inferred. The gate still requires zero
-Critical/High, untracked, fixed-available and secret findings.
+including their original vendor status and review dates. The actual merged-rootfs
+Trivy `0.74.0` scan reports 58 raw findings and 14 exact vendor-pending package
+findings after VEX (six unique CVEs), reviewed through `2026-10-08`. Raw and
+unresolved JSON/TSV sets, VEX finding/PURL suppression and the tracker exact-set
+were independently matched. Critical/High, untracked, fixed-available and secret
+findings are zero; this is not a zero-CVE result.
 
-## Required gates before publication or deployment
+## Official publication evidence and remaining acceptance
 
-Server source/pin gates, the actual image build, flattened one-layer identity,
-34 MFA policy/API checks, isolated first start/restart `HTTP 200` / `pong`,
-TLS/private-API contracts, actual merged-rootfs SBOM/security exact-set checks
-and independent public asset/GHCR readback remain pending for Server497.
-Component validation is not packaged native-browser evidence. Mobile,
-all-language/full-layout and the broader resource/role matrix remain INCOMPLETE;
-no company-site deployment or full-site PASS is claimed.
+- All 56 source/pin gates and the single exact-source image build passed.
+- The 26-layer build was flattened to one `linux/amd64` layer with identical
+  runtime configuration; public tag/immutable manifest bytes, config hash and
+  version/revision/base labels matched.
+- Isolated first start and restart returned `HTTP 200` / `pong` (13 and eight
+  attempts); all 34 MFA policy/API checks passed on the disposable database.
+- TLS 1.2/1.3 returned HTTP 200 and an untrusted certificate was rejected.
+  Before/after restart public-origin and private-API `no-store` contracts passed.
+- All 22 checksummed assets plus `SHA256SUMS` matched their local SHA-256/size and
+  published GitHub asset digests. Manifest SHA-256 is
+  `1c0110de4bc4e513a78fb6e825b6d8b4da1e34dd851947bc93079d29fa990793`.
+- CycloneDX SBOM container digest, version, source revision and root dependency
+  identity matched the published image. Both provenance and SBOM attestation
+  workflow steps succeeded. The 14-pending security boundary above is unchanged.
+- Existing QA `8080` first start/restart returned `HTTP 200` / `pong` (10 and nine
+  attempts), with zero runtime-contract and tracked five-table DB-count
+  differences at both checkpoints. The `account`, `credential`, `setting`,
+  `project_member` and `host` counts were preserved; this is count preservation,
+  not a whole-database row comparison. The three original named data volumes,
+  environment overrides, AppArmor and restart policy were preserved. Docker
+  health is `null`, and no Docker `healthy` result is claimed. The nearest
+  immutable `v1.6.496` rollback is retained. The `v1.6.495` image and backups
+  remain retained; its obsolete stopped container was removed without deleting
+  data volumes.
+
+The immutable Release assets, including their publication-time notes, remain
+byte-for-byte unchanged; this source document records the subsequent successful
+publication/readback. Component validation and publisher smoke are not packaged
+native-browser evidence. QA startup/restart is not backend-write authorization
+or lifecycle acceptance. Packaged native Receiver browser acceptance remains
+pending; mobile, all-language/full-layout and the broader resource/role matrix
+remain INCOMPLETE. No company-site deployment or full-site PASS is claimed.
