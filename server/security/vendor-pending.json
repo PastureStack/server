@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "release": "v1.6.496",
-  "generatedAt": "2026-09-28T16:09:16Z",
+  "generatedAt": "2026-10-01T04:05:59Z",
   "policy": {
     "allowedSeverities": [
       "LOW",
@@ -13,6 +13,30 @@
     "trivyTarget": "/rootfs (ubuntu 26.04)"
   },
   "findings": [
+    {
+      "vulnerabilityId": "CVE-2026-42772",
+      "severity": "LOW",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-42772",
+      "reviewAfter": "2026-10-08",
+      "packages": [
+        { "name": "libssl3t64", "installedVersion": "3.5.5-1ubuntu3.6" },
+        { "name": "openssl", "installedVersion": "3.5.5-1ubuntu3.6" },
+        { "name": "openssl-provider-legacy", "installedVersion": "3.5.5-1ubuntu3.6" }
+      ]
+    },
+    {
+      "vulnerabilityId": "CVE-2026-54873",
+      "severity": "LOW",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-54873",
+      "reviewAfter": "2026-10-08",
+      "packages": [
+        { "name": "libssl3t64", "installedVersion": "3.5.5-1ubuntu3.6" },
+        { "name": "openssl", "installedVersion": "3.5.5-1ubuntu3.6" },
+        { "name": "openssl-provider-legacy", "installedVersion": "3.5.5-1ubuntu3.6" }
+      ]
+    },
     {
       "vulnerabilityId": "CVE-2026-85091",
       "severity": "MEDIUM",
