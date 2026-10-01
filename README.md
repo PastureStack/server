@@ -11,6 +11,33 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.496
+
+This release packages Web Console `1.6.162` for the Host Add Container capability
+gate and translated Secret desktop table headings, plus Orchestration Engine
+`v0.183.328` with distributed-cache runtime `5.7.5`. The Engine and embedded
+cache include Jackson `2.22.3` / `3.2.3`; numeric Hazelcast cluster runtime
+remains `5.7.3`. No API permission or stored-data migration is introduced.
+The immutable image is
+`ghcr.io/pasturestack/server:v1.6.496@sha256:6c85435b3de8771e5adff0b247274e0f1b9fe9d66c8b91e07d55a444e5589678`,
+from Server source `d8e0e898b08aae45e040eb085936d11de14027fb`.
+[Publication run `36821096323`](https://github.com/PastureStack/server/actions/runs/36821096323)
+and independent public asset/image readback passed: 22 checksummed files plus
+their manifest, one filesystem layer, official candidate first start/restart
+`HTTP 200` / `pong`, and 34 MFA policy/API checks. The unchanged merged-rootfs
+security gate reports 58 raw findings and 14 exact vendor-pending package
+findings (eight Medium and six Low) after VEX, with zero untracked,
+Critical/High, fixed-available or secret findings. This is not a zero-CVE claim.
+The first failed publication run remains recorded and is not promoted.
+
+QA496 deployment and packaged browser acceptance remain pending; publication
+checks are not isolated QA deployment or native browser evidence. Historical
+HOLD receipts remain HOLD, the broader resource/role matrix remains INCOMPLETE,
+and no company-site deployment is claimed. See the
+[v1.6.496 notes](docs/releases/server-1.6.496.md) for component source/hash
+identities; retain the immutable `v1.6.495` image and original volumes/settings
+for rollback.
+
 ## v1.6.495
 
 This patch packages Web Console `1.6.161` to fix existing Certificate
@@ -262,8 +289,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.495` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.495).
+Before deploying, verify the `v1.6.496` numeric tag and immutable digest in
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.496).
 A registry login is not required. Pin the version and retain the database and
 platform volumes:
 
@@ -272,7 +299,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.495@sha256:ffd4d1c2a208b0bce3f9f961500ddebfdf7024bbddcf2d1e156cdbe76d30ba56
+  ghcr.io/pasturestack/server:v1.6.496@sha256:6c85435b3de8771e5adff0b247274e0f1b9fe9d66c8b91e07d55a444e5589678
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -281,7 +308,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.495@sha256:ffd4d1c2a208b0bce3f9f961500ddebfdf7024bbddcf2d1e156cdbe76d30ba56
+    image: ghcr.io/pasturestack/server:v1.6.496@sha256:6c85435b3de8771e5adff0b247274e0f1b9fe9d66c8b91e07d55a444e5589678
     restart: unless-stopped
     ports:
       - "8080:8080"

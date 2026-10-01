@@ -1,12 +1,19 @@
 # Server v1.6.496
 
-Candidate packaging only. No Server `v1.6.496` image, digest or deployment is
-claimed. Packaged desktop acceptance and isolated runtime acceptance remain
-pending. The currently published Server remains
-`ghcr.io/pasturestack/server:v1.6.495@sha256:ffd4d1c2a208b0bce3f9f961500ddebfdf7024bbddcf2d1e156cdbe76d30ba56`;
-public quick-start and compatibility instructions still use that release.
+Published Server artifact verified. The immutable image is
+`ghcr.io/pasturestack/server:v1.6.496@sha256:6c85435b3de8771e5adff0b247274e0f1b9fe9d66c8b91e07d55a444e5589678`,
+from Server source `d8e0e898b08aae45e040eb085936d11de14027fb` and successful
+[publication run `36821096323`](https://github.com/PastureStack/server/actions/runs/36821096323).
+Independent public Release asset and GHCR readback matched the source, component
+pins, immutable digest, all 22 checksummed files plus their manifest, and the
+single filesystem layer. Downloaded publication notes remain byte-for-byte
+unchanged; this source document records the subsequent public readback.
 
-This candidate packages the officially published Web Console `1.6.162`:
+QA496 deployment and packaged browser acceptance remain pending. Publication
+first start/restart is not isolated QA deployment or native browser evidence.
+No company-site deployment is claimed.
+
+This release packages the officially published Web Console `1.6.162`:
 
 - Numeric tag and artifact source commit:
   `46501e31071b3d74595aea91908876eec32b7fd6`.
@@ -14,15 +21,16 @@ This candidate packages the officially published Web Console `1.6.162`:
 - Archive SHA-256:
   `9c5b34d2cdf7ad354e1dab199795b12e5de119e47dc342547d5cdc84c7911581`.
 
-This candidate consumes Orchestration Engine `v0.183.328`, from source
+This release consumes Orchestration Engine `v0.183.328`, from source
 `ad43f4b6790c359e248710a39bca2f776d70be62` and artifact SHA-256
 `184fb3d4a2b026560e1e60d7b444f693f79bff6c8220cc9354c1284012f6a683`.
 Its WAR contains the published distributed-cache runtime `5.7.5` as
 `WEB-INF/lib/hazelcast-5.7.5.jar`, with SHA-256
 `0f536a9c7bcd00f2369586fb6ca1606f7e45f3225e24795d10d38397051c8715`.
 The embedded Jackson core/databind metadata is `2.22.3` / `3.2.3`; numeric
-Hazelcast cluster runtime remains `5.7.3`. These pinned assembly inputs do not
-replace the required new Server artifact scan or runtime acceptance.
+Hazelcast cluster runtime remains `5.7.3`. The successful Server publication
+verified these assembly inputs; that evidence does not establish native browser
+or deployment acceptance.
 All other platform component coordinates and runtime dependencies are unchanged.
 
 ## Narrow desktop changes
@@ -43,14 +51,20 @@ policy changes are included. Existing historical
 HOLD receipts remain HOLD. The broader resource/role matrix remains INCOMPLETE;
 no full-site acceptance or company-site deployment is claimed.
 
-## Required packaging evidence
+## Published packaging evidence
 
-The local source gate is not an artifact scan, image build, first start,
-restart or native packaged-browser acceptance. A new immutable Server artifact,
-its official digest/readback, merged-rootfs security gate and isolated runtime
-checks are still required before publication or deployment claims. The VEX and
-vendor-pending release identities are advanced for this candidate. This is not
-a zero-CVE claim.
+The official publication run passed candidate first start and restart with
+`HTTP 200` / `pong` (12 initial attempts and eight restart attempts), 34 MFA
+policy/API checks, private API `no-store`, trusted TLS 1.2/1.3 reads and rejection
+of an untrusted TLS certificate. These are publication checks, not QA496
+deployment or packaged native-browser acceptance.
+
+The merged-rootfs Trivy `0.74.0` scan reports 58 raw findings and 14 exact
+vendor-pending package findings after VEX: eight Medium and six Low, covering
+six unique CVEs, with review due 2026-10-08. Untracked, Critical/High,
+fixed-available and secret findings are zero; the JSON/TSV pending set and exact
+VEX finding/purl set match. The unchanged security gate passed. This is not a
+zero-CVE claim.
 
 ### First publication attempt: blocked, not released
 
