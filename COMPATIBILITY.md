@@ -2,6 +2,36 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
+Published Server `v1.6.496` pins Web Console `1.6.162`, Orchestration Engine
+`v0.183.328` and the WAR's distributed-cache runtime `5.7.5`. Jackson
+core/databind metadata is `2.22.3` / `3.2.3`; numeric Hazelcast cluster runtime
+remains `5.7.3`. The Host Add Container entry follows the loaded exact-project
+Container POST schema; the Secret desktop headings use existing translation
+keys. Neither a schema GET nor a hidden UI entry establishes API write
+authorization. Established schemas, stored-data formats and API permissions
+are unchanged. The immutable image is
+`ghcr.io/pasturestack/server:v1.6.496@sha256:6c85435b3de8771e5adff0b247274e0f1b9fe9d66c8b91e07d55a444e5589678`,
+from source `d8e0e898b08aae45e040eb085936d11de14027fb` and successful
+[publication run `36821096323`](https://github.com/PastureStack/server/actions/runs/36821096323).
+Public assets/image readback, official candidate first start/restart and 34 MFA
+policy/API checks passed. The one-layer merged-rootfs scan retains 58 raw
+findings and 14 exact vendor-pending package findings (eight Medium and six
+Low) after VEX, with zero untracked, Critical/High, fixed-available or secret
+findings; it is not a zero-CVE claim. Isolated QA496 deployment passed first
+start/restart `HTTP 200` / `pong` (10 attempts each), with zero runtime-contract
+and tracked five-table DB-count differences; Docker health is `null`, not
+`healthy`. Two zero-resource-write `1440 x 1000` desktop cases passed: readonly
+Host Add Container absence/Edit unavailability and the member Secret table's
+four Traditional Chinese headings. Host statistics remained connecting and
+its right-side table was not fully reviewed; the Secret body was masked.
+No full-layout, backend-write authorization or lifecycle acceptance is inferred.
+Mobile and all-language acceptance remain pending.
+Historical HOLDs and the first failed publication remain unchanged; the broader
+resource/role matrix remains INCOMPLETE. No company-site deployment is claimed.
+Retain `v1.6.495` with its original volumes/settings for rollback; see
+[the release notes](docs/releases/server-1.6.496.md) for component source/hash
+identities and the publication/QA boundary.
+
 Published Server `v1.6.495` changes the Web Console Certificate editor and
 installs Ubuntu's official `libdbi-perl` `1.647-1ubuntu0.26.04.3` security fix.
 An existing matching certificate with a masked key and unchanged certificate

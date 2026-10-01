@@ -20,10 +20,10 @@ last_release_notes=docs/releases/server-1.6.463.md
 prior_release_notes=docs/releases/server-1.6.466.md
 current_release_notes=docs/releases/server-1.6.483.md
 next_release_notes=docs/releases/server-1.6.494.md
-candidate_release_notes=docs/releases/server-1.6.496.md
-published_current_release_notes=docs/releases/server-1.6.495.md
+published_current_release_notes=docs/releases/server-1.6.496.md
+previous_published_release_notes=docs/releases/server-1.6.495.md
 published_release_notes=docs/releases/server-1.6.482.md
-official_image_reference=ghcr.io/pasturestack/server:v1.6.495@sha256:ffd4d1c2a208b0bce3f9f961500ddebfdf7024bbddcf2d1e156cdbe76d30ba56
+official_image_reference=ghcr.io/pasturestack/server:v1.6.496@sha256:6c85435b3de8771e5adff0b247274e0f1b9fe9d66c8b91e07d55a444e5589678
 host_api_repair=server/artifacts/repair-host-api-sha256.sh
 host_api_check=scripts/check-server-host-api-package.sh
 mfa_policy_smoke=scripts/test-mfa-policy-api.py
@@ -32,7 +32,7 @@ for path in "$dockerfile" "$release_dockerfile" "$core_dockerfile" "$build_scrip
     "$coreutils_patch" "$runtime_vex" "$runtime_vendor_pending" \
     "$vendor_pending_validator" \
     "$release_notes" "$previous_release_notes" "$last_release_notes" "$prior_release_notes" "$published_release_notes" "$current_release_notes" "$host_api_repair" "$host_api_check" \
-    "$mfa_policy_smoke" "$next_release_notes" "$candidate_release_notes" "$published_current_release_notes"; do
+    "$mfa_policy_smoke" "$next_release_notes" "$published_current_release_notes" "$previous_published_release_notes"; do
     test -f "$path"
 done
 
@@ -120,7 +120,7 @@ for official_identity_doc in README.md COMPATIBILITY.md "$published_current_rele
     require_marker "$official_identity_doc" "$official_image_reference" \
         SERVER_OFFICIAL_IMMUTABLE_IMAGE_MISSING
 done
-require_marker README.md '## v1.6.495' \
+require_marker README.md '## v1.6.496' \
     SERVER_CURRENT_README_MISSING
 require_marker README.md '## v1.6.491' \
     SERVER_PREVIOUS_README_MISSING
@@ -135,7 +135,7 @@ require_marker docs/README.md \
     SERVER_NEXT_DOC_INDEX_MISSING
 require_marker docs/README.md \
     '[Server v1.6.496](releases/server-1.6.496.md)' \
-    SERVER_CANDIDATE_DOC_INDEX_MISSING
+    SERVER_PUBLISHED_DOC_INDEX_MISSING
 
 for published_current_release_marker in \
     '# Server v1.6.495' \
@@ -145,12 +145,14 @@ for published_current_release_marker in \
     'no resource write was dispatched' \
     'No authentication, session, OIDC, MFA, permission, API status, database,' \
     'Scoped owner/member browser checks'; do
-    require_marker "$published_current_release_notes" "$published_current_release_marker" \
+    require_marker "$previous_published_release_notes" "$published_current_release_marker" \
         SERVER_CERTIFICATE_METADATA_PATCH_EVIDENCE_MISSING
 done
-for candidate_release_marker in \
+for published_release_marker in \
     '# Server v1.6.496' \
-    'Candidate packaging only.' \
+    'Published Server artifact verified.' \
+    'd8e0e898b08aae45e040eb085936d11de14027fb' \
+    'publication run `36821096323`' \
     'Web Console `1.6.162`' \
     'web-console-1.6.162.tar.gz' \
     '46501e31071b3d74595aea91908876eec32b7fd6' \
@@ -164,9 +166,25 @@ for candidate_release_marker in \
     'backend POST or PUT authorization' \
     'does not claim mobile acceptance' \
     'HOLD receipts remain HOLD.' \
-    'resource/role matrix remains INCOMPLETE'; do
-    require_marker "$candidate_release_notes" "$candidate_release_marker" \
-        SERVER_WEB_CONSOLE_CANDIDATE_SCOPE_EVIDENCE_MISSING
+    'resource/role matrix remains INCOMPLETE' \
+    'Isolated QA496 deployment and two scoped desktop observations passed' \
+    'five tracked `account`, `credential`,' \
+    'count preservation, not a whole-database row comparison' \
+    'no Docker `healthy` result is claimed' \
+    'zero-write observations, not backend-write authorization' \
+    'Host statistics remained connecting' \
+    'right-side table was not fully reviewed' \
+    'body rendering was not accepted' \
+    'full-layout acceptance' \
+    'Mobile and all-language acceptance remain pending' \
+    'ef3e411485a7bb9b759a9a6a27f29987c3f7c5f7e95a5fddd9615f0f706ef73b' \
+    '8283f2ec75cfc82aaf894d2fa183d9451d6746dbb93a2ca6cc3d87cfbf4159c3' \
+    '0973ef57b70acf2ca2e5f2fd3b7f51e07dd839dd03a657d199ba71a62162f736' \
+    '34 MFA' \
+    '58 raw findings and 14 exact' \
+    'eight Medium and six Low'; do
+    require_marker "$published_current_release_notes" "$published_release_marker" \
+        SERVER_WEB_CONSOLE_PUBLISHED_SCOPE_EVIDENCE_MISSING
 done
 
 for mfa_policy_contract_marker in \
