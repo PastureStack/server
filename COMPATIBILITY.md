@@ -2,16 +2,33 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
-Server `v1.6.497` is a source-only assembly candidate for officially published
-Web Console `1.6.164`. It includes the shared state/date display-locale fixes
+Published Server `v1.6.497` packages officially published Web Console `1.6.164`.
+It includes the shared state/date display-locale fixes
 and Receiver validation-label fixes without changing API authorization, driver
 actions, clone behavior, schemas or stored data. Engine `v0.183.328`, embedded
 Cache `5.7.5`, base Server `v1.6.460`, Compose, AppArmor and nftables contracts
-remain unchanged. Server497 publication/runtime/packaged-browser acceptance is
-pending; no image digest, full-language/layout PASS or company-site deployment
-is claimed. Historical HOLDs remain HOLD and the matrix remains INCOMPLETE.
-The published `v1.6.496` image below remains the current installation reference;
-see [the candidate notes](docs/releases/server-1.6.497.md).
+remain unchanged. The immutable image is
+`ghcr.io/pasturestack/server:v1.6.497@sha256:1a1f05415e50d2ea337140d89063c6d7ae993140befa5aa79c5c83922990021d`,
+from source `80d97523052aa86ec761ade8ec487c382a8d5e1d` and successful
+[publication run `36836319609`](https://github.com/PastureStack/server/actions/runs/36836319609).
+All 56 source gates, exact build/flatten, isolated first start/restart and 34 MFA
+policy/API checks passed; public assets/image/SBOM readback matched. The final
+one-layer merged-rootfs scan has 58 raw findings and 14 exact vendor-pending
+package findings (eight Medium and six Low, six unique CVEs), with zero untracked,
+Critical/High, fixed-available or secret findings. This is not a zero-CVE claim.
+QA `8080` now runs `v1.6.497` / Web Console `1.6.164`; first start/restart
+returned `HTTP 200` / `pong` (10 and nine attempts), with zero runtime-contract
+and tracked five-table DB-count differences. The original three named data
+volumes, environment overrides, AppArmor and restart policy were preserved.
+This is count preservation, not a whole-database row comparison; Docker health
+is `null`, and no Docker `healthy` result is claimed. Packaged native Receiver
+browser acceptance remains pending. Publication smoke and QA startup do not
+establish full-language/layout, backend-write authorization or company-site
+acceptance. Historical HOLDs remain HOLD and the matrix remains INCOMPLETE.
+Preserve the nearest `v1.6.496` QA rollback with its original volumes/settings.
+The `v1.6.495` image and backups remain retained; its obsolete stopped container
+was removed.
+See [the release notes](docs/releases/server-1.6.497.md).
 
 Published Server `v1.6.496` pins Web Console `1.6.162`, Orchestration Engine
 `v0.183.328` and the WAR's distributed-cache runtime `5.7.5`. Jackson

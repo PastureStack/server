@@ -21,7 +21,7 @@ prior_release_notes=docs/releases/server-1.6.466.md
 current_release_notes=docs/releases/server-1.6.483.md
 next_release_notes=docs/releases/server-1.6.494.md
 published_current_release_notes=docs/releases/server-1.6.496.md
-candidate_release_notes=docs/releases/server-1.6.497.md
+latest_published_release_notes=docs/releases/server-1.6.497.md
 previous_published_release_notes=docs/releases/server-1.6.495.md
 published_release_notes=docs/releases/server-1.6.482.md
 official_image_reference=ghcr.io/pasturestack/server:v1.6.496@sha256:6c85435b3de8771e5adff0b247274e0f1b9fe9d66c8b91e07d55a444e5589678
@@ -33,7 +33,7 @@ for path in "$dockerfile" "$release_dockerfile" "$core_dockerfile" "$build_scrip
     "$coreutils_patch" "$runtime_vex" "$runtime_vendor_pending" \
     "$vendor_pending_validator" \
     "$release_notes" "$previous_release_notes" "$last_release_notes" "$prior_release_notes" "$published_release_notes" "$current_release_notes" "$host_api_repair" "$host_api_check" \
-    "$mfa_policy_smoke" "$next_release_notes" "$published_current_release_notes" "$previous_published_release_notes" "$candidate_release_notes"; do
+    "$mfa_policy_smoke" "$next_release_notes" "$published_current_release_notes" "$previous_published_release_notes" "$latest_published_release_notes"; do
     test -f "$path"
 done
 
@@ -123,56 +123,172 @@ for official_identity_doc in README.md COMPATIBILITY.md "$published_current_rele
 done
 require_marker README.md '## v1.6.496' \
     SERVER_CURRENT_README_MISSING
-require_marker README.md '## v1.6.497 candidate — publication pending' \
-    SERVER_CANDIDATE_README_MISSING
-require_marker COMPATIBILITY.md 'Server `v1.6.497` is a source-only assembly candidate' \
-    SERVER_CANDIDATE_COMPATIBILITY_MISSING
 require_marker README.md '## v1.6.491' \
     SERVER_PREVIOUS_README_MISSING
 require_marker README.md '## v1.6.487' \
     SERVER_LAST_PUBLISHED_README_MISSING
-require_marker README.md "  $official_image_reference" \
-    SERVER_LATEST_PUBLISHED_QUICK_START_MISSING
-require_marker README.md "    image: $official_image_reference" \
-    SERVER_LATEST_PUBLISHED_QUICK_START_MISSING
 require_marker docs/README.md \
     '[Server v1.6.495](releases/server-1.6.495.md)' \
     SERVER_NEXT_DOC_INDEX_MISSING
 require_marker docs/README.md \
     '[Server v1.6.496](releases/server-1.6.496.md)' \
     SERVER_PUBLISHED_DOC_INDEX_MISSING
-require_marker docs/README.md \
-    '[Server v1.6.497 candidate](releases/server-1.6.497.md)' \
-    SERVER_CANDIDATE_DOC_INDEX_MISSING
 
-for candidate_release_marker in \
-    '# Server v1.6.497' \
-    'SOURCE-ONLY ASSEMBLY CANDIDATE' \
-    'Web Console `1.6.164`' \
-    'c3c0779d930d4d0367ec0517166ca21f6b3dc6d4' \
-    'eddb24c5561e0ad46519aa3e3e2704e932fc8e72' \
-    '36831735186' \
-    '763 actual case results' \
-    'web-console-1.6.164.tar.gz' \
-    '2,976,044 bytes' \
-    '734898ac6ed2fe8774e5bb947988da9720a3a65aa0bb7ec09a89420adc0acc20' \
-    '4b7c0d38fd529a7dc9ca36457a40b5afe8216ca595393e291a031b44ec73801e' \
-    'Orchestration Engine remains `v0.183.328`' \
-    'ad43f4b6790c359e248710a39bca2f776d70be62' \
-    '184fb3d4a2b026560e1e60d7b444f693f79bff6c8220cc9354c1284012f6a683' \
-    'WEB-INF/lib/hazelcast-5.7.5.jar' \
-    '0f536a9c7bcd00f2369586fb6ca1606f7e45f3225e24795d10d38397051c8715' \
-    'eight Medium plus six Low' \
-    'does not promote historical HOLD receipts' \
-    'resource/role matrix remain INCOMPLETE'; do
-    require_marker "$candidate_release_notes" "$candidate_release_marker" \
-        SERVER_CANDIDATE_SCOPE_EVIDENCE_MISSING
-done
-if grep -Eq 'ghcr.io/pasturestack/server:v1\.6\.497@sha256:' \
-    README.md COMPATIBILITY.md "$candidate_release_notes"; then
-    echo SERVER_CANDIDATE_UNPUBLISHED_IMAGE_DIGEST_PRESENT >&2
-    exit 1
-fi
+check_server497_published_docs()
+{
+    local latest_notes=docs/releases/server-1.6.497.md
+    local latest_image=ghcr.io/pasturestack/server:v1.6.497@sha256:1a1f05415e50d2ea337140d89063c6d7ae993140befa5aa79c5c83922990021d
+    local published_marker
+    require_marker README.md '## v1.6.497' SERVER_PUBLISHED_497_README_MISSING
+    require_marker COMPATIBILITY.md 'Published Server `v1.6.497`' \
+        SERVER_PUBLISHED_497_COMPATIBILITY_MISSING
+    require_marker docs/README.md '[Server v1.6.497](releases/server-1.6.497.md)' \
+        SERVER_PUBLISHED_497_DOC_INDEX_MISSING
+    python3 - <<'PY'
+import pathlib
+import re
+import sys
+
+image = "ghcr.io/pasturestack/server:v1.6.497@sha256:1a1f05415e50d2ea337140d89063c6d7ae993140befa5aa79c5c83922990021d"
+source = "80d97523052aa86ec761ade8ec487c382a8d5e1d"
+run = "36836319609"
+run_url = "https://github.com/PastureStack/server/actions/runs/" + run
+
+
+def reject(code, path):
+    print(code + " file=" + path, file=sys.stderr)
+    raise SystemExit(1)
+
+
+def words(value):
+    return re.escape(value).replace(r"\ ", r"\s+")
+
+
+specs = (
+    ("README.md", r"(?m)^## v1\.6\.497[^\n]*$", r"(?m)^## ",
+     "## v1.6.497", "This release packages the officially published Web Console `1.6.164`,",
+     "The immutable image is", "from Server source", ".", "Publication run"),
+    ("COMPATIBILITY.md", r"(?m)^Published Server `v1\.6\.497`[^\n]*$",
+     r"(?m)^Published Server `v", None,
+     "Published Server `v1.6.497` packages officially published Web Console `1.6.164`.",
+     "The immutable image is", "from source", " and successful", "publication run"),
+    ("docs/releases/server-1.6.497.md", r"(?m)^# Server v1\.6\.497[^\n]*$", None,
+     "# Server v1.6.497", "Published Server `v1.6.497` is the immutable image",
+     "Published Server `v1.6.497` is the immutable image", "from source", ".",
+     "Official publication run"),
+)
+documents = {}
+latest_sections = {}
+for path, heading, end_heading, exact_heading, intro, image_lead, source_lead, source_end, run_lead in specs:
+    text = pathlib.Path(path).read_text(encoding="utf-8")
+    documents[path] = text
+    starts = list(re.finditer(heading, text))
+    if len(starts) != 1 or (exact_heading and starts[0].group() != exact_heading):
+        reject("SERVER_PUBLISHED_497_STATUS_MISMATCH", path)
+    start = starts[0]
+    section_start = start.end() if exact_heading else start.start()
+    section_end = len(text)
+    if end_heading:
+        end = re.search(end_heading, text[start.end():])
+        if end:
+            section_end = start.end() + end.start()
+    section = text[section_start:section_end].lstrip()
+    latest_sections[path] = section
+    if not re.match(words(intro), section.lstrip()):
+        reject("SERVER_PUBLISHED_497_STATUS_MISMATCH", path)
+    publication_paragraph = re.split(r"\n\s*\n", section, maxsplit=1)[0]
+    if re.search(r"candidate|source[- ]only|unpublished|publication\s+pending", publication_paragraph, re.I):
+        reject("SERVER_PUBLISHED_497_CANDIDATE_STATUS_STALE", path)
+    identity = (
+        words(image_lead) + r"\s+`(?P<image>[^`\r\n]+)`,\s+"
+        + words(source_lead) + r"\s+`(?P<source>[^`\r\n]+)`" + words(source_end)
+        + r"\s+\[" + words(run_lead) + r"\s+`(?P<run>[^`\r\n]+)`\]\((?P<url>[^)\s]+)\)"
+    )
+    identities = list(re.finditer(identity, publication_paragraph))
+    if len(identities) != 1:
+        reject("SERVER_PUBLISHED_497_IDENTITY_CONTEXT_MISSING", path)
+    actual = identities[0].groupdict()
+    if actual["image"] != image:
+        reject("SERVER_PUBLISHED_497_DIGEST_MISMATCH", path)
+    if actual["source"] != source:
+        reject("SERVER_PUBLISHED_497_SOURCE_MISMATCH", path)
+    if actual["run"] != run or actual["url"] != run_url:
+        reject("SERVER_PUBLISHED_497_RUN_MISMATCH", path)
+    # Include the whole reference, so a valid digest prefix cannot hide a suffix.
+    references = re.findall(r'''ghcr\.io/pasturestack/server:v1\.6\.497@[^\s`"'<>()\[\]{},;]+''', text)
+    if any(reference != image for reference in references):
+        reject("SERVER_PUBLISHED_497_DIGEST_MISMATCH", path)
+
+documents["docs/README.md"] = pathlib.Path("docs/README.md").read_text(encoding="utf-8")
+index_lines = [line for line in documents["docs/README.md"].splitlines()
+               if "[Server v1.6.497](releases/server-1.6.497.md)" in line]
+if len(index_lines) != 1 or " — published " not in index_lines[0]:
+    reject("SERVER_PUBLISHED_497_STATUS_MISMATCH", "docs/README.md")
+latest_sections["docs/README.md"] = index_lines[0]
+for path, text in documents.items():
+    if re.search(r"source[- ]only\s+assembly\s+candidate", latest_sections[path], re.I):
+        reject("SERVER_PUBLISHED_497_CANDIDATE_STATUS_STALE", path)
+    for line in text.splitlines():
+        if (re.search(r"v1\.6\.497|Server497", line, re.I)
+            and re.search(r"candidate|source[- ]only|publication\s+pending|unpublished|not\s+published", line, re.I)
+        ):
+            reject("SERVER_PUBLISHED_497_CANDIDATE_STATUS_STALE", path)
+PY
+    require_marker README.md "  $latest_image" SERVER_LATEST_PUBLISHED_QUICK_START_MISSING
+    require_marker README.md "    image: $latest_image" SERVER_LATEST_PUBLISHED_QUICK_START_MISSING
+    require_marker README.md \
+        'The existing QA `8080` deployment now runs `v1.6.497` / Web Console `1.6.164`.' \
+        SERVER_PUBLISHED_497_QA_BOUNDARY_MISSING
+    require_marker COMPATIBILITY.md \
+        'QA `8080` now runs `v1.6.497` / Web Console `1.6.164`; first start/restart' \
+        SERVER_PUBLISHED_497_QA_BOUNDARY_MISSING
+    require_marker docs/README.md \
+        'QA8080 now497/Web164 first start/restart passed; packaged native Receiver browser acceptance pending, broader matrix INCOMPLETE' \
+        SERVER_PUBLISHED_497_QA_BOUNDARY_MISSING
+    for published_marker in \
+        '# Server v1.6.497' \
+        'Published Server `v1.6.497` is the immutable image' \
+        'Web Console `1.6.164`' \
+        'c3c0779d930d4d0367ec0517166ca21f6b3dc6d4' \
+        'eddb24c5561e0ad46519aa3e3e2704e932fc8e72' \
+        '36831735186' \
+        '763 actual case results' \
+        'web-console-1.6.164.tar.gz' \
+        '2,976,044 bytes' \
+        '734898ac6ed2fe8774e5bb947988da9720a3a65aa0bb7ec09a89420adc0acc20' \
+        '4b7c0d38fd529a7dc9ca36457a40b5afe8216ca595393e291a031b44ec73801e' \
+        'Orchestration Engine remains `v0.183.328`' \
+        'ad43f4b6790c359e248710a39bca2f776d70be62' \
+        '184fb3d4a2b026560e1e60d7b444f693f79bff6c8220cc9354c1284012f6a683' \
+        'WEB-INF/lib/hazelcast-5.7.5.jar' \
+        '0f536a9c7bcd00f2369586fb6ca1606f7e45f3225e24795d10d38397051c8715' \
+        'eight Medium plus six Low' \
+        '58 raw findings and 14 exact vendor-pending package' \
+        'six unique CVEs' \
+        '2026-10-08' \
+        'All 56 source/pin gates' \
+        '26-layer build was flattened to one' \
+        'all 34 MFA policy/API checks passed' \
+        '1c0110de4bc4e513a78fb6e825b6d8b4da1e34dd851947bc93079d29fa990793' \
+        'not a zero-CVE result' \
+        'not promote historical HOLD receipts.' \
+        'QA `8080` now runs the' \
+        'immutable `v1.6.497` / Web Console `1.6.164` deployment; first start/restart passed.' \
+        'Existing QA `8080` first start/restart returned `HTTP 200` / `pong` (10 and nine' \
+        'attempts), with zero runtime-contract and tracked five-table DB-count' \
+        'not a whole-database row comparison.' \
+        'health is `null`, and no Docker `healthy` result is claimed.' \
+        'immutable `v1.6.496` rollback is retained. The `v1.6.495` image and backups' \
+        'remain retained; its obsolete stopped container was removed without deleting' \
+        'data volumes.' \
+        'Packaged native Receiver browser acceptance remains' \
+        'pending; mobile, all-language/full-layout and the broader resource/role matrix' \
+        'remain INCOMPLETE. No company-site deployment or full-site PASS is claimed.'; do
+        require_marker "$latest_notes" "$published_marker" SERVER_PUBLISHED_497_SCOPE_EVIDENCE_MISSING
+    done
+}
+
+check_server497_published_docs
 
 for published_current_release_marker in \
     '# Server v1.6.495' \
