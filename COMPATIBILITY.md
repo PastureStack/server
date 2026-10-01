@@ -2,6 +2,17 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
+Server `v1.6.497` is a source-only assembly candidate for officially published
+Web Console `1.6.164`. It includes the shared state/date display-locale fixes
+and Receiver validation-label fixes without changing API authorization, driver
+actions, clone behavior, schemas or stored data. Engine `v0.183.328`, embedded
+Cache `5.7.5`, base Server `v1.6.460`, Compose, AppArmor and nftables contracts
+remain unchanged. Server497 publication/runtime/packaged-browser acceptance is
+pending; no image digest, full-language/layout PASS or company-site deployment
+is claimed. Historical HOLDs remain HOLD and the matrix remains INCOMPLETE.
+The published `v1.6.496` image below remains the current installation reference;
+see [the candidate notes](docs/releases/server-1.6.497.md).
+
 Published Server `v1.6.496` pins Web Console `1.6.162`, Orchestration Engine
 `v0.183.328` and the WAR's distributed-cache runtime `5.7.5`. Jackson
 core/databind metadata is `2.22.3` / `3.2.3`; numeric Hazelcast cluster runtime

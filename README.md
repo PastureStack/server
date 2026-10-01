@@ -11,6 +11,19 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.497 candidate — publication pending
+
+Source-only assembly candidate for the officially published Web Console
+`1.6.164`, including the `1.6.163` state-badge/relative-date locale fixes and
+Receiver validation-label fixes. Engine `v0.183.328`, distributed-cache runtime
+`5.7.5`, the immutable `v1.6.460` runtime base and all security thresholds remain
+unchanged. No Server497 build, image digest, publication, deployment or packaged
+browser acceptance is claimed. Historical HOLD receipts remain HOLD; the broader
+resource/role matrix remains INCOMPLETE. See the
+[candidate notes](docs/releases/server-1.6.497.md) for exact component pins and
+pending gates. The published `v1.6.496` immutable image below remains the current
+installation/rollback reference; the Quick Start is not a candidate install.
+
 ## v1.6.496
 
 This release packages Web Console `1.6.162` for the Host Add Container capability
