@@ -9,8 +9,8 @@ pins, immutable digest, all 22 checksummed files plus their manifest, and the
 single filesystem layer. Downloaded publication notes remain byte-for-byte
 unchanged; this source document records the subsequent public readback.
 
-QA496 deployment and packaged browser acceptance remain pending. Publication
-first start/restart is not isolated QA deployment or native browser evidence.
+Isolated QA496 deployment and two scoped desktop observations passed as recorded
+below; publication checks and these observations have distinct acceptance scopes.
 No company-site deployment is claimed.
 
 This release packages the officially published Web Console `1.6.162`:
@@ -65,6 +65,36 @@ six unique CVEs, with review due 2026-10-08. Untracked, Critical/High,
 fixed-available and secret findings are zero; the JSON/TSV pending set and exact
 VEX finding/purl set match. The unchanged security gate passed. This is not a
 zero-CVE claim.
+
+## Isolated QA496 deployment and desktop observations
+
+The immutable QA `8080` upgrade returned PASS: first start and restart each
+reached `HTTP 200` / `pong` in 10 attempts. Runtime-contract, first-start DB and
+restart DB differences were zero; the five tracked `account`, `credential`,
+`setting`, `project_member` and `host` counts matched before/after. This is
+count preservation, not a whole-database row comparison. Docker health is
+`null`; no Docker `healthy` result is claimed. `docker-default`,
+`unless-stopped`, environment overrides and the stopped `v1.6.495` rollback
+container were retained. Deployment receipt `v496-deploy-20261001/result.json`
+has SHA-256 `ef3e411485a7bb9b759a9a6a27f29987c3f7c5f7e95a5fddd9615f0f706ef73b`.
+
+Two packaged desktop cases returned raw PASS at `1440 x 1000`, with zero
+resource writes. Subsequent screenshot review supports only these observations:
+
+- `host-readonly/qa496desktop1567d7bd87ea`: the readonly Host Add Container
+  entry was absent and Edit unavailable. Host statistics remained connecting;
+  the right-side table was not fully reviewed. Result SHA-256:
+  `8283f2ec75cfc82aaf894d2fa183d9451d6746dbb93a2ca6cc3d87cfbf4159c3`.
+- `secret-member/qa496desktop4a6e3b58b5d8`: the member Secret table's State,
+  Name, Description and Created headings were Traditional Chinese. The body
+  was deliberately masked; plaintext/body rendering was not accepted. Result
+  SHA-256: `0973ef57b70acf2ca2e5f2fd3b7f51e07dd839dd03a657d199ba71a62162f736`.
+
+The browser cases are zero-write observations, not backend-write authorization
+tests, resource lifecycle or full DB-preservation tests. They do not establish
+full-layout acceptance. Mobile and all-language acceptance remain pending;
+the broader resource/role matrix remains INCOMPLETE. Historical HOLD receipts
+remain HOLD and are not promoted; no company-site deployment is claimed.
 
 ### First publication attempt: blocked, not released
 

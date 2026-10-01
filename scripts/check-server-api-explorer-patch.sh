@@ -167,7 +167,19 @@ for published_release_marker in \
     'does not claim mobile acceptance' \
     'HOLD receipts remain HOLD.' \
     'resource/role matrix remains INCOMPLETE' \
-    'QA496 deployment and packaged browser acceptance remain pending.' \
+    'Isolated QA496 deployment and two scoped desktop observations passed' \
+    'five tracked `account`, `credential`,' \
+    'count preservation, not a whole-database row comparison' \
+    'no Docker `healthy` result is claimed' \
+    'zero-write observations, not backend-write authorization' \
+    'Host statistics remained connecting' \
+    'right-side table was not fully reviewed' \
+    'body rendering was not accepted' \
+    'full-layout acceptance' \
+    'Mobile and all-language acceptance remain pending' \
+    'ef3e411485a7bb9b759a9a6a27f29987c3f7c5f7e95a5fddd9615f0f706ef73b' \
+    '8283f2ec75cfc82aaf894d2fa183d9451d6746dbb93a2ca6cc3d87cfbf4159c3' \
+    '0973ef57b70acf2ca2e5f2fd3b7f51e07dd839dd03a657d199ba71a62162f736' \
     '34 MFA' \
     '58 raw findings and 14 exact' \
     'eight Medium and six Low'; do

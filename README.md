@@ -30,8 +30,15 @@ findings (eight Medium and six Low) after VEX, with zero untracked,
 Critical/High, fixed-available or secret findings. This is not a zero-CVE claim.
 The first failed publication run remains recorded and is not promoted.
 
-QA496 deployment and packaged browser acceptance remain pending; publication
-checks are not isolated QA deployment or native browser evidence. Historical
+Isolated QA496 `8080` deployment passed first start/restart `HTTP 200` / `pong`
+(10 attempts each), with zero runtime-contract/DB-count differences across the
+five tracked tables. Docker health is `null`, not a Docker `healthy` result.
+Two zero-resource-write desktop cases passed at `1440 x 1000`: readonly Host
+Add Container absence/Edit unavailability and the member Secret table's four
+Traditional Chinese headings. Host statistics remained connecting and its
+right-side table was not fully reviewed; the Secret body was deliberately
+masked. These are not full-layout, backend-write authorization or lifecycle
+acceptance. Mobile and all-language acceptance remain pending. Historical
 HOLD receipts remain HOLD, the broader resource/role matrix remains INCOMPLETE,
 and no company-site deployment is claimed. See the
 [v1.6.496 notes](docs/releases/server-1.6.496.md) for component source/hash

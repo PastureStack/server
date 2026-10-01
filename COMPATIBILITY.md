@@ -17,8 +17,15 @@ Public assets/image readback, official candidate first start/restart and 34 MFA
 policy/API checks passed. The one-layer merged-rootfs scan retains 58 raw
 findings and 14 exact vendor-pending package findings (eight Medium and six
 Low) after VEX, with zero untracked, Critical/High, fixed-available or secret
-findings; it is not a zero-CVE claim. QA496 deployment and packaged browser
-acceptance remain pending, including mobile and all-language acceptance.
+findings; it is not a zero-CVE claim. Isolated QA496 deployment passed first
+start/restart `HTTP 200` / `pong` (10 attempts each), with zero runtime-contract
+and tracked five-table DB-count differences; Docker health is `null`, not
+`healthy`. Two zero-resource-write `1440 x 1000` desktop cases passed: readonly
+Host Add Container absence/Edit unavailability and the member Secret table's
+four Traditional Chinese headings. Host statistics remained connecting and
+its right-side table was not fully reviewed; the Secret body was masked.
+No full-layout, backend-write authorization or lifecycle acceptance is inferred.
+Mobile and all-language acceptance remain pending.
 Historical HOLDs and the first failed publication remain unchanged; the broader
 resource/role matrix remains INCOMPLETE. No company-site deployment is claimed.
 Retain `v1.6.495` with its original volumes/settings for rollback; see
