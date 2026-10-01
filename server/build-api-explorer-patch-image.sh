@@ -17,10 +17,10 @@ revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
-orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.327}
+orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.328}
 orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}
-orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-c6d4c3003a19db19d1be73e69aa52358a0a4166bf726cbefe7e2ab9ed5664b56}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-dce2f2473ffea1510fe10676a771eb1fe5d0b161}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-184fb3d4a2b026560e1e60d7b444f693f79bff6c8220cc9354c1284012f6a683}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-ad43f4b6790c359e248710a39bca2f776d70be62}
 api_explorer_release_base_url=${API_EXPLORER_RELEASE_BASE_URL:-https://github.com/PastureStack/api-explorer/releases/download}
 api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.18}
 api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
@@ -180,7 +180,7 @@ image_environment=$(docker image inspect "$image" \
 for marker in \
     CATTLE_RANCHER_SERVER_VERSION=v1.6.496 \
     CATTLE_API_UI_VERSION=1.1.18 \
-    CATTLE_CATTLE_VERSION=v0.183.327 \
+    CATTLE_CATTLE_VERSION=v0.183.328 \
     RC16_GO_AGENT_VERSION=0.13.27 \
     RC16_WINDOWS_AGENT_VERSION=0.13.27 \
     RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-0.13.27.tar.gz \
@@ -300,7 +300,7 @@ docker run --rm --entrypoint bash "$image" -lc '
     web_root=$(readlink -f /usr/share/cattle/war)
     test "${web_root}" = "/usr/share/cattle/${engine_hash}"
     resources_jar=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-resources-0.183.327.jar" -print -quit)
+        -name "cattle-resources-0.183.328.jar" -print -quit)
     test -n "${resources_jar}"
     unzip -p "${resources_jar}" db/core-124.xml |
         grep -F "pasturestack-catalog-pinned-commit" >/dev/null
@@ -536,10 +536,10 @@ docker run --rm --entrypoint bash "$image" -lc '
         /usr/share/cattle/war/translations/zh-tw.json >/dev/null
     unzip -p /usr/share/cattle/cattle.jar META-INF/MANIFEST.MF |
         tr -d "\r" |
-        grep -Fx "Implementation-Version: 0.183.327" >/dev/null
+        grep -Fx "Implementation-Version: 0.183.328" >/dev/null
     test "$(find /usr/share/cattle/war/WEB-INF/lib -maxdepth 1 -type f -name "freemarker-2.3.35.jar" | wc -l)" -eq 1
     resources_jar=$(find /usr/share/cattle/war/WEB-INF/lib -maxdepth 1 -type f \
-        -name "cattle-resources-0.183.327.jar" -print -quit)
+        -name "cattle-resources-0.183.328.jar" -print -quit)
     test -n "${resources_jar}"
     unzip -p "${resources_jar}" schema/base/mfaOperation.json |
         grep -F "oidcAccessPolicyUpdate" >/dev/null
@@ -559,9 +559,9 @@ docker run --rm --entrypoint bash "$image" -lc '
     done
     hazelcast_entry=$(unzip -Z1 /usr/share/cattle/cattle.jar |
         grep -E "^WEB-INF/lib/hazelcast-[^/]+[.]jar$")
-    test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.4.jar"
+    test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.5.jar"
     unzip -p /usr/share/cattle/cattle.jar "${hazelcast_entry}" >/tmp/hazelcast.jar
-    echo "6b768e6cff9e5281e77ad14e609b69bac6856ecd4469af827f566be95553644c  /tmp/hazelcast.jar" |
+    echo "0f536a9c7bcd00f2369586fb6ca1606f7e45f3225e24795d10d38397051c8715  /tmp/hazelcast.jar" |
         sha256sum -c -
     rm -f /tmp/hazelcast.jar
     cat <<'"'"'EOF'"'"' | sha256sum -c -

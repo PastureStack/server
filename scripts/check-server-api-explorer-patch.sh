@@ -155,7 +155,11 @@ for candidate_release_marker in \
     'web-console-1.6.162.tar.gz' \
     '46501e31071b3d74595aea91908876eec32b7fd6' \
     '9c5b34d2cdf7ad354e1dab199795b12e5de119e47dc342547d5cdc84c7911581' \
-    'Orchestration Engine remains `v0.183.327`' \
+    'Orchestration Engine `v0.183.328`' \
+    'ad43f4b6790c359e248710a39bca2f776d70be62' \
+    '184fb3d4a2b026560e1e60d7b444f693f79bff6c8220cc9354c1284012f6a683' \
+    'WEB-INF/lib/hazelcast-5.7.5.jar' \
+    '0f536a9c7bcd00f2369586fb6ca1606f7e45f3225e24795d10d38397051c8715' \
     'not evidence of' \
     'backend POST or PUT authorization' \
     'does not claim mobile acceptance' \
@@ -487,16 +491,17 @@ require_marker "$build_script" \
     'CATTLE_RANCHER_SERVER_VERSION=v1.6.496' \
     SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING
 for release_engine_marker in \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.327' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.328' \
     'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=c6d4c3003a19db19d1be73e69aa52358a0a4166bf726cbefe7e2ab9ed5664b56' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=dce2f2473ffea1510fe10676a771eb1fe5d0b161' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=184fb3d4a2b026560e1e60d7b444f693f79bff6c8220cc9354c1284012f6a683' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=ad43f4b6790c359e248710a39bca2f776d70be62' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
-    "grep -Fx 'Implementation-Version: 0.183.327'" \
-    'cattle-resources-0.183.327.jar' \
-    'cattle-app-config-0.183.327.jar' \
+    "grep -Fx 'Implementation-Version: 0.183.328'" \
+    'cattle-resources-0.183.328.jar' \
+    'cattle-app-config-0.183.328.jar' \
+    'WEB-INF/lib/hazelcast-5\.7\.5\.jar' \
     'freemarker-2\.3\.35\.jar' \
-    'ENV CATTLE_CATTLE_VERSION=v0.183.327' \
+    'ENV CATTLE_CATTLE_VERSION=v0.183.328' \
     'schema/token/token-auth.json' \
     '"token.clientSessionId": "cro"' \
     'for frozen_token_schema in base superadmin token' \
@@ -511,12 +516,13 @@ for release_engine_marker in \
         SERVER_INCREMENTAL_ENGINE_REPLACEMENT_MISSING
 done
 for release_engine_build_marker in \
-    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.327}' \
+    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.328}' \
     'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}' \
-    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-c6d4c3003a19db19d1be73e69aa52358a0a4166bf726cbefe7e2ab9ed5664b56}' \
-    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-dce2f2473ffea1510fe10676a771eb1fe5d0b161}' \
-    'CATTLE_CATTLE_VERSION=v0.183.327' \
-    'cattle-resources-0.183.327.jar'; do
+    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-184fb3d4a2b026560e1e60d7b444f693f79bff6c8220cc9354c1284012f6a683}' \
+    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-ad43f4b6790c359e248710a39bca2f776d70be62}' \
+    'CATTLE_CATTLE_VERSION=v0.183.328' \
+    'cattle-resources-0.183.328.jar' \
+    'test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.5.jar"'; do
     require_marker "$build_script" "$release_engine_build_marker" \
         SERVER_INCREMENTAL_ENGINE_BUILD_COORDINATE_MISSING
 done
@@ -694,7 +700,7 @@ require_marker "$dockerfile" \
     'WEB-INF/lib/hazelcast-5\.7\.4\.jar' \
     SERVER_DISTRIBUTED_CACHE_RUNTIME_GATE_MISSING
 require_marker "$build_script" \
-    '6b768e6cff9e5281e77ad14e609b69bac6856ecd4469af827f566be95553644c  /tmp/hazelcast.jar' \
+    '0f536a9c7bcd00f2369586fb6ca1606f7e45f3225e24795d10d38397051c8715  /tmp/hazelcast.jar' \
     SERVER_DISTRIBUTED_CACHE_RUNTIME_HASH_GATE_MISSING
 require_marker "$build_script" \
     'image_orchestration' \
@@ -1498,6 +1504,7 @@ jq -r '
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
     "$vendor_pending_fixture" v1.6.496 >/dev/null
+bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
 
@@ -1585,4 +1592,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.496 base=v1.6.460 engine=0.183.327 web_console=1.6.162 webhook_automation_service=0.10.3 authentication_service=0.4.42 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.496 base=v1.6.460 engine=0.183.328 web_console=1.6.162 webhook_automation_service=0.10.3 authentication_service=0.4.42 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
