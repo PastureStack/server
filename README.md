@@ -11,6 +11,22 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.501
+
+Candidate packaging of Web Console `1.6.165` corrects ambiguous truncated
+container names on Host cards. Full names wrap within the existing shared
+container/VM subpod; IP addresses and action triggers retain separate space.
+Web source is `00bcd9fdc92afead708dffb4a2b3b01f4ebaeaa0`, with archive SHA-256
+`5baaa4879fe5548cc8b66cd1c7a2005edf586d4b5f12b6dbb3796b6692e41959`.
+Official Web validation passed 767/767 cases and produced identical archives;
+four focused CSS cases passed 744 assertions. Engine `v0.183.331` and its exact
+WAR, authentication, permissions, API/schema, deployment settings and security
+thresholds are unchanged. No migration or runtime patch is required.
+Server immutable publication, QA8080 native readable-name/menu/reload evidence
+and the broader matrix remain pending. Server500's visual HOLD below is not
+promoted. The quick-start image remains the latest actually published release.
+See [the candidate release notes](docs/releases/server-1.6.501.md).
+
 ## v1.6.500
 
 This patch packages Engine `v0.183.331` to correct imported-container name
