@@ -2,7 +2,7 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
-Preparing Server `v1.6.499` packages Engine `v0.183.330` from source
+Published Server `v1.6.499` packages Engine `v0.183.330` from source
 `3f7320a8063a5471618be5b8be6a168f49559847`, with exact CI WAR SHA-256
 `c01cbbfd63625fc09f39c5494775919aad6db22c92050b217b28b940b57e1de3`.
 Only eligible standalone imported-container names are synchronized to fresh
@@ -10,9 +10,26 @@ full-ID Docker names; managed-service logical names remain unchanged. No
 database-schema or stored-data-format migration is introduced. Web Console
 `1.6.164`, Engine329 role/schema protections, Compose, mounts, OIDC/MFA/session
 ownership, runtime base and security thresholds remain unchanged. Engine330's
-signed release, exact CI assets and isolated H2 startup passed. Server499
-publication/image/QA/browser gates remain pending; this is not new full-matrix acceptance. See
-[the preparing notes](docs/releases/server-1.6.499.md). The published 498
+signed release, exact CI assets and isolated H2 startup passed. The immutable
+Server image is
+`ghcr.io/pasturestack/server:v1.6.499@sha256:8552137dd4e40bf20dee5524cabf09540ed7431328e584ca1e488065e6fec394`,
+from source `0a656e617c51059b92fb37a9b0571f142e8463aa` and successful
+[publication run `36969193015`](https://github.com/PastureStack/server/actions/runs/36969193015).
+Exact build/flatten and isolated first start/restart `HTTP 200` / `pong`
+(12 and eight attempts), 34 MFA policy/API checks and TLS 1.2/1.3 checks passed;
+untrusted certificates were rejected. Public assets/image/SBOM readback matched.
+The unchanged merged-rootfs gate reports 52 raw findings and eight exact Medium
+vendor-pending package findings (four unique CVEs), with zero untracked,
+Critical/High, fixed-available or secret findings; this is not a zero-CVE claim.
+QA499 first start/restart returned `HTTP 200` / `pong` (nine attempts each), with
+original environment overrides, mounts, AppArmor and restart policy preserved;
+runtime-contract and tracked five-table count differences are zero. Docker
+health is `null`, not Docker `healthy`. Targeted name acceptance remains failed:
+Engine330 rejects normal stopped/inactive instance/mapping pairs. Retained
+rollback containers were not deleted or manually renamed. The browser HOLD
+and this product defect remain recorded pending a new immutable correction;
+these results are not full-matrix or company-site acceptance. See
+[the release notes](docs/releases/server-1.6.499.md). The published 498
 evidence below is historical to that release and is not promoted to 499 proof.
 
 Published Server `v1.6.498` packages Engine `v0.183.329` and Web Console `1.6.164`.
@@ -31,7 +48,7 @@ assets/image/SBOM readback matched. The final one-layer merged-rootfs scan has
 unique CVEs), with zero untracked, Critical/High, fixed-available or secret
 findings. This is not a zero-CVE claim. The exact Engine329 WAR's normal CI
 executed 266 suites / 1,123 tests with zero failures, errors or skips.
-The QA `8080` upgrade runs the immutable 498 image / Web Console `1.6.164`.
+The recorded QA498 `8080` upgrade ran the immutable 498 image / Web Console `1.6.164`.
 First start/restart returned `HTTP 200` / `pong` (11 and 10 attempts); runtime
 contract and tracked five-table DB-count differences were zero. The original
 three named volumes, environment overrides, `docker-default` AppArmor and
