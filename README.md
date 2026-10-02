@@ -11,15 +11,40 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
-## v1.6.500 (preparing)
+## v1.6.500
 
 This patch packages Engine `v0.183.331` to correct imported-container name
 synchronization for normal stopped/inactive mappings. Only the name-only
 full-row CAS lifecycle predicate changes; authentication, permissions, schemas,
 managed-service names and Web Console `1.6.164` remain unchanged.
-No migration or runtime patch is required. No immutable image, QA deployment or
-browser acceptance is claimed yet. The published install examples below still
-use Server499. See [the preparing release notes](docs/releases/server-1.6.500.md).
+No migration or runtime patch is required. The immutable image is
+`ghcr.io/pasturestack/server:v1.6.500@sha256:7ffd67a7f82da0d374d7846b97b5a2fb71647ad01a159120418544591899f5f5`,
+from Server source `abdee460eb67c8cd02a2db8e9a55b15f58020d83`.
+[Publication run `36973764295`](https://github.com/PastureStack/server/actions/runs/36973764295)
+passed exact build/flatten, isolated first start/restart `HTTP 200` / `pong`
+(13 and seven attempts), 34 MFA policy/API checks and TLS 1.2/1.3 checks with
+untrusted certificates rejected. Public readback verified 22 checksummed files
+plus their manifest and the one-layer image/component identity. The unchanged
+merged-rootfs gate retains 52 raw findings and eight exact Medium vendor-pending
+package findings (four unique CVEs), with zero untracked, Critical/High,
+fixed-available or secret findings. This is not a zero-CVE claim.
+The exact Engine331 WAR is 87,700,088 bytes, SHA-256
+`0c8310d9e9a872589972658d2fd8cb88f59f473ab8072a4746df5b0f4ef9e70e`,
+from source `515a5d37a1194f827bc3ffde34db729905ecb2b1`; its 268 suites /
+1,144 tests passed with zero failures, errors or skips.
+QA500 first start/restart returned `HTTP 200` / `pong` (nine and 10 attempts),
+with zero runtime-contract or tracked five-table count differences. Original
+environment overrides, three named volumes, `docker-default` AppArmor and
+`unless-stopped` restart policy were preserved; Docker health is `null`, not
+Docker `healthy`. Server499 is retained and stopped for rollback.
+Native Host1 initial/reload checks found five unique full Docker IDs, names and
+links, with no removed mappings, resource writes or browser/console errors.
+WebSocket received a forwarded server message. Visual review still found four
+rollback names truncated to indistinguishable prefixes; visual acceptance is
+HOLD pending a scoped Web Console layout correction, not a complete fix.
+Historical 499 name failure and browser HOLD remain recorded, not promoted;
+the full resource/role matrix remains INCOMPLETE. No company-site, all-page or
+all-locale acceptance is claimed. See [the release notes](docs/releases/server-1.6.500.md).
 
 ## v1.6.499
 
@@ -432,8 +457,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.499` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.499).
+Before deploying, verify the `v1.6.500` numeric tag and immutable digest in
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.500).
 A registry login is not required. Pin the version and retain the database and
 platform volumes:
 
@@ -442,7 +467,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.499@sha256:8552137dd4e40bf20dee5524cabf09540ed7431328e584ca1e488065e6fec394
+  ghcr.io/pasturestack/server:v1.6.500@sha256:7ffd67a7f82da0d374d7846b97b5a2fb71647ad01a159120418544591899f5f5
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -451,7 +476,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.499@sha256:8552137dd4e40bf20dee5524cabf09540ed7431328e584ca1e488065e6fec394
+    image: ghcr.io/pasturestack/server:v1.6.500@sha256:7ffd67a7f82da0d374d7846b97b5a2fb71647ad01a159120418544591899f5f5
     restart: unless-stopped
     ports:
       - "8080:8080"
