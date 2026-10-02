@@ -13,7 +13,7 @@ boundary.
 
 ## v1.6.501
 
-Candidate packaging of Web Console `1.6.165` corrects ambiguous truncated
+Published packaging of Web Console `1.6.165` corrects ambiguous truncated
 container names on Host cards. Full names wrap within the existing shared
 container/VM subpod; IP addresses and action triggers retain separate space.
 Web source is `00bcd9fdc92afead708dffb4a2b3b01f4ebaeaa0`, with archive SHA-256
@@ -22,10 +22,21 @@ Official Web validation passed 767/767 cases and produced identical archives;
 four focused CSS cases passed 744 assertions. Engine `v0.183.331` and its exact
 WAR, authentication, permissions, API/schema, deployment settings and security
 thresholds are unchanged. No migration or runtime patch is required.
-Server immutable publication, QA8080 native readable-name/menu/reload evidence
-and the broader matrix remain pending. Server500's visual HOLD below is not
-promoted. The quick-start image remains the latest actually published release.
-See [the candidate release notes](docs/releases/server-1.6.501.md).
+Official publisher 36980705366 passed source, single-layer comparison,
+startup/restart, 34 MFA/security API checks, TLS and final-image SBOM gates.
+Immutable source is `ea97b199801c277efc178430b4aa6a0d4f67d25b`, image
+`ghcr.io/pasturestack/server:v1.6.501@sha256:0a671e2695eecc74d79ef666267a40e81172205f0f8b1d0b12a7dbbed446becd`.
+All 23 public assets and 22 SHA-256 entries match. Eight Medium package
+findings / four CVEs remain vendor-pending; this is not a zero-CVE claim.
+QA first start and one restart returned HTTP200/pong with unchanged runtime
+settings and database counts. Native Host-page initial/reload verification
+matched six full Docker IDs/names; all five rollback suffixes are readable and
+IP/action areas do not overlap. The actual menu opened/closed normally, with
+zero resource writes or page/console/loading errors. WebSocket connected and
+an actual server message was received. Root reviewed both actual screenshots.
+This is scoped acceptance, not the broader permission/resource/locale matrix;
+that matrix remains INCOMPLETE. Server500's visual HOLD below is not promoted.
+See [the release notes](docs/releases/server-1.6.501.md).
 
 ## v1.6.500
 
@@ -473,8 +484,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.500` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.500).
+Before deploying, verify the `v1.6.501` numeric tag and immutable digest in
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.501).
 A registry login is not required. Pin the version and retain the database and
 platform volumes:
 
@@ -483,7 +494,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.500@sha256:7ffd67a7f82da0d374d7846b97b5a2fb71647ad01a159120418544591899f5f5
+  ghcr.io/pasturestack/server:v1.6.501@sha256:0a671e2695eecc74d79ef666267a40e81172205f0f8b1d0b12a7dbbed446becd
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -492,7 +503,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.500@sha256:7ffd67a7f82da0d374d7846b97b5a2fb71647ad01a159120418544591899f5f5
+    image: ghcr.io/pasturestack/server:v1.6.501@sha256:0a671e2695eecc74d79ef666267a40e81172205f0f8b1d0b12a7dbbed446becd
     restart: unless-stopped
     ports:
       - "8080:8080"
