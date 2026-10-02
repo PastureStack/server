@@ -11,6 +11,25 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.503 candidate
+
+The next patch will package Web Console `1.6.167` for shared schema-ID lookup.
+The store already normalizes schema IDs when caching them, but its synchronous
+lookup previously left the requested ID unchanged. Mixed-case resource types
+such as `registryCredential` could therefore miss their real permission schema.
+The fix normalizes lookup IDs only in the schema group. Ordinary resource IDs
+remain opaque and case-sensitive; missing schemas remain denied and separate
+project stores are not combined. API schemas and server authorization do not
+change. Engine `v0.183.331`, authentication/session ownership, MFA, runtime
+overrides and firewall contracts remain unchanged.
+
+This candidate is not a published image and has not passed packaged browser
+acceptance. Immutable `v1.6.502` below remains the current installation target.
+The Registry111/credential6880 packaged QA on 502 stopped before resource writes
+when the credential model could not resolve its schema. That HOLD is preserved;
+the full permission/resource/locale matrix remains INCOMPLETE.
+See [the candidate release notes](docs/releases/server-1.6.503.md).
+
 ## v1.6.502
 
 Published Server packages immutable Web Console `1.6.166` to translate the
