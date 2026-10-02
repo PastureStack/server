@@ -11,9 +11,9 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
-## v1.6.499 (preparing)
+## v1.6.499
 
-This candidate packages Engine `v0.183.330` from source
+This release packages Engine `v0.183.330` from source
 `3f7320a8063a5471618be5b8be6a168f49559847` to synchronize eligible standalone
 imported-container names with fresh, full-ID Docker inspection. Managed-service
 logical names and unrelated instance fields are not changed. Web Console
@@ -22,13 +22,34 @@ and security thresholds remain unchanged.
 
 The exact CI WAR SHA-256 is
 `c01cbbfd63625fc09f39c5494775919aad6db22c92050b217b28b940b57e1de3`.
-Preparing only; Server499 publication, image digest, isolated startup/restart,
-QA upgrade and the targeted native Host1 browser/reload acceptance are pending.
+The immutable image is
+`ghcr.io/pasturestack/server:v1.6.499@sha256:8552137dd4e40bf20dee5524cabf09540ed7431328e584ca1e488065e6fec394`,
+from Server source `0a656e617c51059b92fb37a9b0571f142e8463aa`.
+[Publication run `36969193015`](https://github.com/PastureStack/server/actions/runs/36969193015)
+passed the exact build/flatten, isolated first start/restart `HTTP 200` / `pong`
+(12 and eight attempts), 34 MFA policy/API checks and TLS 1.2/1.3 checks with
+untrusted certificates rejected. Independent public readback verified 22
+checksummed files plus their manifest, the one-layer image, version/source/digest
+labels and SBOM identity. The unchanged merged-rootfs security gate reports 52
+raw findings and eight exact Medium vendor-pending package findings (four unique
+CVEs), with zero untracked, Critical/High, fixed-available or secret findings.
+This is not a zero-CVE claim.
 Engine330's signed numeric release and six exact CI assets have been verified;
 the exact WAR passed isolated H2 startup without platform data or network access.
-This preparation does not establish the full resource/role matrix or company-site acceptance.
-See [the preparing notes](docs/releases/server-1.6.499.md); the published 498
-identity and historical HOLD receipts below remain unchanged.
+QA499 first start/restart returned `HTTP 200` / `pong` (nine attempts each),
+with zero runtime-contract or tracked five-table count differences. Original
+environment overrides, three named volumes, AppArmor and restart policy were
+preserved; Docker health is `null`, not a Docker `healthy` result.
+Targeted name acceptance did not pass: Engine330 incorrectly requires an active
+mapping for stopped imported containers, whose normal mapping state is inactive.
+The retained rollback containers consequently still show their original name;
+they were not deleted or manually renamed. The browser HOLD is retained, and
+the lifecycle correction requires a new immutable release. These results do
+not establish the full
+resource/role matrix, all-page/all-locale or company-site acceptance. Historical
+HOLDs remain HOLD. See [the release notes](docs/releases/server-1.6.499.md); the
+498 evidence below remains historical to that release and is not promoted to
+499 proof.
 
 ## v1.6.498
 
@@ -53,7 +74,7 @@ security gate reports 52 raw findings and eight exact Medium vendor-pending
 package findings (four unique CVEs) after VEX, with zero untracked,
 Critical/High, fixed-available or secret findings. This is not a zero-CVE claim.
 
-The QA `8080` upgrade now runs this immutable 498 image / Web Console `1.6.164`.
+The recorded QA498 `8080` upgrade ran this immutable 498 image / Web Console `1.6.164`.
 First start/restart returned `HTTP 200` / `pong` (11 and 10 attempts), with zero
 runtime-contract and tracked five-table DB-count differences. The original
 three named volumes, environment overrides, `docker-default` AppArmor and
@@ -401,8 +422,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.498` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.498).
+Before deploying, verify the `v1.6.499` numeric tag and immutable digest in
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.499).
 A registry login is not required. Pin the version and retain the database and
 platform volumes:
 
@@ -411,7 +432,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.498@sha256:bd8671e99fbf3661f91d6667f6cb04b16ade89a8d463ae872ffd84ce1e65a6e7
+  ghcr.io/pasturestack/server:v1.6.499@sha256:8552137dd4e40bf20dee5524cabf09540ed7431328e584ca1e488065e6fec394
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -420,7 +441,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.498@sha256:bd8671e99fbf3661f91d6667f6cb04b16ade89a8d463ae872ffd84ce1e65a6e7
+    image: ghcr.io/pasturestack/server:v1.6.499@sha256:8552137dd4e40bf20dee5524cabf09540ed7431328e584ca1e488065e6fec394
     restart: unless-stopped
     ports:
       - "8080:8080"
