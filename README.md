@@ -13,12 +13,14 @@ boundary.
 
 ## v1.6.504
 
-Server 候選整合，尚未正式發布；固定封裝已正式發行的 Web Console `1.6.168`。
-Web 的 SSH-signed numeric tag、tested source 與匿名 immutable archive 讀回已核實；
-build pins 已同步正式168座標，不以新版本標籤搭配舊 archive。Server504 成品、
-publisher 與 QA 尚待完成。
+已正式發布，固定封裝 Web Console `1.6.168`。Server source 為
+`e33ef8565ebe40dd188170baa46da8092fc131b9`，不可變映像為
+`ghcr.io/pasturestack/server:v1.6.504@sha256:11393d4a5189601464d2a2e1ffc823160bedd6bda6c1fbae12457337f7cb9e2f`。
+[正式 publisher 37063207602](https://github.com/PastureStack/server/actions/runs/37063207602)
+通過啟動／重啟、34 項 MFA/API 檢查、TLS、單 runtime layer 與成品 SBOM／安全門檻；
+23 個公開 assets、22 項 SHA-256 與匿名 registry／component identity 已讀回。
 
-本候選修正 Volume 新增入口：只有目前環境與當次 schema 相符，且 schema
+本版修正 Volume 新增入口：只有目前環境與當次 schema 相符，且 schema
 允許建立 Volume，才顯示新增控制並允許直接新增網址；既有 update 分支也須
 通過相同的 schema 新鮮度條件。Storagepools 提供獨立的未配置 local Volume
 區段與原生 Add，不依賴任何 pool 存在；顯示未配置前必須讀回實際 advertised
@@ -29,13 +31,16 @@ advertised deactivate 的資源才開原生停用；active→detached 後沿用�
 
 Web168 正式 CI `37061716638` 已通過788／788個 QUnit案例，fail／skip／todo皆為0，
 包含16個 scoped Volume案例；兩次 production build archive SHA-256相同。
-這些 component source／artifact證據不代表 Server504 正式封裝、local Volume
-原生建立／列表／清理現場或完整矩陣驗收；Server504發布、QA及native lifecycle仍待完成。
+測試環境 8080 的首次啟動與一次重啟均取得 HTTP 200/pong；runtime、環境參數、
+既有掛載與五表 counts 差異皆 0，503 停止回復容器與資料庫備份保留。
+Docker health 為 `null`，不能稱為 `healthy`。這些證據不代表 local Volume
+原生建立／列表／清理或完整角色矩陣通過；首次原生驗收因工具對 v1 schema
+欄位的假設中止，資源寫入為 0，該 HOLD 保留並待修正工具後重新驗收。
 Engine `v0.183.331`／原 WAR、API/schema、後端授權、OIDC/MFA、
 部署參數、相依套件與安全門檻不變。既有 8 個 Medium package findings／
 4 個 CVE 與 VEX statements 保留，不宣稱零弱點或完整矩陣 PASS。
-Quick start 暫留已發布的 503 immutable image。
-詳見[候選發行說明](docs/releases/server-1.6.504.md)。
+Quick start 已對齊本版不可變映像；正式公司站未部署或修改。
+詳見[發行說明](docs/releases/server-1.6.504.md)。
 
 ## v1.6.503
 
@@ -573,8 +578,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.503` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.503).
+Before deploying, verify the `v1.6.504` numeric tag and immutable digest in
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.504).
 A registry login is not required. Pin the version and retain the database and
 platform volumes:
 
@@ -583,7 +588,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.503@sha256:4a8997768c5c16a9aefdc682f906aab34417e204d622d03116e62b2fcfe0af79
+  ghcr.io/pasturestack/server:v1.6.504@sha256:11393d4a5189601464d2a2e1ffc823160bedd6bda6c1fbae12457337f7cb9e2f
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -592,7 +597,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.503@sha256:4a8997768c5c16a9aefdc682f906aab34417e204d622d03116e62b2fcfe0af79
+    image: ghcr.io/pasturestack/server:v1.6.504@sha256:11393d4a5189601464d2a2e1ffc823160bedd6bda6c1fbae12457337f7cb9e2f
     restart: unless-stopped
     ports:
       - "8080:8080"
