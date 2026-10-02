@@ -2,13 +2,36 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
-Preparing Server `v1.6.500` packages Engine `v0.183.331` to accept only the two
+Published Server `v1.6.500` packages Engine `v0.183.331` to accept only the two
 stable imported-container lifecycle pairs, running/active and stopped/inactive,
 in both selection and the name-only full-row CAS. All existing ownership,
 full Docker ID, active Host/Agent, unique mapping, managed/service exclusions,
 role/schema denials and deployment/authentication contracts remain unchanged.
-No migration or runtime patch is required. Immutable artifact and QA/browser
-acceptance are pending; historical 499 evidence below is not promoted to 500.
+No migration or runtime patch is required. Engine source is
+`515a5d37a1194f827bc3ffde34db729905ecb2b1`, with exact WAR SHA-256
+`0c8310d9e9a872589972658d2fd8cb88f59f473ab8072a4746df5b0f4ef9e70e`.
+The immutable image is
+`ghcr.io/pasturestack/server:v1.6.500@sha256:7ffd67a7f82da0d374d7846b97b5a2fb71647ad01a159120418544591899f5f5`,
+from source `abdee460eb67c8cd02a2db8e9a55b15f58020d83` and successful
+[publication run `36973764295`](https://github.com/PastureStack/server/actions/runs/36973764295).
+Exact public asset/image/component readback matched. The unchanged merged-rootfs
+gate retains 52 raw findings and eight Medium vendor-pending package findings
+(four unique CVEs), with zero untracked, Critical/High, fixed-available or secret
+findings; this is not a zero-CVE claim.
+QA500 first start/restart returned `HTTP 200` / `pong` (nine and 10 attempts).
+Runtime-contract and tracked five-table count differences are zero; original
+environment overrides, three named volumes, `docker-default` AppArmor and
+`unless-stopped` restart policy were preserved. Docker health is `null`, not
+Docker `healthy`; count equality is not a whole-database comparison. The
+previous Server499 rollback is retained and stopped. Native Host1 initial/reload
+checks matched five unique full Docker IDs, names and links, excluded removed
+mappings, and observed a forwarded WebSocket server message without resource
+writes or browser/console errors. Screenshot review still found indistinguishable
+truncated rollback names, so visual acceptance remains HOLD pending a scoped
+Web Console layout correction; the full resource/role matrix
+remains INCOMPLETE. No company-site, all-page or all-locale acceptance is claimed.
+See [the release notes](docs/releases/server-1.6.500.md). Historical 499 name
+failure and browser HOLD below remain unchanged and are not promoted to 500.
 
 Published Server `v1.6.499` packages Engine `v0.183.330` from source
 `3f7320a8063a5471618be5b8be6a168f49559847`, with exact CI WAR SHA-256
