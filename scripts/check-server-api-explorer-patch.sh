@@ -294,6 +294,14 @@ require_marker docs/releases/server-1.6.498.md '# Server v1.6.498' \
     SERVER_GENERIC_OBJECT_PATCH_NOTES_MISSING
 require_marker docs/releases/server-1.6.498.md 'No migration or runtime patch is required.' \
     SERVER_GENERIC_OBJECT_PATCH_BOUNDARY_MISSING
+require_marker docs/releases/server-1.6.499.md '# Server v1.6.499' \
+    SERVER_IMPORTED_CONTAINER_NAME_NOTES_MISSING
+require_marker docs/releases/server-1.6.499.md 'No migration or runtime patch is required.' \
+    SERVER_IMPORTED_CONTAINER_NAME_MIGRATION_BOUNDARY_MISSING
+require_marker README.md '## v1.6.499' \
+    SERVER_IMPORTED_CONTAINER_NAME_README_MISSING
+require_marker COMPATIBILITY.md 'Server `v1.6.499` packages Engine `v0.183.330`' \
+    SERVER_IMPORTED_CONTAINER_NAME_COMPATIBILITY_MISSING
 for low_role_snapshot_hash in \
     7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233 \
     f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51; do
@@ -370,7 +378,7 @@ require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
-    'org.opencontainers.image.version="v1.6.498"' \
+    'org.opencontainers.image.version="v1.6.499"' \
     SERVER_INCREMENTAL_RELEASE_VERSION_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460"' \
@@ -379,7 +387,7 @@ require_marker "$release_dockerfile" \
     'org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"' \
     SERVER_INCREMENTAL_RELEASE_BASE_DIGEST_MISSING
 require_marker "$release_dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.498' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.499' \
     SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING
 require_marker "$release_dockerfile" \
     'COPY --from=release_artifacts /out/host-api-0.38.4.tar.gz /usr/share/cattle/artifacts/host-api-0.38.4.tar.gz' \
@@ -667,23 +675,23 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.498}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.499}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'CATTLE_RANCHER_SERVER_VERSION=v1.6.498' \
+    'CATTLE_RANCHER_SERVER_VERSION=v1.6.499' \
     SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING
 for release_engine_marker in \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.329' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.330' \
     'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=9f8e5736898b6d9c51cb96d5f7cdbe8e3831a29ce296909108f5f2d5a68f7ec4' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=14e3f0919a33282ff3026c364182f715f5dda634' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=c01cbbfd63625fc09f39c5494775919aad6db22c92050b217b28b940b57e1de3' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=3f7320a8063a5471618be5b8be6a168f49559847' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
-    "grep -Fx 'Implementation-Version: 0.183.329'" \
-    'cattle-resources-0.183.329.jar' \
-    'cattle-app-config-0.183.329.jar' \
+    "grep -Fx 'Implementation-Version: 0.183.330'" \
+    'cattle-resources-0.183.330.jar' \
+    'cattle-app-config-0.183.330.jar' \
     'WEB-INF/lib/hazelcast-5\.7\.5\.jar' \
     'freemarker-2\.3\.35\.jar' \
-    'ENV CATTLE_CATTLE_VERSION=v0.183.329' \
+    'ENV CATTLE_CATTLE_VERSION=v0.183.330' \
     'schema/token/token-auth.json' \
     '"token.clientSessionId": "cro"' \
     'for frozen_token_schema in base superadmin token' \
@@ -698,12 +706,12 @@ for release_engine_marker in \
         SERVER_INCREMENTAL_ENGINE_REPLACEMENT_MISSING
 done
 for release_engine_build_marker in \
-    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.329}' \
+    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.330}' \
     'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}' \
-    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-9f8e5736898b6d9c51cb96d5f7cdbe8e3831a29ce296909108f5f2d5a68f7ec4}' \
-    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-14e3f0919a33282ff3026c364182f715f5dda634}' \
-    'CATTLE_CATTLE_VERSION=v0.183.329' \
-    'cattle-resources-0.183.329.jar' \
+    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-c01cbbfd63625fc09f39c5494775919aad6db22c92050b217b28b940b57e1de3}' \
+    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-3f7320a8063a5471618be5b8be6a168f49559847}' \
+    'CATTLE_CATTLE_VERSION=v0.183.330' \
+    'cattle-resources-0.183.330.jar' \
     'test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.5.jar"'; do
     require_marker "$build_script" "$release_engine_build_marker" \
         SERVER_INCREMENTAL_ENGINE_BUILD_COORDINATE_MISSING
@@ -1659,7 +1667,7 @@ done
 
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.498"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.499"
   and (.statements | length) == 51
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -1685,7 +1693,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.498 >/dev/null
+    "$vendor_pending_fixture" v1.6.499 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -1774,4 +1782,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.498 base=v1.6.460 engine=0.183.329 web_console=1.6.164 webhook_automation_service=0.10.3 authentication_service=0.4.42 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.499 base=v1.6.460 engine=0.183.330 web_console=1.6.164 webhook_automation_service=0.10.3 authentication_service=0.4.42 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
