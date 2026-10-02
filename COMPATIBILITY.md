@@ -1,5 +1,11 @@
 # Compatibility Contract
 
+Server `v1.6.506` 來源預定封裝 Web Console `1.6.169`，將本機 Volume 的
+`externalId` 視為識別碼而非配置綁定。完整 pool/mount 關聯、主機／image／
+instance null binding、環境 schema 與 API 授權保護均不變。Engine 保持
+`v0.183.332`，不涉及資料遷移、認證或防火牆變更。正式成品與 QA 原生
+生命週期驗收尚待完成；不以來源測試替代整體權限矩陣。
+
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
 已發布的 Server `v1.6.505` 封裝 Engine `v0.183.332` 與既有 Web Console `1.6.168`。

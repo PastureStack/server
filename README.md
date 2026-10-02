@@ -11,6 +11,15 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.506 — 修正來源，尚待發布
+
+本版預定封裝 Web Console `1.6.169`，修正合法本機磁碟區的 `externalId`
+被誤當配置關聯、建立成功後不出現在未配置清單的問題。Engine 保持
+`v0.183.332`；不改權限、登入、API、主機防火牆或持久資料。既有的完整
+儲存池與掛載關聯檢查仍保留，未配置的 inactive 磁碟區使用正式 remove
+流程，不強制轉態。正式映像與原生瀏覽器驗收尚待完成；目前安裝範例
+仍指向已發布的 `v1.6.505`。詳見[發行說明](docs/releases/server-1.6.506.md)。
+
 ## v1.6.505 — 已發布
 
 已正式發布，封裝 Engine `v0.183.332`，Web Console 維持已發布的 `1.6.168`。

@@ -7,6 +7,9 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.506](releases/server-1.6.506.md) — source candidate for the Web Console 1.6.169 generated Volume identifier classifier fix; immutable publication and packaged native lifecycle acceptance pending
+- [Server v1.6.505](releases/server-1.6.505.md) — published Engine 0.183.332 with Web Console 1.6.168; immutable artifact and QA start/restart verified, broader permission matrix incomplete
+- [Server v1.6.504](releases/server-1.6.504.md) — published Web Console 1.6.168 Volume entry and permission repair; immutable artifact and QA start/restart verified
 - [Server v1.6.498](releases/server-1.6.498.md) — unpublished source candidate for Engine 0.183.329 low-role GenericObject capability protection; immutable artifact/deployment/browser gates pending
 - [Server v1.6.497](releases/server-1.6.497.md) — published Web Console 1.6.164 / Engine 0.183.328 / Cache 5.7.5; official source/build/start-restart/security/public artifact readback verified, QA8080 now497/Web164 first start/restart passed; packaged native Receiver browser acceptance pending, broader matrix INCOMPLETE
 - [Server v1.6.496](releases/server-1.6.496.md) — published Web Console 1.6.162 / Engine 0.183.328 / Cache 5.7.5; official artifact readback, isolated QA first start/restart and two scoped zero-write desktop cases passed; mobile/all-language/full-layout pending, broader matrix INCOMPLETE
