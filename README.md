@@ -11,6 +11,32 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.504
+
+Server 候選整合，尚未正式發布；固定封裝已正式發行的 Web Console `1.6.168`。
+Web 的 SSH-signed numeric tag、tested source 與匿名 immutable archive 讀回已核實；
+build pins 已同步正式168座標，不以新版本標籤搭配舊 archive。Server504 成品、
+publisher 與 QA 尚待完成。
+
+本候選修正 Volume 新增入口：只有目前環境與當次 schema 相符，且 schema
+允許建立 Volume，才顯示新增控制並允許直接新增網址；既有 update 分支也須
+通過相同的 schema 新鮮度條件。Storagepools 提供獨立的未配置 local Volume
+區段與原生 Add，不依賴任何 pool 存在；顯示未配置前必須讀回實際 advertised
+storagePools 完整 collection，並以包含 inactive mounts 的完整 scoped 資料
+證明未被配置或使用。原始403、network／sync error 不吞，交既有 route／growl
+診斷，不能將缺漏欄位或失敗當成空關聯。只有目前 project/schema 相符且實際
+advertised deactivate 的資源才開原生停用；active→detached 後沿用原生刪除。
+
+Web168 正式 CI `37061716638` 已通過788／788個 QUnit案例，fail／skip／todo皆為0，
+包含16個 scoped Volume案例；兩次 production build archive SHA-256相同。
+這些 component source／artifact證據不代表 Server504 正式封裝、local Volume
+原生建立／列表／清理現場或完整矩陣驗收；Server504發布、QA及native lifecycle仍待完成。
+Engine `v0.183.331`／原 WAR、API/schema、後端授權、OIDC/MFA、
+部署參數、相依套件與安全門檻不變。既有 8 個 Medium package findings／
+4 個 CVE 與 VEX statements 保留，不宣稱零弱點或完整矩陣 PASS。
+Quick start 暫留已發布的 503 immutable image。
+詳見[候選發行說明](docs/releases/server-1.6.504.md)。
+
 ## v1.6.503
 
 Published Server packages immutable Web Console `1.6.167` for shared schema-ID lookup.
