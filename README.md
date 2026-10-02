@@ -11,6 +11,17 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.498 source candidate
+
+The next patch packages Engine `v0.183.329` to protect GenericObject capability
+fields from readonly/restricted roles in v1 and v2-beta. Owner/member/service
+storage and the typed Receiver API remain intact. Web Console `1.6.164`,
+Webhook Automation Service `0.10.3`, OIDC/MFA/session ownership and deployment
+settings are unchanged. It is not published or deployed yet; use the verified
+current release below until immutable artifact and QA gates complete. See the
+[candidate notes](docs/releases/server-1.6.498.md). The broader matrix remains
+INCOMPLETE; source tests do not substitute for packaged browser evidence.
+
 ## v1.6.497
 
 This release packages the officially published Web Console `1.6.164`, including
