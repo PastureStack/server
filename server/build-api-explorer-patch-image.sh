@@ -190,7 +190,7 @@ for marker in \
     PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256="${orchestration_engine_artifact_sha256}" \
     PASTURESTACK_RUNTIME_GO_VERSION=1.27.0 \
     PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10 \
-    PASTURESTACK_CURL_SECURITY_SNAPSHOT=20260930T000000Z \
+    PASTURESTACK_CURL_SECURITY_SNAPSHOT=20261002T000000Z \
     PASTURESTACK_CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7 \
     PASTURESTACK_GLIBC_CVE_2026_18374_FIX=not-in-execute-path \
     PASTURESTACK_GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4 \
@@ -201,8 +201,8 @@ for marker in \
     PASTURESTACK_COREUTILS_UNIQ_FIX=d64e35a8a4c0e4608321433e0d84d917e4e36371 \
     PASTURESTACK_ZLIB_VERSION=1.3.2 \
     PASTURESTACK_OPENSSL_VERSION=3.5.5 \
-    PASTURESTACK_OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.6 \
-    PASTURESTACK_OPENSSL_SECURITY_SNAPSHOT=20260930T000000Z \
+    PASTURESTACK_OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7 \
+    PASTURESTACK_OPENSSL_SECURITY_SNAPSHOT=20261002T000000Z \
     PASTURESTACK_DIFF3_HARDENING=removed \
     PASTURESTACK_SSH_CLIENT_HARDENING=client-removed \
     PASTURESTACK_PRIVILEGED_MOUNT_HELPERS=removed \
@@ -670,7 +670,7 @@ EOF
     grep -aF "1.3.2" /usr/lib/x86_64-linux-gnu/libz.so.1.3.2 >/dev/null
     ldd /usr/sbin/mariadbd | grep -F "/usr/lib/x86_64-linux-gnu/libz.so.1" >/dev/null
     for package in openssl libssl3t64 openssl-provider-legacy; do
-        test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${package}")" = 3.5.5-1ubuntu3.6
+        test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${package}")" = 3.5.5-1ubuntu3.7
     done
     cd /
     test "$(wc -l < /usr/share/pasturestack/security/openssl-runtime.sha256)" -eq 7

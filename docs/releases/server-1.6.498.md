@@ -27,6 +27,19 @@ change in GenericObject and inherited Register snapshots; unrelated contracts
 remain identical. Server assembly checks exact WAR and both low-role frozen
 schema hashes. Packaged Server role/browser proof remains a separate gate.
 
+The first Server publisher [run `36953191960`](https://github.com/PastureStack/server/actions/runs/36953191960)
+failed its security gate after official fixes became available for
+[CVE-2026-42772](https://ubuntu.com/security/CVE-2026-42772) and
+[CVE-2026-54873](https://ubuntu.com/security/CVE-2026-54873): two Low CVEs across
+three OpenSSL packages, or six package findings. That failed run is retained.
+This unpublished correction selects official Ubuntu 26.04 package
+`3.5.5-1ubuntu3.7` from the signed HTTPS `20261002T000000Z` snapshot. The existing
+whole-package install, SHA-256 checks and exact runtime versions remain required.
+Only those two CVEs leave vendor-pending; the other four CVEs / eight Medium
+package findings and their `2026-10-20` review date are unchanged. No VEX or
+fixed-available/security threshold is relaxed. A new publisher/security run and
+packaged QA are still required; this source correction is not a release PASS.
+
 The QA497 reproduction used restricted account 1a2512/project 1a2540 to read an
 owner-created inert Receiver through v1 GenericObject. No execution endpoint
 was called. The historical HOLD remains HOLD, and its fixture was normally
@@ -35,6 +48,6 @@ all-language/full-layout or company-site acceptance is made.
 
 No migration or runtime patch is required. Preserve the v1.6.497 image and
 original configuration/volumes for rollback, but note that rolling back restores
-the low-role capability exposure. Existing pending vendor findings and security
+the low-role capability exposure. Remaining pending vendor findings and security
 thresholds are retained; this release does not claim zero findings of every
 severity.

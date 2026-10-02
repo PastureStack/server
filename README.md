@@ -22,6 +22,12 @@ current release below until immutable artifact and QA gates complete. See the
 [candidate notes](docs/releases/server-1.6.498.md). The broader matrix remains
 INCOMPLETE; source tests do not substitute for packaged browser evidence.
 
+The first publisher run [`36953191960`](https://github.com/PastureStack/server/actions/runs/36953191960)
+failed when official OpenSSL fixes became available; that failed evidence is
+retained. This unpublished candidate selects Ubuntu `3.5.5-1ubuntu3.7` from the
+signed HTTPS `20261002T000000Z` snapshot, without relaxing security gates.
+The tracker retains four unfixed CVEs / eight Medium package findings.
+
 ## v1.6.497
 
 This release packages the officially published Web Console `1.6.164`, including

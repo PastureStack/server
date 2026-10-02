@@ -10,6 +10,11 @@ session, Compose/AppArmor/nftables or Web Console version change is introduced.
 Immutable publication and packaged role/browser gates remain pending.
 See [the candidate notes](docs/releases/server-1.6.498.md).
 
+The first 498 publisher run failed the fixed-available OpenSSL gate and remains
+failed evidence. This candidate selects official Ubuntu `3.5.5-1ubuntu3.7` via
+the signed HTTPS `20261002T000000Z` snapshot; security thresholds and the four
+remaining unfixed CVEs / eight Medium package findings are retained.
+
 Published Server `v1.6.497` packages officially published Web Console `1.6.164`.
 It includes the shared state/date display-locale fixes
 and Receiver validation-label fixes without changing API authorization, driver

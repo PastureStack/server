@@ -1297,9 +1297,9 @@ if grep -Eq 'ubuntu_security_packages|pasturestack-ubuntu-security|UBUNTU_SNAPSH
 fi
 for release_curl_security_marker in \
     'FROM ${UBUNTU_SECURITY_IMAGE} AS runtime_security_packages' \
-    'ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20260930T000000Z' \
+    'ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20261002T000000Z' \
     'ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7' \
-    'ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.6' \
+    'ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7' \
     'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg' \
     'Acquire::AllowInsecureRepositories "false"' \
     'APT::Get::AllowUnauthenticated "false"' \
@@ -1341,7 +1341,7 @@ for runtime_libdbi_security_marker in \
         SERVER_LIBDBI_PERL_RUNTIME_GATE_MISSING
 done
 require_marker "$build_script" \
-    'PASTURESTACK_CURL_SECURITY_SNAPSHOT=20260930T000000Z' \
+    'PASTURESTACK_CURL_SECURITY_SNAPSHOT=20261002T000000Z' \
     SERVER_CURL_IMAGE_SNAPSHOT_GATE_MISSING
 require_marker "$build_script" \
     'PASTURESTACK_CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7' \
@@ -1457,8 +1457,8 @@ require_marker "$build_script" \
     'openssl version | grep -E "^OpenSSL 3\\.5\\.5 .*\\(Library: OpenSSL 3\\.5\\.5 "' \
     SERVER_OPENSSL_IMAGE_VERSION_GATE_MISSING
 for openssl_image_marker in \
-    'PASTURESTACK_OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.6' \
-    'PASTURESTACK_OPENSSL_SECURITY_SNAPSHOT=20260930T000000Z' \
+    'PASTURESTACK_OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7' \
+    'PASTURESTACK_OPENSSL_SECURITY_SNAPSHOT=20261002T000000Z' \
     'sha256sum -c /usr/share/pasturestack/security/openssl-runtime.sha256' \
     'test "$(wc -l < /usr/share/pasturestack/security/openssl-runtime.sha256)" -eq 7' \
     'ldd -r "$target"' \
