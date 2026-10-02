@@ -2,6 +2,14 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
+Preparing Server `v1.6.500` packages Engine `v0.183.331` to accept only the two
+stable imported-container lifecycle pairs, running/active and stopped/inactive,
+in both selection and the name-only full-row CAS. All existing ownership,
+full Docker ID, active Host/Agent, unique mapping, managed/service exclusions,
+role/schema denials and deployment/authentication contracts remain unchanged.
+No migration or runtime patch is required. Immutable artifact and QA/browser
+acceptance are pending; historical 499 evidence below is not promoted to 500.
+
 Published Server `v1.6.499` packages Engine `v0.183.330` from source
 `3f7320a8063a5471618be5b8be6a168f49559847`, with exact CI WAR SHA-256
 `c01cbbfd63625fc09f39c5494775919aad6db22c92050b217b28b940b57e1de3`.

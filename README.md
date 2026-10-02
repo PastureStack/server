@@ -11,6 +11,16 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.500 (preparing)
+
+This patch packages Engine `v0.183.331` to correct imported-container name
+synchronization for normal stopped/inactive mappings. Only the name-only
+full-row CAS lifecycle predicate changes; authentication, permissions, schemas,
+managed-service names and Web Console `1.6.164` remain unchanged.
+No migration or runtime patch is required. No immutable image, QA deployment or
+browser acceptance is claimed yet. The published install examples below still
+use Server499. See [the preparing release notes](docs/releases/server-1.6.500.md).
+
 ## v1.6.499
 
 This release packages Engine `v0.183.330` from source
