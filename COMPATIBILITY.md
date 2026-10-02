@@ -2,15 +2,29 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
-Server `v1.6.505` 候選封裝 Engine `v0.183.332` 與既有 Web Console `1.6.168`。
+已發布的 Server `v1.6.505` 封裝 Engine `v0.183.332` 與既有 Web Console `1.6.168`。
+Server source 為 `400f7dc8d533a5f13a555398c595b9ae42e0c454`，不可變映像為
+`ghcr.io/pasturestack/server:v1.6.505@sha256:b3dd402cfd773b4d37ecf06f716187833e56cc6f211b7ab920dccf8dcb7366c5`。
+正式 publisher `37072151759` 及23個 assets／22項 SHA-256、公開 image/component
+identity 讀回通過。隔離映像首次啟動／一次重啟均 HTTP 200/pong，分別在第10／6次
+探測取得；34項 MFA/API、TLS、單 runtime layer 與成品 SBOM／安全門檻通過。
+這些是正式成品證據，不是 QA8080 部署、Docker healthy 或原生 Volume PASS。
 本次 API/schema 有窄幅相容性補齊：v1 與 v2-beta Volume 恢復 server-owned
 唯讀 `isNative`。客戶端不能寫入該欄位；其他欄位、methods、完整 actions、
 角色限制及環境隔離不變，無資料庫 migration。8080 的實際 504 schema 讀回
 證明兩個 API 根都缺漏分類，補充更正先前只歸因於 v1 驗收工具的診斷；
-原始零資源寫入 HOLD 不改成 PASS。18 個 scoped 單元測試通過，不代替正式
-成品發布或原生建立／列表／取消／停用／刪除驗收。immutable digest 尚未
-產生；部署環境、掛載、restart、AppArmor、HTTPS origin、OIDC/MFA 與
-firewall 契約保持。Vendor-pending、VEX 與安全門檻不放寬。
+原始零資源寫入 HOLD 不改成 PASS。Engine 正式 source 為
+`7a625eee58fb2bdba83d2f008bdf7dd3c0ae4295`，WAR SHA-256 為
+`31090699e214f8e357f7fe413ce307e722b9b53177003e5de0bbbca1bc7bc3f5`；
+正式 CI 通過270 suites／1,150 tests，failure／error／skip皆為0，含6個新增回歸。
+QA8080 已部署本版並完成一次重啟；HTTP 200/pong、runtime／環境參數與
+五項資料筆數保存，504 回復點保留。Docker health 為 `null`，不稱為 `healthy`。
+原生建立／列表／取消／刷新／刪除仍在驗收，完整資源／角色矩陣尚未完成。
+未配置 local Volume 的 `inactive` 是合法狀態，原生清單不要求 `active`；
+移除須核對當次 action 與空關聯，不要求額外 activate／deactivate。
+部署環境、掛載、restart、AppArmor、HTTPS origin、OIDC/MFA 與 firewall 契約保持。
+Vendor-pending 8個 Medium package findings／4個 CVE、2026-10-20複核期限、
+VEX 51 statements 與安全門檻不放寬；正式發行不代表零 CVE或完整矩陣 PASS。
 
 已發布的 Server `v1.6.504` 固定封裝 Web Console `1.6.168`；Web tested source／
 archive、SSH-signed numeric tag 與 Server 正式成品均已讀回。Server source 為
