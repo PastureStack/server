@@ -17,8 +17,10 @@ passed 768/768 actual tests, zero failures/skips/todo, and two byte-identical
 production archives. Eight state/date rendering cases include switching the
 actual supported catalogs. The existing artifact is reused, not rebuilt.
 
-Only Dockerfile/build-script component pins and product/release identity
-metadata change. The existing vendor-pending and OpenVEX policy content is
+Runtime changes are limited to Dockerfile/build-script component pins and
+product/release identity metadata. Publication assertions now check the same
+502/166 coordinates; focused regression tests reject stale component pins while
+retaining historical publication checks. The existing vendor-pending and OpenVEX policy content is
 retained with the new release identifier; no threshold or finding is waived. Engine
 `v0.183.331` and its exact WAR, authentication/proxies, API/schema, authorization,
 state/health semantics, icons/colors, deployment configuration and security
