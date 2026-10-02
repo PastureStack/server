@@ -2,16 +2,45 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
-Server `v1.6.498` is an unpublished source candidate for Engine `v0.183.329`.
+Published Server `v1.6.498` packages Engine `v0.183.329` and Web Console `1.6.164`.
 Readonly/restricted GenericObject key/resourceData visibility changes in both
 API versions; privileged roles retain those fields. Use typed plugin APIs for
 safe low-role configuration reads. No stored-data migration, authentication,
 session, Compose/AppArmor/nftables or Web Console version change is introduced.
-Immutable publication and packaged role/browser gates remain pending.
-See [the candidate notes](docs/releases/server-1.6.498.md).
+The immutable image is
+`ghcr.io/pasturestack/server:v1.6.498@sha256:bd8671e99fbf3661f91d6667f6cb04b16ade89a8d463ae872ffd84ce1e65a6e7`,
+from source `ea58d92167eef31b76c7616f41df4d515530c359` and successful
+[publication run `36954622994`](https://github.com/PastureStack/server/actions/runs/36954622994).
+Exact build/flatten, isolated first start/restart `HTTP 200` / `pong` (10 and six
+attempts), 34 MFA policy/API checks and TLS 1.2/1.3 checks passed; public
+assets/image/SBOM readback matched. The final one-layer merged-rootfs scan has
+52 raw findings and eight exact Medium vendor-pending package findings (four
+unique CVEs), with zero untracked, Critical/High, fixed-available or secret
+findings. This is not a zero-CVE claim. The exact Engine329 WAR's normal CI
+executed 266 suites / 1,123 tests with zero failures, errors or skips.
+The QA `8080` upgrade runs the immutable 498 image / Web Console `1.6.164`.
+First start/restart returned `HTTP 200` / `pong` (11 and 10 attempts); runtime
+contract and tracked five-table DB-count differences were zero. The original
+three named volumes, environment overrides, `docker-default` AppArmor and
+`unless-stopped` restart policy were preserved. Docker health is `null`, not
+Docker `healthy`; counts do not establish whole-database equality. The previous
+`v1.6.497` rollback container is retained and stopped. Limited Receiver
+role/API/header/message gates passed in scoped QA. Member retains privileged
+reads; restricted/readonly typed reads retain safe configuration without URLs,
+and GenericObject exact/list reads omit key/resourceData in both API versions.
+No-access exact API requests return 403. Member Add is visible;
+restricted/readonly Add is hidden, with Traditional Chinese direct-create
+denial and no-access unavailable messages verified. Normal owner fixture
+creation/deletion and cleanup were verified. Secret and other 498 resources,
+all-resource, full-page and all-locale acceptance are not established.
+Publication smoke and QA startup alone do not establish backend-write
+authorization or company-site acceptance. Historical HOLDs remain
+HOLD and the matrix remains INCOMPLETE. Preserve original volumes/settings for
+rollback; rolling back to 497 restores the low-role capability exposure.
+See [the release notes](docs/releases/server-1.6.498.md) for exact component pins.
 
 The first 498 publisher run failed the fixed-available OpenSSL gate and remains
-failed evidence. This candidate selects official Ubuntu `3.5.5-1ubuntu3.7` via
+failed evidence. This release selects official Ubuntu `3.5.5-1ubuntu3.7` via
 the signed HTTPS `20261002T000000Z` snapshot; security thresholds and the four
 remaining unfixed CVEs / eight Medium package findings are retained.
 
@@ -29,13 +58,15 @@ policy/API checks passed; public assets/image/SBOM readback matched. The final
 one-layer merged-rootfs scan has 58 raw findings and 14 exact vendor-pending
 package findings (eight Medium and six Low, six unique CVEs), with zero untracked,
 Critical/High, fixed-available or secret findings. This is not a zero-CVE claim.
-QA `8080` now runs `v1.6.497` / Web Console `1.6.164`; first start/restart
+The recorded QA497 `8080` deployment ran `v1.6.497` / Web Console `1.6.164`;
+first start/restart
 returned `HTTP 200` / `pong` (10 and nine attempts), with zero runtime-contract
 and tracked five-table DB-count differences. The original three named data
 volumes, environment overrides, AppArmor and restart policy were preserved.
 This is count preservation, not a whole-database row comparison; Docker health
-is `null`, and no Docker `healthy` result is claimed. Packaged native Receiver
-browser acceptance remains pending. Publication smoke and QA startup do not
+is `null`, and no Docker `healthy` result is claimed. That deployment did not
+establish packaged native Receiver browser acceptance. Publication smoke and
+QA startup do not
 establish full-language/layout, backend-write authorization or company-site
 acceptance. Historical HOLDs remain HOLD and the matrix remains INCOMPLETE.
 Preserve the nearest `v1.6.496` QA rollback with its original volumes/settings.
