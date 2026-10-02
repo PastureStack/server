@@ -11,6 +11,22 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.502 candidate
+
+This candidate packages published Web Console `1.6.166` to translate the
+previously omitted `Inactive` state label in all thirteen supported catalogs.
+The component's exact-source validation passed 768/768 tests and produced
+byte-identical archives. Web source is
+`b63fa15f6726cb78659ae43258dfc802b30d6d04`; archive SHA-256 is
+`9205fbaec6e80f31846212f0949c3eac0fae083f80c6c46a3122d64c4d9da6c6`.
+Engine `v0.183.331`, API/schema, authorization, authentication, runtime settings,
+icons/colors, health/connection overrides and security thresholds are unchanged.
+No database migration or runtime patch is required. Server publication and
+packaged acceptance are not yet established; `v1.6.501` remains the latest
+published Server and the installation examples below continue to pin it.
+The broader permission/resource/locale matrix remains INCOMPLETE.
+See [the candidate release notes](docs/releases/server-1.6.502.md).
+
 ## v1.6.501
 
 Published packaging of Web Console `1.6.165` corrects ambiguous truncated
