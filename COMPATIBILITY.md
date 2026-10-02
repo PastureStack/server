@@ -2,6 +2,19 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
+Preparing Server `v1.6.499` packages Engine `v0.183.330` from source
+`3f7320a8063a5471618be5b8be6a168f49559847`, with exact CI WAR SHA-256
+`c01cbbfd63625fc09f39c5494775919aad6db22c92050b217b28b940b57e1de3`.
+Only eligible standalone imported-container names are synchronized to fresh
+full-ID Docker names; managed-service logical names remain unchanged. No
+database-schema or stored-data-format migration is introduced. Web Console
+`1.6.164`, Engine329 role/schema protections, Compose, mounts, OIDC/MFA/session
+ownership, runtime base and security thresholds remain unchanged. Engine330's
+signed release, exact CI assets and isolated H2 startup passed. Server499
+publication/image/QA/browser gates remain pending; this is not new full-matrix acceptance. See
+[the preparing notes](docs/releases/server-1.6.499.md). The published 498
+evidence below is historical to that release and is not promoted to 499 proof.
+
 Published Server `v1.6.498` packages Engine `v0.183.329` and Web Console `1.6.164`.
 Readonly/restricted GenericObject key/resourceData visibility changes in both
 API versions; privileged roles retain those fields. Use typed plugin APIs for
