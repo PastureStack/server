@@ -2,17 +2,24 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
-Candidate Server `v1.6.501` packages Web Console `1.6.165` to keep complete
+Published Server `v1.6.501` packages Web Console `1.6.165` to keep complete
 container names readable on Host cards without shrinking IP/action areas.
 The shared subpod layout alone changes; real names/IDs, API permissions,
 authentication/session ownership, Engine `v0.183.331`/exact WAR, database
 schema, Compose overrides, named volumes, AppArmor, restart and nftables
 contracts remain unchanged. No migration or runtime patch is required.
 Web source/archive are pinned in the build and verified by actual 767/767 CI
-cases with identical production archives. Server publication and native
-QA8080 visual/menu/reload acceptance remain pending; the historical 500
-visual HOLD must not be promoted to PASS. See
-[the candidate notes](docs/releases/server-1.6.501.md).
+cases with identical production archives. Publisher 36980705366 passed,
+including single-layer comparison, startup/restart, 34 MFA/API cases,
+TLS and exact final-image SBOM/security checks. Public digest is
+`sha256:0a671e2695eecc74d79ef666267a40e81172205f0f8b1d0b12a7dbbed446becd`.
+Native QA initial/reload accepted six exact Docker IDs and complete names,
+including distinguishing rollback suffixes. Actual menu open/close, separate
+IP/action areas and both screenshots passed scoped review, with zero resource
+writes or page/console/loading errors. One restart preserved runtime settings
+and database counts. The historical 500 visual HOLD remains unchanged and the
+full permission/resource/locale matrix remains INCOMPLETE. See
+[the release notes](docs/releases/server-1.6.501.md).
 
 Published Server `v1.6.500` packages Engine `v0.183.331` to accept only the two
 stable imported-container lifecycle pairs, running/active and stopped/inactive,
