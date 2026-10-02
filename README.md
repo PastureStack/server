@@ -11,6 +11,25 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.499 (preparing)
+
+This candidate packages Engine `v0.183.330` from source
+`3f7320a8063a5471618be5b8be6a168f49559847` to synchronize eligible standalone
+imported-container names with fresh, full-ID Docker inspection. Managed-service
+logical names and unrelated instance fields are not changed. Web Console
+`1.6.164`, existing role/schema protections, authentication, deployment settings
+and security thresholds remain unchanged.
+
+The exact CI WAR SHA-256 is
+`c01cbbfd63625fc09f39c5494775919aad6db22c92050b217b28b940b57e1de3`.
+Preparing only; Server499 publication, image digest, isolated startup/restart,
+QA upgrade and the targeted native Host1 browser/reload acceptance are pending.
+Engine330's signed numeric release and six exact CI assets have been verified;
+the exact WAR passed isolated H2 startup without platform data or network access.
+This preparation does not establish the full resource/role matrix or company-site acceptance.
+See [the preparing notes](docs/releases/server-1.6.499.md); the published 498
+identity and historical HOLD receipts below remain unchanged.
+
 ## v1.6.498
 
 This release packages Engine `v0.183.329` to protect GenericObject capability
