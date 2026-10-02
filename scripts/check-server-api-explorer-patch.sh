@@ -234,13 +234,12 @@ for path, text in documents.items():
         ):
             reject("SERVER_PUBLISHED_497_CANDIDATE_STATUS_STALE", path)
 PY
-    require_marker README.md "  $latest_image" SERVER_LATEST_PUBLISHED_QUICK_START_MISSING
-    require_marker README.md "    image: $latest_image" SERVER_LATEST_PUBLISHED_QUICK_START_MISSING
+    # This function verifies the historical 497 publication, not today's install target.
     require_marker README.md \
-        'The existing QA `8080` deployment now runs `v1.6.497` / Web Console `1.6.164`.' \
+        'The recorded QA497 `8080` deployment ran `v1.6.497` / Web Console `1.6.164`.' \
         SERVER_PUBLISHED_497_QA_BOUNDARY_MISSING
     require_marker COMPATIBILITY.md \
-        'QA `8080` now runs `v1.6.497` / Web Console `1.6.164`; first start/restart' \
+        'The recorded QA497 `8080` deployment ran `v1.6.497` / Web Console `1.6.164`;' \
         SERVER_PUBLISHED_497_QA_BOUNDARY_MISSING
     require_marker docs/README.md \
         'QA8080 now497/Web164 first start/restart passed; packaged native Receiver browser acceptance pending, broader matrix INCOMPLETE' \
@@ -289,6 +288,37 @@ PY
 }
 
 check_server497_published_docs
+
+# Install examples must follow the highest actually published numeric release;
+# preparing sections without a digest are not installable releases.
+python3 - <<'PY'
+import pathlib
+import re
+
+readme = pathlib.Path('README.md').read_text(encoding='utf-8')
+image_pattern = r'ghcr\.io/pasturestack/server:v[0-9]+\.[0-9]+\.[0-9]+@sha256:[0-9a-f]{64}'
+published = []
+for section in re.split(r'(?m)(?=^## )', readme):
+    heading = re.match(r'^## (v([0-9]+)\.([0-9]+)\.([0-9]+))\s*\n', section)
+    if heading:
+        images = set(re.findall(r'`(' + image_pattern + r')`', section))
+        images = {image for image in images if image.split('@')[0].endswith(':' + heading[1])}
+        if len(images) == 1:
+            published.append((tuple(map(int, heading.groups()[1:])), heading[1], images.pop()))
+if not published:
+    raise SystemExit('SERVER_LATEST_PUBLISHED_IDENTITY_MISSING')
+_, tag, image = max(published)
+quick = re.search(r'(?ms)^## Quick start\n(.*?)(?=^## |\Z)', readme)
+references = re.findall(r'ghcr\.io/pasturestack/server:[^\s`"<>]+', quick[1] if quick else '')
+notes = pathlib.Path('docs/releases/server-' + tag[1:] + '.md').read_text(encoding='utf-8')
+compat = pathlib.Path('COMPATIBILITY.md').read_text(encoding='utf-8')
+if references != [image, image] or image not in notes or image not in compat or (
+    'https://github.com/PastureStack/server/releases/tag/' + tag not in quick[1]
+):
+    raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
+print('SERVER_LATEST_PUBLISHED_QUICK_START_OK release=' + tag)
+PY
+python3 scripts/test-published-install-gate.py
 
 require_marker docs/releases/server-1.6.498.md '# Server v1.6.498' \
     SERVER_GENERIC_OBJECT_PATCH_NOTES_MISSING
