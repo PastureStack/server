@@ -299,7 +299,7 @@ readme = pathlib.Path('README.md').read_text(encoding='utf-8')
 image_pattern = r'ghcr\.io/pasturestack/server:v[0-9]+\.[0-9]+\.[0-9]+@sha256:[0-9a-f]{64}'
 published = []
 for section in re.split(r'(?m)(?=^## )', readme):
-    heading = re.match(r'^## (v([0-9]+)\.([0-9]+)\.([0-9]+))\s*\n', section)
+    heading = re.match(r'^## (v([0-9]+)\.([0-9]+)\.([0-9]+))(?:[ \t]+[—–-][^\n]*)?[ \t]*\n', section)
     if heading:
         images = set(re.findall(r'`(' + image_pattern + r')`', section))
         images = {image for image in images if image.split('@')[0].endswith(':' + heading[1])}

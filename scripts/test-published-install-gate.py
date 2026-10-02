@@ -29,6 +29,15 @@ class Tests(unittest.TestCase):
     def test_current_published498_and_preparing499_are_distinct(self):
         verify(FILES)
 
+    def test_publication_status_heading_keeps_digest_identity_authoritative(self):
+        files = dict(FILES)
+        files['README.md'] = files['README.md'].replace('## v1.6.499\n', '## v1.6.499 — source pending\n').replace('## v1.6.498\n', '## v1.6.498 — 已發布\n')
+        verify(files)
+        first, quick = files['README.md'].split('## Quick start', 1)
+        files['README.md'] = first + '## Quick start' + quick.replace(IMAGE, IMAGE.replace('v1.6.498', 'v1.6.497'))
+        with self.assertRaisesRegex(SystemExit, 'QUICK_START_MISMATCH'):
+            verify(files)
+
     def test_previous_install_target_rejected(self):
         files = dict(FILES)
         first, quick = files['README.md'].split('## Quick start', 1)
