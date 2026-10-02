@@ -2,14 +2,33 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
-Candidate Server `v1.6.503` is intended to package Web Console `1.6.167` for
+Published Server `v1.6.503` packages immutable Web Console `1.6.167` for
 schema-only ID lookup normalization. It does not change API schemas, server
 authorization, ordinary resource IDs, project-store isolation, Engine
 `v0.183.331`, authentication/session ownership, MFA or runtime/firewall settings.
 Missing schemas do not grant capabilities. No migration or runtime patch is
-required. Publication and packaged permission/locale QA remain separate pending
-gates; existing 502 HOLD results are not promoted. See
-[the candidate release notes](docs/releases/server-1.6.503.md).
+required. Web source `dff35fc4bce340e21cac7204146a7bcb20a7b60b` and archive
+SHA-256 `e8e714fc06282de75a3570aac1d4d4d04a3c9478d982d0d5aaeae14efa8ebbaf`
+match the immutable component publication. Its validation passed 772/772 tests
+with zero failures, skips or todo, including four actual Store/schema cases,
+and produced byte-identical production archives. Official publisher
+37015013747 passed isolated startup/restart, 34 MFA/API checks, TLS,
+exact-rootfs single-layer comparison and final-image SBOM/security gates.
+Anonymous registry and all 23 release assets match Server source
+`df061d5c93d0e4fdbc0e06664493ac5328a6f596`; the public image is
+`ghcr.io/pasturestack/server:v1.6.503@sha256:4a8997768c5c16a9aefdc682f906aab34417e204d622d03116e62b2fcfe0af79`.
+Eight Medium package findings covering four CVEs remain vendor-pending until
+review on 2026-10-20; publication is not a zero-vulnerability result.
+QA deployment passed first start and one restart with HTTP 200/pong after nine
+attempts each. Runtime settings, environment overrides, named mounts and
+five-table count baselines were preserved; the prior immutable Server502
+rollback and database backup were retained. Docker health is `null`, not
+`healthy`. Packaged exact-fixture QA confirmed GET-only registry/credential
+models for the readonly role and denied all 24 normal-CSRF v1/v2-beta writes for readonly/no-access
+roles, with the existing readable permission errors. That bounded result does
+not establish all API authorization, thirteen-locale or lifecycle acceptance.
+Existing 502 HOLD results are not promoted and the complete matrix remains
+INCOMPLETE. See [the release notes](docs/releases/server-1.6.503.md).
 
 Published Server `v1.6.502` packages Web Console `1.6.166` for the shared
 inactive-state display label in thirteen supported catalogs. Only display

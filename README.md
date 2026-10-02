@@ -11,9 +11,9 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
-## v1.6.503 candidate
+## v1.6.503
 
-The next patch will package Web Console `1.6.167` for shared schema-ID lookup.
+Published Server packages immutable Web Console `1.6.167` for shared schema-ID lookup.
 The store already normalizes schema IDs when caching them, but its synchronous
 lookup previously left the requested ID unchanged. Mixed-case resource types
 such as `registryCredential` could therefore miss their real permission schema.
@@ -23,12 +23,34 @@ project stores are not combined. API schemas and server authorization do not
 change. Engine `v0.183.331`, authentication/session ownership, MFA, runtime
 overrides and firewall contracts remain unchanged.
 
-This candidate is not a published image and has not passed packaged browser
-acceptance. Immutable `v1.6.502` below remains the current installation target.
-The Registry111/credential6880 packaged QA on 502 stopped before resource writes
+Web source is `dff35fc4bce340e21cac7204146a7bcb20a7b60b`; archive SHA-256 is
+`e8e714fc06282de75a3570aac1d4d4d04a3c9478d982d0d5aaeae14efa8ebbaf`.
+Exact-source component validation 37012345421 passed 772/772 tests with zero
+failures, skips or todo, including four new Store/schema cases, and produced
+two byte-identical production archives. Official publisher
+[37015013747](https://github.com/PastureStack/server/actions/runs/37015013747)
+passed isolated startup/restart, 34 MFA/API checks, TLS, single-runtime-layer
+comparison and final-image SBOM/security gates. Server source is
+`df061d5c93d0e4fdbc0e06664493ac5328a6f596`. Anonymous registry and all 23 release
+assets were read back; the immutable image is
+`ghcr.io/pasturestack/server:v1.6.503@sha256:4a8997768c5c16a9aefdc682f906aab34417e204d622d03116e62b2fcfe0af79`.
+Eight Medium package findings covering four CVEs remain vendor-pending, with
+review due 2026-10-20; this is not a zero-vulnerability result.
+QA first start and one restart returned HTTP 200/pong after nine attempts each,
+with unchanged runtime settings, environment overrides, named mounts and
+five-table count baselines. The immutable Server502 rollback and database
+backup were retained. Docker health is `null`, not a `healthy` result.
+Packaged QA confirmed GET-only registry/credential models, hidden create
+controls and disabled edit/remove controls for the readonly role. The no-access
+role showed the environment-unavailable screen; both roles used readable
+existing permission errors. All 24 normal-CSRF v1/v2-beta write-denial checks
+passed (12 readonly HTTP 405; 12 no-access HTTP 403). This is exact-fixture
+coverage, not all API authorization or complete native-browser acceptance.
+The registry/credential packaged QA on 502 stopped before resource writes
 when the credential model could not resolve its schema. That HOLD is preserved;
-the full permission/resource/locale matrix remains INCOMPLETE.
-See [the candidate release notes](docs/releases/server-1.6.503.md).
+the full permission/resource/locale matrix, including thirteen-locale inactive
+badge and remaining native lifecycle checks, remains INCOMPLETE.
+See [the release notes](docs/releases/server-1.6.503.md).
 
 ## v1.6.502
 
@@ -525,8 +547,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.502` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.502).
+Before deploying, verify the `v1.6.503` numeric tag and immutable digest in
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.503).
 A registry login is not required. Pin the version and retain the database and
 platform volumes:
 
@@ -535,7 +557,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.502@sha256:ee6d0141574280473cb27a638814ae924b3d5bfe344f1ee0e1741aae0f3efddb
+  ghcr.io/pasturestack/server:v1.6.503@sha256:4a8997768c5c16a9aefdc682f906aab34417e204d622d03116e62b2fcfe0af79
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -544,7 +566,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.502@sha256:ee6d0141574280473cb27a638814ae924b3d5bfe344f1ee0e1741aae0f3efddb
+    image: ghcr.io/pasturestack/server:v1.6.503@sha256:4a8997768c5c16a9aefdc682f906aab34417e204d622d03116e62b2fcfe0af79
     restart: unless-stopped
     ports:
       - "8080:8080"
