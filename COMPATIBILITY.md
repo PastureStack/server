@@ -2,6 +2,26 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
+Published Server `v1.6.502` packages Web Console `1.6.166` for the shared
+inactive-state display label in thirteen supported catalogs. Only display
+translations and component/release pins change; Engine `v0.183.331`, its exact
+WAR, API/schema, authorization, session ownership, OIDC/MFA, icon/color and
+state semantics, deployment overrides and firewall contracts are unchanged.
+No migration or runtime patch is required. Official publisher 37003831065
+passed startup/restart, 34 MFA/API checks, TLS, exact-rootfs single-layer and
+final-image SBOM/security checks. Anonymous registry and 23 release assets
+were verified against the immutable publication. The public image is
+`ghcr.io/pasturestack/server:v1.6.502@sha256:ee6d0141574280473cb27a638814ae924b3d5bfe344f1ee0e1741aae0f3efddb`.
+Eight Medium package findings covering four CVEs remain vendor-pending.
+Component validation passed 768/768 tests, including eight state/date rendering
+cases; it does not establish all packaged UI, resource/role or layout cases.
+The QA upgrade and one restart returned HTTP 200/pong with unchanged runtime
+configuration, named mounts and account/credential/setting/membership/host counts;
+the prior immutable 501 container and database backup were retained. This is
+deployment preservation evidence, not native-browser or role-matrix acceptance.
+The full permission/resource/locale matrix remains INCOMPLETE. See
+[the release notes](docs/releases/server-1.6.502.md).
+
 Published Server `v1.6.501` packages Web Console `1.6.165` to keep complete
 container names readable on Host cards without shrinking IP/action areas.
 The shared subpod layout alone changes; real names/IDs, API permissions,
