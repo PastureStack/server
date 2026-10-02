@@ -2,10 +2,14 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
-Server `v1.6.504` 目前為候選，固定封裝已正式發行的 Web Console `1.6.168`；
-Web tested source／archive及 SSH-signed numeric immutable tag已讀回。
-Build pins已同步正式168座標，Server成品及QA尚待驗收；安裝指引仍留已發布503，
-不使用假 SHA／commit或將未發布Server候選視為可安裝成品。
+已發布的 Server `v1.6.504` 固定封裝 Web Console `1.6.168`；Web tested source／
+archive、SSH-signed numeric tag 與 Server 正式成品均已讀回。Server source 為
+`e33ef8565ebe40dd188170baa46da8092fc131b9`，不可變映像為
+`ghcr.io/pasturestack/server:v1.6.504@sha256:11393d4a5189601464d2a2e1ffc823160bedd6bda6c1fbae12457337f7cb9e2f`。
+正式 publisher `37063207602` 與 23 個公開 assets／22 項 SHA-256 驗證通過。
+測試環境首次啟動／重啟均 HTTP 200/pong，runtime、環境參數、既有掛載及五表
+counts 無差異；503 回復容器與資料庫備份保留，health=null，不稱 healthy。
+安裝指引已對齊本版；正式公司站未部署或修改。
 
 Volume 的新增 CTA、直接新增路由及既有 update 路由都要求目前 project 與
 schemaProjectId 相符；建立仍須實際 schema 的 POST 能力，update 原有 PUT
@@ -20,11 +24,12 @@ API/schema、後端授權、資料／state 語意、Engine `v0.183.331`／exact 
 session ownership、OIDC/MFA、部署參數、相依套件、安全門檻及多階段／單 runtime
 layer 契約不變；無需 migration 或 runtime patch。Web168正式CI `37061716638`
 通過788／788個 QUnit案例、fail／skip／todo皆為0，包含16個 scoped Volume案例；
-兩次production archive一致。這僅證明Web component，並非Server504成品／部署、
-原生建立／列表／清理或完整矩陣 PASS。Vendor-pending
+兩次production archive一致。上述 component 與成品／部署證據不代替原生
+建立／列表／清理或完整矩陣 PASS。首次原生驗收在任何資源寫入前，因工具
+誤要求 v1 schema 的 isNative 欄位中止；原 HOLD 保留，原生驗收仍待完成。Vendor-pending
 8 個 Medium package findings／4 個 CVE、reviewAfter、VEX statements 與 policy
 保留；正式504僅同步必要的 release-coordinate metadata，不放寬任何門檻。
-詳見[候選發行說明](docs/releases/server-1.6.504.md)。
+詳見[發行說明](docs/releases/server-1.6.504.md)。
 
 Published Server `v1.6.503` packages immutable Web Console `1.6.167` for
 schema-only ID lookup normalization. It does not change API schemas, server

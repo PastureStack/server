@@ -1,9 +1,11 @@
 # Server v1.6.504
 
-Server候選整合，尚未正式發布。固定封裝已正式發行的 Web Console `1.6.168`，
-正式 tested source／archive與 SSH-signed numeric immutable tag已核實並同步build pins。
-尚無 Server504 immutable image／digest，不提供候選安裝命令。
-Server正式 artifact、publisher、QA部署及原生瀏覽器驗收均待完成。
+已正式發布，固定封裝 Web Console `1.6.168`，不覆寫既有版本。
+Server source：`e33ef8565ebe40dd188170baa46da8092fc131b9`。
+不可變映像：`ghcr.io/pasturestack/server:v1.6.504@sha256:11393d4a5189601464d2a2e1ffc823160bedd6bda6c1fbae12457337f7cb9e2f`。
+[正式 publisher 37063207602](https://github.com/PastureStack/server/actions/runs/37063207602)
+通過啟動／重啟、34 項 MFA/API 檢查、TLS、單 runtime layer 與成品 SBOM／安全門檻。
+23 個公開 assets、22 項 SHA-256、匿名 registry 與 component identity 已核實。
 
 Web component公開座標：
 
@@ -14,7 +16,7 @@ Web component公開座標：
 - archive SHA-256：`fdd1d33d47b032eef8b5b6d5dbb1401110daf860d84a6c17003577463d3d2cb5`
 
 正式CI `37061716638` 與immutable匿名下載讀回相符；正常merge與tested source樹相同。
-這些是Web component publication證據，不是Server發布或packaged native browser驗收。
+這些是 Web component publication 證據，不代替 packaged native browser 驗收。
 
 ## Volume 入口與未配置 local 列表
 
@@ -36,7 +38,7 @@ error 不吞，保留既有 route／growl 診斷，不自動重試。
 普通清理只使用當次資源 advertised deactivate 與 advertised remove：只有目前
 project/schema 相符且 actual advertised deactivate 才開原生停用，待 active→detached
 及模型同步後沿用原生刪除，不假造動作、不重送清理或更改已被
-工作負載使用的 Volume。這是候選流程界線，尚不是 packaged lifecycle PASS。
+工作負載使用的 Volume。這是產品流程界線，尚不是 packaged lifecycle PASS。
 
 ## 證據與相容性界線
 
@@ -44,8 +46,13 @@ Web168正式CI通過788／788個 QUnit案例，fail／skip／todo皆為0；包�
 Volume案例，涵蓋入口能力與schema freshness、未配置關聯／live cache、錯誤傳遞
 及原生停用動作守門。兩次production build archive SHA-256一致；正式匿名asset
 與CI成品相符。未配置區段的5個翻譯key已封裝於13語系，包含關聯不完整的人話錯誤。
-這不代表Server504發布／部署、原生create／edit／cancel／deactivate／delete或完整
-resource／role／locale矩陣驗收。歷史HOLD保留，完整矩陣仍INCOMPLETE。
+測試環境 8080 已升級並重啟一次，HTTP 200/pong 分別於第 10／9 次檢查成立。
+runtime、環境參數、既有掛載及 account／credential／setting／project_member／host
+counts 均保持；三個快照皆 529／4123／38／14／3。503 停止回復容器與資料庫備份
+保留；Docker health=null，不稱 healthy。未修改正式公司站、HAProxy 或 OIDC。
+首次原生 Volume 驗收在任何資源寫入前，因工具錯誤要求 v1 schema 的 isNative
+欄位中止；原始 HOLD 保留。原生 create／edit／cancel／deactivate／delete 與完整
+resource／role／locale 矩陣仍未完成，不能以發行、QUnit 或部署成功代替。
 
 Engine `v0.183.331`、source `515a5d37a1194f827bc3ffde34db729905ecb2b1` 與 WAR
 SHA-256 `0c8310d9e9a872589972658d2fd8cb88f59f473ab8072a4746df5b0f4ef9e70e`
@@ -56,5 +63,13 @@ No migration or runtime patch is required.
 Vendor-pending 保留原有 8 個 Medium package findings／4 個 CVE 與 reviewAfter；
 VEX 51 statements、policy、Critical/High、fix-available、untracked／secret
 門檻原封不動。正式504只同步必要 release-coordinate metadata；本文件不
-推測新成品 raw scan count，不宣稱零 CVE。多階段建置及單 runtime layer
-契約保留。Quick start 繼續使用已發布503的 immutable image，直到新成品核實。
+宣稱零 CVE。成品 raw scan count 為 52；多階段建置及單 runtime layer
+契約保留。Quick start 已對齊已核實的 504 immutable image。
+
+## 升級與回復
+
+先備份資料庫與既有資料卷，再僅更換映像版本及 digest；保留原 Compose 環境
+參數、named volumes、restart policy、AppArmor、HTTPS origin 與 nftables 架構。
+無需資料庫 migration 或 runtime patch。保留先前已知可用的 immutable image
+及備份；回復時沿用原資料卷與設定，不重建或清除它們。此版本不代表完整
+權限／資源／語系矩陣通過，請依部署需求確認上述待驗項目。
