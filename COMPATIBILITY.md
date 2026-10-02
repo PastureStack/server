@@ -2,6 +2,14 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
+Server `v1.6.498` is an unpublished source candidate for Engine `v0.183.329`.
+Readonly/restricted GenericObject key/resourceData visibility changes in both
+API versions; privileged roles retain those fields. Use typed plugin APIs for
+safe low-role configuration reads. No stored-data migration, authentication,
+session, Compose/AppArmor/nftables or Web Console version change is introduced.
+Immutable publication and packaged role/browser gates remain pending.
+See [the candidate notes](docs/releases/server-1.6.498.md).
+
 Published Server `v1.6.497` packages officially published Web Console `1.6.164`.
 It includes the shared state/date display-locale fixes
 and Receiver validation-label fixes without changing API authorization, driver
