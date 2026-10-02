@@ -8,9 +8,14 @@ REPO = pathlib.Path(__file__).resolve().parents[1]
 SCRIPT = (REPO / 'scripts/check-server-api-explorer-patch.sh').read_text(encoding='utf-8')
 MARKER = '# Install examples must follow the highest actually published numeric release;'
 ADAPTER = SCRIPT.split(MARKER, 1)[1].split("python3 - <<'PY'\n", 1)[1].split('\nPY\n', 1)[0]
-FILES = {name: (REPO / name).read_text(encoding='utf-8') for name in
-         ('README.md', 'COMPATIBILITY.md', 'docs/releases/server-1.6.498.md')}
 IMAGE = 'ghcr.io/pasturestack/server:v1.6.498@sha256:bd8671e99fbf3661f91d6667f6cb04b16ade89a8d463ae872ffd84ce1e65a6e7'
+FILES = {
+    'README.md': ('## v1.6.499\n\nPreparing only.\n\n## v1.6.498\n\nThe immutable image is `' + IMAGE +
+                  '`.\n\n## Quick start\n\nhttps://github.com/PastureStack/server/releases/tag/v1.6.498\n\n'
+                  '```sh\ndocker run\n  ' + IMAGE + '\n```\n\n```yaml\nservices:\n  server:\n    image: ' + IMAGE + '\n```\n'),
+    'COMPATIBILITY.md': 'Published Server v1.6.498\n' + IMAGE,
+    'docs/releases/server-1.6.498.md': '# Server v1.6.498\n\nOfficially published: ' + IMAGE,
+}
 
 
 def verify(files):
