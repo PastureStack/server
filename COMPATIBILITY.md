@@ -2,6 +2,18 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
+Candidate Server `v1.6.501` packages Web Console `1.6.165` to keep complete
+container names readable on Host cards without shrinking IP/action areas.
+The shared subpod layout alone changes; real names/IDs, API permissions,
+authentication/session ownership, Engine `v0.183.331`/exact WAR, database
+schema, Compose overrides, named volumes, AppArmor, restart and nftables
+contracts remain unchanged. No migration or runtime patch is required.
+Web source/archive are pinned in the build and verified by actual 767/767 CI
+cases with identical production archives. Server publication and native
+QA8080 visual/menu/reload acceptance remain pending; the historical 500
+visual HOLD must not be promoted to PASS. See
+[the candidate notes](docs/releases/server-1.6.501.md).
+
 Published Server `v1.6.500` packages Engine `v0.183.331` to accept only the two
 stable imported-container lifecycle pairs, running/active and stopped/inactive,
 in both selection and the name-only full-row CAS. All existing ownership,
