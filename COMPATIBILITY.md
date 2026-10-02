@@ -2,6 +2,15 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
+Candidate Server `v1.6.503` is intended to package Web Console `1.6.167` for
+schema-only ID lookup normalization. It does not change API schemas, server
+authorization, ordinary resource IDs, project-store isolation, Engine
+`v0.183.331`, authentication/session ownership, MFA or runtime/firewall settings.
+Missing schemas do not grant capabilities. No migration or runtime patch is
+required. Publication and packaged permission/locale QA remain separate pending
+gates; existing 502 HOLD results are not promoted. See
+[the candidate release notes](docs/releases/server-1.6.503.md).
+
 Published Server `v1.6.502` packages Web Console `1.6.166` for the shared
 inactive-state display label in thirteen supported catalogs. Only display
 translations and component/release pins change; Engine `v0.183.331`, its exact

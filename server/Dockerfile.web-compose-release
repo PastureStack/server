@@ -29,9 +29,9 @@ ARG SOURCE_DATE_EPOCH
 COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host-api-sha256
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.166
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.166.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=9205fbaec6e80f31846212f0949c3eac0fae083f80c6c46a3122d64c4d9da6c6
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.167
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.167.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=e8e714fc06282de75a3570aac1d4d4d04a3c9478d982d0d5aaeae14efa8ebbaf
 ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -395,9 +395,9 @@ ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7
 ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.3
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.166
-ARG WEB_CONSOLE_ARTIFACT_SHA256=9205fbaec6e80f31846212f0949c3eac0fae083f80c6c46a3122d64c4d9da6c6
-ARG WEB_CONSOLE_COMMIT=b63fa15f6726cb78659ae43258dfc802b30d6d04
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.167
+ARG WEB_CONSOLE_ARTIFACT_SHA256=e8e714fc06282de75a3570aac1d4d4d04a3c9478d982d0d5aaeae14efa8ebbaf
+ARG WEB_CONSOLE_COMMIT=dff35fc4bce340e21cac7204146a7bcb20a7b60b
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_COMMIT=5589ef8fda68ae56e1afd64096965d452ee8a17e
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -745,12 +745,12 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.502" \
+      org.opencontainers.image.version="v1.6.503" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460" \
       org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.502
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.503
 ENV CATTLE_CATTLE_VERSION=v0.183.331
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_SECURITY_SNAPSHOT=${UBUNTU_RUNTIME_SECURITY_SNAPSHOT}
