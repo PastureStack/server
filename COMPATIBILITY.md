@@ -2,6 +2,16 @@
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 
+Server `v1.6.505` 候選封裝 Engine `v0.183.332` 與既有 Web Console `1.6.168`。
+本次 API/schema 有窄幅相容性補齊：v1 與 v2-beta Volume 恢復 server-owned
+唯讀 `isNative`。客戶端不能寫入該欄位；其他欄位、methods、完整 actions、
+角色限制及環境隔離不變，無資料庫 migration。8080 的實際 504 schema 讀回
+證明兩個 API 根都缺漏分類，補充更正先前只歸因於 v1 驗收工具的診斷；
+原始零資源寫入 HOLD 不改成 PASS。18 個 scoped 單元測試通過，不代替正式
+成品發布或原生建立／列表／取消／停用／刪除驗收。immutable digest 尚未
+產生；部署環境、掛載、restart、AppArmor、HTTPS origin、OIDC/MFA 與
+firewall 契約保持。Vendor-pending、VEX 與安全門檻不放寬。
+
 已發布的 Server `v1.6.504` 固定封裝 Web Console `1.6.168`；Web tested source／
 archive、SSH-signed numeric tag 與 Server 正式成品均已讀回。Server source 為
 `e33ef8565ebe40dd188170baa46da8092fc131b9`，不可變映像為

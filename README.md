@@ -11,6 +11,24 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.505 — candidate
+
+本候選版將封裝 Engine `v0.183.332`，Web Console 維持已發布的 `1.6.168`。
+8080 的版本綁定讀回確認：504 的 v1 與 v2-beta Volume schema 都缺少
+`isNative`，不只是驗收工具的 v1 假設。這讓前端無法安全判定未配置 local
+Volume；不能把缺少分類當成 `false`。
+
+Engine 修補在共用 user overlay 與 frozen v1 schema adapter 恢復 server-owned
+唯讀 `volume.isNative`，保留資料庫實際 true／false 與既有 server default。
+不新增 create/update 權限，不改其他欄位、methods、actions、環境隔離或
+資料庫 schema。18 個直接相關單元測試已通過，fail／error／skip 都為 0；
+正式成品、不可變 digest、8080 原生 Volume 生命週期仍待驗收。
+不以候選、單元測試或既有 Web CI 宣稱完整矩陣通過。
+
+正式發布前 Quick start 保留已核實的 504 映像。部署參數、OIDC/MFA、
+多階段建置、單 runtime layer 與安全門檻不變；不使用 runtime patch。
+詳見[候選發行說明](docs/releases/server-1.6.505.md)。
+
 ## v1.6.504
 
 已正式發布，固定封裝 Web Console `1.6.168`。Server source 為
