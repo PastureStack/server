@@ -12,7 +12,7 @@ Web source/archive are pinned in the build and verified by actual 767/767 CI
 cases with identical production archives. Publisher 36980705366 passed,
 including single-layer comparison, startup/restart, 34 MFA/API cases,
 TLS and exact final-image SBOM/security checks. Public digest is
-`sha256:0a671e2695eecc74d79ef666267a40e81172205f0f8b1d0b12a7dbbed446becd`.
+`ghcr.io/pasturestack/server:v1.6.501@sha256:0a671e2695eecc74d79ef666267a40e81172205f0f8b1d0b12a7dbbed446becd`.
 Native QA initial/reload accepted six exact Docker IDs and complete names,
 including distinguishing rollback suffixes. Actual menu open/close, separate
 IP/action areas and both screenshots passed scoped review, with zero resource
