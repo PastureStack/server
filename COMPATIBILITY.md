@@ -1,17 +1,22 @@
 # Compatibility Contract
 
-## Server v1.6.510 source candidate
+## Server v1.6.510 published
 
-Server `v1.6.510` candidate packages Web Console `1.6.172` 的 create-only first
+Server `v1.6.510` packages Web Console `1.6.172` 的 create-only first
 delivery，Engine保留正式 `v0.183.333`。canonical store 只保存正常資源身分；
 首次201限定欄位由 request-local delivery 交給本次非 canonical modal clone。
-Web172正式 source／archive 已固定並匿名讀回，808／808測試通過；Server510 build、發布、部署及新key
-create／edit／deactivate／delete尚未驗收，不宣稱首次交付或生命周期PASS。
+Web172正式 source／archive 已固定並匿名讀回，808／808測試通過。
+Server正式 source為 `1a323f5f690ed89a4f03e7ead1ad2e51ddeb4fdf`，映像為
+`ghcr.io/pasturestack/server:v1.6.510@sha256:82e4ee7fa51dae3fb6b1f339ee794d17b593f6feae2fd313ef5354ccaaf2d89f`。
+正式 publisher37110936143與公開讀回通過：23 assets／22 SHA-256、單 runtime
+layer、34 MFA/API、首次啟動／重啟、TLS、SBOM與成品scan均核對。
+QA部署及新key create／edit／deactivate／delete尚待原生驗收，不宣稱生命周期PASS。
 No migration or runtime patch is required.
 460 digest-pinned base、單 runtime layer、role/schema、登入、production環境變數與
-volumes不變。VEX51及8 Medium／4CVE vendor-pending exact-set只是候選沿用政策，
-不是510新runtime scan；KB／SBOM與publicreadback仍待實際發布。
-509正式digest、6974／6977 scoped closures、6982 HOLD與active保留資源不重寫或升格。
+volumes不變。510成品scan保留raw52、VEX51與8 Medium／4CVE
+vendor-pending exact-set（review 2026-10-20）；不宣稱零CVE。
+509正式digest、6974／6977 scoped closures、6982 HOLD與active保留資源不重寫或升格；
+公司站不部署，完整矩陣仍 INCOMPLETE。
 
 ## Server v1.6.509 published
 
