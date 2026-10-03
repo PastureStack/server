@@ -11,6 +11,23 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.509 — 候選，尚未發布
+
+本次修正 Engine API 回應的共用 create-only 邊界：只有真正的資源建立
+（POST 且沒有 action）可以首次交付建立時限定欄位；停用等 POST action
+不得再回傳該欄位。API Key 的首次金鑰交付維持原有行為，不改角色授權、
+資料庫 schema、OIDC、MFA、主機防火牆或使用者的部署參數。
+
+封裝已正式發布的 Engine `v0.183.333`，Web Console 保持 `1.6.171`。
+Engine exact source `0d94f7d879d314235e582a7f4062914a27b82709`，
+WAR SHA256 `8c42c0982cbc2f4569fa265ad320b341551758cb4fc0bc6d79ba06d70e20d328`；
+正式 CI273 suites／1164 tests、隔離啟動與六個發行檔案讀回已通過。
+Server 不可變映像及 QA 8080 原生 API Key／隔離主機驗收尚未完成；
+不得把下列 508 的結果當作 509 通過。
+完整權限、所有資源 ID、所有語系與 UI 版面矩陣仍未完成。
+安裝指令暫時保留最後已發布的 508，待 509 正式 digest 驗證後才更新。
+詳見[候選說明](docs/releases/server-1.6.509.md)。
+
 ## v1.6.508 — 已發布
 
 本版封裝 Web Console `1.6.171`，來源固定為

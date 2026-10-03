@@ -1,5 +1,19 @@
 # Compatibility Contract
 
+## Server v1.6.509 candidate
+
+Server `v1.6.509` candidate packages Web Console `1.6.171`，封裝已正式發布的
+Engine `v0.183.333`。create-only 欄位僅限真正的 POST create response，
+不包含 POST action；既有首次 API Key 金鑰交付、角色授權、所有 frozen
+schema、登入、防火牆與持久資料契約保持不變。
+
+No migration or runtime patch is required.
+Engine CI273 suites／1164 tests、隔離啟動與正式元件六檔讀回已通過；
+Server 映像發行及 QA 8080 同 ID 原生生命週期驗收仍待完成；
+此候選不沿用 508 的 PASS，不代表完整權限／語系／版面矩陣通過。
+
+## Server v1.6.508 published
+
 Server `v1.6.508` 已正式發布，封裝 Web Console `1.6.171`。
 Server source為 `69744f3ef0c00c14147fb83480306e07ccb667d9`，不可變映像為
 `ghcr.io/pasturestack/server:v1.6.508@sha256:e24f9993593bb609a7a0e26dc12fbbb21ab402b73c60af28955b988b83b6ac04`。
