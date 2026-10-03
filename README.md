@@ -11,9 +11,9 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
-## v1.6.511 — 候選；Web173已發布，Server封裝仍待驗證
+## v1.6.511 — 已發布；QA部署已核對，原生驗收仍待完成
 
-本候選準備封裝 Web Console `1.6.173` 的原生 Project Template 卡片名稱修正：
+本版封裝 Web Console `1.6.173` 的原生 Project Template 卡片名稱修正：
 template choices 使用模型既有 `name`，不再讀取未實作的 `localizedName`。
 Web173正式 source為 `c8b8bb2659fdad3539cf6a72866c94a77ec516b6`，
 tree為 `f590310e157edea79de81fcf333e8b39dbc5677e`；
@@ -23,13 +23,32 @@ CI archive SHA256為
 `a566684e6e0831630a15cb7212989c0e9fe707ed07965156c2b664b9cdb5ba27`；
 數字tag `1.6.173` 已簽章發布；匿名公開byte讀回與該SHA256一致，
 詳見[Web Console發行](https://github.com/PastureStack/web-console/releases/tag/1.6.173)。
-封裝pins已對齊該CI成品；Server511尚未建置或發布，來源窄測不是成品PASS。
-Engine保留正式 `v0.183.333`，沿用460 digest-pinned base、最終單runtime layer
-驗證與既有安全exact-set，不變更角色、schema、production環境或持久volumes。
-QA部署、原生Project／Host／全新key生命週期與完整矩陣仍待各自驗收；
+Server source為 `e995f8f35bc6335effaceb6c973f7915c68df2ab`，不可變映像為
+`ghcr.io/pasturestack/server:v1.6.511@sha256:bce474ce4403398044a7c24aafe6c8314bac38b44731540c5ffaa2dfc40699cd`。
+[正式publisher37116124788](https://github.com/PastureStack/server/actions/runs/37116124788)
+與公開成品讀回通過：23 assets／22 SHA-256、public tag／digest／config一致、
+單runtime layer；隔離映像首次啟動13次／重啟9次探測後均HTTP200/pong，
+34 MFA/API、TLS1.2／1.3、private no-store與不受信任TLS憑證拒絕均核對。
+實際成品scan保留raw52 findings、VEX51、8 Medium package findings／4 vendor-pending CVE，
+複核期限2026-10-20；Critical／High、available-fix、untracked與secrets均為0，
+不宣稱零CVE。Engine保留正式 `v0.183.333`、460 digest-pinned base與既有安全exact-set，
+不變更角色、schema、production環境或持久volumes。
+QA125/8080升級與獨立只讀核對通過，首次啟動11次／重啟10次探測後HTTP200/pong；
+既有binds、environment、`unless-stopped`、`docker-default`與五項DB計數保持。
+映像未定義Healthcheck，不宣稱Docker healthy。
+當版既有Template117原生只讀proof已通過：3 Full17/14 guards、0資源寫入，
+source-bound proof核對同一ID及空stacks/services；這不是native create finalizer。
+當版Process原生list/link/detail及同一ID direct GET只讀驗收通過：兩API roots×六角色
+共12/12格、0資源寫入；僅涵蓋一個實際ID，不代表所有ID或write操作。
+當版全新Project key `1c6998` 已獨立核對為
+`DERIVED_SCOPED_KEY511_VERIFIED_NOT_ORIGINAL_PASS`：同一次實機child有4筆原生寫入、
+13 guards、6筆停用／刪除前cookie-free issued Basic GET、4 barriers及18項首次交付判斷。
+原parent因QA child receipt的 `resourceId`／`generatedKeyId` schema失配仍保留HOLD；只讀derived核對
+未重寫原件或重跑寫入，詳見[發行說明的證據與範圍](docs/releases/server-1.6.511.md)。
+原生Project／Host及完整矩陣仍待各自驗收，部署或key scoped結果不代替其他流程PASS。
 歷史scoped PASS與HOLD不移植為511成功，fullMatrix仍 INCOMPLETE。
-Quick start繼續指向已公開核實的510映像，待511正式digest讀回後才更新。
-詳見[候選發行說明](docs/releases/server-1.6.511.md)。
+Quick start對齊本版已公開核實的完整不可變映像；510與既有回復說明保留。
+詳見[發行說明](docs/releases/server-1.6.511.md)。
 
 ## v1.6.510 — 已發布；原生操作與完整矩陣仍待驗收
 
@@ -763,8 +782,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.510` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.510).
+Before deploying, verify the `v1.6.511` numeric tag and immutable digest in
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.511).
 A registry login is not required. Pin the version and retain the database and
 platform volumes:
 
@@ -773,7 +792,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.510@sha256:82e4ee7fa51dae3fb6b1f339ee794d17b593f6feae2fd313ef5354ccaaf2d89f
+  ghcr.io/pasturestack/server:v1.6.511@sha256:bce474ce4403398044a7c24aafe6c8314bac38b44731540c5ffaa2dfc40699cd
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -782,7 +801,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.510@sha256:82e4ee7fa51dae3fb6b1f339ee794d17b593f6feae2fd313ef5354ccaaf2d89f
+    image: ghcr.io/pasturestack/server:v1.6.511@sha256:bce474ce4403398044a7c24aafe6c8314bac38b44731540c5ffaa2dfc40699cd
     restart: unless-stopped
     ports:
       - "8080:8080"

@@ -1,8 +1,8 @@
 # Compatibility Contract
 
-## Server v1.6.511 candidate
+## Server v1.6.511 published
 
-Server `v1.6.511` candidate packages Web Console `1.6.173` 的原生Project
+Server `v1.6.511` packages Web Console `1.6.173` 的原生Project
 Template卡片名稱修正：使用模型既有 `name`，不依賴未實作的 `localizedName`。
 Web正式source為 `c8b8bb2659fdad3539cf6a72866c94a77ec516b6`，
 tree為 `f590310e157edea79de81fcf333e8b39dbc5677e`。
@@ -10,13 +10,30 @@ CI `37115288389` 通過812／812，fail／skip／todo為0，兩次production成�
 CI archive SHA256為
 `a566684e6e0831630a15cb7212989c0e9fe707ed07965156c2b664b9cdb5ba27`。
 Web數字tag `1.6.173` 已簽章發布，匿名公開byte讀回與CI SHA256一致；
-Server source gates仍不是Server成品PASS。
+Server source為 `e995f8f35bc6335effaceb6c973f7915c68df2ab`，不可變映像為
+`ghcr.io/pasturestack/server:v1.6.511@sha256:bce474ce4403398044a7c24aafe6c8314bac38b44731540c5ffaa2dfc40699cd`。
+正式publisher37116124788與公開讀回通過：23 assets／22 SHA-256、單runtime layer，
+隔離首次啟動13次／重啟9次後HTTP200/pong、34 MFA/API、TLS1.2／1.3、
+private no-store與不受信任TLS憑證拒絕均核對。
 Engine維持正式 `v0.183.333`，460 digest-pinned base、單runtime layer驗證、
 角色／schema／登入／production環境／持久volumes契約與安全門檻保留。
 No migration or runtime patch is required.
-Server511正式source／image digest／build／start-restart／scan／SBOM／公開讀回
-尚待本版實證，不援引510成功數字；Quick start仍是公開510digest。
-QA部署、全新key、Project與Host原生流程皆獨立pending，完整矩陣 INCOMPLETE；
+Server511實際scan保留raw52 findings、VEX51 statements、8 Medium package findings／
+4 vendor-pending CVE，review 2026-10-20；Critical／High、available-fix、
+untracked與secrets均為0，不宣稱零CVE。Quick start採本版已核實公開digest。
+QA125/8080升級與獨立只讀核對通過：首次啟動11次／重啟10次探測後HTTP200/pong，
+既有binds、environment、`unless-stopped`、`docker-default`與五項DB計數不變。
+映像未定義Healthcheck，不宣稱Docker healthy。
+當版既有Template117原生只讀proof已通過：3 Full17/14 guards、0資源寫入，
+source-bound proof核對同一ID及空stacks/services；這不是native create finalizer。
+當版Process原生list/link/detail及同一ID direct GET只讀驗收通過：兩API roots×六角色
+共12/12格、0資源寫入；僅涵蓋一個實際ID，不代表所有ID或write操作。
+當版全新Project key `1c6998` 已獨立核對為
+`DERIVED_SCOPED_KEY511_VERIFIED_NOT_ORIGINAL_PASS`：同一次實機child有4筆原生寫入、
+13 guards、6筆停用／刪除前cookie-free issued Basic GET、4 barriers及18項首次交付判斷。
+原parent的QA receipt identity schema失配HOLD不重寫，只讀derived核對沒有重跑寫入；
+詳見[發行說明的證據與範圍](docs/releases/server-1.6.511.md)。
+Project與Host原生流程仍獨立pending，完整矩陣 INCOMPLETE；不以key scoped結果升格。
 既有版本的scoped PASS與歷史HOLD不重寫或升格，公司站不部署。
 
 ## Server v1.6.510 published
