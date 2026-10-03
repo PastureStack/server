@@ -1,5 +1,13 @@
 # Compatibility Contract
 
+Server `v1.6.507` 是尚待正式成品與 QA 驗收的候選，預定封裝
+Web Console `1.6.170`（source `09df1480c5f4b58c6a9a9060ff94d980792f7015`）。
+範圍僅 nullable Volume 關聯欄位的前端分類相容性；Engine `v0.183.332`／
+原 WAR、API／Auth、角色授權、pool/mount 證明、部署參數與安全門檻保留。
+正式 CI archive SHA-256 為 `900974b07bb20ba5b2e7c1dede7012a53c6e2c96cd094c67cb7019434c4f27c9`；
+Web170 已正式公開；Server507 成品及 QA／原生驗收仍 pending，不借用506證據。
+完整矩陣仍 INCOMPLETE，506 已發布／部署實績及歷史 HOLD 保留。
+
 Server `v1.6.506` 已正式封裝 Web Console `1.6.169`，將本機 Volume 的
 `externalId` 視為識別碼而非配置綁定。完整 pool/mount 關聯、主機／image／
 instance null binding、環境 schema 與 API 授權保護均不變。Engine 保持
