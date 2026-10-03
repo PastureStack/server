@@ -380,7 +380,7 @@ require_marker docs/releases/server-1.6.508.md '# Server v1.6.508' \
 require_marker docs/releases/server-1.6.508.md 'No migration or runtime patch is required.' \
     SERVER_CREATE_RESPONSE_ORDER_BOUNDARY_MISSING
 require_marker README.md '## v1.6.508' SERVER_CREATE_RESPONSE_ORDER_README_MISSING
-require_marker COMPATIBILITY.md 'Server `v1.6.508` candidate packages Web Console `1.6.171`' \
+require_marker COMPATIBILITY.md 'Server `v1.6.508` 已正式發布，封裝 Web Console `1.6.171`。' \
     SERVER_CREATE_RESPONSE_ORDER_COMPATIBILITY_MISSING
 
 for published_current_release_marker in \

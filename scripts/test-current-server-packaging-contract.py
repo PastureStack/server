@@ -12,7 +12,11 @@ DOCKER = 'server/Dockerfile.web-compose-release'
 BUILD = 'server/build-api-explorer-patch-image.sh'
 VEX = 'server/security/openvex.json'
 VENDOR = 'server/security/vendor-pending.json'
-FILES = {name: (REPO / name).read_text(encoding='utf-8') for name in (DOCKER, BUILD, VEX, VENDOR)}
+COMPATIBILITY = 'COMPATIBILITY.md'
+FILES = {name: (REPO / name).read_text(encoding='utf-8') for name in (DOCKER, BUILD, VEX, VENDOR, COMPATIBILITY)}
+PUBLISHED_508 = 'Server `v1.6.508` 已正式發布，封裝 Web Console `1.6.171`。'
+STALE_508_CANDIDATE = 'Server `v1.6.508` candidate packages Web Console `1.6.171`'
+COMPATIBILITY_CODE = 'SERVER_CREATE_RESPONSE_ORDER_COMPATIBILITY_MISSING'
 WEB_SHA = '49fac41ca93eb628d0877104f9512ef382ffd9dbc89e04c940196b3a9c57798b'
 WEB_SOURCE = 'fc37f5af9320e492bec7e7244cd62144908b720e'
 ENGINE_SHA = '8c42c0982cbc2f4569fa265ad320b341551758cb4fc0bc6d79ba06d70e20d328'
@@ -31,6 +35,7 @@ LEGACY_ENGINE_COORDINATES = {
     ENGINE_SOURCE: '7a625eee58fb2bdba83d2f008bdf7dd3c0ae4295',
 }
 EXPECTED = {
+    COMPATIBILITY_CODE: (COMPATIBILITY, PUBLISHED_508),
     'SERVER_INCREMENTAL_RELEASE_VERSION_MISSING': (DOCKER, 'org.opencontainers.image.version="v1.6.509"'),
     'SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING': (DOCKER, 'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.509'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RELEASE_TAG=1.6.171'),
@@ -101,7 +106,7 @@ def engine_gate_markers(gate, variable):
 def verify(files, gate=GATE):
     # Extract the actual single-quoted require_marker calls. Membership has the
     # same fixed-string semantics as the unchanged gate's grep -Fq -- invocation.
-    paths = {'$release_dockerfile': DOCKER, '$build_script': BUILD}
+    paths = {'$release_dockerfile': DOCKER, '$build_script': BUILD, COMPATIBILITY: COMPATIBILITY}
     actual = {}
     for line in gate.replace('\\\n', ' ').splitlines():
         if line.startswith('require_marker ') and any(code in line for code in EXPECTED):
@@ -152,7 +157,9 @@ def verify(files, gate=GATE):
 def previous_gate(gate=GATE):
     # Only quoted current markers are changed; unrelated gates may evolve freely.
     replacements = {}
-    for _, marker in EXPECTED.values():
+    for name, marker in EXPECTED.values():
+        if name == COMPATIBILITY:
+            continue  # Published508 history does not become a stale candidate.
         if stale(marker) != marker:
             replacements["'" + marker + "' "] = "'" + stale(marker) + "' "
     replacements.update({
@@ -172,8 +179,29 @@ def previous_gate(gate=GATE):
 
 
 class Tests(unittest.TestCase):
-    def test_actual_current_gate_and_four_files_agree(self):
+    def test_actual_current_gate_and_five_files_agree(self):
         verify(FILES)
+
+    def test_published_508_compatibility_matches_actual_document(self):
+        self.assertIn(PUBLISHED_508, FILES[COMPATIBILITY].splitlines())
+        self.assertNotIn(STALE_508_CANDIDATE, FILES[COMPATIBILITY])
+        self.assertIn("require_marker COMPATIBILITY.md '" + PUBLISHED_508 + "'", GATE)
+        self.assertIn("require_marker COMPATIBILITY.md '" + PUBLISHED_508 + "'", previous_gate())
+        verify(FILES)
+
+    def test_missing_stale_candidate_or_wrong_web_compatibility_rejected(self):
+        for marker in ('', STALE_508_CANDIDATE, PUBLISHED_508.replace('1.6.171', '1.6.170')):
+            with self.subTest(marker=marker):
+                files = dict(FILES)
+                files[COMPATIBILITY] = files[COMPATIBILITY].replace(PUBLISHED_508, marker)
+                with self.assertRaisesRegex(AssertionError, COMPATIBILITY_CODE):
+                    verify(files)
+
+    def test_stale_508_candidate_gate_rejected_even_with_current_document(self):
+        stale_gate = GATE.replace("'" + PUBLISHED_508 + "'", "'" + STALE_508_CANDIDATE + "'")
+        self.assertNotEqual(stale_gate, GATE)
+        with self.assertRaisesRegex(AssertionError, 'CURRENT_GATE_PIN_MISMATCH'):
+            verify(FILES, stale_gate)
 
     def test_previous_gate_and_each_old_component_pin_rejected(self):
         with self.assertRaisesRegex(AssertionError, 'CURRENT_GATE_PIN_MISMATCH'):
