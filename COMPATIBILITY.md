@@ -1,5 +1,26 @@
 # Compatibility Contract
 
+## Server v1.6.512 candidate
+
+Server `v1.6.512` candidate packages Web Console `1.6.174` 的VM映像表單防呆與缺映像訊息。
+只移除全新VM的一般容器預填／quick picks，保留自訂／initialValue／last-used、
+一般容器預設及原生required／willSave語意；不改Engine、schema、角色或VM runtime。
+Web174正式signed source為 `d24b7f4e164f058e3ef9057347caa2080e2b5407`、
+tree為 `c408e8b018d99db2ca228203880f4e72663ab1b7`。
+[正式CI37152802665](https://github.com/PastureStack/web-console/actions/runs/37152802665)
+通過817／817，fail／skip／todo為0；
+[數字tag `1.6.174`](https://github.com/PastureStack/web-console/releases/tag/1.6.174)
+已簽章發布，匿名公開archive原bytes與CI一致，2982022 bytes，
+archive SHA256為 `6408775898f412e4b27092eeddd9cdc2028ad7b27835f489139c2d0cf62c6776`。
+獨立publication receipt SHA256為 `aa79ea915bb8d6de4542b1095c35e39479af4d6c24e7b7d9cd2e28ffbf08f603`；
+此為Web component讀回，不代表Server512 build/runtime/QA PASS。
+Server512 source／digest／publisher／artifact scan／runtime及QA證據尚未完成，不引用511 PASS替代。
+Engine333、460 digest-pinned base、四build stages／最終單runtime layer、其他component pins、
+runtime ENV／volumes／AppArmor、VEX51 exact-set、vendor-pending門檻與2026-10-20期限不變。
+No migration or runtime patch is required.
+Quick Start與rollback參考保留下方511已核實公開digest；歷史HOLD及full matrix INCOMPLETE不升格。
+詳見[候選發行說明](docs/releases/server-1.6.512.md)。
+
 ## Server v1.6.511 published
 
 Server `v1.6.511` packages Web Console `1.6.173` 的原生Project
