@@ -7,6 +7,7 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.511](releases/server-1.6.511.md) — candidate for published Web Console 1.6.173 native Project Template card names; official Web CI812/812, identical builds, signed numeric tag and anonymous archive readback verified; Server build/publication/runtime/native QA pending; Engine333 and safety boundaries retained, historical HOLD unchanged
 - [Server v1.6.510](releases/server-1.6.510.md) — published Web Console 1.6.172 request-local create-only first delivery; exact official image, build/start/restart, SBOM/security and anonymous component/artifact readback verified; QA deployment and fresh native key/Host lifecycle pending, full matrix incomplete; 509 scoped evidence and key6982 HOLD unchanged
 - [Server v1.6.509](releases/server-1.6.509.md) — published Engine 0.183.333 canonical create-only redaction with Web Console 1.6.171; immutable artifact readback, QA start/restart and existing Account6974/Project6977 scoped closures verified; fresh key6982 first-delivery HOLD, fresh Host pending; full matrix incomplete
 - [Server v1.6.508](releases/server-1.6.508.md) — published Web Console 1.6.171 canonical create-response fix; immutable artifact, QA start/restart, scoped Volume and Registry lifecycle verified; full matrix incomplete
