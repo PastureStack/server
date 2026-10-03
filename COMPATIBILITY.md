@@ -1,12 +1,24 @@
 # Compatibility Contract
 
-Server `v1.6.507` 是尚待正式成品與 QA 驗收的候選，預定封裝
+Server `v1.6.507` 已正式發布，封裝
 Web Console `1.6.170`（source `09df1480c5f4b58c6a9a9060ff94d980792f7015`）。
 範圍僅 nullable Volume 關聯欄位的前端分類相容性；Engine `v0.183.332`／
 原 WAR、API／Auth、角色授權、pool/mount 證明、部署參數與安全門檻保留。
 正式 CI archive SHA-256 為 `900974b07bb20ba5b2e7c1dede7012a53c6e2c96cd094c67cb7019434c4f27c9`；
-Web170 已正式公開；Server507 成品及 QA／原生驗收仍 pending，不借用506證據。
+Web170 與 Server507 已正式公開；Server source 為
+`34287791861643ba93edd9923fa11dd504172f60`，映像 digest 為
+`sha256:c0ee312207e38f4e31b8503521c0e43cbf178110e91fac61c23056026603c91e`。
+publisher37083174895及23 assets／22 SHA-256、單runtime layer、34 MFA/API、TLS、
+SBOM與安全門檻均讀回；QA／原生驗收另行記錄，不借用506證據。
 完整矩陣仍 INCOMPLETE，506 已發布／部署實績及歷史 HOLD 保留。
+QA507首次9次／restart8次HTTP200/pong，runtime／環境參數／五表counts差異0，
+原named volumes、AppArmor、restart policy與506回復點保留；health=null。
+首輪QA根分割區滿的HOLD不追認，新部署通過3GiB空間及本機精確image守門。
+本版兩筆既有隔離Volume已通過原生Store／列表／刷新、取消零寫入、
+唯讀兩根DELETE405、owner原生DELETE200及終態消失；新建仍在追查。
+主機新增入口三低權限角色的繁中、英文拒絕分項通過，無資源或註冊Token寫入。
+這些不是全矩陣、主機註冊或完整多語系版面PASS。精確清除10個停止的舊Server
+容器後，保留507與最近506回滾點，主機UI重新登入／刷新無舊重複項目；VM與資料卷未刪除。
 
 Server `v1.6.506` 已正式封裝 Web Console `1.6.169`，將本機 Volume 的
 `externalId` 視為識別碼而非配置綁定。完整 pool/mount 關聯、主機／image／

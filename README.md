@@ -11,17 +11,33 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
-## v1.6.507 — 候選，尚待正式成品與 QA 驗收
+## v1.6.507 — 已發布
 
-本候選預定封裝 Web Console `1.6.170`，修正未配置 local Volume 分類器
+本版封裝 Web Console `1.6.170`，修正未配置 local Volume 分類器
 對 nullable 關聯欄位的處理。Web 來源為
 `09df1480c5f4b58c6a9a9060ff94d980792f7015`；正式 CI `37082272427` 的兩個 production archive
 SHA-256 相同：`900974b07bb20ba5b2e7c1dede7012a53c6e2c96cd094c67cb7019434c4f27c9`。Web170 公開發行已讀回核實；
-Server507 正式成品與 QA8080／原生生命週期仍尚待驗收，不能借用506結果。
+Server source 為 `34287791861643ba93edd9923fa11dd504172f60`，不可變映像為
+`ghcr.io/pasturestack/server:v1.6.507@sha256:c0ee312207e38f4e31b8503521c0e43cbf178110e91fac61c23056026603c91e`。
+[正式 publisher37083174895](https://github.com/PastureStack/server/actions/runs/37083174895)
+與公開成品讀回通過：23 assets／22 SHA-256、單 runtime layer、首次啟動與重啟、
+34 MFA/API 檢查、TLS 與成品 SBOM／安全閘門。這不是原生生命週期或完整矩陣的證明。
 Engine 保持 `v0.183.332`／原 WAR；API／Auth、角色授權、資料、完整
 pool/mount 關聯檢查與安全門檻不變。完整矩陣仍 INCOMPLETE，既有 HOLD
-不追認成功；Quick start 保持已發布的 `v1.6.506`。
-詳見[候選發行說明](docs/releases/server-1.6.507.md)。
+不追認成功；Quick start 對齊本版不可變映像。
+詳見[發行說明](docs/releases/server-1.6.507.md)。
+
+QA8080 已完成本版部署與讀回：首次9次／重啟8次探測HTTP200/pong，
+runtime、environment與五表counts差異皆0，三named volumes及506回滾點保留。
+Docker health為null，不稱healthy。首次嘗試因QA根分割區100%滿失敗並回滾；
+僅精確回收三份未被容器引用且可由公開digest重新取得的舊image副本，原失敗紀錄保留。
+新嘗試加入至少3GiB可用空間與已存在精確本機映像的守門，不涉及資料卷或VM刪除。
+另以本版實測兩筆既有隔離Volume：Store／列表／刷新、取消刪除零寫入、
+唯讀兩API根DELETE405、owner原生DELETE200及刷新後消失均通過。
+主機新增入口restricted／readonly／noaccess的繁中、英文拒絕分項通過；
+新建Volume仍在追查，完整角色矩陣仍INCOMPLETE，不以部署PASS代替。
+另外精確移除10個已停止的舊Server回滾容器，保留目前507與最近506回滾點；
+主機清單重新登入及刷新後只顯示這兩筆，不再堆積舊項目。未刪除VM或資料卷。
 
 ## v1.6.506 — 已發布
 
@@ -648,7 +664,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.506@sha256:f6860a1d0e96587b05afbf72d52c063921ff8473a976552c6d0a01d223a7a188
+  ghcr.io/pasturestack/server:v1.6.507@sha256:c0ee312207e38f4e31b8503521c0e43cbf178110e91fac61c23056026603c91e
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -657,7 +673,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.506@sha256:f6860a1d0e96587b05afbf72d52c063921ff8473a976552c6d0a01d223a7a188
+    image: ghcr.io/pasturestack/server:v1.6.507@sha256:c0ee312207e38f4e31b8503521c0e43cbf178110e91fac61c23056026603c91e
     restart: unless-stopped
     ports:
       - "8080:8080"
