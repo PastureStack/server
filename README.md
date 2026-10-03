@@ -11,6 +11,33 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.512 — candidate；Web174已發布，Server成品驗收待核對
+
+本候選只將 Web Console 更新為 `1.6.174`：全新VM表單不再預填一般容器映像，
+也不顯示Ubuntu／Alpine容器quick picks；保留自訂映像、initialValue、VM last-used，
+以及一般容器預設。VM boot-image說明與VM／容器缺少映像訊息沿既有i18n fallback；
+必填驗證仍由原生willSave阻擋，不新增VM runtime、映像白名單或權限變更。
+
+Web174正式signed source為 `d24b7f4e164f058e3ef9057347caa2080e2b5407`，
+tree為 `c408e8b018d99db2ca228203880f4e72663ab1b7`；
+[正式CI37152802665](https://github.com/PastureStack/web-console/actions/runs/37152802665)
+通過817／817，fail／skip／todo為0。
+[數字tag `1.6.174`](https://github.com/PastureStack/web-console/releases/tag/1.6.174)
+已簽章發布；匿名公開archive原bytes與CI成品一致，2982022 bytes，
+SHA256為 `6408775898f412e4b27092eeddd9cdc2028ad7b27835f489139c2d0cf62c6776`。
+本機release workspace證據（非public asset）
+`.release-evidence/web-console-v174-signed-merge-readonly/published-readback/publication-readback.json`
+SHA256為 `aa79ea915bb8d6de4542b1095c35e39479af4d6c24e7b7d9cd2e28ffbf08f603`。
+Server512正式source、映像digest、publisher、SBOM／scan、隔離啟動／重啟及QA驗收均pending；
+不沿用511的PASS或計數作為512證據。
+
+Engine保留正式 `v0.183.333`、460 digest-pinned base、多stage build與最終單runtime layer；
+其他component、runtime ENV、volumes、AppArmor及安全exact-set不變更。
+VEX51與vendor-pending政策及2026-10-20期限維持；52 findings是511歷史scan結果，
+512必須使用自己的實際成品scan，不宣稱零CVE。
+Quick Start維持下方已核實的Server511 digest；歷史scoped結果與HOLD不重寫或升格。
+詳見[Server512候選發行說明](docs/releases/server-1.6.512.md)。
+
 ## v1.6.511 — 已發布；QA部署已核對，原生驗收仍待完成
 
 本版封裝 Web Console `1.6.173` 的原生 Project Template 卡片名稱修正：
