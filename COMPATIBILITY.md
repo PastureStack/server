@@ -17,8 +17,8 @@ Web Console `1.6.170`（source `09df1480c5f4b58c6a9a9060ff94d980792f7015`）。
 原 WAR、API／Auth、角色授權、pool/mount 證明、部署參數與安全門檻保留。
 正式 CI archive SHA-256 為 `900974b07bb20ba5b2e7c1dede7012a53c6e2c96cd094c67cb7019434c4f27c9`；
 Web170 與 Server507 已正式公開；Server source 為
-`34287791861643ba93edd9923fa11dd504172f60`，映像 digest 為
-`sha256:c0ee312207e38f4e31b8503521c0e43cbf178110e91fac61c23056026603c91e`。
+`34287791861643ba93edd9923fa11dd504172f60`，不可變映像為
+`ghcr.io/pasturestack/server:v1.6.507@sha256:c0ee312207e38f4e31b8503521c0e43cbf178110e91fac61c23056026603c91e`。
 publisher37083174895及23 assets／22 SHA-256、單runtime layer、34 MFA/API、TLS、
 SBOM與安全門檻均讀回；QA／原生驗收另行記錄，不借用506證據。
 完整矩陣仍 INCOMPLETE，506 已發布／部署實績及歷史 HOLD 保留。
