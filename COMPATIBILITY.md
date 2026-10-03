@@ -1,16 +1,47 @@
 # Compatibility Contract
 
-## Server v1.6.509 candidate
+## Server v1.6.510 source candidate
 
-Server `v1.6.509` candidate packages Web Console `1.6.171`，封裝已正式發布的
+Server `v1.6.510` candidate packages Web Console `1.6.172` 的 create-only first
+delivery，Engine保留正式 `v0.183.333`。canonical store 只保存正常資源身分；
+首次201限定欄位由 request-local delivery 交給本次非 canonical modal clone。
+Web172正式 source／archive 已固定並匿名讀回，808／808測試通過；Server510 build、發布、部署及新key
+create／edit／deactivate／delete尚未驗收，不宣稱首次交付或生命周期PASS。
+No migration or runtime patch is required.
+460 digest-pinned base、單 runtime layer、role/schema、登入、production環境變數與
+volumes不變。VEX51及8 Medium／4CVE vendor-pending exact-set只是候選沿用政策，
+不是510新runtime scan；KB／SBOM與publicreadback仍待實際發布。
+509正式digest、6974／6977 scoped closures、6982 HOLD與active保留資源不重寫或升格。
+
+## Server v1.6.509 published
+
+Server `v1.6.509` 已正式發布，封裝 Web Console `1.6.171` 與
 Engine `v0.183.333`。create-only 欄位僅限真正的 POST create response，
 不包含 POST action；既有首次 API Key 金鑰交付、角色授權、所有 frozen
 schema、登入、防火牆與持久資料契約保持不變。
 
 No migration or runtime patch is required.
-Engine CI273 suites／1164 tests、隔離啟動與正式元件六檔讀回已通過；
-Server 映像發行及 QA 8080 同 ID 原生生命週期驗收仍待完成；
-此候選不沿用 508 的 PASS，不代表完整權限／語系／版面矩陣通過。
+Engine CI273 suites／1164 tests、隔離啟動與正式元件六檔讀回已通過。
+Server source 為 `261bb23c980f5f896375923233e36f6554b99751`，不可變映像為
+`ghcr.io/pasturestack/server:v1.6.509@sha256:d934c9d7bc7387626fedca5d403210fac70b7b4e35e334dcdb439f79f555ab87`。
+正式 publisher `37105881483` 與公開成品讀回通過：23 assets／22 SHA-256、
+public tag／digest／config、單 runtime layer、34 MFA/API、首次啟動／重啟與TLS均核對。
+成品 raw52 findings／VEX51 statements、8 Medium package findings／4 CVE exact-set 保留；
+Critical／High 為0，安全門檻不放寬，不宣稱零CVE。
+QA8080 的509部署與唯讀驗收通過：首次啟動13次、重啟9次重試後均為200 pong；
+環境變數、執行設定與五表筆數不變，508回復容器與資料庫備份保留。
+owner2513 的 Account6974 續接scoped PASS：本次PUT200／deactivate202／DELETE200，
+3筆原生寫入／9個full16及14API守門，cleanup=true；508 POST201與HOLD保留。
+Project6977 續接移除scoped PASS：本次僅DELETE200／4個守門，cleanup=true；
+508已知POST201／PUT200／deactivate202不能拼成509新4writes或整案PASS。
+全新Project key第二次僅POST201建立1c6982，3個守門與Store barrier通過，
+Web171首次交付timeout而HOLD；未執行issued Basic讀取／edit／deactivate／delete，
+active資源保留、不自動重試或清理，第一次0資源寫入HOLD不升格。
+Web172修正尚未包含在509不可變成品，不宣稱原生首次交付已修復。
+Host原生註冊／healthy／停用／移除仍pending；空template首次0writes／0guards HOLD，
+guest或fixture不能建立Host PASS。上述結果不代表Docker healthy、公司站部署
+或完整權限／語系／版面矩陣通過。
+508 scoped PASS 與歷史 HOLD 保持原版本及原狀態，不升格為509證據。
 
 ## Server v1.6.508 published
 
@@ -41,7 +72,7 @@ GET／DELETE403，繁中／英文可讀拒絕與取消、刪除、刷新終態�
 16個生命週期守門區分12個既有證據與4個本次守門；no-access API既有4請求／9守門
 與本次零API請求／5畫面及終態守門分開，不重送已完成請求，不追認歷史HOLD。
 完整矩陣INCOMPLETE。
-Quick start對齊已發布508完整不可變映像；507歷史來源、HOLD與scoped PASS不拼成新版本整體PASS。
+508發布時的Quick start曾對齊其完整不可變映像；507歷史來源、HOLD與scoped PASS不拼成新版本整體PASS。
 
 Server `v1.6.507` 已正式發布，封裝
 Web Console `1.6.170`（source `09df1480c5f4b58c6a9a9060ff94d980792f7015`）。

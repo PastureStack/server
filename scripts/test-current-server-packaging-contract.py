@@ -17,18 +17,18 @@ FILES = {name: (REPO / name).read_text(encoding='utf-8') for name in (DOCKER, BU
 PUBLISHED_508 = 'Server `v1.6.508` 已正式發布，封裝 Web Console `1.6.171`。'
 STALE_508_CANDIDATE = 'Server `v1.6.508` candidate packages Web Console `1.6.171`'
 COMPATIBILITY_CODE = 'SERVER_CREATE_RESPONSE_ORDER_COMPATIBILITY_MISSING'
-WEB_SHA = '49fac41ca93eb628d0877104f9512ef382ffd9dbc89e04c940196b3a9c57798b'
-WEB_SOURCE = 'fc37f5af9320e492bec7e7244cd62144908b720e'
+WEB_SHA = '9a21c5e6ff9fbb274dbc7c45ec1ccffdbff33a945544b64d5976b14ee9752bfa'
+WEB_SOURCE = 'daab6e8ed5206562feb60e6549a3b9e72b4c8381'
 ENGINE_SHA = '8c42c0982cbc2f4569fa265ad320b341551758cb4fc0bc6d79ba06d70e20d328'
 ENGINE_SOURCE = '0d94f7d879d314235e582a7f4062914a27b82709'
 OLD_COORDINATES = {
-    'v1.6.509': 'v1.6.508',
-    '1.6.171': '1.6.170',
-    WEB_SHA: '900974b07bb20ba5b2e7c1dede7012a53c6e2c96cd094c67cb7019434c4f27c9',
-    WEB_SOURCE: '09df1480c5f4b58c6a9a9060ff94d980792f7015',
+    'v1.6.510': 'v1.6.509',
+    '1.6.172': '1.6.171',
+    WEB_SHA: '49fac41ca93eb628d0877104f9512ef382ffd9dbc89e04c940196b3a9c57798b',
+    WEB_SOURCE: 'fc37f5af9320e492bec7e7244cd62144908b720e',
 }
-# Server508 uses Engine332. Older web pins are independent mutation controls,
-# not a claim that the synthetic stale gate equals a released Server508 tree.
+# Engine333 stays pinned. The stale509 Web171 values are mutation controls,
+# not a claim that candidate510 has published Web172 coordinates.
 LEGACY_ENGINE_COORDINATES = {
     '0.183.333': '0.183.332',
     ENGINE_SHA: '31090699e214f8e357f7fe413ce307e722b9b53177003e5de0bbbca1bc7bc3f5',
@@ -36,19 +36,19 @@ LEGACY_ENGINE_COORDINATES = {
 }
 EXPECTED = {
     COMPATIBILITY_CODE: (COMPATIBILITY, PUBLISHED_508),
-    'SERVER_INCREMENTAL_RELEASE_VERSION_MISSING': (DOCKER, 'org.opencontainers.image.version="v1.6.509"'),
-    'SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING': (DOCKER, 'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.509'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RELEASE_TAG=1.6.171'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.171.tar.gz'),
+    'SERVER_INCREMENTAL_RELEASE_VERSION_MISSING': (DOCKER, 'org.opencontainers.image.version="v1.6.510"'),
+    'SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING': (DOCKER, 'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.510'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RELEASE_TAG=1.6.172'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.172.tar.gz'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT_SHA256=' + WEB_SHA),
     'SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_COMMIT=' + WEB_SOURCE),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING': (BUILD, 'web_console_commit=${WEB_CONSOLE_COMMIT:-' + WEB_SOURCE + '}'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING': (BUILD, 'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.171}'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING': (BUILD, 'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.171.tar.gz}'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING': (BUILD, 'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.172}'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING': (BUILD, 'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.172.tar.gz}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING': (BUILD, 'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-' + WEB_SHA + '}'),
-    'SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING': (BUILD, 'image=${IMAGE:-pasturestack-validation/server:v1.6.509}'),
-    'SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING': (BUILD, 'CATTLE_RANCHER_SERVER_VERSION=v1.6.509'),
-    'SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING': (BUILD, 'test "$(cat "${web_root}/VERSION.txt")" = "1.6.171"'),
+    'SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING': (BUILD, 'image=${IMAGE:-pasturestack-validation/server:v1.6.510}'),
+    'SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING': (BUILD, 'CATTLE_RANCHER_SERVER_VERSION=v1.6.510'),
+    'SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING': (BUILD, 'test "$(cat "${web_root}/VERSION.txt")" = "1.6.172"'),
     'SERVER_VOLUME_NATIVE_READ_ONLY_BUILD_GATE_MISSING': (DOCKER, 'grep -F \'"volume.isNative" : "r"\' >/dev/null'),
     'SERVER_VOLUME_NATIVE_READ_ONLY_RUNTIME_GATE_MISSING': (BUILD, r'grep -F "\"volume.isNative\" : \"r\"" >/dev/null'),
     'SERVER_WEB_CREATE_IDENTITY_BUILD_GATE_MISSING': (DOCKER, "grep -aF 'createIdentity' \"${web_root}\"/assets/*.js >/dev/null"),
@@ -142,15 +142,15 @@ def verify(files, gate=GATE):
                     + r'(?=\s*(?:;|\n|$))')
         if len(re.findall(pipeline, source)) != 1:
             raise AssertionError(code)
-    if 'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.509"' not in gate:
+    if 'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.510"' not in gate:
         raise AssertionError('CURRENT_VEX_GATE_PIN_MISMATCH')
-    if '"$vendor_pending_fixture" v1.6.509 >/dev/null' not in gate:
+    if '"$vendor_pending_fixture" v1.6.510 >/dev/null' not in gate:
         raise AssertionError('CURRENT_VENDOR_GATE_PIN_MISMATCH')
-    if json.loads(files[VEX]).get('@id') != 'https://github.com/PastureStack/server/security/openvex/v1.6.509':
+    if json.loads(files[VEX]).get('@id') != 'https://github.com/PastureStack/server/security/openvex/v1.6.510':
         raise AssertionError('CURRENT_VEX_RELEASE_MISMATCH')
-    if json.loads(files[VENDOR]).get('release') != 'v1.6.509':
+    if json.loads(files[VENDOR]).get('release') != 'v1.6.510':
         raise AssertionError('CURRENT_VENDOR_RELEASE_MISMATCH')
-    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.509 base=v1.6.460 engine=0.183.333 web_console=1.6.171 ' not in gate:
+    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.510 base=v1.6.460 engine=0.183.333 web_console=1.6.172 ' not in gate:
         raise AssertionError('CURRENT_SUMMARY_MISMATCH')
 
 
@@ -163,12 +163,12 @@ def previous_gate(gate=GATE):
         if stale(marker) != marker:
             replacements["'" + marker + "' "] = "'" + stale(marker) + "' "
     replacements.update({
-        'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.509"':
-            'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.508"',
-        '"$vendor_pending_fixture" v1.6.509 >/dev/null':
-            '"$vendor_pending_fixture" v1.6.508 >/dev/null',
-        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.509 base=v1.6.460 engine=0.183.333 web_console=1.6.171 ':
-            'SERVER_API_EXPLORER_PATCH_OK release=v1.6.508 base=v1.6.460 engine=0.183.333 web_console=1.6.170 ',
+        'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.510"':
+            'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.509"',
+        '"$vendor_pending_fixture" v1.6.510 >/dev/null':
+            '"$vendor_pending_fixture" v1.6.509 >/dev/null',
+        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.510 base=v1.6.460 engine=0.183.333 web_console=1.6.172 ':
+            'SERVER_API_EXPLORER_PATCH_OK release=v1.6.509 base=v1.6.460 engine=0.183.333 web_console=1.6.171 ',
     })
     for marker, stale_marker in replacements.items():
         if gate.count(marker) != 1:
@@ -181,6 +181,34 @@ def previous_gate(gate=GATE):
 class Tests(unittest.TestCase):
     def test_actual_current_gate_and_five_files_agree(self):
         verify(FILES)
+
+    def test_published_coordinates_pass_and_pending_mutations_fail_actual_pin_predicates(self):
+        # Interpret the actual, unchanged shell regex predicates, not a second
+        # hardcoded publication predicate. Source agreement is not release PASS.
+        patterns = re.findall(r'\[\[ "\$(web_console_(?:commit|artifact_sha256))" =~ ([^ ]+) \]\]', FILES[BUILD])
+        self.assertEqual(len(patterns), 2)
+        for variable, pattern in patterns:
+            default = re.search(r'^' + variable + r'=\$\{[^:}]+:-([^}]+)\}$', FILES[BUILD], re.M).group(1)
+            self.assertIsNotNone(re.fullmatch(pattern, default))
+            self.assertIsNone(re.fullmatch(pattern, '__WEB_CONSOLE_172_COORDINATE_PENDING__'))
+        prefix = "if ! grep -Eq '^ARG WEB_CONSOLE_ARTIFACT_SHA256="
+        actual = prefix + GATE.split(prefix, 1)[1].split('; then', 1)[0]
+        gates = re.findall(r"grep -Eq '([^']+)' \"\$(release_dockerfile|build_script)\"", actual)
+        self.assertEqual(len(gates), 4)
+        paths = dict(release_dockerfile=DOCKER, build_script=BUILD)
+        self.assertTrue(all(re.search(pattern, FILES[paths[variable]], re.M) for pattern, variable in gates))
+        for name, old in ((DOCKER, WEB_SHA), (DOCKER, WEB_SOURCE), (BUILD, WEB_SHA), (BUILD, WEB_SOURCE)):
+            mutated = dict(FILES)
+            mutated[name] = mutated[name].replace(old, '__WEB_CONSOLE_172_COORDINATE_PENDING__')
+            self.assertFalse(all(re.search(pattern, mutated[paths[variable]], re.M) for pattern, variable in gates))
+        pending = re.search(r"if grep -Eq '([^']+)' \"\$release_dockerfile\" \"\$build_script\"; then\n\s+echo 'SERVER_COMPONENT_RELEASE_COORDINATES_PENDING' >&2\n\s+exit 1\nfi", GATE)
+        self.assertIsNotNone(pending)
+        self.assertFalse(any(re.search(pending.group(1), FILES[name]) for name in (DOCKER, BUILD)))
+        self.assertTrue(re.search(pending.group(1), FILES[BUILD].replace(WEB_SHA, '__WEB_CONSOLE_172_COORDINATE_PENDING__')))
+        # Direct Docker invocation must also reject a remaining pending default.
+        for variable, digits in (('WEB_CONSOLE_ARTIFACT_SHA256', 64), ('WEB_CONSOLE_COMMIT', 40)):
+            marker = "printf '%s\\n' \"${" + variable + "}\" | grep -Eq '^[0-9a-f]{" + str(digits) + "}$'; \\\n"
+            self.assertEqual(FILES[DOCKER].count(marker), 1)
 
     def test_published_508_compatibility_matches_actual_document(self):
         self.assertIn(PUBLISHED_508, FILES[COMPATIBILITY].splitlines())
@@ -231,7 +259,7 @@ class Tests(unittest.TestCase):
                         verify(files)
         self.assertGreater(checked, 0)
 
-    def test_previous_fixture_rejects_stale_web170_pins(self):
+    def test_previous_fixture_rejects_stale_web171_pins(self):
         gate = previous_gate()
         for code, (_, marker) in EXPECTED.items():
             if 'WEB_CONSOLE' in code:
@@ -288,7 +316,7 @@ class Tests(unittest.TestCase):
                     verify(FILES, GATE.replace(code, code + '_REMOVED'))
 
     def test_old_vex_or_vendor_release_rejected(self):
-        for name, key, value in ((VEX, '@id', 'https://github.com/PastureStack/server/security/openvex/v1.6.508'),
+        for name, key, value in ((VEX, '@id', 'https://github.com/PastureStack/server/security/openvex/v1.6.509'),
                                  (VENDOR, 'release', 'v1.6.508')):
             with self.subTest(name=name):
                 files = dict(FILES)
