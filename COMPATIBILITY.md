@@ -1,5 +1,16 @@
 # Compatibility Contract
 
+Server `v1.6.508` candidate packages Web Console `1.6.171`；尚未正式發布。
+Web signed source 固定為 `fc37f5af9320e492bec7e7244cd62144908b720e`；1.6.171 已正式發布。
+公開 archive SHA256 為 `49fac41ca93eb628d0877104f9512ef382ffd9dbc89e04c940196b3a9c57798b`，CI 802/802 通過。
+API-store compatibility revision 5 的 canonical adoption 僅限新建 POST201、
+精確 type／server-generated ID、同 Store／generation／base URL；action 清除 createIdentity。
+無相符 cache、GET／PUT／action／非201／204／errors 維持原語意，沒有狀態／時間排序 heuristic。
+Engine `v0.183.332`／WAR、API／Auth／CRUD、pool/mount 證明與部署／回復參數不變。
+8個 MEDIUM package findings／4 CVE、51個 VEX statements 與安全 exact-set 不放寬。
+正式發行、QA8080 部署與 fresh native Volume 驗收仍待完成；完整矩陣 INCOMPLETE。
+Quick start 維持已發布507，歷史來源、HOLD 與 scoped PASS 不拼成新版本整體 PASS。
+
 Server `v1.6.507` 已正式發布，封裝
 Web Console `1.6.170`（source `09df1480c5f4b58c6a9a9060ff94d980792f7015`）。
 範圍僅 nullable Volume 關聯欄位的前端分類相容性；Engine `v0.183.332`／

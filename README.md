@@ -11,6 +11,24 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.508 — 候選，尚未發布
+
+本候選封裝 Web Console `1.6.171`，來源固定為
+`fc37f5af9320e492bec7e7244cd62144908b720e`。API-store compatibility revision 5 僅在
+新建請求的 HTTP 201、精確 type／server-generated ID、相同 Store generation／base URL
+且已有該模型時採用 canonical cache，避免較晚的初始回應覆寫先到的 WebSocket 更新。
+沒有相符 cache 或非新建 201 時仍走原匯入流程；GET／PUT／action／204／errors 保留。
+不改 API 回應、狀態排序、訂閱、Auth 或角色授權，也不為此追加 GET。
+
+Web171 已正式發布，CI 802/802 測試通過；公開 archive SHA256 為
+`49fac41ca93eb628d0877104f9512ef382ffd9dbc89e04c940196b3a9c57798b`。
+Server508 正式成品／digest、QA8080 部署及
+全新原生 Volume 建立→Store→刷新→取消→刪除驗收尚待完成；來源修正不是現場 PASS。
+Engine 保持 `v0.183.332`／原 WAR，完整 pool/mount 關聯、inactive fixture、
+安全閘門與回復契約保留。完整矩陣仍 INCOMPLETE，歷史 HOLD 不追認成功。
+Quick start 仍使用已發布的 507 不可變映像，候選 508 不作安裝目標。
+詳見[候選發行說明](docs/releases/server-1.6.508.md)。
+
 ## v1.6.507 — 已發布
 
 本版封裝 Web Console `1.6.170`，修正未配置 local Volume 分類器
@@ -654,8 +672,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.506` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.506).
+Before deploying, verify the `v1.6.507` numeric tag and immutable digest in
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.507).
 A registry login is not required. Pin the version and retain the database and
 platform volumes:
 
