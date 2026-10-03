@@ -11,6 +11,26 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.511 — 候選；Web173已發布，Server封裝仍待驗證
+
+本候選準備封裝 Web Console `1.6.173` 的原生 Project Template 卡片名稱修正：
+template choices 使用模型既有 `name`，不再讀取未實作的 `localizedName`。
+Web173正式 source為 `c8b8bb2659fdad3539cf6a72866c94a77ec516b6`，
+tree為 `f590310e157edea79de81fcf333e8b39dbc5677e`；
+[正式CI37115288389](https://github.com/PastureStack/web-console/actions/runs/37115288389)
+通過812／812，fail／skip／todo為0；兩次production成品逐位元一致。
+CI archive SHA256為
+`a566684e6e0831630a15cb7212989c0e9fe707ed07965156c2b664b9cdb5ba27`；
+數字tag `1.6.173` 已簽章發布；匿名公開byte讀回與該SHA256一致，
+詳見[Web Console發行](https://github.com/PastureStack/web-console/releases/tag/1.6.173)。
+封裝pins已對齊該CI成品；Server511尚未建置或發布，來源窄測不是成品PASS。
+Engine保留正式 `v0.183.333`，沿用460 digest-pinned base、最終單runtime layer
+驗證與既有安全exact-set，不變更角色、schema、production環境或持久volumes。
+QA部署、原生Project／Host／全新key生命週期與完整矩陣仍待各自驗收；
+歷史scoped PASS與HOLD不移植為511成功，fullMatrix仍 INCOMPLETE。
+Quick start繼續指向已公開核實的510映像，待511正式digest讀回後才更新。
+詳見[候選發行說明](docs/releases/server-1.6.511.md)。
+
 ## v1.6.510 — 已發布；原生操作與完整矩陣仍待驗收
 
 本版封裝 Web Console `1.6.172` 的 request-local create-only delivery：首次201

@@ -1,5 +1,24 @@
 # Compatibility Contract
 
+## Server v1.6.511 candidate
+
+Server `v1.6.511` candidate packages Web Console `1.6.173` 的原生Project
+Template卡片名稱修正：使用模型既有 `name`，不依賴未實作的 `localizedName`。
+Web正式source為 `c8b8bb2659fdad3539cf6a72866c94a77ec516b6`，
+tree為 `f590310e157edea79de81fcf333e8b39dbc5677e`。
+CI `37115288389` 通過812／812，fail／skip／todo為0，兩次production成品一致；
+CI archive SHA256為
+`a566684e6e0831630a15cb7212989c0e9fe707ed07965156c2b664b9cdb5ba27`。
+Web數字tag `1.6.173` 已簽章發布，匿名公開byte讀回與CI SHA256一致；
+Server source gates仍不是Server成品PASS。
+Engine維持正式 `v0.183.333`，460 digest-pinned base、單runtime layer驗證、
+角色／schema／登入／production環境／持久volumes契約與安全門檻保留。
+No migration or runtime patch is required.
+Server511正式source／image digest／build／start-restart／scan／SBOM／公開讀回
+尚待本版實證，不援引510成功數字；Quick start仍是公開510digest。
+QA部署、全新key、Project與Host原生流程皆獨立pending，完整矩陣 INCOMPLETE；
+既有版本的scoped PASS與歷史HOLD不重寫或升格，公司站不部署。
+
 ## Server v1.6.510 published
 
 Server `v1.6.510` packages Web Console `1.6.172` 的 create-only first
