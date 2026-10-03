@@ -26,6 +26,16 @@ def verify(files):
 
 
 class Tests(unittest.TestCase):
+    def test_checked_out_install_documents_match_actual_latest_publication(self):
+        readme = (REPO / 'README.md').read_text(encoding='utf-8')
+        tags = set(re.findall(r'(?m)^## (v[0-9]+\.[0-9]+\.[0-9]+)(?:[ \t]+[—–-][^\n]*)?[ \t]*$', readme))
+        files = {'README.md': readme, 'COMPATIBILITY.md': (REPO / 'COMPATIBILITY.md').read_text(encoding='utf-8')}
+        for tag in tags:
+            notes = REPO / ('docs/releases/server-' + tag[1:] + '.md')
+            if notes.is_file():
+                files['docs/releases/server-' + tag[1:] + '.md'] = notes.read_text(encoding='utf-8')
+        verify(files)
+
     def test_current_published498_and_preparing499_are_distinct(self):
         verify(FILES)
 
