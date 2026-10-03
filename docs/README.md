@@ -7,6 +7,9 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.509](releases/server-1.6.509.md) — candidate packages published Engine 0.183.333 create-only response boundary; official image and QA native API-key lifecycle still pending
+- [Server v1.6.508](releases/server-1.6.508.md) — published Web Console 1.6.171 canonical create-response fix; immutable artifact, QA start/restart, scoped Volume and Registry lifecycle verified; full matrix incomplete
+- [Server v1.6.507](releases/server-1.6.507.md) — published Web Console 1.6.170 nullable Volume relation fix; immutable artifact and QA start/restart verified
 - [Server v1.6.506](releases/server-1.6.506.md) — source candidate for the Web Console 1.6.169 generated Volume identifier classifier fix; immutable publication and packaged native lifecycle acceptance pending
 - [Server v1.6.505](releases/server-1.6.505.md) — published Engine 0.183.332 with Web Console 1.6.168; immutable artifact and QA start/restart verified, broader permission matrix incomplete
 - [Server v1.6.504](releases/server-1.6.504.md) — published Web Console 1.6.168 Volume entry and permission repair; immutable artifact and QA start/restart verified
