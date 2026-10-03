@@ -1,13 +1,12 @@
 # Server v1.6.512
 
-Server512 candidate only. Web174 exact CI and immutable publication/archive
-readback are verified; Server512 build/publication/runtime/security and QA
-acceptance remain pending.
-No Server512 image digest or PASS is claimed.
+Server512 is published. Its immutable image, official publisher, SBOM/security,
+isolated start/restart and anonymous public artifact readback were verified.
+The full functional/permission/browser matrix remains incomplete.
 
 ## Scope
 
-This candidate packages Web Console `1.6.174` VM boot-image form safeguards:
+This release packages Web Console `1.6.174` VM boot-image form safeguards:
 fresh VM forms do not use ordinary-container defaults or Ubuntu/Alpine quick picks.
 Custom images, initialValue and VM last-used remain available; ordinary-container
 defaults and existing required/willSave validation are unchanged.
@@ -27,7 +26,7 @@ Other component/package pins, OIDC/MFA, environment, persistent volumes,
 AppArmor and runtime policy are unchanged.
 No migration or runtime patch is required.
 
-## Verified Web174 component; Server512 artifact pending
+## Published components and immutable Server image
 
 - Web174 published signed source: `d24b7f4e164f058e3ef9057347caa2080e2b5407`.
 - Published/tested tree: `c408e8b018d99db2ca228203880f4e72663ab1b7`.
@@ -39,27 +38,46 @@ No migration or runtime patch is required.
   `6408775898f412e4b27092eeddd9cdc2028ad7b27835f489139c2d0cf62c6776`.
   Anonymous public original archive bytes match the exact CI artifact.
   Signed source/tag, same tested tree and immutable publication were verified.
-- Independent publication receipt SHA256:
-  `aa79ea915bb8d6de4542b1095c35e39479af4d6c24e7b7d9cd2e28ffbf08f603`.
-  Local release workspace evidence, not a public asset:
-  `.release-evidence/web-console-v174-signed-merge-readonly/published-readback/publication-readback.json`.
-- Server512 source, publisher run and immutable image digest pending.
+- Server512 source: `c533ac7753d222abb515848effc27d007bd700b6`.
+- [Official publisher37153784888](https://github.com/PastureStack/server/actions/runs/37153784888):
+  successful first run, including build, flatten, start/restart, security and publication.
+- [Immutable release `v1.6.512`](https://github.com/PastureStack/server/releases/tag/v1.6.512):
+  23 assets and 22 SHA-256 checks verified by public readback.
+- Image: `ghcr.io/pasturestack/server:v1.6.512@sha256:805078de83c0320c751dff90304bd841b8e64bec720079198258d22fa41d0145`.
+- Config digest: `sha256:92f363f07a9425096dfba9746e13d2cbbd49ccbaba309950358e1b633583a4c5`.
+  Tag and immutable manifest/config bytes, version/revision labels and SBOM identity match.
+- Four build stages and one final runtime layer are retained.
+- Isolated first start and restart: HTTP200/pong after 12 and 8 probes respectively.
+  34 MFA/API checks, TLS1.2/TLS1.3, private no-store and rejection of an untrusted
+  TLS certificate passed against this artifact.
 
 Existing source, builder and Docker exact-coordinate/hash gates remain unchanged;
-verified Web component pins do not establish Server512 build/runtime/QA PASS.
-Do not use the Server511 digest as Server512 publication evidence.
+verified artifact checks do not establish full UI/permission/VM lifecycle acceptance.
+Historical Server511 evidence is not promoted to Server512 functional acceptance.
 
 ## Security and acceptance boundaries
 
 The existing 51 OpenVEX statements, vendor-pending exact-set/severity/fix policy
 and `2026-10-20` review deadline are retained without widening exceptions.
-Server511's 52 raw findings are historical scan evidence, not a Server512 scan.
-Server512 SBOM, merged-rootfs scan, licenses, first-start/restart, MFA/API/TLS,
-public artifact readback and QA results must come from its own exact artifact.
-This is not a zero-CVE claim.
+Server512's own merged-rootfs scan has 52 raw findings, 51 OpenVEX statements,
+8 vendor-pending Medium package findings covering 4 CVEs, and zero Critical/High,
+available-fix, untracked or secret findings. This is not a zero-CVE claim.
 
-Keep the published [Server511 release](server-1.6.511.md), its verified digest,
-Quick Start and historical scoped/HOLD receipts unchanged.
+The current Quick Start pins512. Keep the published
+[Server511 release](server-1.6.511.md), its digest and historical scoped/HOLD
+receipts unchanged for audit and rollback.
 The full permission/resource/locale/layout matrix remains INCOMPLETE;
-a packaging candidate does not promote historical QA evidence.
+a published artifact does not promote historical QA evidence.
 Publication does not deploy or modify the company site or existing environments.
+
+## Upgrade and rollback
+
+Back up the database and persistent volumes before changing only the image
+reference in the existing Compose file. Preserve environment overrides, named
+volumes, restart policy, AppArmor and HTTPS origin. No data migration or runtime
+patch is required for this Web-only package change. Verify `/ping`, the displayed
+Web version and the relevant UI after first start and a restart.
+
+To roll back, restore the previously pinned Server511 image in the same Compose
+configuration. Keep the backup and previous image until the new deployment has
+passed its own acceptance checks. Do not delete persistent volumes.
