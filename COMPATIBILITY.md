@@ -1,15 +1,33 @@
 # Compatibility Contract
 
-Server `v1.6.508` candidate packages Web Console `1.6.171`；尚未正式發布。
+Server `v1.6.508` 已正式發布，封裝 Web Console `1.6.171`。
+Server source為 `69744f3ef0c00c14147fb83480306e07ccb667d9`，不可變映像為
+`ghcr.io/pasturestack/server:v1.6.508@sha256:e24f9993593bb609a7a0e26dc12fbbb21ab402b73c60af28955b988b83b6ac04`。
+正式publisher `37095694250` 與公開讀回通過：23 assets／22 SHA-256、
+public tag／digest／config、單runtime layer、34 MFA/API、首次啟動／重啟與TLS均核對。
+正式成品讀回不代表QA部署、Docker healthy或native Volume驗收。
 Web signed source 固定為 `fc37f5af9320e492bec7e7244cd62144908b720e`；1.6.171 已正式發布。
-公開 archive SHA256 為 `49fac41ca93eb628d0877104f9512ef382ffd9dbc89e04c940196b3a9c57798b`，CI 802/802 通過。
+公開 archive SHA256 為 `49fac41ca93eb628d0877104f9512ef382ffd9dbc89e04c940196b3a9c57798b`，
+CI `37094728912` 通過802/802，含10項新回歸、100次barrier與22項audit self-tests；CodeQL通過。
 API-store compatibility revision 5 的 canonical adoption 僅限新建 POST201、
 精確 type／server-generated ID、同 Store／generation／base URL；action 清除 createIdentity。
 無相符 cache、GET／PUT／action／非201／204／errors 維持原語意，沒有狀態／時間排序 heuristic。
-Engine `v0.183.332`／WAR、API／Auth／CRUD、pool/mount 證明與部署／回復參數不變。
+Engine保持 `v0.183.332`，WAR SHA256為
+`31090699e214f8e357f7fe413ce307e722b9b53177003e5de0bbbca1bc7bc3f5`；
+API／Auth／CRUD、pool/mount證明與部署／回復參數不變。
 8個 MEDIUM package findings／4 CVE、51個 VEX statements 與安全 exact-set 不放寬。
-正式發行、QA8080 部署與 fresh native Volume 驗收仍待完成；完整矩陣 INCOMPLETE。
-Quick start 維持已發布507，歷史來源、HOLD 與 scoped PASS 不拼成新版本整體 PASS。
+Web建置audit仍為7 High／3 Moderate／0 Critical，精確上游待補風險複核至2026-10-10；
+這不是零CVE或runtime整體不受影響的宣告。
+QA8080已部署508，首次10次／重啟9次HTTP200/pong；runtime、environment及
+五表counts差異0。三named volumes、AppArmor、restart policy與507回復點保留；
+health=null，不宣稱healthy。Registry member生命周期分項通過（5次原生寫入及
+2次API憑證收尾），英文憑證必填驗證／取消零寫入通過。原生Volume同ID生命週期
+已可追溯續接通過：POST201／DELETE200、readonly兩版DELETE405、no-access兩版
+GET／DELETE403，繁中／英文可讀拒絕與取消、刪除、刷新終態皆核對。
+16個生命週期守門區分12個既有證據與4個本次守門；no-access API既有4請求／9守門
+與本次零API請求／5畫面及終態守門分開，不重送已完成請求，不追認歷史HOLD。
+完整矩陣INCOMPLETE。
+Quick start對齊已發布508完整不可變映像；507歷史來源、HOLD與scoped PASS不拼成新版本整體PASS。
 
 Server `v1.6.507` 已正式發布，封裝
 Web Console `1.6.170`（source `09df1480c5f4b58c6a9a9060ff94d980792f7015`）。
