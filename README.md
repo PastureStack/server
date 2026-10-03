@@ -11,9 +11,9 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
-## v1.6.512 — candidate；Web174已發布，Server成品驗收待核對
+## v1.6.512 — 已發布；完整功能矩陣仍待驗收
 
-本候選只將 Web Console 更新為 `1.6.174`：全新VM表單不再預填一般容器映像，
+本版只將 Web Console 更新為 `1.6.174`：全新VM表單不再預填一般容器映像，
 也不顯示Ubuntu／Alpine容器quick picks；保留自訂映像、initialValue、VM last-used，
 以及一般容器預設。VM boot-image說明與VM／容器缺少映像訊息沿既有i18n fallback；
 必填驗證仍由原生willSave阻擋，不新增VM runtime、映像白名單或權限變更。
@@ -25,18 +25,21 @@ tree為 `c408e8b018d99db2ca228203880f4e72663ab1b7`；
 [數字tag `1.6.174`](https://github.com/PastureStack/web-console/releases/tag/1.6.174)
 已簽章發布；匿名公開archive原bytes與CI成品一致，2982022 bytes，
 SHA256為 `6408775898f412e4b27092eeddd9cdc2028ad7b27835f489139c2d0cf62c6776`。
-本機release workspace證據（非public asset）
-`.release-evidence/web-console-v174-signed-merge-readonly/published-readback/publication-readback.json`
-SHA256為 `aa79ea915bb8d6de4542b1095c35e39479af4d6c24e7b7d9cd2e28ffbf08f603`。
-Server512正式source、映像digest、publisher、SBOM／scan、隔離啟動／重啟及QA驗收均pending；
-不沿用511的PASS或計數作為512證據。
+Server source為 `c533ac7753d222abb515848effc27d007bd700b6`，不可變映像為
+`ghcr.io/pasturestack/server:v1.6.512@sha256:805078de83c0320c751dff90304bd841b8e64bec720079198258d22fa41d0145`。
+[正式publisher37153784888](https://github.com/PastureStack/server/actions/runs/37153784888)
+與公開成品讀回通過：23 assets／22 SHA-256、public tag／digest／config一致，
+隔離映像首次啟動12次／重啟8次探測後均HTTP200/pong，34項MFA/API、
+TLS1.2／1.3、private no-store及不受信任TLS憑證拒絕均核對。
+這些是本版成品證據，不代表全部前端權限、資源寫入或實機VM生命週期已驗收。
 
 Engine保留正式 `v0.183.333`、460 digest-pinned base、多stage build與最終單runtime layer；
 其他component、runtime ENV、volumes、AppArmor及安全exact-set不變更。
-VEX51與vendor-pending政策及2026-10-20期限維持；52 findings是511歷史scan結果，
-512必須使用自己的實際成品scan，不宣稱零CVE。
-Quick Start維持下方已核實的Server511 digest；歷史scoped結果與HOLD不重寫或升格。
-詳見[Server512候選發行說明](docs/releases/server-1.6.512.md)。
+本版merged-rootfs scan保留raw52 findings、VEX51、8 Medium package findings／
+4 vendor-pending CVE，複核期限2026-10-20；Critical／High、available-fix、untracked
+與secrets均為0，不宣稱零CVE。Quick Start對齊本版已核實的不可變映像；
+歷史scoped結果與HOLD不重寫或升格。完整功能矩陣仍未完成。
+詳見[Server512發行說明](docs/releases/server-1.6.512.md)。
 
 ## v1.6.511 — 已發布；QA部署已核對，原生驗收仍待完成
 
@@ -809,8 +812,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.511` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.511).
+Before deploying, verify the `v1.6.512` numeric tag and immutable digest in
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.512).
 A registry login is not required. Pin the version and retain the database and
 platform volumes:
 
@@ -819,7 +822,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.511@sha256:bce474ce4403398044a7c24aafe6c8314bac38b44731540c5ffaa2dfc40699cd
+  ghcr.io/pasturestack/server:v1.6.512@sha256:805078de83c0320c751dff90304bd841b8e64bec720079198258d22fa41d0145
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -828,7 +831,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.511@sha256:bce474ce4403398044a7c24aafe6c8314bac38b44731540c5ffaa2dfc40699cd
+    image: ghcr.io/pasturestack/server:v1.6.512@sha256:805078de83c0320c751dff90304bd841b8e64bec720079198258d22fa41d0145
     restart: unless-stopped
     ports:
       - "8080:8080"
