@@ -11,17 +11,25 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
-## v1.6.510 — 未發布的 Server 候選；Web172 正式成品已核實
+## v1.6.510 — 已發布；原生操作與完整矩陣仍待驗收
 
-候選封裝 Web Console `1.6.172` 的 request-local create-only delivery：首次201
+本版封裝 Web Console `1.6.172` 的 request-local create-only delivery：首次201
 限定欄位交給本次 save 的非 canonical clone，不要求 canonical store 永久保留 secret。
 Engine 維持已發布的 `v0.183.333`，460 digest-pinned base、最終單 runtime layer、
 所有既有 production 環境與持久 volumes 契約不變。
 Web172 已正式發行，CI 808／808 通過，兩次 production 成品一致，公開下載與
-CI 檔案逐位元吻合；封裝 pins 已固定，沒有本機重建。Server510 未 build／發布／部署，
-新成品 SBOM／security scan／公共讀回與全新 key 四筆原生生命周期均未驗收；
-不得把509 scoped PASS或6982 HOLD升格。Quick start仍指向已核實的509不可變映像。
-詳見[候選發行說明](docs/releases/server-1.6.510.md)。
+CI 檔案逐位元吻合；封裝 pins 已固定，沒有本機重建。
+Server source 為 `1a323f5f690ed89a4f03e7ead1ad2e51ddeb4fdf`，不可變映像為
+`ghcr.io/pasturestack/server:v1.6.510@sha256:82e4ee7fa51dae3fb6b1f339ee794d17b593f6feae2fd313ef5354ccaaf2d89f`。
+[正式 publisher37110936143](https://github.com/PastureStack/server/actions/runs/37110936143)
+與公開成品讀回通過：23 assets／22 SHA-256、public tag／digest／config、
+單 runtime layer、34 MFA/API、首次啟動／重啟及 TLS 證據均核對。
+新成品 SBOM 與 scan 對齊本版，保留 raw52 findings、VEX51、
+8 Medium package findings／4 CVE；不放寬門檻，也不宣稱零CVE。
+QA部署、全新 key 四筆原生生命週期與 Host 流程尚未驗收；
+509 scoped PASS與6982 HOLD不升格，完整矩陣仍 INCOMPLETE。
+Quick start 對齊本版公開核實的不可變映像；公司站未部署或修改。
+詳見[發行說明](docs/releases/server-1.6.510.md)。
 
 ## v1.6.509 — 已發布；API Key 僅兩個續接範圍通過
 
@@ -735,8 +743,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.509` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.509).
+Before deploying, verify the `v1.6.510` numeric tag and immutable digest in
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.510).
 A registry login is not required. Pin the version and retain the database and
 platform volumes:
 
@@ -745,7 +753,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.509@sha256:d934c9d7bc7387626fedca5d403210fac70b7b4e35e334dcdb439f79f555ab87
+  ghcr.io/pasturestack/server:v1.6.510@sha256:82e4ee7fa51dae3fb6b1f339ee794d17b593f6feae2fd313ef5354ccaaf2d89f
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -754,7 +762,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.509@sha256:d934c9d7bc7387626fedca5d403210fac70b7b4e35e334dcdb439f79f555ab87
+    image: ghcr.io/pasturestack/server:v1.6.510@sha256:82e4ee7fa51dae3fb6b1f339ee794d17b593f6feae2fd313ef5354ccaaf2d89f
     restart: unless-stopped
     ports:
       - "8080:8080"
