@@ -11,6 +11,18 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.507 — 候選，尚待正式成品與 QA 驗收
+
+本候選預定封裝 Web Console `1.6.170`，修正未配置 local Volume 分類器
+對 nullable 關聯欄位的處理。Web 來源為
+`09df1480c5f4b58c6a9a9060ff94d980792f7015`；正式 CI `37082272427` 的兩個 production archive
+SHA-256 相同：`900974b07bb20ba5b2e7c1dede7012a53c6e2c96cd094c67cb7019434c4f27c9`。Web170 公開發行已讀回核實；
+Server507 正式成品與 QA8080／原生生命週期仍尚待驗收，不能借用506結果。
+Engine 保持 `v0.183.332`／原 WAR；API／Auth、角色授權、資料、完整
+pool/mount 關聯檢查與安全門檻不變。完整矩陣仍 INCOMPLETE，既有 HOLD
+不追認成功；Quick start 保持已發布的 `v1.6.506`。
+詳見[候選發行說明](docs/releases/server-1.6.507.md)。
+
 ## v1.6.506 — 已發布
 
 本版封裝 Web Console `1.6.169`，修正合法本機磁碟區的 `externalId`
