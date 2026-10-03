@@ -7,7 +7,8 @@ runtime gates have passed.
 
 ## Release notes
 
-- [Server v1.6.509](releases/server-1.6.509.md) — candidate packages published Engine 0.183.333 create-only response boundary; official image and QA native API-key lifecycle still pending
+- [Server v1.6.510](releases/server-1.6.510.md) — unpublished source candidate for Web Console 1.6.172 request-local create-only first delivery; official component pins, build/publication/SBOM/readback/deployment and fresh native key lifecycle pending; 509 scoped evidence and key6982 HOLD unchanged
+- [Server v1.6.509](releases/server-1.6.509.md) — published Engine 0.183.333 canonical create-only redaction with Web Console 1.6.171; immutable artifact readback, QA start/restart and existing Account6974/Project6977 scoped closures verified; fresh key6982 first-delivery HOLD, fresh Host pending; full matrix incomplete
 - [Server v1.6.508](releases/server-1.6.508.md) — published Web Console 1.6.171 canonical create-response fix; immutable artifact, QA start/restart, scoped Volume and Registry lifecycle verified; full matrix incomplete
 - [Server v1.6.507](releases/server-1.6.507.md) — published Web Console 1.6.170 nullable Volume relation fix; immutable artifact and QA start/restart verified
 - [Server v1.6.506](releases/server-1.6.506.md) — source candidate for the Web Console 1.6.169 generated Volume identifier classifier fix; immutable publication and packaged native lifecycle acceptance pending

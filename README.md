@@ -11,7 +11,19 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
-## v1.6.509 — 候選，尚未發布
+## v1.6.510 — 未發布的 Server 候選；Web172 正式成品已核實
+
+候選封裝 Web Console `1.6.172` 的 request-local create-only delivery：首次201
+限定欄位交給本次 save 的非 canonical clone，不要求 canonical store 永久保留 secret。
+Engine 維持已發布的 `v0.183.333`，460 digest-pinned base、最終單 runtime layer、
+所有既有 production 環境與持久 volumes 契約不變。
+Web172 已正式發行，CI 808／808 通過，兩次 production 成品一致，公開下載與
+CI 檔案逐位元吻合；封裝 pins 已固定，沒有本機重建。Server510 未 build／發布／部署，
+新成品 SBOM／security scan／公共讀回與全新 key 四筆原生生命周期均未驗收；
+不得把509 scoped PASS或6982 HOLD升格。Quick start仍指向已核實的509不可變映像。
+詳見[候選發行說明](docs/releases/server-1.6.510.md)。
+
+## v1.6.509 — 已發布；API Key 僅兩個續接範圍通過
 
 本次修正 Engine API 回應的共用 create-only 邊界：只有真正的資源建立
 （POST 且沒有 action）可以首次交付建立時限定欄位；停用等 POST action
@@ -22,11 +34,29 @@ boundary.
 Engine exact source `0d94f7d879d314235e582a7f4062914a27b82709`，
 WAR SHA256 `8c42c0982cbc2f4569fa265ad320b341551758cb4fc0bc6d79ba06d70e20d328`；
 正式 CI273 suites／1164 tests、隔離啟動與六個發行檔案讀回已通過。
-Server 不可變映像及 QA 8080 原生 API Key／隔離主機驗收尚未完成；
-不得把下列 508 的結果當作 509 通過。
-完整權限、所有資源 ID、所有語系與 UI 版面矩陣仍未完成。
-安裝指令暫時保留最後已發布的 508，待 509 正式 digest 驗證後才更新。
-詳見[候選說明](docs/releases/server-1.6.509.md)。
+Server source 為 `261bb23c980f5f896375923233e36f6554b99751`，不可變映像為
+`ghcr.io/pasturestack/server:v1.6.509@sha256:d934c9d7bc7387626fedca5d403210fac70b7b4e35e334dcdb439f79f555ab87`。
+[正式 publisher37105881483](https://github.com/PastureStack/server/actions/runs/37105881483)
+與公開成品讀回通過：23 assets／22 SHA-256、public tag／digest／config、
+單 runtime layer、34 MFA/API、首次啟動／重啟及 TLS 證據均核對。
+成品保留 raw52 findings、51 VEX statements、8 Medium package findings／4 CVE；
+Critical／High 為0，不宣稱零CVE。
+QA8080 的509部署與唯讀驗收通過：首次啟動13次、重啟9次重試後均為200 pong，
+環境變數、執行設定與五表筆數不變；508回復容器及資料庫備份保留。
+owner2513 的既有 Account6974 續接通過：本次 PUT200／deactivate202／DELETE200，
+3筆原生寫入、9個full16／14守門，cleanup=true；原508建立POST201與HOLD保留。
+既有 Project6977 續接移除通過：本次只有 DELETE200／4個守門，cleanup=true；
+原508 POST201／PUT200／deactivate202不算本版新寫入，原HOLD不升格。
+全新Project API Key仍HOLD：第二次僅POST201建立1c6982，3個守門與Store barrier通過，
+Web171原生首次交付timeout；無issued Basic讀取、edit／deactivate／delete或cleanup。
+active資源保留，不自動重試或清理；第一次0資源寫入的前檢HOLD也保留。
+Web172首次交付修正尚待正式打包與驗收，不包含在本版不可變映像中。
+全新隔離Host原生註冊／healthy／停用／移除仍pending；空template首次0writes／0guards HOLD，
+不能用guest readiness、template或Project fixture替代Host PASS。
+上述scoped結果不代表Docker healthy、公司站部署或完整矩陣PASS。
+完整權限、所有資源 ID、所有語系與 UI 版面矩陣仍未完成；508 scoped PASS 與歷史 HOLD 不升格。
+Quick start 對齊本版已核實的完整不可變映像；公司站未部署或修改。
+詳見[發行說明](docs/releases/server-1.6.509.md)。
 
 ## v1.6.508 — 已發布
 
@@ -59,7 +89,7 @@ Registry member原生建立／編輯／取消／移除已分項通過（5次原�
 Engine 保持 `v0.183.332`／原 WAR，完整 pool/mount 關聯、inactive fixture、
 安全閘門與回復契約保留。完整矩陣仍 INCOMPLETE，歷史 HOLD 不追認成功。
 Web建置audit保留7 High／3 Moderate／0 Critical，精確上游待補風險複核至2026-10-10；
-不宣稱零CVE或runtime整體不受影響。Quick start已對齊本版完整不可變映像。
+不宣稱零CVE或runtime整體不受影響。本版發布時的Quick start曾對齊508完整不可變映像。
 詳見[發行說明](docs/releases/server-1.6.508.md)。
 
 ## v1.6.507 — 已發布
@@ -705,8 +735,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.508` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.508).
+Before deploying, verify the `v1.6.509` numeric tag and immutable digest in
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.509).
 A registry login is not required. Pin the version and retain the database and
 platform volumes:
 
@@ -715,7 +745,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.508@sha256:e24f9993593bb609a7a0e26dc12fbbb21ab402b73c60af28955b988b83b6ac04
+  ghcr.io/pasturestack/server:v1.6.509@sha256:d934c9d7bc7387626fedca5d403210fac70b7b4e35e334dcdb439f79f555ab87
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -724,7 +754,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.508@sha256:e24f9993593bb609a7a0e26dc12fbbb21ab402b73c60af28955b988b83b6ac04
+    image: ghcr.io/pasturestack/server:v1.6.509@sha256:d934c9d7bc7387626fedca5d403210fac70b7b4e35e334dcdb439f79f555ab87
     restart: unless-stopped
     ports:
       - "8080:8080"

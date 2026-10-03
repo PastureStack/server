@@ -29,9 +29,9 @@ ARG SOURCE_DATE_EPOCH
 COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host-api-sha256
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.171
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.171.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=49fac41ca93eb628d0877104f9512ef382ffd9dbc89e04c940196b3a9c57798b
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.172
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.172.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=9a21c5e6ff9fbb274dbc7c45ec1ccffdbff33a945544b64d5976b14ee9752bfa
 ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -56,6 +56,7 @@ ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=bebcc1c0275072ac40b5bc9b80f914c40a7f0431ff
 ARG GOVC_BINARY_SHA256=f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31
 
 RUN set -eux; \
+    printf '%s\n' "${WEB_CONSOLE_ARTIFACT_SHA256}" | grep -Eq '^[0-9a-f]{64}$'; \
     apt-get update; \
     apt-get install -y --no-install-recommends xz-utils; \
     rm -rf /var/lib/apt/lists/*; \
@@ -395,9 +396,9 @@ ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7
 ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.3
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.171
-ARG WEB_CONSOLE_ARTIFACT_SHA256=49fac41ca93eb628d0877104f9512ef382ffd9dbc89e04c940196b3a9c57798b
-ARG WEB_CONSOLE_COMMIT=fc37f5af9320e492bec7e7244cd62144908b720e
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.172
+ARG WEB_CONSOLE_ARTIFACT_SHA256=9a21c5e6ff9fbb274dbc7c45ec1ccffdbff33a945544b64d5976b14ee9752bfa
+ARG WEB_CONSOLE_COMMIT=daab6e8ed5206562feb60e6549a3b9e72b4c8381
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_COMMIT=5589ef8fda68ae56e1afd64096965d452ee8a17e
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -424,6 +425,7 @@ ARG GOVC_BINARY_SHA256=f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d
 COPY --from=runtime_security_packages /out/ /tmp/pasturestack-runtime-security/
 COPY --from=runtime_security_packages /out/tar /usr/bin/tar
 RUN set -eux; \
+    printf '%s\n' "${WEB_CONSOLE_COMMIT}" | grep -Eq '^[0-9a-f]{40}$'; \
     cd /tmp/pasturestack-runtime-security; \
     sha256sum -c SHA256SUMS; \
     dpkg -i packages/*.deb; \
@@ -749,12 +751,12 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.509" \
+      org.opencontainers.image.version="v1.6.510" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460" \
       org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.509
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.510
 ENV CATTLE_CATTLE_VERSION=v0.183.333
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_SECURITY_SNAPSHOT=${UBUNTU_RUNTIME_SECURITY_SNAPSHOT}
