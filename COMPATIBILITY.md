@@ -1,10 +1,14 @@
 # Compatibility Contract
 
-Server `v1.6.506` 來源預定封裝 Web Console `1.6.169`，將本機 Volume 的
+Server `v1.6.506` 已正式封裝 Web Console `1.6.169`，將本機 Volume 的
 `externalId` 視為識別碼而非配置綁定。完整 pool/mount 關聯、主機／image／
 instance null binding、環境 schema 與 API 授權保護均不變。Engine 保持
-`v0.183.332`，不涉及資料遷移、認證或防火牆變更。正式成品與 QA 原生
-生命週期驗收尚待完成；不以來源測試替代整體權限矩陣。
+`v0.183.332`，不涉及資料遷移、認證或防火牆變更。正式 source 為
+`3cfb920a428fc2af6af6a07a832d6882663f544d`，不可變映像為
+`ghcr.io/pasturestack/server:v1.6.506@sha256:f6860a1d0e96587b05afbf72d52c063921ff8473a976552c6d0a01d223a7a188`。
+publisher37079727511已通過；Web169正式CI791/791。QA8080部署完成，首次11次／
+restart9次HTTP200/pong，runtime／environment／五表counts差異0，505回復點保留；
+health=null，不稱healthy。原生生命週期及完整角色矩陣另案驗收，不以正式成品或來源測試代替。
 
 The packaging migration preserves established database schemas, API paths and fields, event names, environment-variable aliases, service names used by stored data, container labels, filesystem upgrade paths, and bootstrap contracts.
 

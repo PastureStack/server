@@ -22,8 +22,21 @@ Web Console `1.6.169` is published from signed source
 produced the identical archive SHA-256
 `e2bcb97b0da810f2ff216f9738739235e3c6f29ef46f1d99b623cf9c9f7258e2`.
 
-The new numeric immutable tag must not replace `v1.6.505`. Image publication,
-start/restart checks and packaged browser lifecycle acceptance are pending.
+Server source is `3cfb920a428fc2af6af6a07a832d6882663f544d`; official publisher
+[`37079727511`](https://github.com/PastureStack/server/actions/runs/37079727511)
+completed the image build, start/restart, 34 MFA/API checks, TLS, single-runtime-layer,
+SBOM and security gates. The numeric immutable image is
+`ghcr.io/pasturestack/server:v1.6.506@sha256:f6860a1d0e96587b05afbf72d52c063921ff8473a976552c6d0a01d223a7a188`;
+it does not replace `v1.6.505`.
+
+The first publisher `37079232161` stopped at the source gate before building.
+PR232 corrected the published-heading parser and stale packaging-test version
+pins; it did not relax digest or security checks. That failed run remains failed.
+QA8080 deployment completed: first start and one restart returned HTTP200/pong
+after 11 and 9 attempts. Runtime configuration, environment overrides, mounts
+and five database counts were preserved. The v1.6.505 recovery point remains;
+Docker health is null, not healthy. Packaged browser lifecycle acceptance is
+separate and pending.
 Earlier HOLD receipts remain
 HOLD; known creation is not retroactively a complete lifecycle PASS. The full
 permission matrix remains INCOMPLETE.
