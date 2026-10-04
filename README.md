@@ -11,6 +11,26 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.513 — candidate；Web175 已發布，Server／部署驗收 pending
+
+本候選封裝 Web Console `1.6.175`，修正一般容器／VM 映像補正或切換語系後，
+父表單仍留有舊 required 錯誤的問題。只刷新同一表單自有的 validation aggregate；
+model／command 錯誤及後續 backend save 錯誤保留，不改共用 NewOrEdit、
+save lock、payload、Engine schema、角色或登入契約。
+Web175 正式 source 為 `bb905d092700c262497b88f5773e7714fc1f4be4`，
+tree 為 `b2b38347e5fa24bd945706fd2aaab0136ea4ef45`；
+[正式 CI37163340764](https://github.com/PastureStack/web-console/actions/runs/37163340764)
+通過 821／821，fail／skip／todo 為 0；兩次 production 成品一致。
+[數字 tag 1.6.175](https://github.com/PastureStack/web-console/releases/tag/1.6.175)
+已簽章發布，匿名公開 archive 原 bytes 與 CI 一致：2982158 bytes，
+SHA256 `9833467b2be47d4fa01f09954fcd35beb292c59d382d5c1aecd76d17c6a387a2`。
+這只是正式 Web component 讀回；Server513 source／digest／publisher、
+成品 scan／start-restart 與部署 UI 驗收均 pending，不借用 512 或歷史 QA PASS。
+Engine 維持 `v0.183.333`，四 build stages／最終單 runtime layer、
+460 digest-pinned base、其他 component pins 及安全門檻不變。
+Quick Start 暫留已發布 512 exact digest；完整功能矩陣 INCOMPLETE，舊 HOLD 不升格。
+詳見[候選發行說明](docs/releases/server-1.6.513.md)。
+
 ## v1.6.512 — 已發布；完整功能矩陣仍待驗收
 
 本版只將 Web Console 更新為 `1.6.174`：全新VM表單不再預填一般容器映像，

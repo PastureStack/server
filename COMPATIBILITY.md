@@ -1,5 +1,27 @@
 # Compatibility Contract
 
+## Server v1.6.513 candidate
+
+Server `v1.6.513` candidate packages 正式 Web Console `1.6.175`：
+映像補正／語系切換同步表單自有 required 錯誤，保留非映像錯誤及後續 backend save 錯誤。
+正式 source `bb905d092700c262497b88f5773e7714fc1f4be4`、
+tree `b2b38347e5fa24bd945706fd2aaab0136ea4ef45`、
+[CI37163340764](https://github.com/PastureStack/web-console/actions/runs/37163340764)
+821／821、fail／skip／todo 0；兩 production archive 一致，簽章數字 tag 及匿名讀回已核對。
+公開 archive 2982158 bytes，SHA256
+`9833467b2be47d4fa01f09954fcd35beb292c59d382d5c1aecd76d17c6a387a2`。
+Publication receipt SHA256 為
+`a177e4d2a20bff51b18c8f233e87672a3f343ff5a1df12edcc57771ae41ba125`。
+上述只證明 Web component published，不代表 Server513 build／runtime／部署 UI PASS。
+Engine333、460 base、四 build stages／單 runtime layer、其他 component／package pins、
+原生 save／payload／角色／OIDC-MFA、ENV／volumes／AppArmor 契約不變。
+VEX51 exact-set 與 vendor-pending severity／available-fix／untracked／secret 門檻不放寬，
+2026-10-20 review deadline 保留；513 成品 scan 未完成，不宣稱零 CVE。
+No migration or runtime patch is required.
+Server513 source／digest／publisher／QA 尚未產生；Quick Start 保留已發布512 exact digest，
+舊512／511發行、rollback與 scoped/HOLD 證據不升格，full matrix INCOMPLETE。
+詳見[候選發行說明](docs/releases/server-1.6.513.md)。
+
 ## Server v1.6.512 candidate
 
 Server `v1.6.512` candidate packages Web Console `1.6.174` 的VM映像表單防呆與缺映像訊息。
