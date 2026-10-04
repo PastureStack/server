@@ -11,6 +11,23 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.514 — 準備中，尚未發布
+
+本版準備封裝 Catalog Service `0.20.12`：Git `.git` 中繼資料不再被誤建成空範本，
+同一來源 commit 已有空索引時會透過原有交易重建該 Catalog，而非跳過修復。
+Web Console `1.6.176` 同時修正升級 Ember 後原生選單的 `mut` 綁定：
+選取成員角色時必須真正更新模型，並檢查相同寫法的 21 個欄位；不改角色權限契約。
+保留 Web175 的映像錯誤修正與 Engine `v0.183.333`；不改登入或主機防火牆。
+Catalog 正式 main CI `37177694304` 已驗證來源 `d708579092eae0fd03b2750ac594ff0396cf563b`、
+39 個 integration cases 兩次通過與可重現 archive；正式發布 run `37178033799` 成功，
+匿名公開讀回已核對兩個 assets 原 bytes、兩 binary／LICENSE 與來源；元件已正式發布。
+完整成品座標列於本版 release notes。Server514 映像 digest、
+正式 runtime/security 及 QA 遷移仍待驗證；Quick Start 維持已發布的 `v1.6.513`。
+原生升級及完整權限／語系／版面矩陣尚未完成，不能據此宣稱通過。
+升級前請備份資料；交易重建可能更換 Catalog DB 列及 API 範本 ID，須依相同來源、
+範本 key、版本、內容與 labels 核對，不承諾 ID 穩定。
+詳見[本版範圍及升級注意事項](docs/releases/server-1.6.514.md)。
+
 ## v1.6.513 — 已發布；QA部署／完整功能矩陣仍待驗收
 
 本版封裝 Web Console `1.6.175`，修正一般容器／VM 映像補正或切換語系後，

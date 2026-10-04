@@ -1,5 +1,29 @@
 # Compatibility Contract
 
+## Server v1.6.514 candidate
+
+Package Catalog Service `0.20.12` from verified main CI `37177694304`, source
+`d708579092eae0fd03b2750ac594ff0396cf563b`; 39 integration cases passed twice and archives
+are reproducible. Official publication run `37178033799` succeeded; anonymous public
+readback verified two asset bytes, both binaries, source LICENSE and immutable coordinates.
+Publication receipt SHA256 is `552ba8ab75e5379e462a44b03dc94d21b32e75476bd768db3d11cfee25d666de`.
+Exact component hashes are recorded in the release notes.
+Skip root `.git` metadata, reject invalid revision folders before allocating a template,
+and rebuild an empty/unnamed cached index within the existing catalog transaction.
+The cache check is scoped by catalog name and environment; another catalog cannot satisfy it.
+Startup refresh can rebuild an affected catalog without a source commit change. Database
+and API template IDs may remap; catalog origin, template keys, versions, content and labels
+must be preserved and checked independently of those IDs.
+Back up persistent data before upgrade and keep the old image and backup for rollback.
+No SQL repair, live binary override, role change, authentication change or firewall change.
+Web Console `1.6.176` repairs 21 native-select `mut` bindings through the existing
+invokable function contract, including project member-role edits. Permission checks,
+identity metadata and Web175 image-error handling remain unchanged. Component and native
+DOM/model/save verification are required; hiding the timeout alone is not acceptance.
+Engine333, four build stages, the final one-layer image and all unrelated pins remain.
+Server514 image digest, official runtime/security readback and real migration/native UI
+results are pending, not PASS. Quick Start remains the published Server513 reference.
+
 ## Server v1.6.513 published
 
 Server `v1.6.513` packages 正式 Web Console `1.6.175`：
