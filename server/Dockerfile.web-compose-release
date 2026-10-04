@@ -29,9 +29,16 @@ ARG SOURCE_DATE_EPOCH
 COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host-api-sha256
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.175
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.175.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=9833467b2be47d4fa01f09954fcd35beb292c59d382d5c1aecd76d17c6a387a2
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.176
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.176.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=071ce0b7091b323e0d84fe91269684f59fcf2e29000bd8ff94428e8dd03ece52
+ARG CATALOG_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/catalog-service/releases/download
+ARG CATALOG_SERVICE_VERSION=0.20.12
+ARG CATALOG_SERVICE_COMMIT=d708579092eae0fd03b2750ac594ff0396cf563b
+ARG CATALOG_SERVICE_ARCHIVE_SHA256=34b76c121270c603501664f7146d41916c7f45da983e326861ed4c5b9614372d
+ARG CATALOG_SERVICE_BINARY_SHA256=3deb43f9760d7cbb07f818dd108ab35abf9efc6908d5d7fcaf5c44a185f2fba9
+ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=8805af3c0b5968a02f994d65de715c525b73637aa2dc398a0648feeeaf2fd397
+ARG CATALOG_SERVICE_LICENSE_SHA256=0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594
 ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -162,6 +169,45 @@ RUN set -eux; \
         done; \
     done; \
     cp -a "${package_root}/." /out/web-console/; \
+    printf '%s\n' "${CATALOG_SERVICE_VERSION}" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; \
+    printf '%s\n' "${CATALOG_SERVICE_COMMIT}" | grep -Eq '^[0-9a-f]{40}$'; \
+    for catalog_hash in "${CATALOG_SERVICE_ARCHIVE_SHA256}" "${CATALOG_SERVICE_BINARY_SHA256}" "${CATALOG_SERVICE_SQLITE_BINARY_SHA256}" "${CATALOG_SERVICE_LICENSE_SHA256}"; do \
+        printf '%s\n' "${catalog_hash}" | grep -Eq '^[0-9a-f]{64}$'; \
+    done; \
+    catalog_archive=/tmp/catalog-service.tar.xz; \
+    catalog_listing=/tmp/catalog-service-files.txt; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
+        --connect-timeout 10 --max-time 300 \
+        -o "${catalog_archive}" \
+        "${CATALOG_SERVICE_RELEASE_BASE_URL%/}/v${CATALOG_SERVICE_VERSION}/catalog-service-${CATALOG_SERVICE_VERSION}.tar.xz"; \
+    echo "${CATALOG_SERVICE_ARCHIVE_SHA256}  ${catalog_archive}" | sha256sum -c -; \
+    tar -tJf "${catalog_archive}" >"${catalog_listing}"; \
+    printf './\n./catalog-service\n./catalog-service-sqlite\n' | cmp - "${catalog_listing}"; \
+    if tar -tvJf "${catalog_archive}" | grep -Eq '^[lh]'; then \
+        echo 'Catalog Service archive may not contain links' >&2; \
+        exit 1; \
+    fi; \
+    mkdir -p /out/catalog-service; \
+    tar --no-same-owner --no-same-permissions -xJf "${catalog_archive}" -C /out/catalog-service; \
+    echo "${CATALOG_SERVICE_BINARY_SHA256}  /out/catalog-service/catalog-service" | sha256sum -c -; \
+    echo "${CATALOG_SERVICE_SQLITE_BINARY_SHA256}  /out/catalog-service/catalog-service-sqlite" | sha256sum -c -; \
+    for catalog_binary in catalog-service catalog-service-sqlite; do \
+        chmod 0755 "/out/catalog-service/${catalog_binary}"; \
+        test "$(/out/catalog-service/${catalog_binary} --version)" = "v${CATALOG_SERVICE_VERSION}"; \
+        go version -m "/out/catalog-service/${catalog_binary}" | grep -F "vcs.revision=${CATALOG_SERVICE_COMMIT}"; \
+        go version -m "/out/catalog-service/${catalog_binary}" | grep -F 'vcs.modified=false'; \
+    done; \
+    mkdir -p /out/catalog-service-licenses; \
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
+        --connect-timeout 10 --max-time 300 \
+        -o /out/catalog-service-licenses/LICENSE.txt \
+        "https://raw.githubusercontent.com/PastureStack/catalog-service/${CATALOG_SERVICE_COMMIT}/LICENSE"; \
+    echo "${CATALOG_SERVICE_LICENSE_SHA256}  /out/catalog-service-licenses/LICENSE.txt" | sha256sum -c -; \
+    printf 'Catalog Service v%s\nRelease source commit: %s\nArtifact SHA-256: %s\nBinary SHA-256: %s\nSQLite binary SHA-256: %s\nSource: https://github.com/PastureStack/catalog-service/tree/%s\nThe inherited runtime license bundle remains available as historical attribution; these coordinates identify the replacement Catalog binaries.\n' \
+        "${CATALOG_SERVICE_VERSION}" "${CATALOG_SERVICE_COMMIT}" \
+        "${CATALOG_SERVICE_ARCHIVE_SHA256}" "${CATALOG_SERVICE_BINARY_SHA256}" \
+        "${CATALOG_SERVICE_SQLITE_BINARY_SHA256}" "${CATALOG_SERVICE_COMMIT}" \
+        > /out/catalog-service-licenses/SOURCES.txt; \
     auth_archive=/tmp/authentication-service.tar.xz; \
     auth_listing=/tmp/authentication-service-files.txt; \
     curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
@@ -396,9 +442,15 @@ ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7
 ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.3
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.175
-ARG WEB_CONSOLE_ARTIFACT_SHA256=9833467b2be47d4fa01f09954fcd35beb292c59d382d5c1aecd76d17c6a387a2
-ARG WEB_CONSOLE_COMMIT=bb905d092700c262497b88f5773e7714fc1f4be4
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.176
+ARG WEB_CONSOLE_ARTIFACT_SHA256=071ce0b7091b323e0d84fe91269684f59fcf2e29000bd8ff94428e8dd03ece52
+ARG WEB_CONSOLE_COMMIT=a1bbf172aad8443bfbb1859760d62669d6705189
+ARG CATALOG_SERVICE_VERSION=0.20.12
+ARG CATALOG_SERVICE_COMMIT=d708579092eae0fd03b2750ac594ff0396cf563b
+ARG CATALOG_SERVICE_ARCHIVE_SHA256=34b76c121270c603501664f7146d41916c7f45da983e326861ed4c5b9614372d
+ARG CATALOG_SERVICE_BINARY_SHA256=3deb43f9760d7cbb07f818dd108ab35abf9efc6908d5d7fcaf5c44a185f2fba9
+ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=8805af3c0b5968a02f994d65de715c525b73637aa2dc398a0648feeeaf2fd397
+ARG CATALOG_SERVICE_LICENSE_SHA256=0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594
 ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
 ARG AUTHENTICATION_SERVICE_COMMIT=5589ef8fda68ae56e1afd64096965d452ee8a17e
 ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
@@ -449,6 +501,9 @@ RUN set -eux; \
     rm -f /usr/bin/tar
 
 COPY --from=release_artifacts /out/web-console/ /tmp/pasturestack-web-console/
+COPY --from=release_artifacts --chmod=0755 /out/catalog-service/catalog-service /usr/bin/catalog-service.real
+COPY --from=release_artifacts --chmod=0755 /out/catalog-service/catalog-service-sqlite /usr/bin/catalog-service-sqlite
+COPY --from=release_artifacts /out/catalog-service-licenses/ /usr/share/licenses/pasturestack/catalog-service/
 COPY --from=release_artifacts --chmod=0755 /out/authentication-service/authentication-service /usr/bin/authentication-service.real
 COPY --from=release_artifacts --chmod=0755 /out/websocket-proxy/websocket-proxy /usr/bin/websocket-proxy.real
 
@@ -718,6 +773,13 @@ RUN set -eux; \
             "${web_root}/translations/zh-tw.json" >/dev/null; \
     done; \
     echo "${AUTHENTICATION_SERVICE_BINARY_SHA256}  /usr/bin/authentication-service.real" | sha256sum -c -; \
+    echo "${CATALOG_SERVICE_BINARY_SHA256}  /usr/bin/catalog-service.real" | sha256sum -c -; \
+    echo "${CATALOG_SERVICE_SQLITE_BINARY_SHA256}  /usr/bin/catalog-service-sqlite" | sha256sum -c -; \
+    test "$(/usr/bin/catalog-service.real --version)" = "v${CATALOG_SERVICE_VERSION}"; \
+    test "$(/usr/bin/catalog-service-sqlite --version)" = "v${CATALOG_SERVICE_VERSION}"; \
+    echo "${CATALOG_SERVICE_LICENSE_SHA256}  /usr/share/licenses/pasturestack/catalog-service/LICENSE.txt" | sha256sum -c -; \
+    grep -Fx "Release source commit: ${CATALOG_SERVICE_COMMIT}" \
+        /usr/share/licenses/pasturestack/catalog-service/SOURCES.txt >/dev/null; \
     /usr/bin/authentication-service.real --version | \
         grep -F "${AUTHENTICATION_SERVICE_VERSION}" >/dev/null; \
     for marker in \
@@ -751,12 +813,12 @@ RUN set -eux; \
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack server image with pure numeric dependency releases and preserved reviewed runtime behavior." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v1.6.513" \
+      org.opencontainers.image.version="v1.6.514" \
       org.opencontainers.image.revision="${PASTURESTACK_SERVER_REVISION}" \
       org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460" \
       org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"
 
-ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.513
+ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.514
 ENV CATTLE_CATTLE_VERSION=v0.183.333
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
 ENV PASTURESTACK_CURL_SECURITY_SNAPSHOT=${UBUNTU_RUNTIME_SECURITY_SNAPSHOT}
@@ -773,6 +835,11 @@ ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ART
 ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
+ENV PASTURESTACK_CATALOG_SERVICE_VERSION=${CATALOG_SERVICE_VERSION}
+ENV PASTURESTACK_CATALOG_SERVICE_COMMIT=${CATALOG_SERVICE_COMMIT}
+ENV PASTURESTACK_CATALOG_SERVICE_ARCHIVE_SHA256=${CATALOG_SERVICE_ARCHIVE_SHA256}
+ENV PASTURESTACK_CATALOG_SERVICE_BINARY_SHA256=${CATALOG_SERVICE_BINARY_SHA256}
+ENV PASTURESTACK_CATALOG_SERVICE_SQLITE_BINARY_SHA256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256}
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=${AUTHENTICATION_SERVICE_VERSION}
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT=${AUTHENTICATION_SERVICE_COMMIT}
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_ARCHIVE_SHA256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256}
