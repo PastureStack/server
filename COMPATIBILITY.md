@@ -1,6 +1,6 @@
 # Compatibility Contract
 
-## Server v1.6.514 candidate
+## Server v1.6.514 published
 
 Package Catalog Service `0.20.12` from verified main CI `37177694304`, source
 `d708579092eae0fd03b2750ac594ff0396cf563b`; 39 integration cases passed twice and archives
@@ -21,8 +21,22 @@ invokable function contract, including project member-role edits. Permission che
 identity metadata and Web175 image-error handling remain unchanged. Component and native
 DOM/model/save verification are required; hiding the timeout alone is not acceptance.
 Engine333, four build stages, the final one-layer image and all unrelated pins remain.
-Server514 image digest, official runtime/security readback and real migration/native UI
-results are pending, not PASS. Quick Start remains the published Server513 reference.
+Server514 source is `076aa43c6b978dfe65cd0fb3a05efc97ec5d02dd`; its immutable image is
+`ghcr.io/pasturestack/server:v1.6.514@sha256:45712644bc11325df927d10bdbab47421168cc3c512eb5f2a51d85020671a71f`.
+[Publisher37179046649](https://github.com/PastureStack/server/actions/runs/37179046649)
+and independent public artifact/runtime/security readback are recorded in the release notes,
+with receipt SHA256 `59340dd9c4b365df3e08633d71be66b56640e7d9cc673a79670c78c7739b2d70`.
+Quick Start follows this exact published514 identity. QA125/8080 now runs514/Web176;
+first-start11/restart9 probes returned HTTP200/pong, runtime settings, volumes and five
+core-table counts were preserved, with512 retained for rollback. Two real read-only catalog
+migration captures agreed:12 blank Git stubs and2 README-only entries were removed while
+valid origin/template/version/content/label semantics were preserved. Native UI and the
+full resource/role/locale/layout matrix remain INCOMPLETE, not PASS. The image has no Docker
+Healthcheck; running/pong must not be reported as Docker healthy.
+Traditional Chinese/English native VM/container forms passed eight cases and
+two INIT toggle/restore checks without creating resources or starting a VM;
+other locales, GPU hardware and VM runtime remain unverified.
+Historical513/512 publication and rollback records are unchanged; no zero-CVE claim is made.
 
 ## Server v1.6.513 published
 
