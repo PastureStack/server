@@ -1,8 +1,8 @@
 # Compatibility Contract
 
-## Server v1.6.513 candidate
+## Server v1.6.513 published
 
-Server `v1.6.513` candidate packages 正式 Web Console `1.6.175`：
+Server `v1.6.513` packages 正式 Web Console `1.6.175`：
 映像補正／語系切換同步表單自有 required 錯誤，保留非映像錯誤及後續 backend save 錯誤。
 正式 source `bb905d092700c262497b88f5773e7714fc1f4be4`、
 tree `b2b38347e5fa24bd945706fd2aaab0136ea4ef45`、
@@ -12,15 +12,22 @@ tree `b2b38347e5fa24bd945706fd2aaab0136ea4ef45`、
 `9833467b2be47d4fa01f09954fcd35beb292c59d382d5c1aecd76d17c6a387a2`。
 Publication receipt SHA256 為
 `a177e4d2a20bff51b18c8f233e87672a3f343ff5a1df12edcc57771ae41ba125`。
-上述只證明 Web component published，不代表 Server513 build／runtime／部署 UI PASS。
+Server513 source 為 `eefc84d670188f8d81978d6ce600d1c0400fe720`，正式不可變映像為
+`ghcr.io/pasturestack/server:v1.6.513@sha256:d6df82fe1ec29d720af47fe62ec83dcf0f96ce1b0dcfc00059363f8621dc61ab`。
+[Publisher37164995463](https://github.com/PastureStack/server/actions/runs/37164995463)
+與獨立公開讀回通過：23 assets／22 SHA-256、SBOM來源／digest／版本及單runtime layer，
+隔離首次啟動13次／重啟7次後HTTP200/pong、34 MFA/API、TLS1.2／1.3、
+不信任TLS憑證拒絕與private API `no-store`。這些是正式成品驗證，不是QA部署／UI PASS。
 Engine333、460 base、四 build stages／單 runtime layer、其他 component／package pins、
 原生 save／payload／角色／OIDC-MFA、ENV／volumes／AppArmor 契約不變。
 VEX51 exact-set 與 vendor-pending severity／available-fix／untracked／secret 門檻不放寬，
-2026-10-20 review deadline 保留；513 成品 scan 未完成，不宣稱零 CVE。
+513 actual scan raw52／VEX51，vendor pending為8 Medium package findings／4 CVEs；
+untracked／Critical／High／available-fix／secret均0，2026-10-20 review deadline保留，不宣稱零CVE。
 No migration or runtime patch is required.
-Server513 source／digest／publisher／QA 尚未產生；Quick Start 保留已發布512 exact digest，
+Quick Start指向已發布513 exact digest；QA目前仍512，513尚未部署，
 舊512／511發行、rollback與 scoped/HOLD 證據不升格，full matrix INCOMPLETE。
-詳見[候選發行說明](docs/releases/server-1.6.513.md)。
+原生UI／角色／語系／版面及VM開機仍待本版實機驗收。
+詳見[已發布發行說明](docs/releases/server-1.6.513.md)。
 
 ## Server v1.6.512 published
 

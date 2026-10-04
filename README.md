@@ -11,9 +11,9 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
-## v1.6.513 — candidate；Web175 已發布，Server／部署驗收 pending
+## v1.6.513 — 已發布；QA部署／完整功能矩陣仍待驗收
 
-本候選封裝 Web Console `1.6.175`，修正一般容器／VM 映像補正或切換語系後，
+本版封裝 Web Console `1.6.175`，修正一般容器／VM 映像補正或切換語系後，
 父表單仍留有舊 required 錯誤的問題。只刷新同一表單自有的 validation aggregate；
 model／command 錯誤及後續 backend save 錯誤保留，不改共用 NewOrEdit、
 save lock、payload、Engine schema、角色或登入契約。
@@ -24,12 +24,19 @@ tree 為 `b2b38347e5fa24bd945706fd2aaab0136ea4ef45`；
 [數字 tag 1.6.175](https://github.com/PastureStack/web-console/releases/tag/1.6.175)
 已簽章發布，匿名公開 archive 原 bytes 與 CI 一致：2982158 bytes，
 SHA256 `9833467b2be47d4fa01f09954fcd35beb292c59d382d5c1aecd76d17c6a387a2`。
-這只是正式 Web component 讀回；Server513 source／digest／publisher、
-成品 scan／start-restart 與部署 UI 驗收均 pending，不借用 512 或歷史 QA PASS。
+Server513 正式 source 為 `eefc84d670188f8d81978d6ce600d1c0400fe720`，不可變映像為
+`ghcr.io/pasturestack/server:v1.6.513@sha256:d6df82fe1ec29d720af47fe62ec83dcf0f96ce1b0dcfc00059363f8621dc61ab`。
+[正式 publisher37164995463](https://github.com/PastureStack/server/actions/runs/37164995463)
+及獨立公開讀回通過：23 assets／22 SHA-256、單 runtime layer、SBOM來源／digest核對，
+隔離首次啟動13次／重啟7次後 HTTP200/pong、34 MFA/API、TLS1.2／1.3，
+不信任TLS憑證拒絕與private API `no-store`通過；這不是QA部署或原生UI驗收。
+本版merged-rootfs scan為raw52／VEX51，保留8 Medium vendor package findings／4 CVEs，
+untracked／Critical／High／available-fix／secret均0，review deadline維持2026-10-20；不宣稱零CVE。
 Engine 維持 `v0.183.333`，四 build stages／最終單 runtime layer、
 460 digest-pinned base、其他 component pins 及安全門檻不變。
-Quick Start 暫留已發布 512 exact digest；完整功能矩陣 INCOMPLETE，舊 HOLD 不升格。
-詳見[候選發行說明](docs/releases/server-1.6.513.md)。
+Quick Start更新為513 exact digest；QA目前仍512，513尚未部署，不借用歷史QA PASS。
+完整功能矩陣 INCOMPLETE，原生UI／角色／VM開機仍待驗收，舊 HOLD 不升格。
+詳見[已發布發行說明](docs/releases/server-1.6.513.md)。
 
 ## v1.6.512 — 已發布；完整功能矩陣仍待驗收
 
@@ -832,8 +839,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.512` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.512).
+Before deploying, verify the `v1.6.513` numeric tag and immutable digest in
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.513).
 A registry login is not required. Pin the version and retain the database and
 platform volumes:
 
@@ -842,7 +849,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.512@sha256:805078de83c0320c751dff90304bd841b8e64bec720079198258d22fa41d0145
+  ghcr.io/pasturestack/server:v1.6.513@sha256:d6df82fe1ec29d720af47fe62ec83dcf0f96ce1b0dcfc00059363f8621dc61ab
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -851,7 +858,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.512@sha256:805078de83c0320c751dff90304bd841b8e64bec720079198258d22fa41d0145
+    image: ghcr.io/pasturestack/server:v1.6.513@sha256:d6df82fe1ec29d720af47fe62ec83dcf0f96ce1b0dcfc00059363f8621dc61ab
     restart: unless-stopped
     ports:
       - "8080:8080"
