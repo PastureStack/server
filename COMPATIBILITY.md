@@ -22,9 +22,9 @@ Server513 source／digest／publisher／QA 尚未產生；Quick Start 保留已�
 舊512／511發行、rollback與 scoped/HOLD 證據不升格，full matrix INCOMPLETE。
 詳見[候選發行說明](docs/releases/server-1.6.513.md)。
 
-## Server v1.6.512 candidate
+## Server v1.6.512 published
 
-Server `v1.6.512` candidate packages Web Console `1.6.174` 的VM映像表單防呆與缺映像訊息。
+Server `v1.6.512` packages Web Console `1.6.174` 的VM映像表單防呆與缺映像訊息。
 只移除全新VM的一般容器預填／quick picks，保留自訂／initialValue／last-used、
 一般容器預設及原生required／willSave語意；不改Engine、schema、角色或VM runtime。
 Web174正式signed source為 `d24b7f4e164f058e3ef9057347caa2080e2b5407`、
@@ -35,13 +35,21 @@ tree為 `c408e8b018d99db2ca228203880f4e72663ab1b7`。
 已簽章發布，匿名公開archive原bytes與CI一致，2982022 bytes，
 archive SHA256為 `6408775898f412e4b27092eeddd9cdc2028ad7b27835f489139c2d0cf62c6776`。
 獨立publication receipt SHA256為 `aa79ea915bb8d6de4542b1095c35e39479af4d6c24e7b7d9cd2e28ffbf08f603`；
-此為Web component讀回，不代表Server512 build/runtime/QA PASS。
-Server512 source／digest／publisher／artifact scan／runtime及QA證據尚未完成，不引用511 PASS替代。
+此為Web component讀回，不代表完整功能矩陣 PASS。
+Server512 source 為 `c533ac7753d222abb515848effc27d007bd700b6`，不可變映像為
+`ghcr.io/pasturestack/server:v1.6.512@sha256:805078de83c0320c751dff90304bd841b8e64bec720079198258d22fa41d0145`。
+[正式 publisher37153784888](https://github.com/PastureStack/server/actions/runs/37153784888)
+及獨立公開讀回通過：23 assets／22 SHA-256、單 runtime layer、
+隔離首次啟動12次／重啟8次後 HTTP200/pong、34 MFA/API、TLS1.2／1.3、
+private no-store 與不受信任 TLS 憑證拒絕均核對。這些不代表全部實機操作或權限已驗收。
+實際 merged-rootfs scan 為 raw52／VEX51、8 Medium package findings／4 vendor-pending CVE；
+Critical／High、available-fix、untracked 與 secrets 為0，不宣稱零 CVE。
 Engine333、460 digest-pinned base、四build stages／最終單runtime layer、其他component pins、
 runtime ENV／volumes／AppArmor、VEX51 exact-set、vendor-pending門檻與2026-10-20期限不變。
 No migration or runtime patch is required.
-Quick Start與rollback參考保留下方511已核實公開digest；歷史HOLD及full matrix INCOMPLETE不升格。
-詳見[候選發行說明](docs/releases/server-1.6.512.md)。
+Quick Start 對齊512已核實公開digest，511仍為歷史rollback參考；
+歷史HOLD及full matrix INCOMPLETE不升格。
+詳見[已發布發行說明](docs/releases/server-1.6.512.md)。
 
 ## Server v1.6.511 published
 
