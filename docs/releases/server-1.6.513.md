@@ -1,8 +1,9 @@
 # Server v1.6.513
 
-Source candidate only. Web Console `1.6.175` is a published immutable component;
-Server513 has not yet been built, published or deployed. The full functional,
-permission, locale and layout matrix remains INCOMPLETE.
+Published immutable Server artifact with Web Console `1.6.175`; its own official
+runtime/security/public readback passed. Server513 is not yet deployed to QA,
+which remains on 512. The full functional, permission, locale and layout matrix
+remains INCOMPLETE; no native UI or VM-boot acceptance is claimed.
 
 ## Scope
 
@@ -40,31 +41,44 @@ No migration or runtime patch is required.
   `a177e4d2a20bff51b18c8f233e87672a3f343ff5a1df12edcc57771ae41ba125`.
 - Web build audit remains `PASS_BUILD_VENDOR_PENDING`; it is not a zero-risk claim.
 
-## Pending Server and acceptance boundaries
+## Actual published Server and remaining acceptance boundaries
 
-Server513 source, publisher run, image/config digest, public assets,
-merged-rootfs scan, isolated start/restart and deployed UI evidence are PENDING.
-Do not substitute Web publication, Server512 artifact checks, or earlier QA
-results for this version's acceptance. No Server513 image digest is asserted.
+- Source: `eefc84d670188f8d81978d6ce600d1c0400fe720`.
+- [Official publisher37164995463](https://github.com/PastureStack/server/actions/runs/37164995463):
+  success, source-bound single final runtime layer and flatten/config checks.
+- [Immutable numeric release v1.6.513](https://github.com/PastureStack/server/releases/tag/v1.6.513):
+  23 assets including the checksum manifest, 22 SHA-256 entries; all local hashes
+  and GitHub asset digests match. Anonymous GHCR manifest/config and SBOM identity
+  match the image/source/version, linux/amd64 and digest-pinned 460 base.
+- Image: `ghcr.io/pasturestack/server:v1.6.513@sha256:d6df82fe1ec29d720af47fe62ec83dcf0f96ce1b0dcfc00059363f8621dc61ab`.
+- Config digest: `sha256:c219a757a09fad676f9f95c235b2b8e64551f7f011d2fae2d267752cba6bd054`.
+- Isolated first start13/restart7 attempts reached HTTP200/pong; 34 MFA/API checks,
+  TLS1.2/TLS1.3 HTTP200, untrusted TLS rejection and private API `no-store` passed.
+  These official artifact gates are not QA deployment or native UI acceptance.
+- Independent readback receipt SHA256:
+  `0ddeb6b6fe1b5a846fd6e7f803da61a8caa7865496a2751fc9f33cd73bfc9e96`.
+  Local release workspace evidence, not a public Release asset:
+  `.release-evidence/server-v513-published-readonly/readback/server513-release-37164995463/readback-receipt.json`.
 
-The existing 51 OpenVEX statements and vendor-pending exact-set/severity/fix
-policy retain the `2026-10-20` review deadline. Updating their release identity
-does not establish a new artifact scan. Server512's historical raw52/VEX51,
-8 Medium package findings / 4 vendor-pending CVEs are not Server513 scan results.
-The actual Server513 scan remains required; do not claim zero CVEs.
+The actual Server513 merged-rootfs scan has 52 raw findings and 51 OpenVEX
+statements. Raw/unresolved JSON and TSV, PURLs, VEX and vendor exact sets match;
+8 Medium vendor-pending package findings / 4 CVEs remain. Untracked,
+Critical/High, available-fix and secret findings are 0. Existing severity/fix
+policy and the `2026-10-20` review deadline remain unchanged; do not claim zero CVEs.
 
-Quick Start keeps the published Server512 immutable image
-`ghcr.io/pasturestack/server:v1.6.512@sha256:805078de83c0320c751dff90304bd841b8e64bec720079198258d22fa41d0145`.
+Quick Start now pins the published Server513 immutable image above. QA remains
+on 512; Server513 deployment/native UI evidence is pending. Do not substitute
+Web publication, official runtime gates or earlier QA results for it.
 Keep [Server512](server-1.6.512.md) and earlier release/QA receipts unchanged.
-Historical HOLDs are not promoted; component publication does not complete the
+Historical HOLDs are not promoted; artifact publication does not complete the
 native resource/role/locale/layout matrix or authorize company deployment.
 
 ## Upgrade and rollback
 
-After Server513's own publication/readback gates pass, change only the image
-reference in the existing configuration. Preserve environment overrides,
+When deploying the published Server513 image, change only the image reference
+in the existing configuration. Preserve environment overrides,
 named volumes, restart policy, AppArmor and HTTPS origin. Back up persistent
 data first; verify HTTP200/pong, displayed Web version and relevant native UI
-after first start and a restart. Until that evidence exists, retain Server512
-as the current published Quick Start and rollback reference. Never delete
+after first start and a restart. Until that deployment evidence exists,
+retain the current QA512 runtime and rollback reference. Never delete
 persistent volumes as part of this Web-only upgrade.
