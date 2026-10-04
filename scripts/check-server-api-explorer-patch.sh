@@ -131,7 +131,7 @@ require_marker README.md \
     '## v1.6.510' \
     SERVER_V510_README_MISSING
 require_marker README.md '## v1.6.514' SERVER_V514_README_MISSING
-require_marker COMPATIBILITY.md '## Server v1.6.514 candidate' SERVER_V514_COMPATIBILITY_MISSING
+require_marker COMPATIBILITY.md '## Server v1.6.514 published' SERVER_V514_COMPATIBILITY_MISSING
 require_marker docs/README.md '[Server v1.6.514](releases/server-1.6.514.md)' SERVER_V514_INDEX_MISSING
 require_marker docs/releases/server-1.6.514.md '# Server v1.6.514' SERVER_V514_RELEASE_NOTES_MISSING
 require_marker docs/releases/server-1.6.514.md 'including API template IDs, may remap' SERVER_V514_ID_REMAP_CONTRACT_MISSING

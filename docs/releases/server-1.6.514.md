@@ -1,6 +1,8 @@
 # Server v1.6.514
 
-Candidate; not yet published or deployed. No complete functional-matrix PASS is claimed.
+Published immutable Server artifact; QA deployment/readback and the scoped catalog
+migration have passed. Native UI acceptance remains separate and in progress.
+No complete functional-matrix PASS is claimed.
 
 ## Repair
 
@@ -45,8 +47,33 @@ the helper itself, capabilities, identity metadata and session protection are un
   `8c42c0982cbc2f4569fa265ad320b341551758cb4fc0bc6d79ba06d70e20d328` (unchanged).
 - Reuse the pinned Server460 base and four build stages; the official publisher retains
   the single-runtime-layer/config comparison. No runtime patch is used.
-- Server image tag/digest, official runtime/security readback and real catalog migration
-  results are pending. Component tests are not native UI or permission-matrix acceptance.
+- [Official publisher37179046649](https://github.com/PastureStack/server/actions/runs/37179046649)
+  and independent public readback verified this Server artifact, not QA deployment.
+  Source: `076aa43c6b978dfe65cd0fb3a05efc97ec5d02dd`.
+  Image: `ghcr.io/pasturestack/server:v1.6.514@sha256:45712644bc11325df927d10bdbab47421168cc3c512eb5f2a51d85020671a71f`.
+  Artifact config digest: `sha256:e34715538f3e1b3effd555f3a308a162074092d1a4764badb1bae383d2339838` (distinct from the manifest digest).
+  Actual runtime/security/publication results are in the independent receipt SHA256
+  `59340dd9c4b365df3e08633d71be66b56640e7d9cc673a79670c78c7739b2d70`, local evidence
+  `.release-evidence/server-v514-published-readonly/readback/server514-release-37179046649/readback-receipt.json`; no run counts are borrowed from Server513.
+- QA125/8080 runs514/Web176 after actual immutable deployment and independent readback.
+  First-start11/restart9 probes returned HTTP200/pong; runtime contract and five core-table
+  count differences were0. Existing environment variables, named volumes and AppArmor were
+  preserved;512 remains stopped as a rollback container. No Docker Healthcheck is defined.
+  Deployment receipt SHA256: `3195d1d1e2cf1985bfc1caab0b18cdc81bb65564829764c585d17174250fe1c8`.
+- Two real post-deployment SELECT snapshots agreed. The catalog migration removed12 blank
+  Git stubs and2 source-proven README-only entries, preserving valid origin, template keys,
+  versions, compose contents and labels across the eight tables. No SQL writes or manual
+  runtime repair were used. Migration summary SHA256:
+  `e979b384a70826b3a8ea44ee60c0166aff665520cab25a78cded6ae49a0cd8c7`.
+  This accepts the scoped index migration only, not native create/upgrade/delete.
+- QA125/8080 native form checks passed for Traditional Chinese and English:
+  eight VM/container fresh/cache cases, two INIT toggle/restore cases and three
+  data-preservation checks. Required-image errors were visible, and the INIT
+  checkbox did not overlap the adjacent input. No resource was created and no
+  guest VM was started. This is not all-locale, GPU or VM-runtime acceptance.
+  Actual result SHA256: `786b08d0205ba48272b67cad5494e5e9728368a019faa0bc2ebf3cd2d2a63f16`.
+- Native UI, resource/role/locale/layout and VM runtime remain scoped or OPEN;
+  full matrix INCOMPLETE. Artifact and migration tests do not establish full UI or permission acceptance.
 
 ## Upgrade and rollback
 
@@ -66,5 +93,6 @@ controlled downtime. Never delete named volumes as an upgrade or cleanup step.
 
 Unfixed vendor Medium/Low findings remain recorded under the existing policy and review
 deadline `2026-10-20` (51 VEX statements and eight vendor Medium package findings across
-four CVEs remain the existing exact policy). The Server514 runtime scan is still pending.
+four CVEs remain the existing exact policy). This policy is not the actual Server514 scan:
+its recorded findings and gate results come only from the independent receipt above.
 This release does not claim zero CVEs or authorize changes to a company deployment.
