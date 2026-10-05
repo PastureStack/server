@@ -11,19 +11,31 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
-## v1.6.515 — 來源包裝更新；Server CI、發行與實機驗收待完成
+## v1.6.515 — 已發布；隔離 QA 部署通過，原生驗收待完成
 
-本版來源封裝已發布的 Web Console `1.6.177`，修正已結束的日誌／終端工作區重新連線，
+本版封裝已發布的 Web Console `1.6.177`，修正已結束的日誌／終端工作區重新連線，
 以及延後抵達的回應、socket 與 timer 回呼誤更新舊工作區的問題。明確開啟新項目與
 仍在執行中的連線可繼續使用；權限、API、工作區保存格式及 MFA 契約不變。
 Web 正式 CI `37255121243` 通過 841 項測試（新增 17 項），兩份 archive 原 bytes 一致；
-數字 tag `1.6.177` 綁定簽章來源 `b9b841e65afe1d89a5b03ac767e9168bccd3c3ea`，
-匿名 HTTP200 讀回 archive `2982494` bytes、SHA256
+數字 lightweight tag `1.6.177` 綁定 signed source commit
+`b9b841e65afe1d89a5b03ac767e9168bccd3c3ea`，不是 signed tag；
+正常 PR #175 squash merge `5d150806be20226657e5caa8a0150d068006c772` 的 tree 相同且簽章已驗證。
+匿名 HTTP 200 讀回 archive `2982494` bytes、SHA256
 `4e34eb2b3165f078134cddcf1721239b3da7baf11dd683991b2d6aa5bae944e0`。
-Engine333、Catalog Service0.20.12、其他元件、plugins、460 base 與單 runtime layer 流程不變。
-這是 Server515 來源包裝，不是 Server 已發布或 QA 已升級；不可變 Server digest 尚未產生。
-Quick Start 保留已發布514，原映像與備份保留供 rollback；全矩陣仍 INCOMPLETE，歷史 HOLD 不提升。
-詳見[本版來源範圍與驗收邊界](docs/releases/server-1.6.515.md)。
+Engine 333、Catalog Service 0.20.12、其他元件、plugins、460 base 與單 runtime layer 流程不變。
+Server 515 正式 source 為 `f0267ff3a347ea526088db1749b1d3c8dfd9bd37`，不可變映像為
+`ghcr.io/pasturestack/server:v1.6.515@sha256:fcc79f616927040ef2b3a5c58662fa948823220dbc57ffe275dee2ad88764d47`。
+[正式 publisher 37256753740](https://github.com/PastureStack/server/actions/runs/37256753740)
+及獨立公開成品／runtime／security 讀回通過。
+隔離測試站已升級 Server 515 / Web 177，獨立部署讀回通過：首次啟動第 10 次、
+重啟第 11 次探測取得 HTTP 200/pong；runtime 設定、環境覆寫、三個具名資料卷
+與五張核心表筆數保持不變，`docker-default`、`unless-stopped` 及 514 回滾映像與備份保留。
+映像沒有 Docker Healthcheck；running/pong 不等於 Docker healthy，也不是原生生命週期 PASS。
+Quick Start 對齊已發布 515；514 原映像、設定、資料卷與備份保留供 rollback。
+最新一輪 Project v2 原生驗收仍為 HOLD：停用請求回 HTTP 200 後，介面等待逾時；
+原生移除與資料庫清理尚未完成。本版完整原生驗收仍待完成，全矩陣仍 INCOMPLETE，
+歷史 HOLD 不提升。
+詳見 [本版發行事實與驗收邊界](docs/releases/server-1.6.515.md)。
 
 ## v1.6.514 — 已發布；QA升級與Catalog遷移通過，原生驗收持續進行
 
@@ -886,8 +898,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.514` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.514).
+Before deploying, verify the `v1.6.515` numeric tag and immutable digest in
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.515).
 A registry login is not required. Pin the version and retain the database and
 platform volumes:
 
@@ -896,7 +908,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.514@sha256:45712644bc11325df927d10bdbab47421168cc3c512eb5f2a51d85020671a71f
+  ghcr.io/pasturestack/server:v1.6.515@sha256:fcc79f616927040ef2b3a5c58662fa948823220dbc57ffe275dee2ad88764d47
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -905,7 +917,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.514@sha256:45712644bc11325df927d10bdbab47421168cc3c512eb5f2a51d85020671a71f
+    image: ghcr.io/pasturestack/server:v1.6.515@sha256:fcc79f616927040ef2b3a5c58662fa948823220dbc57ffe275dee2ad88764d47
     restart: unless-stopped
     ports:
       - "8080:8080"
