@@ -11,6 +11,20 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.515 — 來源包裝更新；Server CI、發行與實機驗收待完成
+
+本版來源封裝已發布的 Web Console `1.6.177`，修正已結束的日誌／終端工作區重新連線，
+以及延後抵達的回應、socket 與 timer 回呼誤更新舊工作區的問題。明確開啟新項目與
+仍在執行中的連線可繼續使用；權限、API、工作區保存格式及 MFA 契約不變。
+Web 正式 CI `37255121243` 通過 841 項測試（新增 17 項），兩份 archive 原 bytes 一致；
+數字 tag `1.6.177` 綁定簽章來源 `b9b841e65afe1d89a5b03ac767e9168bccd3c3ea`，
+匿名 HTTP200 讀回 archive `2982494` bytes、SHA256
+`4e34eb2b3165f078134cddcf1721239b3da7baf11dd683991b2d6aa5bae944e0`。
+Engine333、Catalog Service0.20.12、其他元件、plugins、460 base 與單 runtime layer 流程不變。
+這是 Server515 來源包裝，不是 Server 已發布或 QA 已升級；不可變 Server digest 尚未產生。
+Quick Start 保留已發布514，原映像與備份保留供 rollback；全矩陣仍 INCOMPLETE，歷史 HOLD 不提升。
+詳見[本版來源範圍與驗收邊界](docs/releases/server-1.6.515.md)。
+
 ## v1.6.514 — 已發布；QA升級與Catalog遷移通過，原生驗收持續進行
 
 本版封裝 Catalog Service `0.20.12`：Git `.git` 中繼資料不再被誤建成空範本，
