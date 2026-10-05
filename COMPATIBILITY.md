@@ -1,5 +1,20 @@
 # Compatibility Contract
 
+## Server v1.6.515 source packaging
+
+Package published Web Console `1.6.177` from signed source
+`b9b841e65afe1d89a5b03ac767e9168bccd3c3ea`, archive SHA256
+`4e34eb2b3165f078134cddcf1721239b3da7baf11dd683991b2d6aa5bae944e0`.
+Ended logs/terminal entries cannot reconnect or accept late responses and old callbacks;
+explicit new entries and live reconnects remain supported. Permission checks, API contracts,
+workspace persistence, generation/mutex and MFA are unchanged.
+Engine333, Catalog Service0.20.12, all other components/plugins, the pinned460 base,
+four build stages and final single-runtime-layer publication flow are unchanged.
+Server515 exact-source CI, immutable publication and isolated native acceptance remain pending.
+Do not treat source packaging or the published Web component as Server/QA acceptance.
+Keep the published514 Quick Start image, configuration, named volumes and rollback backups.
+The complete matrix remains INCOMPLETE; historical HOLDs and514 evidence are unchanged.
+
 ## Server v1.6.514 published
 
 Package Catalog Service `0.20.12` from verified main CI `37177694304`, source
