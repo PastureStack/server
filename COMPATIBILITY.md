@@ -1,6 +1,6 @@
 # Compatibility Contract
 
-## Server v1.6.516 candidate
+## Server v1.6.516 published
 
 Package published Web Console `1.6.178`, signed source
 `60a494e943150ecd300d1aa653ee397f590b575b`, archive SHA256
@@ -9,7 +9,20 @@ Formal CI 37273270200 passed 848 tests; two archives and anonymous immutable
 download agree. Only exactly inactive environments skip scoped network/policy
 reads; global project/member reads and capabilities remain authoritative.
 Other states, authorization errors, generation/mutex, OIDC and MFA are unchanged.
-The new status hint exists in all 13 packaged locales.
+The new status hint exists in all 13 packaged locales. The numeric lightweight
+tag binds the signed Web source commit; it is not a signed tag.
+
+Server source is `e024e054be7371c60d719d0590ca3f5b86bdb6ee`; its immutable image is
+`ghcr.io/pasturestack/server:v1.6.516@sha256:3741b7d87273387f36b49e44d407c240658db0ab7fc7fb8d518ae08f55ac733c`.
+[Publisher 37275775509](https://github.com/PastureStack/server/actions/runs/37275775509)
+and independent public artifact readback passed. Tag and immutable manifest
+bytes, config/version/revision identity, checksummed release assets and SBOM
+identity agree. Publication and isolated QA acceptance are separate evidence.
+The actual isolated 516 deployment separately passed: first start and restart
+each reached HTTP 200/pong after ten bounded probe attempts. Runtime settings
+and five core-table counts have zero differences; the existing AppArmor,
+three named volumes and `unless-stopped` policy remain. Docker health is null,
+not healthy; no company-site deployment is claimed.
 
 Image catalog defaults pin normally merged commit
 `7670ffd81d5f0b5570197fb03c7e55b46da45bf3` (IPsec Overlay 12 / v0.14.38).
@@ -17,8 +30,14 @@ Explicit user catalog settings, existing template revisions and backend/plugin
 ownership are preserved. Template visibility is not managed upgrade acceptance.
 Engine 333, Catalog Service 0.20.12, four build stages and one final runtime layer
 remain unchanged. VEX/vendor-pending changes only their release identity;
-review deadline and findings are not reset. Server publication, isolated
-deployment and native acceptance are pending; the full matrix is INCOMPLETE.
+review deadline and findings are not reset. In one inactive environment, native
+detail/reload, edit/remove cancellation, DELETE 200 and absence from the list
+after reload were observed. The parent cleanup timeout remains HOLD. A separate
+read-only database observation confirmed the environment and four networks were
+purged, with no remaining members or dependent resources. Fresh API and complete
+foreign-data preservation verification remain incomplete; this is not full
+native lifecycle PASS. The full matrix is INCOMPLETE and historical HOLDs remain.
+See the [release note](docs/releases/server-1.6.516.md) for exact artifact identities.
 
 ## Server v1.6.515 published
 

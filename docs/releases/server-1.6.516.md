@@ -1,8 +1,8 @@
 # Server v1.6.516
 
-Status: source candidate packaging published components. The immutable Server
-image, independent artifact readback, isolated deployment and native acceptance
-are pending. Full functional/authorization/localization matrix: INCOMPLETE.
+Status: immutable Server image published; independent public artifact readback
+passed. Isolated QA deployment passed; complete native acceptance remains pending.
+Full functional/authorization/localization matrix: INCOMPLETE.
 Historical HOLD evidence is retained; no production deployment is authorized.
 
 ## Repair
@@ -64,13 +64,51 @@ Engine `v0.183.333`, Catalog Service `0.20.12`, Server460 immutable base, four
 build stages, one merged runtime layer and all remaining component pins remain.
 VEX and vendor-pending declarations change only their release identity; the 51
 reviewed statements, exact vendor-pending set and 2026-10-20 review deadline are
-unchanged. The official publisher must regenerate artifact scans, SBOM, startup,
-restart, checksums and provenance before a published image can be claimed.
+unchanged. [Official publisher 37275775509](https://github.com/PastureStack/server/actions/runs/37275775509)
+completed artifact scans, SBOM, isolated candidate startup/restart, checksums and
+image provenance. Independent public artifact readback passed; this is not QA
+deployment or native browser acceptance.
 
-Quick Start remains pinned to published 515 until immutable 516 artifact readback.
+- Server source: `e024e054be7371c60d719d0590ca3f5b86bdb6ee`, reviewed tree
+  `673ab3cc35c4477b8604eec0e3691e0636af4f0e`; normal PR #255 merge retains that tree.
+- [Immutable release](https://github.com/PastureStack/server/releases/tag/v1.6.516):
+  `ghcr.io/pasturestack/server:v1.6.516@sha256:3741b7d87273387f36b49e44d407c240658db0ab7fc7fb8d518ae08f55ac733c`.
+- Config digest: `sha256:0809df0b2a6c3c8d074139ad397a9662db772740b2a56a99b6bcd384664337c3`.
+- Single compressed runtime layer: 531164624 bytes, digest
+  `sha256:8af8706d94e582b3100738c1daeed2e84c2f3073cbdb8868332242ca13474127`.
+  Registry metadata does not prove a complete layer transfer or deployment.
+- `server.cdx.json`: 964181 bytes, SHA256
+  `7c7bddb2dbf9017cbf7cbbcccbc7400b7651c61721f9c064c55ae25e774028a1`;
+  CycloneDX 1.7, 892 components, exact image digest/revision identity.
+- Security gate: 52 raw findings, eight tracked vendor-pending findings,
+  zero untracked, actionable Critical/High, fixed-available or secret findings.
+  This is not a zero-CVE claim; existing review deadlines remain.
+
+## Isolated QA and bounded native observations
+
+The actual isolated 516 deployment passed independent readback. First start and
+restart each reached HTTP 200/pong after ten bounded probe attempts; this does
+not mean every probe returned 200. Runtime settings and five core-table counts
+have zero differences. Existing AppArmor, three named volumes, environment and
+`unless-stopped` policy are preserved. Docker health is null, not healthy.
+No company-site deployment is claimed.
+
+For one existing inactive environment, native detail and reload, write-free
+edit/remove cancellation, one native DELETE 200 and three full guard
+acknowledgements were observed. The native finalizer and list/reload absence
+checks completed without browser errors. The parent still recorded HOLD after
+its cleanup wait timed out. A separate read-only database observation confirmed
+the environment and four networks were purged, with no remaining members or
+dependent resources. Three foreign host-row hashes differed and were not
+excluded or classified as harmless. Fresh API and complete foreign-data
+preservation verification remain incomplete. These observations do not establish
+a complete native lifecycle PASS or promote any historical HOLD. The full
+role/resource/locale matrix remains INCOMPLETE.
+
+Quick Start now pins the independently read-back immutable 516 image.
 Keep the previous image, Compose environment overrides, named volumes, runtime
-security settings and database backup. A later isolated deployment must preserve
-them and independently verify the actual image/config identity. No SQL DML,
+security settings and database backup. The isolated QA deployment preserved
+the runtime configuration and verified the actual image/config identity. No SQL DML,
 production HAProxy change or company-site deployment is part of this repair.
 Catalog API template IDs may remap within the existing refresh transaction;
 semantic template identity and operator overrides must still be preserved.

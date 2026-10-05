@@ -11,19 +11,20 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
-## v1.6.516 — 原始碼候選；封裝已發布的前端與 Catalog
+## v1.6.516 — 已發布；隔離 QA 部署通過，原生完整驗收未完成
 
-本版預定封裝 Web Console `1.6.178`：停用環境的全域檢視、成員、編輯與刪除仍可使用，
-但不再誤讀該環境已禁止的網路／政策 API。頁面沿用既有提示方式說明停用狀態，
-不把其他狀態的 403、登入失效或全域權限錯誤變成空資料。保留 `1.6.177` 的日誌／終端生命週期修正。
-正式 Web CI `37273270200` 通過 848／848 測試（7 項新回歸、17 項既有工作區回歸），
-兩份壓縮包與匿名下載 SHA256 完全相同；13 個封裝語系皆有新的停用狀態提示。
-
-內建 Catalog 預設 commit 更新至 `7670ffd81d5f0b5570197fb03c7e55b46da45bf3`，
-包含 IPsec Overlay 第 12 版與已發布的 runtime `v0.14.38`。既有第 11 版、使用者明確設定、
-防火牆後端選擇及 plugin 負責邊界不變；不會自行升級既有堆疊。
-Server 映像發布、隔離 QA 部署與原生剩餘流程尚待驗收，不能將元件 CI 當成完整矩陣通過。
-Quick Start 暫時仍指向已正式發布的 `v1.6.515`；完整矩陣 INCOMPLETE，歷史 HOLD 保留。
+Server `v1.6.516` 已正式發布，封裝 Web Console `1.6.178`，修正停用環境因不適用的
+網路／政策 API 請求而無法載入詳細資料的問題。
+表單以 13 個語系說明網路設定暫不可用；全域環境／成員權限、其他狀態的錯誤處理及
+既有日誌／終端修正保持，正式 Web CI 848／848 通過。
+內建 Catalog 包含 IPsec Overlay 第 12 版與已發布的 runtime `v0.14.38`，不會自動升級
+既有堆疊，使用者覆寫與 plugin 分工不變。
+正式映像與公開工件讀回已通過；隔離 QA 首次啟動／重啟各經 10 次有界探測後取得
+HTTP 200／pong，runtime 設定與五項核心表筆數差異為 0，既有 AppArmor、三個 named
+volumes 與 `unless-stopped` 保留。Docker health 為 null，不宣稱 healthy，也未部署公司站。
+單一停用環境的詳細資料／重載／取消與原生刪除、列表重載後消失已觀察；parent 收尾
+timeout 的 HOLD 保留。獨立唯讀資料庫觀察確認該環境與四個網路已清除、成員與相依資源為空；
+但未完成新 API／完整外部資料保留驗證，不宣稱完整原生流程 PASS。完整矩陣 INCOMPLETE。
 詳見 [v1.6.516 修補與驗收邊界](docs/releases/server-1.6.516.md)。
 
 ## v1.6.515 — 已發布；隔離 QA 部署通過，原生驗收待完成
@@ -923,7 +924,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.515@sha256:fcc79f616927040ef2b3a5c58662fa948823220dbc57ffe275dee2ad88764d47
+  ghcr.io/pasturestack/server:v1.6.516@sha256:3741b7d87273387f36b49e44d407c240658db0ab7fc7fb8d518ae08f55ac733c
 ```
 
 For TLS termination at a reverse proxy, set the exact public origin so
@@ -932,7 +933,7 @@ generated API links and WebSocket requests use HTTPS:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.515@sha256:fcc79f616927040ef2b3a5c58662fa948823220dbc57ffe275dee2ad88764d47
+    image: ghcr.io/pasturestack/server:v1.6.516@sha256:3741b7d87273387f36b49e44d407c240658db0ab7fc7fb8d518ae08f55ac733c
     restart: unless-stopped
     ports:
       - "8080:8080"
