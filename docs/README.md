@@ -7,7 +7,18 @@ runtime gates have passed.
 
 ## Release notes
 
-- [Server v1.6.515](releases/server-1.6.515.md) — source packaging of published Web Console1.6.177 ended-workspace lifecycle repair; Web CI841 tests and immutable archive verified; Server CI/publication/native acceptance pending; Engine333/Catalog0.20.12/plugins unchanged; Quick Start and rollback remain514; full matrix INCOMPLETE
+- [Server v1.6.515](releases/server-1.6.515.md) — published Web Console 1.6.177
+  ended-workspace lifecycle repair; Web CI passed 841 tests, lightweight numeric tag
+  bound to signed source, identical archives and anonymous bytes verified; Server
+  publisher 37256753740 and independent artifact/runtime/security readback passed;
+  isolated QA 515 / Web 177 deployment/readback passed, reaching HTTP 200/pong after
+  10 initial-start and 11 restart polling attempts; runtime/environment, three named
+  volumes, five core-table counts and 514 rollback preserved; no Docker Healthcheck
+  or healthy claim; native acceptance pending, latest Project v2 run HOLD after
+  deactivate response/UI timeout with native removal and database cleanup incomplete;
+  Quick Start pins 515; Engine 333 / Catalog 0.20.12 / plugins unchanged;
+  full matrix INCOMPLETE,
+  historical HOLD unchanged
 - [Server v1.6.514](releases/server-1.6.514.md) — published Catalog Service0.20.12/Web Console1.6.176; Catalog CI39 twice/Web CI824/824 and immutable component bytes verified; official publisher37179046649 and independent readback verified; Quick Start pins514; QA125/8080 upgrade/readback passed with first-start11/restart9 HTTP200/pong, unchanged runtime/volumes/five core-table counts and512 rollback retained; two real eight-table catalog migration captures agreed, removing12 blank Git stubs and2 README-only items while preserving valid semantics; native acceptance remains in progress; full matrix INCOMPLETE and historical HOLD unchanged
 - [Server v1.6.513](releases/server-1.6.513.md) — published Web Console 1.6.175 image-validation aggregate repair; Web CI821/821, signed numeric tag, identical archives and anonymous bytes verified; immutable Server image, publisher37164995463, 23 assets/22 checksums, SBOM/security and public readback verified; isolated start13/restart7, 34 MFA/API and TLS gates passed; actual scan raw52/VEX51/vendor8 Medium package findings/4 CVEs, review2026-10-20 and no zero-CVE claim; Engine333/base460/four stages/single runtime layer unchanged; Quick Start pins513, QA remains512/513 not deployed; full matrix INCOMPLETE, historical HOLD unchanged
 - [Server v1.6.512](releases/server-1.6.512.md) — published Web Console 1.6.174 VM boot-image form safeguards and localized required-image errors; Web CI817/817, signed numeric tag and anonymous archive bytes verified; immutable Server image, isolated start12/restart8, 34 MFA/API checks, SBOM/security and public artifact readback verified; Quick Start pins512, Engine333/base460/runtime contract unchanged; full functional matrix incomplete, historical scoped/HOLD evidence unchanged

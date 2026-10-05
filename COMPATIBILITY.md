@@ -1,19 +1,34 @@
 # Compatibility Contract
 
-## Server v1.6.515 source packaging
+## Server v1.6.515 published
 
 Package published Web Console `1.6.177` from signed source
 `b9b841e65afe1d89a5b03ac767e9168bccd3c3ea`, archive SHA256
 `4e34eb2b3165f078134cddcf1721239b3da7baf11dd683991b2d6aa5bae944e0`.
+Its numeric lightweight tag binds this signed source commit; the tag itself is
+not signed. Normal PR #175 merge `5d150806be20226657e5caa8a0150d068006c772`
+has the same reviewed tree and a verified signature. Formal CI 37255121243 passed
+841 tests, including 17 new regressions; anonymous archive readback matched both CI builds.
 Ended logs/terminal entries cannot reconnect or accept late responses and old callbacks;
 explicit new entries and live reconnects remain supported. Permission checks, API contracts,
 workspace persistence, generation/mutex and MFA are unchanged.
-Engine333, Catalog Service0.20.12, all other components/plugins, the pinned460 base,
+Engine 333, Catalog Service 0.20.12, all other components/plugins, the pinned 460 base,
 four build stages and final single-runtime-layer publication flow are unchanged.
-Server515 exact-source CI, immutable publication and isolated native acceptance remain pending.
-Do not treat source packaging or the published Web component as Server/QA acceptance.
-Keep the published514 Quick Start image, configuration, named volumes and rollback backups.
-The complete matrix remains INCOMPLETE; historical HOLDs and514 evidence are unchanged.
+Server 515 source is `f0267ff3a347ea526088db1749b1d3c8dfd9bd37`; its immutable image is
+`ghcr.io/pasturestack/server:v1.6.515@sha256:fcc79f616927040ef2b3a5c58662fa948823220dbc57ffe275dee2ad88764d47`.
+[Publisher 37256753740](https://github.com/PastureStack/server/actions/runs/37256753740)
+and independent public artifact/runtime/security readback passed. Separate isolated
+QA 515 / Web 177 deployment and readback passed: initial-start and restart polling
+reached HTTP 200/pong after 10 and 11 attempts, respectively. Runtime configuration,
+environment overrides, three named persistent volumes and five core-table counts
+were preserved, with `docker-default`,
+`unless-stopped`, database backup and 514 rollback retained. There is no Docker
+Healthcheck: running/pong is not Docker healthy. Native lifecycle acceptance
+remains pending; deployment readback is not native UI or full-matrix PASS.
+A separate fresh Project v2 native run remains HOLD after a successful deactivate
+response and a UI wait timeout. Native removal and database cleanup are incomplete.
+Quick Start follows published 515; retain 514, configuration, named volumes and rollback backups.
+The complete matrix remains INCOMPLETE; historical HOLDs and 514 evidence are unchanged.
 
 ## Server v1.6.514 published
 
