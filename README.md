@@ -11,6 +11,21 @@ preserves upstream history, authorship, dates, tags, licenses, and copyright
 notices. PastureStack maintenance is consolidated after the preserved upstream
 boundary.
 
+## v1.6.516 — 原始碼候選；封裝已發布的前端與 Catalog
+
+本版預定封裝 Web Console `1.6.178`：停用環境的全域檢視、成員、編輯與刪除仍可使用，
+但不再誤讀該環境已禁止的網路／政策 API。頁面沿用既有提示方式說明停用狀態，
+不把其他狀態的 403、登入失效或全域權限錯誤變成空資料。保留 `1.6.177` 的日誌／終端生命週期修正。
+正式 Web CI `37273270200` 通過 848／848 測試（7 項新回歸、17 項既有工作區回歸），
+兩份壓縮包與匿名下載 SHA256 完全相同；13 個封裝語系皆有新的停用狀態提示。
+
+內建 Catalog 預設 commit 更新至 `7670ffd81d5f0b5570197fb03c7e55b46da45bf3`，
+包含 IPsec Overlay 第 12 版與已發布的 runtime `v0.14.38`。既有第 11 版、使用者明確設定、
+防火牆後端選擇及 plugin 負責邊界不變；不會自行升級既有堆疊。
+Server 映像發布、隔離 QA 部署與原生剩餘流程尚待驗收，不能將元件 CI 當成完整矩陣通過。
+Quick Start 暫時仍指向已正式發布的 `v1.6.515`；完整矩陣 INCOMPLETE，歷史 HOLD 保留。
+詳見 [v1.6.516 修補與驗收邊界](docs/releases/server-1.6.516.md)。
+
 ## v1.6.515 — 已發布；隔離 QA 部署通過，原生驗收待完成
 
 本版封裝已發布的 Web Console `1.6.177`，修正已結束的日誌／終端工作區重新連線，

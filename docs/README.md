@@ -7,6 +7,12 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.516](releases/server-1.6.516.md) — candidate packaging published
+  Web Console 1.6.178 (848/848 CI tests, reproducible archive, 13 localized inactive
+  environment hints) and normally merged Catalog IPsec Overlay 12 / v0.14.38;
+  inactive global view/edit/member/delete capabilities preserved without forbidden
+  scoped reads; Server publication, isolated deployment and native acceptance pending;
+  explicit catalog overrides and historical HOLD preserved; full matrix INCOMPLETE
 - [Server v1.6.515](releases/server-1.6.515.md) — published Web Console 1.6.177
   ended-workspace lifecycle repair; Web CI passed 841 tests, lightweight numeric tag
   bound to signed source, identical archives and anonymous bytes verified; Server

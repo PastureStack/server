@@ -1,5 +1,25 @@
 # Compatibility Contract
 
+## Server v1.6.516 candidate
+
+Package published Web Console `1.6.178`, signed source
+`60a494e943150ecd300d1aa653ee397f590b575b`, archive SHA256
+`7d4476f3ae1ecd455d0de25008b62327d8c2fa02fafe2b5252ce79fb3309d981`.
+Formal CI 37273270200 passed 848 tests; two archives and anonymous immutable
+download agree. Only exactly inactive environments skip scoped network/policy
+reads; global project/member reads and capabilities remain authoritative.
+Other states, authorization errors, generation/mutex, OIDC and MFA are unchanged.
+The new status hint exists in all 13 packaged locales.
+
+Image catalog defaults pin normally merged commit
+`7670ffd81d5f0b5570197fb03c7e55b46da45bf3` (IPsec Overlay 12 / v0.14.38).
+Explicit user catalog settings, existing template revisions and backend/plugin
+ownership are preserved. Template visibility is not managed upgrade acceptance.
+Engine 333, Catalog Service 0.20.12, four build stages and one final runtime layer
+remain unchanged. VEX/vendor-pending changes only their release identity;
+review deadline and findings are not reset. Server publication, isolated
+deployment and native acceptance are pending; the full matrix is INCOMPLETE.
+
 ## Server v1.6.515 published
 
 Package published Web Console `1.6.177` from signed source
