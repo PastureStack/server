@@ -75,6 +75,24 @@ the helper itself, capabilities, identity metadata and session protection are un
 - Native UI, resource/role/locale/layout and VM runtime remain scoped or OPEN;
   full matrix INCOMPLETE. Artifact and migration tests do not establish full UI or permission acceptance.
 
+## Current isolated native acceptance scopes
+
+These are separate QA scopes on Server514/Web176/Engine333/Catalog Service 0.20.12,
+not production-site acceptance or promotion of earlier HOLDs. Local QA workspace
+evidence is not a public release asset; receipt hashes identify the observed results.
+
+| Scope | Actual current result | Evidence / remaining work |
+| --- | --- | --- |
+| Existing Network fixture service edit and cleanup | Scoped PASS: 4 native writes/6 full guards; cleanup verified | Result SHA256 `f6d0070c20795fdeab0c795fdf0d7b04404a4543b25c52d4b64492ce091d887e`; does not accept an untested networking implementation |
+| Container role-specific denials | Readonly child: 6 expected denials/9 guards observed; target-environment no-access: independent scoped PASS with 6 expected denials/9 guards and 0 allowed resource writes | No-access result SHA256 `179e99a39a96adb22c66c88eccc3cb9f0c89a212e27c7de8cee7eb367001e733`. The earlier readonly parent remains HOLD; the role runs are separate, and denial checks do not establish access to protected resource contents |
+| Owner container lifecycle | INCOMPLETE: the original start/stop run remains HOLD. Separate runs verified start/restart 202 and actual log output/termination (2 writes/4 guards), start 202 and actual terminal output/termination (1 write/3 guards), then native DELETE 200 with the confirmation modal closed and source finalizer completed (1 write/1 entry guard). Independent read-only cleanup found all seven owned rows terminal: six purged and one removed, count 7 | Delete result SHA256 `41611ab1f2d62c36cb76150bac2a015db24fe642e3e5c32ff8ea4697e5e88e54`; cleanup-only result `690e3bcf1410009c8c3d03883e5850181dace29af21eedf6c14e71026edf5aa8`. No removed-phase guard or final browser receipt is claimed. Eight foreign raw-row differences, three historical FK gaps, unproved owned unknown fields and no fresh API14 readback prevent full-guard acceptance. Historical HOLDs remain unchanged; completed writes/streams are not replayed |
+| Existing Catalog B-upgrade remainder | Scoped non-original PASS: 4 resource writes/5 transports/7 full guards; B upgrade 202, finish 202, reload and owned cleanup verified | Result SHA256 `e113ef1b6c1ce2941b9843a8014e55dee31b8a000ee48750c7d5dfdeecfed716`; historical create/A/activation HOLDs are not retroactively PASS |
+| Existing Project native lifecycle and independent owned DB cleanup | Native deactivate/activate/remove finalizers and list reloads observed in separate stages; both original runs remain HOLD, each with 2 validated writes/5 guards. Independent owned DB terminal cleanup confirmed with 0 auth/0 writes/0 current guards | Cleanup-only result SHA256 `a5ff35f857ae2cdad7cd75bb77c26082ed61993978d17388b7432e280482a53c`; this is not full-guard or complete historical-preservation acceptance: 8 missing historical foreign rows and 4 default-network non-lifecycle protection gaps remain |
+
+The complete matrix remains INCOMPLETE. These results do not accept VM boot,
+hardware, every locale or the production site. Historical records and release
+coordinates are unchanged.
+
 ## Upgrade and rollback
 
 Back up the existing persistent data before replacing only the image reference with the
