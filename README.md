@@ -914,8 +914,8 @@ bootstrap runtime and privileged Windows VM testing. See
 
 ## Quick start
 
-Before deploying, verify the `v1.6.515` numeric tag and immutable digest in
-[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.515).
+Before deploying, verify the `v1.6.516` numeric tag and immutable digest in
+[Server releases](https://github.com/PastureStack/server/releases/tag/v1.6.516).
 A registry login is not required. Pin the version and retain the database and
 platform volumes:
 
