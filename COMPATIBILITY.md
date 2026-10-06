@@ -1,5 +1,20 @@
 # Compatibility Contract
 
+## Server v1.6.517 preparing
+
+Packages Web Console `1.6.179` with the official shell-quote `1.11.0` fix in
+both dependency and browser vendor copies. Signed component source
+`826bff55b8885efc9ff1faec0272ef442e4ff702`, archive SHA256
+`1bb7e0acf7040738f2c6413046553609cbbaf14b833abb6ef2c7237b453eaf90`;
+formal CI 37502593612 passed 851 tests and produced two identical archives.
+Server artifact identity and scoped QA acceptance are pending; no image digest
+or deployment success is asserted here. Engine `v0.183.333`, Catalog `0.20.12`,
+runtime contracts, four build stages and one final runtime layer remain.
+Historical evidence is kept in release records; the concise README's current
+install identity is checked against those records. Existing security review
+deadlines, historical HOLDs and incomplete matrix/hardware evidence remain.
+See [the release note](docs/releases/server-1.6.517.md).
+
 ## Server v1.6.516 published
 
 Package published Web Console `1.6.178`, signed source

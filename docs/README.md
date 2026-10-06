@@ -7,6 +7,8 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.517](releases/server-1.6.517.md) — source candidate for Web Console 1.6.179 dependency/security updates and concise README publication-gate repair; immutable publication and scoped QA acceptance pending
+
 - [Server v1.6.516](releases/server-1.6.516.md) — candidate packaging published
   Web Console 1.6.178 (848/848 CI tests, reproducible archive, 13 localized inactive
   environment hints) and normally merged Catalog IPsec Overlay 12 / v0.14.38;
