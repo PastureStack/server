@@ -39,6 +39,14 @@ Existing vendor-pending findings and review deadlines are not reset. Publication
 does not mean zero CVEs or completion of the historical resource/role/hardware
 matrix; earlier HOLD and untested hardware evidence remains unchanged.
 
+The first publication attempt, run 37503831627, correctly stopped before image
+publication when the live scan added Medium `CVE-2026-46675` for Ubuntu
+`libpng16-16t64` `1.6.57-1`. [Ubuntu's current record](https://ubuntu.com/security/CVE-2026-46675)
+lists resolute's libpng1.6 as vulnerable without a released fixed version.
+The exact finding is tracked with the existing 2026-10-20 review deadline;
+Critical/High, available-fix, secret and exact-set checks are unchanged. The
+candidate contains nine unresolved package findings across five CVEs, not zero.
+
 ## Upgrade and rollback
 
 No migration or runtime patch is required. Preserve existing environment
