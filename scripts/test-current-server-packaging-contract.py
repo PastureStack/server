@@ -17,20 +17,20 @@ FILES = {name: (REPO / name).read_text(encoding='utf-8') for name in (DOCKER, BU
 PUBLISHED_508 = 'Server `v1.6.508` 已正式發布，封裝 Web Console `1.6.171`。'
 STALE_508_CANDIDATE = 'Server `v1.6.508` candidate packages Web Console `1.6.171`'
 COMPATIBILITY_CODE = 'SERVER_CREATE_RESPONSE_ORDER_COMPATIBILITY_MISSING'
-WEB_SHA = '7d4476f3ae1ecd455d0de25008b62327d8c2fa02fafe2b5252ce79fb3309d981'
-WEB_SOURCE = '60a494e943150ecd300d1aa653ee397f590b575b'
+WEB_SHA = '1bb7e0acf7040738f2c6413046553609cbbaf14b833abb6ef2c7237b453eaf90'
+WEB_SOURCE = '826bff55b8885efc9ff1faec0272ef442e4ff702'
 CATALOG_COMMIT = '7670ffd81d5f0b5570197fb03c7e55b46da45bf3'
 ENGINE_SHA = '8c42c0982cbc2f4569fa265ad320b341551758cb4fc0bc6d79ba06d70e20d328'
 ENGINE_SOURCE = '0d94f7d879d314235e582a7f4062914a27b82709'
 OLD_COORDINATES = {
-    'v1.6.516': 'v1.6.515',
-    '1.6.178': '1.6.177',
-    WEB_SHA: '4e34eb2b3165f078134cddcf1721239b3da7baf11dd683991b2d6aa5bae944e0',
-    WEB_SOURCE: 'b9b841e65afe1d89a5b03ac767e9168bccd3c3ea',
+    'v1.6.517': 'v1.6.516',
+    '1.6.179': '1.6.178',
+    WEB_SHA: '7d4476f3ae1ecd455d0de25008b62327d8c2fa02fafe2b5252ce79fb3309d981',
+    WEB_SOURCE: '60a494e943150ecd300d1aa653ee397f590b575b',
     CATALOG_COMMIT: 'e082033ba3c12b5f5cfcae93ff1d6f50d5440d07',
 }
-# Engine333 stays pinned. The stale515 Web177 values are mutation controls.
-# Published component coordinates do not establish Server516 artifact/runtime PASS.
+# Engine333 stays pinned. The stale516 Web178 values are mutation controls.
+# Published component coordinates do not establish Server517 artifact/runtime PASS.
 CATALOG_FIELDS = (
     ('VERSION', 'version', '0.20.12'),
     ('COMMIT', 'commit', 'd708579092eae0fd03b2750ac594ff0396cf563b'),
@@ -46,19 +46,19 @@ LEGACY_ENGINE_COORDINATES = {
 }
 EXPECTED = {
     COMPATIBILITY_CODE: (COMPATIBILITY, PUBLISHED_508),
-    'SERVER_INCREMENTAL_RELEASE_VERSION_MISSING': (DOCKER, 'org.opencontainers.image.version="v1.6.516"'),
-    'SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING': (DOCKER, 'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.516'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RELEASE_TAG=1.6.178'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.178.tar.gz'),
+    'SERVER_INCREMENTAL_RELEASE_VERSION_MISSING': (DOCKER, 'org.opencontainers.image.version="v1.6.517"'),
+    'SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING': (DOCKER, 'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.517'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RELEASE_TAG=1.6.179'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.179.tar.gz'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT_SHA256=' + WEB_SHA),
     'SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_COMMIT=' + WEB_SOURCE),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING': (BUILD, 'web_console_commit=${WEB_CONSOLE_COMMIT:-' + WEB_SOURCE + '}'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING': (BUILD, 'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.178}'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING': (BUILD, 'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.178.tar.gz}'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING': (BUILD, 'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.179}'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING': (BUILD, 'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.179.tar.gz}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING': (BUILD, 'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-' + WEB_SHA + '}'),
-    'SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING': (BUILD, 'image=${IMAGE:-pasturestack-validation/server:v1.6.516}'),
-    'SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING': (BUILD, 'CATTLE_RANCHER_SERVER_VERSION=v1.6.516'),
-    'SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING': (BUILD, 'test "$(cat "${web_root}/VERSION.txt")" = "1.6.178"'),
+    'SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING': (BUILD, 'image=${IMAGE:-pasturestack-validation/server:v1.6.517}'),
+    'SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING': (BUILD, 'CATTLE_RANCHER_SERVER_VERSION=v1.6.517'),
+    'SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING': (BUILD, 'test "$(cat "${web_root}/VERSION.txt")" = "1.6.179"'),
     'SERVER_VOLUME_NATIVE_READ_ONLY_BUILD_GATE_MISSING': (DOCKER, 'grep -F \'"volume.isNative" : "r"\' >/dev/null'),
     'SERVER_VOLUME_NATIVE_READ_ONLY_RUNTIME_GATE_MISSING': (BUILD, r'grep -F "\"volume.isNative\" : \"r\"" >/dev/null'),
     'SERVER_WEB_CREATE_IDENTITY_BUILD_GATE_MISSING': (DOCKER, "grep -aF 'createIdentity' \"${web_root}\"/assets/*.js >/dev/null"),
@@ -172,15 +172,15 @@ def verify(files, gate=GATE):
                 pipeline = r'(?:^|[;\n])\s*' + re.escape(marker) + r'(?=\s*(?:;|\n|$))'
                 if len(re.findall(pipeline, source)) != 1:
                     raise AssertionError('CURRENT_CATALOG_HASH_BYPASS')
-    if 'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.516"' not in gate:
+    if 'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.517"' not in gate:
         raise AssertionError('CURRENT_VEX_GATE_PIN_MISMATCH')
-    if '"$vendor_pending_fixture" v1.6.516 >/dev/null' not in gate:
+    if '"$vendor_pending_fixture" v1.6.517 >/dev/null' not in gate:
         raise AssertionError('CURRENT_VENDOR_GATE_PIN_MISMATCH')
-    if json.loads(files[VEX]).get('@id') != 'https://github.com/PastureStack/server/security/openvex/v1.6.516':
+    if json.loads(files[VEX]).get('@id') != 'https://github.com/PastureStack/server/security/openvex/v1.6.517':
         raise AssertionError('CURRENT_VEX_RELEASE_MISMATCH')
-    if json.loads(files[VENDOR]).get('release') != 'v1.6.516':
+    if json.loads(files[VENDOR]).get('release') != 'v1.6.517':
         raise AssertionError('CURRENT_VENDOR_RELEASE_MISMATCH')
-    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.516 base=v1.6.460 engine=0.183.333 web_console=1.6.178 catalog_service=0.20.12 ' not in gate:
+    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.517 base=v1.6.460 engine=0.183.333 web_console=1.6.179 catalog_service=0.20.12 ' not in gate:
         raise AssertionError('CURRENT_SUMMARY_MISMATCH')
 
 
@@ -193,12 +193,12 @@ def previous_gate(gate=GATE):
         if stale(marker) != marker:
             replacements["'" + marker + "' "] = "'" + stale(marker) + "' "
     replacements.update({
-        'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.516"':
-            'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.515"',
-        '"$vendor_pending_fixture" v1.6.516 >/dev/null':
-            '"$vendor_pending_fixture" v1.6.515 >/dev/null',
-        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.516 base=v1.6.460 engine=0.183.333 web_console=1.6.178 catalog_service=0.20.12 ':
-            'SERVER_API_EXPLORER_PATCH_OK release=v1.6.515 base=v1.6.460 engine=0.183.333 web_console=1.6.177 catalog_service=0.20.12 ',
+        'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.517"':
+            'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.516"',
+        '"$vendor_pending_fixture" v1.6.517 >/dev/null':
+            '"$vendor_pending_fixture" v1.6.516 >/dev/null',
+        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.517 base=v1.6.460 engine=0.183.333 web_console=1.6.179 catalog_service=0.20.12 ':
+            'SERVER_API_EXPLORER_PATCH_OK release=v1.6.516 base=v1.6.460 engine=0.183.333 web_console=1.6.178 catalog_service=0.20.12 ',
     })
     for marker, stale_marker in replacements.items():
         if gate.count(marker) != 1:
@@ -358,7 +358,7 @@ class Tests(unittest.TestCase):
                         verify(files)
         self.assertGreater(checked, 0)
 
-    def test_previous_fixture_rejects_stale_web177_pins(self):
+    def test_previous_fixture_rejects_stale_web178_pins(self):
         gate = previous_gate()
         for code, (_, marker) in EXPECTED.items():
             if 'WEB_CONSOLE' in code:
@@ -425,15 +425,27 @@ class Tests(unittest.TestCase):
                 with self.assertRaisesRegex(AssertionError, 'CURRENT_.*_RELEASE_MISMATCH'):
                     verify(files)
 
-    def test_previous_pin_fixture_keeps_four_historical_markers(self):
+    def test_previous_pin_fixture_keeps_versioned_historical_markers(self):
         for marker in (
             "require_marker docs/releases/server-1.6.501.md '# Server v1.6.501'",
             "require_marker docs/releases/server-1.6.501.md 'No migration or runtime patch is required.'",
-            "require_marker README.md '## v1.6.501' SERVER_HOST_NAME_LAYOUT_README_MISSING",
             "require_marker COMPATIBILITY.md 'Server `v1.6.501` packages Web Console `1.6.165`'",
         ):
             self.assertIn(marker, GATE)
             self.assertIn(marker, previous_gate())
+        self.assertNotRegex(GATE, r"require_marker README\.md '## v[0-9]")
+
+    def test_current_readme_keeps_install_and_upgrade_contract(self):
+        block = GATE.split('for current_readme_marker in ', 1)[1].split('; do', 1)[0]
+        markers = shlex.split(block.replace('\\\n', ' '))
+        for marker in ('## Current release', '## Quick start', '## Upgrade and rollback',
+                       '[upgrade guide](docs/upgrades/README.md)',
+                       'Do not replace existing volumes with new empty ones or run `docker compose down -v`.',
+                       'rollback may require restoring matching data', '[release notes](docs/releases)'):
+            self.assertIn(marker, markers)
+        readme = (REPO / 'README.md').read_text(encoding='utf-8')
+        for marker in markers:
+            self.assertIn(marker, readme)
 
 
 if __name__ == '__main__':

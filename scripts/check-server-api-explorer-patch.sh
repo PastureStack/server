@@ -117,51 +117,37 @@ for next_release_marker in \
     require_marker "$next_release_notes" "$next_release_marker" \
         SERVER_PUBLISHED_RELEASE_EVIDENCE_MISSING
 done
-for official_identity_doc in README.md COMPATIBILITY.md "$published_current_release_notes"; do
+for official_identity_doc in COMPATIBILITY.md "$published_current_release_notes"; do
     require_marker "$official_identity_doc" "$official_image_reference" \
         SERVER_OFFICIAL_IMMUTABLE_IMAGE_MISSING
 done
-require_marker README.md '## v1.6.496' \
-    SERVER_CURRENT_README_MISSING
-require_marker README.md '## v1.6.491' \
-    SERVER_PREVIOUS_README_MISSING
-require_marker README.md '## v1.6.487' \
-    SERVER_LAST_PUBLISHED_README_MISSING
-require_marker README.md \
-    '## v1.6.510' \
-    SERVER_V510_README_MISSING
-require_marker README.md '## v1.6.514' SERVER_V514_README_MISSING
+require_marker "$published_current_release_notes" '# Server v1.6.496' \
+    SERVER_CURRENT_RELEASE_NOTES_MISSING
+require_marker docs/releases/server-1.6.491.md '# Server v1.6.491' \
+    SERVER_PREVIOUS_RELEASE_NOTES_MISSING
+require_marker docs/releases/server-1.6.487.md '# Server v1.6.487' \
+    SERVER_LAST_PUBLISHED_RELEASE_NOTES_MISSING
 require_marker COMPATIBILITY.md '## Server v1.6.514 published' SERVER_V514_COMPATIBILITY_MISSING
 require_marker docs/README.md '[Server v1.6.514](releases/server-1.6.514.md)' SERVER_V514_INDEX_MISSING
 require_marker docs/releases/server-1.6.514.md '# Server v1.6.514' SERVER_V514_RELEASE_NOTES_MISSING
 require_marker docs/releases/server-1.6.514.md 'including API template IDs, may remap' SERVER_V514_ID_REMAP_CONTRACT_MISSING
-require_marker README.md '## v1.6.516' SERVER_V516_README_MISSING
 require_marker COMPATIBILITY.md '## Server v1.6.516' SERVER_V516_COMPATIBILITY_MISSING
 require_marker docs/README.md '[Server v1.6.516](releases/server-1.6.516.md)' SERVER_V516_INDEX_MISSING
 require_marker docs/releases/server-1.6.516.md '# Server v1.6.516' SERVER_V516_RELEASE_NOTES_MISSING
 require_marker docs/releases/server-1.6.516.md '## Repair' SERVER_V516_PENDING_ACCEPTANCE_MISSING
 
-require_marker README.md \
-    '## v1.6.513' \
-    SERVER_V513_README_MISSING
 require_marker COMPATIBILITY.md \
     '## Server v1.6.513' \
     SERVER_V513_COMPATIBILITY_MISSING
 require_marker docs/releases/server-1.6.513.md \
     'No migration or runtime patch is required.' \
     SERVER_V513_RELEASE_CONTRACT_MISSING
-require_marker README.md \
-    '## v1.6.512' \
-    SERVER_V512_README_MISSING
 require_marker COMPATIBILITY.md \
     '## Server v1.6.512' \
     SERVER_V512_COMPATIBILITY_MISSING
 require_marker docs/releases/server-1.6.512.md \
     'No migration or runtime patch is required.' \
     SERVER_V512_RELEASE_CONTRACT_MISSING
-require_marker README.md \
-    '## v1.6.511' \
-    SERVER_V511_README_MISSING
 require_marker COMPATIBILITY.md \
     '## Server v1.6.511' \
     SERVER_V511_COMPATIBILITY_MISSING
@@ -174,9 +160,6 @@ require_marker COMPATIBILITY.md \
 require_marker docs/releases/server-1.6.510.md \
     'No migration or runtime patch is required.' \
     SERVER_V510_RELEASE_CONTRACT_MISSING
-require_marker README.md \
-    '## v1.6.509' \
-    SERVER_V509_README_MISSING
 require_marker COMPATIBILITY.md \
     '## Server v1.6.509' \
     SERVER_V509_COMPATIBILITY_MISSING
@@ -195,7 +178,6 @@ check_server497_published_docs()
     local latest_notes=docs/releases/server-1.6.497.md
     local latest_image=ghcr.io/pasturestack/server:v1.6.497@sha256:1a1f05415e50d2ea337140d89063c6d7ae993140befa5aa79c5c83922990021d
     local published_marker
-    require_marker README.md '## v1.6.497' SERVER_PUBLISHED_497_README_MISSING
     require_marker COMPATIBILITY.md 'Published Server `v1.6.497`' \
         SERVER_PUBLISHED_497_COMPATIBILITY_MISSING
     require_marker docs/README.md '[Server v1.6.497](releases/server-1.6.497.md)' \
@@ -221,9 +203,6 @@ def words(value):
 
 
 specs = (
-    ("README.md", r"(?m)^## v1\.6\.497[^\n]*$", r"(?m)^## ",
-     "## v1.6.497", "This release packages the officially published Web Console `1.6.164`,",
-     "The immutable image is", "from Server source", ".", "Publication run"),
     ("COMPATIBILITY.md", r"(?m)^Published Server `v1\.6\.497`[^\n]*$",
      r"(?m)^Published Server `v", None,
      "Published Server `v1.6.497` packages officially published Web Console `1.6.164`.",
@@ -291,9 +270,6 @@ for path, text in documents.items():
             reject("SERVER_PUBLISHED_497_CANDIDATE_STATUS_STALE", path)
 PY
     # This function verifies the historical 497 publication, not today's install target.
-    require_marker README.md \
-        'The recorded QA497 `8080` deployment ran `v1.6.497` / Web Console `1.6.164`.' \
-        SERVER_PUBLISHED_497_QA_BOUNDARY_MISSING
     require_marker COMPATIBILITY.md \
         'The recorded QA497 `8080` deployment ran `v1.6.497` / Web Console `1.6.164`;' \
         SERVER_PUBLISHED_497_QA_BOUNDARY_MISSING
@@ -346,32 +322,42 @@ PY
 check_server497_published_docs
 
 # Install examples must follow the highest actually published numeric release;
-# preparing sections without a digest are not installable releases.
+# README's current link and quick start must agree with versioned publication evidence.
 python3 - <<'PY'
 import pathlib
 import re
 
 readme = pathlib.Path('README.md').read_text(encoding='utf-8')
 image_pattern = r'ghcr\.io/pasturestack/server:v[0-9]+\.[0-9]+\.[0-9]+@sha256:[0-9a-f]{64}'
-published = []
-for section in re.split(r'(?m)(?=^## )', readme):
-    heading = re.match(r'^## (v([0-9]+)\.([0-9]+)\.([0-9]+))(?:[ \t]+[—–-][^\n]*)?[ \t]*\n', section)
-    if heading:
-        images = set(re.findall(r'`(' + image_pattern + r')`', section))
-        images = {image for image in images if image.split('@')[0].endswith(':' + heading[1])}
-        if len(images) == 1:
-            published.append((tuple(map(int, heading.groups()[1:])), heading[1], images.pop()))
-if not published:
+reference_pattern = r'''ghcr\.io/pasturestack/server:[^\s`"'<>()\[\]{},;]+'''
+current = re.search(r'(?ms)^## Current release\n(.*?)(?=^## |\Z)', readme)
+tags = re.findall(r'https://github\.com/PastureStack/server/releases/tag/(v[0-9]+\.[0-9]+\.[0-9]+)(?=[)\s])', current[1] if current else '')
+if len(tags) != 1:
     raise SystemExit('SERVER_LATEST_PUBLISHED_IDENTITY_MISSING')
-_, tag, image = max(published)
+tag = tags[0]
 quick = re.search(r'(?ms)^## Quick start\n(.*?)(?=^## |\Z)', readme)
 references = re.findall(r'ghcr\.io/pasturestack/server:[^\s`"<>]+', quick[1] if quick else '')
-notes = pathlib.Path('docs/releases/server-' + tag[1:] + '.md').read_text(encoding='utf-8')
-compat = pathlib.Path('COMPATIBILITY.md').read_text(encoding='utf-8')
-if references != [image, image] or image not in notes or image not in compat or (
-    'https://github.com/PastureStack/server/releases/tag/' + tag not in quick[1]
-):
+if len(references) != 2 or references[0] != references[1] or not re.fullmatch(image_pattern, references[0]):
     raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
+image = references[0]
+notes_path = 'docs/releases/server-' + tag[1:] + '.md'
+if image.split('@')[0] != 'ghcr.io/pasturestack/server:' + tag or '(' + notes_path + ')' not in current[1]:
+    raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
+notes = pathlib.Path(notes_path).read_text(encoding='utf-8')
+compat = pathlib.Path('COMPATIBILITY.md').read_text(encoding='utf-8')
+published = [reference for reference in re.findall(reference_pattern, compat)
+             if re.fullmatch(image_pattern, reference)]
+if not published:
+    raise SystemExit('SERVER_LATEST_PUBLISHED_IDENTITY_MISSING')
+latest_tag = max((reference.split('@')[0].rsplit(':', 1)[1] for reference in published),
+                 key=lambda value: tuple(map(int, value[1:].split('.'))))
+if tag != latest_tag or not re.search(r'(?m)^# Server ' + re.escape(tag) + r'[ \t]*$', notes):
+    raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
+for text in (notes, compat):
+    identities = [reference for reference in re.findall(reference_pattern, text)
+                  if reference.startswith('ghcr.io/pasturestack/server:' + tag + '@')]
+    if not identities or any(reference != image for reference in identities):
+        raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
 print('SERVER_LATEST_PUBLISHED_QUICK_START_OK release=' + tag)
 PY
 python3 scripts/test-published-install-gate.py
@@ -385,15 +371,12 @@ require_marker docs/releases/server-1.6.500.md '# Server v1.6.500' \
     SERVER_IMPORTED_CONTAINER_NAME_NOTES_MISSING
 require_marker docs/releases/server-1.6.500.md 'No migration or runtime patch is required.' \
     SERVER_IMPORTED_CONTAINER_NAME_MIGRATION_BOUNDARY_MISSING
-require_marker README.md '## v1.6.500' \
-    SERVER_IMPORTED_CONTAINER_NAME_README_MISSING
 require_marker COMPATIBILITY.md 'Server `v1.6.500` packages Engine `v0.183.331`' \
     SERVER_IMPORTED_CONTAINER_NAME_COMPATIBILITY_MISSING
 require_marker docs/releases/server-1.6.501.md '# Server v1.6.501' \
     SERVER_HOST_NAME_LAYOUT_NOTES_MISSING
 require_marker docs/releases/server-1.6.501.md 'No migration or runtime patch is required.' \
     SERVER_HOST_NAME_LAYOUT_MIGRATION_BOUNDARY_MISSING
-require_marker README.md '## v1.6.501' SERVER_HOST_NAME_LAYOUT_README_MISSING
 require_marker COMPATIBILITY.md 'Server `v1.6.501` packages Web Console `1.6.165`' \
     SERVER_HOST_NAME_LAYOUT_COMPATIBILITY_MISSING
 for low_role_snapshot_hash in \
@@ -426,7 +409,6 @@ require_marker docs/releases/server-1.6.508.md '# Server v1.6.508' \
     SERVER_CREATE_RESPONSE_ORDER_NOTES_MISSING
 require_marker docs/releases/server-1.6.508.md 'No migration or runtime patch is required.' \
     SERVER_CREATE_RESPONSE_ORDER_BOUNDARY_MISSING
-require_marker README.md '## v1.6.508' SERVER_CREATE_RESPONSE_ORDER_README_MISSING
 require_marker COMPATIBILITY.md 'Server `v1.6.508` 已正式發布，封裝 Web Console `1.6.171`。' \
     SERVER_CREATE_RESPONSE_ORDER_COMPATIBILITY_MISSING
 
@@ -499,7 +481,7 @@ require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
-    'org.opencontainers.image.version="v1.6.516"' \
+    'org.opencontainers.image.version="v1.6.517"' \
     SERVER_INCREMENTAL_RELEASE_VERSION_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.base.name="ghcr.io/pasturestack/server:v1.6.460"' \
@@ -508,7 +490,7 @@ require_marker "$release_dockerfile" \
     'org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"' \
     SERVER_INCREMENTAL_RELEASE_BASE_DIGEST_MISSING
 require_marker "$release_dockerfile" \
-    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.516' \
+    'ENV CATTLE_RANCHER_SERVER_VERSION=v1.6.517' \
     SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING
 require_marker "$release_dockerfile" \
     'COPY --from=release_artifacts /out/host-api-0.38.4.tar.gz /usr/share/cattle/artifacts/host-api-0.38.4.tar.gz' \
@@ -520,16 +502,16 @@ require_marker "$publish_workflow" \
     'bash source/scripts/check-server-host-api-package.sh' \
     SERVER_HOST_API_RELEASE_CHECK_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.178' \
+    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.179' \
     SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.178.tar.gz' \
+    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.179.tar.gz' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=7d4476f3ae1ecd455d0de25008b62327d8c2fa02fafe2b5252ce79fb3309d981' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=1bb7e0acf7040738f2c6413046553609cbbaf14b833abb6ef2c7237b453eaf90' \
     SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=60a494e943150ecd300d1aa653ee397f590b575b' \
+    'ARG WEB_CONSOLE_COMMIT=826bff55b8885efc9ff1faec0272ef442e4ff702' \
     SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING
 require_marker "$release_dockerfile" \
     "grep -aF 'hostsPage.permissionDenied'" \
@@ -538,16 +520,16 @@ require_marker "$release_dockerfile" \
     '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ZH_TW_PERMISSION_MESSAGE_MISSING
 require_marker "$build_script" \
-    'web_console_commit=${WEB_CONSOLE_COMMIT:-60a494e943150ecd300d1aa653ee397f590b575b}' \
+    'web_console_commit=${WEB_CONSOLE_COMMIT:-826bff55b8885efc9ff1faec0272ef442e4ff702}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING
 require_marker "$build_script" \
-    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.178}' \
+    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.179}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.178.tar.gz}' \
+    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.179.tar.gz}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING
 require_marker "$build_script" \
-    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-7d4476f3ae1ecd455d0de25008b62327d8c2fa02fafe2b5252ce79fb3309d981}' \
+    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-1bb7e0acf7040738f2c6413046553609cbbaf14b833abb6ef2c7237b453eaf90}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING
 require_marker "$release_dockerfile" \
     'ARG CATALOG_SERVICE_VERSION=0.20.12' \
@@ -859,10 +841,10 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.516}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.517}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'CATTLE_RANCHER_SERVER_VERSION=v1.6.516' \
+    'CATTLE_RANCHER_SERVER_VERSION=v1.6.517' \
     SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING
 for release_engine_marker in \
     'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.333' \
@@ -1187,7 +1169,7 @@ require_marker "$build_script" \
     'PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}"' \
     SERVER_WEB_CONSOLE_RUNTIME_HASH_GATE_MISSING
 require_marker "$build_script" \
-    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.178"' \
+    'test "$(cat "${web_root}/VERSION.txt")" = "1.6.179"' \
     SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING
 require_marker "$release_dockerfile" \
     "grep -aF 'pod-empty-message text-center text-muted'" \
@@ -1322,24 +1304,31 @@ for current_release_marker in \
         SERVER_CURRENT_RELEASE_NOTES_IDENTITY_MISSING
 done
 for current_readme_marker in \
-    '## v1.6.483 release' \
-    'Server `v1.6.483` packages Web Console `1.6.149`' \
-    '[v1.6.483 notes](docs/releases/server-1.6.483.md)' \
-    'sends only the editable description' \
-    '## v1.6.482 release' \
-    'ghcr.io/pasturestack/server@sha256:e3ac65290f17981201a6cf2857e0f6def3eb79974746bc7110357fd87869a609' \
-    'Server `v1.6.481` packages Web Console `1.6.146`' \
-    'Required-field errors on the Secret' \
-    '[v1.6.481 notes](docs/releases/server-1.6.481.md)' \
-    'ghcr.io/pasturestack/server@sha256:013eb045ed669344a67b8ac85d2ce56193abb74f34628281dec503dced8ab415' \
-    '`9c6914cda01a48dda4fb38f62d1a3f0c4db10be8`' \
-    'Web Console `1.6.145`' \
-    'Service `0.10.3`' \
-    'ProjectTemplate writes remain owner-scoped' \
-    '[v1.6.480 notes](docs/releases/server-1.6.480.md)'; do
+    '## Current release' \
+    '## Quick start' \
+    'Pin the immutable image' \
+    'keep all three named volumes' \
+    '[performance settings](docs/performance/README.md)' \
+    '## Upgrade and rollback' \
+    'Back up the database and volumes, test a restore' \
+    '[upgrade guide](docs/upgrades/README.md)' \
+    'Do not replace existing volumes with new empty ones or run `docker compose down -v`.' \
+    'rollback may require restoring matching data' \
+    '[GitHub Releases](https://github.com/PastureStack/server/releases)' \
+    '[release notes](docs/releases)'; do
     require_marker README.md "$current_readme_marker" \
         SERVER_CURRENT_README_IDENTITY_MISSING
 done
+for historical_v481_marker in \
+    '# Server v1.6.481' \
+    'This release assembles Web Console `1.6.146`' \
+    'fields are Secret name, description, and value; Certificate name, description,' \
+    '`9c6914cda01a48dda4fb38f62d1a3f0c4db10be8`'; do
+    require_marker docs/releases/server-1.6.481.md "$historical_v481_marker" \
+        SERVER_V481_PUBLICATION_RECORD_MISSING
+done
+require_marker COMPATIBILITY.md 'non-admin mutations owner-scoped.' \
+    SERVER_CURRENT_COMPATIBILITY_CONTRACT_MISSING
 require_marker docs/README.md \
     '[Server v1.6.483](releases/server-1.6.483.md)' \
     SERVER_CURRENT_DOC_INDEX_MISSING
@@ -1851,7 +1840,7 @@ done
 
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.516"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.517"
   and (.statements | length) == 51
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -1877,7 +1866,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.516 >/dev/null
+    "$vendor_pending_fixture" v1.6.517 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -1966,4 +1955,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.516 base=v1.6.460 engine=0.183.333 web_console=1.6.178 catalog_service=0.20.12 webhook_automation_service=0.10.3 authentication_service=0.4.42 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.517 base=v1.6.460 engine=0.183.333 web_console=1.6.179 catalog_service=0.20.12 webhook_automation_service=0.10.3 authentication_service=0.4.42 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
