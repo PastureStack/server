@@ -1,14 +1,26 @@
 # Compatibility Contract
 
-## Server v1.6.517 preparing
+## Server v1.6.517 published
 
 Packages Web Console `1.6.179` with the official shell-quote `1.11.0` fix in
 both dependency and browser vendor copies. Signed component source
 `826bff55b8885efc9ff1faec0272ef442e4ff702`, archive SHA256
 `1bb7e0acf7040738f2c6413046553609cbbaf14b833abb6ef2c7237b453eaf90`;
 formal CI 37502593612 passed 851 tests and produced two identical archives.
-Server artifact identity and scoped QA acceptance are pending; no image digest
-or deployment success is asserted here. Engine `v0.183.333`, Catalog `0.20.12`,
+Official Server publication run 37505065403 passed; signed source/tag
+`352f1097c002224e84a1719a0df50e4ae4a1219a`, immutable image
+`ghcr.io/pasturestack/server:v1.6.517@sha256:2bf411c5828b7090f9dab950942befcc22295c7dce9a5db2e3d2d6c9dfd2f7d8`.
+Anonymous asset/manifest readback agrees. Isolated startup/restart, 34 MFA/API
+checks and the artifact SBOM/scan passed: nine vendor-pending Medium package
+findings / five CVEs, zero untracked/available-fix/Critical/High/secret findings.
+The isolated QA host also passed pinned deployment: first start/restart (11/9
+probes), unchanged runtime/environment/volume contracts and five core-table
+counts. Real Authentik plus platform TOTP login using the existing OTP EXE,
+five protected APIs (all 200), two WebSockets, zero passive token DELETEs and
+one explicit logout DELETE passed. The loaded browser vendor rejects four
+hostile line-terminator cases and preserves three legitimate round-trips.
+This scoped acceptance does not promote historical matrix HOLDs or untested
+hardware to PASS. Engine `v0.183.333`, Catalog `0.20.12`,
 runtime contracts, four build stages and one final runtime layer remain.
 Historical evidence is kept in release records; the concise README's current
 install identity is checked against those records. Existing security review
