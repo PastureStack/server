@@ -216,6 +216,7 @@ for marker in \
     PASTURESTACK_GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4 \
     PASTURESTACK_PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3 \
     PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.3 \
+    PASTURESTACK_FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2 \
     PASTURESTACK_COREUTILS_PROVIDER=gnu \
     PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11 \
     PASTURESTACK_COREUTILS_UNIQ_FIX=d64e35a8a4c0e4608321433e0d84d917e4e36371 \
@@ -715,6 +716,10 @@ EOF
     test "$(dpkg-query -W -f='"'"'${Version}'"'"' libdbi-perl)" = 1.647-1ubuntu0.26.04.3
     test "$(wc -l < /usr/share/pasturestack/security/libdbi-perl-runtime.sha256)" -eq 2
     sha256sum -c /usr/share/pasturestack/security/libdbi-perl-runtime.sha256
+    test "$(dpkg-query -W -f='"'"'${Version}'"'"' libfreetype6)" = 2.14.2+dfsg-1ubuntu0.2
+    test "$(wc -l < /usr/share/pasturestack/security/freetype-runtime.sha256)" -eq 1
+    sha256sum -c /usr/share/pasturestack/security/freetype-runtime.sha256
+    test "$(readlink -f /usr/lib/x86_64-linux-gnu/libfreetype.so.6)" = /usr/lib/x86_64-linux-gnu/libfreetype.so.6.20.5
     perl -MDBI -e '"'"'die "Unexpected DBI runtime version\n" unless $DBI::VERSION eq "1.647"'"'"'
     openssl version | grep -E "^OpenSSL 3\\.5\\.5 .*\\(Library: OpenSSL 3\\.5\\.5 " >/dev/null
     test "$(openssl version -d)" = "OPENSSLDIR: \"/usr/lib/ssl\""
@@ -722,7 +727,7 @@ EOF
     test "$(openssl version -m)" = "MODULESDIR: \"/usr/lib/x86_64-linux-gnu/ossl-modules\""
     openssl list -providers -provider legacy | grep -F "OpenSSL Legacy Provider" >/dev/null
     printf abc | openssl dgst -provider default -provider legacy -md4 | grep -F a448017aaf21d8525fc10ae87aa6729d >/dev/null
-    for target in /usr/bin/curl /usr/sbin/mariadbd /usr/bin/mariadb /usr/lib/x86_64-linux-gnu/libssh2.so.1; do
+    for target in /usr/bin/curl /usr/sbin/mariadbd /usr/bin/mariadb /usr/lib/x86_64-linux-gnu/libssh2.so.1 /usr/lib/x86_64-linux-gnu/libfreetype.so.6; do
         linkage=$(ldd -r "$target" 2>&1)
         ! printf "%s\n" "$linkage" | grep -E "not found|undefined symbol"
     done

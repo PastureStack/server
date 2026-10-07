@@ -61,7 +61,22 @@ are retained.
 
 ## Publication and acceptance boundaries
 
-No Server `v1.6.518` image digest, publication run or real-host acceptance is
+The first official publication attempt,
+[run 37565304067](https://github.com/PastureStack/server/actions/runs/37565304067),
+stopped before publishing any Server `v1.6.518` tag or image. Its artifact gate
+found `CVE-2026-95512` in inherited `libfreetype6` `2.14.2+dfsg-1ubuntu0.1`, with
+an official available fix. [Ubuntu USN-8881-1](https://ubuntu.com/security/notices/USN-8881-1)
+identifies `2.14.2+dfsg-1ubuntu0.2` as the fixed Ubuntu 26.04 package.
+
+The candidate adds only that official amd64 deb, SHA-256
+`6d7d532b7d0c57639deb3b228f1f0d786cf5305d613ef7df9ba76c776a0f8373`,
+to the existing security-package builder. The archive identity, installed dpkg
+version and actual shared-library bytes/linkage are checked. The existing
+`20261002T000000Z` snapshot, curl/OpenSSL/DBI pins, VEX/pending policy and review
+deadlines remain unchanged. This source repair requires a new successful
+official build and artifact scan; it is not publication or runtime PASS.
+
+No Server `v1.6.518` image digest, successful publication or real-host acceptance is
 claimed here. Component source tests do not establish a passing managed
 infrastructure upgrade, workload traffic, Metadata/DNS, host-port behavior,
 restart recovery or rollback on actual hosts. Those acceptance results remain
