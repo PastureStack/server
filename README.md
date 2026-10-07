@@ -27,15 +27,15 @@ every resource/role/hardware combination has been tested.
 
 ## Quick start
 
-Public GHCR downloads do not require a registry login. Pin the immutable image
-and keep all three named volumes:
+Public GHCR downloads do not require a registry login. Use the published numeric
+version tag and keep all three named volumes:
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.517@sha256:2bf411c5828b7090f9dab950942befcc22295c7dce9a5db2e3d2d6c9dfd2f7d8
+  ghcr.io/pasturestack/server:v1.6.517
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -43,7 +43,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.517@sha256:2bf411c5828b7090f9dab950942befcc22295c7dce9a5db2e3d2d6c9dfd2f7d8
+    image: ghcr.io/pasturestack/server:v1.6.517
     restart: unless-stopped
     ports:
       - "8080:8080"
