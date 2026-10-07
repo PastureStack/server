@@ -224,6 +224,40 @@ class Tests(unittest.TestCase):
         # introduced to override a user's explicit catalog setting.
         self.assertNotIn('UPDATE setting', FILES[BUILD])
 
+    def test_freetype_official_deb_and_library_checks_fail_closed(self):
+        version = '2.14.2+dfsg-1ubuntu0.2'
+        archive_sha = '6d7d532b7d0c57639deb3b228f1f0d786cf5305d613ef7df9ba76c776a0f8373'
+        archive_url = 'https://security.ubuntu.com/ubuntu/pool/main/f/freetype/libfreetype6_' + version + '_amd64.deb'
+        archive = r'^ADD --checksum=sha256:' + archive_sha + r' \\\n\s+' + re.escape(archive_url) + r' \\\n\s+/tmp/libfreetype6\.deb$'
+        hash_guard = 'sha256sum -c /usr/share/pasturestack/security/freetype-runtime.sha256'
+        paths = ((DOCKER, 'release_freetype_security_marker'), (BUILD, 'runtime_freetype_security_marker'))
+
+        def check(files):
+            self.assertEqual(files[DOCKER].splitlines().count('ARG FREETYPE_PACKAGE_VERSION=' + version), 2)
+            self.assertEqual(len(re.findall(archive, files[DOCKER], re.M)), 1)
+            self.assertEqual(len(re.findall(r'^FROM ', files[DOCKER], re.M)), 4)
+            for name, variable in paths:
+                for marker in engine_gate_markers(GATE, variable):
+                    self.assertIn(marker, files[name])
+                source = files[name].replace('\\\n', ' ')
+                pipeline = r'(?:^|[;\n])\s*' + re.escape(hash_guard) + r'(?=\s*(?:;|\n|$))'
+                self.assertEqual(len(re.findall(pipeline, source)), 1)
+
+        check(FILES)
+        for name, variable in paths:
+            for marker in engine_gate_markers(GATE, variable):
+                with self.subTest(name=name, missing=marker):
+                    with self.assertRaises(AssertionError):
+                        check(dict(FILES, **{name: FILES[name].replace(marker, 'REMOVED_FREETYPE_CONTRACT')}))
+            for replacement in (hash_guard + ' || true', '# ' + hash_guard):
+                with self.subTest(name=name, bypass=replacement):
+                    with self.assertRaises(AssertionError):
+                        check(dict(FILES, **{name: FILES[name].replace(hash_guard, replacement)}))
+        for value, stale_value in ((version, '2.14.2+dfsg-1ubuntu0.1'), (archive_sha, '0' * 64)):
+            with self.subTest(stale=value):
+                with self.assertRaises(AssertionError):
+                    check(dict(FILES, **{DOCKER: FILES[DOCKER].replace(value, stale_value)}))
+
     def test_actual_candidate_gate_and_five_files_agree(self):
         verify(FILES)
 

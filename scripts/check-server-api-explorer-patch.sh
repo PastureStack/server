@@ -1501,7 +1501,7 @@ for release_curl_security_marker in \
     '"libssl3t64=${OPENSSL_PACKAGE_VERSION}"' \
     '"openssl-provider-legacy=${OPENSSL_PACKAGE_VERSION}"' \
     'dpkg-deb --extract "${package_file}" /tmp/openssl-runtime' \
-    'sha256sum packages/*.deb tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 > SHA256SUMS' \
+    'sha256sum packages/*.deb tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 freetype-runtime.sha256 > SHA256SUMS' \
     'sha256sum -c /usr/share/pasturestack/security/openssl-runtime.sha256' \
     'ENV PASTURESTACK_OPENSSL_VERSION=3.5.5' \
     'ENV PASTURESTACK_OPENSSL_PACKAGE_VERSION=${OPENSSL_PACKAGE_VERSION}' \
@@ -1528,6 +1528,34 @@ for runtime_libdbi_security_marker in \
     'Unexpected DBI runtime version'; do
     require_marker "$build_script" "$runtime_libdbi_security_marker" \
         SERVER_LIBDBI_PERL_RUNTIME_GATE_MISSING
+done
+for release_freetype_security_marker in \
+    'ARG FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2' \
+    'ADD --checksum=sha256:6d7d532b7d0c57639deb3b228f1f0d786cf5305d613ef7df9ba76c776a0f8373' \
+    'https://security.ubuntu.com/ubuntu/pool/main/f/freetype/libfreetype6_2.14.2+dfsg-1ubuntu0.2_amd64.deb' \
+    'test "$(dpkg-deb -f /tmp/libfreetype6.deb Package)" = libfreetype6' \
+    'test "$(dpkg-deb -f /tmp/libfreetype6.deb Version)" = "${FREETYPE_PACKAGE_VERSION}"' \
+    'test "$(dpkg-deb -f /tmp/libfreetype6.deb Architecture)" = amd64' \
+    'libfreetype6)" = "${FREETYPE_PACKAGE_VERSION}"' \
+    'dpkg-deb --extract /tmp/libfreetype6.deb /tmp/freetype-runtime' \
+    'sha256sum usr/lib/x86_64-linux-gnu/libfreetype.so.6 > /out/freetype-runtime.sha256' \
+    'test "$(wc -l < /out/freetype-runtime.sha256)" -eq 1' \
+    'sha256sum -c /usr/share/pasturestack/security/freetype-runtime.sha256' \
+    'test "$(readlink -f /usr/lib/x86_64-linux-gnu/libfreetype.so.6)" = /usr/lib/x86_64-linux-gnu/libfreetype.so.6.20.5' \
+    'ldd -r /usr/lib/x86_64-linux-gnu/libfreetype.so.6 2>&1' \
+    'ENV PASTURESTACK_FREETYPE_PACKAGE_VERSION=${FREETYPE_PACKAGE_VERSION}'; do
+    require_marker "$release_dockerfile" "$release_freetype_security_marker" \
+        SERVER_FREETYPE_OFFICIAL_SECURITY_REFRESH_MISSING
+done
+for runtime_freetype_security_marker in \
+    'PASTURESTACK_FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2' \
+    'libfreetype6)" = 2.14.2+dfsg-1ubuntu0.2' \
+    'sha256sum -c /usr/share/pasturestack/security/freetype-runtime.sha256' \
+    'test "$(wc -l < /usr/share/pasturestack/security/freetype-runtime.sha256)" -eq 1' \
+    'test "$(readlink -f /usr/lib/x86_64-linux-gnu/libfreetype.so.6)" = /usr/lib/x86_64-linux-gnu/libfreetype.so.6.20.5' \
+    '/usr/lib/x86_64-linux-gnu/libfreetype.so.6; do'; do
+    require_marker "$build_script" "$runtime_freetype_security_marker" \
+        SERVER_FREETYPE_RUNTIME_GATE_MISSING
 done
 require_marker "$build_script" \
     'PASTURESTACK_CURL_SECURITY_SNAPSHOT=20261002T000000Z' \
