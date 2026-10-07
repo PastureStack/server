@@ -7,6 +7,8 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.518](releases/server-1.6.518.md) — source candidate pinning published Catalog v0.3.13 / Network Plugin Manager v0.8.22 for Metadata-driven CNI configuration migration, plus published Web Console 1.6.180 / audit broker full-retained-time query and export; Server publication and real-host acceptance pending.
+
 - [Server v1.6.517](releases/server-1.6.517.md) — officially published with Web Console 1.6.179; isolated start/restart, browser login and focused API acceptance passed. Known limits remain in the versioned release note.
 
 - [Server v1.6.516](releases/server-1.6.516.md) — candidate packaging published
