@@ -31,8 +31,9 @@ type auditExportRow struct {
 
 type auditJSONExport struct {
 	GeneratedAt string           `json:"generatedAt"`
-	From        string           `json:"from"`
-	To          string           `json:"to"`
+	From        string           `json:"from,omitempty"`
+	To          string           `json:"to,omitempty"`
+	TimeScope   string           `json:"timeScope,omitempty"`
 	Count       int              `json:"count"`
 	Range       string           `json:"rangeSemantics"`
 	Records     []auditExportRow `json:"records"`
@@ -72,10 +73,15 @@ func writeAuditExport(writer http.ResponseWriter, request *http.Request, query a
 		payload, err = buildAuditCSV(rows, traditionalChinese)
 		contentType, extension = "text/csv; charset=utf-8", "csv"
 	case "json":
-		payload, err = json.MarshalIndent(auditJSONExport{
+		export := auditJSONExport{
 			GeneratedAt: time.Now().UTC().Format(time.RFC3339), From: query.From.Format(time.RFC3339Nano),
 			To: query.To.Format(time.RFC3339Nano), Count: len(rows), Range: "[from,to)", Records: rows,
-		}, "", "  ")
+		}
+		if query.AllTime {
+			export.From, export.To = "", ""
+			export.TimeScope, export.Range = "all", "all-retained"
+		}
+		payload, err = json.MarshalIndent(export, "", "  ")
 		if err == nil {
 			payload = append(payload, '\n')
 		}
@@ -128,6 +134,10 @@ func buildAuditCSV(rows []auditExportRow, traditionalChinese bool) ([]byte, erro
 func buildAuditXLSX(rows []auditExportRow, query auditQuery, traditionalChinese bool) ([]byte, error) {
 	buffer := &bytes.Buffer{}
 	archive := zip.NewWriter(buffer)
+	rangeDescription := query.From.Format(time.RFC3339) + " - " + query.To.Format(time.RFC3339)
+	if query.AllTime {
+		rangeDescription = "All retained audit log time"
+	}
 	files := map[string]string{
 		"[Content_Types].xml": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>` +
 			`<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">` +
@@ -158,7 +168,7 @@ func buildAuditXLSX(rows []auditExportRow, query auditQuery, traditionalChinese 
 			`<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">`+
 			`<dc:title>PastureStack Audit Logs</dc:title><dc:creator>PastureStack</dc:creator><dc:description>%s</dc:description>`+
 			`<dcterms:created xsi:type="dcterms:W3CDTF">%s</dcterms:created></cp:coreProperties>`,
-			xmlText(query.From.Format(time.RFC3339)+" - "+query.To.Format(time.RFC3339)), time.Now().UTC().Format(time.RFC3339)),
+			xmlText(rangeDescription), time.Now().UTC().Format(time.RFC3339)),
 	}
 	order := []string{"[Content_Types].xml", "_rels/.rels", "docProps/app.xml", "docProps/core.xml", "xl/workbook.xml", "xl/_rels/workbook.xml.rels", "xl/styles.xml", "xl/worksheets/sheet1.xml"}
 	for _, name := range order {

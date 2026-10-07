@@ -28,6 +28,7 @@ const (
 type auditQuery struct {
 	From                time.Time
 	To                  time.Time
+	AllTime             bool
 	EnvironmentID       string
 	UserID              string
 	EventType           string
@@ -156,9 +157,16 @@ func parseAuditQuery(values url.Values, now time.Time) (auditQuery, error) {
 
 	fromValue := firstNonEmpty(values.Get("created_gte"), values.Get("createdFrom"))
 	toValue := firstNonEmpty(values.Get("created_lte"), values.Get("createdTo"))
+	timeScope := values.Get("timeScope")
+	if timeScope != "" && timeScope != "all" {
+		return auditQuery{}, &auditHTTPError{Status: http.StatusBadRequest, Code: "invalid_time_scope", Message: "Unsupported audit log time scope"}
+	}
 	if fromValue == "" && toValue == "" {
 		query.To = now
-		query.From = now.Add(-auditDefaultRange)
+		query.AllTime = timeScope == "all"
+		if !query.AllTime {
+			query.From = now.Add(-auditDefaultRange)
+		}
 	} else {
 		if fromValue == "" || toValue == "" {
 			return auditQuery{}, &auditHTTPError{Status: http.StatusBadRequest, Code: "incomplete_time_range", Message: "Both audit log time boundaries are required"}
@@ -175,10 +183,10 @@ func parseAuditQuery(values url.Values, now time.Time) (auditQuery, error) {
 		query.From = query.From.UTC()
 		query.To = query.To.UTC()
 	}
-	if !query.From.Before(query.To) {
+	if !query.AllTime && !query.From.Before(query.To) {
 		return auditQuery{}, &auditHTTPError{Status: http.StatusBadRequest, Code: "invalid_time_range", Message: "Audit log start time must be earlier than the end time"}
 	}
-	if query.To.Sub(query.From) > auditMaximumRange {
+	if !query.AllTime && query.To.Sub(query.From) > auditMaximumRange {
 		return auditQuery{}, &auditHTTPError{Status: http.StatusUnprocessableEntity, Code: "time_range_too_large", Message: "Audit log time range must not exceed 366 days"}
 	}
 
@@ -275,10 +283,12 @@ func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, quer
 	}
 
 	upstreamValues := url.Values{
-		"created_gte": {query.From.Format(time.RFC3339Nano)},
-		"limit":       {strconv.Itoa(auditUpstreamPageSize)},
-		"sort":        {"id"},
-		"order":       {"desc"},
+		"limit": {strconv.Itoa(auditUpstreamPageSize)},
+		"sort":  {"id"},
+		"order": {"desc"},
+	}
+	if !query.AllTime {
+		upstreamValues.Set("created_gte", query.From.Format(time.RFC3339Nano))
 	}
 	if query.EnvironmentID != "" {
 		upstreamValues.Set("accountId", query.EnvironmentID)
@@ -295,7 +305,7 @@ func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, quer
 			continue
 		}
 		created, ok := auditTimestamp(record)
-		if !ok || created.Before(query.From) || !created.Before(query.To) {
+		if !ok || (!query.AllTime && (created.Before(query.From) || !created.Before(query.To))) {
 			continue
 		}
 		if query.EnvironmentID != "" && projectID != query.EnvironmentID {

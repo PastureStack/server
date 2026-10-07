@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"net/http"
@@ -22,13 +23,15 @@ type auditUpstreamFixture struct {
 	auditRecords  []map[string]any
 	secondPage    []map[string]any
 	allowedCookie string
+	allowedAuth   string
 }
 
 func newAuditUpstreamFixture(t *testing.T) *auditUpstreamFixture {
 	t.Helper()
 	fixture := &auditUpstreamFixture{allowedCookie: "R_SESS=authorized"}
 	fixture.server = httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		if request.Header.Get("Cookie") != fixture.allowedCookie {
+		if request.Header.Get("Cookie") != fixture.allowedCookie ||
+			(fixture.allowedAuth != "" && request.Header.Get("Authorization") != fixture.allowedAuth) {
 			http.Error(writer, "unauthorized", http.StatusUnauthorized)
 			return
 		}
@@ -171,6 +174,122 @@ func TestAuditQueryEnforcesBothTimeBoundariesAndEnvironmentAuthorization(t *test
 	}
 	if fixture.auditQueries[0].Get("created_gte") == "" || fixture.auditQueries[0].Get("created_lte") != "" {
 		t.Fatalf("upstream query must use the supported lower boundary only: %#v", fixture.auditQueries[0])
+	}
+}
+
+func TestAuditTimeScopesPreserveOwnerAuthorizationAndEnvironmentFilters(t *testing.T) {
+	fixture := newAuditUpstreamFixture(t)
+	fixture.allowedAuth = "Bearer authorized-owner"
+	now := time.Now().UTC()
+	fixture.auditRecords = []map[string]any{
+		auditTestRecord("recent", now.Add(-time.Hour).Format(time.RFC3339Nano), "1p1", "1a1", "recent.event", "TokenAuth", "recent"),
+		auditTestRecord("old", "2020-01-01T00:00:00Z", "1p1", "1a1", "old.event", "TokenAuth", "old retained record"),
+		auditTestRecord("other-project", "2019-01-01T00:00:00Z", "1p2", "1a2", "other.event", "TokenAuth", "other authorized environment"),
+		auditTestRecord("forbidden", "2018-01-01T00:00:00Z", "1p9", "1a9", "forbidden.event", "TokenAuth", "must not leak"),
+	}
+	server := newAuditTestBroker(t, fixture)
+	from, to := now.Add(-2*time.Hour).Format(time.RFC3339Nano), now.Format(time.RFC3339Nano)
+	cases := []struct {
+		name      string
+		values    url.Values
+		auth      string
+		status    int
+		expected  string
+		unbounded bool
+	}{
+		{name: "default 24 hours", values: url.Values{}, auth: fixture.allowedAuth, status: http.StatusOK, expected: "recent"},
+		{name: "all retained time", values: url.Values{"timeScope": {"all"}}, auth: fixture.allowedAuth, status: http.StatusOK, expected: "recent,old,other-project", unbounded: true},
+		{name: "all with environment", values: url.Values{"timeScope": {"all"}, "accountId": {"1p1"}}, auth: fixture.allowedAuth, status: http.StatusOK, expected: "recent,old", unbounded: true},
+		{name: "all with actor", values: url.Values{"timeScope": {"all"}, "authenticatedAsAccountId": {"1a2"}}, auth: fixture.allowedAuth, status: http.StatusOK, expected: "other-project", unbounded: true},
+		{name: "explicit dates", values: url.Values{"created_gte": {from}, "created_lte": {to}}, auth: fixture.allowedAuth, status: http.StatusOK, expected: "recent"},
+		{name: "all with explicit dates", values: url.Values{"timeScope": {"all"}, "created_gte": {from}, "created_lte": {to}}, auth: fixture.allowedAuth, status: http.StatusOK, expected: "recent"},
+		{name: "all forbidden environment", values: url.Values{"timeScope": {"all"}, "accountId": {"1p9"}}, auth: fixture.allowedAuth, status: http.StatusForbidden},
+		{name: "all missing owner credential", values: url.Values{"timeScope": {"all"}}, status: http.StatusUnauthorized},
+		{name: "all wrong owner credential", values: url.Values{"timeScope": {"all"}}, auth: "Bearer different-owner", status: http.StatusUnauthorized},
+	}
+	for _, testCase := range cases {
+		t.Run(testCase.name, func(t *testing.T) {
+			fixture.mu.Lock()
+			before := len(fixture.auditQueries)
+			fixture.mu.Unlock()
+			request, err := http.NewRequest(http.MethodGet, server.URL+auditQueryPath+"?"+testCase.values.Encode(), nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			request.Header.Set("Cookie", fixture.allowedCookie)
+			request.Header.Set("Authorization", testCase.auth)
+			response, err := http.DefaultClient.Do(request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer response.Body.Close()
+			if response.StatusCode != testCase.status {
+				body, _ := io.ReadAll(response.Body)
+				t.Fatalf("query returned %d expected %d: %s", response.StatusCode, testCase.status, body)
+			}
+			fixture.mu.Lock()
+			queries := append([]url.Values(nil), fixture.auditQueries[before:]...)
+			fixture.mu.Unlock()
+			if testCase.status != http.StatusOK {
+				if len(queries) != 0 {
+					t.Fatalf("denied owner/environment triggered an audit query: %#v", queries)
+				}
+				return
+			}
+			var payload auditCollection
+			if err := json.NewDecoder(response.Body).Decode(&payload); err != nil {
+				t.Fatal(err)
+			}
+			ids := make([]string, 0, len(payload.Data))
+			for _, record := range payload.Data {
+				ids = append(ids, auditString(record, "id"))
+			}
+			if actual := strings.Join(ids, ","); actual != testCase.expected {
+				t.Fatalf("result=%q expected=%q", actual, testCase.expected)
+			}
+			filters, _ := json.Marshal(payload.Filters)
+			if bytes.Contains(filters, []byte("forbidden.event")) || bytes.Contains(filters, []byte("1a9")) {
+				t.Fatalf("unauthorized records leaked into suggestions: %s", filters)
+			}
+			if len(queries) != 1 || (queries[0].Get("created_gte") == "") != testCase.unbounded || queries[0].Get("accountId") != testCase.values.Get("accountId") {
+				t.Fatalf("upstream scope is incorrect: %#v", queries)
+			}
+		})
+	}
+}
+
+func TestAuditAllTimeQueryKeepsMaximumScanRows(t *testing.T) {
+	for _, overflow := range []bool{false, true} {
+		t.Run(map[bool]string{false: "exact cap", true: "over cap"}[overflow], func(t *testing.T) {
+			fixture := newAuditUpstreamFixture(t)
+			fixture.auditRecords = make([]map[string]any, auditMaximumScanRows)
+			for index := range fixture.auditRecords {
+				fixture.auditRecords[index] = map[string]any{"id": "event", "created": "2020-01-01T00:00:00Z", "accountId": "1p1"}
+			}
+			if overflow {
+				fixture.secondPage = []map[string]any{{"id": "overflow", "created": "2020-01-01T00:00:00Z", "accountId": "1p1"}}
+			}
+			server := newAuditTestBroker(t, fixture)
+			response := performAuditRequest(t, server, auditQueryPath+"?timeScope=all")
+			defer response.Body.Close()
+			if overflow {
+				body, _ := io.ReadAll(response.Body)
+				if response.StatusCode != http.StatusUnprocessableEntity || !bytes.Contains(body, []byte("result_set_too_large")) {
+					t.Fatalf("scan overflow was not rejected: %d %s", response.StatusCode, body)
+				}
+				return
+			}
+			var payload auditCollection
+			if response.StatusCode != http.StatusOK {
+				t.Fatalf("exact scan cap returned %d", response.StatusCode)
+			}
+			if err := json.NewDecoder(response.Body).Decode(&payload); err != nil {
+				t.Fatal(err)
+			}
+			if total := payload.Pagination["total"]; total != float64(auditMaximumScanRows) {
+				t.Fatalf("exact scan cap total=%v", total)
+			}
+		})
 	}
 }
 
@@ -335,6 +454,114 @@ func TestAuditExportsUseTheSameFilteredRecordsAndSafeSpreadsheetText(t *testing.
 	}
 	if !foundSheet {
 		t.Fatal("XLSX worksheet is missing")
+	}
+}
+
+func TestAuditAllTimeExportsDescribeTheRetainedScope(t *testing.T) {
+	fixture := newAuditUpstreamFixture(t)
+	fixture.auditRecords = []map[string]any{
+		auditTestRecord("old", "2020-01-01T00:00:00Z", "1p1", "1a1", "old.event", "TokenAuth", "old retained record"),
+		auditTestRecord("forbidden", "2019-01-01T00:00:00Z", "1p9", "1a9", "forbidden.event", "TokenAuth", "must not leak"),
+	}
+	server := newAuditTestBroker(t, fixture)
+	response := performAuditRequest(t, server, auditExportPath+"?timeScope=all&format=json")
+	defer response.Body.Close()
+	var payload map[string]any
+	if response.StatusCode != http.StatusOK {
+		t.Fatalf("JSON export returned %d", response.StatusCode)
+	}
+	if err := json.NewDecoder(response.Body).Decode(&payload); err != nil {
+		t.Fatal(err)
+	}
+	if payload["timeScope"] != "all" || payload["rangeSemantics"] != "all-retained" || payload["count"] != float64(1) {
+		t.Fatalf("JSON export scope is incorrect: %#v", payload)
+	}
+	if _, exists := payload["from"]; exists {
+		t.Fatalf("all-time export declared a false lower boundary: %#v", payload)
+	}
+	if _, exists := payload["to"]; exists {
+		t.Fatalf("all-time export declared a false upper boundary: %#v", payload)
+	}
+	encoded, _ := json.Marshal(payload)
+	if !bytes.Contains(encoded, []byte("old")) || bytes.Contains(encoded, []byte("forbidden")) || bytes.Contains(encoded, []byte("must-not-export")) {
+		t.Fatalf("all-time export leaked a forbidden record or hidden payload: %s", encoded)
+	}
+
+	xlsx := performAuditRequest(t, server, auditExportPath+"?timeScope=all&format=xlsx")
+	defer xlsx.Body.Close()
+	body, err := io.ReadAll(xlsx.Body)
+	if err != nil || xlsx.StatusCode != http.StatusOK {
+		t.Fatalf("XLSX export returned %d: %v", xlsx.StatusCode, err)
+	}
+	archive, err := zip.NewReader(bytes.NewReader(body), int64(len(body)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, file := range archive.File {
+		if file.Name != "docProps/core.xml" {
+			continue
+		}
+		reader, err := file.Open()
+		if err != nil {
+			t.Fatal(err)
+		}
+		properties, err := io.ReadAll(reader)
+		reader.Close()
+		if err != nil || !bytes.Contains(properties, []byte("All retained audit log time")) || bytes.Contains(properties, []byte("0001-01-01")) {
+			t.Fatalf("XLSX export scope is incorrect: %s %v", properties, err)
+		}
+		return
+	}
+	t.Fatal("XLSX export scope metadata is missing")
+}
+
+func TestParseAuditQueryAllTimeOnlyDisablesTheDefaultRange(t *testing.T) {
+	now := time.Date(2026, 8, 29, 3, 0, 0, 0, time.UTC)
+	from := now.Add(-time.Hour)
+	cases := []struct {
+		name    string
+		values  url.Values
+		allTime bool
+		from    time.Time
+	}{
+		{name: "default", values: url.Values{}, from: now.Add(-auditDefaultRange)},
+		{name: "all", values: url.Values{"timeScope": {"all"}}, allTime: true},
+		{name: "explicit dates", values: url.Values{"created_gte": {from.Format(time.RFC3339)}, "created_lte": {now.Format(time.RFC3339)}}, from: from},
+		{name: "all with explicit dates", values: url.Values{"timeScope": {"all"}, "created_gte": {from.Format(time.RFC3339)}, "created_lte": {now.Format(time.RFC3339)}}, from: from},
+		{name: "all with date aliases", values: url.Values{"timeScope": {"all"}, "createdFrom": {"2026-08-29T10:00:00+08:00"}, "createdTo": {"2026-08-29T11:00:00+08:00"}}, from: from},
+	}
+	for _, testCase := range cases {
+		t.Run(testCase.name, func(t *testing.T) {
+			query, err := parseAuditQuery(testCase.values, now)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if query.AllTime != testCase.allTime || !query.From.Equal(testCase.from) || !query.To.Equal(now) {
+				t.Fatalf("incorrect effective time scope: %#v", query)
+			}
+		})
+	}
+
+	invalid := []struct {
+		name   string
+		values url.Values
+		status int
+		code   string
+	}{
+		{name: "unknown scope", values: url.Values{"timeScope": {"everything"}}, status: http.StatusBadRequest, code: "invalid_time_scope"},
+		{name: "all with one boundary", values: url.Values{"timeScope": {"all"}, "created_gte": {from.Format(time.RFC3339)}}, status: http.StatusBadRequest, code: "incomplete_time_range"},
+		{name: "all with invalid date", values: url.Values{"timeScope": {"all"}, "created_gte": {"not-a-date"}, "created_lte": {now.Format(time.RFC3339)}}, status: http.StatusBadRequest, code: "invalid_time_range"},
+		{name: "all with zero-width dates", values: url.Values{"timeScope": {"all"}, "created_gte": {now.Format(time.RFC3339)}, "created_lte": {now.Format(time.RFC3339)}}, status: http.StatusBadRequest, code: "invalid_time_range"},
+		{name: "all with excessive dates", values: url.Values{"timeScope": {"all"}, "created_gte": {"2025-01-01T00:00:00Z"}, "created_lte": {now.Format(time.RFC3339)}}, status: http.StatusUnprocessableEntity, code: "time_range_too_large"},
+	}
+	for _, testCase := range invalid {
+		t.Run(testCase.name, func(t *testing.T) {
+			_, err := parseAuditQuery(testCase.values, now)
+			var failure *auditHTTPError
+			if !errors.As(err, &failure) || failure.Status != testCase.status || failure.Code != testCase.code {
+				t.Fatalf("incorrect query rejection: %v", err)
+			}
+		})
 	}
 }
 

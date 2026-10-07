@@ -1,5 +1,31 @@
 # Compatibility Contract
 
+## Server v1.6.518 candidate
+
+Pins published Catalog `v0.3.13` source
+`b6b658888fce50d3ec217eb4eba0f26ab0113baf`, Network Services revision `10` / template `v0.3.8`,
+and Network Plugin Manager `v0.8.22` for Metadata-driven CNI configuration
+migration. After validating desired files, the manager atomically replaces
+each file and retires only an unrequested old configuration matching the
+exact legacy network/bridge/IPAM triplet. Its original contents remain in a
+recoverable `.pasturestack-retired` copy outside the active CNI set. The
+reverse Metadata transition supports rollback; unrelated administrator files
+remain untouched. Replacement is atomic per file, not across the whole bundle.
+
+Web Console `1.6.180` and the audit broker support explicit `timeScope=all`
+for query/export without the implicit 24-hour range. Explicit dates still use
+the existing half-open interval and 366-day maximum; authorization, environment
+filters, 20,000-row scan cap, 10,000-row export cap and DB retention remain.
+The pinned Web and Catalog releases are published; Server publication and
+real-host managed-upgrade/audit acceptance remain pending. Engine `v0.183.333`, Catalog Service `0.20.12`,
+Authentication Service `0.4.42`, HAProxy, OIDC, four build stages and the single
+final runtime layer flow remain.
+VEX decisions, vendor-pending findings and review deadlines are not reset.
+README/Compose install examples remain on published numeric tag `v1.6.517`
+until the official `v1.6.518` image and release are verified. No infrastructure
+upgrade or historical HOLD is promoted to PASS by this source candidate.
+See [the candidate release note](docs/releases/server-1.6.518.md).
+
 ## Server v1.6.517 published
 
 Packages Web Console `1.6.179` with the official shell-quote `1.11.0` fix in
