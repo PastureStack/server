@@ -1,7 +1,13 @@
 # Server v1.6.518
 
-Status: Server source candidate; Catalog `v0.3.13` and Web Console `1.6.180`
-are published and pinned. Server publication and real-host acceptance remain pending.
+Status: officially published; immutable artifact and scoped isolated-QA
+deployment/read-only checks verified.
+
+Immutable image:
+`ghcr.io/pasturestack/server:v1.6.518@sha256:4040180d74574b1e72710decb09874d29a32e45808658156753700b548c8647e`.
+Signed Server source: `7607f4d4cd64b3c99b8ed9faa809109ad49cf893`.
+Image config digest: `sha256:2fb8eb0bce97f1351ffd513a826da1dcb3c0434e9ffeda1e04d424029d7b4564`
+(not the registry manifest digest).
 
 ## Scope
 
@@ -13,7 +19,7 @@ upgrade. A historical `10-rancher.conf` can otherwise remain active after
 Metadata switches to `10-pasturestack.conf`, causing both configurations to
 be executed.
 
-The candidate manager validates and serializes all desired configurations
+The manager validates and serializes all desired configurations
 before changing active files. It installs each desired file atomically, then
 retires the unrequested historical file only when its network name, bridge
 type and IPAM type exactly match the known legacy triplet:
@@ -49,7 +55,7 @@ all-retained scope without inventing date boundaries. Web Console `1.6.180`
 forwards the all-time marker through both the audit query and export routes;
 explicit date filters remain intact.
 
-Server assembly also prepares the reviewed Catalog source pin and release
+Server assembly packages the reviewed Catalog source pin and release
 identity. Orchestration Engine `v0.183.333`, Catalog Service `0.20.12`,
 Authentication Service `0.4.42`, HAProxy and OIDC contracts remain unchanged.
 The Web Console pin is `1.6.180`, source
@@ -59,7 +65,29 @@ The Web Console pin is `1.6.180`, source
 Four build stages and the existing single final runtime layer publication flow
 are retained.
 
-## Publication and acceptance boundaries
+## Verification
+
+[Official publication run 37566647090](https://github.com/PastureStack/server/actions/runs/37566647090)
+completed successfully at the signed Server source above. It passed source
+gates, exact component verification, artifact scan/SBOM, disposable startup
+and restart (11/7 bounded probes), and public release readback. Independent
+readback verified the public asset SHA-256 checksums, SBOM OCI identity,
+single runtime layer and official fixed FreeType package.
+
+The final scan has 53 raw findings, 51 retained VEX statements, and nine
+vendor-pending Medium package findings covering five CVEs. Untracked,
+Critical/High, available-fix and secret findings are zero. Existing
+vendor-pending findings and review deadlines are not reset; this is not a
+zero-CVE claim.
+
+Catalog PR #17 was normally merged, and
+[Catalog CI 37564407383](https://github.com/PastureStack/catalog-templates/actions/runs/37564407383)
+passed at the pinned source. The fixed Web source passed
+[Validate 37564108185](https://github.com/PastureStack/web-console/actions/runs/37564108185);
+the official numeric [Web Console 1.6.180 release](https://github.com/PastureStack/web-console/releases/tag/1.6.180)
+contains the pinned archive.
+
+## Publication blocker repaired
 
 The first official publication attempt,
 [run 37565304067](https://github.com/PastureStack/server/actions/runs/37565304067),
@@ -68,33 +96,32 @@ found `CVE-2026-95512` in inherited `libfreetype6` `2.14.2+dfsg-1ubuntu0.1`, wit
 an official available fix. [Ubuntu USN-8881-1](https://ubuntu.com/security/notices/USN-8881-1)
 identifies `2.14.2+dfsg-1ubuntu0.2` as the fixed Ubuntu 26.04 package.
 
-The candidate adds only that official amd64 deb, SHA-256
+The release adds only that official amd64 deb, SHA-256
 `6d7d532b7d0c57639deb3b228f1f0d786cf5305d613ef7df9ba76c776a0f8373`,
 to the existing security-package builder. The archive identity, installed dpkg
 version and actual shared-library bytes/linkage are checked. The existing
 `20261002T000000Z` snapshot, curl/OpenSSL/DBI pins, VEX/pending policy and review
-deadlines remain unchanged. This source repair requires a new successful
-official build and artifact scan; it is not publication or runtime PASS.
+deadlines remain unchanged. The subsequent successful official build and
+artifact scan verified this repair without a security-gate exception.
 
-No Server `v1.6.518` image digest, successful publication or real-host acceptance is
-claimed here. Component source tests do not establish a passing managed
-infrastructure upgrade, workload traffic, Metadata/DNS, host-port behavior,
-restart recovery or rollback on actual hosts. Those acceptance results remain
-pending. Existing historical HOLDs and incomplete coverage remain unchanged.
+## Acceptance and upgrade boundaries
 
-Catalog PR #17 was normally merged, and
-[Catalog CI 37564407383](https://github.com/PastureStack/catalog-templates/actions/runs/37564407383)
-passed at the pinned source. The fixed Web source passed
-[Validate 37564108185](https://github.com/PastureStack/web-console/actions/runs/37564108185);
-the official numeric [Web Console 1.6.180 release](https://github.com/PastureStack/web-console/releases/tag/1.6.180)
-contains the pinned archive. No placeholder commit is submitted. Operator
-Catalog overrides and deployed
+Separate isolated-QA deployment and read-only checks verified the exact
+published image, first startup and one restart with HTTP 200/pong. Runtime
+configuration, mounts, environment overrides and database counts were
+preserved, with the previous image and backup retained for rollback. Host
+receipts remain local; internal endpoints and QA details are not published.
+
+Publication and these scoped checks do not establish complete infrastructure,
+resource/role/hardware or functional-matrix acceptance. Existing historical
+HOLDs and incomplete coverage remain unchanged.
+
+Operator Catalog overrides and deployed
 infrastructure stacks are not automatically upgraded by changing the image
 defaults. VEX and vendor-pending metadata change only their Server release
 identity; vulnerability decisions and existing review deadlines are retained.
 
-README and Compose install examples continue to use the actually published
-numeric tag `v1.6.517` until the official `v1.6.518` image and release have been
-published and verified. Candidate preparation is separate from that install
-contract. Existing volumes, environment overrides and prior rollback evidence
-must be preserved; see [the upgrade guide](../upgrades/README.md).
+README and Compose install examples use the actually published numeric tag
+`v1.6.518`, without a digest or descriptive suffix. Immutable identities remain
+in release/compatibility records. Existing volumes, environment overrides and
+prior rollback evidence must be preserved; see [the upgrade guide](../upgrades/README.md).

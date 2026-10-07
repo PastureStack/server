@@ -11,7 +11,7 @@ profile; measure the real workload before increasing it further.
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.517
+    image: ghcr.io/pasturestack/server:v1.6.518
     restart: unless-stopped
     ports:
       - "8080:8080"
