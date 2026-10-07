@@ -11,17 +11,17 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server v1.6.517](https://github.com/PastureStack/server/releases/tag/v1.6.517)
-includes Web Console `1.6.179` and Orchestration Engine `v0.183.333`.
+[Server v1.6.518](https://github.com/PastureStack/server/releases/tag/v1.6.518)
+includes Web Console `1.6.180` and Orchestration Engine `v0.183.333`.
 The console supports OIDC, TOTP and passkeys, role-aware resource operations,
 container resource/hardware settings, and movable terminal/log windows.
 Hardware options require compatible node software and actual host capabilities;
 GPU device access is not exclusive GPU allocation.
 
-The current patch packages reviewed dependency updates and the official
-shell-quote security fix in both npm and the browser bundle. Authentication,
-authorization, API and firewall contracts are unchanged. See the
-[release note](docs/releases/server-1.6.517.md) for component identities,
+The current release packages Metadata-driven CNI configuration migration fixes
+and all-retained-time audit queries and exports. Authentication and
+authorization contracts are retained. See the
+[release note](docs/releases/server-1.6.518.md) for component identities,
 verification results, and known limits. A published image is not a claim that
 every resource/role/hardware combination has been tested.
 
@@ -35,7 +35,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.517
+  ghcr.io/pasturestack/server:v1.6.518
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -43,7 +43,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.517
+    image: ghcr.io/pasturestack/server:v1.6.518
     restart: unless-stopped
     ports:
       - "8080:8080"

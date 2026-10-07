@@ -1,6 +1,13 @@
 # Compatibility Contract
 
-## Server v1.6.518 candidate
+## Server v1.6.518 published
+
+Immutable image:
+`ghcr.io/pasturestack/server:v1.6.518@sha256:4040180d74574b1e72710decb09874d29a32e45808658156753700b548c8647e`,
+from signed source `7607f4d4cd64b3c99b8ed9faa809109ad49cf893` and successful
+[publication run 37566647090](https://github.com/PastureStack/server/actions/runs/37566647090).
+Public asset checksums, SBOM identity, the single runtime layer and fixed
+FreeType `2.14.2+dfsg-1ubuntu0.2` were independently read back.
 
 Pins published Catalog `v0.3.13` source
 `b6b658888fce50d3ec217eb4eba0f26ab0113baf`, Network Services revision `10` / template `v0.3.8`,
@@ -16,15 +23,14 @@ Web Console `1.6.180` and the audit broker support explicit `timeScope=all`
 for query/export without the implicit 24-hour range. Explicit dates still use
 the existing half-open interval and 366-day maximum; authorization, environment
 filters, 20,000-row scan cap, 10,000-row export cap and DB retention remain.
-The pinned Web and Catalog releases are published; Server publication and
-real-host managed-upgrade/audit acceptance remain pending. Engine `v0.183.333`, Catalog Service `0.20.12`,
+Publication and scoped isolated-QA deployment/read-only checks passed; this is
+not full functional-matrix acceptance. Engine `v0.183.333`, Catalog Service `0.20.12`,
 Authentication Service `0.4.42`, HAProxy, OIDC, four build stages and the single
 final runtime layer flow remain.
 VEX decisions, vendor-pending findings and review deadlines are not reset.
-README/Compose install examples remain on published numeric tag `v1.6.517`
-until the official `v1.6.518` image and release are verified. No infrastructure
-upgrade or historical HOLD is promoted to PASS by this source candidate.
-See [the candidate release note](docs/releases/server-1.6.518.md).
+README/Compose install examples use published numeric tag `v1.6.518`; digest
+identities stay in release records. Historical HOLDs and incomplete coverage
+are not promoted to PASS. See [the release note](docs/releases/server-1.6.518.md).
 
 ## Server v1.6.517 published
 
