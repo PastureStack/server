@@ -322,13 +322,14 @@ PY
 check_server497_published_docs
 
 # Install examples must follow the highest actually published numeric release;
-# README's current link and quick start must agree with versioned publication evidence.
+# Install commands use numeric tags; digest identity stays in publication evidence.
 python3 - <<'PY'
 import pathlib
 import re
 
 readme = pathlib.Path('README.md').read_text(encoding='utf-8')
-image_pattern = r'ghcr\.io/pasturestack/server:v[0-9]+\.[0-9]+\.[0-9]+@sha256:[0-9a-f]{64}'
+install_pattern = r'ghcr\.io/pasturestack/server:v[0-9]+\.[0-9]+\.[0-9]+'
+image_pattern = install_pattern + r'@sha256:[0-9a-f]{64}'
 reference_pattern = r'''ghcr\.io/pasturestack/server:[^\s`"'<>()\[\]{},;]+'''
 current = re.search(r'(?ms)^## Current release\n(.*?)(?=^## |\Z)', readme)
 tags = re.findall(r'https://github\.com/PastureStack/server/releases/tag/(v[0-9]+\.[0-9]+\.[0-9]+)(?=[)\s])', current[1] if current else '')
@@ -337,12 +338,16 @@ if len(tags) != 1:
 tag = tags[0]
 quick = re.search(r'(?ms)^## Quick start\n(.*?)(?=^## |\Z)', readme)
 references = re.findall(r'ghcr\.io/pasturestack/server:[^\s`"<>]+', quick[1] if quick else '')
-if len(references) != 2 or references[0] != references[1] or not re.fullmatch(image_pattern, references[0]):
+if len(references) != 2 or references[0] != references[1] or not re.fullmatch(install_pattern, references[0]):
     raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
 image = references[0]
 notes_path = 'docs/releases/server-' + tag[1:] + '.md'
-if image.split('@')[0] != 'ghcr.io/pasturestack/server:' + tag or '(' + notes_path + ')' not in current[1]:
+if image != 'ghcr.io/pasturestack/server:' + tag or '(' + notes_path + ')' not in current[1]:
     raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
+performance = pathlib.Path('docs/performance/README.md').read_text(encoding='utf-8')
+performance_references = re.findall(r'ghcr\.io/pasturestack/server:[^\s`"<>]+', performance)
+if performance_references != [image]:
+    raise SystemExit('SERVER_LATEST_PUBLISHED_PERFORMANCE_MISMATCH')
 notes = pathlib.Path(notes_path).read_text(encoding='utf-8')
 compat = pathlib.Path('COMPATIBILITY.md').read_text(encoding='utf-8')
 published = [reference for reference in re.findall(reference_pattern, compat)
@@ -353,10 +358,15 @@ latest_tag = max((reference.split('@')[0].rsplit(':', 1)[1] for reference in pub
                  key=lambda value: tuple(map(int, value[1:].split('.'))))
 if tag != latest_tag or not re.search(r'(?m)^# Server ' + re.escape(tag) + r'[ \t]*$', notes):
     raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
+publication_identity = None
 for text in (notes, compat):
     identities = [reference for reference in re.findall(reference_pattern, text)
                   if reference.startswith('ghcr.io/pasturestack/server:' + tag + '@')]
-    if not identities or any(reference != image for reference in identities):
+    if not identities or any(not re.fullmatch(image_pattern, reference) for reference in identities):
+        raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
+    if publication_identity is None:
+        publication_identity = identities[0]
+    if any(reference != publication_identity for reference in identities):
         raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
 print('SERVER_LATEST_PUBLISHED_QUICK_START_OK release=' + tag)
 PY
@@ -1306,7 +1316,7 @@ done
 for current_readme_marker in \
     '## Current release' \
     '## Quick start' \
-    'Pin the immutable image' \
+    'Use the published numeric' \
     'keep all three named volumes' \
     '[performance settings](docs/performance/README.md)' \
     '## Upgrade and rollback' \
@@ -1344,9 +1354,7 @@ require_marker docs/README.md \
 require_marker docs/hosts/README.md \
     'PastureStack Server `v1.6.483` recognizes' \
     SERVER_CURRENT_HOST_DOC_MISSING
-require_marker docs/performance/README.md \
-    'image: ghcr.io/pasturestack/server:v1.6.483' \
-    SERVER_CURRENT_PERFORMANCE_DOC_MISSING
+# The performance install image is checked against the latest published tag above.
 for current_compatibility_marker in \
     'Server `v1.6.483` packages Web Console `1.6.149`.' \
     'only `description` is submitted on save' \

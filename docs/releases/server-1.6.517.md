@@ -22,10 +22,11 @@ The existing generation/mutex and session-bound logout protection is retained.
 Orchestration Engine `v0.183.333`, Catalog Service `0.20.12`, the other component
 pins, four build stages and the single final runtime layer remain unchanged.
 
-The publication gate now checks the concise README's current release and exact
-immutable install reference against versioned release/compatibility records.
-Historical evidence remains in those records instead of being duplicated in
-the README. Stale tags, digest mismatches and suffixes are still rejected.
+The publication gate checks the README's current release and numeric install
+tag against versioned publication records. README and performance Compose
+examples use the same numeric tag without a digest or descriptive suffix.
+SHA-256 identities remain in release/compatibility records for verification.
+Stale install tags and mismatched publication identities are still rejected.
 
 ## Verification
 
@@ -79,10 +80,24 @@ The company production site, proxy, OIDC settings and host firewall were not
 modified. This dependency/release verification does not rerun or complete the
 historical full role/resource/hardware matrix.
 
+Focused v1/v2-beta API checks subsequently passed for stacks (36 cells), secrets
+(36), environments (42), and personal API keys (72), using six existing roles
+and both Authentik and platform TOTP. Each stage includes applicable writes,
+readback, denied-write preservation and exact fixture cleanup. Schema/capability
+not-applicable cells are distinct from authorization passes. Personal API-key
+management does not grant environment-write permission. These scoped results
+do not complete the historical matrix or untested hardware coverage.
+
+Webhook-driven service-upgrade acceptance remains incomplete: after a successful
+stack create, the browser harness completion wait timed out before service or
+webhook creation. The test stack was removed through the normal API. This is
+neither a passing upgrade nor proof of a product runtime failure. KVM testing
+is deferred; physical GPU coverage remains untested.
+
 ## Upgrade and rollback
 
 No migration or runtime patch is required. Preserve existing environment
 variables, volume names, restart policy, AppArmor, HTTPS origin, OIDC settings
 and host firewall/backend selection. Retain the prior image and database/volume
-backups; see [the upgrade guide](../upgrades/README.md). The install README pins
-the verified published image above; existing named volumes must be retained.
+backups; see [the upgrade guide](../upgrades/README.md). The install README uses
+the published numeric version tag; existing named volumes must be retained.

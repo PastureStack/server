@@ -1,5 +1,26 @@
 # Upgrade and persisted-coordinate migration
 
+## Catalog infrastructure-stack upgrades
+
+An available update is a Catalog candidate, not an upgrade already in progress.
+Manual Catalog upgrades use two phases:
+
+1. Choose the candidate and submit **Upgrade**. Wait for the stack and its
+   services to reach `upgraded` with no transition error.
+2. Verify the replacement containers and the plugin's readiness/network
+   behavior. **Upgraded: Finish Upgrade** means confirmation is pending;
+   stopped previous containers are retained for rollback and may be included
+   in the displayed container count.
+3. Choose **Finish Upgrade** to commit, or **Rollback** to restore the previous
+   configuration. Finishing consumes that rollback point. Wait for `active`
+   and verify that the superseded container IDs have been removed.
+
+Do not remove retained containers manually or disable the confirmation step
+to make a status badge disappear. Catalog template versions and component
+image versions are separate; a template-only upgrade may keep the same image.
+
+## Persisted runtime coordinates
+
 A new container image does not automatically replace values already stored in
 an existing control-plane database. Older installations can therefore continue
 to request a private registry, a temporary HTTP server, or an obsolete Catalog
