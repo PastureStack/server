@@ -538,10 +538,10 @@ require_marker "$release_dockerfile" \
     'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.181.tar.gz' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=498d0ab74cf2f83d54020cbeec33350d81f082bde2dff63b7c4419e3a07082f5' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=6bc983093b3af4905d31e9a55be2cc73dfe5da915aba3e4d33f0f2df8251a6cf' \
     SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=c56afed1cb9cba99393815ec966c7719760c8d1e' \
+    'ARG WEB_CONSOLE_COMMIT=cf3d8b654e5ad8cd003ae10e62c57a3c14d79f95' \
     SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING
 require_marker "$release_dockerfile" \
     "grep -aF 'hostsPage.permissionDenied'" \
@@ -550,7 +550,7 @@ require_marker "$release_dockerfile" \
     '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ZH_TW_PERMISSION_MESSAGE_MISSING
 require_marker "$build_script" \
-    'web_console_commit=${WEB_CONSOLE_COMMIT:-c56afed1cb9cba99393815ec966c7719760c8d1e}' \
+    'web_console_commit=${WEB_CONSOLE_COMMIT:-cf3d8b654e5ad8cd003ae10e62c57a3c14d79f95}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING
 require_marker "$build_script" \
     'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.181}' \
@@ -559,7 +559,7 @@ require_marker "$build_script" \
     'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.181.tar.gz}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING
 require_marker "$build_script" \
-    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-498d0ab74cf2f83d54020cbeec33350d81f082bde2dff63b7c4419e3a07082f5}' \
+    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-6bc983093b3af4905d31e9a55be2cc73dfe5da915aba3e4d33f0f2df8251a6cf}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING
 require_marker "$release_dockerfile" \
     'ARG CATALOG_SERVICE_VERSION=0.20.12' \

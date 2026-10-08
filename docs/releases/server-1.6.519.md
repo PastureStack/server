@@ -40,11 +40,16 @@ delegation boundary.
 | Component | Clean source commit | Archive SHA-256 |
 | --- | --- | --- |
 | Engine `v0.183.334` (`cattle.jar`) | `863aed1f35e7a85d3686d5829d54dfe5c2c2f084` | `60b7ca446421f366882136a2bb276e508aa400d2961854b77d9a4574ee4dabfc` |
-| Web Console `1.6.181` | `c56afed1cb9cba99393815ec966c7719760c8d1e` | `498d0ab74cf2f83d54020cbeec33350d81f082bde2dff63b7c4419e3a07082f5` |
+| Web Console `1.6.181` | `cf3d8b654e5ad8cd003ae10e62c57a3c14d79f95` | `6bc983093b3af4905d31e9a55be2cc73dfe5da915aba3e4d33f0f2df8251a6cf` |
 | Websocket Proxy `0.23.15` | `97ad2a48658841709924efc21af93b82c825c800` | `3e9dabbfd466ccaa4427ed9cf02b2fb3793436f4d27a120dd7e2d73d9ba56bfc` |
 | Host API `0.38.5` | `94ae7b598c67431ceaa8ee471c0f5b83e535d25c` | `9b414d1f7e803184698c5f20bd438a75713dde7f115aac385c1f898466d2b68c` |
 | Linux Node Agent `0.13.28` | `4b20764cacc9496e810fe1b6687923a4bcc901b8` | `4a9f26a0ac9d0a53a6a7b0bb1dbde72b6a642e7474a19959ad87f81e46a85396` |
 | vSphere CLI Bundle `0.55.3` | `5b1f9c91cdf2b5217b8d5019bbfb18bbc3e3294e` | `94553db031d141bf115594effae7ef0c28214e091d018db684467ee56f0c5120` |
+
+Web Console's official archive is packed from the listed clean source,
+including its test-fixture correction. All 123 packaged files, including
+88 assets, are byte-identical to the previously tested production bundle;
+this is a provenance-only repack, not a new runtime build.
 
 Host package root: `94ae7b598c67431ceaa8ee471c0f5b83`.
 Host binary SHA-256: `8a197dc440361febb750b7a181195a19b09f674d8cfd8bc69eae6b9f168616c1`.
