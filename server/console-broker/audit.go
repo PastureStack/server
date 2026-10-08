@@ -29,6 +29,15 @@ type auditQuery struct {
 	From                time.Time
 	To                  time.Time
 	AllTime             bool
+	KeyID               string
+	KeyOwnerAccountID   string
+	ViewerAccountID     string
+	Decision            string
+	Outcome             string
+	HTTPStatus          string
+	Operation           string
+	TargetType          string
+	RequestID           string
 	EnvironmentID       string
 	UserID              string
 	EventType           string
@@ -199,6 +208,12 @@ func parseAuditQuery(values url.Values, now time.Time) (auditQuery, error) {
 	query.Channel = strings.ToLower(cleanAuditValue(values.Get("interactionChannel"), 64))
 	query.EventType, query.EventTypeOperator = parseTextAuditFilter(values, "eventType")
 	query.Description, query.DescriptionOperator = parseTextAuditFilter(values, "description")
+	query.Decision = cleanAuditValue(values.Get("decision"), 32)
+	query.Outcome = cleanAuditValue(values.Get("outcome"), 32)
+	query.HTTPStatus = cleanAuditValue(values.Get("httpStatus"), 8)
+	query.Operation = cleanAuditValue(values.Get("operation"), 64)
+	query.TargetType = cleanAuditValue(values.Get("targetType"), 160)
+	query.RequestID = cleanAuditValue(values.Get("requestId"), 512)
 
 	if query.Channel != "" {
 		if !validAuditChannel(query.Channel) {
@@ -257,6 +272,11 @@ func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, quer
 		}
 		allowedProjects[id] = firstNonEmpty(auditString(project, "displayName"), auditString(project, "name"))
 	}
+	if query.KeyID != "" && query.KeyOwnerAccountID != query.ViewerAccountID {
+		if _, allowed := allowedProjects[query.KeyOwnerAccountID]; !allowed {
+			return auditResult{}, &auditHTTPError{Status: http.StatusForbidden, Code: "key_audit_access_lost", Message: "You no longer have access to this API key or its environment"}
+		}
+	}
 	if query.EnvironmentID != "" {
 		if _, allowed := allowedProjects[query.EnvironmentID]; !allowed {
 			return auditResult{}, &auditHTTPError{Status: http.StatusForbidden, Code: "environment_denied", Message: "The requested environment is not available to this user"}
@@ -300,9 +320,15 @@ func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, quer
 
 	scoped := make([]map[string]any, 0, len(records))
 	for _, record := range records {
+		if query.KeyID != "" && keyAuditMetadataString(record, "keyId") != query.KeyID {
+			continue
+		}
 		projectID := auditString(record, "accountId")
 		if _, allowed := allowedProjects[projectID]; !allowed {
-			continue
+			// Personal-account events are visible only to that key's owner.
+			if query.KeyID == "" || query.KeyOwnerAccountID != query.ViewerAccountID || projectID != query.ViewerAccountID {
+				continue
+			}
 		}
 		created, ok := auditTimestamp(record)
 		if !ok || (!query.AllTime && (created.Before(query.From) || !created.Before(query.To))) {
@@ -313,6 +339,9 @@ func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, quer
 		}
 
 		copyRecord := cloneAuditRecord(record)
+		if query.KeyID != "" {
+			copyRecord = safeKeyAuditRecord(record)
+		}
 		copyRecord["environmentDisplayName"] = allowedProjects[projectID]
 		actorID := auditString(record, "authenticatedAsAccountId")
 		copyRecord["actorDisplayName"] = firstNonEmpty(
@@ -429,6 +458,14 @@ func copyAuditAuthHeaders(target, source http.Header) {
 }
 
 func auditRecordMatches(record map[string]any, query auditQuery) bool {
+	for field, expected := range map[string]string{
+		"decision": query.Decision, "outcome": query.Outcome, "httpStatus": query.HTTPStatus,
+		"operation": query.Operation, "targetType": query.TargetType, "requestId": query.RequestID,
+	} {
+		if expected != "" && auditString(record, field) != expected {
+			return false
+		}
+	}
 	if query.UserID != "" && auditString(record, "authenticatedAsAccountId") != query.UserID {
 		return false
 	}

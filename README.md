@@ -18,9 +18,9 @@ container resource/hardware settings, and movable terminal/log windows.
 Hardware options require compatible node software and actual host capabilities;
 GPU device access is not exclusive GPU allocation.
 
-The current release packages Metadata-driven CNI configuration migration fixes
-and all-retained-time audit queries and exports. Authentication and
-authorization contracts are retained. See the
+Audit queries and exports cover all retained records, with environment-aware
+access and bounded pagination. Authentication and authorization contracts are
+retained. See the
 [release note](docs/releases/server-1.6.518.md) for component identities,
 verification results, and known limits. A published image is not a claim that
 every resource/role/hardware combination has been tested.
@@ -96,6 +96,14 @@ bash scripts/check-server-source-gates.sh
 Runtime, database migration, registration, backup/restore, and upgrade validation
 use isolated hosts. Publication is a separate, manually dispatched workflow.
 See [ORIGIN.md](ORIGIN.md) and [SECURITY.md](SECURITY.md).
+
+The component candidate build uses the same release Dockerfile and verification
+gates. `server/build-component-candidate.sh` requires actual component commits
+and SHA-256 values; it does not publish or deploy. Set
+`PASTURESTACK_COMPONENT_ARTIFACT_DIR` to an isolated directory with the five
+component assets for an unpublished candidate. Without it, the same hashes
+verify the versioned HTTPS release assets. The current published release remains
+`v1.6.518` until a candidate is verified and separately released.
 
 ## Language and licensing
 
