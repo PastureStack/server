@@ -13,17 +13,18 @@ import (
 )
 
 type keyAuditFixture struct {
-	mu                sync.Mutex
-	owner             string
-	keyStatus         int
-	restricted        bool
-	viewer            string
-	projects          []map[string]any
-	records           []map[string]any
-	auditQueries      []url.Values
-	accountScoped     bool
-	deniedProject     string
-	projectPagination bool
+	mu                   sync.Mutex
+	owner                string
+	keyStatus            int
+	restricted           bool
+	viewer               string
+	projects             []map[string]any
+	records              []map[string]any
+	auditQueries         []url.Values
+	accountScoped        bool
+	deniedProject        string
+	projectPagination    bool
+	projectAuthorityNext bool
 }
 
 func newKeyAuditFixture(t *testing.T) (*keyAuditFixture, *httptest.Server) {
@@ -57,7 +58,11 @@ func newKeyAuditFixture(t *testing.T) (*keyAuditFixture, *httptest.Server) {
 			writer.WriteHeader(fixture.keyStatus)
 			_ = json.NewEncoder(writer).Encode(map[string]any{"type": kind, "id": "1a99", "accountId": fixture.owner, "secretValue": "never-return-key-secret"})
 		case "/v2-beta/projects":
-			writeFixtureCollection(writer, fixture.projects, "")
+			next := ""
+			if fixture.projectAuthorityNext {
+				next = upstream.server.URL + "/v2-beta/projects?marker=more"
+			}
+			writeFixtureCollection(writer, fixture.projects, next)
 		case "/v2-beta/accounts":
 			writeFixtureCollection(writer, []map[string]any{{"type": "account", "id": "1a1", "name": "Owner"}}, "")
 		case "/v2-beta/auditlogs":
@@ -251,6 +256,20 @@ func TestKeyAuditCombinedProjectScanBoundCannotBeBypassed(t *testing.T) {
 	body, _ := io.ReadAll(response.Body)
 	if response.StatusCode != http.StatusUnprocessableEntity || !strings.Contains(string(body), "result_set_too_large") {
 		t.Fatalf("combined contexts exceeded global scan bound: %d", response.StatusCode)
+	}
+}
+
+func TestKeyAuditIncompleteLiveProjectAuthorityNeverReturnsPartialCounts(t *testing.T) {
+	fixture, server := newKeyAuditFixture(t)
+	fixture.projectAuthorityNext = true
+	response := performAuditRequest(t, server, keyAuditQueryPath+"?keyId=1a99&timeScope=all")
+	defer response.Body.Close()
+	body, _ := io.ReadAll(response.Body)
+	if response.StatusCode != http.StatusUnprocessableEntity || !strings.Contains(string(body), "result_set_too_large") {
+		t.Fatalf("partial project authority claimed complete Key audit results: %d", response.StatusCode)
+	}
+	if len(fixture.auditQueries) != 0 {
+		t.Fatal("partial authority was used for an audit scan")
 	}
 }
 

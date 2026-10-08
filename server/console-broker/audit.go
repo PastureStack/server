@@ -254,12 +254,16 @@ func cleanAuditValue(value string, maximum int) string {
 }
 
 func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, query auditQuery) (auditResult, error) {
-	projects, err := b.fetchAuditCollection(ctx, incoming, "/v2-beta/projects", url.Values{
+	projectPage, err := b.fetchAuditPage(ctx, incoming, "/v2-beta/projects", url.Values{
 		"all": {"true"}, "limit": {"1000"},
 	})
 	if err != nil {
 		return auditResult{}, err
 	}
+	if query.KeyID != "" && auditMapString(projectPage.Pagination, "next") != "" {
+		return auditResult{}, &auditHTTPError{Status: http.StatusUnprocessableEntity, Code: "result_set_too_large", Message: "Narrow the visible environment scope before continuing; current permissions cannot be completely verified within this bounded query"}
+	}
+	projects := projectPage.Data
 
 	allowedProjects := make(map[string]string)
 	for _, project := range projects {

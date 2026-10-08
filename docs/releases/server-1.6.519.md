@@ -10,6 +10,9 @@ as full keys, intersected with the owner's live role and environment access.
 Operation decisions and actual request/process outcomes are durably audited
 without credential secrets or request payloads. Key-scoped audit queries
 recheck the viewer's current authorization before filtering and pagination.
+The Key query uses the viewer's personal context and Engine-proven live project
+contexts, then deduplicates and scopes events within a shared scan bound.
+An incomplete live project-authority page is rejected without partial results.
 Delegated terminal/log access rechecks current authorization; terminal outcomes
 are accepted only from the authenticated host's agent, with durable deduplication.
 An API Key stream cannot start against a backend without the verified audit
@@ -39,17 +42,19 @@ delegation boundary.
 
 | Component | Clean source commit | Archive SHA-256 |
 | --- | --- | --- |
-| Engine `v0.183.334` (`cattle.jar`) | `863aed1f35e7a85d3686d5829d54dfe5c2c2f084` | `60b7ca446421f366882136a2bb276e508aa400d2961854b77d9a4574ee4dabfc` |
-| Web Console `1.6.181` | `cf3d8b654e5ad8cd003ae10e62c57a3c14d79f95` | `6bc983093b3af4905d31e9a55be2cc73dfe5da915aba3e4d33f0f2df8251a6cf` |
+| Engine `v0.183.334` (`cattle.jar`) | `7e1cfcfe6467e0c901ca206d3daa5db0a6a601d0` | `2dabbe9b2cd1450826116898e49d9b7df4fd4836d9ca613b355f29cf9e4a14b7` |
+| Web Console `1.6.181` | `c3536a0560cdc1b286b275c39fb1cd04a14ed9b0` | `6b22e2291b0d4c1d19061e65eb84a84d5f8ae2c22b1eb5b6b1d24b1f3a46d08b` |
 | Websocket Proxy `0.23.15` | `97ad2a48658841709924efc21af93b82c825c800` | `3e9dabbfd466ccaa4427ed9cf02b2fb3793436f4d27a120dd7e2d73d9ba56bfc` |
 | Host API `0.38.5` | `94ae7b598c67431ceaa8ee471c0f5b83e535d25c` | `9b414d1f7e803184698c5f20bd438a75713dde7f115aac385c1f898466d2b68c` |
 | Linux Node Agent `0.13.28` | `4b20764cacc9496e810fe1b6687923a4bcc901b8` | `4a9f26a0ac9d0a53a6a7b0bb1dbde72b6a642e7474a19959ad87f81e46a85396` |
 | vSphere CLI Bundle `0.55.3` | `5b1f9c91cdf2b5217b8d5019bbfb18bbc3e3294e` | `94553db031d141bf115594effae7ef0c28214e091d018db684467ee56f0c5120` |
 
-Web Console's official archive is packed from the listed clean source,
-including its test-fixture correction. All 123 packaged files, including
-88 assets, are byte-identical to the previously tested production bundle;
-this is a provenance-only repack, not a new runtime build.
+Web Console is built and officially packed from the listed source. Its custom
+scope editor uses stable rule identity and defers capability publication until
+after rendering. Source/render regression tests are distinct from the required
+native browser acceptance of this new production bundle.
+The final package changes only the two generated range-limit translations
+relative to the rendered build; business JavaScript bytes are unchanged.
 
 Host package root: `94ae7b598c67431ceaa8ee471c0f5b83`.
 Host binary SHA-256: `8a197dc440361febb750b7a181195a19b09f674d8cfd8bc69eae6b9f168616c1`.
