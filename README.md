@@ -78,6 +78,11 @@ by default and requires explicit apply/rollback. Keep the previous image and
 backup: after a database migration, rollback may require restoring matching data,
 not merely selecting an older image tag.
 
+After using API Key policy or expiry, do not downgrade directly to a
+policy-unaware Engine: an older version can treat a restricted or expired Key
+as full access. Follow the [API Key rollback safety guide](docs/upgrades/api-key-policy-rollback.md)
+before any downgrade or database restore.
+
 [GitHub Releases](https://github.com/PastureStack/server/releases) contain
 versioned assets, SHA-256 checksums, and release records. Built-in templates come
 from pinned [`catalog-templates`](https://github.com/PastureStack/catalog-templates)

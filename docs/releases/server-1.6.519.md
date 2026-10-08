@@ -55,6 +55,18 @@ symlinks and checksum failures stop the build.
 
 ## Verification boundary
 
+### Rollback safety
+
+Direct image-only downgrade to Server `1.6.518` or another policy-unaware Engine
+is unsupported. Such versions can interpret custom, closed or expired API Keys
+as full access. Recover to a compatible version, or disable the external API
+while revoking affected Keys and preserving revocation tombstones. Restoring a
+database must not resurrect credentials revoked, narrowed or expired since the
+backup. See the [API Key rollback safety guide](../upgrades/api-key-policy-rollback.md)
+for the required recovery boundary.
+
+### Artifact evidence
+
 Source/recipe tests, exact producer package checks and Engine component tests
 are distinct from the assembled Server image's startup, restart, feature/API
 matrix and merged-runtime vulnerability scan. Publication requires those
