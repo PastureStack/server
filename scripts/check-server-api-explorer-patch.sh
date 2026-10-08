@@ -538,10 +538,10 @@ require_marker "$release_dockerfile" \
     'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.181.tar.gz' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=c252224d9ebd17ff1b6279f261e9617df9bc3b35340a848e54aefca7d257e3cd' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=498d0ab74cf2f83d54020cbeec33350d81f082bde2dff63b7c4419e3a07082f5' \
     SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=4a79536b26692354f5a08153b88207740ec1fafa' \
+    'ARG WEB_CONSOLE_COMMIT=c56afed1cb9cba99393815ec966c7719760c8d1e' \
     SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING
 require_marker "$release_dockerfile" \
     "grep -aF 'hostsPage.permissionDenied'" \
@@ -550,7 +550,7 @@ require_marker "$release_dockerfile" \
     '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ZH_TW_PERMISSION_MESSAGE_MISSING
 require_marker "$build_script" \
-    'web_console_commit=${WEB_CONSOLE_COMMIT:-4a79536b26692354f5a08153b88207740ec1fafa}' \
+    'web_console_commit=${WEB_CONSOLE_COMMIT:-c56afed1cb9cba99393815ec966c7719760c8d1e}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING
 require_marker "$build_script" \
     'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.181}' \
@@ -559,7 +559,7 @@ require_marker "$build_script" \
     'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.181.tar.gz}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING
 require_marker "$build_script" \
-    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-c252224d9ebd17ff1b6279f261e9617df9bc3b35340a848e54aefca7d257e3cd}' \
+    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-498d0ab74cf2f83d54020cbeec33350d81f082bde2dff63b7c4419e3a07082f5}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING
 require_marker "$release_dockerfile" \
     'ARG CATALOG_SERVICE_VERSION=0.20.12' \
@@ -697,14 +697,23 @@ if grep -Eq 'dacf7353a1e72e933ac883c3e4c5521e12bb9017706475a7d94f2803c5b5b216|23
 fi
 for release_proxy_marker in \
     'ARG WEBSOCKET_PROXY_VERSION=0.23.15' \
-    'ARG WEBSOCKET_PROXY_COMMIT=2ec921200724341af6bf1c9402aac6b10a37f19f' \
-    'ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=f7046347c1e8ae20b18ed068860773ff810a5180b6b9b191a8eba6fbc215670b' \
-    'ARG WEBSOCKET_PROXY_BINARY_SHA256=796241c34a0de6542c93d203b73bf6f6be397643c5b54ee9eae46cd23e445c67' \
+    'ARG WEBSOCKET_PROXY_COMMIT=97ad2a48658841709924efc21af93b82c825c800' \
+    'ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=3e9dabbfd466ccaa4427ed9cf02b2fb3793436f4d27a120dd7e2d73d9ba56bfc' \
+    'ARG WEBSOCKET_PROXY_BINARY_SHA256=686fa62702315348e8698fa11e9647b423ab5c4331ff8236260726ef1c275b16' \
     'tar --no-same-owner --no-same-permissions -xJf "${websocket_archive}"' \
     'COPY --from=release_artifacts --chmod=0755 /out/websocket-proxy/websocket-proxy /usr/bin/websocket-proxy.real' \
     '/usr/bin/websocket-proxy.real --help 2>&1 | grep -F -- '\''-platform-public-origin'\'''; do
     require_marker "$release_dockerfile" "$release_proxy_marker" \
         SERVER_INCREMENTAL_WEBSOCKET_PROXY_REPLACEMENT_MISSING
+done
+for release_proxy_build_marker in \
+    'websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-97ad2a48658841709924efc21af93b82c825c800}' \
+    'websocket_proxy_archive_sha256=${WEBSOCKET_PROXY_ARCHIVE_SHA256:-3e9dabbfd466ccaa4427ed9cf02b2fb3793436f4d27a120dd7e2d73d9ba56bfc}' \
+    'websocket_proxy_binary_sha256=${WEBSOCKET_PROXY_BINARY_SHA256:-686fa62702315348e8698fa11e9647b423ab5c4331ff8236260726ef1c275b16}' \
+    'PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256="${websocket_proxy_binary_sha256}"' \
+    'echo "${PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256}  /usr/bin/websocket-proxy.real" | sha256sum -c -'; do
+    require_marker "$build_script" "$release_proxy_build_marker" \
+        SERVER_INCREMENTAL_WEBSOCKET_PROXY_RUNTIME_IDENTITY_MISSING
 done
 for release_webhook_marker in \
     'ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.3' \
@@ -882,8 +891,8 @@ require_marker "$build_script" \
 for release_engine_marker in \
     'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.334' \
     'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=00dd728c906a2fb20bcec44f2f5bd111516aeebf3d3b24d7e639f51c9879b19b' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=f3d6a7f5fe464047b9d3de72cd5f628bf2e95878' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=af91a285c434dd5408d1e05b0d923ac0a7d0066fea07fc6952fa1c6c3ec7cd30' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=ad733b8425f31b7135150bd905dae572ea648484' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
     'ARG ORCHESTRATION_ENGINE_VERSION=0.183.334' \
     'grep -Fx "Implementation-Version: ${ORCHESTRATION_ENGINE_VERSION}"' \
@@ -908,8 +917,8 @@ done
 for release_engine_build_marker in \
     'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.334}' \
     'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}' \
-    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-00dd728c906a2fb20bcec44f2f5bd111516aeebf3d3b24d7e639f51c9879b19b}' \
-    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-f3d6a7f5fe464047b9d3de72cd5f628bf2e95878}' \
+    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-af91a285c434dd5408d1e05b0d923ac0a7d0066fea07fc6952fa1c6c3ec7cd30}' \
+    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-ad733b8425f31b7135150bd905dae572ea648484}' \
     'CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.5.jar"'; do

@@ -17,11 +17,11 @@ FILES = {name: (REPO / name).read_text(encoding='utf-8') for name in (DOCKER, BU
 PUBLISHED_508 = 'Server `v1.6.508` 已正式發布，封裝 Web Console `1.6.171`。'
 STALE_508_CANDIDATE = 'Server `v1.6.508` candidate packages Web Console `1.6.171`'
 COMPATIBILITY_CODE = 'SERVER_CREATE_RESPONSE_ORDER_COMPATIBILITY_MISSING'
-WEB_SHA = 'c252224d9ebd17ff1b6279f261e9617df9bc3b35340a848e54aefca7d257e3cd'
-WEB_SOURCE = '4a79536b26692354f5a08153b88207740ec1fafa'
+WEB_SHA = '498d0ab74cf2f83d54020cbeec33350d81f082bde2dff63b7c4419e3a07082f5'
+WEB_SOURCE = 'c56afed1cb9cba99393815ec966c7719760c8d1e'
 CATALOG_COMMIT = 'b6b658888fce50d3ec217eb4eba0f26ab0113baf'
-ENGINE_SHA = '00dd728c906a2fb20bcec44f2f5bd111516aeebf3d3b24d7e639f51c9879b19b'
-ENGINE_SOURCE = 'f3d6a7f5fe464047b9d3de72cd5f628bf2e95878'
+ENGINE_SHA = 'af91a285c434dd5408d1e05b0d923ac0a7d0066fea07fc6952fa1c6c3ec7cd30'
+ENGINE_SOURCE = 'ad733b8425f31b7135150bd905dae572ea648484'
 OLD_COORDINATES = {
     'v1.6.519': 'v1.6.518',
     '1.6.181': '1.6.180',
@@ -473,6 +473,27 @@ class Tests(unittest.TestCase):
             self.assertIn(marker, GATE)
             self.assertIn(marker, previous_gate())
         self.assertNotRegex(GATE, r"require_marker README\.md '## v[0-9]")
+
+    def test_proxy_binary_readback_uses_the_verified_component_parameter(self):
+        for field, value in (
+            ('COMMIT', '97ad2a48658841709924efc21af93b82c825c800'),
+            ('ARCHIVE_SHA256', '3e9dabbfd466ccaa4427ed9cf02b2fb3793436f4d27a120dd7e2d73d9ba56bfc'),
+            ('BINARY_SHA256', '686fa62702315348e8698fa11e9647b423ab5c4331ff8236260726ef1c275b16'),
+        ):
+            docker_marker = 'ARG WEBSOCKET_PROXY_' + field + '=' + value
+            build_marker = 'websocket_proxy_' + field.lower() + '=${WEBSOCKET_PROXY_' + field + ':-' + value + '}'
+            self.assertEqual(2, FILES[DOCKER].count(docker_marker))
+            self.assertIn(build_marker, FILES[BUILD])
+            self.assertIn(docker_marker, GATE)
+            self.assertIn(build_marker, GATE)
+        markers = (
+            'PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256="${websocket_proxy_binary_sha256}"',
+            'echo "${PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256}  /usr/bin/websocket-proxy.real" | sha256sum -c -',
+        )
+        for marker in markers:
+            self.assertIn(marker, FILES[BUILD])
+            self.assertIn(marker, GATE)
+        self.assertNotRegex(FILES[BUILD], r'(?m)^[0-9a-f]{64}  /usr/bin/websocket-proxy[.]real$')
 
     def test_current_readme_keeps_install_and_upgrade_contract(self):
         block = GATE.split('for current_readme_marker in ', 1)[1].split('; do', 1)[0]

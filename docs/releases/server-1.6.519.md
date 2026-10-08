@@ -15,6 +15,9 @@ are accepted only from the authenticated host's agent, with durable deduplicatio
 An API Key stream cannot start against a backend without the verified audit
 capability. That blocked handshake is recorded as `FAILED`, phase `handshake`,
 HTTP `503`; it is not an executor completion. Cookie-based access is unchanged.
+A signed ticket used for a different stream route is rejected and durably
+recorded as `DENY`/`FAILED`, phase `handshake`, HTTP `403`. An unavailable durable
+receipt stops the stream with `503`; it does not start an executor.
 
 The Server broker is a thin authenticated entry point. Engine owns the final
 policy. Existing audit `timeScope=all`, bounded query/export behavior, database
@@ -33,16 +36,16 @@ delegation boundary.
 
 | Component | Clean source commit | Archive SHA-256 |
 | --- | --- | --- |
-| Engine `v0.183.334` (`cattle.jar`) | `f3d6a7f5fe464047b9d3de72cd5f628bf2e95878` | `00dd728c906a2fb20bcec44f2f5bd111516aeebf3d3b24d7e639f51c9879b19b` |
-| Web Console `1.6.181` | `4a79536b26692354f5a08153b88207740ec1fafa` | `c252224d9ebd17ff1b6279f261e9617df9bc3b35340a848e54aefca7d257e3cd` |
-| Websocket Proxy `0.23.15` | `2ec921200724341af6bf1c9402aac6b10a37f19f` | `f7046347c1e8ae20b18ed068860773ff810a5180b6b9b191a8eba6fbc215670b` |
+| Engine `v0.183.334` (`cattle.jar`) | `ad733b8425f31b7135150bd905dae572ea648484` | `af91a285c434dd5408d1e05b0d923ac0a7d0066fea07fc6952fa1c6c3ec7cd30` |
+| Web Console `1.6.181` | `c56afed1cb9cba99393815ec966c7719760c8d1e` | `498d0ab74cf2f83d54020cbeec33350d81f082bde2dff63b7c4419e3a07082f5` |
+| Websocket Proxy `0.23.15` | `97ad2a48658841709924efc21af93b82c825c800` | `3e9dabbfd466ccaa4427ed9cf02b2fb3793436f4d27a120dd7e2d73d9ba56bfc` |
 | Host API `0.38.5` | `94ae7b598c67431ceaa8ee471c0f5b83e535d25c` | `9b414d1f7e803184698c5f20bd438a75713dde7f115aac385c1f898466d2b68c` |
 | Linux Node Agent `0.13.28` | `4b20764cacc9496e810fe1b6687923a4bcc901b8` | `4a9f26a0ac9d0a53a6a7b0bb1dbde72b6a642e7474a19959ad87f81e46a85396` |
 
 Host package root: `94ae7b598c67431ceaa8ee471c0f5b83`.
 Host binary SHA-256: `8a197dc440361febb750b7a181195a19b09f674d8cfd8bc69eae6b9f168616c1`.
 Host `apply.sh` SHA-256: `8a21f63099832afb571755011bbcf8d97710994a50c419b20700cbc31efced0f`.
-Proxy binary SHA-256: `796241c34a0de6542c93d203b73bf6f6be397643c5b54ee9eae46cd23e445c67`.
+Proxy binary SHA-256: `686fa62702315348e8698fa11e9647b423ab5c4331ff8236260726ef1c275b16`.
 Node package root: `4b20764cacc9496e810fe1b6687923a4`.
 Node binary SHA-256: `a20b69fc484416e92f4102d2a18f77cc1650ed7d7c6fbbd9c371f5383e2596aa`.
 Node `apply.sh` SHA-256: `dd8cb342518a43e7468cc121db5c4e44b16731f2620b77ea0fd03c02c03766a9`.

@@ -20,8 +20,8 @@ base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea2
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
 orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.334}
 orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}
-orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-00dd728c906a2fb20bcec44f2f5bd111516aeebf3d3b24d7e639f51c9879b19b}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-f3d6a7f5fe464047b9d3de72cd5f628bf2e95878}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-af91a285c434dd5408d1e05b0d923ac0a7d0066fea07fc6952fa1c6c3ec7cd30}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-ad733b8425f31b7135150bd905dae572ea648484}
 orchestration_engine_version=${orchestration_engine_release_tag#v}
 engine_readonly_schema_sha256=${ENGINE_READONLY_SCHEMA_SHA256:-7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233}
 engine_restricted_schema_sha256=${ENGINE_RESTRICTED_SCHEMA_SHA256:-f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51}
@@ -50,8 +50,8 @@ api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
 web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.181}
 web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.181.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-c252224d9ebd17ff1b6279f261e9617df9bc3b35340a848e54aefca7d257e3cd}
-web_console_commit=${WEB_CONSOLE_COMMIT:-4a79536b26692354f5a08153b88207740ec1fafa}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-498d0ab74cf2f83d54020cbeec33350d81f082bde2dff63b7c4419e3a07082f5}
+web_console_commit=${WEB_CONSOLE_COMMIT:-c56afed1cb9cba99393815ec966c7719760c8d1e}
 catalog_service_release_base_url=${CATALOG_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/catalog-service/releases/download}
 catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.12}
 catalog_service_commit=${CATALOG_SERVICE_COMMIT:-d708579092eae0fd03b2750ac594ff0396cf563b}
@@ -66,9 +66,9 @@ authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-f
 authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-feaabe4bba85cbe119c98a79a27abb4510401fc051f34d02aa7b48d69bdbe746}
 websocket_proxy_release_base_url=${WEBSOCKET_PROXY_RELEASE_BASE_URL:-https://github.com/PastureStack/websocket-proxy/releases/download}
 websocket_proxy_version=${WEBSOCKET_PROXY_VERSION:-0.23.15}
-websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-2ec921200724341af6bf1c9402aac6b10a37f19f}
-websocket_proxy_archive_sha256=${WEBSOCKET_PROXY_ARCHIVE_SHA256:-f7046347c1e8ae20b18ed068860773ff810a5180b6b9b191a8eba6fbc215670b}
-websocket_proxy_binary_sha256=${WEBSOCKET_PROXY_BINARY_SHA256:-796241c34a0de6542c93d203b73bf6f6be397643c5b54ee9eae46cd23e445c67}
+websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-97ad2a48658841709924efc21af93b82c825c800}
+websocket_proxy_archive_sha256=${WEBSOCKET_PROXY_ARCHIVE_SHA256:-3e9dabbfd466ccaa4427ed9cf02b2fb3793436f4d27a120dd7e2d73d9ba56bfc}
+websocket_proxy_binary_sha256=${WEBSOCKET_PROXY_BINARY_SHA256:-686fa62702315348e8698fa11e9647b423ab5c4331ff8236260726ef1c275b16}
 webhook_automation_service_release_base_url=${WEBHOOK_AUTOMATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/webhook-automation-service/releases/download}
 webhook_automation_service_version=${WEBHOOK_AUTOMATION_SERVICE_VERSION:-0.10.3}
 webhook_automation_service_commit=${WEBHOOK_AUTOMATION_SERVICE_COMMIT:-fbcc0ca07e42e9b21bda18031d0848192ec2f9a1}
@@ -717,9 +717,9 @@ bce26b98133d3f5d4ecaddba26179ed8e14e5b260b38dee5f9e4383cbfbc855a  /usr/bin/host-
 fbdd12862e1cfe3c957f492ae81c4c1c5658357502bd322febbbe209496929be  /usr/bin/secret-delivery-api
 f18ed969b8b5959293fdbcd55d2e28846372ab87c9348fbb315a9a490bf85ad4  /usr/bin/usage-telemetry-agent
 9094f3b2527762a3e683b02d93aa00e52618e902cd409e72e34553d98d98a609  /usr/bin/webhook-automation-service
-796241c34a0de6542c93d203b73bf6f6be397643c5b54ee9eae46cd23e445c67  /usr/bin/websocket-proxy.real
 f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31  /usr/bin/govc
 EOF
+    echo "${PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256}  /usr/bin/websocket-proxy.real" | sha256sum -c -
     echo "${PASTURESTACK_CATALOG_SERVICE_BINARY_SHA256}  /usr/bin/catalog-service.real" | sha256sum -c -
     echo "${PASTURESTACK_CATALOG_SERVICE_SQLITE_BINARY_SHA256}  /usr/bin/catalog-service-sqlite" | sha256sum -c -
     for binary in \
