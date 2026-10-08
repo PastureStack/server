@@ -32,7 +32,8 @@ does not establish that every resource/role/hardware combination has been tested
 The currently downloadable [Server v1.6.518](https://github.com/PastureStack/server/releases/tag/v1.6.518)
 includes Web Console `1.6.180` and Orchestration Engine `v0.183.333`.
 The quick-start examples below use this published image until the candidate is
-verified and separately released.
+verified and separately released. Its exact artifact identity and verification
+boundaries are recorded in the [published release note](docs/releases/server-1.6.518.md).
 
 ## Quick start
 
