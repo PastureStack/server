@@ -13,19 +13,24 @@ import (
 	"time"
 )
 
-func TestSessionCreationPreservesOnlyTrustedAuditCapabilityFailure(t *testing.T) {
+func TestSessionCreationPreservesOnlyTrustedStreamFailureContract(t *testing.T) {
 	for _, testCase := range []struct {
-		name         string
-		status       int
-		upstreamCode string
-		wantStatus   int
-		wantCode     string
+		name           string
+		status         int
+		upstreamHeader string
+		upstreamCode   string
+		wantStatus     int
+		wantCode       string
 	}{
-		{"verified backend capability block", http.StatusServiceUnavailable, backendAuditUnavailable, http.StatusServiceUnavailable, backendAuditUnavailable},
-		{"durable failure receipt unavailable", http.StatusServiceUnavailable, streamAuditUnavailable, http.StatusServiceUnavailable, streamAuditUnavailable},
-		{"client header cannot upgrade generic 503", http.StatusServiceUnavailable, "", http.StatusBadGateway, "upstream_unavailable"},
-		{"matching code without 503 is not the contract", http.StatusForbidden, backendAuditUnavailable, http.StatusBadGateway, "upstream_unavailable"},
-		{"unknown upstream code is not reflected", http.StatusServiceUnavailable, "private-upstream-error", http.StatusBadGateway, "upstream_unavailable"},
+		{"verified backend capability block", http.StatusServiceUnavailable, streamErrorHeader, backendAuditUnavailable, http.StatusServiceUnavailable, backendAuditUnavailable},
+		{"durable failure receipt unavailable", http.StatusServiceUnavailable, streamErrorHeader, streamAuditUnavailable, http.StatusServiceUnavailable, streamAuditUnavailable},
+		{"client header cannot upgrade generic 503", http.StatusServiceUnavailable, streamErrorHeader, "", http.StatusBadGateway, "upstream_unavailable"},
+		{"matching code without 503 is not the contract", http.StatusForbidden, streamErrorHeader, backendAuditUnavailable, http.StatusBadGateway, "upstream_unavailable"},
+		{"unknown upstream code is not reflected", http.StatusServiceUnavailable, streamErrorHeader, "private-upstream-error", http.StatusBadGateway, "upstream_unavailable"},
+		{"signed route denial remains 403", http.StatusForbidden, routeErrorHeader, streamRouteDenied, http.StatusForbidden, streamRouteDenied},
+		{"client header cannot upgrade generic 403", http.StatusForbidden, routeErrorHeader, "", http.StatusBadGateway, "upstream_unavailable"},
+		{"unknown route code is not reflected", http.StatusForbidden, routeErrorHeader, "private-upstream-error", http.StatusBadGateway, "upstream_unavailable"},
+		{"route code without 403 is not the contract", http.StatusServiceUnavailable, routeErrorHeader, streamRouteDenied, http.StatusBadGateway, "upstream_unavailable"},
 	} {
 		t.Run(testCase.name, func(t *testing.T) {
 			const ticket = "signed-ticket-never-log-this-123456789"
@@ -35,13 +40,13 @@ func TestSessionCreationPreservesOnlyTrustedAuditCapabilityFailure(t *testing.T)
 			var forwardedClientSignal atomic.Bool
 			upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 				attempts.Add(1)
-				if request.Header.Get(streamErrorHeader) != "" || request.Header.Get("Authorization") != "" || request.Header.Get("Cookie") != "" {
+				if request.Header.Get(streamErrorHeader) != "" || request.Header.Get(routeErrorHeader) != "" || request.Header.Get("Authorization") != "" || request.Header.Get("Cookie") != "" {
 					forwardedClientSignal.Store(true)
 				}
 				if request.URL.Query().Get("token") != ticket {
 					t.Error("the actual upstream handshake lost its ticket")
 				}
-				writer.Header().Set(streamErrorHeader, testCase.upstreamCode)
+				writer.Header().Set(testCase.upstreamHeader, testCase.upstreamCode)
 				writer.WriteHeader(testCase.status)
 				_, _ = io.WriteString(writer, ticket+" "+backendTicket)
 			}))
@@ -72,6 +77,7 @@ func TestSessionCreationPreservesOnlyTrustedAuditCapabilityFailure(t *testing.T)
 			}
 			request.Header.Set("Content-Type", "application/json")
 			request.Header.Set(streamErrorHeader, backendAuditUnavailable)
+			request.Header.Set(routeErrorHeader, streamRouteDenied)
 			request.Header.Set("Authorization", "Bearer "+backendTicket)
 			request.Header.Set("Cookie", "session="+backendTicket)
 			response, err := server.Client().Do(request)
@@ -96,6 +102,13 @@ func TestSessionCreationPreservesOnlyTrustedAuditCapabilityFailure(t *testing.T)
 			}
 			if response.Header.Get(streamErrorHeader) != wantHeader || response.Header.Get("Cache-Control") != "no-store" {
 				t.Fatal("handshake response lost its fixed safe header/cache contract")
+			}
+			wantRouteHeader := ""
+			if testCase.wantStatus == http.StatusForbidden {
+				wantRouteHeader = streamRouteDenied
+			}
+			if response.Header.Get(routeErrorHeader) != wantRouteHeader {
+				t.Fatal("route denial response lost its fixed safe header contract")
 			}
 			if attempts.Load() != 1 || instance.activeSessionCount() != 0 || forwardedClientSignal.Load() {
 				t.Fatal("a blocked handshake retried, created a session, or trusted browser metadata")

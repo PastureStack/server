@@ -39,8 +39,10 @@ const (
 	defaultDialAttempts     = 3
 	defaultDialRetryWait    = 5 * time.Second
 	streamErrorHeader       = "X-PastureStack-Stream-Error-Code"
+	routeErrorHeader        = "X-Api-Error-Code"
 	backendAuditUnavailable = "BackendAuditCapabilityUnavailable"
 	streamAuditUnavailable  = "AuditUnavailable"
+	streamRouteDenied       = "DelegationRouteDenied"
 )
 
 var (
@@ -49,6 +51,7 @@ var (
 	secretPattern              = regexp.MustCompile(`^[A-Za-z0-9_-]{40,256}$`)
 	errBackendAuditUnavailable = errors.New(backendAuditUnavailable)
 	errStreamAuditUnavailable  = errors.New(streamAuditUnavailable)
+	errStreamRouteDenied       = errors.New(streamRouteDenied)
 )
 
 type brokerConfig struct {
@@ -345,6 +348,12 @@ func (b *broker) createSession(writer http.ResponseWriter, request *http.Request
 	if err != nil {
 		// A dial error can contain the signed ticket in its URL. Log only a
 		// fixed category, never the error, target, headers, or response body.
+		if errors.Is(err, errStreamRouteDenied) {
+			b.logger.Printf("upstream session connection failed for %s: %s", safeLogValue(sessionID), streamRouteDenied)
+			writer.Header().Set(routeErrorHeader, streamRouteDenied)
+			writeJSONError(writer, http.StatusForbidden, streamRouteDenied, "The signed stream request does not match its allowed route")
+			return
+		}
 		blockedCode := ""
 		if errors.Is(err, errBackendAuditUnavailable) {
 			blockedCode = backendAuditUnavailable
@@ -405,7 +414,7 @@ func (b *broker) dialUpstreamSession(ctx context.Context, target *url.URL, heade
 	for attempt := 1; attempt <= b.config.SessionDialAttempts; attempt++ {
 		connection, response, err := websocket.DefaultDialer.DialContext(ctx, target.String(), headers)
 		status := 0
-		var blockedAuditError error
+		var blockedStreamError error
 		if response != nil {
 			status = response.StatusCode
 			// Only the operator-controlled internal dial endpoint can supply
@@ -413,10 +422,12 @@ func (b *broker) dialUpstreamSession(ctx context.Context, target *url.URL, heade
 			if status == http.StatusServiceUnavailable {
 				switch response.Header.Get(streamErrorHeader) {
 				case backendAuditUnavailable:
-					blockedAuditError = errBackendAuditUnavailable
+					blockedStreamError = errBackendAuditUnavailable
 				case streamAuditUnavailable:
-					blockedAuditError = errStreamAuditUnavailable
+					blockedStreamError = errStreamAuditUnavailable
 				}
+			} else if status == http.StatusForbidden && response.Header.Get(routeErrorHeader) == streamRouteDenied {
+				blockedStreamError = errStreamRouteDenied
 			}
 			if response.Body != nil {
 				_ = response.Body.Close()
@@ -425,8 +436,8 @@ func (b *broker) dialUpstreamSession(ctx context.Context, target *url.URL, heade
 		if err == nil {
 			return connection, nil
 		}
-		if blockedAuditError != nil {
-			return nil, blockedAuditError
+		if blockedStreamError != nil {
+			return nil, blockedStreamError
 		}
 		lastErr = err
 		if status != http.StatusUnauthorized || attempt == b.config.SessionDialAttempts {
