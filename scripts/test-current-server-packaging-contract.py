@@ -20,8 +20,8 @@ COMPATIBILITY_CODE = 'SERVER_CREATE_RESPONSE_ORDER_COMPATIBILITY_MISSING'
 WEB_SHA = '498d0ab74cf2f83d54020cbeec33350d81f082bde2dff63b7c4419e3a07082f5'
 WEB_SOURCE = 'c56afed1cb9cba99393815ec966c7719760c8d1e'
 CATALOG_COMMIT = 'b6b658888fce50d3ec217eb4eba0f26ab0113baf'
-ENGINE_SHA = 'af91a285c434dd5408d1e05b0d923ac0a7d0066fea07fc6952fa1c6c3ec7cd30'
-ENGINE_SOURCE = 'ad733b8425f31b7135150bd905dae572ea648484'
+ENGINE_SHA = '60b7ca446421f366882136a2bb276e508aa400d2961854b77d9a4574ee4dabfc'
+ENGINE_SOURCE = '863aed1f35e7a85d3686d5829d54dfe5c2c2f084'
 OLD_COORDINATES = {
     'v1.6.519': 'v1.6.518',
     '1.6.181': '1.6.180',
@@ -494,6 +494,29 @@ class Tests(unittest.TestCase):
             self.assertIn(marker, FILES[BUILD])
             self.assertIn(marker, GATE)
         self.assertNotRegex(FILES[BUILD], r'(?m)^[0-9a-f]{64}  /usr/bin/websocket-proxy[.]real$')
+
+    def test_govc_fixed_dependency_and_binary_readback_use_formal_pins(self):
+        for upper, lower, value in (
+            ('VSPHERE_CLI_BUNDLE_VERSION', 'vsphere_cli_bundle_version', '0.55.3'),
+            ('VSPHERE_CLI_BUNDLE_COMMIT', 'vsphere_cli_bundle_commit', '5b1f9c91cdf2b5217b8d5019bbfb18bbc3e3294e'),
+            ('VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256', 'vsphere_cli_bundle_archive_sha256', '94553db031d141bf115594effae7ef0c28214e091d018db684467ee56f0c5120'),
+            ('GOVC_BINARY_SHA256', 'govc_binary_sha256', '0994912900534ddb60e0b70a1853046f0c7ab1aa374d241f12b2a397d1de84ae'),
+        ):
+            docker_marker = 'ARG ' + upper + '=' + value
+            build_marker = lower + '=${' + upper + ':-' + value + '}'
+            self.assertEqual(1 if upper.endswith('_COMMIT') else 2, FILES[DOCKER].count(docker_marker))
+            self.assertIn(build_marker, FILES[BUILD])
+            self.assertIn(docker_marker, GATE)
+            self.assertIn(build_marker, GATE)
+        for marker in (
+            'echo "${PASTURESTACK_GOVC_BINARY_SHA256}  /usr/bin/govc" | sha256sum -c -',
+            'test "$(/usr/bin/govc version)" = "govc ${PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION}"',
+            'Security dependency: golang.org/x/text v0.41.0',
+        ):
+            self.assertIn(marker, FILES[BUILD])
+            self.assertIn(marker, GATE)
+        self.assertNotRegex(FILES[BUILD], r'(?m)^[0-9a-f]{64}  /usr/bin/govc$')
+        self.assertIn('Dependency-only override: govc/go.mod and govc/go.sum; upstream Go source unchanged', FILES[DOCKER])
 
     def test_current_readme_keeps_install_and_upgrade_contract(self):
         block = GATE.split('for current_readme_marker in ', 1)[1].split('; do', 1)[0]

@@ -891,8 +891,8 @@ require_marker "$build_script" \
 for release_engine_marker in \
     'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.334' \
     'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=af91a285c434dd5408d1e05b0d923ac0a7d0066fea07fc6952fa1c6c3ec7cd30' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=ad733b8425f31b7135150bd905dae572ea648484' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=60b7ca446421f366882136a2bb276e508aa400d2961854b77d9a4574ee4dabfc' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=863aed1f35e7a85d3686d5829d54dfe5c2c2f084' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
     'ARG ORCHESTRATION_ENGINE_VERSION=0.183.334' \
     'grep -Fx "Implementation-Version: ${ORCHESTRATION_ENGINE_VERSION}"' \
@@ -917,8 +917,8 @@ done
 for release_engine_build_marker in \
     'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.334}' \
     'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}' \
-    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-af91a285c434dd5408d1e05b0d923ac0a7d0066fea07fc6952fa1c6c3ec7cd30}' \
-    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-ad733b8425f31b7135150bd905dae572ea648484}' \
+    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-60b7ca446421f366882136a2bb276e508aa400d2961854b77d9a4574ee4dabfc}' \
+    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-863aed1f35e7a85d3686d5829d54dfe5c2c2f084}' \
     'CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.5.jar"'; do
@@ -997,16 +997,30 @@ if grep -Fq -- 'test "${new_web_root}" != "${old_web_root}"' "$release_dockerfil
 fi
 
 for release_vsphere_marker in \
-    'ARG VSPHERE_CLI_BUNDLE_VERSION=0.55.2' \
-    'ARG VSPHERE_CLI_BUNDLE_COMMIT=c4b27e87aa0dacce432a2c6108ee0752319e6d5b' \
-    'ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=bebcc1c0275072ac40b5bc9b80f914c40a7f0431fffebc2c06fe34a34c33a57c' \
-    'ARG GOVC_BINARY_SHA256=f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31' \
+    'ARG VSPHERE_CLI_BUNDLE_VERSION=0.55.3' \
+    'ARG VSPHERE_CLI_BUNDLE_COMMIT=5b1f9c91cdf2b5217b8d5019bbfb18bbc3e3294e' \
+    'ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=94553db031d141bf115594effae7ef0c28214e091d018db684467ee56f0c5120' \
+    'ARG GOVC_BINARY_SHA256=0994912900534ddb60e0b70a1853046f0c7ab1aa374d241f12b2a397d1de84ae' \
     'COPY --from=release_artifacts --chmod=0755 /out/vsphere-cli-bundle/govc /usr/bin/govc' \
     'ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=${VSPHERE_CLI_BUNDLE_VERSION}' \
     'ENV PASTURESTACK_GOVC_BINARY_SHA256=${GOVC_BINARY_SHA256}'; do
     require_marker "$release_dockerfile" "$release_vsphere_marker" \
         SERVER_INCREMENTAL_VSPHERE_REPLACEMENT_MISSING
 done
+for release_vsphere_build_marker in \
+    'vsphere_cli_bundle_version=${VSPHERE_CLI_BUNDLE_VERSION:-0.55.3}' \
+    'vsphere_cli_bundle_commit=${VSPHERE_CLI_BUNDLE_COMMIT:-5b1f9c91cdf2b5217b8d5019bbfb18bbc3e3294e}' \
+    'vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-94553db031d141bf115594effae7ef0c28214e091d018db684467ee56f0c5120}' \
+    'govc_binary_sha256=${GOVC_BINARY_SHA256:-0994912900534ddb60e0b70a1853046f0c7ab1aa374d241f12b2a397d1de84ae}' \
+    'echo "${PASTURESTACK_GOVC_BINARY_SHA256}  /usr/bin/govc" | sha256sum -c -' \
+    'test "$(/usr/bin/govc version)" = "govc ${PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION}"' \
+    'grep -Fx "Security dependency: golang.org/x/text v0.41.0"'; do
+    require_marker "$build_script" "$release_vsphere_build_marker" \
+        SERVER_INCREMENTAL_VSPHERE_BUILD_OR_READBACK_MISSING
+done
+require_marker "$release_dockerfile" \
+    'Security dependency: golang.org/x/text v0.41.0' \
+    SERVER_INCREMENTAL_VSPHERE_FIXED_DEPENDENCY_MISSING
 require_marker "$build_script" \
     '[[ "$orchestration_engine_release_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]' \
     SERVER_INCREMENTAL_ENGINE_NUMERIC_TAG_GATE_MISSING

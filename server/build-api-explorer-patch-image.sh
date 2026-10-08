@@ -20,8 +20,8 @@ base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea2
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
 orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.334}
 orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}
-orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-af91a285c434dd5408d1e05b0d923ac0a7d0066fea07fc6952fa1c6c3ec7cd30}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-ad733b8425f31b7135150bd905dae572ea648484}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-60b7ca446421f366882136a2bb276e508aa400d2961854b77d9a4574ee4dabfc}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-863aed1f35e7a85d3686d5829d54dfe5c2c2f084}
 orchestration_engine_version=${orchestration_engine_release_tag#v}
 engine_readonly_schema_sha256=${ENGINE_READONLY_SCHEMA_SHA256:-7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233}
 engine_restricted_schema_sha256=${ENGINE_RESTRICTED_SCHEMA_SHA256:-f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51}
@@ -80,10 +80,10 @@ compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-e85545a1bc34cb5c42db62ff90dd8
 compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66}
 compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d}
 vsphere_cli_bundle_release_base_url=${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL:-https://github.com/PastureStack/vsphere-cli-bundle/releases/download}
-vsphere_cli_bundle_version=${VSPHERE_CLI_BUNDLE_VERSION:-0.55.2}
-vsphere_cli_bundle_commit=${VSPHERE_CLI_BUNDLE_COMMIT:-c4b27e87aa0dacce432a2c6108ee0752319e6d5b}
-vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-bebcc1c0275072ac40b5bc9b80f914c40a7f0431fffebc2c06fe34a34c33a57c}
-govc_binary_sha256=${GOVC_BINARY_SHA256:-f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31}
+vsphere_cli_bundle_version=${VSPHERE_CLI_BUNDLE_VERSION:-0.55.3}
+vsphere_cli_bundle_commit=${VSPHERE_CLI_BUNDLE_COMMIT:-5b1f9c91cdf2b5217b8d5019bbfb18bbc3e3294e}
+vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-94553db031d141bf115594effae7ef0c28214e091d018db684467ee56f0c5120}
+govc_binary_sha256=${GOVC_BINARY_SHA256:-0994912900534ddb60e0b70a1853046f0c7ab1aa374d241f12b2a397d1de84ae}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
 image=${IMAGE:-pasturestack-validation/server:v1.6.519}
@@ -717,8 +717,8 @@ bce26b98133d3f5d4ecaddba26179ed8e14e5b260b38dee5f9e4383cbfbc855a  /usr/bin/host-
 fbdd12862e1cfe3c957f492ae81c4c1c5658357502bd322febbbe209496929be  /usr/bin/secret-delivery-api
 f18ed969b8b5959293fdbcd55d2e28846372ab87c9348fbb315a9a490bf85ad4  /usr/bin/usage-telemetry-agent
 9094f3b2527762a3e683b02d93aa00e52618e902cd409e72e34553d98d98a609  /usr/bin/webhook-automation-service
-f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31  /usr/bin/govc
 EOF
+    echo "${PASTURESTACK_GOVC_BINARY_SHA256}  /usr/bin/govc" | sha256sum -c -
     echo "${PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256}  /usr/bin/websocket-proxy.real" | sha256sum -c -
     echo "${PASTURESTACK_CATALOG_SERVICE_BINARY_SHA256}  /usr/bin/catalog-service.real" | sha256sum -c -
     echo "${PASTURESTACK_CATALOG_SERVICE_SQLITE_BINARY_SHA256}  /usr/bin/catalog-service-sqlite" | sha256sum -c -
@@ -761,7 +761,10 @@ EOF
     test "$(readlink -f /usr/bin/webhook-service)" = /usr/bin/webhook-automation-service
     grep -Fx "Release source commit: fbcc0ca07e42e9b21bda18031d0848192ec2f9a1" \
         /usr/share/licenses/pasturestack/webhook-automation-service/webhook-automation-service-SOURCES.txt >/dev/null
-    test "$(/usr/bin/govc version)" = "govc 0.55.2"
+    test "$(/usr/bin/govc version)" = "govc ${PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION}"
+    grep -aF "$(printf "dep\tgolang.org/x/text\tv0.41.0\t")" /usr/bin/govc >/dev/null
+    grep -Fx "Security dependency: golang.org/x/text v0.41.0" \
+        /usr/share/licenses/pasturestack/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null
     version_at_least()
     {
         local package=$1 minimum=$2 installed

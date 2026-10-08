@@ -21,7 +21,10 @@ receipt stops the stream with `503`; it does not start an executor.
 
 The Server broker is a thin authenticated entry point. Engine owns the final
 policy. Existing audit `timeScope=all`, bounded query/export behavior, database
-retention, HAProxy, OIDC, security package pins and overlays are retained.
+retention, HAProxy, OIDC, and security overlays are retained. The govc bundle
+updates only its x/text dependency to `0.41.0` for
+[GO-2026-6629](https://pkg.go.dev/vuln/GO-2026-6629); its upstream Go source and
+Go `1.27.0` toolchain remain unchanged.
 
 Linux Node Agent `0.13.28` supervises the installed Host API `0.38.5` binary
 instead of the old embedded backend. Host and Node producer archives are
@@ -36,16 +39,18 @@ delegation boundary.
 
 | Component | Clean source commit | Archive SHA-256 |
 | --- | --- | --- |
-| Engine `v0.183.334` (`cattle.jar`) | `ad733b8425f31b7135150bd905dae572ea648484` | `af91a285c434dd5408d1e05b0d923ac0a7d0066fea07fc6952fa1c6c3ec7cd30` |
+| Engine `v0.183.334` (`cattle.jar`) | `863aed1f35e7a85d3686d5829d54dfe5c2c2f084` | `60b7ca446421f366882136a2bb276e508aa400d2961854b77d9a4574ee4dabfc` |
 | Web Console `1.6.181` | `c56afed1cb9cba99393815ec966c7719760c8d1e` | `498d0ab74cf2f83d54020cbeec33350d81f082bde2dff63b7c4419e3a07082f5` |
 | Websocket Proxy `0.23.15` | `97ad2a48658841709924efc21af93b82c825c800` | `3e9dabbfd466ccaa4427ed9cf02b2fb3793436f4d27a120dd7e2d73d9ba56bfc` |
 | Host API `0.38.5` | `94ae7b598c67431ceaa8ee471c0f5b83e535d25c` | `9b414d1f7e803184698c5f20bd438a75713dde7f115aac385c1f898466d2b68c` |
 | Linux Node Agent `0.13.28` | `4b20764cacc9496e810fe1b6687923a4bcc901b8` | `4a9f26a0ac9d0a53a6a7b0bb1dbde72b6a642e7474a19959ad87f81e46a85396` |
+| vSphere CLI Bundle `0.55.3` | `5b1f9c91cdf2b5217b8d5019bbfb18bbc3e3294e` | `94553db031d141bf115594effae7ef0c28214e091d018db684467ee56f0c5120` |
 
 Host package root: `94ae7b598c67431ceaa8ee471c0f5b83`.
 Host binary SHA-256: `8a197dc440361febb750b7a181195a19b09f674d8cfd8bc69eae6b9f168616c1`.
 Host `apply.sh` SHA-256: `8a21f63099832afb571755011bbcf8d97710994a50c419b20700cbc31efced0f`.
 Proxy binary SHA-256: `686fa62702315348e8698fa11e9647b423ab5c4331ff8236260726ef1c275b16`.
+govc binary SHA-256: `0994912900534ddb60e0b70a1853046f0c7ab1aa374d241f12b2a397d1de84ae`.
 Node package root: `4b20764cacc9496e810fe1b6687923a4`.
 Node binary SHA-256: `a20b69fc484416e92f4102d2a18f77cc1650ed7d7c6fbbd9c371f5383e2596aa`.
 Node `apply.sh` SHA-256: `dd8cb342518a43e7468cc121db5c4e44b16731f2620b77ea0fd03c02c03766a9`.
