@@ -9,21 +9,30 @@ Rancher 1.6 ecosystem. It is not affiliated with Rancher Labs or SUSE.
 This fork of [`rancher/rancher`](https://github.com/rancher/rancher) preserves
 upstream history, authorship, licenses, and notices.
 
-## Current release
+## Current source
 
-[Server v1.6.518](https://github.com/PastureStack/server/releases/tag/v1.6.518)
-includes Web Console `1.6.180` and Orchestration Engine `v0.183.333`.
+Server `v1.6.519` is an unpublished candidate, packaging Web Console `1.6.181`
+and Orchestration Engine `v0.183.334`. API Keys support full, custom and closed
+policies, optional expiry, and key-scoped durable audit records. Their permissions
+remain bounded by the owner's current role and environment access. Delegated
+terminal/log access requires the verified Host API audit capability and the
+compatible Linux Node Agent lifecycle.
+
 The console supports OIDC, TOTP and passkeys, role-aware resource operations,
 container resource/hardware settings, and movable terminal/log windows.
 Hardware options require compatible node software and actual host capabilities;
-GPU device access is not exclusive GPU allocation.
+GPU device access is not exclusive GPU allocation. Audit queries and exports
+cover retained records with environment-aware access and bounded pagination.
+See the [candidate release note](docs/releases/server-1.6.519.md) for exact
+component identities and verification boundaries. A version or packaged feature
+does not establish that every resource/role/hardware combination has been tested.
 
-Audit queries and exports cover all retained records, with environment-aware
-access and bounded pagination. Authentication and authorization contracts are
-retained. See the
-[release note](docs/releases/server-1.6.518.md) for component identities,
-verification results, and known limits. A published image is not a claim that
-every resource/role/hardware combination has been tested.
+## Current release
+
+The currently downloadable [Server v1.6.518](https://github.com/PastureStack/server/releases/tag/v1.6.518)
+includes Web Console `1.6.180` and Orchestration Engine `v0.183.333`.
+The quick-start examples below use this published image until the candidate is
+verified and separately released.
 
 ## Quick start
 
