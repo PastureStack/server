@@ -12,10 +12,10 @@ import secrets
 
 AUDIT_FIELDS = ('keyId', 'decision', 'outcome', 'httpStatus', 'requestId', 'actor',
                 'targetType', 'targetId', 'operation', 'policyRevision', 'reason',
-                'phase', 'preview', 'eventId', 'hostUuid', 'failureCode')
+                'phase', 'preview', 'eventId', 'processId', 'processName', 'hostUuid', 'failureCode')
 
 
-def validate_schema(name, schema):
+def _validate_schema(name, schema):
     fields = schema['resourceFields']
     if name in ('apikey', 'apikeyrestricted'):
         assert fields['apiKeyPolicy']['type'] == 'map[json]', name + '-policy-type'
@@ -36,6 +36,37 @@ def validate_schema(name, schema):
             assert not fields[field].get('create') and not fields[field].get('update'), name + '-readonly-' + field
     else:
         raise AssertionError('unexpected-schema')
+
+
+def validate_schema(name, schema):
+    try:
+        _validate_schema(name, schema)
+    except (AssertionError, KeyError, TypeError) as error:
+        safe_name = name if name in ('apikey', 'apikeyrestricted', 'apikeypolicypreview', 'auditlog') else 'unexpected'
+        fields = schema.get('resourceFields', {}) if isinstance(schema, dict) else {}
+        if not isinstance(fields, dict):
+            fields = {}
+        metadata = {}
+        for field_name in ('apiKeyPolicy', 'apiKeyPolicyRevision', 'securityConfirmation') + AUDIT_FIELDS:
+            field = fields.get(field_name)
+            if not isinstance(field, dict):
+                metadata[field_name] = {'present': False}
+                continue
+            field_type = field.get('type')
+            metadata[field_name] = {
+                'present': True,
+                'type': field_type if field_type in ('map[json]', 'map[object]', 'json', 'object', 'password', 'string', 'int', 'long', 'boolean', 'enum', 'date') else 'nonstandard',
+                'create': field.get('create') if type(field.get('create')) is bool else None,
+                'update': field.get('update') if type(field.get('update')) is bool else None,
+            }
+        if isinstance(error, KeyError):
+            safe_code = 'MISSING_FIELD_METADATA'
+        elif isinstance(error, TypeError):
+            safe_code = 'INVALID_FIELD_METADATA'
+        else:
+            safe_code = str(error) if safe_name != 'unexpected' else 'unexpected-schema'
+        print('SCHEMA_CONTRACT_FAILURE ' + json.dumps({'schema': safe_name, 'code': safe_code, 'fields': metadata}, sort_keys=True), flush=True)
+        raise error
 
 
 def main():

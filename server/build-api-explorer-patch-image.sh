@@ -74,10 +74,12 @@ webhook_automation_service_version=${WEBHOOK_AUTOMATION_SERVICE_VERSION:-0.10.3}
 webhook_automation_service_commit=${WEBHOOK_AUTOMATION_SERVICE_COMMIT:-fbcc0ca07e42e9b21bda18031d0848192ec2f9a1}
 webhook_automation_service_archive_sha256=${WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256:-6babbc18cee9a192009cfadcd143e6b9a5f2b550c4dc419781f3e3657caa022a}
 webhook_automation_service_binary_sha256=${WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256:-9094f3b2527762a3e683b02d93aa00e52618e902cd409e72e34553d98d98a609}
+compose_executor_release_base_url=${COMPOSE_EXECUTOR_RELEASE_BASE_URL:-https://github.com/PastureStack/compose-cli/releases/download}
 compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.36}
 compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-e85545a1bc34cb5c42db62ff90dd82b7ff9f5838}
 compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66}
 compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d}
+vsphere_cli_bundle_release_base_url=${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL:-https://github.com/PastureStack/vsphere-cli-bundle/releases/download}
 vsphere_cli_bundle_version=${VSPHERE_CLI_BUNDLE_VERSION:-0.55.2}
 vsphere_cli_bundle_commit=${VSPHERE_CLI_BUNDLE_COMMIT:-c4b27e87aa0dacce432a2c6108ee0752319e6d5b}
 vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-bebcc1c0275072ac40b5bc9b80f914c40a7f0431fffebc2c06fe34a34c33a57c}
@@ -143,7 +145,7 @@ fi
 [[ "$vsphere_cli_bundle_archive_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$govc_binary_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$base_image" == ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403 ]]
-for release_base_url in "$orchestration_engine_release_base_url" "$api_explorer_release_base_url" "$web_console_release_base_url" "$catalog_service_release_base_url" "$authentication_service_release_base_url" "$websocket_proxy_release_base_url" "$webhook_automation_service_release_base_url" "$host_api_release_base_url" "$node_agent_release_base_url"; do
+for release_base_url in "$orchestration_engine_release_base_url" "$api_explorer_release_base_url" "$web_console_release_base_url" "$catalog_service_release_base_url" "$authentication_service_release_base_url" "$websocket_proxy_release_base_url" "$webhook_automation_service_release_base_url" "$host_api_release_base_url" "$node_agent_release_base_url" "$compose_executor_release_base_url" "$vsphere_cli_bundle_release_base_url"; do
 case "$release_base_url" in
     https://*) ;;
     http://127.0.0.1:*|http://localhost:*)
@@ -246,10 +248,12 @@ docker buildx build \
     --build-arg "WEBHOOK_AUTOMATION_SERVICE_COMMIT=${webhook_automation_service_commit}" \
     --build-arg "WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=${webhook_automation_service_archive_sha256}" \
     --build-arg "WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=${webhook_automation_service_binary_sha256}" \
+    --build-arg "COMPOSE_EXECUTOR_RELEASE_BASE_URL=${compose_executor_release_base_url}" \
     --build-arg "COMPOSE_EXECUTOR_VERSION=${compose_executor_version}" \
     --build-arg "COMPOSE_EXECUTOR_COMMIT=${compose_executor_commit}" \
     --build-arg "COMPOSE_EXECUTOR_ARCHIVE_SHA256=${compose_executor_archive_sha256}" \
     --build-arg "COMPOSE_EXECUTOR_BINARY_SHA256=${compose_executor_binary_sha256}" \
+    --build-arg "VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL=${vsphere_cli_bundle_release_base_url}" \
     --build-arg "VSPHERE_CLI_BUNDLE_VERSION=${vsphere_cli_bundle_version}" \
     --build-arg "VSPHERE_CLI_BUNDLE_COMMIT=${vsphere_cli_bundle_commit}" \
     --build-arg "VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=${vsphere_cli_bundle_archive_sha256}" \

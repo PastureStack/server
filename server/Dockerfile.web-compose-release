@@ -81,14 +81,23 @@ ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orches
 ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.334
 ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar
 ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=78bfd316e4188712dc79069bd73c1e1112363912bfdcd6f56916a655cd282bbb
+ARG COMPOSE_EXECUTOR_RELEASE_BASE_URL=https://github.com/PastureStack/compose-cli/releases/download
 ARG COMPOSE_EXECUTOR_VERSION=0.14.36
 ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66
 ARG COMPOSE_EXECUTOR_BINARY_SHA256=1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d
+ARG VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL=https://github.com/PastureStack/vsphere-cli-bundle/releases/download
 ARG VSPHERE_CLI_BUNDLE_VERSION=0.55.2
 ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=bebcc1c0275072ac40b5bc9b80f914c40a7f0431fffebc2c06fe34a34c33a57c
 ARG GOVC_BINARY_SHA256=f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31
 
 RUN set -eux; \
+    for release_base_url in "${COMPOSE_EXECUTOR_RELEASE_BASE_URL}" "${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL}"; do \
+        case "${release_base_url}" in \
+            https://*) ;; \
+            http://127.0.0.1:*|http://localhost:*) test "${PASTURESTACK_ALLOW_LOOPBACK_ARTIFACTS}" = 1 ;; \
+            *) echo 'Release artifact source must use HTTPS or an explicitly allowed loopback address' >&2; exit 1 ;; \
+        esac; \
+    done; \
     printf '%s\n' "${WEB_CONSOLE_ARTIFACT_SHA256}" | grep -Eq '^[0-9a-f]{64}$'; \
     apt-get update; \
     apt-get install -y --no-install-recommends xz-utils; \
@@ -304,7 +313,7 @@ RUN set -eux; \
     curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
         --connect-timeout 10 --max-time 300 \
         -o "${compose_archive}" \
-        "https://github.com/PastureStack/compose-cli/releases/download/v${COMPOSE_EXECUTOR_VERSION}/compose-executor-${COMPOSE_EXECUTOR_VERSION}-linux-amd64.gz"; \
+        "${COMPOSE_EXECUTOR_RELEASE_BASE_URL%/}/v${COMPOSE_EXECUTOR_VERSION}/compose-executor-${COMPOSE_EXECUTOR_VERSION}-linux-amd64.gz"; \
     echo "${COMPOSE_EXECUTOR_ARCHIVE_SHA256}  ${compose_archive}" | sha256sum -c -; \
     gzip -dc "${compose_archive}" >/out/compose-executor; \
     chmod 0755 /out/compose-executor; \
@@ -322,7 +331,7 @@ RUN set -eux; \
     curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
         --connect-timeout 10 --max-time 300 \
         -o "${vsphere_archive}" \
-        "https://github.com/PastureStack/vsphere-cli-bundle/releases/download/v${VSPHERE_CLI_BUNDLE_VERSION}/vsphere-cli-bundle-${VSPHERE_CLI_BUNDLE_VERSION}-linux-amd64.tar.xz"; \
+        "${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL%/}/v${VSPHERE_CLI_BUNDLE_VERSION}/vsphere-cli-bundle-${VSPHERE_CLI_BUNDLE_VERSION}-linux-amd64.tar.xz"; \
     echo "${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256}  ${vsphere_archive}" | sha256sum -c -; \
     tar -tJf "${vsphere_archive}" >"${vsphere_listing}"; \
     if grep -Eq '(^/|(^|/)\.\.(/|$))' "${vsphere_listing}"; then \

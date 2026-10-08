@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Recipe/asset boundary tests. Fixtures are not release component identities."""
 import hashlib
+import contextlib
 import importlib.util
 import io
 import os
@@ -96,6 +97,46 @@ class ComponentRecipeTest(unittest.TestCase):
                 self.assertIn(environment[variable], arguments)
             for variable in COMMITS:
                 self.assertIn(environment[variable], arguments)
+
+    def test_ancillary_url_defaults_keep_https_and_sha_pins_with_explicit_loopback_only(self):
+        defaults = {
+            'COMPOSE_EXECUTOR_RELEASE_BASE_URL': 'https://github.com/PastureStack/compose-cli/releases/download',
+            'VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL': 'https://github.com/PastureStack/vsphere-cli-bundle/releases/download',
+        }
+        dockerfile = (ROOT / 'server/Dockerfile.web-compose-release').read_text()
+        for variable, url in defaults.items():
+            self.assertIn('ARG ' + variable + '=' + url, dockerfile)
+            self.assertNotIn('ENV ' + variable, dockerfile)
+        self.assertIn('echo "${COMPOSE_EXECUTOR_ARCHIVE_SHA256}  ${compose_archive}" | sha256sum -c -', dockerfile)
+        self.assertIn('echo "${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256}  ${vsphere_archive}" | sha256sum -c -', dockerfile)
+        self.assertIn('test "${PASTURESTACK_ALLOW_LOOPBACK_ARTIFACTS}" = 1', dockerfile)
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary)
+            environment, _ = self.local_fixture(path)
+            result = self.run_entry(environment)
+            self.assertEqual(88, result.returncode, result.stderr)
+            arguments = (path / 'docker-arguments').read_text()
+            for variable, url in defaults.items():
+                self.assertIn(variable + '=' + url, arguments)
+        for variable in defaults:
+            for url, allowed, reaches_docker in (
+                    ('http://127.0.0.1:18795/cache', False, False),
+                    ('http://127.0.0.1:18795/cache', True, True),
+                    ('http://10.0.0.144:18795/cache', True, False)):
+                with self.subTest(variable=variable, url=url, allowed=allowed):
+                    with tempfile.TemporaryDirectory() as temporary:
+                        path = Path(temporary)
+                        environment, _ = self.local_fixture(path)
+                        environment[variable] = url
+                        if allowed:
+                            environment['PASTURESTACK_ALLOW_LOOPBACK_ARTIFACTS'] = '1'
+                        result = self.run_entry(environment)
+                        self.assertEqual(reaches_docker, (path / 'docker-arguments').exists())
+                        if reaches_docker:
+                            self.assertEqual(88, result.returncode, result.stderr)
+                            self.assertIn(variable + '=' + url, (path / 'docker-arguments').read_text())
+                        else:
+                            self.assertNotEqual(0, result.returncode)
 
     def test_extra_file_or_corrupted_asset_cannot_reach_build(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -212,6 +253,33 @@ class ComponentRecipeTest(unittest.TestCase):
         preview['resourceFields']['purpose']['create'] = True
         with self.assertRaises(AssertionError):
             proof.validate_schema('apikeypolicypreview', preview)
+
+    def test_schema_failure_diagnostics_keep_only_safe_metadata(self):
+        specification = importlib.util.spec_from_file_location('key_schema_failure_proof', ROOT / 'scripts/test-api-key-schema.py')
+        proof = importlib.util.module_from_spec(specification)
+        specification.loader.exec_module(proof)
+        secret = 'fixture-secret-that-must-not-be-printed'
+        valid = {'resourceFields': {
+            'apiKeyPolicy': {'type': 'map[json]', 'create': True, 'update': True},
+            'apiKeyPolicyRevision': {'update': True},
+            'securityConfirmation': {'type': 'password'},
+        }, 'token': secret}
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            proof.validate_schema('apikey', valid)
+        self.assertEqual('', output.getvalue())
+        cases = (
+            ({'resourceFields': {'apiKeyPolicy': {'type': secret}}, 'token': secret}, AssertionError, 'apikey-policy-type'),
+            ({'resourceFields': {}, 'token': secret}, KeyError, 'MISSING_FIELD_METADATA'),
+            ({'resourceFields': None, 'token': secret}, TypeError, 'INVALID_FIELD_METADATA'),
+        )
+        for schema, exception, code in cases:
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output), self.assertRaises(exception):
+                proof.validate_schema('apikey', schema)
+            self.assertIn(code, output.getvalue())
+            self.assertNotIn(secret, output.getvalue())
+            self.assertNotIn('"token"', output.getvalue())
 
 
 if __name__ == "__main__":
