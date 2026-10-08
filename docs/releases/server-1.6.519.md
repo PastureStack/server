@@ -33,7 +33,7 @@ delegation boundary.
 
 | Component | Clean source commit | Archive SHA-256 |
 | --- | --- | --- |
-| Engine `v0.183.334` (`cattle.jar`) | `ae6a95001278e199fe09a314df10d37fcd542324` | `b0814095c177ee0be4f2b77277bb140d6dd9e948b42f5998a26ad9e178225319` |
+| Engine `v0.183.334` (`cattle.jar`) | `54b93a042e39ad1818fd509225d6b547d371854d` | `78bfd316e4188712dc79069bd73c1e1112363912bfdcd6f56916a655cd282bbb` |
 | Web Console `1.6.181` | `adfed6c46a0478634004d72f3748290c6f904abf` | `427424a8c2b956b415dc7daaaef8b89094130f04cd5d10f9a74a655907dc74d3` |
 | Websocket Proxy `0.23.15` | `2ec921200724341af6bf1c9402aac6b10a37f19f` | `f7046347c1e8ae20b18ed068860773ff810a5180b6b9b191a8eba6fbc215670b` |
 | Host API `0.38.5` | `94ae7b598c67431ceaa8ee471c0f5b83e535d25c` | `9b414d1f7e803184698c5f20bd438a75713dde7f115aac385c1f898466d2b68c` |
