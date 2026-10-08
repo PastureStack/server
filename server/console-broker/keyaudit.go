@@ -6,7 +6,9 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"net/url"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 )
@@ -14,6 +16,60 @@ import (
 const keyAuditQueryPath = "/v2-beta/pasturestack/key-audit-logs"
 
 var keyAuditIDPattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_-]{0,159}$`)
+
+func (b *broker) fetchKeyAuditLogs(ctx context.Context, incoming *http.Request, query auditQuery,
+	allowedProjects map[string]string, baseValues url.Values) ([]map[string]any, error) {
+	// Only Engine-proven live memberships select project contexts. Never
+	// accept a client project header, inferred Key owner or payload as a grant.
+	contexts := make([]string, 0, len(allowedProjects)+1)
+	if query.EnvironmentID == "" {
+		contexts = append(contexts, "") // current viewer's personal account
+	}
+	for projectID := range allowedProjects {
+		if !keyAuditIDPattern.MatchString(projectID) {
+			return nil, &auditHTTPError{Status: http.StatusBadGateway, Code: "invalid_key_audit_scope", Message: "Current environment permissions could not be verified"}
+		}
+		if query.EnvironmentID == "" || projectID == query.EnvironmentID {
+			contexts = append(contexts, projectID)
+		}
+	}
+	sort.Strings(contexts)
+	seen := make(map[string]bool)
+	records := make([]map[string]any, 0)
+	scanned := 0
+	for _, projectID := range contexts {
+		values := make(url.Values, len(baseValues)+2)
+		for name, items := range baseValues {
+			values[name] = append([]string(nil), items...)
+		}
+		values.Del("projectId")
+		accountID := query.ViewerAccountID
+		if projectID != "" {
+			values.Set("projectId", projectID)
+			accountID = projectID
+		}
+		values.Set("accountId", accountID)
+		pageRecords, err := b.fetchAllAuditLogs(ctx, incoming, values)
+		if err != nil {
+			return nil, err // role/session loss is fail-closed, never partial data
+		}
+		scanned += len(pageRecords)
+		if scanned > auditMaximumScanRows {
+			return nil, &auditHTTPError{Status: http.StatusUnprocessableEntity, Code: "result_set_too_large", Message: "Narrow the audit log time range or environment before continuing"}
+		}
+		for _, record := range pageRecords {
+			id := auditString(record, "id")
+			if !keyAuditIDPattern.MatchString(id) {
+				return nil, &auditHTTPError{Status: http.StatusBadGateway, Code: "invalid_audit_response", Message: "Audit log service returned an invalid event identifier"}
+			}
+			if !seen[id] {
+				seen[id] = true
+				records = append(records, record)
+			}
+		}
+	}
+	return records, nil
+}
 
 func isKeyAuditPath(path string) bool {
 	return path == keyAuditQueryPath || strings.HasPrefix(path, keyAuditQueryPath+"/")

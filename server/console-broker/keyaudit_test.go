@@ -6,20 +6,24 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
 )
 
 type keyAuditFixture struct {
-	mu           sync.Mutex
-	owner        string
-	keyStatus    int
-	restricted   bool
-	viewer       string
-	projects     []map[string]any
-	records      []map[string]any
-	auditQueries []url.Values
+	mu                sync.Mutex
+	owner             string
+	keyStatus         int
+	restricted        bool
+	viewer            string
+	projects          []map[string]any
+	records           []map[string]any
+	auditQueries      []url.Values
+	accountScoped     bool
+	deniedProject     string
+	projectPagination bool
 }
 
 func newKeyAuditFixture(t *testing.T) (*keyAuditFixture, *httptest.Server) {
@@ -58,7 +62,34 @@ func newKeyAuditFixture(t *testing.T) (*keyAuditFixture, *httptest.Server) {
 			writeFixtureCollection(writer, []map[string]any{{"type": "account", "id": "1a1", "name": "Owner"}}, "")
 		case "/v2-beta/auditlogs":
 			fixture.auditQueries = append(fixture.auditQueries, request.URL.Query())
-			writeFixtureCollection(writer, fixture.records, "")
+			if !fixture.accountScoped {
+				writeFixtureCollection(writer, fixture.records, "")
+				break
+			}
+			projectID := request.URL.Query().Get("projectId")
+			if projectID != "" && projectID == fixture.deniedProject {
+				http.Error(writer, "forbidden", http.StatusForbidden)
+				break
+			}
+			accountID := fixture.viewer
+			if projectID != "" {
+				accountID = projectID
+			}
+			var records []map[string]any
+			for _, record := range fixture.records {
+				if auditString(record, "accountId") == accountID {
+					records = append(records, record)
+				}
+			}
+			next := ""
+			if projectID != "" && fixture.projectPagination && request.URL.Query().Get("marker") == "" && len(records) > 1 {
+				records = records[:1]
+				// Real Engine next URLs can omit request-local project context.
+				next = upstream.server.URL + "/v2-beta/auditlogs?marker=second"
+			} else if request.URL.Query().Get("marker") == "second" && len(records) > 1 {
+				records = records[1:]
+			}
+			writeFixtureCollection(writer, records, next)
 		default:
 			http.NotFound(writer, request)
 		}
@@ -107,8 +138,119 @@ func TestKeyAuditFiltersBeforeCountAndPaginationAndAllTimeIncludesOldReads(t *te
 			t.Fatalf("unsafe query response retained %s", secret)
 		}
 	}
-	if len(fixture.auditQueries) != 1 || fixture.auditQueries[0].Get("created_gte") != "" {
+	if len(fixture.auditQueries) != 2 || fixture.auditQueries[0].Get("created_gte") != "" || fixture.auditQueries[1].Get("created_gte") != "" {
 		t.Fatalf("all-time query kept a lower time boundary: %#v", fixture.auditQueries)
+	}
+}
+
+func TestKeyAuditReadonlyOwnKeyUsesLiveProjectContextBeforeCountAndDetail(t *testing.T) {
+	fixture, server := newKeyAuditFixture(t)
+	fixture.accountScoped = true
+	fixture.records = []map[string]any{
+		keyAuditRecord("personal", "1a99", "1a1", "2020-01-01T00:00:00Z"),
+		keyAuditRecord("decision", "1a99", "1p1", "2021-01-01T00:00:00Z"),
+		keyAuditRecord("response405", "1a99", "1p1", "2022-01-01T00:00:00Z"),
+		keyAuditRecord("hidden", "1a99", "1p9", "2023-01-01T00:00:00Z"),
+		keyAuditRecord("foreign", "1a98", "1p1", "2024-01-01T00:00:00Z"),
+	}
+	fixture.records[2]["outcome"], fixture.records[2]["httpStatus"] = "FAILED", 405
+	response := performAuditRequest(t, server, keyAuditQueryPath+"?keyId=1a99&timeScope=all&limit=1&offset=1&order=asc")
+	defer response.Body.Close()
+	var payload auditCollection
+	if err := json.NewDecoder(response.Body).Decode(&payload); err != nil {
+		t.Fatal(err)
+	}
+	if response.StatusCode != http.StatusOK || payload.Pagination["total"] != float64(3) || len(payload.Data) != 1 || auditString(payload.Data[0], "id") != "decision" {
+		t.Fatalf("live project rows missing before count/pagination: %d %#v", response.StatusCode, payload)
+	}
+	detail := performAuditRequest(t, server, keyAuditQueryPath+"/response405?keyId=1a99")
+	defer detail.Body.Close()
+	if detail.StatusCode != http.StatusOK {
+		t.Fatalf("own denied update event missing: %d", detail.StatusCode)
+	}
+	for _, id := range []string{"foreign", "hidden"} {
+		hidden := performAuditRequest(t, server, keyAuditQueryPath+"/"+id+"?keyId=1a99")
+		hidden.Body.Close()
+		if hidden.StatusCode != http.StatusNotFound {
+			t.Fatalf("foreign/currently inaccessible event escaped: %s %d", id, hidden.StatusCode)
+		}
+	}
+}
+
+func TestKeyAuditProjectContextSurvivesPaginationAndRoleLossFailsClosed(t *testing.T) {
+	fixture, server := newKeyAuditFixture(t)
+	fixture.accountScoped, fixture.projectPagination = true, true
+	fixture.records = []map[string]any{
+		keyAuditRecord("decision", "1a99", "1p1", "2021-01-01T00:00:00Z"),
+		keyAuditRecord("response", "1a99", "1p1", "2022-01-01T00:00:00Z"),
+	}
+	response := performAuditRequest(t, server, keyAuditQueryPath+"?keyId=1a99&timeScope=all")
+	defer response.Body.Close()
+	var payload auditCollection
+	if err := json.NewDecoder(response.Body).Decode(&payload); err != nil {
+		t.Fatal(err)
+	}
+	if response.StatusCode != http.StatusOK || payload.Pagination["total"] != float64(2) {
+		t.Fatalf("later page lost verified project context: %d %#v", response.StatusCode, payload)
+	}
+	fixture.mu.Lock()
+	fixture.deniedProject = "1p1"
+	fixture.mu.Unlock()
+	lost := performAuditRequest(t, server, keyAuditQueryPath+"?keyId=1a99&timeScope=all")
+	defer lost.Body.Close()
+	if lost.StatusCode != http.StatusForbidden {
+		t.Fatalf("mid-query live role loss returned partial collection: %d", lost.StatusCode)
+	}
+}
+
+func TestKeyAuditDoesNotTrustCallerProjectHeaderOrReturnForeignPersonalKey(t *testing.T) {
+	fixture, server := newKeyAuditFixture(t)
+	fixture.accountScoped = true
+	fixture.records = []map[string]any{keyAuditRecord("hidden", "1a99", "1p9", "2020-01-01T00:00:00Z")}
+	request, _ := http.NewRequest(http.MethodGet, server.URL+keyAuditQueryPath+"?keyId=1a99&timeScope=all", nil)
+	request.Header.Set("Cookie", "R_SESS=authorized")
+	request.Header.Set("X-API-Project-ID", "1p9")
+	response, err := server.Client().Do(request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer response.Body.Close()
+	var payload auditCollection
+	if err := json.NewDecoder(response.Body).Decode(&payload); err != nil {
+		t.Fatal(err)
+	}
+	if response.StatusCode != http.StatusOK || payload.Pagination["total"] != float64(0) {
+		t.Fatalf("caller project header was treated as a grant: %d %#v", response.StatusCode, payload)
+	}
+	fixture.mu.Lock()
+	fixture.owner = "1a2"
+	fixture.mu.Unlock()
+	foreign := performAuditRequest(t, server, keyAuditQueryPath+"?keyId=1a99&timeScope=all")
+	defer foreign.Body.Close()
+	if foreign.StatusCode != http.StatusForbidden {
+		t.Fatalf("foreign personal key ceiling relaxed: %d", foreign.StatusCode)
+	}
+}
+
+func TestKeyAuditCombinedProjectScanBoundCannotBeBypassed(t *testing.T) {
+	fixture, server := newKeyAuditFixture(t)
+	fixture.accountScoped = true
+	fixture.projects = []map[string]any{{"type": "project", "id": "1p1"}, {"type": "project", "id": "1p2"}}
+	for index := 0; index <= auditMaximumScanRows; index++ {
+		account := "1p1"
+		if index%2 != 0 {
+			account = "1p2"
+		}
+		fixture.records = append(fixture.records, map[string]any{
+			"id": "event" + strconv.Itoa(index), "accountId": account,
+			"keyId": "1a99", "created": "2020-01-01T00:00:00Z",
+		})
+	}
+	response := performAuditRequest(t, server, keyAuditQueryPath+"?keyId=1a99&timeScope=all")
+	defer response.Body.Close()
+	body, _ := io.ReadAll(response.Body)
+	if response.StatusCode != http.StatusUnprocessableEntity || !strings.Contains(string(body), "result_set_too_large") {
+		t.Fatalf("combined contexts exceeded global scan bound: %d", response.StatusCode)
 	}
 }
 

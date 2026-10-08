@@ -313,7 +313,15 @@ func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, quer
 	if query.EnvironmentID != "" {
 		upstreamValues.Set("accountId", query.EnvironmentID)
 	}
-	records, err := b.fetchAllAuditLogs(ctx, incoming, upstreamValues)
+	var records []map[string]any
+	if query.KeyID != "" {
+		// AccountPolicy applies to the requested Engine environment, not all
+		// memberships at once. The Key view must query each live authorized
+		// environment explicitly rather than silently showing personal rows only.
+		records, err = b.fetchKeyAuditLogs(ctx, incoming, query, allowedProjects, upstreamValues)
+	} else {
+		records, err = b.fetchAllAuditLogs(ctx, incoming, upstreamValues)
+	}
 	if err != nil {
 		return auditResult{}, err
 	}
@@ -378,6 +386,9 @@ func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, quer
 
 func (b *broker) fetchAllAuditLogs(ctx context.Context, incoming *http.Request, values url.Values) ([]map[string]any, error) {
 	requestPath := "/v2-beta/auditlogs"
+	// A trusted, server-selected environment must remain fixed on later
+	// pages even when the Engine's next URL omits request-local context.
+	projectContext, accountScope := values.Get("projectId"), values.Get("accountId")
 	records := make([]map[string]any, 0, auditUpstreamPageSize)
 	for page := 0; page < 100; page++ {
 		collection, err := b.fetchAuditPage(ctx, incoming, requestPath, values)
@@ -398,6 +409,10 @@ func (b *broker) fetchAllAuditLogs(ctx context.Context, incoming *http.Request, 
 		}
 		requestPath = parsed.Path
 		values = parsed.Query()
+		if projectContext != "" {
+			values.Set("projectId", projectContext)
+			values.Set("accountId", accountScope)
+		}
 	}
 	return nil, &auditHTTPError{Status: http.StatusUnprocessableEntity, Code: "result_set_too_large", Message: "Narrow the audit log time range or environment before continuing"}
 }
