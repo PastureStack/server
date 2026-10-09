@@ -697,9 +697,9 @@ if grep -Eq 'dacf7353a1e72e933ac883c3e4c5521e12bb9017706475a7d94f2803c5b5b216|23
 fi
 for release_proxy_marker in \
     'ARG WEBSOCKET_PROXY_VERSION=0.23.15' \
-    'ARG WEBSOCKET_PROXY_COMMIT=97ad2a48658841709924efc21af93b82c825c800' \
-    'ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=3e9dabbfd466ccaa4427ed9cf02b2fb3793436f4d27a120dd7e2d73d9ba56bfc' \
-    'ARG WEBSOCKET_PROXY_BINARY_SHA256=686fa62702315348e8698fa11e9647b423ab5c4331ff8236260726ef1c275b16' \
+    'ARG WEBSOCKET_PROXY_COMMIT=a968ae2887a9b6f190c0552e11c9bb54da72a76b' \
+    'ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=159f6bbaf84c230b99c97d59f171e12444ff203dd183a338e0b7d491711a88d4' \
+    'ARG WEBSOCKET_PROXY_BINARY_SHA256=5ade6d24ff05abd7fdd29b5c4260a699d2bf1ccde17cfc9ebbcedb1c0ee36d6a' \
     'tar --no-same-owner --no-same-permissions -xJf "${websocket_archive}"' \
     'COPY --from=release_artifacts --chmod=0755 /out/websocket-proxy/websocket-proxy /usr/bin/websocket-proxy.real' \
     '/usr/bin/websocket-proxy.real --help 2>&1 | grep -F -- '\''-platform-public-origin'\'''; do
@@ -707,9 +707,9 @@ for release_proxy_marker in \
         SERVER_INCREMENTAL_WEBSOCKET_PROXY_REPLACEMENT_MISSING
 done
 for release_proxy_build_marker in \
-    'websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-97ad2a48658841709924efc21af93b82c825c800}' \
-    'websocket_proxy_archive_sha256=${WEBSOCKET_PROXY_ARCHIVE_SHA256:-3e9dabbfd466ccaa4427ed9cf02b2fb3793436f4d27a120dd7e2d73d9ba56bfc}' \
-    'websocket_proxy_binary_sha256=${WEBSOCKET_PROXY_BINARY_SHA256:-686fa62702315348e8698fa11e9647b423ab5c4331ff8236260726ef1c275b16}' \
+    'websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-a968ae2887a9b6f190c0552e11c9bb54da72a76b}' \
+    'websocket_proxy_archive_sha256=${WEBSOCKET_PROXY_ARCHIVE_SHA256:-159f6bbaf84c230b99c97d59f171e12444ff203dd183a338e0b7d491711a88d4}' \
+    'websocket_proxy_binary_sha256=${WEBSOCKET_PROXY_BINARY_SHA256:-5ade6d24ff05abd7fdd29b5c4260a699d2bf1ccde17cfc9ebbcedb1c0ee36d6a}' \
     'PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256="${websocket_proxy_binary_sha256}"' \
     'echo "${PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256}  /usr/bin/websocket-proxy.real" | sha256sum -c -'; do
     require_marker "$build_script" "$release_proxy_build_marker" \
@@ -891,8 +891,8 @@ require_marker "$build_script" \
 for release_engine_marker in \
     'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.334' \
     'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=a3a2dc900ea09477fc26148418a2edc7dc17f2a6b08d6301ef5f4ca33e6884a5' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=7b7415676d9b8d6bf00a1c28e1c7468758cd56bf' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=6a797997a5ea5505659807789b6d92d1741ffe9afb1bb78057453b0d067265d0' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=3e519e28dde216427642df537b4d8365ef014d95' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
     'ARG ORCHESTRATION_ENGINE_VERSION=0.183.334' \
     'grep -Fx "Implementation-Version: ${ORCHESTRATION_ENGINE_VERSION}"' \
@@ -917,8 +917,8 @@ done
 for release_engine_build_marker in \
     'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.334}' \
     'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}' \
-    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-a3a2dc900ea09477fc26148418a2edc7dc17f2a6b08d6301ef5f4ca33e6884a5}' \
-    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-7b7415676d9b8d6bf00a1c28e1c7468758cd56bf}' \
+    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-6a797997a5ea5505659807789b6d92d1741ffe9afb1bb78057453b0d067265d0}' \
+    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-3e519e28dde216427642df537b4d8365ef014d95}' \
     'CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.5.jar"'; do

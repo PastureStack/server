@@ -20,8 +20,8 @@ COMPATIBILITY_CODE = 'SERVER_CREATE_RESPONSE_ORDER_COMPATIBILITY_MISSING'
 WEB_SHA = '6b22e2291b0d4c1d19061e65eb84a84d5f8ae2c22b1eb5b6b1d24b1f3a46d08b'
 WEB_SOURCE = 'c3536a0560cdc1b286b275c39fb1cd04a14ed9b0'
 CATALOG_COMMIT = 'b6b658888fce50d3ec217eb4eba0f26ab0113baf'
-ENGINE_SHA = 'a3a2dc900ea09477fc26148418a2edc7dc17f2a6b08d6301ef5f4ca33e6884a5'
-ENGINE_SOURCE = '7b7415676d9b8d6bf00a1c28e1c7468758cd56bf'
+ENGINE_SHA = '6a797997a5ea5505659807789b6d92d1741ffe9afb1bb78057453b0d067265d0'
+ENGINE_SOURCE = '3e519e28dde216427642df537b4d8365ef014d95'
 OLD_COORDINATES = {
     'v1.6.519': 'v1.6.518',
     '1.6.181': '1.6.180',
@@ -476,9 +476,9 @@ class Tests(unittest.TestCase):
 
     def test_proxy_binary_readback_uses_the_verified_component_parameter(self):
         for field, value in (
-            ('COMMIT', '97ad2a48658841709924efc21af93b82c825c800'),
-            ('ARCHIVE_SHA256', '3e9dabbfd466ccaa4427ed9cf02b2fb3793436f4d27a120dd7e2d73d9ba56bfc'),
-            ('BINARY_SHA256', '686fa62702315348e8698fa11e9647b423ab5c4331ff8236260726ef1c275b16'),
+            ('COMMIT', 'a968ae2887a9b6f190c0552e11c9bb54da72a76b'),
+            ('ARCHIVE_SHA256', '159f6bbaf84c230b99c97d59f171e12444ff203dd183a338e0b7d491711a88d4'),
+            ('BINARY_SHA256', '5ade6d24ff05abd7fdd29b5c4260a699d2bf1ccde17cfc9ebbcedb1c0ee36d6a'),
         ):
             docker_marker = 'ARG WEBSOCKET_PROXY_' + field + '=' + value
             build_marker = 'websocket_proxy_' + field.lower() + '=${WEBSOCKET_PROXY_' + field + ':-' + value + '}'

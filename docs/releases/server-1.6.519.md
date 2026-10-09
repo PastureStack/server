@@ -42,9 +42,9 @@ delegation boundary.
 
 | Component | Clean source commit | Archive SHA-256 |
 | --- | --- | --- |
-| Engine `v0.183.334` (`cattle.jar`) | `7b7415676d9b8d6bf00a1c28e1c7468758cd56bf` | `a3a2dc900ea09477fc26148418a2edc7dc17f2a6b08d6301ef5f4ca33e6884a5` |
+| Engine `v0.183.334` (`cattle.jar`) | `3e519e28dde216427642df537b4d8365ef014d95` | `6a797997a5ea5505659807789b6d92d1741ffe9afb1bb78057453b0d067265d0` |
 | Web Console `1.6.181` | `c3536a0560cdc1b286b275c39fb1cd04a14ed9b0` | `6b22e2291b0d4c1d19061e65eb84a84d5f8ae2c22b1eb5b6b1d24b1f3a46d08b` |
-| Websocket Proxy `0.23.15` | `97ad2a48658841709924efc21af93b82c825c800` | `3e9dabbfd466ccaa4427ed9cf02b2fb3793436f4d27a120dd7e2d73d9ba56bfc` |
+| Websocket Proxy `0.23.15` | `a968ae2887a9b6f190c0552e11c9bb54da72a76b` | `159f6bbaf84c230b99c97d59f171e12444ff203dd183a338e0b7d491711a88d4` |
 | Host API `0.38.5` | `94ae7b598c67431ceaa8ee471c0f5b83e535d25c` | `9b414d1f7e803184698c5f20bd438a75713dde7f115aac385c1f898466d2b68c` |
 | Linux Node Agent `0.13.28` | `4b20764cacc9496e810fe1b6687923a4bcc901b8` | `4a9f26a0ac9d0a53a6a7b0bb1dbde72b6a642e7474a19959ad87f81e46a85396` |
 | vSphere CLI Bundle `0.55.3` | `5b1f9c91cdf2b5217b8d5019bbfb18bbc3e3294e` | `94553db031d141bf115594effae7ef0c28214e091d018db684467ee56f0c5120` |
@@ -59,7 +59,7 @@ relative to the rendered build; business JavaScript bytes are unchanged.
 Host package root: `94ae7b598c67431ceaa8ee471c0f5b83`.
 Host binary SHA-256: `8a197dc440361febb750b7a181195a19b09f674d8cfd8bc69eae6b9f168616c1`.
 Host `apply.sh` SHA-256: `8a21f63099832afb571755011bbcf8d97710994a50c419b20700cbc31efced0f`.
-Proxy binary SHA-256: `686fa62702315348e8698fa11e9647b423ab5c4331ff8236260726ef1c275b16`.
+Proxy binary SHA-256: `5ade6d24ff05abd7fdd29b5c4260a699d2bf1ccde17cfc9ebbcedb1c0ee36d6a`.
 govc binary SHA-256: `0994912900534ddb60e0b70a1853046f0c7ab1aa374d241f12b2a397d1de84ae`.
 Node package root: `4b20764cacc9496e810fe1b6687923a4`.
 Node binary SHA-256: `a20b69fc484416e92f4102d2a18f77cc1650ed7d7c6fbbd9c371f5383e2596aa`.
