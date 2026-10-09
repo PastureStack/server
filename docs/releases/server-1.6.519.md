@@ -10,6 +10,11 @@ as full keys, intersected with the owner's live role and environment access.
 Operation decisions and actual request/process outcomes are durably audited
 without credential secrets or request payloads. Key-scoped audit queries
 recheck the viewer's current authorization before filtering and pagination.
+Transparent resource-manager filters preserve guarded collection SQL scope
+before pagination; unknown or replaced query paths remain denied. During a
+service upgrade, persisted live `upgrade=true, managed=false` relationships
+retain their same-account ancestry while old instances are replaced. Ordinary
+unmanaged, removed or contradictory relationships do not grant that ancestry.
 The Key query uses the viewer's personal context and Engine-proven live project
 contexts, then deduplicates and scopes events within a shared scan bound.
 An incomplete live project-authority page is rejected without partial results.
@@ -47,14 +52,19 @@ that existing hosts have been upgraded merely because Server contains the new
 archives. Windows retains its separate `0.13.27` package and unsupported
 delegation boundary.
 
+The Linux Host completion spool validates each directory descriptor before
+creating descendants. Unsafe aliases, writable or foreign-owned parents fail
+without creating directories through them. Search-only trusted ancestors and
+owner-only permission repair remain supported without changing parent modes.
+
 ## Exact component inputs
 
 | Component | Clean source commit | Archive SHA-256 |
 | --- | --- | --- |
-| Engine `v0.183.334` (`cattle.jar`) | `3e519e28dde216427642df537b4d8365ef014d95` | `6a797997a5ea5505659807789b6d92d1741ffe9afb1bb78057453b0d067265d0` |
+| Engine `v0.183.334` (`cattle.jar`) | `4311ce0a6c26edfaf1c8eec4f7a9f3a958346aee` | `668a284d5983a2a2d157ad64e8b5885bd3eba10638ee33ea6991732957cf5399` |
 | Web Console `1.6.181` | `c3536a0560cdc1b286b275c39fb1cd04a14ed9b0` | `6b22e2291b0d4c1d19061e65eb84a84d5f8ae2c22b1eb5b6b1d24b1f3a46d08b` |
 | Websocket Proxy `0.23.15` | `a968ae2887a9b6f190c0552e11c9bb54da72a76b` | `159f6bbaf84c230b99c97d59f171e12444ff203dd183a338e0b7d491711a88d4` |
-| Host API `0.38.5` | `94ae7b598c67431ceaa8ee471c0f5b83e535d25c` | `9b414d1f7e803184698c5f20bd438a75713dde7f115aac385c1f898466d2b68c` |
+| Host API `0.38.5` | `ea295d1ffe4064bd3ac4afd8ea0f751d27aa4285` | `718e952852b4bc0342e62481ae60673a6b8e76f72b48e741a63a3145724bf1ce` |
 | Linux Node Agent `0.13.28` | `4b20764cacc9496e810fe1b6687923a4bcc901b8` | `4a9f26a0ac9d0a53a6a7b0bb1dbde72b6a642e7474a19959ad87f81e46a85396` |
 | vSphere CLI Bundle `0.55.3` | `5b1f9c91cdf2b5217b8d5019bbfb18bbc3e3294e` | `94553db031d141bf115594effae7ef0c28214e091d018db684467ee56f0c5120` |
 
@@ -65,8 +75,8 @@ native browser acceptance of this new production bundle.
 The final package changes only the two generated range-limit translations
 relative to the rendered build; business JavaScript bytes are unchanged.
 
-Host package root: `94ae7b598c67431ceaa8ee471c0f5b83`.
-Host binary SHA-256: `8a197dc440361febb750b7a181195a19b09f674d8cfd8bc69eae6b9f168616c1`.
+Host package root: `ea295d1ffe4064bd3ac4afd8ea0f751d`.
+Host binary SHA-256: `30ab71f83213858e6cc727a8b6be22ac9d390c97fdc7a5f0ed96818a8715565f`.
 Host `apply.sh` SHA-256: `8a21f63099832afb571755011bbcf8d97710994a50c419b20700cbc31efced0f`.
 Proxy binary SHA-256: `5ade6d24ff05abd7fdd29b5c4260a699d2bf1ccde17cfc9ebbcedb1c0ee36d6a`.
 govc binary SHA-256: `0994912900534ddb60e0b70a1853046f0c7ab1aa374d241f12b2a397d1de84ae`.

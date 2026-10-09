@@ -519,10 +519,10 @@ for release_host_marker in \
     'ARG HOST_API_PACKAGE_MODE=producer' \
     'ARG HOST_API_RELEASE_BASE_URL=https://github.com/PastureStack/host-api/releases/download' \
     'ARG HOST_API_RELEASE_TAG=v0.38.5' \
-    'ARG HOST_API_COMMIT=94ae7b598c67431ceaa8ee471c0f5b83e535d25c' \
-    'ARG HOST_API_PACKAGE_ID=94ae7b598c67431ceaa8ee471c0f5b83' \
-    'ARG HOST_API_ARCHIVE_SHA256=9b414d1f7e803184698c5f20bd438a75713dde7f115aac385c1f898466d2b68c' \
-    'ARG HOST_API_BINARY_SHA256=8a197dc440361febb750b7a181195a19b09f674d8cfd8bc69eae6b9f168616c1' \
+    'ARG HOST_API_COMMIT=ea295d1ffe4064bd3ac4afd8ea0f751d27aa4285' \
+    'ARG HOST_API_PACKAGE_ID=ea295d1ffe4064bd3ac4afd8ea0f751d' \
+    'ARG HOST_API_ARCHIVE_SHA256=718e952852b4bc0342e62481ae60673a6b8e76f72b48e741a63a3145724bf1ce' \
+    'ARG HOST_API_BINARY_SHA256=30ab71f83213858e6cc727a8b6be22ac9d390c97fdc7a5f0ed96818a8715565f' \
     'ARG HOST_API_APPLY_SHA256=8a21f63099832afb571755011bbcf8d97710994a50c419b20700cbc31efced0f' \
     'verify-host-api-package /out/host-api.tar.gz'; do
     require_marker "$release_dockerfile" "$release_host_marker" \
@@ -891,8 +891,8 @@ require_marker "$build_script" \
 for release_engine_marker in \
     'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.334' \
     'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=6a797997a5ea5505659807789b6d92d1741ffe9afb1bb78057453b0d067265d0' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=3e519e28dde216427642df537b4d8365ef014d95' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=668a284d5983a2a2d157ad64e8b5885bd3eba10638ee33ea6991732957cf5399' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=4311ce0a6c26edfaf1c8eec4f7a9f3a958346aee' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
     'ARG ORCHESTRATION_ENGINE_VERSION=0.183.334' \
     'grep -Fx "Implementation-Version: ${ORCHESTRATION_ENGINE_VERSION}"' \
@@ -917,8 +917,8 @@ done
 for release_engine_build_marker in \
     'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.334}' \
     'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}' \
-    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-6a797997a5ea5505659807789b6d92d1741ffe9afb1bb78057453b0d067265d0}' \
-    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-3e519e28dde216427642df537b4d8365ef014d95}' \
+    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-668a284d5983a2a2d157ad64e8b5885bd3eba10638ee33ea6991732957cf5399}' \
+    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-4311ce0a6c26edfaf1c8eec4f7a9f3a958346aee}' \
     'CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.5.jar"'; do
