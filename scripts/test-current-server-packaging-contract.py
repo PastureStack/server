@@ -681,6 +681,17 @@ class Tests(unittest.TestCase):
             self.assertIn(digest + '  ' + binary, FILES[BUILD])
             self.assertIn('PASTURESTACK_' + upper + '_VERSION="' + '$' + '{' + upper.lower() + '_version}"', FILES[BUILD])
 
+    def test_compose_executor_artifact_and_real_binary_keep_distinct_version_contracts(self):
+        source = FILES[DOCKER]
+        artifact = 'compose_version_output="$(/out/compose-executor --version 2>&1)"; \\\n    test "${compose_version_output}" = "compose-executor version ${COMPOSE_EXECUTOR_VERSION}";'
+        runtime = 'compose_version_output="$(/usr/bin/compose-executor.real --version 2>&1)"; \\\n    test "${compose_version_output}" = "pasturestack-compose version ${COMPOSE_EXECUTOR_VERSION}";'
+        # The producer dispatches by executable basename. Only the unrenamed
+        # artifact uses the executor name; the installed .real binary is the CLI.
+        self.assertEqual(source.count(artifact), 1)
+        self.assertEqual(source.count(runtime), 1)
+        self.assertIn(shlex.quote('test "${compose_version_output}" = "compose-executor version ${COMPOSE_EXECUTOR_VERSION}"'), GATE)
+        self.assertIn('"pasturestack-compose version ${PASTURESTACK_COMPOSE_EXECUTOR_VERSION}"', FILES[BUILD])
+
     def test_original_fourteen_component_inputs_keep_exact_sha_fetch_and_five_stages(self):
         verify_incremental_contract(FILES)
         block = FILES[BUILD].split('    component_assets=(\n', 1)[1].split('    )', 1)[0]

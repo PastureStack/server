@@ -934,7 +934,7 @@ require_marker server/console-broker/broker_test.go \
     'TestStaticAssetCachePolicyIsPreserved' \
     SERVER_CONSOLE_BROKER_STATIC_CACHE_POLICY_TEST_MISSING
 require_marker "$release_dockerfile" \
-    'test "${compose_version_output}" = "pasturestack-compose version ${COMPOSE_EXECUTOR_VERSION}"' \
+    'test "${compose_version_output}" = "compose-executor version ${COMPOSE_EXECUTOR_VERSION}"' \
     SERVER_INCREMENTAL_COMPOSE_VERSION_GATE_MISSING
 require_marker "$release_dockerfile" \
     'footer .footer-dropdown .dropdown-menu' \

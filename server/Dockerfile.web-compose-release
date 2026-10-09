@@ -340,7 +340,7 @@ RUN set -eux; \
     chmod 0755 /out/compose-executor; \
     echo "${COMPOSE_EXECUTOR_BINARY_SHA256}  /out/compose-executor" | sha256sum -c -; \
     compose_version_output="$(/out/compose-executor --version 2>&1)"; \
-    test "${compose_version_output}" = "pasturestack-compose version ${COMPOSE_EXECUTOR_VERSION}"; \
+    test "${compose_version_output}" = "compose-executor version ${COMPOSE_EXECUTOR_VERSION}"; \
     engine_archive=/out/orchestration-engine.jar; \
     fetch-server-component "${COMPONENT_ARTIFACT_MODE}" \
         "${ORCHESTRATION_ENGINE_RELEASE_BASE_URL%/}/${ORCHESTRATION_ENGINE_RELEASE_TAG}/${ORCHESTRATION_ENGINE_ARTIFACT}" \
