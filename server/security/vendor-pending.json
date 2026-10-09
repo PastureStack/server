@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "release": "v1.6.519",
-  "generatedAt": "2026-10-06T17:35:00Z",
+  "generatedAt": "2026-10-10T00:00:00Z",
   "policy": {
     "allowedSeverities": [
       "LOW",
@@ -13,16 +13,6 @@
     "trivyTarget": "/rootfs (ubuntu 26.04)"
   },
   "findings": [
-    {
-      "vulnerabilityId": "CVE-2026-46675",
-      "severity": "MEDIUM",
-      "vendorStatus": "needs-evaluation",
-      "source": "https://ubuntu.com/security/CVE-2026-46675",
-      "reviewAfter": "2026-10-20",
-      "packages": [
-        { "name": "libpng16-16t64", "installedVersion": "1.6.57-1" }
-      ]
-    },
     {
       "vulnerabilityId": "CVE-2026-85091",
       "severity": "MEDIUM",

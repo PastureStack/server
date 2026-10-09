@@ -68,7 +68,7 @@ owner-only permission repair remain supported without changing parent modes.
 | Authentication Service `0.4.43` | `cae736f377019bd9743648a8e9aa469a0e21b5e0` | `e9218771af8dd68323c8c6fdab149c40a3ad02da9ff23f8aad6f0b2977740273` |
 | Compose Executor `0.14.37` | `88e991e823f06d2334c07d5370595aae3c48ee99` | `5ff465601930218f531885a384f231d969033e4cef794ce33d16bfe24e5c1c81` |
 | Host Provisioner `0.39.8` | `385e5b536c108f17fdfcdec84c01750a5be5ab1c` | `d775f36a613b1a486a5e60d6ad61fdbd1ebb4bd22422cbb6dcb70fdd7c4abf0c` |
-| Secret Delivery API `0.3.2` | `53060369b29946b1f1b62e5fabbcfc8778c55bb6` | `8a5e6da29db8f7b55ab3291b0270e843a5c15e67154fa075575d8b84f4bc0ae9` |
+| Secret Delivery API `0.3.2` | `f9c3f933f14e43dc63074d45a3044b693ec1e573` | `ca9ab0bfddbcad84b6c1a865af8ad82fcc56cb43dcca1da240ed11a5d24cbdb2` |
 | Usage Telemetry Agent `0.4.2` | `40f9af7ca932fedacdb87e30b4ef1c60a4a7444e` | `5ce031c84f76b3e62dafdb04fb4ed014aa1921e83be056c2d5dd712acbce25a8` |
 | Webhook Automation Service `0.10.4` | `400118b893843d2a7d7c65cc70c3449d76c4a8d8` | `49c4579829a04e758045fae02a5a9fca12bb0ba3af0d5e979cf9eb97f23a88a9` |
 | Websocket Proxy `0.23.15` | `1928f602b66443cdab40c8cdb450c811548d2749` | `4657338973f672f6ae4d6e5510d06e811b9951afea1baa27a9caa3034e487f2a` |

@@ -91,9 +91,9 @@ host_provisioner_archive_sha256=${HOST_PROVISIONER_ARCHIVE_SHA256:-d775f36a613b1
 host_provisioner_binary_sha256=${HOST_PROVISIONER_BINARY_SHA256:-1d37e20a7a1cf4f3e36036a15ff7699ef22cd8809fd14a20892034dd054fd1fc}
 secret_delivery_api_release_base_url=${SECRET_DELIVERY_API_RELEASE_BASE_URL:-https://github.com/PastureStack/secret-delivery-api/releases/download}
 secret_delivery_api_version=${SECRET_DELIVERY_API_VERSION:-0.3.2}
-secret_delivery_api_commit=${SECRET_DELIVERY_API_COMMIT:-53060369b29946b1f1b62e5fabbcfc8778c55bb6}
-secret_delivery_api_archive_sha256=${SECRET_DELIVERY_API_ARCHIVE_SHA256:-8a5e6da29db8f7b55ab3291b0270e843a5c15e67154fa075575d8b84f4bc0ae9}
-secret_delivery_api_binary_sha256=${SECRET_DELIVERY_API_BINARY_SHA256:-c263f61fd01423da30e06addc4385817fe683df42c299e53f27a812d8621e777}
+secret_delivery_api_commit=${SECRET_DELIVERY_API_COMMIT:-f9c3f933f14e43dc63074d45a3044b693ec1e573}
+secret_delivery_api_archive_sha256=${SECRET_DELIVERY_API_ARCHIVE_SHA256:-ca9ab0bfddbcad84b6c1a865af8ad82fcc56cb43dcca1da240ed11a5d24cbdb2}
+secret_delivery_api_binary_sha256=${SECRET_DELIVERY_API_BINARY_SHA256:-b5e01b7e65aeee3b456fe043142b5e70f4039ee89ffd437648368ff63e6042b6}
 usage_telemetry_agent_release_base_url=${USAGE_TELEMETRY_AGENT_RELEASE_BASE_URL:-https://github.com/PastureStack/usage-telemetry-agent/releases/download}
 usage_telemetry_agent_version=${USAGE_TELEMETRY_AGENT_VERSION:-0.4.2}
 usage_telemetry_agent_commit=${USAGE_TELEMETRY_AGENT_COMMIT:-40f9af7ca932fedacdb87e30b4ef1c60a4a7444e}
@@ -362,6 +362,7 @@ for marker in \
     PASTURESTACK_PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3 \
     PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.3 \
     PASTURESTACK_FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2 \
+    PASTURESTACK_LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1 \
     PASTURESTACK_COREUTILS_PROVIDER=gnu \
     PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11 \
     PASTURESTACK_COREUTILS_UNIQ_FIX=d64e35a8a4c0e4608321433e0d84d917e4e36371 \
@@ -781,7 +782,7 @@ docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_versi
 fe11eec4b31b43863b49a582b1dbbe309eae08fb78adc150037981174f0622da  /usr/bin/authentication-service.real
 a9bf9f0f77e914fe557d3e178a73c31526b0ca0adc4afbf17bf68d8d75c7ee27  /usr/bin/compose-executor.real
 1d37e20a7a1cf4f3e36036a15ff7699ef22cd8809fd14a20892034dd054fd1fc  /usr/bin/host-provisioner.real
-c263f61fd01423da30e06addc4385817fe683df42c299e53f27a812d8621e777  /usr/bin/secret-delivery-api
+b5e01b7e65aeee3b456fe043142b5e70f4039ee89ffd437648368ff63e6042b6  /usr/bin/secret-delivery-api
 e62a21270142181315293d7e11482288ffe8fc4d91cc8fe07dacc90b461f3709  /usr/bin/usage-telemetry-agent
 98c7faea665b7eb95206b8c73a6f47d644c5d2d0eae53f274f6a15faf5205744  /usr/bin/webhook-automation-service
 EOF
@@ -897,6 +898,11 @@ EOF
     test "$(dpkg-query -W -f='"'"'${Version}'"'"' libfreetype6)" = 2.14.2+dfsg-1ubuntu0.2
     test "$(wc -l < /usr/share/pasturestack/security/freetype-runtime.sha256)" -eq 1
     sha256sum -c /usr/share/pasturestack/security/freetype-runtime.sha256
+    test "$(dpkg-query -W -f='"'"'${Version}'"'"' libpng16-16t64)" = 1.6.57-1ubuntu0.1
+    test "$(wc -l < /usr/share/pasturestack/security/libpng-runtime.sha256)" -eq 1
+    sha256sum -c /usr/share/pasturestack/security/libpng-runtime.sha256
+    libpng_linkage=$(ldd -r /usr/lib/x86_64-linux-gnu/libpng16.so.16 2>&1)
+    ! printf "%s\n" "$libpng_linkage" | grep -E "not found|undefined symbol"
     test "$(readlink -f /usr/lib/x86_64-linux-gnu/libfreetype.so.6)" = /usr/lib/x86_64-linux-gnu/libfreetype.so.6.20.5
     perl -MDBI -e '"'"'die "Unexpected DBI runtime version\n" unless $DBI::VERSION eq "1.647"'"'"'
     openssl version | grep -E "^OpenSSL 3\\.5\\.5 .*\\(Library: OpenSSL 3\\.5\\.5 " >/dev/null

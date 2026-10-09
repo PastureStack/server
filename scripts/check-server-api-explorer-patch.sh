@@ -634,9 +634,9 @@ for incremental_producer_marker in \
     'ARG HOST_PROVISIONER_ARCHIVE_SHA256=d775f36a613b1a486a5e60d6ad61fdbd1ebb4bd22422cbb6dcb70fdd7c4abf0c' \
     'ARG HOST_PROVISIONER_BINARY_SHA256=1d37e20a7a1cf4f3e36036a15ff7699ef22cd8809fd14a20892034dd054fd1fc' \
     'ARG SECRET_DELIVERY_API_VERSION=0.3.2' \
-    'ARG SECRET_DELIVERY_API_COMMIT=53060369b29946b1f1b62e5fabbcfc8778c55bb6' \
-    'ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=8a5e6da29db8f7b55ab3291b0270e843a5c15e67154fa075575d8b84f4bc0ae9' \
-    'ARG SECRET_DELIVERY_API_BINARY_SHA256=c263f61fd01423da30e06addc4385817fe683df42c299e53f27a812d8621e777' \
+    'ARG SECRET_DELIVERY_API_COMMIT=f9c3f933f14e43dc63074d45a3044b693ec1e573' \
+    'ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=ca9ab0bfddbcad84b6c1a865af8ad82fcc56cb43dcca1da240ed11a5d24cbdb2' \
+    'ARG SECRET_DELIVERY_API_BINARY_SHA256=b5e01b7e65aeee3b456fe043142b5e70f4039ee89ffd437648368ff63e6042b6' \
     'ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.2' \
     'ARG USAGE_TELEMETRY_AGENT_COMMIT=40f9af7ca932fedacdb87e30b4ef1c60a4a7444e' \
     'ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=5ce031c84f76b3e62dafdb04fb4ed014aa1921e83be056c2d5dd712acbce25a8' \
@@ -652,9 +652,9 @@ for incremental_producer_build_marker in \
     'host_provisioner_archive_sha256=${HOST_PROVISIONER_ARCHIVE_SHA256:-d775f36a613b1a486a5e60d6ad61fdbd1ebb4bd22422cbb6dcb70fdd7c4abf0c}' \
     'host_provisioner_binary_sha256=${HOST_PROVISIONER_BINARY_SHA256:-1d37e20a7a1cf4f3e36036a15ff7699ef22cd8809fd14a20892034dd054fd1fc}' \
     'secret_delivery_api_version=${SECRET_DELIVERY_API_VERSION:-0.3.2}' \
-    'secret_delivery_api_commit=${SECRET_DELIVERY_API_COMMIT:-53060369b29946b1f1b62e5fabbcfc8778c55bb6}' \
-    'secret_delivery_api_archive_sha256=${SECRET_DELIVERY_API_ARCHIVE_SHA256:-8a5e6da29db8f7b55ab3291b0270e843a5c15e67154fa075575d8b84f4bc0ae9}' \
-    'secret_delivery_api_binary_sha256=${SECRET_DELIVERY_API_BINARY_SHA256:-c263f61fd01423da30e06addc4385817fe683df42c299e53f27a812d8621e777}' \
+    'secret_delivery_api_commit=${SECRET_DELIVERY_API_COMMIT:-f9c3f933f14e43dc63074d45a3044b693ec1e573}' \
+    'secret_delivery_api_archive_sha256=${SECRET_DELIVERY_API_ARCHIVE_SHA256:-ca9ab0bfddbcad84b6c1a865af8ad82fcc56cb43dcca1da240ed11a5d24cbdb2}' \
+    'secret_delivery_api_binary_sha256=${SECRET_DELIVERY_API_BINARY_SHA256:-b5e01b7e65aeee3b456fe043142b5e70f4039ee89ffd437648368ff63e6042b6}' \
     'usage_telemetry_agent_version=${USAGE_TELEMETRY_AGENT_VERSION:-0.4.2}' \
     'usage_telemetry_agent_commit=${USAGE_TELEMETRY_AGENT_COMMIT:-40f9af7ca932fedacdb87e30b4ef1c60a4a7444e}' \
     'usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-5ce031c84f76b3e62dafdb04fb4ed014aa1921e83be056c2d5dd712acbce25a8}' \
@@ -1692,7 +1692,7 @@ for release_curl_security_marker in \
     '"libssl3t64=${OPENSSL_PACKAGE_VERSION}"' \
     '"openssl-provider-legacy=${OPENSSL_PACKAGE_VERSION}"' \
     'dpkg-deb --extract "${package_file}" /tmp/openssl-runtime' \
-    'sha256sum packages/*.deb tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 freetype-runtime.sha256 > SHA256SUMS' \
+    'sha256sum packages/*.deb tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 freetype-runtime.sha256 libpng-runtime.sha256 > SHA256SUMS' \
     'sha256sum -c /usr/share/pasturestack/security/openssl-runtime.sha256' \
     'ENV PASTURESTACK_OPENSSL_VERSION=3.5.5' \
     'ENV PASTURESTACK_OPENSSL_PACKAGE_VERSION=${OPENSSL_PACKAGE_VERSION}' \
@@ -1747,6 +1747,30 @@ for runtime_freetype_security_marker in \
     '/usr/lib/x86_64-linux-gnu/libfreetype.so.6; do'; do
     require_marker "$build_script" "$runtime_freetype_security_marker" \
         SERVER_FREETYPE_RUNTIME_GATE_MISSING
+done
+for release_libpng_security_marker in \
+    'ARG LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1' \
+    'ADD --checksum=sha256:f24a7f7c0428d74e33ea934696987b7336ec0962f212535185f0493792e7536e' \
+    'https://security.ubuntu.com/ubuntu/pool/main/libp/libpng1.6/libpng16-16t64_1.6.57-1ubuntu0.1_amd64.deb' \
+    'test "$(dpkg-deb -f /tmp/libpng16.deb Package)" = libpng16-16t64' \
+    'test "$(dpkg-deb -f /tmp/libpng16.deb Version)" = "${LIBPNG_PACKAGE_VERSION}"' \
+    'test "$(dpkg-deb -f /tmp/libpng16.deb Architecture)" = amd64' \
+    'dpkg-deb --extract /tmp/libpng16.deb /tmp/libpng-runtime' \
+    'sha256sum usr/lib/x86_64-linux-gnu/libpng16.so.16 > /out/libpng-runtime.sha256' \
+    'sha256sum -c /usr/share/pasturestack/security/libpng-runtime.sha256' \
+    'ldd -r /usr/lib/x86_64-linux-gnu/libpng16.so.16 2>&1' \
+    'ENV PASTURESTACK_LIBPNG_PACKAGE_VERSION=${LIBPNG_PACKAGE_VERSION}'; do
+    require_marker "$release_dockerfile" "$release_libpng_security_marker" \
+        SERVER_LIBPNG_OFFICIAL_SECURITY_REFRESH_MISSING
+done
+for runtime_libpng_security_marker in \
+    'PASTURESTACK_LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1' \
+    'libpng16-16t64)" = 1.6.57-1ubuntu0.1' \
+    'test "$(wc -l < /usr/share/pasturestack/security/libpng-runtime.sha256)" -eq 1' \
+    'sha256sum -c /usr/share/pasturestack/security/libpng-runtime.sha256' \
+    'ldd -r /usr/lib/x86_64-linux-gnu/libpng16.so.16 2>&1'; do
+    require_marker "$build_script" "$runtime_libpng_security_marker" \
+        SERVER_LIBPNG_RUNTIME_GATE_MISSING
 done
 require_marker "$build_script" \
     'PASTURESTACK_CURL_SECURITY_SNAPSHOT=20261002T000000Z' \

@@ -97,9 +97,9 @@ ARG HOST_PROVISIONER_ARCHIVE_SHA256=d775f36a613b1a486a5e60d6ad61fdbd1ebb4bd22422
 ARG HOST_PROVISIONER_BINARY_SHA256=1d37e20a7a1cf4f3e36036a15ff7699ef22cd8809fd14a20892034dd054fd1fc
 ARG SECRET_DELIVERY_API_RELEASE_BASE_URL=https://github.com/PastureStack/secret-delivery-api/releases/download
 ARG SECRET_DELIVERY_API_VERSION=0.3.2
-ARG SECRET_DELIVERY_API_COMMIT=53060369b29946b1f1b62e5fabbcfc8778c55bb6
-ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=8a5e6da29db8f7b55ab3291b0270e843a5c15e67154fa075575d8b84f4bc0ae9
-ARG SECRET_DELIVERY_API_BINARY_SHA256=c263f61fd01423da30e06addc4385817fe683df42c299e53f27a812d8621e777
+ARG SECRET_DELIVERY_API_COMMIT=f9c3f933f14e43dc63074d45a3044b693ec1e573
+ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=ca9ab0bfddbcad84b6c1a865af8ad82fcc56cb43dcca1da240ed11a5d24cbdb2
+ARG SECRET_DELIVERY_API_BINARY_SHA256=b5e01b7e65aeee3b456fe043142b5e70f4039ee89ffd437648368ff63e6042b6
 ARG USAGE_TELEMETRY_AGENT_RELEASE_BASE_URL=https://github.com/PastureStack/usage-telemetry-agent/releases/download
 ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.2
 ARG USAGE_TELEMETRY_AGENT_COMMIT=40f9af7ca932fedacdb87e30b4ef1c60a4a7444e
@@ -464,6 +464,7 @@ ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7
 ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7
 ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.3
 ARG FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2
+ARG LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /build
 ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90 \
@@ -472,6 +473,9 @@ ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2
 ADD --checksum=sha256:6d7d532b7d0c57639deb3b228f1f0d786cf5305d613ef7df9ba76c776a0f8373 \
     https://security.ubuntu.com/ubuntu/pool/main/f/freetype/libfreetype6_2.14.2+dfsg-1ubuntu0.2_amd64.deb \
     /tmp/libfreetype6.deb
+ADD --checksum=sha256:f24a7f7c0428d74e33ea934696987b7336ec0962f212535185f0493792e7536e \
+    https://security.ubuntu.com/ubuntu/pool/main/libp/libpng1.6/libpng16-16t64_1.6.57-1ubuntu0.1_amd64.deb \
+    /tmp/libpng16.deb
 RUN set -eux; \
     mkdir -p /tmp/ca-bootstrap /etc/ssl/certs; \
     dpkg-deb --extract /tmp/ca-certificates.deb /tmp/ca-bootstrap; \
@@ -495,6 +499,14 @@ RUN set -eux; \
     cd /tmp/freetype-runtime; \
     sha256sum usr/lib/x86_64-linux-gnu/libfreetype.so.6 > /out/freetype-runtime.sha256; \
     test "$(wc -l < /out/freetype-runtime.sha256)" -eq 1; \
+    test "$(dpkg-deb -f /tmp/libpng16.deb Package)" = libpng16-16t64; \
+    test "$(dpkg-deb -f /tmp/libpng16.deb Version)" = "${LIBPNG_PACKAGE_VERSION}"; \
+    test "$(dpkg-deb -f /tmp/libpng16.deb Architecture)" = amd64; \
+    cp /tmp/libpng16.deb "/out/packages/libpng16-16t64_${LIBPNG_PACKAGE_VERSION}_amd64.deb"; \
+    dpkg-deb --extract /tmp/libpng16.deb /tmp/libpng-runtime; \
+    cd /tmp/libpng-runtime; \
+    sha256sum usr/lib/x86_64-linux-gnu/libpng16.so.16 > /out/libpng-runtime.sha256; \
+    test "$(wc -l < /out/libpng-runtime.sha256)" -eq 1; \
     cd /out/packages; \
     apt-get download \
       "curl=${CURL_PACKAGE_VERSION}" \
@@ -547,7 +559,7 @@ RUN set -eux; \
       > /out/openssl-runtime.sha256; \
     cp /usr/bin/tar /out/tar; \
     cd /out; \
-    sha256sum packages/*.deb tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 freetype-runtime.sha256 > SHA256SUMS
+    sha256sum packages/*.deb tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 freetype-runtime.sha256 libpng-runtime.sha256 > SHA256SUMS
 
 FROM ${BASE_IMAGE}
 
@@ -570,6 +582,7 @@ ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7
 ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7
 ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.3
 ARG FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2
+ARG LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
 ARG WEB_CONSOLE_RELEASE_TAG=1.6.181
@@ -600,9 +613,9 @@ ARG HOST_PROVISIONER_COMMIT=385e5b536c108f17fdfcdec84c01750a5be5ab1c
 ARG HOST_PROVISIONER_ARCHIVE_SHA256=d775f36a613b1a486a5e60d6ad61fdbd1ebb4bd22422cbb6dcb70fdd7c4abf0c
 ARG HOST_PROVISIONER_BINARY_SHA256=1d37e20a7a1cf4f3e36036a15ff7699ef22cd8809fd14a20892034dd054fd1fc
 ARG SECRET_DELIVERY_API_VERSION=0.3.2
-ARG SECRET_DELIVERY_API_COMMIT=53060369b29946b1f1b62e5fabbcfc8778c55bb6
-ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=8a5e6da29db8f7b55ab3291b0270e843a5c15e67154fa075575d8b84f4bc0ae9
-ARG SECRET_DELIVERY_API_BINARY_SHA256=c263f61fd01423da30e06addc4385817fe683df42c299e53f27a812d8621e777
+ARG SECRET_DELIVERY_API_COMMIT=f9c3f933f14e43dc63074d45a3044b693ec1e573
+ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=ca9ab0bfddbcad84b6c1a865af8ad82fcc56cb43dcca1da240ed11a5d24cbdb2
+ARG SECRET_DELIVERY_API_BINARY_SHA256=b5e01b7e65aeee3b456fe043142b5e70f4039ee89ffd437648368ff63e6042b6
 ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.2
 ARG USAGE_TELEMETRY_AGENT_COMMIT=40f9af7ca932fedacdb87e30b4ef1c60a4a7444e
 ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=5ce031c84f76b3e62dafdb04fb4ed014aa1921e83be056c2d5dd712acbce25a8
@@ -631,12 +644,18 @@ RUN set -eux; \
     done; \
     test "$(dpkg-query -W -f='${Version}' libdbi-perl)" = "${LIBDBI_PERL_PACKAGE_VERSION}"; \
     test "$(dpkg-query -W -f='${Version}' libfreetype6)" = "${FREETYPE_PACKAGE_VERSION}"; \
+    test "$(dpkg-query -W -f='${Version}' libpng16-16t64)" = "${LIBPNG_PACKAGE_VERSION}"; \
     install -D -m 0644 libdbi-perl-runtime.sha256 /usr/share/pasturestack/security/libdbi-perl-runtime.sha256; \
     install -D -m 0644 freetype-runtime.sha256 /usr/share/pasturestack/security/freetype-runtime.sha256; \
+    install -D -m 0644 libpng-runtime.sha256 /usr/share/pasturestack/security/libpng-runtime.sha256; \
     install -D -m 0644 openssl-runtime.sha256 /usr/share/pasturestack/security/openssl-runtime.sha256; \
     cd /; \
     test "$(wc -l < /usr/share/pasturestack/security/freetype-runtime.sha256)" -eq 1; \
     sha256sum -c /usr/share/pasturestack/security/freetype-runtime.sha256; \
+    test "$(wc -l < /usr/share/pasturestack/security/libpng-runtime.sha256)" -eq 1; \
+    sha256sum -c /usr/share/pasturestack/security/libpng-runtime.sha256; \
+    libpng_linkage="$(ldd -r /usr/lib/x86_64-linux-gnu/libpng16.so.16 2>&1)"; \
+    ! printf '%s\n' "${libpng_linkage}" | grep -E 'not found|undefined symbol'; \
     test "$(readlink -f /usr/lib/x86_64-linux-gnu/libfreetype.so.6)" = /usr/lib/x86_64-linux-gnu/libfreetype.so.6.20.5; \
     freetype_linkage="$(ldd -r /usr/lib/x86_64-linux-gnu/libfreetype.so.6 2>&1)"; \
     ! printf '%s\n' "${freetype_linkage}" | grep -E 'not found|undefined symbol'; \
@@ -1017,6 +1036,7 @@ ENV PASTURESTACK_GLIBC_PACKAGE_VERSION=${GLIBC_PACKAGE_VERSION}
 ENV PASTURESTACK_PERL_PACKAGE_VERSION=${PERL_PACKAGE_VERSION}
 ENV PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=${LIBDBI_PERL_PACKAGE_VERSION}
 ENV PASTURESTACK_FREETYPE_PACKAGE_VERSION=${FREETYPE_PACKAGE_VERSION}
+ENV PASTURESTACK_LIBPNG_PACKAGE_VERSION=${LIBPNG_PACKAGE_VERSION}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}
 ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}
