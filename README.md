@@ -27,6 +27,16 @@ See the [candidate release note](docs/releases/server-1.6.519.md) for exact
 component identities and verification boundaries. A version or packaged feature
 does not establish that every resource/role/hardware combination has been tested.
 
+## API Keys in the source candidate
+
+Choose full, closed or custom access, with optional expiry. The maximum access
+is always the Key owner's current account/environment RBAC; a Key never grants
+an additional role. Existing legacy Keys are not automatically narrowed on upgrade.
+New Key secrets are shown once at creation and are not returned by later lists or
+details. Per-Key audit separates authorization, the HTTP response and any later
+job/stream completion. Errors use the existing API status/code and console error
+handling. See the [API Key guide](docs/api-keys.md) for policy and audit contracts.
+
 ## Current release
 
 The currently downloadable [Server v1.6.518](https://github.com/PastureStack/server/releases/tag/v1.6.518)

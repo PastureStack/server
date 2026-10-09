@@ -22,6 +22,15 @@ A signed ticket used for a different stream route is rejected and durably
 recorded as `DENY`/`FAILED`, phase `handshake`, HTTP `403`. An unavailable durable
 receipt stops the stream with `503`; it does not start an executor.
 
+An expired, signed Key-traced ticket is rejected before backend or persistent
+session creation. Its verified trace and authenticated host proof are audit-only:
+durable acceptance records `DENY`/`FAILED`, phase `handshake`, and returns
+`ApiKeyExpired` (`401`). Signature-only parsing never restores authorization.
+Missing proof or durable acceptance returns `AuditUnavailable` (`503`), without
+execution or a claim that the denial was durably recorded. The
+[API Key guide](../api-keys.md) describes raw policy-input validation, sensitive
+export classification and persisted container audit identity.
+
 The Server broker is a thin authenticated entry point. Engine owns the final
 policy. Existing audit `timeScope=all`, bounded query/export behavior, database
 retention, HAProxy, OIDC, and security overlays are retained. The govc bundle
