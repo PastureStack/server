@@ -12,7 +12,8 @@ trap 'rm -rf -- "$scratch"' EXIT
 tar -tzf "$archive" >"$scratch/listing"
 ! grep -Eq '(^/|(^|/)\.\.(/|$))' "$scratch/listing"
 test -z "$(LC_ALL=C sort "$scratch/listing" | uniq -d)"
-! tar -tvzf "$archive" | grep -Eq '^[lh]'
+tar -tvzf "$archive" >"$scratch/verbose"
+! grep -Eq '^[lh]' "$scratch/verbose"
 while IFS= read -r member; do
     case "$member" in "$root/"|"$root/"*) ;; *) echo 'Unexpected agent package root' >&2; exit 1 ;; esac
 done <"$scratch/listing"

@@ -7,6 +7,8 @@ import io
 import os
 from pathlib import Path
 import re
+import shlex
+import shutil
 import subprocess
 import tarfile
 import tempfile
@@ -203,6 +205,31 @@ class ComponentRecipeTest(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertIn("AGENT_PRODUCER_PACKAGE_OK component=node-agent", result.stdout)
             self.assertNotEqual(0, subprocess.run(["bash", str(verifier), "unknown", *map(str, values)], capture_output=True).returncode)
+
+    def test_agent_archive_verbose_failure_cannot_bypass_link_rejection(self):
+        # Deterministically reproduce an early grep match followed by tar's
+        # SIGPIPE status, without timing or constructing a malicious payload.
+        verifier = ROOT / "server/artifacts/verify-agent-package.sh"
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            values = self.producer_archive(directory, component="node-agent")
+            commands = directory / "commands"
+            commands.mkdir()
+            real_tar = shutil.which("tar")
+            self.assertIsNotNone(real_tar)
+            wrapper = commands / "tar"
+            wrapper.write_text("#!/usr/bin/env bash\n"
+                               "if [[ ${1:-} == -tvzf ]]; then\n"
+                               "  printf '%s\\n' 'lrwxrwxrwx link -> outside'\n"
+                               "  exit 141\n"
+                               "fi\nexec " + shlex.quote(real_tar) + " \"$@\"\n",
+                               encoding="utf-8")
+            wrapper.chmod(0o755)
+            environment = dict(os.environ, PATH=str(commands) + os.pathsep + os.environ["PATH"])
+            result = subprocess.run(["bash", str(verifier), "node-agent", *map(str, values)],
+                                    env=environment, text=True, capture_output=True)
+            self.assertNotEqual(0, result.returncode)
+            self.assertNotIn("AGENT_PRODUCER_PACKAGE_OK", result.stdout)
 
     def test_security_pins_and_overlay_path_are_retained(self):
         text = (ROOT / "server/Dockerfile.web-compose-release").read_text()

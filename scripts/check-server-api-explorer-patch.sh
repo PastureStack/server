@@ -519,10 +519,10 @@ for release_host_marker in \
     'ARG HOST_API_PACKAGE_MODE=producer' \
     'ARG HOST_API_RELEASE_BASE_URL=https://github.com/PastureStack/host-api/releases/download' \
     'ARG HOST_API_RELEASE_TAG=v0.38.5' \
-    'ARG HOST_API_COMMIT=ea295d1ffe4064bd3ac4afd8ea0f751d27aa4285' \
-    'ARG HOST_API_PACKAGE_ID=ea295d1ffe4064bd3ac4afd8ea0f751d' \
-    'ARG HOST_API_ARCHIVE_SHA256=718e952852b4bc0342e62481ae60673a6b8e76f72b48e741a63a3145724bf1ce' \
-    'ARG HOST_API_BINARY_SHA256=30ab71f83213858e6cc727a8b6be22ac9d390c97fdc7a5f0ed96818a8715565f' \
+    'ARG HOST_API_COMMIT=84754fe8bc79027d0c72f492923c47861aa74b99' \
+    'ARG HOST_API_PACKAGE_ID=84754fe8bc79027d0c72f492923c4786' \
+    'ARG HOST_API_ARCHIVE_SHA256=ba111038695aa03a82c51d60944bbbdbbec30bb269051ba29fa21d46ada17179' \
+    'ARG HOST_API_BINARY_SHA256=fda5080d6cfec0a4c1e9daf15b43cea2dce7ffb116c8292ff0f3547c8fb371f7' \
     'ARG HOST_API_APPLY_SHA256=8a21f63099832afb571755011bbcf8d97710994a50c419b20700cbc31efced0f' \
     'verify-host-api-package /out/host-api.tar.gz'; do
     require_marker "$release_dockerfile" "$release_host_marker" \
@@ -538,10 +538,10 @@ require_marker "$release_dockerfile" \
     'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.181.tar.gz' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=6b22e2291b0d4c1d19061e65eb84a84d5f8ae2c22b1eb5b6b1d24b1f3a46d08b' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=82bf7c4107a6834c96e41230a7b57efe7e0cf6c1e57b9a74e16da295863ab891' \
     SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=c3536a0560cdc1b286b275c39fb1cd04a14ed9b0' \
+    'ARG WEB_CONSOLE_COMMIT=72851518ba024777146f8eae9909484d7adba230' \
     SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING
 require_marker "$release_dockerfile" \
     "grep -aF 'hostsPage.permissionDenied'" \
@@ -550,7 +550,7 @@ require_marker "$release_dockerfile" \
     '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ZH_TW_PERMISSION_MESSAGE_MISSING
 require_marker "$build_script" \
-    'web_console_commit=${WEB_CONSOLE_COMMIT:-c3536a0560cdc1b286b275c39fb1cd04a14ed9b0}' \
+    'web_console_commit=${WEB_CONSOLE_COMMIT:-72851518ba024777146f8eae9909484d7adba230}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING
 require_marker "$build_script" \
     'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.181}' \
@@ -559,37 +559,37 @@ require_marker "$build_script" \
     'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.181.tar.gz}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING
 require_marker "$build_script" \
-    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-6b22e2291b0d4c1d19061e65eb84a84d5f8ae2c22b1eb5b6b1d24b1f3a46d08b}' \
+    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-82bf7c4107a6834c96e41230a7b57efe7e0cf6c1e57b9a74e16da295863ab891}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_VERSION=0.20.12' \
+    'ARG CATALOG_SERVICE_VERSION=0.20.13' \
     SERVER_INCREMENTAL_CATALOG_VERSION_MISSING
 require_marker "$build_script" \
-    'catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.12}' \
+    'catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.13}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_COMMIT=d708579092eae0fd03b2750ac594ff0396cf563b' \
+    'ARG CATALOG_SERVICE_COMMIT=4c39c73a8131ba06e9ff0aaec3b95cc27e049324' \
     SERVER_INCREMENTAL_CATALOG_COMMIT_MISSING
 require_marker "$build_script" \
-    'catalog_service_commit=${CATALOG_SERVICE_COMMIT:-d708579092eae0fd03b2750ac594ff0396cf563b}' \
+    'catalog_service_commit=${CATALOG_SERVICE_COMMIT:-4c39c73a8131ba06e9ff0aaec3b95cc27e049324}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_COMMIT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_ARCHIVE_SHA256=34b76c121270c603501664f7146d41916c7f45da983e326861ed4c5b9614372d' \
+    'ARG CATALOG_SERVICE_ARCHIVE_SHA256=29626181cb8489b016e5975ffaddc00b2a32d290b1c0066e833d27fa7a5edf83' \
     SERVER_INCREMENTAL_CATALOG_ARCHIVE_SHA256_MISSING
 require_marker "$build_script" \
-    'catalog_service_archive_sha256=${CATALOG_SERVICE_ARCHIVE_SHA256:-34b76c121270c603501664f7146d41916c7f45da983e326861ed4c5b9614372d}' \
+    'catalog_service_archive_sha256=${CATALOG_SERVICE_ARCHIVE_SHA256:-29626181cb8489b016e5975ffaddc00b2a32d290b1c0066e833d27fa7a5edf83}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_ARCHIVE_SHA256_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_BINARY_SHA256=3deb43f9760d7cbb07f818dd108ab35abf9efc6908d5d7fcaf5c44a185f2fba9' \
+    'ARG CATALOG_SERVICE_BINARY_SHA256=7224c76e5643130dee047e3f1888ce6845d024307bec74d72eebdc4baeae1aea' \
     SERVER_INCREMENTAL_CATALOG_BINARY_SHA256_MISSING
 require_marker "$build_script" \
-    'catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-3deb43f9760d7cbb07f818dd108ab35abf9efc6908d5d7fcaf5c44a185f2fba9}' \
+    'catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-7224c76e5643130dee047e3f1888ce6845d024307bec74d72eebdc4baeae1aea}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_BINARY_SHA256_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=8805af3c0b5968a02f994d65de715c525b73637aa2dc398a0648feeeaf2fd397' \
+    'ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=4aeda3e1ee1ca4c57f26938f3ef27651f9c8c129ee12957642960d22b95034ce' \
     SERVER_INCREMENTAL_CATALOG_SQLITE_BINARY_SHA256_MISSING
 require_marker "$build_script" \
-    'catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-8805af3c0b5968a02f994d65de715c525b73637aa2dc398a0648feeeaf2fd397}' \
+    'catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-4aeda3e1ee1ca4c57f26938f3ef27651f9c8c129ee12957642960d22b95034ce}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_SQLITE_BINARY_SHA256_MISSING
 require_marker "$release_dockerfile" \
     'ARG CATALOG_SERVICE_LICENSE_SHA256=0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594' \
@@ -598,14 +598,17 @@ require_marker "$build_script" \
     'catalog_service_license_sha256=${CATALOG_SERVICE_LICENSE_SHA256:-0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_LICENSE_SHA256_MISSING
 for catalog_release_marker in \
+    'COPY --chmod=0755 artifacts/fetch-server-component.sh /usr/local/bin/fetch-server-component' \
+    '"catalog-service-${CATALOG_SERVICE_VERSION}.tar.xz" "${CATALOG_SERVICE_ARCHIVE_SHA256}" "${catalog_archive}";' \
+    '"catalog-service-${CATALOG_SERVICE_VERSION}-LICENSE.txt" "${CATALOG_SERVICE_LICENSE_SHA256}" /out/catalog-service-licenses/LICENSE.txt;' \
     'for catalog_hash in "${CATALOG_SERVICE_ARCHIVE_SHA256}" "${CATALOG_SERVICE_BINARY_SHA256}" "${CATALOG_SERVICE_SQLITE_BINARY_SHA256}" "${CATALOG_SERVICE_LICENSE_SHA256}"; do' \
     'printf '"'"'./\n./catalog-service\n./catalog-service-sqlite\n'"'"' | cmp - "${catalog_listing}";' \
     'tar --no-same-owner --no-same-permissions -xJf "${catalog_archive}" -C /out/catalog-service' \
     'go version -m "/out/catalog-service/${catalog_binary}" | grep -F "vcs.revision=${CATALOG_SERVICE_COMMIT}"' \
     'go version -m "/out/catalog-service/${catalog_binary}" | grep -F '"'"'vcs.modified=false'"'"'' \
     'echo "${CATALOG_SERVICE_LICENSE_SHA256}  /out/catalog-service-licenses/LICENSE.txt" | sha256sum -c -' \
-    'COPY --from=release_artifacts --chmod=0755 /out/catalog-service/catalog-service /usr/bin/catalog-service.real' \
-    'COPY --from=release_artifacts --chmod=0755 /out/catalog-service/catalog-service-sqlite /usr/bin/catalog-service-sqlite' \
+    'install -m 0755 /out/catalog-service/catalog-service /out/runtime-bin/catalog-service.real;' \
+    'install -m 0755 /out/catalog-service/catalog-service-sqlite /out/runtime-bin/catalog-service-sqlite;' \
     'echo "${CATALOG_SERVICE_BINARY_SHA256}  /usr/bin/catalog-service.real" | sha256sum -c -' \
     'echo "${CATALOG_SERVICE_SQLITE_BINARY_SHA256}  /usr/bin/catalog-service-sqlite" | sha256sum -c -' \
     'echo "${CATALOG_SERVICE_LICENSE_SHA256}  /usr/share/licenses/pasturestack/catalog-service/LICENSE.txt" | sha256sum -c -' \
@@ -622,6 +625,147 @@ for catalog_build_marker in \
     'catalog_service=%s catalog_service_commit=%s catalog_service_archive_sha256=%s catalog_service_binary_sha256=%s catalog_service_sqlite_binary_sha256=%s'; do
     require_marker "$build_script" "$catalog_build_marker" \
         SERVER_INCREMENTAL_CATALOG_BUILD_CONTRACT_MISSING
+done
+
+# Active incremental producer/toolchain contracts are distinct from the historical base patch below.
+for incremental_producer_marker in \
+    'ARG HOST_PROVISIONER_VERSION=0.39.8' \
+    'ARG HOST_PROVISIONER_COMMIT=385e5b536c108f17fdfcdec84c01750a5be5ab1c' \
+    'ARG HOST_PROVISIONER_ARCHIVE_SHA256=d775f36a613b1a486a5e60d6ad61fdbd1ebb4bd22422cbb6dcb70fdd7c4abf0c' \
+    'ARG HOST_PROVISIONER_BINARY_SHA256=1d37e20a7a1cf4f3e36036a15ff7699ef22cd8809fd14a20892034dd054fd1fc' \
+    'ARG SECRET_DELIVERY_API_VERSION=0.3.2' \
+    'ARG SECRET_DELIVERY_API_COMMIT=53060369b29946b1f1b62e5fabbcfc8778c55bb6' \
+    'ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=8a5e6da29db8f7b55ab3291b0270e843a5c15e67154fa075575d8b84f4bc0ae9' \
+    'ARG SECRET_DELIVERY_API_BINARY_SHA256=c263f61fd01423da30e06addc4385817fe683df42c299e53f27a812d8621e777' \
+    'ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.2' \
+    'ARG USAGE_TELEMETRY_AGENT_COMMIT=40f9af7ca932fedacdb87e30b4ef1c60a4a7444e' \
+    'ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=5ce031c84f76b3e62dafdb04fb4ed014aa1921e83be056c2d5dd712acbce25a8' \
+    'ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=e62a21270142181315293d7e11482288ffe8fc4d91cc8fe07dacc90b461f3709' \
+    'ARG COMPOSE_EXECUTOR_COMMIT=88e991e823f06d2334c07d5370595aae3c48ee99' \
+    'ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=5ff465601930218f531885a384f231d969033e4cef794ce33d16bfe24e5c1c81'; do
+    require_marker "$release_dockerfile" "$incremental_producer_marker" \
+        SERVER_INCREMENTAL_RUNTIME_PRODUCER_PIN_MISSING
+done
+for incremental_producer_build_marker in \
+    'host_provisioner_version=${HOST_PROVISIONER_VERSION:-0.39.8}' \
+    'host_provisioner_commit=${HOST_PROVISIONER_COMMIT:-385e5b536c108f17fdfcdec84c01750a5be5ab1c}' \
+    'host_provisioner_archive_sha256=${HOST_PROVISIONER_ARCHIVE_SHA256:-d775f36a613b1a486a5e60d6ad61fdbd1ebb4bd22422cbb6dcb70fdd7c4abf0c}' \
+    'host_provisioner_binary_sha256=${HOST_PROVISIONER_BINARY_SHA256:-1d37e20a7a1cf4f3e36036a15ff7699ef22cd8809fd14a20892034dd054fd1fc}' \
+    'secret_delivery_api_version=${SECRET_DELIVERY_API_VERSION:-0.3.2}' \
+    'secret_delivery_api_commit=${SECRET_DELIVERY_API_COMMIT:-53060369b29946b1f1b62e5fabbcfc8778c55bb6}' \
+    'secret_delivery_api_archive_sha256=${SECRET_DELIVERY_API_ARCHIVE_SHA256:-8a5e6da29db8f7b55ab3291b0270e843a5c15e67154fa075575d8b84f4bc0ae9}' \
+    'secret_delivery_api_binary_sha256=${SECRET_DELIVERY_API_BINARY_SHA256:-c263f61fd01423da30e06addc4385817fe683df42c299e53f27a812d8621e777}' \
+    'usage_telemetry_agent_version=${USAGE_TELEMETRY_AGENT_VERSION:-0.4.2}' \
+    'usage_telemetry_agent_commit=${USAGE_TELEMETRY_AGENT_COMMIT:-40f9af7ca932fedacdb87e30b4ef1c60a4a7444e}' \
+    'usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-5ce031c84f76b3e62dafdb04fb4ed014aa1921e83be056c2d5dd712acbce25a8}' \
+    'usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-e62a21270142181315293d7e11482288ffe8fc4d91cc8fe07dacc90b461f3709}' \
+    'compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.37}' \
+    'compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-88e991e823f06d2334c07d5370595aae3c48ee99}' \
+    'compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-5ff465601930218f531885a384f231d969033e4cef794ce33d16bfe24e5c1c81}' \
+    'compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-a9bf9f0f77e914fe557d3e178a73c31526b0ca0adc4afbf17bf68d8d75c7ee27}'; do
+    require_marker "$build_script" "$incremental_producer_build_marker" \
+        SERVER_INCREMENTAL_RUNTIME_PRODUCER_BUILD_PIN_MISSING
+done
+for incremental_producer_runtime_marker in \
+    'COPY --chmod=0755 artifacts/verify-runtime-producer.sh /usr/local/bin/verify-runtime-producer' \
+    'verify-runtime-producer "$component" "$version" "$commit" "/tmp/${artifact}" "$binary_sha" "/out/$component";' \
+    'install -m 0755 /out/host-provisioner/host-provisioner /out/runtime-bin/host-provisioner.real;' \
+    'cp -a /out/host-provisioner-licenses /out/runtime-licenses/host-provisioner;' \
+    'install -m 0755 /out/secret-delivery-api/secret-delivery-api /out/runtime-bin/secret-delivery-api;' \
+    'cp -a /out/secret-delivery-api-licenses /out/runtime-licenses/secret-delivery-api;' \
+    'install -m 0755 /out/usage-telemetry-agent/usage-telemetry-agent /out/runtime-bin/usage-telemetry-agent;' \
+    'cp -a /out/usage-telemetry-agent-licenses /out/runtime-licenses/usage-telemetry-agent;' \
+    'echo "${HOST_PROVISIONER_BINARY_SHA256}  /usr/bin/host-provisioner.real" | sha256sum -c -;' \
+    '/usr/bin/host-provisioner.real -v | grep -F "${HOST_PROVISIONER_VERSION}" >/dev/null;' \
+    'test -s /usr/share/licenses/pasturestack/host-provisioner/LICENSE;' \
+    'test -s /usr/share/licenses/pasturestack/host-provisioner/ORIGIN.md;' \
+    'test "$(find /usr/share/licenses/pasturestack/host-provisioner/licenses -type f | wc -l)" -eq 35;' \
+    'echo "${SECRET_DELIVERY_API_BINARY_SHA256}  /usr/bin/secret-delivery-api" | sha256sum -c -;' \
+    '/usr/bin/secret-delivery-api --version | grep -F "v${SECRET_DELIVERY_API_VERSION}" >/dev/null;' \
+    'test "$(readlink -f /usr/bin/secrets-api)" = /usr/bin/secret-delivery-api;' \
+    'echo "${USAGE_TELEMETRY_AGENT_BINARY_SHA256}  /usr/bin/usage-telemetry-agent" | sha256sum -c -;' \
+    '/usr/bin/usage-telemetry-agent --version | grep -F "usage-telemetry-agent ${USAGE_TELEMETRY_AGENT_VERSION} (" >/dev/null;' \
+    'test "$(readlink -f /usr/bin/telemetry)" = /usr/bin/usage-telemetry-agent;' \
+    'test ! -e "${license_dir}/${component}";' \
+    'grep -Fx '"'"'Go compiler: 1.27.2'"'"' "${license_dir}/SERVER-PRODUCER-SOURCES.txt" >/dev/null;' \
+    'test -s "${license_dir}/${component}-${suffix}";' \
+    'test -s /usr/share/licenses/pasturestack/usage-telemetry-agent/usage-telemetry-agent-PRIVACY.md;'; do
+    require_marker "$release_dockerfile" "$incremental_producer_runtime_marker" \
+        SERVER_INCREMENTAL_RUNTIME_PRODUCER_GUARD_MISSING
+done
+for incremental_go_marker in \
+    'ARG ARTIFACT_HELPER_IMAGE=golang:1.27.2-bookworm@sha256:5cf287a799e6b94384bad13d16b14904c531f51ba65792237e122ce42b392f61' \
+    'test "$(go version | awk '"'"'{print $3}'"'"')" = go1.27.2;' \
+    'ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.2' \
+    'ENV PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.2' \
+    'ARG ENGINE_READONLY_SCHEMA_SHA256=7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233' \
+    'ARG ENGINE_RESTRICTED_SCHEMA_SHA256=f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51'; do
+    require_marker "$release_dockerfile" "$incremental_go_marker" \
+        SERVER_INCREMENTAL_GO_OR_FROZEN_SCHEMA_MISSING
+done
+for incremental_go_build_marker in \
+    'PASTURESTACK_RUNTIME_GO_VERSION=1.27.2' \
+    'PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.2' \
+    'grep -aF "go1.27.2" "${binary}" >/dev/null' \
+    'runtime_go=1.27.2' \
+    'engine_readonly_schema_sha256=${ENGINE_READONLY_SCHEMA_SHA256:-7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233}' \
+    'engine_restricted_schema_sha256=${ENGINE_RESTRICTED_SCHEMA_SHA256:-f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51}'; do
+    require_marker "$build_script" "$incremental_go_build_marker" \
+        SERVER_INCREMENTAL_GO_OR_FROZEN_SCHEMA_BUILD_MISSING
+done
+
+for incremental_input_marker in \
+    '"$orchestration_engine_artifact|$orchestration_engine_artifact_sha256"' \
+    '"$web_console_artifact|$web_console_artifact_sha256"' \
+    '"websocket-proxy-${websocket_proxy_version}-linux-amd64.tar.xz|$websocket_proxy_archive_sha256"' \
+    '"host-api-${host_api_version}.tar.gz|$host_api_archive_sha256"' \
+    '"node-agent-${node_agent_version}.tar.gz|$node_agent_archive_sha256"' \
+    '"host-provisioner-${host_provisioner_version}-linux-amd64.tar.xz|$host_provisioner_archive_sha256"' \
+    '"secret-delivery-api-${secret_delivery_api_version}-linux-amd64.tar.xz|$secret_delivery_api_archive_sha256"' \
+    '"usage-telemetry-agent-${usage_telemetry_agent_version}-linux-amd64.tar.xz|$usage_telemetry_agent_archive_sha256"' \
+    '"catalog-service-${catalog_service_version}.tar.xz|$catalog_service_archive_sha256"' \
+    '"catalog-service-${catalog_service_version}-LICENSE.txt|$catalog_service_license_sha256"' \
+    '"authentication-service-${authentication_service_version}-linux-amd64.tar.xz|$authentication_service_archive_sha256"' \
+    '"webhook-automation-service-${webhook_automation_service_version}-linux-amd64.tar.xz|$webhook_automation_service_archive_sha256"' \
+    '"compose-executor-${compose_executor_version}-linux-amd64.gz|$compose_executor_archive_sha256"' \
+    '"vsphere-cli-bundle-${vsphere_cli_bundle_version}-linux-amd64.tar.xz|$vsphere_cli_bundle_archive_sha256"' \
+    '[[ "$actual_components" == "$expected_components" ]]' \
+    'printf '"'"'%s  %s\n'"'"' "$component_sha256" "$component_directory/$component_name" | sha256sum -c -'; do
+    require_marker "$build_script" "$incremental_input_marker" \
+        SERVER_INCREMENTAL_EXACT_COMPONENT_INPUT_MISSING
+done
+
+for incremental_layout_marker in \
+    'install -m 0755 /out/catalog-service/catalog-service /out/runtime-bin/catalog-service.real;' \
+    'install -m 0755 /out/catalog-service/catalog-service-sqlite /out/runtime-bin/catalog-service-sqlite;' \
+    'install -m 0755 /out/authentication-service/authentication-service /out/runtime-bin/authentication-service.real;' \
+    'install -m 0755 /out/websocket-proxy/websocket-proxy /out/runtime-bin/websocket-proxy.real;' \
+    'install -m 0755 /out/webhook-automation-service/webhook-automation-service /out/runtime-bin/webhook-automation-service;' \
+    'install -m 0755 /out/compose-executor /out/runtime-bin/compose-executor.real;' \
+    'install -m 0755 /out/vsphere-cli-bundle/govc /out/runtime-bin/govc;' \
+    'install -m 0755 /out/host-provisioner/host-provisioner /out/runtime-bin/host-provisioner.real;' \
+    'install -m 0755 /out/secret-delivery-api/secret-delivery-api /out/runtime-bin/secret-delivery-api;' \
+    'install -m 0755 /out/usage-telemetry-agent/usage-telemetry-agent /out/runtime-bin/usage-telemetry-agent;' \
+    'cp -a /out/catalog-service-licenses /out/runtime-licenses/catalog-service;' \
+    'cp -a /out/host-provisioner-licenses /out/runtime-licenses/host-provisioner;' \
+    'cp -a /out/secret-delivery-api-licenses /out/runtime-licenses/secret-delivery-api;' \
+    'cp -a /out/usage-telemetry-agent-licenses /out/runtime-licenses/usage-telemetry-agent;' \
+    '/out/webhook-automation-service/webhook-automation-service-COMPATIBILITY.md' \
+    '/out/webhook-automation-service/webhook-automation-service-LICENSES.txt' \
+    '/out/webhook-automation-service/webhook-automation-service-SOURCES.txt' \
+    '/out/webhook-automation-service/webhook-automation-service-THIRD-PARTY-NOTICES.md' \
+    '/out/runtime-licenses/webhook-automation-service/' \
+    '/out/vsphere-cli-bundle/vsphere-cli-bundle-LICENSES.txt' \
+    '/out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt' \
+    '/out/vsphere-cli-bundle/vsphere-cli-bundle-THIRD-PARTY-NOTICES.txt' \
+    '/out/runtime-licenses/vsphere-cli-bundle/' \
+    'COPY --from=release_artifacts --chmod=0755 /out/runtime-bin/ /usr/bin/' \
+    'COPY --from=release_artifacts /out/runtime-licenses/ /usr/share/licenses/pasturestack/' \
+    'test "$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 10;' \
+    'test "$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 6;' \
+    'test -z "$(find /out/runtime-bin /out/runtime-licenses -type l -print -quit)"'; do
+    require_marker "$release_dockerfile" "$incremental_layout_marker" \
+        SERVER_INCREMENTAL_RUNTIME_LAYOUT_MISSING
 done
 
 for validation_label in \
@@ -697,52 +841,52 @@ if grep -Eq 'dacf7353a1e72e933ac883c3e4c5521e12bb9017706475a7d94f2803c5b5b216|23
 fi
 for release_proxy_marker in \
     'ARG WEBSOCKET_PROXY_VERSION=0.23.15' \
-    'ARG WEBSOCKET_PROXY_COMMIT=a968ae2887a9b6f190c0552e11c9bb54da72a76b' \
-    'ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=159f6bbaf84c230b99c97d59f171e12444ff203dd183a338e0b7d491711a88d4' \
-    'ARG WEBSOCKET_PROXY_BINARY_SHA256=5ade6d24ff05abd7fdd29b5c4260a699d2bf1ccde17cfc9ebbcedb1c0ee36d6a' \
+    'ARG WEBSOCKET_PROXY_COMMIT=1928f602b66443cdab40c8cdb450c811548d2749' \
+    'ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=4657338973f672f6ae4d6e5510d06e811b9951afea1baa27a9caa3034e487f2a' \
+    'ARG WEBSOCKET_PROXY_BINARY_SHA256=9111d5a569b6326d7cd71fc3384251d9684972492a22e1e9dbbb9863019fbaaa' \
     'tar --no-same-owner --no-same-permissions -xJf "${websocket_archive}"' \
-    'COPY --from=release_artifacts --chmod=0755 /out/websocket-proxy/websocket-proxy /usr/bin/websocket-proxy.real' \
+    'install -m 0755 /out/websocket-proxy/websocket-proxy /out/runtime-bin/websocket-proxy.real;' \
     '/usr/bin/websocket-proxy.real --help 2>&1 | grep -F -- '\''-platform-public-origin'\'''; do
     require_marker "$release_dockerfile" "$release_proxy_marker" \
         SERVER_INCREMENTAL_WEBSOCKET_PROXY_REPLACEMENT_MISSING
 done
 for release_proxy_build_marker in \
-    'websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-a968ae2887a9b6f190c0552e11c9bb54da72a76b}' \
-    'websocket_proxy_archive_sha256=${WEBSOCKET_PROXY_ARCHIVE_SHA256:-159f6bbaf84c230b99c97d59f171e12444ff203dd183a338e0b7d491711a88d4}' \
-    'websocket_proxy_binary_sha256=${WEBSOCKET_PROXY_BINARY_SHA256:-5ade6d24ff05abd7fdd29b5c4260a699d2bf1ccde17cfc9ebbcedb1c0ee36d6a}' \
+    'websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-1928f602b66443cdab40c8cdb450c811548d2749}' \
+    'websocket_proxy_archive_sha256=${WEBSOCKET_PROXY_ARCHIVE_SHA256:-4657338973f672f6ae4d6e5510d06e811b9951afea1baa27a9caa3034e487f2a}' \
+    'websocket_proxy_binary_sha256=${WEBSOCKET_PROXY_BINARY_SHA256:-9111d5a569b6326d7cd71fc3384251d9684972492a22e1e9dbbb9863019fbaaa}' \
     'PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256="${websocket_proxy_binary_sha256}"' \
     'echo "${PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256}  /usr/bin/websocket-proxy.real" | sha256sum -c -'; do
     require_marker "$build_script" "$release_proxy_build_marker" \
         SERVER_INCREMENTAL_WEBSOCKET_PROXY_RUNTIME_IDENTITY_MISSING
 done
 for release_webhook_marker in \
-    'ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.3' \
-    'ARG WEBHOOK_AUTOMATION_SERVICE_COMMIT=fbcc0ca07e42e9b21bda18031d0848192ec2f9a1' \
-    'ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=6babbc18cee9a192009cfadcd143e6b9a5f2b550c4dc419781f3e3657caa022a' \
-    'ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=9094f3b2527762a3e683b02d93aa00e52618e902cd409e72e34553d98d98a609' \
+    'ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.4' \
+    'ARG WEBHOOK_AUTOMATION_SERVICE_COMMIT=400118b893843d2a7d7c65cc70c3449d76c4a8d8' \
+    'ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=49c4579829a04e758045fae02a5a9fca12bb0ba3af0d5e979cf9eb97f23a88a9' \
+    'ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=98c7faea665b7eb95206b8c73a6f47d644c5d2d0eae53f274f6a15faf5205744' \
     'LC_ALL=C sort "${webhook_listing}" | cmp "${webhook_expected}" -' \
     'tar --no-same-owner --no-same-permissions -xJf "${webhook_archive}"' \
-    'COPY --from=release_artifacts --chmod=0755 /out/webhook-automation-service/webhook-automation-service /usr/bin/webhook-automation-service' \
+    'install -m 0755 /out/webhook-automation-service/webhook-automation-service /out/runtime-bin/webhook-automation-service;' \
     'test "$(readlink -f /usr/bin/webhook-service)" = /usr/bin/webhook-automation-service'; do
     require_marker "$release_dockerfile" "$release_webhook_marker" \
         SERVER_INCREMENTAL_WEBHOOK_REPLACEMENT_MISSING
 done
 for release_webhook_build_marker in \
-    'webhook_automation_service_version=${WEBHOOK_AUTOMATION_SERVICE_VERSION:-0.10.3}' \
-    'webhook_automation_service_commit=${WEBHOOK_AUTOMATION_SERVICE_COMMIT:-fbcc0ca07e42e9b21bda18031d0848192ec2f9a1}' \
-    'webhook_automation_service_archive_sha256=${WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256:-6babbc18cee9a192009cfadcd143e6b9a5f2b550c4dc419781f3e3657caa022a}' \
-    'webhook_automation_service_binary_sha256=${WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256:-9094f3b2527762a3e683b02d93aa00e52618e902cd409e72e34553d98d98a609}' \
+    'webhook_automation_service_version=${WEBHOOK_AUTOMATION_SERVICE_VERSION:-0.10.4}' \
+    'webhook_automation_service_commit=${WEBHOOK_AUTOMATION_SERVICE_COMMIT:-400118b893843d2a7d7c65cc70c3449d76c4a8d8}' \
+    'webhook_automation_service_archive_sha256=${WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256:-49c4579829a04e758045fae02a5a9fca12bb0ba3af0d5e979cf9eb97f23a88a9}' \
+    'webhook_automation_service_binary_sha256=${WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256:-98c7faea665b7eb95206b8c73a6f47d644c5d2d0eae53f274f6a15faf5205744}' \
     'WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=${webhook_automation_service_archive_sha256}' \
-    '9094f3b2527762a3e683b02d93aa00e52618e902cd409e72e34553d98d98a609  /usr/bin/webhook-automation-service' \
+    '98c7faea665b7eb95206b8c73a6f47d644c5d2d0eae53f274f6a15faf5205744  /usr/bin/webhook-automation-service' \
     'PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_VERSION="${webhook_automation_service_version}"'; do
     require_marker "$build_script" "$release_webhook_build_marker" \
         SERVER_INCREMENTAL_WEBHOOK_BUILD_GATE_MISSING
 done
 require_marker "$release_dockerfile" \
-    'ARG COMPOSE_EXECUTOR_VERSION=0.14.36' \
+    'ARG COMPOSE_EXECUTOR_VERSION=0.14.37' \
     SERVER_INCREMENTAL_COMPOSE_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG COMPOSE_EXECUTOR_BINARY_SHA256=1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d' \
+    'ARG COMPOSE_EXECUTOR_BINARY_SHA256=a9bf9f0f77e914fe557d3e178a73c31526b0ca0adc4afbf17bf68d8d75c7ee27' \
     SERVER_INCREMENTAL_COMPOSE_HASH_MISSING
 require_marker "$release_dockerfile" \
     'tar --no-same-owner --no-same-permissions -xzf "${web_archive}"' \
@@ -751,7 +895,7 @@ require_marker "$release_dockerfile" \
     'COPY --from=release_artifacts /out/web-console/ /tmp/pasturestack-web-console/' \
     SERVER_INCREMENTAL_WEB_CONSOLE_COPY_MISSING
 require_marker "$release_dockerfile" \
-    'COPY --from=release_artifacts --chmod=0755 /out/compose-executor /usr/bin/compose-executor.real' \
+    'install -m 0755 /out/compose-executor /out/runtime-bin/compose-executor.real;' \
     SERVER_INCREMENTAL_COMPOSE_COPY_MISSING
 require_marker "$release_dockerfile" \
     'COPY --from=console_broker_build --chmod=0755 /out/pasturestack-console-broker /usr/bin/pasturestack-console-broker' \
@@ -891,8 +1035,8 @@ require_marker "$build_script" \
 for release_engine_marker in \
     'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.334' \
     'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=668a284d5983a2a2d157ad64e8b5885bd3eba10638ee33ea6991732957cf5399' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=4311ce0a6c26edfaf1c8eec4f7a9f3a958346aee' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=b0e3608b21ce405cdaf2f74699442b9420844384055f85acf88cfeb638600490' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=91f44685953f7cc72344a21cb47ca235c0bce53f' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
     'ARG ORCHESTRATION_ENGINE_VERSION=0.183.334' \
     'grep -Fx "Implementation-Version: ${ORCHESTRATION_ENGINE_VERSION}"' \
@@ -917,8 +1061,8 @@ done
 for release_engine_build_marker in \
     'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.334}' \
     'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}' \
-    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-668a284d5983a2a2d157ad64e8b5885bd3eba10638ee33ea6991732957cf5399}' \
-    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-4311ce0a6c26edfaf1c8eec4f7a9f3a958346aee}' \
+    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-b0e3608b21ce405cdaf2f74699442b9420844384055f85acf88cfeb638600490}' \
+    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-91f44685953f7cc72344a21cb47ca235c0bce53f}' \
     'CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.5.jar"'; do
@@ -939,26 +1083,26 @@ if grep -Eq '9ce9358d91ff002c0b64a8c1efd037b26f43ccbe11508a1446760f3baffcb564|60
 fi
 for release_auth_marker in \
     'ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download' \
-    'ARG AUTHENTICATION_SERVICE_VERSION=0.4.42' \
-    'ARG AUTHENTICATION_SERVICE_COMMIT=5589ef8fda68ae56e1afd64096965d452ee8a17e' \
-    'ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb' \
-    'ARG AUTHENTICATION_SERVICE_BINARY_SHA256=feaabe4bba85cbe119c98a79a27abb4510401fc051f34d02aa7b48d69bdbe746' \
+    'ARG AUTHENTICATION_SERVICE_VERSION=0.4.43' \
+    'ARG AUTHENTICATION_SERVICE_COMMIT=cae736f377019bd9743648a8e9aa469a0e21b5e0' \
+    'ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=e9218771af8dd68323c8c6fdab149c40a3ad02da9ff23f8aad6f0b2977740273' \
+    'ARG AUTHENTICATION_SERVICE_BINARY_SHA256=fe11eec4b31b43863b49a582b1dbbe309eae08fb78adc150037981174f0622da' \
     'Authentication Service archive may not contain links' \
-    'COPY --from=release_artifacts --chmod=0755 /out/authentication-service/authentication-service /usr/bin/authentication-service.real' \
+    'install -m 0755 /out/authentication-service/authentication-service /out/runtime-bin/authentication-service.real;' \
     'ENV PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT=${AUTHENTICATION_SERVICE_COMMIT}' \
     'grep -aF "${marker}" /usr/bin/authentication-service.real'; do
     require_marker "$release_dockerfile" "$release_auth_marker" \
         SERVER_INCREMENTAL_AUTHENTICATION_SERVICE_REPLACEMENT_MISSING
 done
 for release_auth_build_marker in \
-    'authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.42}' \
-    'authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-5589ef8fda68ae56e1afd64096965d452ee8a17e}' \
-    'authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb}' \
-    'authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-feaabe4bba85cbe119c98a79a27abb4510401fc051f34d02aa7b48d69bdbe746}' \
+    'authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.43}' \
+    'authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-cae736f377019bd9743648a8e9aa469a0e21b5e0}' \
+    'authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-e9218771af8dd68323c8c6fdab149c40a3ad02da9ff23f8aad6f0b2977740273}' \
+    'authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-fe11eec4b31b43863b49a582b1dbbe309eae08fb78adc150037981174f0622da}' \
     '--build-arg "AUTHENTICATION_SERVICE_VERSION=${authentication_service_version}"' \
     'PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT="${authentication_service_commit}"' \
-    'feaabe4bba85cbe119c98a79a27abb4510401fc051f34d02aa7b48d69bdbe746  /usr/bin/authentication-service.real' \
-    '/usr/bin/authentication-service.real --version | grep -F "0.4.42"'; do
+    'fe11eec4b31b43863b49a582b1dbbe309eae08fb78adc150037981174f0622da  /usr/bin/authentication-service.real' \
+    '/usr/bin/authentication-service.real --version | grep -F "0.4.43"'; do
     require_marker "$build_script" "$release_auth_build_marker" \
         SERVER_INCREMENTAL_AUTHENTICATION_SERVICE_BUILD_GATE_MISSING
 done
@@ -998,10 +1142,10 @@ fi
 
 for release_vsphere_marker in \
     'ARG VSPHERE_CLI_BUNDLE_VERSION=0.55.3' \
-    'ARG VSPHERE_CLI_BUNDLE_COMMIT=5b1f9c91cdf2b5217b8d5019bbfb18bbc3e3294e' \
-    'ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=94553db031d141bf115594effae7ef0c28214e091d018db684467ee56f0c5120' \
-    'ARG GOVC_BINARY_SHA256=0994912900534ddb60e0b70a1853046f0c7ab1aa374d241f12b2a397d1de84ae' \
-    'COPY --from=release_artifacts --chmod=0755 /out/vsphere-cli-bundle/govc /usr/bin/govc' \
+    'ARG VSPHERE_CLI_BUNDLE_COMMIT=f48ab9fd9990132c85845fc162186a04f1e0418d' \
+    'ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=31be702e515741686e2c665d387562e5e993c5d2ffbdb2d614ed287243b166e4' \
+    'ARG GOVC_BINARY_SHA256=d3c4f4fab44403ec4110743b52da99f5ce3d7e3773c4661db8a87dec3ead8990' \
+    'install -m 0755 /out/vsphere-cli-bundle/govc /out/runtime-bin/govc;' \
     'ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=${VSPHERE_CLI_BUNDLE_VERSION}' \
     'ENV PASTURESTACK_GOVC_BINARY_SHA256=${GOVC_BINARY_SHA256}'; do
     require_marker "$release_dockerfile" "$release_vsphere_marker" \
@@ -1009,9 +1153,9 @@ for release_vsphere_marker in \
 done
 for release_vsphere_build_marker in \
     'vsphere_cli_bundle_version=${VSPHERE_CLI_BUNDLE_VERSION:-0.55.3}' \
-    'vsphere_cli_bundle_commit=${VSPHERE_CLI_BUNDLE_COMMIT:-5b1f9c91cdf2b5217b8d5019bbfb18bbc3e3294e}' \
-    'vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-94553db031d141bf115594effae7ef0c28214e091d018db684467ee56f0c5120}' \
-    'govc_binary_sha256=${GOVC_BINARY_SHA256:-0994912900534ddb60e0b70a1853046f0c7ab1aa374d241f12b2a397d1de84ae}' \
+    'vsphere_cli_bundle_commit=${VSPHERE_CLI_BUNDLE_COMMIT:-f48ab9fd9990132c85845fc162186a04f1e0418d}' \
+    'vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-31be702e515741686e2c665d387562e5e993c5d2ffbdb2d614ed287243b166e4}' \
+    'govc_binary_sha256=${GOVC_BINARY_SHA256:-d3c4f4fab44403ec4110743b52da99f5ce3d7e3773c4661db8a87dec3ead8990}' \
     'echo "${PASTURESTACK_GOVC_BINARY_SHA256}  /usr/bin/govc" | sha256sum -c -' \
     'test "$(/usr/bin/govc version)" = "govc ${PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION}"' \
     'grep -Fx "Security dependency: golang.org/x/text v0.41.0"'; do
@@ -1869,7 +2013,7 @@ require_marker "$dockerfile" \
     'licenses/inherited-vendor/LICENSE-async-0.9.0' \
     SERVER_API_EXPLORER_PATCH_LEGAL_GATE_MISSING
 require_marker "$build_script" \
-    'runtime_go=1.27.0' \
+    'runtime_go=1.27.2' \
     SERVER_RUNTIME_GO_GATE_MISSING
 require_marker "$build_script" \
     'orchestration_updated=1' \
@@ -2038,4 +2182,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.519 base=v1.6.460 engine=0.183.334 web_console=1.6.181 catalog_service=0.20.12 webhook_automation_service=0.10.3 authentication_service=0.4.42 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.519 base=v1.6.460 engine=0.183.334 web_console=1.6.181 catalog_service=0.20.13 webhook_automation_service=0.10.4 authentication_service=0.4.43 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'

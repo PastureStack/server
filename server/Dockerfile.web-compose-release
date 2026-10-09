@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-ARG ARTIFACT_HELPER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452
+ARG ARTIFACT_HELPER_IMAGE=golang:1.27.2-bookworm@sha256:5cf287a799e6b94384bad13d16b14904c531f51ba65792237e122ce42b392f61
 ARG UBUNTU_SECURITY_IMAGE=ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b
 ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403
 
@@ -8,7 +8,7 @@ FROM ${ARTIFACT_HELPER_IMAGE} AS console_broker_build
 WORKDIR /src
 COPY console-broker/go.mod console-broker/go.sum ./
 RUN set -eux; \
-    test "$(go version | awk '{print $3}')" = go1.27.0; \
+    test "$(go version | awk '{print $3}')" = go1.27.2; \
     go mod download; \
     go mod verify
 COPY console-broker/*.go ./
@@ -31,6 +31,7 @@ FROM ${ARTIFACT_HELPER_IMAGE} AS release_artifacts
 ARG SOURCE_DATE_EPOCH
 COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host-api-sha256
 COPY --chmod=0755 artifacts/fetch-server-component.sh /usr/local/bin/fetch-server-component
+COPY --chmod=0755 artifacts/verify-runtime-producer.sh /usr/local/bin/verify-runtime-producer
 COPY --chmod=0755 artifacts/verify-host-api-package.sh /usr/local/bin/verify-host-api-package
 COPY --chmod=0755 artifacts/verify-agent-package.sh /usr/local/bin/verify-agent-package.sh
 COPY --from=component_input / /tmp/pasturestack-component-input/
@@ -40,55 +41,70 @@ ARG HOST_API_VERSION=0.38.5
 ARG HOST_API_PACKAGE_MODE=producer
 ARG HOST_API_RELEASE_BASE_URL=https://github.com/PastureStack/host-api/releases/download
 ARG HOST_API_RELEASE_TAG=v0.38.5
-ARG HOST_API_ARCHIVE_SHA256=718e952852b4bc0342e62481ae60673a6b8e76f72b48e741a63a3145724bf1ce
-ARG HOST_API_PACKAGE_ID=ea295d1ffe4064bd3ac4afd8ea0f751d
-ARG HOST_API_BINARY_SHA256=30ab71f83213858e6cc727a8b6be22ac9d390c97fdc7a5f0ed96818a8715565f
+ARG HOST_API_ARCHIVE_SHA256=ba111038695aa03a82c51d60944bbbdbbec30bb269051ba29fa21d46ada17179
+ARG HOST_API_PACKAGE_ID=84754fe8bc79027d0c72f492923c4786
+ARG HOST_API_BINARY_SHA256=fda5080d6cfec0a4c1e9daf15b43cea2dce7ffb116c8292ff0f3547c8fb371f7
 ARG HOST_API_APPLY_SHA256=8a21f63099832afb571755011bbcf8d97710994a50c419b20700cbc31efced0f
-ARG HOST_API_COMMIT=ea295d1ffe4064bd3ac4afd8ea0f751d27aa4285
+ARG HOST_API_COMMIT=84754fe8bc79027d0c72f492923c47861aa74b99
 ARG NODE_AGENT_VERSION=0.13.28
 ARG NODE_AGENT_RELEASE_BASE_URL=https://github.com/PastureStack/node-agent/releases/download
-ARG NODE_AGENT_COMMIT=4b20764cacc9496e810fe1b6687923a4bcc901b8
-ARG NODE_AGENT_PACKAGE_ID=4b20764cacc9496e810fe1b6687923a4
-ARG NODE_AGENT_ARCHIVE_SHA256=4a9f26a0ac9d0a53a6a7b0bb1dbde72b6a642e7474a19959ad87f81e46a85396
-ARG NODE_AGENT_BINARY_SHA256=a20b69fc484416e92f4102d2a18f77cc1650ed7d7c6fbbd9c371f5383e2596aa
+ARG NODE_AGENT_COMMIT=bb4e057c089e5384bc9836b42db206326c690387
+ARG NODE_AGENT_PACKAGE_ID=bb4e057c089e5384bc9836b42db20632
+ARG NODE_AGENT_ARCHIVE_SHA256=a16ae6be5fb72fa2ba38bd1076fd3b9e0536c48e70995ffa49d17b8063e2f8d0
+ARG NODE_AGENT_BINARY_SHA256=ce8342e10da07c50cc414b471cadc67db4dd390e6e2dcb632b30c542f658b021
 ARG NODE_AGENT_APPLY_SHA256=dd8cb342518a43e7468cc121db5c4e44b16731f2620b77ea0fd03c02c03766a9
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
 ARG WEB_CONSOLE_RELEASE_TAG=1.6.181
 ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.181.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=6b22e2291b0d4c1d19061e65eb84a84d5f8ae2c22b1eb5b6b1d24b1f3a46d08b
+ARG WEB_CONSOLE_ARTIFACT_SHA256=82bf7c4107a6834c96e41230a7b57efe7e0cf6c1e57b9a74e16da295863ab891
 ARG CATALOG_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/catalog-service/releases/download
-ARG CATALOG_SERVICE_VERSION=0.20.12
-ARG CATALOG_SERVICE_COMMIT=d708579092eae0fd03b2750ac594ff0396cf563b
-ARG CATALOG_SERVICE_ARCHIVE_SHA256=34b76c121270c603501664f7146d41916c7f45da983e326861ed4c5b9614372d
-ARG CATALOG_SERVICE_BINARY_SHA256=3deb43f9760d7cbb07f818dd108ab35abf9efc6908d5d7fcaf5c44a185f2fba9
-ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=8805af3c0b5968a02f994d65de715c525b73637aa2dc398a0648feeeaf2fd397
+ARG CATALOG_SERVICE_VERSION=0.20.13
+ARG CATALOG_SERVICE_COMMIT=4c39c73a8131ba06e9ff0aaec3b95cc27e049324
+ARG CATALOG_SERVICE_ARCHIVE_SHA256=29626181cb8489b016e5975ffaddc00b2a32d290b1c0066e833d27fa7a5edf83
+ARG CATALOG_SERVICE_BINARY_SHA256=7224c76e5643130dee047e3f1888ce6845d024307bec74d72eebdc4baeae1aea
+ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=4aeda3e1ee1ca4c57f26938f3ef27651f9c8c129ee12957642960d22b95034ce
 ARG CATALOG_SERVICE_LICENSE_SHA256=0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594
 ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
-ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
-ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
-ARG AUTHENTICATION_SERVICE_BINARY_SHA256=feaabe4bba85cbe119c98a79a27abb4510401fc051f34d02aa7b48d69bdbe746
+ARG AUTHENTICATION_SERVICE_VERSION=0.4.43
+ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=e9218771af8dd68323c8c6fdab149c40a3ad02da9ff23f8aad6f0b2977740273
+ARG AUTHENTICATION_SERVICE_BINARY_SHA256=fe11eec4b31b43863b49a582b1dbbe309eae08fb78adc150037981174f0622da
 ARG WEBSOCKET_PROXY_RELEASE_BASE_URL=https://github.com/PastureStack/websocket-proxy/releases/download
 ARG WEBSOCKET_PROXY_VERSION=0.23.15
-ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=159f6bbaf84c230b99c97d59f171e12444ff203dd183a338e0b7d491711a88d4
-ARG WEBSOCKET_PROXY_BINARY_SHA256=5ade6d24ff05abd7fdd29b5c4260a699d2bf1ccde17cfc9ebbcedb1c0ee36d6a
-ARG WEBSOCKET_PROXY_COMMIT=a968ae2887a9b6f190c0552e11c9bb54da72a76b
+ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=4657338973f672f6ae4d6e5510d06e811b9951afea1baa27a9caa3034e487f2a
+ARG WEBSOCKET_PROXY_BINARY_SHA256=9111d5a569b6326d7cd71fc3384251d9684972492a22e1e9dbbb9863019fbaaa
+ARG WEBSOCKET_PROXY_COMMIT=1928f602b66443cdab40c8cdb450c811548d2749
 ARG WEBHOOK_AUTOMATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/webhook-automation-service/releases/download
-ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.3
-ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=6babbc18cee9a192009cfadcd143e6b9a5f2b550c4dc419781f3e3657caa022a
-ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=9094f3b2527762a3e683b02d93aa00e52618e902cd409e72e34553d98d98a609
+ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.4
+ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=49c4579829a04e758045fae02a5a9fca12bb0ba3af0d5e979cf9eb97f23a88a9
+ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=98c7faea665b7eb95206b8c73a6f47d644c5d2d0eae53f274f6a15faf5205744
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
 ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.334
 ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=aec22db40e2a7e4a4b16003c5a931ed16a285170c15ad5db3d7a37181146f333
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=b0e3608b21ce405cdaf2f74699442b9420844384055f85acf88cfeb638600490
 ARG COMPOSE_EXECUTOR_RELEASE_BASE_URL=https://github.com/PastureStack/compose-cli/releases/download
-ARG COMPOSE_EXECUTOR_VERSION=0.14.36
-ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66
-ARG COMPOSE_EXECUTOR_BINARY_SHA256=1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d
+ARG COMPOSE_EXECUTOR_VERSION=0.14.37
+ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=5ff465601930218f531885a384f231d969033e4cef794ce33d16bfe24e5c1c81
+ARG COMPOSE_EXECUTOR_BINARY_SHA256=a9bf9f0f77e914fe557d3e178a73c31526b0ca0adc4afbf17bf68d8d75c7ee27
 ARG VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL=https://github.com/PastureStack/vsphere-cli-bundle/releases/download
 ARG VSPHERE_CLI_BUNDLE_VERSION=0.55.3
-ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=94553db031d141bf115594effae7ef0c28214e091d018db684467ee56f0c5120
-ARG GOVC_BINARY_SHA256=0994912900534ddb60e0b70a1853046f0c7ab1aa374d241f12b2a397d1de84ae
+ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=31be702e515741686e2c665d387562e5e993c5d2ffbdb2d614ed287243b166e4
+ARG GOVC_BINARY_SHA256=d3c4f4fab44403ec4110743b52da99f5ce3d7e3773c4661db8a87dec3ead8990
+ARG HOST_PROVISIONER_RELEASE_BASE_URL=https://github.com/PastureStack/host-provisioner/releases/download
+ARG HOST_PROVISIONER_VERSION=0.39.8
+ARG HOST_PROVISIONER_COMMIT=385e5b536c108f17fdfcdec84c01750a5be5ab1c
+ARG HOST_PROVISIONER_ARCHIVE_SHA256=d775f36a613b1a486a5e60d6ad61fdbd1ebb4bd22422cbb6dcb70fdd7c4abf0c
+ARG HOST_PROVISIONER_BINARY_SHA256=1d37e20a7a1cf4f3e36036a15ff7699ef22cd8809fd14a20892034dd054fd1fc
+ARG SECRET_DELIVERY_API_RELEASE_BASE_URL=https://github.com/PastureStack/secret-delivery-api/releases/download
+ARG SECRET_DELIVERY_API_VERSION=0.3.2
+ARG SECRET_DELIVERY_API_COMMIT=53060369b29946b1f1b62e5fabbcfc8778c55bb6
+ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=8a5e6da29db8f7b55ab3291b0270e843a5c15e67154fa075575d8b84f4bc0ae9
+ARG SECRET_DELIVERY_API_BINARY_SHA256=c263f61fd01423da30e06addc4385817fe683df42c299e53f27a812d8621e777
+ARG USAGE_TELEMETRY_AGENT_RELEASE_BASE_URL=https://github.com/PastureStack/usage-telemetry-agent/releases/download
+ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.2
+ARG USAGE_TELEMETRY_AGENT_COMMIT=40f9af7ca932fedacdb87e30b4ef1c60a4a7444e
+ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=5ce031c84f76b3e62dafdb04fb4ed014aa1921e83be056c2d5dd712acbce25a8
+ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=e62a21270142181315293d7e11482288ffe8fc4d91cc8fe07dacc90b461f3709
 
 RUN set -eux; \
     for release_base_url in "${COMPOSE_EXECUTOR_RELEASE_BASE_URL}" "${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL}"; do \
@@ -118,11 +134,13 @@ RUN set -eux; \
         echo 'Unsafe Web Console archive path' >&2; \
         exit 1; \
     fi; \
-    if sort "${web_listing}" | uniq -d | grep -q .; then \
+    sort "${web_listing}" | uniq -d > /tmp/pasturestack-archive-duplicates.txt; \
+    if test -s /tmp/pasturestack-archive-duplicates.txt; then \
         echo 'Duplicate Web Console archive path' >&2; \
         exit 1; \
     fi; \
-    if tar -tvzf "${web_archive}" | grep -Eq '^[lh]'; then \
+    tar -tvzf "${web_archive}" > /tmp/pasturestack-archive-verbose.txt; \
+    if grep -Eq '^[lh]' /tmp/pasturestack-archive-verbose.txt; then \
         echo 'Web Console archive may not contain links' >&2; \
         exit 1; \
     fi; \
@@ -210,14 +228,14 @@ RUN set -eux; \
     done; \
     catalog_archive=/tmp/catalog-service.tar.xz; \
     catalog_listing=/tmp/catalog-service-files.txt; \
-    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
-        --connect-timeout 10 --max-time 300 \
-        -o "${catalog_archive}" \
-        "${CATALOG_SERVICE_RELEASE_BASE_URL%/}/v${CATALOG_SERVICE_VERSION}/catalog-service-${CATALOG_SERVICE_VERSION}.tar.xz"; \
+    fetch-server-component "${COMPONENT_ARTIFACT_MODE}" \
+        "${CATALOG_SERVICE_RELEASE_BASE_URL%/}/v${CATALOG_SERVICE_VERSION}/catalog-service-${CATALOG_SERVICE_VERSION}.tar.xz" \
+        "catalog-service-${CATALOG_SERVICE_VERSION}.tar.xz" "${CATALOG_SERVICE_ARCHIVE_SHA256}" "${catalog_archive}"; \
     echo "${CATALOG_SERVICE_ARCHIVE_SHA256}  ${catalog_archive}" | sha256sum -c -; \
     tar -tJf "${catalog_archive}" >"${catalog_listing}"; \
     printf './\n./catalog-service\n./catalog-service-sqlite\n' | cmp - "${catalog_listing}"; \
-    if tar -tvJf "${catalog_archive}" | grep -Eq '^[lh]'; then \
+    tar -tvJf "${catalog_archive}" > /tmp/pasturestack-archive-verbose.txt; \
+    if grep -Eq '^[lh]' /tmp/pasturestack-archive-verbose.txt; then \
         echo 'Catalog Service archive may not contain links' >&2; \
         exit 1; \
     fi; \
@@ -232,10 +250,9 @@ RUN set -eux; \
         go version -m "/out/catalog-service/${catalog_binary}" | grep -F 'vcs.modified=false'; \
     done; \
     mkdir -p /out/catalog-service-licenses; \
-    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
-        --connect-timeout 10 --max-time 300 \
-        -o /out/catalog-service-licenses/LICENSE.txt \
-        "https://raw.githubusercontent.com/PastureStack/catalog-service/${CATALOG_SERVICE_COMMIT}/LICENSE"; \
+    fetch-server-component "${COMPONENT_ARTIFACT_MODE}" \
+        "https://raw.githubusercontent.com/PastureStack/catalog-service/${CATALOG_SERVICE_COMMIT}/LICENSE" \
+        "catalog-service-${CATALOG_SERVICE_VERSION}-LICENSE.txt" "${CATALOG_SERVICE_LICENSE_SHA256}" /out/catalog-service-licenses/LICENSE.txt; \
     echo "${CATALOG_SERVICE_LICENSE_SHA256}  /out/catalog-service-licenses/LICENSE.txt" | sha256sum -c -; \
     printf 'Catalog Service v%s\nRelease source commit: %s\nArtifact SHA-256: %s\nBinary SHA-256: %s\nSQLite binary SHA-256: %s\nSource: https://github.com/PastureStack/catalog-service/tree/%s\nThe inherited runtime license bundle remains available as historical attribution; these coordinates identify the replacement Catalog binaries.\n' \
         "${CATALOG_SERVICE_VERSION}" "${CATALOG_SERVICE_COMMIT}" \
@@ -244,15 +261,15 @@ RUN set -eux; \
         > /out/catalog-service-licenses/SOURCES.txt; \
     auth_archive=/tmp/authentication-service.tar.xz; \
     auth_listing=/tmp/authentication-service-files.txt; \
-    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
-        --connect-timeout 10 --max-time 300 \
-        -o "${auth_archive}" \
-        "${AUTHENTICATION_SERVICE_RELEASE_BASE_URL%/}/v${AUTHENTICATION_SERVICE_VERSION}/authentication-service-${AUTHENTICATION_SERVICE_VERSION}-linux-amd64.tar.xz"; \
+    fetch-server-component "${COMPONENT_ARTIFACT_MODE}" \
+        "${AUTHENTICATION_SERVICE_RELEASE_BASE_URL%/}/v${AUTHENTICATION_SERVICE_VERSION}/authentication-service-${AUTHENTICATION_SERVICE_VERSION}-linux-amd64.tar.xz" \
+        "authentication-service-${AUTHENTICATION_SERVICE_VERSION}-linux-amd64.tar.xz" "${AUTHENTICATION_SERVICE_ARCHIVE_SHA256}" "${auth_archive}"; \
     echo "${AUTHENTICATION_SERVICE_ARCHIVE_SHA256}  ${auth_archive}" | sha256sum -c -; \
     tar -tJf "${auth_archive}" >"${auth_listing}"; \
     test "$(cat "${auth_listing}")" = authentication-service; \
     test "$(wc -l <"${auth_listing}")" -eq 1; \
-    if tar -tvJf "${auth_archive}" | grep -Eq '^[lh]'; then \
+    tar -tvJf "${auth_archive}" > /tmp/pasturestack-archive-verbose.txt; \
+    if grep -Eq '^[lh]' /tmp/pasturestack-archive-verbose.txt; then \
         echo 'Authentication Service archive may not contain links' >&2; \
         exit 1; \
     fi; \
@@ -272,7 +289,8 @@ RUN set -eux; \
     tar -tJf "${websocket_archive}" >"${websocket_listing}"; \
     test "$(cat "${websocket_listing}")" = websocket-proxy; \
     test "$(wc -l <"${websocket_listing}")" -eq 1; \
-    if tar -tvJf "${websocket_archive}" | grep -Eq '^[lh]'; then \
+    tar -tvJf "${websocket_archive}" > /tmp/pasturestack-archive-verbose.txt; \
+    if grep -Eq '^[lh]' /tmp/pasturestack-archive-verbose.txt; then \
         echo 'WebSocket Proxy archive may not contain links' >&2; \
         exit 1; \
     fi; \
@@ -283,10 +301,9 @@ RUN set -eux; \
     webhook_archive=/tmp/webhook-automation-service.tar.xz; \
     webhook_listing=/tmp/webhook-automation-service-files.txt; \
     webhook_expected=/tmp/webhook-automation-service-expected.txt; \
-    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
-        --connect-timeout 10 --max-time 300 \
-        -o "${webhook_archive}" \
-        "${WEBHOOK_AUTOMATION_SERVICE_RELEASE_BASE_URL%/}/v${WEBHOOK_AUTOMATION_SERVICE_VERSION}/webhook-automation-service-${WEBHOOK_AUTOMATION_SERVICE_VERSION}-linux-amd64.tar.xz"; \
+    fetch-server-component "${COMPONENT_ARTIFACT_MODE}" \
+        "${WEBHOOK_AUTOMATION_SERVICE_RELEASE_BASE_URL%/}/v${WEBHOOK_AUTOMATION_SERVICE_VERSION}/webhook-automation-service-${WEBHOOK_AUTOMATION_SERVICE_VERSION}-linux-amd64.tar.xz" \
+        "webhook-automation-service-${WEBHOOK_AUTOMATION_SERVICE_VERSION}-linux-amd64.tar.xz" "${WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256}" "${webhook_archive}"; \
     echo "${WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256}  ${webhook_archive}" | sha256sum -c -; \
     tar -tJf "${webhook_archive}" >"${webhook_listing}"; \
     printf '%s\n' \
@@ -296,7 +313,8 @@ RUN set -eux; \
         webhook-automation-service-SOURCES.txt \
         webhook-automation-service-THIRD-PARTY-NOTICES.md | LC_ALL=C sort >"${webhook_expected}"; \
     LC_ALL=C sort "${webhook_listing}" | cmp "${webhook_expected}" -; \
-    if tar -tvJf "${webhook_archive}" | grep -Eq '^[lh]'; then \
+    tar -tvJf "${webhook_archive}" > /tmp/pasturestack-archive-verbose.txt; \
+    if grep -Eq '^[lh]' /tmp/pasturestack-archive-verbose.txt; then \
         echo 'Webhook Automation Service archive may not contain links' >&2; \
         exit 1; \
     fi; \
@@ -307,19 +325,18 @@ RUN set -eux; \
     chmod 0755 /out/webhook-automation-service/webhook-automation-service; \
     /out/webhook-automation-service/webhook-automation-service --version | \
         grep -Fx "webhook-automation-service version ${WEBHOOK_AUTOMATION_SERVICE_VERSION}"; \
-    grep -Fx 'Release source commit: fbcc0ca07e42e9b21bda18031d0848192ec2f9a1' \
+    grep -Fx 'Release source commit: 400118b893843d2a7d7c65cc70c3449d76c4a8d8' \
         /out/webhook-automation-service/webhook-automation-service-SOURCES.txt; \
     compose_archive=/tmp/compose-executor.gz; \
-    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
-        --connect-timeout 10 --max-time 300 \
-        -o "${compose_archive}" \
-        "${COMPOSE_EXECUTOR_RELEASE_BASE_URL%/}/v${COMPOSE_EXECUTOR_VERSION}/compose-executor-${COMPOSE_EXECUTOR_VERSION}-linux-amd64.gz"; \
+    fetch-server-component "${COMPONENT_ARTIFACT_MODE}" \
+        "${COMPOSE_EXECUTOR_RELEASE_BASE_URL%/}/v${COMPOSE_EXECUTOR_VERSION}/compose-executor-${COMPOSE_EXECUTOR_VERSION}-linux-amd64.gz" \
+        "compose-executor-${COMPOSE_EXECUTOR_VERSION}-linux-amd64.gz" "${COMPOSE_EXECUTOR_ARCHIVE_SHA256}" "${compose_archive}"; \
     echo "${COMPOSE_EXECUTOR_ARCHIVE_SHA256}  ${compose_archive}" | sha256sum -c -; \
     gzip -dc "${compose_archive}" >/out/compose-executor; \
     chmod 0755 /out/compose-executor; \
     echo "${COMPOSE_EXECUTOR_BINARY_SHA256}  /out/compose-executor" | sha256sum -c -; \
     compose_version_output="$(/out/compose-executor --version 2>&1)"; \
-    test "${compose_version_output}" = "compose-executor version ${COMPOSE_EXECUTOR_VERSION}"; \
+    test "${compose_version_output}" = "pasturestack-compose version ${COMPOSE_EXECUTOR_VERSION}"; \
     engine_archive=/out/orchestration-engine.jar; \
     fetch-server-component "${COMPONENT_ARTIFACT_MODE}" \
         "${ORCHESTRATION_ENGINE_RELEASE_BASE_URL%/}/${ORCHESTRATION_ENGINE_RELEASE_TAG}/${ORCHESTRATION_ENGINE_ARTIFACT}" \
@@ -328,21 +345,22 @@ RUN set -eux; \
     vsphere_archive=/tmp/vsphere-cli-bundle.tar.xz; \
     vsphere_listing=/tmp/vsphere-cli-bundle-files.txt; \
     vsphere_expected=/tmp/vsphere-cli-bundle-expected.txt; \
-    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 \
-        --connect-timeout 10 --max-time 300 \
-        -o "${vsphere_archive}" \
-        "${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL%/}/v${VSPHERE_CLI_BUNDLE_VERSION}/vsphere-cli-bundle-${VSPHERE_CLI_BUNDLE_VERSION}-linux-amd64.tar.xz"; \
+    fetch-server-component "${COMPONENT_ARTIFACT_MODE}" \
+        "${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL%/}/v${VSPHERE_CLI_BUNDLE_VERSION}/vsphere-cli-bundle-${VSPHERE_CLI_BUNDLE_VERSION}-linux-amd64.tar.xz" \
+        "vsphere-cli-bundle-${VSPHERE_CLI_BUNDLE_VERSION}-linux-amd64.tar.xz" "${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256}" "${vsphere_archive}"; \
     echo "${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256}  ${vsphere_archive}" | sha256sum -c -; \
     tar -tJf "${vsphere_archive}" >"${vsphere_listing}"; \
     if grep -Eq '(^/|(^|/)\.\.(/|$))' "${vsphere_listing}"; then \
         echo 'Unsafe vSphere CLI bundle archive path' >&2; \
         exit 1; \
     fi; \
-    if sort "${vsphere_listing}" | uniq -d | grep -q .; then \
+    sort "${vsphere_listing}" | uniq -d > /tmp/pasturestack-archive-duplicates.txt; \
+    if test -s /tmp/pasturestack-archive-duplicates.txt; then \
         echo 'Duplicate vSphere CLI bundle archive path' >&2; \
         exit 1; \
     fi; \
-    if tar -tvJf "${vsphere_archive}" | grep -Eq '^[lh]'; then \
+    tar -tvJf "${vsphere_archive}" > /tmp/pasturestack-archive-verbose.txt; \
+    if grep -Eq '^[lh]' /tmp/pasturestack-archive-verbose.txt; then \
         echo 'vSphere CLI bundle archive may not contain links' >&2; \
         exit 1; \
     fi; \
@@ -360,7 +378,7 @@ RUN set -eux; \
     test "$(/out/vsphere-cli-bundle/govc version)" = "govc ${VSPHERE_CLI_BUNDLE_VERSION}"; \
     grep -Fx 'Pinned source commit: a668d9c60399552ea96782b8751c956720a0b8fb' \
         /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null; \
-    grep -Fx 'Build Go version: 1.27.0' \
+    grep -Fx 'Build Go version: 1.27.2' \
         /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null; \
     grep -Fx "Binary SHA-256: ${GOVC_BINARY_SHA256}" \
         /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null; \
@@ -368,6 +386,51 @@ RUN set -eux; \
         /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null; \
     grep -Fx 'Dependency-only override: govc/go.mod and govc/go.sum; upstream Go source unchanged' \
         /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null
+
+RUN set -eux; \
+    for component in host-provisioner secret-delivery-api usage-telemetry-agent; do \
+        case "$component" in \
+            host-provisioner) version="${HOST_PROVISIONER_VERSION}"; commit="${HOST_PROVISIONER_COMMIT}"; archive_sha="${HOST_PROVISIONER_ARCHIVE_SHA256}"; binary_sha="${HOST_PROVISIONER_BINARY_SHA256}"; release_url="${HOST_PROVISIONER_RELEASE_BASE_URL}" ;; \
+            secret-delivery-api) version="${SECRET_DELIVERY_API_VERSION}"; commit="${SECRET_DELIVERY_API_COMMIT}"; archive_sha="${SECRET_DELIVERY_API_ARCHIVE_SHA256}"; binary_sha="${SECRET_DELIVERY_API_BINARY_SHA256}"; release_url="${SECRET_DELIVERY_API_RELEASE_BASE_URL}" ;; \
+            usage-telemetry-agent) version="${USAGE_TELEMETRY_AGENT_VERSION}"; commit="${USAGE_TELEMETRY_AGENT_COMMIT}"; archive_sha="${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256}"; binary_sha="${USAGE_TELEMETRY_AGENT_BINARY_SHA256}"; release_url="${USAGE_TELEMETRY_AGENT_RELEASE_BASE_URL}" ;; \
+        esac; \
+        artifact="${component}-${version}-linux-amd64.tar.xz"; \
+        fetch-server-component "${COMPONENT_ARTIFACT_MODE}" "${release_url%/}/v${version}/${artifact}" "${artifact}" "${archive_sha}" "/tmp/${artifact}"; \
+        verify-runtime-producer "$component" "$version" "$commit" "/tmp/${artifact}" "$binary_sha" "/out/$component"; \
+    done
+
+# Assemble verified products in the build stage; retain component-specific legal
+# directories and .real targets so runtime wrappers remain unchanged. Two COPYs
+# replace per-component layers without flattening the multi-stage build.
+RUN set -eux; \
+    mkdir -p /out/runtime-bin /out/runtime-licenses; \
+    install -m 0755 /out/catalog-service/catalog-service /out/runtime-bin/catalog-service.real; \
+    install -m 0755 /out/catalog-service/catalog-service-sqlite /out/runtime-bin/catalog-service-sqlite; \
+    install -m 0755 /out/authentication-service/authentication-service /out/runtime-bin/authentication-service.real; \
+    install -m 0755 /out/websocket-proxy/websocket-proxy /out/runtime-bin/websocket-proxy.real; \
+    install -m 0755 /out/webhook-automation-service/webhook-automation-service /out/runtime-bin/webhook-automation-service; \
+    install -m 0755 /out/compose-executor /out/runtime-bin/compose-executor.real; \
+    install -m 0755 /out/vsphere-cli-bundle/govc /out/runtime-bin/govc; \
+    install -m 0755 /out/host-provisioner/host-provisioner /out/runtime-bin/host-provisioner.real; \
+    install -m 0755 /out/secret-delivery-api/secret-delivery-api /out/runtime-bin/secret-delivery-api; \
+    install -m 0755 /out/usage-telemetry-agent/usage-telemetry-agent /out/runtime-bin/usage-telemetry-agent; \
+    cp -a /out/catalog-service-licenses /out/runtime-licenses/catalog-service; \
+    cp -a /out/host-provisioner-licenses /out/runtime-licenses/host-provisioner; \
+    cp -a /out/secret-delivery-api-licenses /out/runtime-licenses/secret-delivery-api; \
+    cp -a /out/usage-telemetry-agent-licenses /out/runtime-licenses/usage-telemetry-agent; \
+    mkdir -p /out/runtime-licenses/webhook-automation-service /out/runtime-licenses/vsphere-cli-bundle; \
+    cp -a /out/webhook-automation-service/webhook-automation-service-COMPATIBILITY.md \
+        /out/webhook-automation-service/webhook-automation-service-LICENSES.txt \
+        /out/webhook-automation-service/webhook-automation-service-SOURCES.txt \
+        /out/webhook-automation-service/webhook-automation-service-THIRD-PARTY-NOTICES.md \
+        /out/runtime-licenses/webhook-automation-service/; \
+    cp -a /out/vsphere-cli-bundle/vsphere-cli-bundle-LICENSES.txt \
+        /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt \
+        /out/vsphere-cli-bundle/vsphere-cli-bundle-THIRD-PARTY-NOTICES.txt \
+        /out/runtime-licenses/vsphere-cli-bundle/; \
+    test "$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 10; \
+    test "$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 6; \
+    test -z "$(find /out/runtime-bin /out/runtime-licenses -type l -print -quit)"
 
 RUN set -eux; \
     test -n "${SOURCE_DATE_EPOCH}"; \
@@ -492,12 +555,12 @@ ARG ORCHESTRATION_ENGINE_VERSION=0.183.334
 ARG ENGINE_READONLY_SCHEMA_SHA256=7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233
 ARG ENGINE_RESTRICTED_SCHEMA_SHA256=f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51
 ARG HOST_API_VERSION=0.38.5
-ARG HOST_API_PACKAGE_ID=ea295d1ffe4064bd3ac4afd8ea0f751d
-ARG HOST_API_COMMIT=ea295d1ffe4064bd3ac4afd8ea0f751d27aa4285
-ARG HOST_API_ARCHIVE_SHA256=718e952852b4bc0342e62481ae60673a6b8e76f72b48e741a63a3145724bf1ce
+ARG HOST_API_PACKAGE_ID=84754fe8bc79027d0c72f492923c4786
+ARG HOST_API_COMMIT=84754fe8bc79027d0c72f492923c47861aa74b99
+ARG HOST_API_ARCHIVE_SHA256=ba111038695aa03a82c51d60944bbbdbbec30bb269051ba29fa21d46ada17179
 ARG NODE_AGENT_VERSION=0.13.28
-ARG NODE_AGENT_COMMIT=4b20764cacc9496e810fe1b6687923a4bcc901b8
-ARG NODE_AGENT_ARCHIVE_SHA256=4a9f26a0ac9d0a53a6a7b0bb1dbde72b6a642e7474a19959ad87f81e46a85396
+ARG NODE_AGENT_COMMIT=bb4e057c089e5384bc9836b42db206326c690387
+ARG NODE_AGENT_ARCHIVE_SHA256=a16ae6be5fb72fa2ba38bd1076fd3b9e0536c48e70995ffa49d17b8063e2f8d0
 ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20261002T000000Z
 ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7
 ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7
@@ -506,36 +569,48 @@ ARG FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
 ARG WEB_CONSOLE_RELEASE_TAG=1.6.181
-ARG WEB_CONSOLE_ARTIFACT_SHA256=6b22e2291b0d4c1d19061e65eb84a84d5f8ae2c22b1eb5b6b1d24b1f3a46d08b
-ARG WEB_CONSOLE_COMMIT=c3536a0560cdc1b286b275c39fb1cd04a14ed9b0
-ARG CATALOG_SERVICE_VERSION=0.20.12
-ARG CATALOG_SERVICE_COMMIT=d708579092eae0fd03b2750ac594ff0396cf563b
-ARG CATALOG_SERVICE_ARCHIVE_SHA256=34b76c121270c603501664f7146d41916c7f45da983e326861ed4c5b9614372d
-ARG CATALOG_SERVICE_BINARY_SHA256=3deb43f9760d7cbb07f818dd108ab35abf9efc6908d5d7fcaf5c44a185f2fba9
-ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=8805af3c0b5968a02f994d65de715c525b73637aa2dc398a0648feeeaf2fd397
+ARG WEB_CONSOLE_ARTIFACT_SHA256=82bf7c4107a6834c96e41230a7b57efe7e0cf6c1e57b9a74e16da295863ab891
+ARG WEB_CONSOLE_COMMIT=72851518ba024777146f8eae9909484d7adba230
+ARG CATALOG_SERVICE_VERSION=0.20.13
+ARG CATALOG_SERVICE_COMMIT=4c39c73a8131ba06e9ff0aaec3b95cc27e049324
+ARG CATALOG_SERVICE_ARCHIVE_SHA256=29626181cb8489b016e5975ffaddc00b2a32d290b1c0066e833d27fa7a5edf83
+ARG CATALOG_SERVICE_BINARY_SHA256=7224c76e5643130dee047e3f1888ce6845d024307bec74d72eebdc4baeae1aea
+ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=4aeda3e1ee1ca4c57f26938f3ef27651f9c8c129ee12957642960d22b95034ce
 ARG CATALOG_SERVICE_LICENSE_SHA256=0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594
-ARG AUTHENTICATION_SERVICE_VERSION=0.4.42
-ARG AUTHENTICATION_SERVICE_COMMIT=5589ef8fda68ae56e1afd64096965d452ee8a17e
-ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb
-ARG AUTHENTICATION_SERVICE_BINARY_SHA256=feaabe4bba85cbe119c98a79a27abb4510401fc051f34d02aa7b48d69bdbe746
+ARG AUTHENTICATION_SERVICE_VERSION=0.4.43
+ARG AUTHENTICATION_SERVICE_COMMIT=cae736f377019bd9743648a8e9aa469a0e21b5e0
+ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=e9218771af8dd68323c8c6fdab149c40a3ad02da9ff23f8aad6f0b2977740273
+ARG AUTHENTICATION_SERVICE_BINARY_SHA256=fe11eec4b31b43863b49a582b1dbbe309eae08fb78adc150037981174f0622da
 ARG WEBSOCKET_PROXY_VERSION=0.23.15
-ARG WEBSOCKET_PROXY_COMMIT=a968ae2887a9b6f190c0552e11c9bb54da72a76b
-ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=159f6bbaf84c230b99c97d59f171e12444ff203dd183a338e0b7d491711a88d4
-ARG WEBSOCKET_PROXY_BINARY_SHA256=5ade6d24ff05abd7fdd29b5c4260a699d2bf1ccde17cfc9ebbcedb1c0ee36d6a
-ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.3
-ARG WEBHOOK_AUTOMATION_SERVICE_COMMIT=fbcc0ca07e42e9b21bda18031d0848192ec2f9a1
-ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=6babbc18cee9a192009cfadcd143e6b9a5f2b550c4dc419781f3e3657caa022a
-ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=9094f3b2527762a3e683b02d93aa00e52618e902cd409e72e34553d98d98a609
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=aec22db40e2a7e4a4b16003c5a931ed16a285170c15ad5db3d7a37181146f333
-ARG ORCHESTRATION_ENGINE_COMMIT=c709e19933beb47ae7b530b07aaa1046a8a22564
-ARG COMPOSE_EXECUTOR_VERSION=0.14.36
-ARG COMPOSE_EXECUTOR_COMMIT=e85545a1bc34cb5c42db62ff90dd82b7ff9f5838
-ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66
-ARG COMPOSE_EXECUTOR_BINARY_SHA256=1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d
+ARG WEBSOCKET_PROXY_COMMIT=1928f602b66443cdab40c8cdb450c811548d2749
+ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=4657338973f672f6ae4d6e5510d06e811b9951afea1baa27a9caa3034e487f2a
+ARG WEBSOCKET_PROXY_BINARY_SHA256=9111d5a569b6326d7cd71fc3384251d9684972492a22e1e9dbbb9863019fbaaa
+ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.4
+ARG WEBHOOK_AUTOMATION_SERVICE_COMMIT=400118b893843d2a7d7c65cc70c3449d76c4a8d8
+ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=49c4579829a04e758045fae02a5a9fca12bb0ba3af0d5e979cf9eb97f23a88a9
+ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=98c7faea665b7eb95206b8c73a6f47d644c5d2d0eae53f274f6a15faf5205744
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=b0e3608b21ce405cdaf2f74699442b9420844384055f85acf88cfeb638600490
+ARG ORCHESTRATION_ENGINE_COMMIT=91f44685953f7cc72344a21cb47ca235c0bce53f
+ARG HOST_PROVISIONER_VERSION=0.39.8
+ARG HOST_PROVISIONER_COMMIT=385e5b536c108f17fdfcdec84c01750a5be5ab1c
+ARG HOST_PROVISIONER_ARCHIVE_SHA256=d775f36a613b1a486a5e60d6ad61fdbd1ebb4bd22422cbb6dcb70fdd7c4abf0c
+ARG HOST_PROVISIONER_BINARY_SHA256=1d37e20a7a1cf4f3e36036a15ff7699ef22cd8809fd14a20892034dd054fd1fc
+ARG SECRET_DELIVERY_API_VERSION=0.3.2
+ARG SECRET_DELIVERY_API_COMMIT=53060369b29946b1f1b62e5fabbcfc8778c55bb6
+ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=8a5e6da29db8f7b55ab3291b0270e843a5c15e67154fa075575d8b84f4bc0ae9
+ARG SECRET_DELIVERY_API_BINARY_SHA256=c263f61fd01423da30e06addc4385817fe683df42c299e53f27a812d8621e777
+ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.2
+ARG USAGE_TELEMETRY_AGENT_COMMIT=40f9af7ca932fedacdb87e30b4ef1c60a4a7444e
+ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=5ce031c84f76b3e62dafdb04fb4ed014aa1921e83be056c2d5dd712acbce25a8
+ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=e62a21270142181315293d7e11482288ffe8fc4d91cc8fe07dacc90b461f3709
+ARG COMPOSE_EXECUTOR_VERSION=0.14.37
+ARG COMPOSE_EXECUTOR_COMMIT=88e991e823f06d2334c07d5370595aae3c48ee99
+ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=5ff465601930218f531885a384f231d969033e4cef794ce33d16bfe24e5c1c81
+ARG COMPOSE_EXECUTOR_BINARY_SHA256=a9bf9f0f77e914fe557d3e178a73c31526b0ca0adc4afbf17bf68d8d75c7ee27
 ARG VSPHERE_CLI_BUNDLE_VERSION=0.55.3
-ARG VSPHERE_CLI_BUNDLE_COMMIT=5b1f9c91cdf2b5217b8d5019bbfb18bbc3e3294e
-ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=94553db031d141bf115594effae7ef0c28214e091d018db684467ee56f0c5120
-ARG GOVC_BINARY_SHA256=0994912900534ddb60e0b70a1853046f0c7ab1aa374d241f12b2a397d1de84ae
+ARG VSPHERE_CLI_BUNDLE_COMMIT=f48ab9fd9990132c85845fc162186a04f1e0418d
+ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=31be702e515741686e2c665d387562e5e993c5d2ffbdb2d614ed287243b166e4
+ARG GOVC_BINARY_SHA256=d3c4f4fab44403ec4110743b52da99f5ce3d7e3773c4661db8a87dec3ead8990
 
 COPY --from=runtime_security_packages /out/ /tmp/pasturestack-runtime-security/
 COPY --from=runtime_security_packages /out/tar /usr/bin/tar
@@ -571,16 +646,8 @@ RUN set -eux; \
     rm -f /usr/bin/tar
 
 COPY --from=release_artifacts /out/web-console/ /tmp/pasturestack-web-console/
-COPY --from=release_artifacts --chmod=0755 /out/catalog-service/catalog-service /usr/bin/catalog-service.real
-COPY --from=release_artifacts --chmod=0755 /out/catalog-service/catalog-service-sqlite /usr/bin/catalog-service-sqlite
-COPY --from=release_artifacts /out/catalog-service-licenses/ /usr/share/licenses/pasturestack/catalog-service/
-COPY --from=release_artifacts --chmod=0755 /out/authentication-service/authentication-service /usr/bin/authentication-service.real
-COPY --from=release_artifacts --chmod=0755 /out/websocket-proxy/websocket-proxy /usr/bin/websocket-proxy.real
-
-COPY --from=release_artifacts --chmod=0755 /out/webhook-automation-service/webhook-automation-service /usr/bin/webhook-automation-service
-
-COPY --from=release_artifacts /out/webhook-automation-service/webhook-automation-service-COMPATIBILITY.md /out/webhook-automation-service/webhook-automation-service-LICENSES.txt /out/webhook-automation-service/webhook-automation-service-SOURCES.txt /out/webhook-automation-service/webhook-automation-service-THIRD-PARTY-NOTICES.md /usr/share/licenses/pasturestack/webhook-automation-service/
-COPY --from=release_artifacts --chmod=0755 /out/compose-executor /usr/bin/compose-executor.real
+COPY --from=release_artifacts --chmod=0755 /out/runtime-bin/ /usr/bin/
+COPY --from=release_artifacts /out/runtime-licenses/ /usr/share/licenses/pasturestack/
 COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar
 COPY --from=release_artifacts /out/host-api.tar.gz /usr/share/cattle/artifacts/host-api-${HOST_API_VERSION}.tar.gz
 COPY --from=release_artifacts /out/node-agent.tar.gz /usr/share/cattle/artifacts/node-agent-${NODE_AGENT_VERSION}.tar.gz
@@ -596,10 +663,6 @@ RUN set -eux; \
     sed -i '/^export \(DEFAULT_\)\?CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL=/d' /usr/share/cattle/env_vars; \
     printf 'export DEFAULT_CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL=/usr/share/cattle/artifacts/node-agent-%s.tar.gz\nexport CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL=/usr/share/cattle/artifacts/node-agent-%s.tar.gz\n' \
         "${NODE_AGENT_VERSION}" "${NODE_AGENT_VERSION}" >> /usr/share/cattle/env_vars
-COPY --from=release_artifacts --chmod=0755 /out/vsphere-cli-bundle/govc /usr/bin/govc
-COPY --from=release_artifacts /out/vsphere-cli-bundle/vsphere-cli-bundle-LICENSES.txt /usr/share/licenses/pasturestack/vsphere-cli-bundle/vsphere-cli-bundle-LICENSES.txt
-COPY --from=release_artifacts /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt /usr/share/licenses/pasturestack/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt
-COPY --from=release_artifacts /out/vsphere-cli-bundle/vsphere-cli-bundle-THIRD-PARTY-NOTICES.txt /usr/share/licenses/pasturestack/vsphere-cli-bundle/vsphere-cli-bundle-THIRD-PARTY-NOTICES.txt
 COPY --from=console_broker_build --chmod=0755 /out/pasturestack-console-broker /usr/bin/pasturestack-console-broker
 COPY patches/service-auth.json /tmp/pasturestack-server-overlays/schema/service/service-auth.json
 COPY patches/bootstrap.sh /tmp/pasturestack-server-overlays/config-content/bootstrap/bootstrap.sh
@@ -620,7 +683,8 @@ RUN set -eux; \
         echo 'Unsafe Orchestration Engine JAR path' >&2; \
         exit 1; \
     fi; \
-    if sort "${listing}" | uniq -d | grep -q .; then \
+    sort "${listing}" | uniq -d > /tmp/pasturestack-archive-duplicates.txt; \
+    if test -s /tmp/pasturestack-archive-duplicates.txt; then \
         echo 'Duplicate Orchestration Engine JAR path' >&2; \
         exit 1; \
     fi; \
@@ -855,6 +919,30 @@ RUN set -eux; \
         grep -F "\"resourceLoadError.${load_key}\":" \
             "${web_root}/translations/zh-tw.json" >/dev/null; \
     done; \
+    echo "${HOST_PROVISIONER_BINARY_SHA256}  /usr/bin/host-provisioner.real" | sha256sum -c -; \
+    /usr/bin/host-provisioner.real -v | grep -F "${HOST_PROVISIONER_VERSION}" >/dev/null; \
+    test -s /usr/share/licenses/pasturestack/host-provisioner/LICENSE; \
+    test -s /usr/share/licenses/pasturestack/host-provisioner/ORIGIN.md; \
+    test "$(find /usr/share/licenses/pasturestack/host-provisioner/licenses -type f | wc -l)" -eq 35; \
+    echo "${SECRET_DELIVERY_API_BINARY_SHA256}  /usr/bin/secret-delivery-api" | sha256sum -c -; \
+    /usr/bin/secret-delivery-api --version | grep -F "v${SECRET_DELIVERY_API_VERSION}" >/dev/null; \
+    ln -sfn secret-delivery-api /usr/bin/secrets-api; \
+    test "$(readlink -f /usr/bin/secrets-api)" = /usr/bin/secret-delivery-api; \
+    echo "${USAGE_TELEMETRY_AGENT_BINARY_SHA256}  /usr/bin/usage-telemetry-agent" | sha256sum -c -; \
+    /usr/bin/usage-telemetry-agent --version | grep -F "usage-telemetry-agent ${USAGE_TELEMETRY_AGENT_VERSION} (" >/dev/null; \
+    ln -sfn usage-telemetry-agent /usr/bin/telemetry; \
+    test "$(readlink -f /usr/bin/telemetry)" = /usr/bin/usage-telemetry-agent; \
+    for component in host-provisioner secret-delivery-api usage-telemetry-agent; do \
+        license_dir="/usr/share/licenses/pasturestack/${component}"; \
+        test ! -e "${license_dir}/${component}"; \
+        grep -Fx 'Go compiler: 1.27.2' "${license_dir}/SERVER-PRODUCER-SOURCES.txt" >/dev/null; \
+        if test "${component}" != host-provisioner; then \
+            for suffix in LICENSES.txt SOURCES.txt THIRD-PARTY-NOTICES.md; do \
+                test -s "${license_dir}/${component}-${suffix}"; \
+            done; \
+        fi; \
+    done; \
+    test -s /usr/share/licenses/pasturestack/usage-telemetry-agent/usage-telemetry-agent-PRIVACY.md; \
     echo "${AUTHENTICATION_SERVICE_BINARY_SHA256}  /usr/bin/authentication-service.real" | sha256sum -c -; \
     echo "${CATALOG_SERVICE_BINARY_SHA256}  /usr/bin/catalog-service.real" | sha256sum -c -; \
     echo "${CATALOG_SERVICE_SQLITE_BINARY_SHA256}  /usr/bin/catalog-service-sqlite" | sha256sum -c -; \
@@ -939,6 +1027,20 @@ ENV PASTURESTACK_AUTHENTICATION_SERVICE_VERSION=${AUTHENTICATION_SERVICE_VERSION
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT=${AUTHENTICATION_SERVICE_COMMIT}
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_ARCHIVE_SHA256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256}
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_BINARY_SHA256=${AUTHENTICATION_SERVICE_BINARY_SHA256}
+ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.2
+ENV PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.2
+ENV PASTURESTACK_HOST_PROVISIONER_VERSION=${HOST_PROVISIONER_VERSION}
+ENV PASTURESTACK_HOST_PROVISIONER_COMMIT=${HOST_PROVISIONER_COMMIT}
+ENV PASTURESTACK_HOST_PROVISIONER_ARCHIVE_SHA256=${HOST_PROVISIONER_ARCHIVE_SHA256}
+ENV PASTURESTACK_HOST_PROVISIONER_BINARY_SHA256=${HOST_PROVISIONER_BINARY_SHA256}
+ENV PASTURESTACK_SECRET_DELIVERY_API_VERSION=${SECRET_DELIVERY_API_VERSION}
+ENV PASTURESTACK_SECRET_DELIVERY_API_COMMIT=${SECRET_DELIVERY_API_COMMIT}
+ENV PASTURESTACK_SECRET_DELIVERY_API_ARCHIVE_SHA256=${SECRET_DELIVERY_API_ARCHIVE_SHA256}
+ENV PASTURESTACK_SECRET_DELIVERY_API_BINARY_SHA256=${SECRET_DELIVERY_API_BINARY_SHA256}
+ENV PASTURESTACK_USAGE_TELEMETRY_AGENT_VERSION=${USAGE_TELEMETRY_AGENT_VERSION}
+ENV PASTURESTACK_USAGE_TELEMETRY_AGENT_COMMIT=${USAGE_TELEMETRY_AGENT_COMMIT}
+ENV PASTURESTACK_USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256}
+ENV PASTURESTACK_USAGE_TELEMETRY_AGENT_BINARY_SHA256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256}
 ENV PASTURESTACK_WEBSOCKET_PROXY_VERSION=${WEBSOCKET_PROXY_VERSION}
 ENV PASTURESTACK_WEBSOCKET_PROXY_COMMIT=${WEBSOCKET_PROXY_COMMIT}
 ENV PASTURESTACK_WEBSOCKET_PROXY_ARCHIVE_SHA256=${WEBSOCKET_PROXY_ARCHIVE_SHA256}
