@@ -891,8 +891,8 @@ require_marker "$build_script" \
 for release_engine_marker in \
     'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.334' \
     'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=2dabbe9b2cd1450826116898e49d9b7df4fd4836d9ca613b355f29cf9e4a14b7' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=7e1cfcfe6467e0c901ca206d3daa5db0a6a601d0' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=a3a2dc900ea09477fc26148418a2edc7dc17f2a6b08d6301ef5f4ca33e6884a5' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=7b7415676d9b8d6bf00a1c28e1c7468758cd56bf' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
     'ARG ORCHESTRATION_ENGINE_VERSION=0.183.334' \
     'grep -Fx "Implementation-Version: ${ORCHESTRATION_ENGINE_VERSION}"' \
@@ -917,8 +917,8 @@ done
 for release_engine_build_marker in \
     'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.334}' \
     'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}' \
-    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-2dabbe9b2cd1450826116898e49d9b7df4fd4836d9ca613b355f29cf9e4a14b7}' \
-    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-7e1cfcfe6467e0c901ca206d3daa5db0a6a601d0}' \
+    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-a3a2dc900ea09477fc26148418a2edc7dc17f2a6b08d6301ef5f4ca33e6884a5}' \
+    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-7b7415676d9b8d6bf00a1c28e1c7468758cd56bf}' \
     'CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.5.jar"'; do
