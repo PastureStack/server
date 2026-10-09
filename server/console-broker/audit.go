@@ -167,8 +167,11 @@ func parseAuditQuery(values url.Values, now time.Time) (auditQuery, error) {
 	fromValue := firstNonEmpty(values.Get("created_gte"), values.Get("createdFrom"))
 	toValue := firstNonEmpty(values.Get("created_lte"), values.Get("createdTo"))
 	timeScope := values.Get("timeScope")
-	if timeScope != "" && timeScope != "all" {
+	if timeScope != "" && timeScope != "all" && timeScope != "range" {
 		return auditQuery{}, &auditHTTPError{Status: http.StatusBadRequest, Code: "invalid_time_scope", Message: "Unsupported audit log time scope"}
+	}
+	if timeScope == "range" && (fromValue == "" || toValue == "") {
+		return auditQuery{}, &auditHTTPError{Status: http.StatusBadRequest, Code: "incomplete_time_range", Message: "Both audit log time boundaries are required"}
 	}
 	if fromValue == "" && toValue == "" {
 		query.To = now
