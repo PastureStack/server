@@ -57,7 +57,7 @@ ARG NODE_AGENT_APPLY_SHA256=dd8cb342518a43e7468cc121db5c4e44b16731f2620b77ea0fd0
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
 ARG WEB_CONSOLE_RELEASE_TAG=1.6.181
 ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.181.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=82bf7c4107a6834c96e41230a7b57efe7e0cf6c1e57b9a74e16da295863ab891
+ARG WEB_CONSOLE_ARTIFACT_SHA256=db50f1f4f413ccbc6d9b2c3337e1979fb5ed4688f86978b885a48f30af342ad1
 ARG CATALOG_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/catalog-service/releases/download
 ARG CATALOG_SERVICE_VERSION=0.20.13
 ARG CATALOG_SERVICE_COMMIT=4c39c73a8131ba06e9ff0aaec3b95cc27e049324
@@ -169,6 +169,10 @@ RUN set -eux; \
     grep -aF 'resourceLoadError.secretsUnavailable' "${ui_entry}" >/dev/null; \
     grep -aF 'resourceLoadError.secretsFailed' "${ui_entry}" >/dev/null; \
     grep -aF 'growl-mount' "${ui_entry}" >/dev/null; \
+    for key_policy_marker in ui/utils/api-key-policy-matrix ui/components/api-key-policy-matrix/template \
+        data-policy-matrix data-access-default data-matrix-basis; do \
+        grep -aF "${key_policy_marker}" "${ui_entry}" >/dev/null; \
+    done; \
     for permission_key in routePermission.title routePermission.denied routePermission.updateDenied; do \
         grep -aF "${permission_key}" "${ui_entry}" >/dev/null; \
     done; \
@@ -569,8 +573,8 @@ ARG FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
 ARG WEB_CONSOLE_RELEASE_TAG=1.6.181
-ARG WEB_CONSOLE_ARTIFACT_SHA256=82bf7c4107a6834c96e41230a7b57efe7e0cf6c1e57b9a74e16da295863ab891
-ARG WEB_CONSOLE_COMMIT=72851518ba024777146f8eae9909484d7adba230
+ARG WEB_CONSOLE_ARTIFACT_SHA256=db50f1f4f413ccbc6d9b2c3337e1979fb5ed4688f86978b885a48f30af342ad1
+ARG WEB_CONSOLE_COMMIT=9f2869e08161db6550892039aea4ccf2c8a8016b
 ARG CATALOG_SERVICE_VERSION=0.20.13
 ARG CATALOG_SERVICE_COMMIT=4c39c73a8131ba06e9ff0aaec3b95cc27e049324
 ARG CATALOG_SERVICE_ARCHIVE_SHA256=29626181cb8489b016e5975ffaddc00b2a32d290b1c0066e833d27fa7a5edf83

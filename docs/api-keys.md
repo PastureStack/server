@@ -10,9 +10,21 @@ image tag in the installation guide until the candidate is separately released.
 Full retains the owner's existing account/environment scope. Closed allows no
 Key-authorized operations. Custom narrows access by stable environment, Stack or
 resource IDs and explicit operations; an explicit deny takes precedence.
+In the console, select resources by searchable names and readable context,
+not by entering IDs. Choose allow-by-default with deny exceptions (blacklist),
+or deny-by-default with allow exceptions (whitelist). Both allow direct exception
+editing, and changing the default preserves those exceptions. With no exceptions,
+the original full or closed behavior applies.
 Every policy is intersected with the owner's current RBAC. It neither snapshots
 nor adds a role. Browser operation choices are not proof of backend authority.
 Untouched legacy Keys are not automatically narrowed during an upgrade.
+
+The editor and reviewed changes show the same resource-by-operation policy
+matrix. It explains deny precedence, partial scopes, unresolved ancestry and
+expiry, with readable resource names. This is a Key-rule preview, not a guarantee
+of effective authorization: live owner access, creation destinations and all
+targets of multi-resource actions remain server-checked. An expired reviewed
+policy cannot be submitted even if MFA confirmation arrives later.
 
 Policy-bearing writes are checked after authentication and before schema
 sanitization. Forbidden owner or credential fields are rejected rather than

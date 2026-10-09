@@ -29,7 +29,10 @@ does not establish that every resource/role/hardware combination has been tested
 
 ## API Keys in the source candidate
 
-Choose full, closed or custom access, with optional expiry. The maximum access
+Choose allow-by-default with deny exceptions, or deny-by-default with allow
+exceptions, with optional expiry. Without exceptions these retain full or closed
+access. Search for resource names; the editor and reviewed changes include a
+resource-by-operation policy matrix, not an extra grant of authority. The maximum access
 is always the Key owner's current account/environment RBAC; a Key never grants
 an additional role. Existing legacy Keys are not automatically narrowed on upgrade.
 New Key secrets are shown once at creation and are not returned by later lists or
