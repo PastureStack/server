@@ -54,8 +54,12 @@ stale query/session responses cannot replace a newer view or deliver its file.
 Narrow screen filter actions wrap, and audit errors use readable theme colors.
 Export-only permission or download failures identify the failed export and keep
 the successful query results intact.
-Delayed Key-editor autofocus does not steal focus after keyboard navigation or
-a child selector's own autofocus.
+The Key modal is the sole initial-focus owner; its shared name form opts out.
+Keyboard or pointer interaction cancels delayed focus, including an ABA return
+to the original active element. Teardown cancels only the component's own work.
+Audit export hides its own existing dropdown before disabling the request
+control, preserving consecutive JSON, CSV and XLSX selection. Related Chrome
+tests pass; native acceptance of this new production bundle remains separate.
 The govc bundle
 uses x/text `0.41.0` for
 [GO-2026-6629](https://pkg.go.dev/vuln/GO-2026-6629); its upstream Go source and
@@ -81,7 +85,7 @@ owner-only permission repair remain supported without changing parent modes.
 | Component | Clean source commit | Archive SHA-256 |
 | --- | --- | --- |
 | Engine `v0.183.334` (`cattle.jar`) | `66a87ea6901296fa11ada5df58b0618a4ca96975` | `a62d8f6ddd61c850e71bbb6fd30352b3a73c7c09e605bb5c45d549074e8824e8` |
-| Web Console `1.6.181` | `90ca669058b11d2581a2bf733436c2994c36af0e` | `0728bb4a033c18a62b7f62c9dcb3e453f0ae1b27f97ffe5c6210ccdcb6f27604` |
+| Web Console `1.6.181` | `c36eef5283634c0e5d6b832e5127cec6d0d87139` | `a5595d217fa6ce31d0c593b5a4b54c40da809ff6d96f56845a43db75cb69fb5b` |
 | Catalog Service `0.20.13` | `4c39c73a8131ba06e9ff0aaec3b95cc27e049324` | `29626181cb8489b016e5975ffaddc00b2a32d290b1c0066e833d27fa7a5edf83` |
 | Authentication Service `0.4.43` | `cae736f377019bd9743648a8e9aa469a0e21b5e0` | `e9218771af8dd68323c8c6fdab149c40a3ad02da9ff23f8aad6f0b2977740273` |
 | Compose Executor `0.14.37` | `88e991e823f06d2334c07d5370595aae3c48ee99` | `5ff465601930218f531885a384f231d969033e4cef794ce33d16bfe24e5c1c81` |
