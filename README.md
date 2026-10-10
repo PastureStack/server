@@ -31,6 +31,8 @@ query results intact; scan and export limits are retained.
 The Key modal owns initial focus and yields to keyboard or pointer interaction.
 Audit export closes its own menu before locking the request, allowing consecutive
 JSON, CSV and XLSX downloads without leaving a disabled menu open.
+Key scope choices use the viewer's authorized environment list. Environment,
+stack and resource selectors close before dependent loading or verification.
 See the [candidate release note](docs/releases/server-1.6.519.md) for exact
 component identities and verification boundaries. A version or packaged feature
 does not establish that every resource/role/hardware combination has been tested.

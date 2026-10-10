@@ -17,11 +17,11 @@ FILES = {name: (REPO / name).read_text(encoding='utf-8') for name in (DOCKER, BU
 PUBLISHED_508 = 'Server `v1.6.508` 已正式發布，封裝 Web Console `1.6.171`。'
 STALE_508_CANDIDATE = 'Server `v1.6.508` candidate packages Web Console `1.6.171`'
 COMPATIBILITY_CODE = 'SERVER_CREATE_RESPONSE_ORDER_COMPATIBILITY_MISSING'
-WEB_SHA = 'db50f1f4f413ccbc6d9b2c3337e1979fb5ed4688f86978b885a48f30af342ad1'
-WEB_SOURCE = '9f2869e08161db6550892039aea4ccf2c8a8016b'
+WEB_SHA = '9199681f2c4311f3fbe8727fcf0f6fa136c9bafe9fbe9d13878c55df442a7a03'
+WEB_SOURCE = '7f2bdad0c90a3241693c2ddd4475202ababba550'
 CATALOG_COMMIT = 'b6b658888fce50d3ec217eb4eba0f26ab0113baf'
-ENGINE_SHA = 'b0e3608b21ce405cdaf2f74699442b9420844384055f85acf88cfeb638600490'
-ENGINE_SOURCE = '91f44685953f7cc72344a21cb47ca235c0bce53f'
+ENGINE_SHA = 'a62d8f6ddd61c850e71bbb6fd30352b3a73c7c09e605bb5c45d549074e8824e8'
+ENGINE_SOURCE = '66a87ea6901296fa11ada5df58b0618a4ca96975'
 OLD_COORDINATES = {
     'v1.6.519': 'v1.6.518',
     '1.6.181': '1.6.180',
@@ -111,9 +111,9 @@ INCREMENTAL_CONTRACTS = [
             "ARG HOST_PROVISIONER_ARCHIVE_SHA256=d775f36a613b1a486a5e60d6ad61fdbd1ebb4bd22422cbb6dcb70fdd7c4abf0c",
             "ARG HOST_PROVISIONER_BINARY_SHA256=1d37e20a7a1cf4f3e36036a15ff7699ef22cd8809fd14a20892034dd054fd1fc",
             "ARG SECRET_DELIVERY_API_VERSION=0.3.2",
-            "ARG SECRET_DELIVERY_API_COMMIT=53060369b29946b1f1b62e5fabbcfc8778c55bb6",
-            "ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=8a5e6da29db8f7b55ab3291b0270e843a5c15e67154fa075575d8b84f4bc0ae9",
-            "ARG SECRET_DELIVERY_API_BINARY_SHA256=c263f61fd01423da30e06addc4385817fe683df42c299e53f27a812d8621e777",
+            "ARG SECRET_DELIVERY_API_COMMIT=f9c3f933f14e43dc63074d45a3044b693ec1e573",
+            "ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=ca9ab0bfddbcad84b6c1a865af8ad82fcc56cb43dcca1da240ed11a5d24cbdb2",
+            "ARG SECRET_DELIVERY_API_BINARY_SHA256=b5e01b7e65aeee3b456fe043142b5e70f4039ee89ffd437648368ff63e6042b6",
             "ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.2",
             "ARG USAGE_TELEMETRY_AGENT_COMMIT=40f9af7ca932fedacdb87e30b4ef1c60a4a7444e",
             "ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=5ce031c84f76b3e62dafdb04fb4ed014aa1921e83be056c2d5dd712acbce25a8",
@@ -131,9 +131,9 @@ INCREMENTAL_CONTRACTS = [
             "host_provisioner_archive_sha256=${HOST_PROVISIONER_ARCHIVE_SHA256:-d775f36a613b1a486a5e60d6ad61fdbd1ebb4bd22422cbb6dcb70fdd7c4abf0c}",
             "host_provisioner_binary_sha256=${HOST_PROVISIONER_BINARY_SHA256:-1d37e20a7a1cf4f3e36036a15ff7699ef22cd8809fd14a20892034dd054fd1fc}",
             "secret_delivery_api_version=${SECRET_DELIVERY_API_VERSION:-0.3.2}",
-            "secret_delivery_api_commit=${SECRET_DELIVERY_API_COMMIT:-53060369b29946b1f1b62e5fabbcfc8778c55bb6}",
-            "secret_delivery_api_archive_sha256=${SECRET_DELIVERY_API_ARCHIVE_SHA256:-8a5e6da29db8f7b55ab3291b0270e843a5c15e67154fa075575d8b84f4bc0ae9}",
-            "secret_delivery_api_binary_sha256=${SECRET_DELIVERY_API_BINARY_SHA256:-c263f61fd01423da30e06addc4385817fe683df42c299e53f27a812d8621e777}",
+            "secret_delivery_api_commit=${SECRET_DELIVERY_API_COMMIT:-f9c3f933f14e43dc63074d45a3044b693ec1e573}",
+            "secret_delivery_api_archive_sha256=${SECRET_DELIVERY_API_ARCHIVE_SHA256:-ca9ab0bfddbcad84b6c1a865af8ad82fcc56cb43dcca1da240ed11a5d24cbdb2}",
+            "secret_delivery_api_binary_sha256=${SECRET_DELIVERY_API_BINARY_SHA256:-b5e01b7e65aeee3b456fe043142b5e70f4039ee89ffd437648368ff63e6042b6}",
             "usage_telemetry_agent_version=${USAGE_TELEMETRY_AGENT_VERSION:-0.4.2}",
             "usage_telemetry_agent_commit=${USAGE_TELEMETRY_AGENT_COMMIT:-40f9af7ca932fedacdb87e30b4ef1c60a4a7444e}",
             "usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-5ce031c84f76b3e62dafdb04fb4ed014aa1921e83be056c2d5dd712acbce25a8}",
@@ -675,7 +675,7 @@ class Tests(unittest.TestCase):
                         verify_incremental_contract(dict(FILES, **{DOCKER: FILES[DOCKER].replace(marker, replacement)}))
         for upper, version, digest, binary in (
             ('HOST_PROVISIONER', '0.39.8', '1d37e20a7a1cf4f3e36036a15ff7699ef22cd8809fd14a20892034dd054fd1fc', '/usr/bin/host-provisioner.real'),
-            ('SECRET_DELIVERY_API', '0.3.2', 'c263f61fd01423da30e06addc4385817fe683df42c299e53f27a812d8621e777', '/usr/bin/secret-delivery-api'),
+            ('SECRET_DELIVERY_API', '0.3.2', 'b5e01b7e65aeee3b456fe043142b5e70f4039ee89ffd437648368ff63e6042b6', '/usr/bin/secret-delivery-api'),
             ('USAGE_TELEMETRY_AGENT', '0.4.2', 'e62a21270142181315293d7e11482288ffe8fc4d91cc8fe07dacc90b461f3709', '/usr/bin/usage-telemetry-agent'),
         ):
             self.assertIn(digest + '  ' + binary, FILES[BUILD])

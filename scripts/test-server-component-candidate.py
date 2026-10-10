@@ -22,7 +22,24 @@ COMMITS = ("ORCHESTRATION_ENGINE_COMMIT", "WEB_CONSOLE_COMMIT", "WEBSOCKET_PROXY
 HASHES = ("ORCHESTRATION_ENGINE_ARTIFACT_SHA256", "ENGINE_READONLY_SCHEMA_SHA256", "ENGINE_RESTRICTED_SCHEMA_SHA256",
           "WEB_CONSOLE_ARTIFACT_SHA256", "WEBSOCKET_PROXY_ARCHIVE_SHA256", "WEBSOCKET_PROXY_BINARY_SHA256",
           "HOST_API_ARCHIVE_SHA256", "HOST_API_BINARY_SHA256", "HOST_API_APPLY_SHA256",
-          "NODE_AGENT_ARCHIVE_SHA256", "NODE_AGENT_BINARY_SHA256", "NODE_AGENT_APPLY_SHA256")
+          "NODE_AGENT_ARCHIVE_SHA256", "NODE_AGENT_BINARY_SHA256", "NODE_AGENT_APPLY_SHA256",
+          "HOST_PROVISIONER_ARCHIVE_SHA256", "SECRET_DELIVERY_API_ARCHIVE_SHA256", "USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256",
+          "CATALOG_SERVICE_ARCHIVE_SHA256", "CATALOG_SERVICE_LICENSE_SHA256", "AUTHENTICATION_SERVICE_ARCHIVE_SHA256",
+          "WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256", "COMPOSE_EXECUTOR_ARCHIVE_SHA256", "VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256")
+LOCAL_ASSETS = (("cattle.jar", "ORCHESTRATION_ENGINE_ARTIFACT_SHA256"),
+                ("web-console-1.6.181.tar.gz", "WEB_CONSOLE_ARTIFACT_SHA256"),
+                ("websocket-proxy-0.23.15-linux-amd64.tar.xz", "WEBSOCKET_PROXY_ARCHIVE_SHA256"),
+                ("host-api-0.38.5.tar.gz", "HOST_API_ARCHIVE_SHA256"),
+                ("node-agent-0.13.28.tar.gz", "NODE_AGENT_ARCHIVE_SHA256"),
+                ("host-provisioner-0.39.8-linux-amd64.tar.xz", "HOST_PROVISIONER_ARCHIVE_SHA256"),
+                ("secret-delivery-api-0.3.2-linux-amd64.tar.xz", "SECRET_DELIVERY_API_ARCHIVE_SHA256"),
+                ("usage-telemetry-agent-0.4.2-linux-amd64.tar.xz", "USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256"),
+                ("catalog-service-0.20.13.tar.xz", "CATALOG_SERVICE_ARCHIVE_SHA256"),
+                ("catalog-service-0.20.13-LICENSE.txt", "CATALOG_SERVICE_LICENSE_SHA256"),
+                ("authentication-service-0.4.43-linux-amd64.tar.xz", "AUTHENTICATION_SERVICE_ARCHIVE_SHA256"),
+                ("webhook-automation-service-0.10.4-linux-amd64.tar.xz", "WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256"),
+                ("compose-executor-0.14.37-linux-amd64.gz", "COMPOSE_EXECUTOR_ARCHIVE_SHA256"),
+                ("vsphere-cli-bundle-0.55.3-linux-amd64.tar.xz", "VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256"))
 
 
 def fixture_environment():
@@ -61,11 +78,7 @@ class ComponentRecipeTest(unittest.TestCase):
         environment = fixture_environment()
         assets = path / "assets"
         assets.mkdir()
-        for name, variable in (("cattle.jar", "ORCHESTRATION_ENGINE_ARTIFACT_SHA256"),
-                               ("web-console-1.6.181.tar.gz", "WEB_CONSOLE_ARTIFACT_SHA256"),
-                               ("websocket-proxy-0.23.15-linux-amd64.tar.xz", "WEBSOCKET_PROXY_ARCHIVE_SHA256"),
-                               ("host-api-0.38.5.tar.gz", "HOST_API_ARCHIVE_SHA256"),
-                               ("node-agent-0.13.28.tar.gz", "NODE_AGENT_ARCHIVE_SHA256")):
+        for name, variable in LOCAL_ASSETS:
             content = ("unit-fixture:" + name).encode()
             (assets / name).write_bytes(content)
             environment[variable] = hashlib.sha256(content).hexdigest()
@@ -83,10 +96,12 @@ class ComponentRecipeTest(unittest.TestCase):
                            FIXTURE_TRACE=str(path / "docker-arguments"))
         return environment, assets
 
-    def test_five_local_assets_are_hashed_and_named_context_reaches_formal_recipe(self):
+    def test_fourteen_local_assets_are_hashed_and_named_context_reaches_formal_recipe(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary)
             environment, assets = self.local_fixture(path)
+            self.assertEqual(14, len(LOCAL_ASSETS))
+            self.assertEqual({name for name, _ in LOCAL_ASSETS}, {asset.name for asset in assets.iterdir()})
             result = self.run_entry(environment)
             self.assertEqual(88, result.returncode, result.stderr)
             arguments = (path / "docker-arguments").read_text()
@@ -139,6 +154,21 @@ class ComponentRecipeTest(unittest.TestCase):
                             self.assertIn(variable + '=' + url, (path / 'docker-arguments').read_text())
                         else:
                             self.assertNotEqual(0, result.returncode)
+
+    def test_missing_file_or_wrong_hash_cannot_reach_build(self):
+        for name, variable in LOCAL_ASSETS:
+            with self.subTest(asset=name), tempfile.TemporaryDirectory() as temporary:
+                path = Path(temporary)
+                environment, assets = self.local_fixture(path)
+                asset = assets / name
+                content = asset.read_bytes()
+                asset.unlink()
+                self.assertNotEqual(0, self.run_entry(environment).returncode)
+                self.assertFalse((path / "docker-arguments").exists(), "a missing input must fail before Docker")
+                asset.write_bytes(content)
+                environment[variable] = "0" * 64
+                self.assertNotEqual(0, self.run_entry(environment).returncode)
+                self.assertFalse((path / "docker-arguments").exists(), "a wrong SHA must fail before Docker")
 
     def test_extra_file_or_corrupted_asset_cannot_reach_build(self):
         with tempfile.TemporaryDirectory() as temporary:
