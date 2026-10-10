@@ -39,6 +39,8 @@ New Key secrets are shown once at creation and are not returned by later lists o
 details. Per-Key audit separates authorization, the HTTP response and any later
 job/stream completion. Environment-Key audit rechecks live Engine access in
 Engine-verified project contexts; a caller-supplied project header is not a grant.
+Open a Key's audit from its action menu; the close control follows the audit
+filters, results and details, below the audit block.
 Errors use the existing API status/code and console error
 handling. See the [API Key guide](docs/api-keys.md) for policy and audit contracts.
 
