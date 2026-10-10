@@ -46,7 +46,11 @@ securely; later GET/list/detail views do not return it. Audit contains safe
 identifiers and status metadata, not Key secrets or authentication material.
 
 Open audit from the Key's normal entry point. Access is checked against the
-current viewer, including for an inactive Key. All-time has no hidden 24-hour
+current viewer, including for an inactive Key. Environment-Key visibility is
+verified in project contexts returned by the Engine for that viewer. A browser
+project header does not grant access. Session or membership loss during the
+query rejects the result instead of returning partially authorized records.
+All-time has no hidden 24-hour
 restriction; explicit UTC ranges and filters apply before bounded totals and
 pagination. Failed queries or loss of access must not leave old records visible.
 

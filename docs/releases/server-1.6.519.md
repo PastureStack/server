@@ -18,6 +18,10 @@ unmanaged, removed or contradictory relationships do not grant that ancestry.
 The Key query uses the viewer's personal context and Engine-proven live project
 contexts, then deduplicates and scopes events within a shared scan bound.
 An incomplete live project-authority page is rejected without partial results.
+Environment-Key metadata uses those Engine-proven contexts when a global Key
+lookup is forbidden; each scoped lookup independently verifies the Key owner
+and current viewer. Redirects, changed principals and lost memberships reject
+the query rather than yielding partial records or trusting a caller header.
 Delegated terminal/log access rechecks current authorization; terminal outcomes
 are accepted only from the authenticated host's agent, with durable deduplication.
 An API Key stream cannot start against a backend without the verified audit

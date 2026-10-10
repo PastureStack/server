@@ -25,6 +25,20 @@ type keyAuditFixture struct {
 	deniedProject        string
 	projectPagination    bool
 	projectAuthorityNext bool
+	requireProjectKey    bool
+	keyQueries           []url.Values
+	keyProjectHeaders    []string
+	projectQueries       []url.Values
+	projectStatus        int
+	projectRedirect      bool
+	scopedKeyStatus      int
+	scopedKeyRedirect    bool
+	scopedKeyOverride    map[string]string
+	loseProjectAfterKey  bool
+	changeViewerAfterKey bool
+	auditRedirect        bool
+	auditViewer          string
+	redirectHits         int
 }
 
 func newKeyAuditFixture(t *testing.T) (*keyAuditFixture, *httptest.Server) {
@@ -41,8 +55,11 @@ func newKeyAuditFixture(t *testing.T) (*keyAuditFixture, *httptest.Server) {
 		}
 		fixture.mu.Lock()
 		defer fixture.mu.Unlock()
+		writer.Header().Set("X-API-USER-ID", fixture.viewer)
 		switch request.URL.Path {
 		case "/v2-beta/apikey/1a99", "/v2-beta/apikeyrestricted/1a99":
+			fixture.keyQueries = append(fixture.keyQueries, request.URL.Query())
+			fixture.keyProjectHeaders = append(fixture.keyProjectHeaders, request.Header.Get("X-API-Project-ID"))
 			kind := "apiKey"
 			if strings.Contains(request.URL.Path, "apikeyrestricted") {
 				if !fixture.restricted {
@@ -54,10 +71,51 @@ func newKeyAuditFixture(t *testing.T) (*keyAuditFixture, *httptest.Server) {
 				http.NotFound(writer, request)
 				return
 			}
-			writer.Header().Set("X-API-USER-ID", fixture.viewer)
+			projectID := request.URL.Query().Get("projectId")
+			if fixture.requireProjectKey && projectID != fixture.owner {
+				http.Error(writer, "credential outside account policy", http.StatusForbidden)
+				return
+			}
+			if fixture.requireProjectKey {
+				writer.Header().Set("X-API-ACCOUNT-ID", projectID)
+				if fixture.scopedKeyRedirect {
+					http.Redirect(writer, request, "/authority-redirect", http.StatusFound)
+					return
+				}
+				if fixture.scopedKeyStatus != 0 {
+					http.Error(writer, "scope unavailable", fixture.scopedKeyStatus)
+					return
+				}
+			}
+			key := map[string]any{"type": kind, "id": "1a99", "accountId": fixture.owner, "secretValue": "never-return-key-secret"}
+			for field, value := range fixture.scopedKeyOverride {
+				switch field {
+				case "viewer":
+					writer.Header().Set("X-API-USER-ID", value)
+				case "context":
+					writer.Header().Set("X-API-ACCOUNT-ID", value)
+				default:
+					key[field] = value
+				}
+			}
 			writer.WriteHeader(fixture.keyStatus)
-			_ = json.NewEncoder(writer).Encode(map[string]any{"type": kind, "id": "1a99", "accountId": fixture.owner, "secretValue": "never-return-key-secret"})
+			_ = json.NewEncoder(writer).Encode(key)
+			if fixture.loseProjectAfterKey {
+				fixture.projects = nil
+			}
+			if fixture.changeViewerAfterKey {
+				fixture.viewer = "1a2"
+			}
 		case "/v2-beta/projects":
+			fixture.projectQueries = append(fixture.projectQueries, request.URL.Query())
+			if fixture.projectRedirect {
+				http.Redirect(writer, request, "/authority-redirect", http.StatusFound)
+				return
+			}
+			if fixture.projectStatus != 0 {
+				http.Error(writer, "projects unavailable", fixture.projectStatus)
+				return
+			}
 			next := ""
 			if fixture.projectAuthorityNext {
 				next = upstream.server.URL + "/v2-beta/projects?marker=more"
@@ -67,6 +125,13 @@ func newKeyAuditFixture(t *testing.T) (*keyAuditFixture, *httptest.Server) {
 			writeFixtureCollection(writer, []map[string]any{{"type": "account", "id": "1a1", "name": "Owner"}}, "")
 		case "/v2-beta/auditlogs":
 			fixture.auditQueries = append(fixture.auditQueries, request.URL.Query())
+			if fixture.auditViewer != "" {
+				writer.Header().Set("X-API-USER-ID", fixture.auditViewer)
+			}
+			if fixture.auditRedirect {
+				http.Redirect(writer, request, "/authority-redirect", http.StatusFound)
+				return
+			}
 			if !fixture.accountScoped {
 				writeFixtureCollection(writer, fixture.records, "")
 				break
@@ -95,6 +160,9 @@ func newKeyAuditFixture(t *testing.T) (*keyAuditFixture, *httptest.Server) {
 				records = records[1:]
 			}
 			writeFixtureCollection(writer, records, next)
+		case "/authority-redirect":
+			fixture.redirectHits++
+			http.Error(writer, "must not follow", http.StatusServiceUnavailable)
 		default:
 			http.NotFound(writer, request)
 		}
@@ -418,5 +486,189 @@ func TestKeyAuditUpstreamAuthenticationFailuresReturnStableCodes(t *testing.T) {
 				t.Fatalf("unverified authority started an audit query or returned an unclear error: %d %s", response.StatusCode, body)
 			}
 		})
+	}
+}
+
+func TestKeyAuditProjectOwnedCredentialUsesEngineProvenContextAndKeepsBaseline(t *testing.T) {
+	for _, restricted := range []bool{false, true} {
+		t.Run(strconv.FormatBool(restricted), func(t *testing.T) {
+			fixture, server := newKeyAuditFixture(t)
+			fixture.owner, fixture.requireProjectKey, fixture.accountScoped = "1p1", true, true
+			fixture.restricted = restricted
+			fixture.records = []map[string]any{
+				keyAuditRecord("baseline1", "1a99", "1p1", "2020-01-01T00:00:00Z"),
+				keyAuditRecord("baseline2", "1a99", "1p1", "2021-01-01T00:00:00Z"),
+				keyAuditRecord("personal", "1a99", "1a1", "2022-01-01T00:00:00Z"),
+				keyAuditRecord("hidden", "1a99", "1p9", "2023-01-01T00:00:00Z"),
+			}
+			request, _ := http.NewRequest(http.MethodGet, server.URL+keyAuditQueryPath+"?keyId=1a99&timeScope=all&limit=1&offset=1&order=asc", nil)
+			request.Header.Set("Cookie", "R_SESS=authorized")
+			request.Header.Set("X-API-Project-ID", "1p9")
+			request.Header.Set("X-API-USER-ID", "forged-viewer")
+			response, err := server.Client().Do(request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer response.Body.Close()
+			var payload auditCollection
+			if json.NewDecoder(response.Body).Decode(&payload) != nil || response.StatusCode != http.StatusOK ||
+				payload.Pagination["total"] != float64(2) || len(payload.Data) != 1 || auditString(payload.Data[0], "id") != "baseline2" {
+				t.Fatalf("project owner lost historical baseline/count: %d %#v", response.StatusCode, payload)
+			}
+			for index, query := range fixture.keyQueries {
+				if fixture.keyProjectHeaders[index] != "" || (query.Get("projectId") != "" && query.Get("projectId") != "1p1") {
+					t.Fatalf("client/unproven context forwarded: %#v %q", query, fixture.keyProjectHeaders[index])
+				}
+			}
+			if len(fixture.projectQueries) != 2 || fixture.projectQueries[0].Get("all") != "true" || fixture.projectQueries[0].Get("limit") != "1000" {
+				t.Fatalf("missing complete live candidate/final authority reads: %#v", fixture.projectQueries)
+			}
+			detail := performAuditRequest(t, server, keyAuditQueryPath+"/baseline1?keyId=1a99")
+			detail.Body.Close()
+			if detail.StatusCode != http.StatusOK {
+				t.Fatalf("project-owned historical detail lost: %d", detail.StatusCode)
+			}
+		})
+	}
+}
+
+func TestKeyAuditProjectFallbackScopeGuardsFailBeforeDataScan(t *testing.T) {
+	cases := []struct {
+		name   string
+		status int
+		setup  func(*keyAuditFixture)
+	}{
+		{"no-membership", http.StatusForbidden, func(f *keyAuditFixture) { f.projects = nil }},
+		{"non-project", http.StatusForbidden, func(f *keyAuditFixture) {
+			f.projects = []map[string]any{{"type": "environment", "id": "1p1"}}
+		}},
+		{"invalid-project-id", http.StatusBadGateway, func(f *keyAuditFixture) {
+			f.projects = []map[string]any{{"type": "project", "id": "../1p1"}}
+		}},
+		{"non-string-project-id", http.StatusBadGateway, func(f *keyAuditFixture) {
+			f.projects = []map[string]any{{"type": "project", "id": 123}}
+		}},
+		{"duplicate-project-id", http.StatusBadGateway, func(f *keyAuditFixture) { f.projects = append(f.projects, f.projects[0]) }},
+		{"unbounded-projects", http.StatusUnprocessableEntity, func(f *keyAuditFixture) {
+			f.projects = nil
+			for index := 0; index <= auditUpstreamPageSize; index++ {
+				f.projects = append(f.projects, map[string]any{"type": "project", "id": "1p" + strconv.Itoa(index)})
+			}
+		}},
+		{"partial-projects", http.StatusUnprocessableEntity, func(f *keyAuditFixture) { f.projectAuthorityNext = true }},
+		{"expired-project-session", http.StatusUnauthorized, func(f *keyAuditFixture) { f.projectStatus = http.StatusUnauthorized }},
+		{"unavailable-projects", http.StatusBadGateway, func(f *keyAuditFixture) { f.projectStatus = http.StatusServiceUnavailable }},
+		{"project-redirect", http.StatusBadGateway, func(f *keyAuditFixture) { f.projectRedirect = true }},
+		{"missing-engine-viewer", http.StatusBadGateway, func(f *keyAuditFixture) { f.viewer = "" }},
+		{"wrong-owner", http.StatusBadGateway, func(f *keyAuditFixture) { f.scopedKeyOverride = map[string]string{"accountId": "1a2"} }},
+		{"wrong-key-id", http.StatusBadGateway, func(f *keyAuditFixture) { f.scopedKeyOverride = map[string]string{"id": "1a98"} }},
+		{"wrong-key-type", http.StatusBadGateway, func(f *keyAuditFixture) { f.scopedKeyOverride = map[string]string{"type": "apiKeyRestricted"} }},
+		{"wrong-engine-viewer", http.StatusBadGateway, func(f *keyAuditFixture) { f.scopedKeyOverride = map[string]string{"viewer": "1a2"} }},
+		{"wrong-engine-context", http.StatusBadGateway, func(f *keyAuditFixture) { f.scopedKeyOverride = map[string]string{"context": "1p9"} }},
+		{"missing-engine-context", http.StatusBadGateway, func(f *keyAuditFixture) { f.scopedKeyOverride = map[string]string{"context": ""} }},
+		{"expired-scoped-session", http.StatusUnauthorized, func(f *keyAuditFixture) { f.scopedKeyStatus = http.StatusUnauthorized }},
+		{"unavailable-scoped-key", http.StatusBadGateway, func(f *keyAuditFixture) { f.scopedKeyStatus = http.StatusServiceUnavailable }},
+		{"scoped-key-redirect", http.StatusBadGateway, func(f *keyAuditFixture) { f.scopedKeyRedirect = true }},
+		{"live-object-denied", http.StatusForbidden, func(f *keyAuditFixture) { f.scopedKeyStatus = http.StatusForbidden }},
+		{"project-lost-after-key", http.StatusForbidden, func(f *keyAuditFixture) { f.loseProjectAfterKey = true }},
+		{"viewer-changed-after-key", http.StatusBadGateway, func(f *keyAuditFixture) { f.changeViewerAfterKey = true }},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			fixture, server := newKeyAuditFixture(t)
+			fixture.owner, fixture.requireProjectKey, fixture.accountScoped = "1p1", true, true
+			fixture.records = []map[string]any{keyAuditRecord("baseline", "1a99", "1p1", "2020-01-01T00:00:00Z")}
+			tc.setup(fixture)
+			request, _ := http.NewRequest(http.MethodGet, server.URL+keyAuditQueryPath+"?keyId=1a99&timeScope=all", nil)
+			request.Header.Set("Cookie", "R_SESS=authorized")
+			request.Header.Set("X-API-Project-ID", "1p1") // Caller hint cannot supply missing live authority.
+			response, err := server.Client().Do(request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer response.Body.Close()
+			body, _ := io.ReadAll(response.Body)
+			if response.StatusCode != tc.status || len(fixture.auditQueries) != 0 || fixture.redirectHits != 0 || strings.Contains(string(body), "baseline") {
+				t.Fatalf("unproven scope scanned events/followed redirect: status=%d scans=%d redirects=%d body=%s", response.StatusCode, len(fixture.auditQueries), fixture.redirectHits, body)
+			}
+		})
+	}
+}
+
+func TestKeyAuditProjectFallbackOnlyProbesVisibleScopesAndNeverGrantsForeignPersonalKey(t *testing.T) {
+	fixture, server := newKeyAuditFixture(t)
+	fixture.owner, fixture.requireProjectKey = "1a2", true
+	fixture.projects = []map[string]any{{"type": "project", "id": "1p2"}, {"type": "project", "id": "1p1"}}
+	response := performAuditRequest(t, server, keyAuditQueryPath+"?keyId=1a99&timeScope=all")
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusForbidden || len(fixture.auditQueries) != 0 {
+		t.Fatalf("membership borrowed foreign personal-key authority: %d", response.StatusCode)
+	}
+	var contexts []string
+	for _, query := range fixture.keyQueries {
+		contexts = append(contexts, query.Get("projectId"))
+	}
+	if strings.Join(contexts, ",") != ",1p1,1p2" {
+		t.Fatalf("scanned an unproven scope or skipped ordered live candidates: %#v", contexts)
+	}
+}
+
+func TestKeyAuditProjectZeroBaselineIsReadRatherThanInventedAndDataLossFailsClosed(t *testing.T) {
+	for _, option := range []string{"empty", "denied", "redirect", "viewer-changed"} {
+		t.Run(option, func(t *testing.T) {
+			fixture, server := newKeyAuditFixture(t)
+			fixture.owner, fixture.requireProjectKey, fixture.accountScoped = "1p1", true, true
+			expected := http.StatusOK
+			switch option {
+			case "denied":
+				fixture.deniedProject, expected = "1p1", http.StatusForbidden
+			case "redirect":
+				fixture.auditRedirect, expected = true, http.StatusBadGateway
+			case "viewer-changed":
+				fixture.auditViewer, expected = "1a2", http.StatusBadGateway
+			}
+			response := performAuditRequest(t, server, keyAuditQueryPath+"?keyId=1a99&timeScope=all")
+			defer response.Body.Close()
+			var payload auditCollection
+			if json.NewDecoder(response.Body).Decode(&payload) != nil || response.StatusCode != expected ||
+				len(fixture.auditQueries) == 0 || fixture.redirectHits != 0 {
+				t.Fatalf("data baseline not queried or loss was ignored: %d %#v", response.StatusCode, fixture.auditQueries)
+			}
+			if option == "empty" && (len(fixture.auditQueries) != 2 || payload.Pagination["total"] != float64(0)) {
+				t.Fatalf("zero was not proved across the live authorized contexts: %#v %#v", fixture.auditQueries, payload)
+			}
+		})
+	}
+}
+
+func TestKeyAuditStrictProjectRedirectDoesNotChangeGenericAuditRedirectBehavior(t *testing.T) {
+	redirectHits := 0
+	upstream := &auditUpstreamFixture{}
+	upstream.server = httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		switch request.URL.Path {
+		case "/v2-beta/apikey/1a99", "/v2-beta/apikeyrestricted/1a99":
+			http.NotFound(writer, request)
+		case "/v2-beta/projects":
+			http.Redirect(writer, request, "/generic-project-list", http.StatusFound)
+		case "/generic-project-list":
+			redirectHits++
+			writeFixtureCollection(writer, []map[string]any{{"type": "project", "id": "1p1"}}, "")
+		case "/v2-beta/accounts", "/v2-beta/auditlogs":
+			writeFixtureCollection(writer, nil, "")
+		default:
+			http.NotFound(writer, request)
+		}
+	}))
+	t.Cleanup(upstream.server.Close)
+	server := newAuditTestBroker(t, upstream)
+	generic := performAuditRequest(t, server, auditQueryPath+"?timeScope=all")
+	generic.Body.Close()
+	if generic.StatusCode != http.StatusOK || redirectHits != 1 {
+		t.Fatalf("generic audit redirect behavior changed: %d hits=%d", generic.StatusCode, redirectHits)
+	}
+	key := performAuditRequest(t, server, keyAuditQueryPath+"?keyId=1a99&timeScope=all")
+	key.Body.Close()
+	if key.StatusCode != http.StatusBadGateway || redirectHits != 1 {
+		t.Fatalf("key authority followed a redirect: %d hits=%d", key.StatusCode, redirectHits)
 	}
 }

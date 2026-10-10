@@ -85,6 +85,8 @@ type auditCollection struct {
 type auditUpstreamCollection struct {
 	Data       []map[string]any `json:"data"`
 	Pagination map[string]any   `json:"pagination"`
+	// Principal identity comes only from the Engine response header, never JSON.
+	viewerAccountID string
 }
 
 type auditHTTPError struct {
@@ -256,28 +258,59 @@ func cleanAuditValue(value string, maximum int) string {
 	return value
 }
 
-func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, query auditQuery) (auditResult, error) {
-	projectPage, err := b.fetchAuditPage(ctx, incoming, "/v2-beta/projects", url.Values{
+func (b *broker) fetchAuditProjects(ctx context.Context, incoming *http.Request, keyQuery bool) (map[string]string, string, error) {
+	projectPage, err := b.fetchAuditPagePolicy(ctx, incoming, "/v2-beta/projects", url.Values{
 		"all": {"true"}, "limit": {"1000"},
-	})
+	}, keyQuery)
 	if err != nil {
-		return auditResult{}, err
+		return nil, "", err
 	}
-	if query.KeyID != "" && auditMapString(projectPage.Pagination, "next") != "" {
-		return auditResult{}, &auditHTTPError{Status: http.StatusUnprocessableEntity, Code: "result_set_too_large", Message: "Narrow the visible environment scope before continuing; current permissions cannot be completely verified within this bounded query"}
+	if keyQuery {
+		if len(projectPage.Data) > auditUpstreamPageSize {
+			return nil, "", &auditHTTPError{Status: http.StatusUnprocessableEntity, Code: "result_set_too_large", Message: "Current environment permissions exceeded the bounded authority query"}
+		}
+		if next, present := projectPage.Pagination["next"]; present && next != nil {
+			value, valid := next.(string)
+			if !valid {
+				return nil, "", &auditHTTPError{Status: http.StatusBadGateway, Code: "invalid_key_audit_scope", Message: "Current environment permissions could not be verified"}
+			}
+			if value != "" {
+				return nil, "", &auditHTTPError{Status: http.StatusUnprocessableEntity, Code: "result_set_too_large", Message: "Narrow the visible environment scope before continuing; current permissions cannot be completely verified within this bounded query"}
+			}
+		}
+		if !keyAuditIDPattern.MatchString(projectPage.viewerAccountID) {
+			return nil, "", &auditHTTPError{Status: http.StatusBadGateway, Code: "invalid_key_authority", Message: "The current user could not be verified"}
+		}
 	}
-	projects := projectPage.Data
-
 	allowedProjects := make(map[string]string)
-	for _, project := range projects {
+	for _, project := range projectPage.Data {
 		if !strings.EqualFold(auditString(project, "type"), "project") {
 			continue
 		}
 		id := auditString(project, "id")
+		if keyQuery {
+			_, duplicate := allowedProjects[id]
+			_, stringID := project["id"].(string)
+			if !stringID || !keyAuditIDPattern.MatchString(id) || duplicate {
+				return nil, "", &auditHTTPError{Status: http.StatusBadGateway, Code: "invalid_key_audit_scope", Message: "Current environment permissions could not be verified"}
+			}
+		}
 		if id == "" {
 			continue
 		}
 		allowedProjects[id] = firstNonEmpty(auditString(project, "displayName"), auditString(project, "name"))
+	}
+	return allowedProjects, projectPage.viewerAccountID, nil
+}
+
+func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, query auditQuery) (auditResult, error) {
+	keyQuery := query.KeyID != ""
+	allowedProjects, viewer, err := b.fetchAuditProjects(ctx, incoming, keyQuery)
+	if err != nil {
+		return auditResult{}, err
+	}
+	if keyQuery && viewer != query.ViewerAccountID {
+		return auditResult{}, &auditHTTPError{Status: http.StatusBadGateway, Code: "invalid_key_authority", Message: "The current user changed while verifying API key permissions"}
 	}
 	if query.KeyID != "" && query.KeyOwnerAccountID != query.ViewerAccountID {
 		if _, allowed := allowedProjects[query.KeyOwnerAccountID]; !allowed {
@@ -290,15 +323,19 @@ func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, quer
 		}
 	}
 
-	accounts, accountErr := b.fetchAuditCollection(ctx, incoming, "/v2-beta/accounts", url.Values{
+	accountPage, accountErr := b.fetchAuditPagePolicy(ctx, incoming, "/v2-beta/accounts", url.Values{
 		"limit": {"1000"}, "kind_ne": {"service", "agent"},
-	})
+	}, keyQuery)
+	accounts := accountPage.Data
 	if accountErr != nil {
 		var upstreamErr *auditHTTPError
 		if !errors.As(accountErr, &upstreamErr) || (upstreamErr.Status != http.StatusForbidden && upstreamErr.Status != http.StatusNotFound) {
 			return auditResult{}, accountErr
 		}
 		accounts = nil
+	}
+	if keyQuery && accountErr == nil && accountPage.viewerAccountID != query.ViewerAccountID {
+		return auditResult{}, &auditHTTPError{Status: http.StatusBadGateway, Code: "invalid_key_authority", Message: "The current user changed while verifying API key permissions"}
 	}
 	accountNames := make(map[string]string)
 	for _, account := range accounts {
@@ -392,15 +429,22 @@ func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, quer
 }
 
 func (b *broker) fetchAllAuditLogs(ctx context.Context, incoming *http.Request, values url.Values) ([]map[string]any, error) {
+	return b.fetchAllAuditLogsForViewer(ctx, incoming, values, "")
+}
+
+func (b *broker) fetchAllAuditLogsForViewer(ctx context.Context, incoming *http.Request, values url.Values, viewer string) ([]map[string]any, error) {
 	requestPath := "/v2-beta/auditlogs"
 	// A trusted, server-selected environment must remain fixed on later
 	// pages even when the Engine's next URL omits request-local context.
 	projectContext, accountScope := values.Get("projectId"), values.Get("accountId")
 	records := make([]map[string]any, 0, auditUpstreamPageSize)
 	for page := 0; page < 100; page++ {
-		collection, err := b.fetchAuditPage(ctx, incoming, requestPath, values)
+		collection, err := b.fetchAuditPagePolicy(ctx, incoming, requestPath, values, viewer != "")
 		if err != nil {
 			return nil, err
+		}
+		if viewer != "" && collection.viewerAccountID != viewer {
+			return nil, &auditHTTPError{Status: http.StatusBadGateway, Code: "invalid_key_authority", Message: "The current user changed while reading API key audit events"}
 		}
 		if len(records)+len(collection.Data) > auditMaximumScanRows {
 			return nil, &auditHTTPError{Status: http.StatusUnprocessableEntity, Code: "result_set_too_large", Message: "Narrow the audit log time range or environment before continuing"}
@@ -433,6 +477,10 @@ func (b *broker) fetchAuditCollection(ctx context.Context, incoming *http.Reques
 }
 
 func (b *broker) fetchAuditPage(ctx context.Context, incoming *http.Request, path string, values url.Values) (auditUpstreamCollection, error) {
+	return b.fetchAuditPagePolicy(ctx, incoming, path, values, false)
+}
+
+func (b *broker) fetchAuditPagePolicy(ctx context.Context, incoming *http.Request, path string, values url.Values, keyQuery bool) (auditUpstreamCollection, error) {
 	target := *b.upstreamURL
 	target.Path = path
 	target.RawPath = ""
@@ -447,13 +495,18 @@ func (b *broker) fetchAuditPage(ctx context.Context, incoming *http.Request, pat
 	request.Header.Set("Accept", "application/json")
 
 	client := &http.Client{Timeout: 20 * time.Second}
+	if keyQuery {
+		client.CheckRedirect = func(*http.Request, []*http.Request) error {
+			return errors.New("API key audit redirects are not allowed")
+		}
+	}
 	response, err := client.Do(request)
 	if err != nil {
 		return auditUpstreamCollection{}, &auditHTTPError{Status: http.StatusBadGateway, Code: "audit_upstream_unavailable", Message: "Audit log service is not available"}
 	}
 	defer response.Body.Close()
 
-	if response.StatusCode < 200 || response.StatusCode >= 300 {
+	if response.StatusCode < 200 || response.StatusCode >= 300 || (keyQuery && response.StatusCode != http.StatusOK) {
 		_, _ = io.Copy(io.Discard, io.LimitReader(response.Body, 64*1024))
 		status := response.StatusCode
 		if status != http.StatusUnauthorized && status != http.StatusForbidden && status != http.StatusNotFound {
@@ -468,6 +521,7 @@ func (b *broker) fetchAuditPage(ctx context.Context, incoming *http.Request, pat
 	if err := decoder.Decode(&collection); err != nil {
 		return auditUpstreamCollection{}, &auditHTTPError{Status: http.StatusBadGateway, Code: "invalid_audit_response", Message: "Audit log service returned an invalid response"}
 	}
+	collection.viewerAccountID = response.Header.Get("X-API-USER-ID")
 	return collection, nil
 }
 

@@ -37,7 +37,9 @@ is always the Key owner's current account/environment RBAC; a Key never grants
 an additional role. Existing legacy Keys are not automatically narrowed on upgrade.
 New Key secrets are shown once at creation and are not returned by later lists or
 details. Per-Key audit separates authorization, the HTTP response and any later
-job/stream completion. Errors use the existing API status/code and console error
+job/stream completion. Environment-Key audit rechecks live Engine access in
+Engine-verified project contexts; a caller-supplied project header is not a grant.
+Errors use the existing API status/code and console error
 handling. See the [API Key guide](docs/api-keys.md) for policy and audit contracts.
 
 ## Current release

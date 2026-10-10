@@ -49,7 +49,7 @@ func (b *broker) fetchKeyAuditLogs(ctx context.Context, incoming *http.Request, 
 			accountID = projectID
 		}
 		values.Set("accountId", accountID)
-		pageRecords, err := b.fetchAllAuditLogs(ctx, incoming, values)
+		pageRecords, err := b.fetchAllAuditLogsForViewer(ctx, incoming, values, query.ViewerAccountID)
 		if err != nil {
 			return nil, err // role/session loss is fail-closed, never partial data
 		}
@@ -152,12 +152,48 @@ func (b *broker) serveKeyAudit(writer http.ResponseWriter, request *http.Request
 // Credential visibility and principal identity are determined by the Engine
 // for the current session on every query. No browser identity is trusted.
 func (b *broker) fetchKeyAuditAuthority(ctx context.Context, incoming *http.Request, keyID string) (string, string, error) {
+	owner, viewer, err := b.fetchKeyAuditAuthorityInProject(ctx, incoming, keyID, "", "")
+	if err == nil {
+		return owner, viewer, nil // Keep the existing personal/admin visibility fast path.
+	}
+	var upstreamErr *auditHTTPError
+	if !errors.As(err, &upstreamErr) || upstreamErr.Status != http.StatusForbidden || upstreamErr.Code != "key_audit_access_lost" {
+		return "", "", err // Never retry an expired session, outage, redirect or invalid response.
+	}
+	projects, principal, err := b.fetchAuditProjects(ctx, incoming, true)
+	if err != nil {
+		return "", "", err
+	}
+	contexts := make([]string, 0, len(projects))
+	for id := range projects {
+		contexts = append(contexts, id)
+	}
+	sort.Strings(contexts)
+	for _, projectID := range contexts {
+		// The shared Engine enumeration only selects candidate scopes. The
+		// scoped credential GET rechecks live membership/object/schema access.
+		// Neither a caller project header nor an inferred owner is a grant.
+		owner, viewer, err = b.fetchKeyAuditAuthorityInProject(ctx, incoming, keyID, projectID, principal)
+		if err == nil {
+			return owner, viewer, nil
+		}
+		if !errors.As(err, &upstreamErr) || upstreamErr.Status != http.StatusForbidden || upstreamErr.Code != "key_audit_access_lost" {
+			return "", "", err
+		}
+	}
+	return "", "", &auditHTTPError{Status: http.StatusForbidden, Code: "key_audit_access_lost", Message: "The API key is no longer available under your current permissions"}
+}
+
+func (b *broker) fetchKeyAuditAuthorityInProject(ctx context.Context, incoming *http.Request, keyID, projectID, principal string) (string, string, error) {
 	target := *b.upstreamURL
 	client := &http.Client{Timeout: 20 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error {
 		return errors.New("API key authority redirects are not allowed")
 	}}
 	for index, kind := range []string{"apiKey", "apiKeyRestricted"} {
 		target.Path, target.RawPath, target.RawQuery, target.Fragment = "/v2-beta/"+strings.ToLower(kind)+"/"+keyID, "", "", ""
+		if projectID != "" {
+			target.RawQuery = url.Values{"projectId": {projectID}}.Encode()
+		}
 		request, err := http.NewRequestWithContext(ctx, http.MethodGet, target.String(), nil)
 		if err != nil {
 			return "", "", err
@@ -192,6 +228,9 @@ func (b *broker) fetchKeyAuditAuthority(ctx context.Context, incoming *http.Requ
 		owner, viewer := auditString(key, "accountId"), response.Header.Get("X-API-USER-ID")
 		if !keyAuditIDPattern.MatchString(owner) || !keyAuditIDPattern.MatchString(viewer) {
 			return "", "", &auditHTTPError{Status: http.StatusBadGateway, Code: "invalid_key_authority", Message: "API key owner and current user could not be verified"}
+		}
+		if projectID != "" && (owner != projectID || viewer != principal || response.Header.Get("X-API-ACCOUNT-ID") != projectID) {
+			return "", "", &auditHTTPError{Status: http.StatusBadGateway, Code: "invalid_key_authority", Message: "API key environment and current user could not be verified"}
 		}
 		return owner, viewer, nil
 	}
