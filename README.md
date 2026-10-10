@@ -41,6 +41,8 @@ job/stream completion. Environment-Key audit rechecks live Engine access in
 Engine-verified project contexts; a caller-supplied project header is not a grant.
 Open a Key's audit from its action menu; the close control follows the audit
 filters, results and details, below the audit block.
+Scope options and unselected hints use readable light/dark theme text, including
+keyboard highlighting; narrow layouts keep the matrix in its own scroll region.
 Errors use the existing API status/code and console error
 handling. See the [API Key guide](docs/api-keys.md) for policy and audit contracts.
 
