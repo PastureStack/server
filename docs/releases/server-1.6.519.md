@@ -43,7 +43,9 @@ export classification and persisted container audit identity.
 The Server broker is a thin authenticated entry point. Engine owns the final
 policy. Existing audit `timeScope=all`, bounded query/export behavior, database
 retention, HAProxy, OIDC, and security overlays are retained. Explicit audit
-date bounds and viewer filters survive Engine pagination. Historical intervals
+date bounds and viewer filters survive Engine pagination. Lower and upper
+bounds on the same field remain conjunctive; UTC, explicit offsets and
+fractional seconds retain their timestamp meaning. Historical intervals
 are bounded at the Engine rather than scanning later records first; genuinely
 oversized queries still fail at the existing scan/export limits. The console
 keeps the failed query's filters, stops polling, and offers explicit recovery
@@ -52,6 +54,8 @@ stale query/session responses cannot replace a newer view or deliver its file.
 Narrow screen filter actions wrap, and audit errors use readable theme colors.
 Export-only permission or download failures identify the failed export and keep
 the successful query results intact.
+Delayed Key-editor autofocus does not steal focus after keyboard navigation or
+a child selector's own autofocus.
 The govc bundle
 uses x/text `0.41.0` for
 [GO-2026-6629](https://pkg.go.dev/vuln/GO-2026-6629); its upstream Go source and
@@ -76,8 +80,8 @@ owner-only permission repair remain supported without changing parent modes.
 
 | Component | Clean source commit | Archive SHA-256 |
 | --- | --- | --- |
-| Engine `v0.183.334` (`cattle.jar`) | `ca5eb17865fce03c332eb93be8b92360b789b555` | `7fad5ebeab70e69cf57aa895917a9fbad0d04f065c8072f950cee2a7206986f1` |
-| Web Console `1.6.181` | `f63fd9cf9f09c075343642810c648c4660f6c71a` | `59990b149b53c576127710a774318a0f776672623577845390c5f8c1e1cf34a3` |
+| Engine `v0.183.334` (`cattle.jar`) | `66a87ea6901296fa11ada5df58b0618a4ca96975` | `a62d8f6ddd61c850e71bbb6fd30352b3a73c7c09e605bb5c45d549074e8824e8` |
+| Web Console `1.6.181` | `90ca669058b11d2581a2bf733436c2994c36af0e` | `0728bb4a033c18a62b7f62c9dcb3e453f0ae1b27f97ffe5c6210ccdcb6f27604` |
 | Catalog Service `0.20.13` | `4c39c73a8131ba06e9ff0aaec3b95cc27e049324` | `29626181cb8489b016e5975ffaddc00b2a32d290b1c0066e833d27fa7a5edf83` |
 | Authentication Service `0.4.43` | `cae736f377019bd9743648a8e9aa469a0e21b5e0` | `e9218771af8dd68323c8c6fdab149c40a3ad02da9ff23f8aad6f0b2977740273` |
 | Compose Executor `0.14.37` | `88e991e823f06d2334c07d5370595aae3c48ee99` | `5ff465601930218f531885a384f231d969033e4cef794ce33d16bfe24e5c1c81` |
