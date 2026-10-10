@@ -3,6 +3,7 @@ package main
 import (
 	"archive/zip"
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -10,6 +11,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -17,13 +19,16 @@ import (
 )
 
 type auditUpstreamFixture struct {
-	server        *httptest.Server
-	mu            sync.Mutex
-	auditQueries  []url.Values
-	auditRecords  []map[string]any
-	secondPage    []map[string]any
-	allowedCookie string
-	allowedAuth   string
+	server          *httptest.Server
+	mu              sync.Mutex
+	auditQueries    []url.Values
+	auditRecords    []map[string]any
+	secondPage      []map[string]any
+	allowedCookie   string
+	allowedAuth     string
+	applyTimeBounds bool
+	nextAuditQuery  string
+	viewerAccountID string
 }
 
 func newAuditUpstreamFixture(t *testing.T) *auditUpstreamFixture {
@@ -36,6 +41,9 @@ func newAuditUpstreamFixture(t *testing.T) *auditUpstreamFixture {
 			return
 		}
 		writer.Header().Set("Content-Type", "application/json")
+		if fixture.viewerAccountID != "" {
+			writer.Header().Set("X-API-USER-ID", fixture.viewerAccountID)
+		}
 		switch request.URL.Path {
 		case "/v2-beta/projects":
 			writeFixtureCollection(writer, []map[string]any{
@@ -52,6 +60,42 @@ func newAuditUpstreamFixture(t *testing.T) *auditUpstreamFixture {
 			fixture.mu.Lock()
 			fixture.auditQueries = append(fixture.auditQueries, request.URL.Query())
 			fixture.mu.Unlock()
+			if fixture.applyTimeBounds {
+				values := request.URL.Query()
+				from, _ := time.Parse(time.RFC3339Nano, values.Get("created_gte"))
+				to, _ := time.Parse(time.RFC3339Nano, values.Get("created_lte"))
+				records := make([]map[string]any, 0, len(fixture.auditRecords))
+				for _, record := range fixture.auditRecords {
+					created, valid := auditTimestamp(record)
+					if !valid || (!from.IsZero() && created.Before(from)) || (!to.IsZero() && created.After(to)) {
+						continue
+					}
+					records = append(records, record)
+				}
+				page, _ := strconv.Atoi(values.Get("page"))
+				if page < 1 {
+					page = 1
+				}
+				limit, _ := strconv.Atoi(values.Get("limit"))
+				if limit < 1 || limit > auditUpstreamPageSize {
+					limit = auditUpstreamPageSize
+				}
+				start := (page - 1) * limit
+				if start > len(records) {
+					start = len(records)
+				}
+				end := start + limit
+				if end > len(records) {
+					end = len(records)
+				}
+				next := ""
+				if end < len(records) {
+					values.Set("page", strconv.Itoa(page+1))
+					next = fixture.server.URL + "/v2-beta/auditlogs?" + values.Encode()
+				}
+				writeFixtureCollection(writer, records[start:end], next)
+				return
+			}
 			if request.URL.Query().Get("page") == "2" {
 				writeFixtureCollection(writer, fixture.secondPage, "")
 				return
@@ -59,6 +103,9 @@ func newAuditUpstreamFixture(t *testing.T) *auditUpstreamFixture {
 			next := ""
 			if fixture.secondPage != nil {
 				next = fixture.server.URL + "/v2-beta/auditlogs?page=2"
+				if fixture.nextAuditQuery != "" {
+					next = fixture.server.URL + "/v2-beta/auditlogs?" + fixture.nextAuditQuery
+				}
 			}
 			writeFixtureCollection(writer, fixture.auditRecords, next)
 		default:
@@ -172,8 +219,174 @@ func TestAuditQueryEnforcesBothTimeBoundariesAndEnvironmentAuthorization(t *test
 	if len(fixture.auditQueries) != 2 {
 		t.Fatalf("expected two upstream pages, got %d", len(fixture.auditQueries))
 	}
-	if fixture.auditQueries[0].Get("created_gte") == "" || fixture.auditQueries[0].Get("created_lte") != "" {
-		t.Fatalf("upstream query must use the supported lower boundary only: %#v", fixture.auditQueries[0])
+	if fixture.auditQueries[0].Get("created_gte") != "2026-08-29T02:00:00Z" || fixture.auditQueries[0].Get("created_lte") != "2026-08-29T03:00:00Z" {
+		t.Fatalf("upstream query must bound both ends of the candidate range: %#v", fixture.auditQueries[0])
+	}
+}
+
+func TestAuditHistoricalRangeExcludesNewerRowsBeforeScanGuard(t *testing.T) {
+	from, to := "2026-08-29T02:00:00Z", "2026-08-29T03:00:00Z"
+	rangeValues := url.Values{"timeScope": {"range"}, "created_gte": {from}, "created_lte": {to}}
+	cases := []struct {
+		name   string
+		path   string
+		values url.Values
+		status int
+	}{
+		{name: "historical range page", path: auditQueryPath, values: rangeValues, status: http.StatusOK},
+		{name: "all with explicit dates remains a range", path: auditQueryPath, values: url.Values{"timeScope": {"all"}, "created_gte": {from}, "created_lte": {to}}, status: http.StatusOK},
+		{name: "historical range complete export", path: auditExportPath, values: url.Values{"timeScope": {"range"}, "created_gte": {from}, "created_lte": {to}, "format": {"json"}}, status: http.StatusOK},
+		{name: "all retained page keeps scan guard", path: auditQueryPath, values: url.Values{"timeScope": {"all"}}, status: http.StatusUnprocessableEntity},
+		{name: "all retained export keeps scan guard", path: auditExportPath, values: url.Values{"timeScope": {"all"}, "format": {"json"}}, status: http.StatusUnprocessableEntity},
+	}
+	for _, testCase := range cases {
+		t.Run(testCase.name, func(t *testing.T) {
+			fixture := newAuditUpstreamFixture(t)
+			fixture.applyTimeBounds = true
+			fixture.auditRecords = []map[string]any{
+				auditTestRecord("at-from", from, "1p1", "1a1", "range.event", "TokenAuth", "included lower bound"),
+				auditTestRecord("inside", "2026-08-29T02:30:00Z", "1p1", "1a1", "range.event", "TokenAuth", "included range row"),
+				auditTestRecord("at-to", to, "1p1", "1a1", "range.event", "TokenAuth", "local exclusive upper bound"),
+				auditTestRecord("before-from", "2026-08-29T01:59:59Z", "1p1", "1a1", "range.event", "TokenAuth", "outside lower bound"),
+				auditTestRecord("forbidden-in-range", "2026-08-29T02:15:00Z", "1p9", "1a9", "forbidden.event", "TokenAuth", "must not leak"),
+			}
+			for index := 0; index <= auditMaximumScanRows; index++ {
+				fixture.auditRecords = append(fixture.auditRecords,
+					auditTestRecord("newer-"+strconv.Itoa(index), "2026-08-30T02:00:00Z", "1p1", "1a1", "newer.event", "TokenAuth", "outside historical upper bound"))
+			}
+			server := newAuditTestBroker(t, fixture)
+			response := performAuditRequest(t, server, testCase.path+"?"+testCase.values.Encode())
+			defer response.Body.Close()
+			body, _ := io.ReadAll(response.Body)
+			if response.StatusCode != testCase.status {
+				t.Fatalf("status=%d expected=%d: %s", response.StatusCode, testCase.status, body)
+			}
+			fixture.mu.Lock()
+			queries := append([]url.Values(nil), fixture.auditQueries...)
+			fixture.mu.Unlock()
+			if len(queries) == 0 {
+				t.Fatal("missing upstream audit query")
+			}
+			allTime := testCase.values.Get("created_gte") == ""
+			for _, values := range queries {
+				if allTime {
+					if values.Get("created_gte") != "" || values.Get("created_lte") != "" {
+						t.Fatalf("all retained time was incorrectly bounded: %#v", values)
+					}
+				} else if values.Get("created_gte") != from || values.Get("created_lte") != to {
+					t.Fatalf("historical candidate range was not bounded: %#v", values)
+				}
+			}
+			if allTime {
+				if !bytes.Contains(body, []byte("result_set_too_large")) {
+					t.Fatalf("all retained time lost the scan guard: %s", body)
+				}
+				return
+			}
+			if len(queries) != 1 {
+				t.Fatalf("newer rows caused an unnecessary full scan: %d queries", len(queries))
+			}
+			if bytes.Contains(body, []byte("at-to")) || bytes.Contains(body, []byte("before-from")) || bytes.Contains(body, []byte("newer-")) || bytes.Contains(body, []byte("forbidden-in-range")) || bytes.Contains(body, []byte("forbidden.event")) || bytes.Contains(body, []byte("1a9")) {
+				t.Fatalf("out-of-range or unauthorized data escaped: %s", body)
+			}
+			if testCase.path == auditExportPath {
+				var exported auditJSONExport
+				if err := json.Unmarshal(body, &exported); err != nil || exported.Count != 2 || len(exported.Records) != 2 || exported.Range != "[from,to)" || bytes.Contains(body, []byte("must-not-export")) {
+					t.Fatalf("historical export lost completeness or safety: %s %v", body, err)
+				}
+			} else {
+				var collection auditCollection
+				if err := json.Unmarshal(body, &collection); err != nil || len(collection.Data) != 2 || collection.Pagination["total"] != float64(2) {
+					t.Fatalf("historical page lost its exact total: %s %v", body, err)
+				}
+			}
+		})
+	}
+}
+
+func TestAuditPaginationPreservesInitialConditionsAndScopeAbsence(t *testing.T) {
+	from, to := "2026-08-29T02:00:00Z", "2026-08-29T03:00:00Z"
+	cases := []struct {
+		name   string
+		values url.Values
+		next   string
+		viewer string
+	}{
+		{name: "generic environment range omitted by next", values: url.Values{"created_gte": {from}, "created_lte": {to}, "accountId": {"1p1"}}, next: "page=2"},
+		{name: "verified project range cannot be replaced by next", values: url.Values{"created_gte": {from}, "created_lte": {to}, "accountId": {"1p1"}, "projectId": {"1p1"}}, next: "page=2&created_gte=2000-01-01T00%3A00%3A00Z&created_lte=2100-01-01T00%3A00%3A00Z&accountId=1p9&projectId=1p9&limit=250&sort=created&order=asc", viewer: "1a1"},
+		{name: "all retained generic scope remains absent", values: url.Values{}, next: "page=2&created_gte=2000-01-01T00%3A00%3A00Z&created_lte=2100-01-01T00%3A00%3A00Z&accountId=1p9&projectId=1p9"},
+		{name: "verified personal scope cannot gain a project", values: url.Values{"accountId": {"1a1"}}, next: "page=2&created_gte=2000-01-01T00%3A00%3A00Z&created_lte=2100-01-01T00%3A00%3A00Z&accountId=1p9&projectId=1p9", viewer: "1a1"},
+	}
+	for _, testCase := range cases {
+		t.Run(testCase.name, func(t *testing.T) {
+			fixture := newAuditUpstreamFixture(t)
+			fixture.nextAuditQuery, fixture.viewerAccountID = testCase.next, testCase.viewer
+			fixture.auditRecords = []map[string]any{auditTestRecord("first", "2026-08-29T02:30:00Z", "1p1", "1a1", "range.event", "TokenAuth", "first page")}
+			fixture.secondPage = []map[string]any{auditTestRecord("second", "2026-08-29T02:20:00Z", "1p1", "1a1", "range.event", "TokenAuth", "second page")}
+			cfg := brokerConfig{
+				ListenAddress: ":0", UpstreamURL: fixture.server.URL, SessionDialURL: fixture.server.URL,
+				MaxSessions: 8, ReplayBytes: 128 * 1024, ActiveTTL: time.Hour, HistoryTTL: time.Hour, CleanupInterval: time.Hour,
+			}
+			instance, err := newBroker(cfg, log.New(io.Discard, "", 0))
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { instance.close() })
+			values := testCase.values
+			values.Set("limit", "1000")
+			values.Set("sort", "id")
+			values.Set("order", "desc")
+			initial := values.Encode()
+			incoming := httptest.NewRequest(http.MethodGet, auditQueryPath, nil)
+			incoming.Header.Set("Cookie", fixture.allowedCookie)
+			records, err := instance.fetchAllAuditLogsForViewer(context.Background(), incoming, values, testCase.viewer)
+			if err != nil || len(records) != 2 {
+				t.Fatalf("pagination did not read both pages: count=%d error=%v", len(records), err)
+			}
+			if values.Encode() != initial {
+				t.Fatalf("pagination mutated its initial query: %q -> %q", initial, values.Encode())
+			}
+			fixture.mu.Lock()
+			queries := append([]url.Values(nil), fixture.auditQueries...)
+			fixture.mu.Unlock()
+			if len(queries) != 2 || queries[1].Get("page") != "2" {
+				t.Fatalf("pagination cursor was not retained: %#v", queries)
+			}
+			for _, name := range []string{"created_gte", "created_lte", "accountId", "projectId", "limit", "sort", "order"} {
+				if queries[1].Get(name) != values.Get(name) {
+					t.Fatalf("next changed immutable %s: got=%q expected=%q", name, queries[1].Get(name), values.Get(name))
+				}
+			}
+		})
+	}
+}
+
+func TestAuditBoundedRangeKeepsScanAndExportLimits(t *testing.T) {
+	for _, testCase := range []struct {
+		name  string
+		path  string
+		count int
+		code  string
+	}{
+		{name: "matching scan overflow", path: auditQueryPath, count: auditMaximumScanRows + 1, code: "result_set_too_large"},
+		{name: "matching export overflow", path: auditExportPath, count: auditMaximumExportRows + 1, code: "export_too_large"},
+	} {
+		t.Run(testCase.name, func(t *testing.T) {
+			fixture := newAuditUpstreamFixture(t)
+			fixture.applyTimeBounds = true
+			for index := 0; index < testCase.count; index++ {
+				fixture.auditRecords = append(fixture.auditRecords,
+					auditTestRecord("inside-"+strconv.Itoa(index), "2026-08-29T02:30:00Z", "1p1", "1a1", "range.event", "TokenAuth", "inside bounded range"))
+			}
+			server := newAuditTestBroker(t, fixture)
+			values := url.Values{"timeScope": {"range"}, "created_gte": {"2026-08-29T02:00:00Z"}, "created_lte": {"2026-08-29T03:00:00Z"}, "format": {"json"}}
+			response := performAuditRequest(t, server, testCase.path+"?"+values.Encode())
+			defer response.Body.Close()
+			body, _ := io.ReadAll(response.Body)
+			if response.StatusCode != http.StatusUnprocessableEntity || !bytes.Contains(body, []byte(testCase.code)) {
+				t.Fatalf("bounded query lost its %s guard: %d %s", testCase.code, response.StatusCode, body)
+			}
+		})
 	}
 }
 
