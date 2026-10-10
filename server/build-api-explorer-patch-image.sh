@@ -14,59 +14,112 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.519}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
-orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.333}
+orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.334}
 orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}
-orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-8c42c0982cbc2f4569fa265ad320b341551758cb4fc0bc6d79ba06d70e20d328}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-0d94f7d879d314235e582a7f4062914a27b82709}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-a62d8f6ddd61c850e71bbb6fd30352b3a73c7c09e605bb5c45d549074e8824e8}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-66a87ea6901296fa11ada5df58b0618a4ca96975}
+orchestration_engine_version=${orchestration_engine_release_tag#v}
+engine_readonly_schema_sha256=${ENGINE_READONLY_SCHEMA_SHA256:-7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233}
+engine_restricted_schema_sha256=${ENGINE_RESTRICTED_SCHEMA_SHA256:-f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51}
+host_api_version=${HOST_API_VERSION:-0.38.5}
+host_api_package_mode=${HOST_API_PACKAGE_MODE:-producer}
+host_api_release_base_url=${HOST_API_RELEASE_BASE_URL:-https://github.com/PastureStack/host-api/releases/download}
+host_api_release_tag=${HOST_API_RELEASE_TAG:-v0.38.5}
+host_api_archive_sha256=${HOST_API_ARCHIVE_SHA256:-ba111038695aa03a82c51d60944bbbdbbec30bb269051ba29fa21d46ada17179}
+host_api_package_id=${HOST_API_PACKAGE_ID:-84754fe8bc79027d0c72f492923c4786}
+host_api_binary_sha256=${HOST_API_BINARY_SHA256:-fda5080d6cfec0a4c1e9daf15b43cea2dce7ffb116c8292ff0f3547c8fb371f7}
+host_api_apply_sha256=${HOST_API_APPLY_SHA256:-8a21f63099832afb571755011bbcf8d97710994a50c419b20700cbc31efced0f}
+host_api_commit=${HOST_API_COMMIT:-84754fe8bc79027d0c72f492923c47861aa74b99}
+node_agent_version=${NODE_AGENT_VERSION:-0.13.28}
+node_agent_release_base_url=${NODE_AGENT_RELEASE_BASE_URL:-https://github.com/PastureStack/node-agent/releases/download}
+node_agent_commit=${NODE_AGENT_COMMIT:-bb4e057c089e5384bc9836b42db206326c690387}
+node_agent_package_id=${NODE_AGENT_PACKAGE_ID:-${node_agent_commit:0:32}}
+node_agent_archive_sha256=${NODE_AGENT_ARCHIVE_SHA256:-a16ae6be5fb72fa2ba38bd1076fd3b9e0536c48e70995ffa49d17b8063e2f8d0}
+node_agent_binary_sha256=${NODE_AGENT_BINARY_SHA256:-ce8342e10da07c50cc414b471cadc67db4dd390e6e2dcb632b30c542f658b021}
+node_agent_apply_sha256=${NODE_AGENT_APPLY_SHA256:-dd8cb342518a43e7468cc121db5c4e44b16731f2620b77ea0fd03c02c03766a9}
+component_artifact_mode=remote
 api_explorer_release_base_url=${API_EXPLORER_RELEASE_BASE_URL:-https://github.com/PastureStack/api-explorer/releases/download}
 api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.18}
 api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
 api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.180}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.180.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-a367bd6907281298a8e2bf0f3ad0444083db06062f3a1521db573cc5606d274e}
-web_console_commit=${WEB_CONSOLE_COMMIT:-637604b38401b19d2c9ef73d5729d356bb80c8e6}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.181}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.181.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-9199681f2c4311f3fbe8727fcf0f6fa136c9bafe9fbe9d13878c55df442a7a03}
+web_console_commit=${WEB_CONSOLE_COMMIT:-7f2bdad0c90a3241693c2ddd4475202ababba550}
 catalog_service_release_base_url=${CATALOG_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/catalog-service/releases/download}
-catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.12}
-catalog_service_commit=${CATALOG_SERVICE_COMMIT:-d708579092eae0fd03b2750ac594ff0396cf563b}
-catalog_service_archive_sha256=${CATALOG_SERVICE_ARCHIVE_SHA256:-34b76c121270c603501664f7146d41916c7f45da983e326861ed4c5b9614372d}
-catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-3deb43f9760d7cbb07f818dd108ab35abf9efc6908d5d7fcaf5c44a185f2fba9}
-catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-8805af3c0b5968a02f994d65de715c525b73637aa2dc398a0648feeeaf2fd397}
+catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.13}
+catalog_service_commit=${CATALOG_SERVICE_COMMIT:-4c39c73a8131ba06e9ff0aaec3b95cc27e049324}
+catalog_service_archive_sha256=${CATALOG_SERVICE_ARCHIVE_SHA256:-29626181cb8489b016e5975ffaddc00b2a32d290b1c0066e833d27fa7a5edf83}
+catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-7224c76e5643130dee047e3f1888ce6845d024307bec74d72eebdc4baeae1aea}
+catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-4aeda3e1ee1ca4c57f26938f3ef27651f9c8c129ee12957642960d22b95034ce}
 catalog_service_license_sha256=${CATALOG_SERVICE_LICENSE_SHA256:-0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594}
 authentication_service_release_base_url=${AUTHENTICATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/authentication-service/releases/download}
-authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.42}
-authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-5589ef8fda68ae56e1afd64096965d452ee8a17e}
-authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-f14d22036a0a88d6a8d669700506bba680fc7605bbca2b337e345c5cd71500fb}
-authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-feaabe4bba85cbe119c98a79a27abb4510401fc051f34d02aa7b48d69bdbe746}
+authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.43}
+authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-cae736f377019bd9743648a8e9aa469a0e21b5e0}
+authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-e9218771af8dd68323c8c6fdab149c40a3ad02da9ff23f8aad6f0b2977740273}
+authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-fe11eec4b31b43863b49a582b1dbbe309eae08fb78adc150037981174f0622da}
 websocket_proxy_release_base_url=${WEBSOCKET_PROXY_RELEASE_BASE_URL:-https://github.com/PastureStack/websocket-proxy/releases/download}
-websocket_proxy_version=${WEBSOCKET_PROXY_VERSION:-0.23.14}
-websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-3b5788bdc52f4edab0097a3d97afccf138c64089}
-websocket_proxy_archive_sha256=${WEBSOCKET_PROXY_ARCHIVE_SHA256:-c55108c3dbfd8e6579fc768a1988920db83c6f605ca1284b60edf92ae8d0160e}
-websocket_proxy_binary_sha256=${WEBSOCKET_PROXY_BINARY_SHA256:-efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d}
+websocket_proxy_version=${WEBSOCKET_PROXY_VERSION:-0.23.15}
+websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-1928f602b66443cdab40c8cdb450c811548d2749}
+websocket_proxy_archive_sha256=${WEBSOCKET_PROXY_ARCHIVE_SHA256:-4657338973f672f6ae4d6e5510d06e811b9951afea1baa27a9caa3034e487f2a}
+websocket_proxy_binary_sha256=${WEBSOCKET_PROXY_BINARY_SHA256:-9111d5a569b6326d7cd71fc3384251d9684972492a22e1e9dbbb9863019fbaaa}
 webhook_automation_service_release_base_url=${WEBHOOK_AUTOMATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/webhook-automation-service/releases/download}
-webhook_automation_service_version=${WEBHOOK_AUTOMATION_SERVICE_VERSION:-0.10.3}
-webhook_automation_service_commit=${WEBHOOK_AUTOMATION_SERVICE_COMMIT:-fbcc0ca07e42e9b21bda18031d0848192ec2f9a1}
-webhook_automation_service_archive_sha256=${WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256:-6babbc18cee9a192009cfadcd143e6b9a5f2b550c4dc419781f3e3657caa022a}
-webhook_automation_service_binary_sha256=${WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256:-9094f3b2527762a3e683b02d93aa00e52618e902cd409e72e34553d98d98a609}
-compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.36}
-compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-e85545a1bc34cb5c42db62ff90dd82b7ff9f5838}
-compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-47e2ba1686c1b136c7edcac530495c3e29c351e947f0b4d08ebe68d33f98cf66}
-compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d}
-vsphere_cli_bundle_version=${VSPHERE_CLI_BUNDLE_VERSION:-0.55.2}
-vsphere_cli_bundle_commit=${VSPHERE_CLI_BUNDLE_COMMIT:-c4b27e87aa0dacce432a2c6108ee0752319e6d5b}
-vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-bebcc1c0275072ac40b5bc9b80f914c40a7f0431fffebc2c06fe34a34c33a57c}
-govc_binary_sha256=${GOVC_BINARY_SHA256:-f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31}
+webhook_automation_service_version=${WEBHOOK_AUTOMATION_SERVICE_VERSION:-0.10.4}
+webhook_automation_service_commit=${WEBHOOK_AUTOMATION_SERVICE_COMMIT:-400118b893843d2a7d7c65cc70c3449d76c4a8d8}
+webhook_automation_service_archive_sha256=${WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256:-49c4579829a04e758045fae02a5a9fca12bb0ba3af0d5e979cf9eb97f23a88a9}
+webhook_automation_service_binary_sha256=${WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256:-98c7faea665b7eb95206b8c73a6f47d644c5d2d0eae53f274f6a15faf5205744}
+compose_executor_release_base_url=${COMPOSE_EXECUTOR_RELEASE_BASE_URL:-https://github.com/PastureStack/compose-cli/releases/download}
+compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.37}
+compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-88e991e823f06d2334c07d5370595aae3c48ee99}
+compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-5ff465601930218f531885a384f231d969033e4cef794ce33d16bfe24e5c1c81}
+compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-a9bf9f0f77e914fe557d3e178a73c31526b0ca0adc4afbf17bf68d8d75c7ee27}
+vsphere_cli_bundle_release_base_url=${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL:-https://github.com/PastureStack/vsphere-cli-bundle/releases/download}
+vsphere_cli_bundle_version=${VSPHERE_CLI_BUNDLE_VERSION:-0.55.3}
+vsphere_cli_bundle_commit=${VSPHERE_CLI_BUNDLE_COMMIT:-f48ab9fd9990132c85845fc162186a04f1e0418d}
+vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-31be702e515741686e2c665d387562e5e993c5d2ffbdb2d614ed287243b166e4}
+govc_binary_sha256=${GOVC_BINARY_SHA256:-d3c4f4fab44403ec4110743b52da99f5ce3d7e3773c4661db8a87dec3ead8990}
+host_provisioner_release_base_url=${HOST_PROVISIONER_RELEASE_BASE_URL:-https://github.com/PastureStack/host-provisioner/releases/download}
+host_provisioner_version=${HOST_PROVISIONER_VERSION:-0.39.8}
+host_provisioner_commit=${HOST_PROVISIONER_COMMIT:-385e5b536c108f17fdfcdec84c01750a5be5ab1c}
+host_provisioner_archive_sha256=${HOST_PROVISIONER_ARCHIVE_SHA256:-d775f36a613b1a486a5e60d6ad61fdbd1ebb4bd22422cbb6dcb70fdd7c4abf0c}
+host_provisioner_binary_sha256=${HOST_PROVISIONER_BINARY_SHA256:-1d37e20a7a1cf4f3e36036a15ff7699ef22cd8809fd14a20892034dd054fd1fc}
+secret_delivery_api_release_base_url=${SECRET_DELIVERY_API_RELEASE_BASE_URL:-https://github.com/PastureStack/secret-delivery-api/releases/download}
+secret_delivery_api_version=${SECRET_DELIVERY_API_VERSION:-0.3.2}
+secret_delivery_api_commit=${SECRET_DELIVERY_API_COMMIT:-f9c3f933f14e43dc63074d45a3044b693ec1e573}
+secret_delivery_api_archive_sha256=${SECRET_DELIVERY_API_ARCHIVE_SHA256:-ca9ab0bfddbcad84b6c1a865af8ad82fcc56cb43dcca1da240ed11a5d24cbdb2}
+secret_delivery_api_binary_sha256=${SECRET_DELIVERY_API_BINARY_SHA256:-b5e01b7e65aeee3b456fe043142b5e70f4039ee89ffd437648368ff63e6042b6}
+usage_telemetry_agent_release_base_url=${USAGE_TELEMETRY_AGENT_RELEASE_BASE_URL:-https://github.com/PastureStack/usage-telemetry-agent/releases/download}
+usage_telemetry_agent_version=${USAGE_TELEMETRY_AGENT_VERSION:-0.4.2}
+usage_telemetry_agent_commit=${USAGE_TELEMETRY_AGENT_COMMIT:-40f9af7ca932fedacdb87e30b4ef1c60a4a7444e}
+usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-5ce031c84f76b3e62dafdb04fb4ed014aa1921e83be056c2d5dd712acbce25a8}
+usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-e62a21270142181315293d7e11482288ffe8fc4d91cc8fe07dacc90b461f3709}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.518}
+image=${IMAGE:-pasturestack-validation/server:v1.6.519}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
+[[ "$server_release_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+[[ "$host_api_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+[[ "$host_api_release_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+[[ "$host_api_package_id" =~ ^[0-9a-f]{32}$ ]]
+[[ "$node_agent_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+[[ "$node_agent_commit" =~ ^[0-9a-f]{40}$ ]]
+[[ "$node_agent_package_id" == "${node_agent_commit:0:32}" ]]
+for component_hash in "$host_api_archive_sha256" "$host_api_binary_sha256" "$host_api_apply_sha256" "$engine_readonly_schema_sha256" "$engine_restricted_schema_sha256" "$node_agent_archive_sha256" "$node_agent_binary_sha256" "$node_agent_apply_sha256"; do
+    [[ "$component_hash" =~ ^[0-9a-f]{64}$ ]]
+done
+if [[ "$host_api_package_mode" == legacy-repair ]]; then
+    [[ "$host_api_version" == 0.38.4 ]]
+else
+    [[ "$host_api_package_mode" == producer && "$host_api_commit" =~ ^[0-9a-f]{40}$ ]]
+fi
 [[ "$source_date_epoch" =~ ^[0-9]+$ ]]
 [[ "$orchestration_engine_commit" =~ ^[0-9a-f]{40}$ ]]
 [[ "$orchestration_engine_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
@@ -106,8 +159,24 @@ build_options=()
 [[ "$vsphere_cli_bundle_commit" =~ ^[0-9a-f]{40}$ ]]
 [[ "$vsphere_cli_bundle_archive_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$govc_binary_sha256" =~ ^[0-9a-f]{64}$ ]]
+for component_version in "$host_provisioner_version" "$secret_delivery_api_version" "$usage_telemetry_agent_version"; do
+    [[ "$component_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+done
+for component_commit in "$host_provisioner_commit" "$secret_delivery_api_commit" "$usage_telemetry_agent_commit"; do
+    [[ "$component_commit" =~ ^[0-9a-f]{40}$ ]]
+done
+for component_hash in "$host_provisioner_archive_sha256" "$host_provisioner_binary_sha256" "$secret_delivery_api_archive_sha256" "$secret_delivery_api_binary_sha256" "$usage_telemetry_agent_archive_sha256" "$usage_telemetry_agent_binary_sha256"; do
+    [[ "$component_hash" =~ ^[0-9a-f]{64}$ ]]
+done
+for release_base_url in "$host_provisioner_release_base_url" "$secret_delivery_api_release_base_url" "$usage_telemetry_agent_release_base_url"; do
+    case "$release_base_url" in
+        https://*) ;;
+        http://127.0.0.1:*|http://localhost:*) [[ ${PASTURESTACK_ALLOW_LOOPBACK_ARTIFACTS:-0} == 1 ]] ;;
+        *) echo 'Runtime producer source must use HTTPS or authorized loopback' >&2; exit 1 ;;
+    esac
+done
 [[ "$base_image" == ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403 ]]
-for release_base_url in "$orchestration_engine_release_base_url" "$api_explorer_release_base_url" "$web_console_release_base_url" "$catalog_service_release_base_url" "$authentication_service_release_base_url" "$websocket_proxy_release_base_url" "$webhook_automation_service_release_base_url"; do
+for release_base_url in "$orchestration_engine_release_base_url" "$api_explorer_release_base_url" "$web_console_release_base_url" "$catalog_service_release_base_url" "$authentication_service_release_base_url" "$websocket_proxy_release_base_url" "$webhook_automation_service_release_base_url" "$host_api_release_base_url" "$node_agent_release_base_url" "$compose_executor_release_base_url" "$vsphere_cli_bundle_release_base_url"; do
 case "$release_base_url" in
     https://*) ;;
     http://127.0.0.1:*|http://localhost:*)
@@ -122,6 +191,38 @@ done
 if [[ ${PASTURESTACK_BUILD_NO_CACHE:-0} == 1 ]]; then
     build_options+=(--no-cache)
 fi
+if [[ -n ${PASTURESTACK_COMPONENT_ARTIFACT_DIR:-} ]]; then
+    component_artifact_mode=local
+    component_directory=$(realpath -- "$PASTURESTACK_COMPONENT_ARTIFACT_DIR")
+    [[ "$component_directory" != / && "$component_directory" != "$repo_root" && "$component_directory" != "$server_dir" ]]
+    test -d "$component_directory"
+    test -z "$(find "$component_directory" -type l -print -quit)"
+    component_assets=(
+        "$orchestration_engine_artifact|$orchestration_engine_artifact_sha256"
+        "$web_console_artifact|$web_console_artifact_sha256"
+        "websocket-proxy-${websocket_proxy_version}-linux-amd64.tar.xz|$websocket_proxy_archive_sha256"
+        "host-api-${host_api_version}.tar.gz|$host_api_archive_sha256"
+        "node-agent-${node_agent_version}.tar.gz|$node_agent_archive_sha256"
+        "host-provisioner-${host_provisioner_version}-linux-amd64.tar.xz|$host_provisioner_archive_sha256"
+        "secret-delivery-api-${secret_delivery_api_version}-linux-amd64.tar.xz|$secret_delivery_api_archive_sha256"
+        "usage-telemetry-agent-${usage_telemetry_agent_version}-linux-amd64.tar.xz|$usage_telemetry_agent_archive_sha256"
+        "catalog-service-${catalog_service_version}.tar.xz|$catalog_service_archive_sha256"
+        "catalog-service-${catalog_service_version}-LICENSE.txt|$catalog_service_license_sha256"
+        "authentication-service-${authentication_service_version}-linux-amd64.tar.xz|$authentication_service_archive_sha256"
+        "webhook-automation-service-${webhook_automation_service_version}-linux-amd64.tar.xz|$webhook_automation_service_archive_sha256"
+        "compose-executor-${compose_executor_version}-linux-amd64.gz|$compose_executor_archive_sha256"
+        "vsphere-cli-bundle-${vsphere_cli_bundle_version}-linux-amd64.tar.xz|$vsphere_cli_bundle_archive_sha256"
+    )
+    expected_components=$(printf '%s\n' "${component_assets[@]%%|*}" | LC_ALL=C sort)
+    actual_components=$(find "$component_directory" -mindepth 1 -printf '%P\n' | LC_ALL=C sort)
+    [[ "$actual_components" == "$expected_components" ]]
+    for component_asset in "${component_assets[@]}"; do
+        IFS='|' read -r component_name component_sha256 <<< "$component_asset"
+        test -s "$component_directory/$component_name" && test -f "$component_directory/$component_name"
+        printf '%s  %s\n' "$component_sha256" "$component_directory/$component_name" | sha256sum -c -
+    done
+    build_options+=(--build-context "component_input=$component_directory")
+fi
 
 docker buildx build \
     "${build_options[@]}" \
@@ -131,6 +232,28 @@ docker buildx build \
     --build-arg "BASE_IMAGE=${base_image}" \
     --build-arg "SOURCE_DATE_EPOCH=${source_date_epoch}" \
     --build-arg "PASTURESTACK_SERVER_REVISION=${revision}" \
+    --build-arg "SERVER_RELEASE_TAG=${server_release_tag}" \
+    --build-arg "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_version}" \
+    --build-arg "ENGINE_READONLY_SCHEMA_SHA256=${engine_readonly_schema_sha256}" \
+    --build-arg "ENGINE_RESTRICTED_SCHEMA_SHA256=${engine_restricted_schema_sha256}" \
+    --build-arg "COMPONENT_ARTIFACT_MODE=${component_artifact_mode}" \
+    --build-arg "PASTURESTACK_ALLOW_LOOPBACK_ARTIFACTS=${PASTURESTACK_ALLOW_LOOPBACK_ARTIFACTS:-0}" \
+    --build-arg "HOST_API_VERSION=${host_api_version}" \
+    --build-arg "HOST_API_PACKAGE_MODE=${host_api_package_mode}" \
+    --build-arg "HOST_API_RELEASE_BASE_URL=${host_api_release_base_url}" \
+    --build-arg "HOST_API_RELEASE_TAG=${host_api_release_tag}" \
+    --build-arg "HOST_API_ARCHIVE_SHA256=${host_api_archive_sha256}" \
+    --build-arg "HOST_API_PACKAGE_ID=${host_api_package_id}" \
+    --build-arg "HOST_API_BINARY_SHA256=${host_api_binary_sha256}" \
+    --build-arg "HOST_API_APPLY_SHA256=${host_api_apply_sha256}" \
+    --build-arg "HOST_API_COMMIT=${host_api_commit}" \
+    --build-arg "NODE_AGENT_VERSION=${node_agent_version}" \
+    --build-arg "NODE_AGENT_RELEASE_BASE_URL=${node_agent_release_base_url}" \
+    --build-arg "NODE_AGENT_COMMIT=${node_agent_commit}" \
+    --build-arg "NODE_AGENT_PACKAGE_ID=${node_agent_package_id}" \
+    --build-arg "NODE_AGENT_ARCHIVE_SHA256=${node_agent_archive_sha256}" \
+    --build-arg "NODE_AGENT_BINARY_SHA256=${node_agent_binary_sha256}" \
+    --build-arg "NODE_AGENT_APPLY_SHA256=${node_agent_apply_sha256}" \
     --build-arg "ORCHESTRATION_ENGINE_RELEASE_BASE_URL=${orchestration_engine_release_base_url}" \
     --build-arg "ORCHESTRATION_ENGINE_RELEASE_TAG=${orchestration_engine_release_tag}" \
     --build-arg "ORCHESTRATION_ENGINE_ARTIFACT=${orchestration_engine_artifact}" \
@@ -168,14 +291,31 @@ docker buildx build \
     --build-arg "WEBHOOK_AUTOMATION_SERVICE_COMMIT=${webhook_automation_service_commit}" \
     --build-arg "WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=${webhook_automation_service_archive_sha256}" \
     --build-arg "WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=${webhook_automation_service_binary_sha256}" \
+    --build-arg "COMPOSE_EXECUTOR_RELEASE_BASE_URL=${compose_executor_release_base_url}" \
     --build-arg "COMPOSE_EXECUTOR_VERSION=${compose_executor_version}" \
     --build-arg "COMPOSE_EXECUTOR_COMMIT=${compose_executor_commit}" \
     --build-arg "COMPOSE_EXECUTOR_ARCHIVE_SHA256=${compose_executor_archive_sha256}" \
     --build-arg "COMPOSE_EXECUTOR_BINARY_SHA256=${compose_executor_binary_sha256}" \
+    --build-arg "VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL=${vsphere_cli_bundle_release_base_url}" \
     --build-arg "VSPHERE_CLI_BUNDLE_VERSION=${vsphere_cli_bundle_version}" \
     --build-arg "VSPHERE_CLI_BUNDLE_COMMIT=${vsphere_cli_bundle_commit}" \
     --build-arg "VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=${vsphere_cli_bundle_archive_sha256}" \
     --build-arg "GOVC_BINARY_SHA256=${govc_binary_sha256}" \
+    --build-arg "HOST_PROVISIONER_RELEASE_BASE_URL=${host_provisioner_release_base_url}" \
+    --build-arg "HOST_PROVISIONER_VERSION=${host_provisioner_version}" \
+    --build-arg "HOST_PROVISIONER_COMMIT=${host_provisioner_commit}" \
+    --build-arg "HOST_PROVISIONER_ARCHIVE_SHA256=${host_provisioner_archive_sha256}" \
+    --build-arg "HOST_PROVISIONER_BINARY_SHA256=${host_provisioner_binary_sha256}" \
+    --build-arg "SECRET_DELIVERY_API_RELEASE_BASE_URL=${secret_delivery_api_release_base_url}" \
+    --build-arg "SECRET_DELIVERY_API_VERSION=${secret_delivery_api_version}" \
+    --build-arg "SECRET_DELIVERY_API_COMMIT=${secret_delivery_api_commit}" \
+    --build-arg "SECRET_DELIVERY_API_ARCHIVE_SHA256=${secret_delivery_api_archive_sha256}" \
+    --build-arg "SECRET_DELIVERY_API_BINARY_SHA256=${secret_delivery_api_binary_sha256}" \
+    --build-arg "USAGE_TELEMETRY_AGENT_RELEASE_BASE_URL=${usage_telemetry_agent_release_base_url}" \
+    --build-arg "USAGE_TELEMETRY_AGENT_VERSION=${usage_telemetry_agent_version}" \
+    --build-arg "USAGE_TELEMETRY_AGENT_COMMIT=${usage_telemetry_agent_commit}" \
+    --build-arg "USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=${usage_telemetry_agent_archive_sha256}" \
+    --build-arg "USAGE_TELEMETRY_AGENT_BINARY_SHA256=${usage_telemetry_agent_binary_sha256}" \
     --build-arg "SUPPORTED_DOCKER_RANGE=${supported_docker_range}" \
     --build-arg "NEWEST_DOCKER_VERSION=${newest_docker_version}" \
     --tag "$image" \
@@ -184,7 +324,7 @@ docker buildx build \
 
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}')" = \
-    v1.6.518
+    "$server_release_tag"
 test "$(docker image inspect "$image" \
     --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = \
     "$revision"
@@ -198,17 +338,22 @@ test "$(docker image inspect "$image" \
 image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
-    CATTLE_RANCHER_SERVER_VERSION=v1.6.518 \
+    CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}" \
     CATTLE_API_UI_VERSION=1.1.18 \
-    CATTLE_CATTLE_VERSION=v0.183.333 \
-    RC16_GO_AGENT_VERSION=0.13.27 \
+    CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}" \
+    RC16_GO_AGENT_VERSION="${node_agent_version}" \
     RC16_WINDOWS_AGENT_VERSION=0.13.27 \
-    RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-0.13.27.tar.gz \
-    PASTURESTACK_NODE_AGENT_VERSION=0.13.27 \
-    PASTURESTACK_NODE_AGENT_COMMIT=d78a0817214bb21e3537730e68e12ebb74cbdaca \
+    RC16_HOST_API_VERSION="${host_api_version}" \
+    PASTURESTACK_HOST_API_PACKAGE_ID="${host_api_package_id}" \
+    PASTURESTACK_HOST_API_COMMIT="${host_api_commit}" \
+    PASTURESTACK_HOST_API_ARCHIVE_SHA256="${host_api_archive_sha256}" \
+    RC16_AGENT_PACKAGE_URL="/usr/share/cattle/artifacts/node-agent-${node_agent_version}.tar.gz" \
+    PASTURESTACK_NODE_AGENT_VERSION="${node_agent_version}" \
+    PASTURESTACK_NODE_AGENT_COMMIT="${node_agent_commit}" \
+    PASTURESTACK_NODE_AGENT_ARCHIVE_SHA256="${node_agent_archive_sha256}" \
     PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT="${orchestration_engine_commit}" \
     PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256="${orchestration_engine_artifact_sha256}" \
-    PASTURESTACK_RUNTIME_GO_VERSION=1.27.0 \
+    PASTURESTACK_RUNTIME_GO_VERSION=1.27.2 \
     PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10 \
     PASTURESTACK_CURL_SECURITY_SNAPSHOT=20261002T000000Z \
     PASTURESTACK_CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7 \
@@ -217,6 +362,7 @@ for marker in \
     PASTURESTACK_PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3 \
     PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.3 \
     PASTURESTACK_FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2 \
+    PASTURESTACK_LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1 \
     PASTURESTACK_COREUTILS_PROVIDER=gnu \
     PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11 \
     PASTURESTACK_COREUTILS_UNIQ_FIX=d64e35a8a4c0e4608321433e0d84d917e4e36371 \
@@ -230,7 +376,7 @@ for marker in \
     PASTURESTACK_RUNTIME_USER_MAPPING=removed \
     PASTURESTACK_GPG_VERIFIER=removed \
     PASTURESTACK_CONTAINER_SOURCE_BUILD_MODE=removed \
-    PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.0 \
+    PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.2 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.18 \
     PASTURESTACK_API_EXPLORER_COMMIT="${api_explorer_commit}" \
     PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256="${api_explorer_artifact_sha256}" \
@@ -250,9 +396,18 @@ for marker in \
     PASTURESTACK_COMPOSE_EXECUTOR_COMMIT="${compose_executor_commit}" \
     PASTURESTACK_COMPOSE_EXECUTOR_ARCHIVE_SHA256="${compose_executor_archive_sha256}" \
     PASTURESTACK_COMPOSE_EXECUTOR_BINARY_SHA256="${compose_executor_binary_sha256}" \
-    PASTURESTACK_HOST_PROVISIONER_VERSION=0.39.7 \
-    PASTURESTACK_SECRET_DELIVERY_API_VERSION=0.3.1 \
-    PASTURESTACK_USAGE_TELEMETRY_AGENT_VERSION=0.4.1 \
+    PASTURESTACK_HOST_PROVISIONER_VERSION="${host_provisioner_version}" \
+    PASTURESTACK_HOST_PROVISIONER_COMMIT="${host_provisioner_commit}" \
+    PASTURESTACK_HOST_PROVISIONER_ARCHIVE_SHA256="${host_provisioner_archive_sha256}" \
+    PASTURESTACK_HOST_PROVISIONER_BINARY_SHA256="${host_provisioner_binary_sha256}" \
+    PASTURESTACK_SECRET_DELIVERY_API_VERSION="${secret_delivery_api_version}" \
+    PASTURESTACK_SECRET_DELIVERY_API_COMMIT="${secret_delivery_api_commit}" \
+    PASTURESTACK_SECRET_DELIVERY_API_ARCHIVE_SHA256="${secret_delivery_api_archive_sha256}" \
+    PASTURESTACK_SECRET_DELIVERY_API_BINARY_SHA256="${secret_delivery_api_binary_sha256}" \
+    PASTURESTACK_USAGE_TELEMETRY_AGENT_VERSION="${usage_telemetry_agent_version}" \
+    PASTURESTACK_USAGE_TELEMETRY_AGENT_COMMIT="${usage_telemetry_agent_commit}" \
+    PASTURESTACK_USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256="${usage_telemetry_agent_archive_sha256}" \
+    PASTURESTACK_USAGE_TELEMETRY_AGENT_BINARY_SHA256="${usage_telemetry_agent_binary_sha256}" \
     PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_VERSION="${webhook_automation_service_version}" \
     PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_COMMIT="${webhook_automation_service_commit}" \
     PASTURESTACK_WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256="${webhook_automation_service_archive_sha256}" \
@@ -304,14 +459,31 @@ docker run --rm --entrypoint bash "$image" -lc '
     fi
 '
 
-docker run --rm --entrypoint sh "$image" -eu -c '
+docker run --rm \
+    --env "HOST_API_VERSION=${host_api_version}" \
+    --env "HOST_API_PACKAGE_MODE=${host_api_package_mode}" \
+    --env "HOST_API_ARCHIVE_SHA256=${host_api_archive_sha256}" \
+    --env "NODE_AGENT_VERSION=${node_agent_version}" \
+    --env "NODE_AGENT_ARCHIVE_SHA256=${node_agent_archive_sha256}" \
+    --entrypoint sh "$image" -eu -c '
     printf "%s\n" \
-      "0cbf93ef6f90db8c5f6b8cf7d63c99f452b8fc43e93097a21cdb5bcc3007d475  /usr/share/cattle/artifacts/node-agent-0.13.27.tar.gz" \
+      "$NODE_AGENT_ARCHIVE_SHA256  /usr/share/cattle/artifacts/node-agent-${NODE_AGENT_VERSION}.tar.gz" \
       "b6a56f8833c31bc224b7baf20ceb1a252c027021efbe6265c1906f8478d7c2fa  /usr/share/cattle/artifacts/node-agent-0.13.27-windows-amd64.zip" | sha256sum -c -
-    test "$(readlink /usr/share/cattle/artifacts/go-agent.tar.gz)" = node-agent-0.13.27.tar.gz
+    test "$(readlink /usr/share/cattle/artifacts/go-agent.tar.gz)" = "node-agent-${NODE_AGENT_VERSION}.tar.gz"
     . /usr/share/cattle/env_vars
-    test "$CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL" = /usr/share/cattle/artifacts/node-agent-0.13.27.tar.gz
+    test "$DEFAULT_CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL" = "/usr/share/cattle/artifacts/node-agent-${NODE_AGENT_VERSION}.tar.gz"
+    test "$CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL" = "/usr/share/cattle/artifacts/node-agent-${NODE_AGENT_VERSION}.tar.gz"
     test "$CATTLE_AGENT_PACKAGE_WINDOWS_AGENT_URL" = /usr/share/cattle/artifacts/node-agent-0.13.27-windows-amd64.zip
+    host_archive="/usr/share/cattle/artifacts/host-api-${HOST_API_VERSION}.tar.gz"
+    test -s "$host_archive"
+    test "$(readlink /usr/share/cattle/artifacts/host-api.tar.gz)" = "host-api-${HOST_API_VERSION}.tar.gz"
+    test "$DEFAULT_CATTLE_AGENT_PACKAGE_HOST_API_URL" = "$host_archive"
+    test "$CATTLE_AGENT_PACKAGE_HOST_API_URL" = "$host_archive"
+    # Producer packages are installed byte-for-byte. The compatibility-only
+    # 518 repair intentionally changes its archive checksum, not its binaries.
+    if [ "$HOST_API_PACKAGE_MODE" = producer ]; then
+        printf "%s  %s\n" "$HOST_API_ARCHIVE_SHA256" "$host_archive" | sha256sum -c -
+    fi
 '
 
 image_catalog_license=$(docker run --rm --entrypoint sha256sum "$image" \
@@ -324,18 +496,22 @@ image_orchestration=$(docker run --rm --entrypoint sha256sum "$image" \
 test "$image_orchestration" = \
     "${orchestration_engine_artifact_sha256}  /usr/share/cattle/cattle.jar"
 
-docker run --rm --entrypoint bash "$image" -lc '
+docker run --rm \
+    --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_version}" \
+    --env "ENGINE_READONLY_SCHEMA_SHA256=${engine_readonly_schema_sha256}" \
+    --env "ENGINE_RESTRICTED_SCHEMA_SHA256=${engine_restricted_schema_sha256}" \
+    --entrypoint bash "$image" -lc '
     set -euo pipefail
     engine_hash=$(sha256sum /usr/share/cattle/cattle.jar | awk "{print \$1}")
     web_root=$(readlink -f /usr/share/cattle/war)
     test "${web_root}" = "/usr/share/cattle/${engine_hash}"
     resources_jar=$(find "${web_root}/WEB-INF/lib" -maxdepth 1 -type f \
-        -name "cattle-resources-0.183.333.jar" -print -quit)
+        -name "cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar" -print -quit)
     test -n "${resources_jar}"
     test "$(unzip -p "${resources_jar}" schema/v1/readonly.ser | sha256sum | cut -d" " -f1)" = \
-        "7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233"
+        "${ENGINE_READONLY_SCHEMA_SHA256}"
     test "$(unzip -p "${resources_jar}" schema/v1/restricted.ser | sha256sum | cut -d" " -f1)" = \
-        "f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51"
+        "${ENGINE_RESTRICTED_SCHEMA_SHA256}"
     unzip -p "${resources_jar}" db/core-124.xml |
         grep -F "pasturestack-catalog-pinned-commit" >/dev/null
     unzip -p "${resources_jar}" schema/service/service-auth.json |
@@ -378,10 +554,10 @@ test "$(docker run --rm --entrypoint sha256sum "$image" /usr/bin/websocket-proxy
     "${websocket_wrapper_sha256}  /usr/bin/websocket-proxy"
 docker run --rm --entrypoint bash "$image" -lc 'test -x /usr/bin/websocket-proxy'
 
-docker run --rm --entrypoint bash "$image" -lc '
+docker run --rm --env "WEB_CONSOLE_RELEASE_TAG=${web_console_release_tag}" --entrypoint bash "$image" -lc '
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
-    test "$(cat "${web_root}/VERSION.txt")" = "1.6.180"
+    test "$(cat "${web_root}/VERSION.txt")" = "${WEB_CONSOLE_RELEASE_TAG}"
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     test ! -e "${web_root}/translations/none.json"
     test -z "$(find "${web_root}" -type f -name "*.map" -print -quit)"
@@ -527,7 +703,7 @@ docker run --rm --entrypoint bash "$image" -lc '
     grep -F "\"auditLogsPage.filterBuilder.timeDialog.calendar.today\":\"Today\"" "${web_root}/translations/en-us.json" >/dev/null
 '
 
-docker run --rm --entrypoint bash "$image" -lc '
+docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_version}" --entrypoint bash "$image" -lc '
     set -euo pipefail
     api_dir=/usr/share/cattle/war/api-ui
     test -d "${api_dir}"
@@ -572,10 +748,10 @@ docker run --rm --entrypoint bash "$image" -lc '
         /usr/share/cattle/war/translations/zh-tw.json >/dev/null
     unzip -p /usr/share/cattle/cattle.jar META-INF/MANIFEST.MF |
         tr -d "\r" |
-        grep -Fx "Implementation-Version: 0.183.333" >/dev/null
+        grep -Fx "Implementation-Version: ${ORCHESTRATION_ENGINE_VERSION}" >/dev/null
     test "$(find /usr/share/cattle/war/WEB-INF/lib -maxdepth 1 -type f -name "freemarker-2.3.35.jar" | wc -l)" -eq 1
     resources_jar=$(find /usr/share/cattle/war/WEB-INF/lib -maxdepth 1 -type f \
-        -name "cattle-resources-0.183.333.jar" -print -quit)
+        -name "cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar" -print -quit)
     test -n "${resources_jar}"
     unzip -p "${resources_jar}" schema/user/user-auth.json |
         grep -F "\"volume.isNative\" : \"r\"" >/dev/null
@@ -603,15 +779,15 @@ docker run --rm --entrypoint bash "$image" -lc '
         sha256sum -c -
     rm -f /tmp/hazelcast.jar
     cat <<'"'"'EOF'"'"' | sha256sum -c -
-feaabe4bba85cbe119c98a79a27abb4510401fc051f34d02aa7b48d69bdbe746  /usr/bin/authentication-service.real
-1f542ee2dd76c7af06bc5f056c381d7e77aecaeac40f8d897df6df24a9902c0d  /usr/bin/compose-executor.real
-bce26b98133d3f5d4ecaddba26179ed8e14e5b260b38dee5f9e4383cbfbc855a  /usr/bin/host-provisioner.real
-fbdd12862e1cfe3c957f492ae81c4c1c5658357502bd322febbbe209496929be  /usr/bin/secret-delivery-api
-f18ed969b8b5959293fdbcd55d2e28846372ab87c9348fbb315a9a490bf85ad4  /usr/bin/usage-telemetry-agent
-9094f3b2527762a3e683b02d93aa00e52618e902cd409e72e34553d98d98a609  /usr/bin/webhook-automation-service
-efd0c78779a620b4b0f74a10eb3f3edd8886e8d23f22dc4624d8e9971085a26d  /usr/bin/websocket-proxy.real
-f8c7d82a614655c83ee119e3f170a302a9b35d9ca7efd13bbc226df2d68e5d31  /usr/bin/govc
+fe11eec4b31b43863b49a582b1dbbe309eae08fb78adc150037981174f0622da  /usr/bin/authentication-service.real
+a9bf9f0f77e914fe557d3e178a73c31526b0ca0adc4afbf17bf68d8d75c7ee27  /usr/bin/compose-executor.real
+1d37e20a7a1cf4f3e36036a15ff7699ef22cd8809fd14a20892034dd054fd1fc  /usr/bin/host-provisioner.real
+b5e01b7e65aeee3b456fe043142b5e70f4039ee89ffd437648368ff63e6042b6  /usr/bin/secret-delivery-api
+e62a21270142181315293d7e11482288ffe8fc4d91cc8fe07dacc90b461f3709  /usr/bin/usage-telemetry-agent
+98c7faea665b7eb95206b8c73a6f47d644c5d2d0eae53f274f6a15faf5205744  /usr/bin/webhook-automation-service
 EOF
+    echo "${PASTURESTACK_GOVC_BINARY_SHA256}  /usr/bin/govc" | sha256sum -c -
+    echo "${PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256}  /usr/bin/websocket-proxy.real" | sha256sum -c -
     echo "${PASTURESTACK_CATALOG_SERVICE_BINARY_SHA256}  /usr/bin/catalog-service.real" | sha256sum -c -
     echo "${PASTURESTACK_CATALOG_SERVICE_SQLITE_BINARY_SHA256}  /usr/bin/catalog-service-sqlite" | sha256sum -c -
     for binary in \
@@ -627,9 +803,9 @@ EOF
         /usr/bin/govc \
         /usr/bin/pasturestack-console-broker; do
         test -x "${binary}"
-        grep -aF "go1.27.0" "${binary}" >/dev/null
+        grep -aF "go1.27.2" "${binary}" >/dev/null
     done
-    /usr/bin/authentication-service.real --version | grep -F "0.4.42" >/dev/null
+    /usr/bin/authentication-service.real --version | grep -F "0.4.43" >/dev/null
     for marker in \
         oidcAccessPolicyUpdate \
         LocalRecoveryRequired \
@@ -647,13 +823,16 @@ EOF
     test -s /usr/share/licenses/pasturestack/catalog-service/LICENSE.txt
     grep -Fx "Release source commit: ${PASTURESTACK_CATALOG_SERVICE_COMMIT}" \
         /usr/share/licenses/pasturestack/catalog-service/SOURCES.txt >/dev/null
-    /usr/bin/secret-delivery-api --version | grep -F "v0.3.1" >/dev/null
-    /usr/bin/usage-telemetry-agent --version | grep -F "0.4.1" >/dev/null
-    /usr/bin/webhook-automation-service --version | grep -F "0.10.3" >/dev/null
+    /usr/bin/secret-delivery-api --version | grep -F "v0.3.2" >/dev/null
+    /usr/bin/usage-telemetry-agent --version | grep -F "0.4.2" >/dev/null
+    /usr/bin/webhook-automation-service --version | grep -F "0.10.4" >/dev/null
     test "$(readlink -f /usr/bin/webhook-service)" = /usr/bin/webhook-automation-service
-    grep -Fx "Release source commit: fbcc0ca07e42e9b21bda18031d0848192ec2f9a1" \
+    grep -Fx "Release source commit: 400118b893843d2a7d7c65cc70c3449d76c4a8d8" \
         /usr/share/licenses/pasturestack/webhook-automation-service/webhook-automation-service-SOURCES.txt >/dev/null
-    test "$(/usr/bin/govc version)" = "govc 0.55.2"
+    test "$(/usr/bin/govc version)" = "govc ${PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION}"
+    grep -aF "$(printf "dep\tgolang.org/x/text\tv0.41.0\t")" /usr/bin/govc >/dev/null
+    grep -Fx "Security dependency: golang.org/x/text v0.41.0" \
+        /usr/share/licenses/pasturestack/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null
     version_at_least()
     {
         local package=$1 minimum=$2 installed
@@ -719,6 +898,11 @@ EOF
     test "$(dpkg-query -W -f='"'"'${Version}'"'"' libfreetype6)" = 2.14.2+dfsg-1ubuntu0.2
     test "$(wc -l < /usr/share/pasturestack/security/freetype-runtime.sha256)" -eq 1
     sha256sum -c /usr/share/pasturestack/security/freetype-runtime.sha256
+    test "$(dpkg-query -W -f='"'"'${Version}'"'"' libpng16-16t64)" = 1.6.57-1ubuntu0.1
+    test "$(wc -l < /usr/share/pasturestack/security/libpng-runtime.sha256)" -eq 1
+    sha256sum -c /usr/share/pasturestack/security/libpng-runtime.sha256
+    libpng_linkage=$(ldd -r /usr/lib/x86_64-linux-gnu/libpng16.so.16 2>&1)
+    ! printf "%s\n" "$libpng_linkage" | grep -E "not found|undefined symbol"
     test "$(readlink -f /usr/lib/x86_64-linux-gnu/libfreetype.so.6)" = /usr/lib/x86_64-linux-gnu/libfreetype.so.6.20.5
     perl -MDBI -e '"'"'die "Unexpected DBI runtime version\n" unless $DBI::VERSION eq "1.647"'"'"'
     openssl version | grep -E "^OpenSSL 3\\.5\\.5 .*\\(Library: OpenSSL 3\\.5\\.5 " >/dev/null
@@ -782,7 +966,7 @@ EOF
 docker run --rm -i --network none --entrypoint bash "$image" -s \
     < scripts/test-server-openssl-tls.sh
 
-printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s catalog_service=%s catalog_service_commit=%s catalog_service_archive_sha256=%s catalog_service_binary_sha256=%s catalog_service_sqlite_binary_sha256=%s authentication_service=%s authentication_service_commit=%s authentication_service_archive_sha256=%s authentication_service_binary_sha256=%s websocket_proxy=%s websocket_proxy_commit=%s websocket_proxy_archive_sha256=%s websocket_proxy_binary_sha256=%s compose_executor=%s compose_executor_commit=%s compose_executor_archive_sha256=%s compose_executor_binary_sha256=%s vsphere_cli=%s vsphere_cli_commit=%s vsphere_cli_archive_sha256=%s govc_binary_sha256=%s runtime_go=1.27.0 orchestration_updated=1 wrappers_pinned=1 audit_log_filters=1 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 vendor_pending=exact-set artifact_scan=required\n' \
+printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s catalog_service=%s catalog_service_commit=%s catalog_service_archive_sha256=%s catalog_service_binary_sha256=%s catalog_service_sqlite_binary_sha256=%s authentication_service=%s authentication_service_commit=%s authentication_service_archive_sha256=%s authentication_service_binary_sha256=%s websocket_proxy=%s websocket_proxy_commit=%s websocket_proxy_archive_sha256=%s websocket_proxy_binary_sha256=%s compose_executor=%s compose_executor_commit=%s compose_executor_archive_sha256=%s compose_executor_binary_sha256=%s vsphere_cli=%s vsphere_cli_commit=%s vsphere_cli_archive_sha256=%s govc_binary_sha256=%s runtime_go=1.27.2 orchestration_updated=1 wrappers_pinned=1 audit_log_filters=1 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 vendor_pending=exact-set artifact_scan=required\n' \
     "$image" "$revision" "$base_image" "${orchestration_engine_release_tag#v}" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "${api_explorer_release_tag#v}" "$api_explorer_commit" "$api_explorer_artifact_sha256" \

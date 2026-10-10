@@ -1,0 +1,2 @@
+Default remote component source. Local builds override the component_input
+BuildKit context with a directory containing exactly the five verified assets.
