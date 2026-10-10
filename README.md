@@ -26,7 +26,8 @@ cover retained records with environment-aware access and bounded pagination.
 Explicit date bounds remain attached to every audit page, so an older interval
 does not scan newer records first. Oversized queries retain the console filters
 and offer explicit narrowing or retry. Export failures are translated on the
-page instead of downloaded as error files; scan and export limits are retained.
+page instead of downloaded as error files. An export failure keeps successful
+query results intact; scan and export limits are retained.
 See the [candidate release note](docs/releases/server-1.6.519.md) for exact
 component identities and verification boundaries. A version or packaged feature
 does not establish that every resource/role/hardware combination has been tested.

@@ -50,6 +50,8 @@ keeps the failed query's filters, stops polling, and offers explicit recovery
 with translated errors. Checked exports preserve CSRF and same-origin cookies;
 stale query/session responses cannot replace a newer view or deliver its file.
 Narrow screen filter actions wrap, and audit errors use readable theme colors.
+Export-only permission or download failures identify the failed export and keep
+the successful query results intact.
 The govc bundle
 uses x/text `0.41.0` for
 [GO-2026-6629](https://pkg.go.dev/vuln/GO-2026-6629); its upstream Go source and
@@ -75,7 +77,7 @@ owner-only permission repair remain supported without changing parent modes.
 | Component | Clean source commit | Archive SHA-256 |
 | --- | --- | --- |
 | Engine `v0.183.334` (`cattle.jar`) | `ca5eb17865fce03c332eb93be8b92360b789b555` | `7fad5ebeab70e69cf57aa895917a9fbad0d04f065c8072f950cee2a7206986f1` |
-| Web Console `1.6.181` | `aad892466386af8d8450004e9b3c9c18b0a63fa2` | `e0486b480d2c2e375c489a1c6219aaa4a80dea80f5f60f5512443f415b144c4f` |
+| Web Console `1.6.181` | `f63fd9cf9f09c075343642810c648c4660f6c71a` | `59990b149b53c576127710a774318a0f776672623577845390c5f8c1e1cf34a3` |
 | Catalog Service `0.20.13` | `4c39c73a8131ba06e9ff0aaec3b95cc27e049324` | `29626181cb8489b016e5975ffaddc00b2a32d290b1c0066e833d27fa7a5edf83` |
 | Authentication Service `0.4.43` | `cae736f377019bd9743648a8e9aa469a0e21b5e0` | `e9218771af8dd68323c8c6fdab149c40a3ad02da9ff23f8aad6f0b2977740273` |
 | Compose Executor `0.14.37` | `88e991e823f06d2334c07d5370595aae3c48ee99` | `5ff465601930218f531885a384f231d969033e4cef794ce33d16bfe24e5c1c81` |
