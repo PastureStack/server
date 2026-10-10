@@ -353,6 +353,9 @@ func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, quer
 	}
 	if !query.AllTime {
 		upstreamValues.Set("created_gte", query.From.Format(time.RFC3339Nano))
+		// Bound the upstream candidate set too; the local [from,to) check
+		// below still excludes records exactly at the inclusive Engine bound.
+		upstreamValues.Set("created_lte", query.To.Format(time.RFC3339Nano))
 	}
 	if query.EnvironmentID != "" {
 		upstreamValues.Set("accountId", query.EnvironmentID)
@@ -434,9 +437,17 @@ func (b *broker) fetchAllAuditLogs(ctx context.Context, incoming *http.Request, 
 
 func (b *broker) fetchAllAuditLogsForViewer(ctx context.Context, incoming *http.Request, values url.Values, viewer string) ([]map[string]any, error) {
 	requestPath := "/v2-beta/auditlogs"
-	// A trusted, server-selected environment must remain fixed on later
-	// pages even when the Engine's next URL omits request-local context.
-	projectContext, accountScope := values.Get("projectId"), values.Get("accountId")
+	// Next supplies pagination, not a new query. Keep server-selected
+	// bounds, scope and ordering fixed even when next omits or changes them.
+	fixedValues := make(url.Values, len(values)+4)
+	for name, items := range values {
+		fixedValues[name] = append([]string(nil), items...)
+	}
+	for _, name := range []string{"created_gte", "created_lte", "accountId", "projectId"} {
+		if _, present := fixedValues[name]; !present {
+			fixedValues[name] = nil // An unbounded/personal query stays that way.
+		}
+	}
 	records := make([]map[string]any, 0, auditUpstreamPageSize)
 	for page := 0; page < 100; page++ {
 		collection, err := b.fetchAuditPagePolicy(ctx, incoming, requestPath, values, viewer != "")
@@ -460,9 +471,11 @@ func (b *broker) fetchAllAuditLogsForViewer(ctx context.Context, incoming *http.
 		}
 		requestPath = parsed.Path
 		values = parsed.Query()
-		if projectContext != "" {
-			values.Set("projectId", projectContext)
-			values.Set("accountId", accountScope)
+		for name, items := range fixedValues {
+			values.Del(name)
+			if len(items) > 0 {
+				values[name] = append([]string(nil), items...)
+			}
 		}
 	}
 	return nil, &auditHTTPError{Status: http.StatusUnprocessableEntity, Code: "result_set_too_large", Message: "Narrow the audit log time range or environment before continuing"}

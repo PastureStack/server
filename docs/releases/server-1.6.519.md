@@ -42,7 +42,15 @@ export classification and persisted container audit identity.
 
 The Server broker is a thin authenticated entry point. Engine owns the final
 policy. Existing audit `timeScope=all`, bounded query/export behavior, database
-retention, HAProxy, OIDC, and security overlays are retained. The govc bundle
+retention, HAProxy, OIDC, and security overlays are retained. Explicit audit
+date bounds and viewer filters survive Engine pagination. Historical intervals
+are bounded at the Engine rather than scanning later records first; genuinely
+oversized queries still fail at the existing scan/export limits. The console
+keeps the failed query's filters, stops polling, and offers explicit recovery
+with translated errors. Checked exports preserve CSRF and same-origin cookies;
+stale query/session responses cannot replace a newer view or deliver its file.
+Narrow screen filter actions wrap, and audit errors use readable theme colors.
+The govc bundle
 uses x/text `0.41.0` for
 [GO-2026-6629](https://pkg.go.dev/vuln/GO-2026-6629); its upstream Go source and
 Go producer toolchain is now pinned to `1.27.2`, as are the other active Go
@@ -66,8 +74,8 @@ owner-only permission repair remain supported without changing parent modes.
 
 | Component | Clean source commit | Archive SHA-256 |
 | --- | --- | --- |
-| Engine `v0.183.334` (`cattle.jar`) | `91f44685953f7cc72344a21cb47ca235c0bce53f` | `b0e3608b21ce405cdaf2f74699442b9420844384055f85acf88cfeb638600490` |
-| Web Console `1.6.181` | `87729448b1c90913cecffd7e3bc5e0f15144cfe1` | `e7846c998d997a84689fc8823cd29a26291a3bf104a9007a40e81a38bbd793cd` |
+| Engine `v0.183.334` (`cattle.jar`) | `ca5eb17865fce03c332eb93be8b92360b789b555` | `7fad5ebeab70e69cf57aa895917a9fbad0d04f065c8072f950cee2a7206986f1` |
+| Web Console `1.6.181` | `aad892466386af8d8450004e9b3c9c18b0a63fa2` | `e0486b480d2c2e375c489a1c6219aaa4a80dea80f5f60f5512443f415b144c4f` |
 | Catalog Service `0.20.13` | `4c39c73a8131ba06e9ff0aaec3b95cc27e049324` | `29626181cb8489b016e5975ffaddc00b2a32d290b1c0066e833d27fa7a5edf83` |
 | Authentication Service `0.4.43` | `cae736f377019bd9743648a8e9aa469a0e21b5e0` | `e9218771af8dd68323c8c6fdab149c40a3ad02da9ff23f8aad6f0b2977740273` |
 | Compose Executor `0.14.37` | `88e991e823f06d2334c07d5370595aae3c48ee99` | `5ff465601930218f531885a384f231d969033e4cef794ce33d16bfe24e5c1c81` |
