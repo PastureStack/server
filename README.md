@@ -143,9 +143,11 @@ See [ORIGIN.md](ORIGIN.md) and [SECURITY.md](SECURITY.md).
 The component candidate build uses the same release Dockerfile and verification
 gates. `server/build-component-candidate.sh` requires actual component commits
 and SHA-256 values; it does not publish or deploy. Set
-`PASTURESTACK_COMPONENT_ARTIFACT_DIR` to an isolated directory with the five
-component assets for an unpublished candidate. Without it, the same hashes
-verify the versioned HTTPS release assets.
+`PASTURESTACK_COMPONENT_ARTIFACT_DIR` to an isolated directory whose contents
+exactly match the complete `component_assets` list in
+[`server/build-api-explorer-patch-image.sh`](server/build-api-explorer-patch-image.sh).
+Every asset is verified against its SHA-256 value. Without this directory, the
+same hashes verify the versioned HTTPS release assets.
 
 ## Language and licensing
 
