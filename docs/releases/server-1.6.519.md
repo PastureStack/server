@@ -1,13 +1,18 @@
 # Server v1.6.519
 
-Status: unpublished candidate. No registry digest or new artifact-scan result
-is claimed by this source document.
+Status: [published immutable release](https://github.com/PastureStack/server/releases/tag/v1.6.519).
+
+Image: `ghcr.io/pasturestack/server:v1.6.519`.
+Registry digest: `sha256:498ad827ee21d5ec331f71fd2d1eb69b7941b0a089e773b3c7a3cd80744931ff`.
+Artifact producer: `fd9d9b289746b2d5db9a7d3a63f1dc61ba9e0b24`.
+The release contains 22 RootFS layers. Its original SBOM, scan, VEX and
+registry identity binding are attached to the release; integration-only
+CodeQL workflow changes do not relabel or rebuild the artifact.
 
 Engine 0.183.335 adds a shared live Project-membership authority check before
 custom Key evaluation. It corrects a legitimate member's Project being rejected
 before the normal resource manager could authorize it. Key deny rules, expiry,
 non-Project resource permissions and background authorization remain independent.
-The previous 0.183.334 component is superseded for this unpublished candidate.
 
 ## Scope
 
@@ -65,7 +70,10 @@ Keyboard or pointer interaction cancels delayed focus, including an ABA return
 to the original active element. Teardown cancels only the component's own work.
 Audit export hides its own existing dropdown before disabling the request
 control, preserving consecutive JSON, CSV and XLSX selection. Related Chrome
-tests pass; native acceptance of this new production bundle remains separate.
+tests pass. Native selector/review and consecutive CSV/XLSX export
+acceptance passed on the assembled image. JSON export acceptance passed earlier
+with the same Web Console production bytes. These checks do not imply every
+role/filter combination in the broader matrix has been tested.
 The govc bundle
 uses x/text `0.41.0` for
 [GO-2026-6629](https://pkg.go.dev/vuln/GO-2026-6629); its upstream Go source and
@@ -156,6 +164,8 @@ artifact-specific checks; a source commit or inherited VEX statement is not
 evidence that the new assembled image passed them.
 
 The existing VEX assessments, vendor-pending findings and review deadlines
-are retained without relaxing the release policy or claiming a new scan.
-The published installation target remains `v1.6.518` until the candidate is
-verified and separately published.
+remain tracked without relaxing the release policy; the new assembled-image scan is summarized below.
+The assembled image passed the release policy with no High/Critical,
+available-fix, untracked or secret findings. Eight upstream vendor-pending
+findings remain tracked with their VEX and review deadline; this is not a claim
+of zero vulnerabilities. The published installation target is `v1.6.519`.
