@@ -1,9 +1,9 @@
 # API Keys
 
-This guide describes the Server `v1.6.519` source candidate, with Engine
-`0.183.335` and Web Console `1.6.181`. It is not a publication or a claim that
-every role/resource combination has passed acceptance. Use the published numeric
-image tag in the installation guide until the candidate is separately released.
+This guide describes published Server `v1.6.521`, with Engine `0.183.337`
+and Web Console `1.6.181`. Publication does not mean that every role/resource
+combination has passed acceptance. Use the published numeric image tag in the
+[installation guide](../README.md#quick-start).
 
 ## Access and expiry
 
@@ -53,10 +53,13 @@ query rejects the result instead of returning partially authorized records.
 All-time has no hidden 24-hour
 restriction; explicit UTC ranges and filters apply before bounded totals and
 pagination. Failed queries or loss of access must not leave old records visible.
+Key governance events use the public Key ID, including rejected edits. After
+the same ownership and environment checks, per-Key queries also include valid
+historical numeric-ID aliases; existing audit records are not rewritten.
 
 Read decision, outcome and phase separately. ALLOW does not imply success; an
-HTTP 200/202 response is not later job or stream completion. A response error
-such as 405 is not automatically a Key permission denial. Only the actual
+HTTP 200/202 response or successful HTTP 101 handshake is not later job or stream
+completion. An error such as 405 is not automatically a Key permission denial. Only the actual
 terminal event establishes completion. Container targets use their persisted
 instance ID (`1i` prefix) consistently across decision, response and terminal
 records, even when an agent schema has no `container` alias. Errors retain the
@@ -77,7 +80,7 @@ handshake returns `ApiKeyExpired` (401) and records `DENY`/`FAILED`, phase
 is unavailable, it returns `AuditUnavailable` (503), without starting execution
 or claiming that the denial was durably recorded.
 
-See the [candidate contract and component boundary](releases/server-1.6.519.md).
+See the [published release and component boundary](releases/server-1.6.521.md).
 Deploy the complete compatible Server image and preserve existing volumes and
 backups. Do not downgrade restricted or expired Keys to a policy-unaware Engine,
 or convert them to unrestricted legacy Keys as a workaround. Follow the
