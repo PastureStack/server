@@ -73,7 +73,7 @@ jobs:
         with:
           # server/Dockerfile TEMURIN_JDK25_VERSION.
           distribution: temurin
-          java-version: '25.0.4+7'
+          java-version: '25.0.4+7.0.LTS'
           check-latest: false
 
       - name: Initialize CodeQL
