@@ -3,6 +3,12 @@
 Status: unpublished candidate. No registry digest or new artifact-scan result
 is claimed by this source document.
 
+Engine 0.183.335 adds a shared live Project-membership authority check before
+custom Key evaluation. It corrects a legitimate member's Project being rejected
+before the normal resource manager could authorize it. Key deny rules, expiry,
+non-Project resource permissions and background authorization remain independent.
+The previous 0.183.334 component is superseded for this unpublished candidate.
+
 ## Scope
 
 Restricted and expiring API Keys use the same Engine authorization boundary
@@ -84,7 +90,7 @@ owner-only permission repair remain supported without changing parent modes.
 
 | Component | Clean source commit | Archive SHA-256 |
 | --- | --- | --- |
-| Engine `v0.183.334` (`cattle.jar`) | `66a87ea6901296fa11ada5df58b0618a4ca96975` | `a62d8f6ddd61c850e71bbb6fd30352b3a73c7c09e605bb5c45d549074e8824e8` |
+| Engine `v0.183.335` (`cattle.jar`) | `8fd5e7d3021507647064da1ae9c9c3a6eeb4c725` | `98a665f59bced8f7c084e786280100e0571390b04eeffad140e633b463d8a204` |
 | Web Console `1.6.181` | `7f2bdad0c90a3241693c2ddd4475202ababba550` | `9199681f2c4311f3fbe8727fcf0f6fa136c9bafe9fbe9d13878c55df442a7a03` |
 | Catalog Service `0.20.13` | `4c39c73a8131ba06e9ff0aaec3b95cc27e049324` | `29626181cb8489b016e5975ffaddc00b2a32d290b1c0066e833d27fa7a5edf83` |
 | Authentication Service `0.4.43` | `cae736f377019bd9743648a8e9aa469a0e21b5e0` | `e9218771af8dd68323c8c6fdab149c40a3ad02da9ff23f8aad6f0b2977740273` |
