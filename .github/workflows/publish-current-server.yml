@@ -68,9 +68,13 @@ jobs:
           test "$(git -C source rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git -C source status --short)"
 
-          declared_release="$(sed -n 's/.*org.opencontainers.image.version="\([^"]*\)".*/\1/p' \
-            source/server/Dockerfile.web-compose-release)"
+          declared_release="$(sed -n 's/^ARG SERVER_RELEASE_TAG=//p' \
+            source/server/Dockerfile.web-compose-release | sort -u)"
           test "$declared_release" = "$RELEASE_TAG"
+          host_api_version="$(sed -n 's/^ARG HOST_API_VERSION=//p' \
+            source/server/Dockerfile.web-compose-release | sort -u)"
+          [[ "$host_api_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          printf 'HOST_API_VERSION=%s\n' "$host_api_version" >>"$GITHUB_ENV"
           release_notes="source/docs/releases/server-${RELEASE_TAG#v}.md"
           test -f "$release_notes"
           test -s "$release_notes"
@@ -340,15 +344,32 @@ jobs:
           docker export --output "$RUNNER_TEMP/server-rootfs.tar" "$CANDIDATE_NAME"
           tar --no-same-owner -xf "$RUNNER_TEMP/server-rootfs.tar" -C "$rootfs"
           test "$(readlink "$rootfs/usr/share/cattle/artifacts/host-api.tar.gz")" = \
-            host-api-0.38.4.tar.gz
+            "host-api-${HOST_API_VERSION}.tar.gz"
           grep -Fx \
-            'export CATTLE_AGENT_PACKAGE_HOST_API_URL=/usr/share/cattle/artifacts/host-api-0.38.4.tar.gz' \
+            "export CATTLE_AGENT_PACKAGE_HOST_API_URL=/usr/share/cattle/artifacts/host-api-${HOST_API_VERSION}.tar.gz" \
             "$rootfs/usr/share/cattle/env_vars" >/dev/null
-          cp "$rootfs/usr/share/cattle/artifacts/host-api-0.38.4.tar.gz" \
-            "$evidence/host-api-0.38.4.tar.gz"
-          bash source/scripts/check-server-host-api-package.sh \
-            "$evidence/host-api-0.38.4.tar.gz" |
-            tee "$evidence/host-api-package-check.txt"
+          cp "$rootfs/usr/share/cattle/artifacts/host-api-${HOST_API_VERSION}.tar.gz" \
+            "$evidence/host-api-${HOST_API_VERSION}.tar.gz"
+          host_default() {
+            sed -n "s/^ARG ${1}=//p" source/server/Dockerfile.web-compose-release | sort -u
+          }
+          if [[ "$(host_default HOST_API_PACKAGE_MODE)" == producer ]]; then
+            printf '%s  %s\n' "$(host_default HOST_API_ARCHIVE_SHA256)" \
+              "$evidence/host-api-${HOST_API_VERSION}.tar.gz" | sha256sum -c -
+            bash source/server/artifacts/verify-host-api-package.sh \
+              "$evidence/host-api-${HOST_API_VERSION}.tar.gz" \
+              "$(host_default HOST_API_PACKAGE_ID)" \
+              "$(host_default HOST_API_BINARY_SHA256)" \
+              "$(host_default HOST_API_APPLY_SHA256)" \
+              "$(host_default HOST_API_COMMIT)" |
+              tee "$evidence/host-api-package-check.txt"
+          else
+            test "$(host_default HOST_API_PACKAGE_MODE)" = legacy-repair
+            test "$HOST_API_VERSION" = 0.38.4
+            bash source/scripts/check-server-host-api-package.sh \
+              "$evidence/host-api-${HOST_API_VERSION}.tar.gz" |
+              tee "$evidence/host-api-package-check.txt"
+          fi
           printf 'SERVER_CANDIDATE_SMOKE_OK release=%s first_attempts=%s restart_attempts=%s catalog_attempts=%s first_contract_attempts=%s restart_contract_attempts=%s http=200 body=pong public_origin=https://stack.example.test private_api_cache=no-store\n' \
             "$RELEASE_TAG" "$first_attempts" "$restart_attempts" "$catalog_attempts" \
             "$first_contract_attempts" "$restart_contract_attempts" |
@@ -560,7 +581,7 @@ jobs:
               build.log \
               candidate.log \
               candidate-smoke.txt \
-              host-api-0.38.4.tar.gz \
+              "host-api-${HOST_API_VERSION}.tar.gz" \
               host-api-package-check.txt \
               image-inspect.txt \
               mfa-policy-api-smoke.txt \
@@ -590,7 +611,7 @@ jobs:
             "$evidence/build.log" \
             "$evidence/candidate.log" \
             "$evidence/candidate-smoke.txt" \
-            "$evidence/host-api-0.38.4.tar.gz" \
+            "$evidence/host-api-${HOST_API_VERSION}.tar.gz" \
             "$evidence/host-api-package-check.txt" \
             "$evidence/image-inspect.txt" \
             "$evidence/mfa-policy-api-smoke.txt" \

@@ -24,26 +24,34 @@ import (
 )
 
 const (
-	sessionPathPrefix    = "/v1/exec/sessions/"
-	healthPath           = "/v1/exec/sessions/healthz"
-	consoleSubprotocol   = "pasturestack-console-v1"
-	secretProtocolPrefix = "pasturestack-secret."
-	clientProtocolPrefix = "pasturestack-client."
-	maxCreateBody        = 128 * 1024
-	maxClientFrame       = 96 * 1024
-	maxUpstreamFrame     = 4 * 1024 * 1024
-	clientQueueSize      = 256
-	writeWait            = 10 * time.Second
-	pongWait             = 60 * time.Second
-	pingPeriod           = 25 * time.Second
-	defaultDialAttempts  = 3
-	defaultDialRetryWait = 5 * time.Second
+	sessionPathPrefix       = "/v1/exec/sessions/"
+	healthPath              = "/v1/exec/sessions/healthz"
+	consoleSubprotocol      = "pasturestack-console-v1"
+	secretProtocolPrefix    = "pasturestack-secret."
+	clientProtocolPrefix    = "pasturestack-client."
+	maxCreateBody           = 128 * 1024
+	maxClientFrame          = 96 * 1024
+	maxUpstreamFrame        = 4 * 1024 * 1024
+	clientQueueSize         = 256
+	writeWait               = 10 * time.Second
+	pongWait                = 60 * time.Second
+	pingPeriod              = 25 * time.Second
+	defaultDialAttempts     = 3
+	defaultDialRetryWait    = 5 * time.Second
+	streamErrorHeader       = "X-PastureStack-Stream-Error-Code"
+	routeErrorHeader        = "X-Api-Error-Code"
+	backendAuditUnavailable = "BackendAuditCapabilityUnavailable"
+	streamAuditUnavailable  = "AuditUnavailable"
+	streamRouteDenied       = "DelegationRouteDenied"
 )
 
 var (
-	sessionIDPattern = regexp.MustCompile(`^psw_[A-Za-z0-9_-]{20,96}$`)
-	clientIDPattern  = regexp.MustCompile(`^tab_[A-Za-z0-9_-]{20,96}$`)
-	secretPattern    = regexp.MustCompile(`^[A-Za-z0-9_-]{40,256}$`)
+	sessionIDPattern           = regexp.MustCompile(`^psw_[A-Za-z0-9_-]{20,96}$`)
+	clientIDPattern            = regexp.MustCompile(`^tab_[A-Za-z0-9_-]{20,96}$`)
+	secretPattern              = regexp.MustCompile(`^[A-Za-z0-9_-]{40,256}$`)
+	errBackendAuditUnavailable = errors.New(backendAuditUnavailable)
+	errStreamAuditUnavailable  = errors.New(streamAuditUnavailable)
+	errStreamRouteDenied       = errors.New(streamRouteDenied)
 )
 
 type brokerConfig struct {
@@ -246,6 +254,11 @@ func (b *broker) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
+	if isKeyAuditPath(request.URL.Path) {
+		b.serveKeyAudit(writer, request)
+		return
+	}
+
 	if request.URL.Path == auditQueryPath || request.URL.Path == auditExportPath {
 		b.serveAudit(writer, request)
 		return
@@ -333,7 +346,27 @@ func (b *broker) createSession(writer http.ResponseWriter, request *http.Request
 	headers.Set("Origin", sessionDialOrigin(target))
 	upstream, err := b.dialUpstreamSession(request.Context(), target, headers)
 	if err != nil {
-		b.logger.Printf("upstream session connection failed for %s: %s", safeLogValue(sessionID), safeLogValue(err))
+		// A dial error can contain the signed ticket in its URL. Log only a
+		// fixed category, never the error, target, headers, or response body.
+		if errors.Is(err, errStreamRouteDenied) {
+			b.logger.Printf("upstream session connection failed for %s: %s", safeLogValue(sessionID), streamRouteDenied)
+			writer.Header().Set(routeErrorHeader, streamRouteDenied)
+			writeJSONError(writer, http.StatusForbidden, streamRouteDenied, "The signed stream request does not match its allowed route")
+			return
+		}
+		blockedCode := ""
+		if errors.Is(err, errBackendAuditUnavailable) {
+			blockedCode = backendAuditUnavailable
+		} else if errors.Is(err, errStreamAuditUnavailable) {
+			blockedCode = streamAuditUnavailable
+		}
+		if blockedCode != "" {
+			b.logger.Printf("upstream session connection failed for %s: %s", safeLogValue(sessionID), blockedCode)
+			writer.Header().Set(streamErrorHeader, blockedCode)
+			writeJSONError(writer, http.StatusServiceUnavailable, blockedCode, "Durable API Key stream auditing is unavailable")
+			return
+		}
+		b.logger.Printf("upstream session connection failed for %s: upstream_unavailable", safeLogValue(sessionID))
 		writeJSONError(writer, http.StatusBadGateway, "upstream_unavailable", "Unable to start the console session")
 		return
 	}
@@ -381,14 +414,30 @@ func (b *broker) dialUpstreamSession(ctx context.Context, target *url.URL, heade
 	for attempt := 1; attempt <= b.config.SessionDialAttempts; attempt++ {
 		connection, response, err := websocket.DefaultDialer.DialContext(ctx, target.String(), headers)
 		status := 0
+		var blockedStreamError error
 		if response != nil {
 			status = response.StatusCode
+			// Only the operator-controlled internal dial endpoint can supply
+			// this signal. Browser headers and upstream bodies are not trusted.
+			if status == http.StatusServiceUnavailable {
+				switch response.Header.Get(streamErrorHeader) {
+				case backendAuditUnavailable:
+					blockedStreamError = errBackendAuditUnavailable
+				case streamAuditUnavailable:
+					blockedStreamError = errStreamAuditUnavailable
+				}
+			} else if status == http.StatusForbidden && response.Header.Get(routeErrorHeader) == streamRouteDenied {
+				blockedStreamError = errStreamRouteDenied
+			}
 			if response.Body != nil {
 				_ = response.Body.Close()
 			}
 		}
 		if err == nil {
 			return connection, nil
+		}
+		if blockedStreamError != nil {
+			return nil, blockedStreamError
 		}
 		lastErr = err
 		if status != http.StatusUnauthorized || attempt == b.config.SessionDialAttempts {
