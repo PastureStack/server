@@ -16,6 +16,7 @@ import (
 const keyAuditQueryPath = "/v2-beta/pasturestack/key-audit-logs"
 
 var keyAuditIDPattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_-]{0,159}$`)
+var canonicalKeyAuditIDPattern = regexp.MustCompile(`^1c([1-9][0-9]*)$`)
 
 func (b *broker) fetchKeyAuditLogs(ctx context.Context, incoming *http.Request, query auditQuery,
 	allowedProjects map[string]string, baseValues url.Values) ([]map[string]any, error) {
@@ -249,7 +250,21 @@ func keyAuditMetadataString(record map[string]any, field string) string {
 	return ""
 }
 
-func safeKeyAuditRecord(record map[string]any) map[string]any {
+// The Engine used internal numeric credential IDs for some governance failures.
+// Match that historical form only against the current Engine-verified Key ID;
+// unrelated typed IDs and records without keyId must not enter the Key view.
+func keyAuditIDMatches(recordedID, keyID string) bool {
+	if keyID == "" {
+		return false
+	}
+	if recordedID == keyID {
+		return true
+	}
+	canonical := canonicalKeyAuditIDPattern.FindStringSubmatch(keyID)
+	return canonical != nil && recordedID == canonical[1]
+}
+
+func safeKeyAuditRecord(record map[string]any, keyID string) map[string]any {
 	result := make(map[string]any)
 	for _, field := range []string{
 		"type", "id", "created", "accountId", "authenticatedAsAccountId", "authenticatedAsIdentityId",
@@ -265,6 +280,15 @@ func safeKeyAuditRecord(record map[string]any) map[string]any {
 			}
 		} else if value := keyAuditMetadataString(record, field); value != "" {
 			result[field] = value
+		}
+	}
+	if keyAuditIDMatches(keyAuditMetadataString(record, "keyId"), keyID) {
+		result["keyId"] = keyID
+	}
+	switch strings.ToLower(keyAuditMetadataString(record, "targetType")) {
+	case "apikey", "apikeyrestricted":
+		if keyAuditIDMatches(keyAuditMetadataString(record, "targetId"), keyID) {
+			result["targetId"] = keyID
 		}
 	}
 	return result
