@@ -2,6 +2,14 @@
 
 Packages Engine `v0.183.337` and unchanged Web Console `1.6.181`.
 
+## Published identity
+
+The [official v1.6.521 release](https://github.com/PastureStack/server/releases/tag/v1.6.521)
+identifies the immutable image
+`ghcr.io/pasturestack/server:v1.6.521@sha256:bd368b3ac58c7b161442906241aa7ef2a41360a164cb3ca181d0b84742fb2194`,
+with 22 layers, from producer `d478d917f989903dafc6bb834b7f9017126a68bd`.
+This publication identity does not establish full functional-matrix acceptance.
+
 ## API Key audit identity
 
 Rejected Key edits after request validation could be recorded under an internal

@@ -1,5 +1,18 @@
 # Compatibility Contract
 
+## Server v1.6.521 published
+
+The [official release](https://github.com/PastureStack/server/releases/tag/v1.6.521)
+is the immutable image
+`ghcr.io/pasturestack/server:v1.6.521@sha256:bd368b3ac58c7b161442906241aa7ef2a41360a164cb3ca181d0b84742fb2194`.
+It packages Web Console `1.6.181` and Orchestration Engine `v0.183.337`.
+The image has 22 layers; publication identifies producer
+`d478d917f989903dafc6bb834b7f9017126a68bd` and protected-main merge
+`d0d1b417833c25e4a6b765e27e3a52f450d7c0e1`.
+See the [release note](docs/releases/server-1.6.521.md) for audit identity scope.
+Install examples use the published numeric tag; immutable identities stay in
+release records. This is not C-03, C-05 live or full-matrix acceptance.
+
 ## Server v1.6.518 published
 
 Immutable image:
