@@ -7,6 +7,13 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.521](releases/server-1.6.521.md) — officially published with
+  Engine `0.183.337` and Web Console `1.6.181`; canonical API Key audit identifiers
+  and historical numeric-ID reads retain ownership and environment checks.
+  [Official release](https://github.com/PastureStack/server/releases/tag/v1.6.521).
+  Component and scoped evidence do not establish C-03, C-05 live or full-matrix
+  acceptance; exact identities and limits remain in the versioned release note.
+
 - [Server v1.6.518](releases/server-1.6.518.md) — officially published with Catalog v0.3.13 / Network Plugin Manager v0.8.22 CNI configuration migration fixes, Web Console 1.6.180 / audit broker full-retained-time query and export, and the official FreeType security fix; artifact readback and scoped isolated-QA deployment/read-only checks verified. Known limits remain in the release note.
 
 - [Server v1.6.517](releases/server-1.6.517.md) — officially published with Web Console 1.6.179; isolated start/restart, browser login and focused API acceptance passed. Known limits remain in the versioned release note.

@@ -38,7 +38,8 @@ stack and resource selectors close before dependent loading or verification.
 Failed Key edits use a consistent public Key ID in audit records. Per-Key audit
 also reads historical numeric-ID records within the same ownership and environment
 authorization checks; existing records are not rewritten.
-See the [release note](docs/releases/server-1.6.521.md) for exact
+See the [published v1.6.521 release](https://github.com/PastureStack/server/releases/tag/v1.6.521)
+and [release note](docs/releases/server-1.6.521.md) for exact
 component identities and verification boundaries. A version or packaged feature
 does not establish that every resource/role/hardware combination has been tested.
 
