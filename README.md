@@ -11,8 +11,8 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-Server `v1.6.520` packages Web Console `1.6.181`
-and Orchestration Engine `v0.183.336`. API Keys support full, custom and closed
+Server `v1.6.521` packages Web Console `1.6.181`
+and Orchestration Engine `v0.183.337`. API Keys support full, custom and closed
 policies, optional expiry, and key-scoped durable audit records. Their permissions
 remain bounded by the owner's current role and environment access. Delegated
 terminal/log access requires the verified Host API audit capability and the
@@ -35,7 +35,10 @@ Audit export closes its own menu before locking the request, allowing consecutiv
 JSON, CSV and XLSX downloads without leaving a disabled menu open.
 Key scope choices use the viewer's authorized environment list. Environment,
 stack and resource selectors close before dependent loading or verification.
-See the [release note](docs/releases/server-1.6.520.md) for exact
+Failed Key edits use a consistent public Key ID in audit records. Per-Key audit
+also reads historical numeric-ID records within the same ownership and environment
+authorization checks; existing records are not rewritten.
+See the [release note](docs/releases/server-1.6.521.md) for exact
 component identities and verification boundaries. A version or packaged feature
 does not establish that every resource/role/hardware combination has been tested.
 
@@ -70,7 +73,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.520
+  ghcr.io/pasturestack/server:v1.6.521
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -78,7 +81,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.520
+    image: ghcr.io/pasturestack/server:v1.6.521
     restart: unless-stopped
     ports:
       - "8080:8080"

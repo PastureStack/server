@@ -375,7 +375,7 @@ func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, quer
 
 	scoped := make([]map[string]any, 0, len(records))
 	for _, record := range records {
-		if query.KeyID != "" && keyAuditMetadataString(record, "keyId") != query.KeyID {
+		if query.KeyID != "" && !keyAuditIDMatches(keyAuditMetadataString(record, "keyId"), query.KeyID) {
 			continue
 		}
 		projectID := auditString(record, "accountId")
@@ -395,7 +395,7 @@ func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, quer
 
 		copyRecord := cloneAuditRecord(record)
 		if query.KeyID != "" {
-			copyRecord = safeKeyAuditRecord(record)
+			copyRecord = safeKeyAuditRecord(record, query.KeyID)
 		}
 		copyRecord["environmentDisplayName"] = allowedProjects[projectID]
 		actorID := auditString(record, "authenticatedAsAccountId")

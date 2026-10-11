@@ -14,6 +14,7 @@ import (
 
 type keyAuditFixture struct {
 	mu                   sync.Mutex
+	keyID                string
 	owner                string
 	keyStatus            int
 	restricted           bool
@@ -44,7 +45,7 @@ type keyAuditFixture struct {
 func newKeyAuditFixture(t *testing.T) (*keyAuditFixture, *httptest.Server) {
 	t.Helper()
 	fixture := &keyAuditFixture{
-		owner: "1a1", viewer: "1a1", keyStatus: http.StatusOK,
+		keyID: "1a99", owner: "1a1", viewer: "1a1", keyStatus: http.StatusOK,
 		projects: []map[string]any{{"type": "project", "id": "1p1", "name": "Production"}},
 	}
 	upstream := &auditUpstreamFixture{}
@@ -57,7 +58,7 @@ func newKeyAuditFixture(t *testing.T) (*keyAuditFixture, *httptest.Server) {
 		defer fixture.mu.Unlock()
 		writer.Header().Set("X-API-USER-ID", fixture.viewer)
 		switch request.URL.Path {
-		case "/v2-beta/apikey/1a99", "/v2-beta/apikeyrestricted/1a99":
+		case "/v2-beta/apikey/" + fixture.keyID, "/v2-beta/apikeyrestricted/" + fixture.keyID:
 			fixture.keyQueries = append(fixture.keyQueries, request.URL.Query())
 			fixture.keyProjectHeaders = append(fixture.keyProjectHeaders, request.Header.Get("X-API-Project-ID"))
 			kind := "apiKey"
@@ -87,7 +88,7 @@ func newKeyAuditFixture(t *testing.T) (*keyAuditFixture, *httptest.Server) {
 					return
 				}
 			}
-			key := map[string]any{"type": kind, "id": "1a99", "accountId": fixture.owner, "secretValue": "never-return-key-secret"}
+			key := map[string]any{"type": kind, "id": fixture.keyID, "accountId": fixture.owner, "secretValue": "never-return-key-secret"}
 			for field, value := range fixture.scopedKeyOverride {
 				switch field {
 				case "viewer":
@@ -183,6 +184,130 @@ func keyAuditRecord(id, keyID, project, created string) map[string]any {
 	record["Authorization"] = "Bearer-secret"
 	record["responseObject"] = map[string]any{"Cookie": "session-secret", "jwt": "jwt-secret", "oidcCode": "code-secret"}
 	return record
+}
+
+func TestKeyAuditIDMatchesOnlyExactOrCanonicalCredentialAlias(t *testing.T) {
+	for _, tc := range []struct {
+		name, recorded, key string
+		match               bool
+	}{
+		{"typed", "1c99", "1c99", true},
+		{"legacy", "99", "1c99", true},
+		{"existing-exact-contract", "1a99", "1a99", true},
+		{"different-key", "98", "1c99", false},
+		{"different-type", "1a99", "1c99", false},
+		{"non-credential-query", "99", "1a99", false},
+		{"suffix-only", "prefix99", "1c99", false},
+		{"leading-zero", "099", "1c99", false},
+		{"noncanonical-query", "99", "1c099", false},
+		{"missing-key", "", "1c99", false},
+		{"empty-query", "", "", false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := keyAuditIDMatches(tc.recorded, tc.key); got != tc.match {
+				t.Fatalf("key match = %v, want %v", got, tc.match)
+			}
+		})
+	}
+}
+
+func TestSafeKeyAuditCanonicalizesOnlyMatchingKeyTargets(t *testing.T) {
+	for _, tc := range []struct{ kind, target, expected string }{
+		{"apiKey", "99", "1c99"},
+		{"apiKeyRestricted", "99", "1c99"},
+		{"apiKey", "1c99", "1c99"},
+		{"apiKey", "98", "98"},
+		{"apiKey", "1a99", "1a99"},
+		{"stack", "99", "99"},
+		{"container", "99", "99"},
+		{"", "99", "99"},
+	} {
+		t.Run(tc.kind+"/"+tc.target, func(t *testing.T) {
+			record := map[string]any{"keyId": "99", "targetType": tc.kind, "targetId": tc.target,
+				"requestObject": map[string]any{"secretValue": "must-not-leak"}}
+			result := safeKeyAuditRecord(record, "1c99")
+			if result["keyId"] != "1c99" || result["targetId"] != tc.expected {
+				t.Fatalf("incorrect canonical metadata: %#v", result)
+			}
+			if record["keyId"] != "99" || record["targetId"] != tc.target {
+				t.Fatal("canonical projection mutated the historical source record")
+			}
+			if _, present := result["requestObject"]; present {
+				t.Fatal("historical compatibility bypassed the safe projection")
+			}
+		})
+	}
+}
+
+func TestKeyAuditHistoricalNumericIdentifiersBeforeCountDetailAndFilters(t *testing.T) {
+	for _, restricted := range []bool{false, true} {
+		for _, nested := range []bool{false, true} {
+			t.Run("restricted="+strconv.FormatBool(restricted)+"/nested="+strconv.FormatBool(nested), func(t *testing.T) {
+				fixture, server := newKeyAuditFixture(t)
+				fixture.keyID, fixture.restricted, fixture.accountScoped = "1c99", restricted, true
+				kind := "apiKey"
+				if restricted {
+					kind = "apiKeyRestricted"
+				}
+				legacy := keyAuditRecord("legacy", "99", "1a1", "2021-01-01T00:00:00Z")
+				legacy["targetType"], legacy["targetId"], legacy["eventType"] = kind, "99", "api.apiKey.update"
+				legacy["outcome"], legacy["httpStatus"] = "FAILED", 400
+				if nested {
+					fields := make(map[string]any)
+					for _, field := range []string{"keyId", "targetType", "targetId", "outcome", "httpStatus"} {
+						fields[field] = legacy[field]
+						delete(legacy, field)
+					}
+					legacy["data"] = map[string]any{"fields": fields, "secretValue": "nested-must-not-leak"}
+				}
+				denied := keyAuditRecord("denied", "99", "1p1", "2022-01-01T00:00:00Z")
+				denied["targetType"], denied["targetId"], denied["outcome"], denied["httpStatus"] = kind, "99", "DENIED", 403
+				missing := keyAuditRecord("missing-key", "", "1a1", "2023-01-01T00:00:00Z")
+				missing["resourceId"] = "1c99" // Resource IDs cannot substitute for missing Key attribution.
+				fixture.records = []map[string]any{
+					keyAuditRecord("modern", "1c99", "1a1", "2020-01-01T00:00:00Z"), legacy, denied,
+					keyAuditRecord("foreign-key", "98", "1a1", "2023-01-01T00:00:00Z"),
+					keyAuditRecord("foreign-type", "1a99", "1a1", "2023-01-01T00:00:00Z"),
+					keyAuditRecord("hidden-project", "99", "1p9", "2023-01-01T00:00:00Z"), missing,
+				}
+				response := performAuditRequest(t, server, keyAuditQueryPath+"?keyId=1c99&timeScope=all&limit=1&offset=1&order=asc")
+				var payload auditCollection
+				err := json.NewDecoder(response.Body).Decode(&payload)
+				response.Body.Close()
+				if response.StatusCode != http.StatusOK || err != nil || payload.Pagination["total"] != float64(3) || len(payload.Data) != 1 ||
+					auditString(payload.Data[0], "id") != "legacy" || auditString(payload.Data[0], "keyId") != "1c99" ||
+					auditString(payload.Data[0], "targetId") != "1c99" {
+					t.Fatalf("historical count/pagination/canonical metadata lost: status=%d err=%v payload=%#v", response.StatusCode, err, payload)
+				}
+				detail := performAuditRequest(t, server, keyAuditQueryPath+"/legacy?keyId=1c99")
+				var record map[string]any
+				err = json.NewDecoder(detail.Body).Decode(&record)
+				detail.Body.Close()
+				if detail.StatusCode != http.StatusOK || err != nil || auditString(record, "keyId") != "1c99" || auditString(record, "targetId") != "1c99" {
+					t.Fatalf("historical detail unavailable: status=%d err=%v record=%#v", detail.StatusCode, err, record)
+				}
+				serialized, _ := json.Marshal(record)
+				for _, secret := range []string{"must-not-leak", "Bearer-secret", "session-secret", "jwt-secret", "code-secret", "never-return-key-secret"} {
+					if strings.Contains(string(serialized), secret) {
+						t.Fatal("historical detail exposed a secret")
+					}
+				}
+				filtered := performAuditRequest(t, server, keyAuditQueryPath+"?keyId=1c99&timeScope=all&outcome=DENIED")
+				err = json.NewDecoder(filtered.Body).Decode(&payload)
+				filtered.Body.Close()
+				if filtered.StatusCode != http.StatusOK || err != nil || payload.Pagination["total"] != float64(1) || len(payload.Data) != 1 || auditString(payload.Data[0], "id") != "denied" {
+					t.Fatalf("historical denial filter lost: status=%d err=%v payload=%#v", filtered.StatusCode, err, payload)
+				}
+				for _, id := range []string{"foreign-key", "foreign-type", "hidden-project", "missing-key"} {
+					hidden := performAuditRequest(t, server, keyAuditQueryPath+"/"+id+"?keyId=1c99")
+					hidden.Body.Close()
+					if hidden.StatusCode != http.StatusNotFound {
+						t.Fatalf("historical alias admitted unrelated event %s: %d", id, hidden.StatusCode)
+					}
+				}
+			})
+		}
+	}
 }
 
 func TestKeyAuditFiltersBeforeCountAndPaginationAndAllTimeIncludesOldReads(t *testing.T) {
