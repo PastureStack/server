@@ -9,9 +9,9 @@ Rancher 1.6 ecosystem. It is not affiliated with Rancher Labs or SUSE.
 This fork of [`rancher/rancher`](https://github.com/rancher/rancher) preserves
 upstream history, authorship, licenses, and notices.
 
-## Current source
+## Current release
 
-Server `v1.6.519` is an unpublished candidate, packaging Web Console `1.6.181`
+Server `v1.6.519` packages Web Console `1.6.181`
 and Orchestration Engine `v0.183.335`. API Keys support full, custom and closed
 policies, optional expiry, and key-scoped durable audit records. Their permissions
 remain bounded by the owner's current role and environment access. Delegated
@@ -35,11 +35,11 @@ Audit export closes its own menu before locking the request, allowing consecutiv
 JSON, CSV and XLSX downloads without leaving a disabled menu open.
 Key scope choices use the viewer's authorized environment list. Environment,
 stack and resource selectors close before dependent loading or verification.
-See the [candidate release note](docs/releases/server-1.6.519.md) for exact
+See the [release note](docs/releases/server-1.6.519.md) for exact
 component identities and verification boundaries. A version or packaged feature
 does not establish that every resource/role/hardware combination has been tested.
 
-## API Keys in the source candidate
+## API Keys
 
 Choose allow-by-default with deny exceptions, or deny-by-default with allow
 exceptions, with optional expiry. Without exceptions these retain full or closed
@@ -58,14 +58,6 @@ keyboard highlighting; narrow layouts keep the matrix in its own scroll region.
 Errors use the existing API status/code and console error
 handling. See the [API Key guide](docs/api-keys.md) for policy and audit contracts.
 
-## Current release
-
-The currently downloadable [Server v1.6.518](https://github.com/PastureStack/server/releases/tag/v1.6.518)
-includes Web Console `1.6.180` and Orchestration Engine `v0.183.333`.
-The quick-start examples below use this published image until the candidate is
-verified and separately released. Its exact artifact identity and verification
-boundaries are recorded in the [published release note](docs/releases/server-1.6.518.md).
-
 ## Quick start
 
 Public GHCR downloads do not require a registry login. Use the published numeric
@@ -76,7 +68,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.518
+  ghcr.io/pasturestack/server:v1.6.519
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -84,7 +76,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.518
+    image: ghcr.io/pasturestack/server:v1.6.519
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -148,8 +140,7 @@ gates. `server/build-component-candidate.sh` requires actual component commits
 and SHA-256 values; it does not publish or deploy. Set
 `PASTURESTACK_COMPONENT_ARTIFACT_DIR` to an isolated directory with the five
 component assets for an unpublished candidate. Without it, the same hashes
-verify the versioned HTTPS release assets. The current published release remains
-`v1.6.518` until a candidate is verified and separately released.
+verify the versioned HTTPS release assets.
 
 ## Language and licensing
 
