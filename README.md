@@ -11,8 +11,8 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-Server `v1.6.519` packages Web Console `1.6.181`
-and Orchestration Engine `v0.183.335`. API Keys support full, custom and closed
+Server `v1.6.520` packages Web Console `1.6.181`
+and Orchestration Engine `v0.183.336`. API Keys support full, custom and closed
 policies, optional expiry, and key-scoped durable audit records. Their permissions
 remain bounded by the owner's current role and environment access. Delegated
 terminal/log access requires the verified Host API audit capability and the
@@ -35,7 +35,7 @@ Audit export closes its own menu before locking the request, allowing consecutiv
 JSON, CSV and XLSX downloads without leaving a disabled menu open.
 Key scope choices use the viewer's authorized environment list. Environment,
 stack and resource selectors close before dependent loading or verification.
-See the [release note](docs/releases/server-1.6.519.md) for exact
+See the [release note](docs/releases/server-1.6.520.md) for exact
 component identities and verification boundaries. A version or packaged feature
 does not establish that every resource/role/hardware combination has been tested.
 
@@ -49,7 +49,9 @@ is always the Key owner's current account/environment RBAC; a Key never grants
 an additional role. Existing legacy Keys are not automatically narrowed on upgrade.
 New Key secrets are shown once at creation and are not returned by later lists or
 details. Per-Key audit separates authorization, the HTTP response and any later
-job/stream completion. Environment-Key audit rechecks live Engine access in
+job/stream completion. A successful WebSocket upgrade is recorded as a successful
+HTTP `101` handshake, not as proof of the stream's later completion.
+Environment-Key audit rechecks live Engine access in
 Engine-verified project contexts; a caller-supplied project header is not a grant.
 Open a Key's audit from its action menu; the close control follows the audit
 filters, results and details, below the audit block.
@@ -68,7 +70,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.519
+  ghcr.io/pasturestack/server:v1.6.520
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -76,7 +78,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.519
+    image: ghcr.io/pasturestack/server:v1.6.520
     restart: unless-stopped
     ports:
       - "8080:8080"
