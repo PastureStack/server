@@ -12,11 +12,13 @@ upstream history, authorship, licenses, and notices.
 ## Current source
 
 Server `v1.6.519` is an unpublished candidate, packaging Web Console `1.6.181`
-and Orchestration Engine `v0.183.334`. API Keys support full, custom and closed
+and Orchestration Engine `v0.183.335`. API Keys support full, custom and closed
 policies, optional expiry, and key-scoped durable audit records. Their permissions
 remain bounded by the owner's current role and environment access. Delegated
 terminal/log access requires the verified Host API audit capability and the
 compatible Linux Node Agent lifecycle.
+Custom Key Project targets share the normal API's live membership checks;
+membership never bypasses Key rules or unrelated resource authorization.
 
 The console supports OIDC, TOTP and passkeys, role-aware resource operations,
 container resource/hardware settings, and movable terminal/log windows.

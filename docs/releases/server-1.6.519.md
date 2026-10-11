@@ -3,6 +3,12 @@
 Status: unpublished candidate. No registry digest or new artifact-scan result
 is claimed by this source document.
 
+Engine 0.183.335 adds a shared live Project-membership authority check before
+custom Key evaluation. It corrects a legitimate member's Project being rejected
+before the normal resource manager could authorize it. Key deny rules, expiry,
+non-Project resource permissions and background authorization remain independent.
+The previous 0.183.334 component is superseded for this unpublished candidate.
+
 ## Scope
 
 Restricted and expiring API Keys use the same Engine authorization boundary
