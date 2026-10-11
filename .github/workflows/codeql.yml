@@ -1,0 +1,157 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '17 3 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: actions
+            build-mode: none
+          - language: go
+            build-mode: manual
+          - language: java-kotlin
+            build-mode: manual
+          - language: python
+            build-mode: none
+
+    steps:
+      - name: Check out analysis source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Record source identity
+        shell: bash
+        env:
+          EVENT_SHA: ${{ github.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          EVENT_REF: ${{ github.ref }}
+        run: |
+          set -Eeuo pipefail
+          printf 'event_sha=%s\npr_head_sha=%s\nevent_ref=%s\n' \
+            "$EVENT_SHA" "$PR_HEAD_SHA" "$EVENT_REF"
+          printf 'checked_out_sha=%s\nchecked_out_tree=%s\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"
+          test "$(git rev-parse HEAD)" = "$EVENT_SHA"
+
+      - name: Set up the production Go compiler
+        if: matrix.language == 'go'
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          # server/Dockerfile.web-compose-release ARTIFACT_HELPER_IMAGE.
+          go-version: '1.27.2'
+          check-latest: false
+          cache: false
+
+      - name: Set up the production Java compiler
+        if: matrix.language == 'java-kotlin'
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          # server/Dockerfile TEMURIN_JDK25_VERSION.
+          distribution: temurin
+          java-version: '25.0.4+7.0.LTS'
+          check-latest: false
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          config: |
+            name: PastureStack complete extended analysis
+            queries:
+              - uses: security-extended
+            threat-models: local
+
+      - name: Build the Go console broker for analysis
+        if: matrix.language == 'go'
+        working-directory: server/console-broker
+        shell: bash
+        env:
+          CGO_ENABLED: '0'
+          GOOS: linux
+          GOARCH: amd64
+          GOTOOLCHAIN: local
+        run: |
+          set -Eeuo pipefail
+          test "$(go env GOVERSION)" = 'go1.27.2'
+          mkdir -p "$RUNNER_TEMP/codeql-go-build"
+          go build \
+            -mod=readonly \
+            -trimpath \
+            -buildvcs=false \
+            -ldflags='-s -w -buildid=' \
+            -o "$RUNNER_TEMP/codeql-go-build/pasturestack-console-broker" .
+
+      - name: Compile Java sources with the production Engine libraries
+        if: matrix.language == 'java-kotlin'
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          dockerfile=server/Dockerfile.web-compose-release
+          read_arg() {
+            local arg_name="$1"
+            local -a values
+            mapfile -t values < <(sed -n "s/^ARG ${arg_name}=//p" "$dockerfile" | sort -u)
+            test "${#values[@]}" -eq 1 || return 1
+            test -n "${values[0]}" || return 1
+            printf '%s' "${values[0]}"
+          }
+          release_base="$(read_arg ORCHESTRATION_ENGINE_RELEASE_BASE_URL)"
+          release_tag="$(read_arg ORCHESTRATION_ENGINE_RELEASE_TAG)"
+          artifact="$(read_arg ORCHESTRATION_ENGINE_ARTIFACT)"
+          expected_sha256="$(read_arg ORCHESTRATION_ENGINE_ARTIFACT_SHA256)"
+          test "$release_base" = 'https://github.com/PastureStack/orchestration-engine/releases/download'
+          [[ "$release_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          test "$artifact" = cattle.jar
+          [[ "$expected_sha256" =~ ^[0-9a-f]{64}$ ]]
+
+          build_root="$RUNNER_TEMP/codeql-java-build"
+          mkdir -p "$build_root/lib" "$build_root/classes"
+          archive="$build_root/cattle.jar"
+          curl --fail --silent --show-error --location \
+            --proto '=https' --proto-redir '=https' \
+            --retry 3 --connect-timeout 15 --max-time 600 \
+            --output "$archive" "$release_base/$release_tag/$artifact"
+          printf '%s  %s\n' "$expected_sha256" "$archive" | sha256sum --check --strict
+          unzip -j -q "$archive" 'WEB-INF/lib/*.jar' -d "$build_root/lib"
+          compgen -G "$build_root/lib/*.jar" > /dev/null
+
+          # Compile every tracked Java source; the reviewed tree contains one
+          # PatchV1GlobalSubscribe.java and no Kotlin sources or Maven project.
+          # Failing on future Kotlin additions avoids silently omitting them.
+          mapfile -d '' -t kotlin_sources < <(git ls-files -z '*.kt' '*.kts')
+          test "${#kotlin_sources[@]}" -eq 0
+          mapfile -d '' -t java_sources < <(git ls-files -z '*.java')
+          test "${#java_sources[@]}" -gt 0
+          javac -cp "$build_root/lib/*" -d "$build_root/classes" "${java_sources[@]}"
+
+      - name: Analyze and upload CodeQL results
+        uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          category: '/language:${{ matrix.language }}'
+          wait-for-processing: true
