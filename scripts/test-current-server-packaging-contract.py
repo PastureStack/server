@@ -508,6 +508,22 @@ def previous_gate(gate=GATE):
 
 
 class Tests(unittest.TestCase):
+    def test_official_dbi_security_update_is_isolated_and_hash_pinned(self):
+        recipe, builder = FILES[DOCKER], FILES[BUILD]
+        digest = '3040f61cc06ebf363e5895db4cc2c7a2db8951296d39d4ef5fa0fc3fd364654e'
+        url = 'https://security.ubuntu.com/ubuntu/pool/main/libd/libdbi-perl/libdbi-perl_1.647-1ubuntu0.26.04.4_amd64.deb'
+        self.assertIn('ADD --checksum=sha256:' + digest, recipe)
+        self.assertIn(url, recipe)
+        self.assertEqual(recipe.count('ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4'), 2)
+        self.assertNotIn('apt-get download "libdbi-perl=', recipe)
+        self.assertIn('cp /tmp/libdbi-perl.deb "/out/packages/libdbi-perl_${LIBDBI_PERL_PACKAGE_VERSION}_amd64.deb"', recipe)
+        self.assertIn('PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4', builder)
+        self.assertIn('ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20261002T000000Z', recipe)
+        self.assertNotIn('1.647-1ubuntu0.26.04.3', recipe + builder + GATE)
+        for marker in ('Package)" = libdbi-perl', 'Architecture)" = amd64', 'Version)" = "${LIBDBI_PERL_PACKAGE_VERSION}"',
+                       'sha256sum -c /usr/share/pasturestack/security/libdbi-perl-runtime.sha256', 'Unexpected DBI runtime version'):
+            self.assertIn(marker, recipe)
+
     def test_runtime_aggregate_keeps_exact_ten_binaries_six_legal_dirs_and_two_copies(self):
         verify_runtime_layout(FILES)
         self.assertEqual(len(RUNTIME_BINARIES), 10)

@@ -1754,8 +1754,10 @@ for release_curl_security_marker in \
         SERVER_INCREMENTAL_CURL_SECURITY_REFRESH_MISSING
 done
 for release_libdbi_security_marker in \
-    'ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.3' \
-    'apt-get download "libdbi-perl=${LIBDBI_PERL_PACKAGE_VERSION}"' \
+    'ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4' \
+    'ADD --checksum=sha256:3040f61cc06ebf363e5895db4cc2c7a2db8951296d39d4ef5fa0fc3fd364654e' \
+    'https://security.ubuntu.com/ubuntu/pool/main/libd/libdbi-perl/libdbi-perl_1.647-1ubuntu0.26.04.4_amd64.deb' \
+    'cp /tmp/libdbi-perl.deb "/out/packages/libdbi-perl_${LIBDBI_PERL_PACKAGE_VERSION}_amd64.deb"' \
     'dpkg-deb --extract "${package_file}" /tmp/libdbi-perl-runtime' \
     'usr/lib/x86_64-linux-gnu/perl5/5.40/DBI.pm' \
     'usr/lib/x86_64-linux-gnu/perl5/5.40/auto/DBI/DBI.so' \
@@ -1766,7 +1768,7 @@ for release_libdbi_security_marker in \
         SERVER_LIBDBI_PERL_OFFICIAL_SECURITY_REFRESH_MISSING
 done
 for runtime_libdbi_security_marker in \
-    'PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.3' \
+    'PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4' \
     'sha256sum -c /usr/share/pasturestack/security/libdbi-perl-runtime.sha256' \
     'test "$(wc -l < /usr/share/pasturestack/security/libdbi-perl-runtime.sha256)" -eq 2' \
     'Unexpected DBI runtime version'; do
