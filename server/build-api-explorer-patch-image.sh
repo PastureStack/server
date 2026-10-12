@@ -360,7 +360,7 @@ for marker in \
     PASTURESTACK_GLIBC_CVE_2026_18374_FIX=not-in-execute-path \
     PASTURESTACK_GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4 \
     PASTURESTACK_PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3 \
-    PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.3 \
+    PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4 \
     PASTURESTACK_FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2 \
     PASTURESTACK_LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1 \
     PASTURESTACK_COREUTILS_PROVIDER=gnu \
@@ -892,7 +892,7 @@ EOF
     cd /
     test "$(wc -l < /usr/share/pasturestack/security/openssl-runtime.sha256)" -eq 7
     sha256sum -c /usr/share/pasturestack/security/openssl-runtime.sha256
-    test "$(dpkg-query -W -f='"'"'${Version}'"'"' libdbi-perl)" = 1.647-1ubuntu0.26.04.3
+    test "$(dpkg-query -W -f='"'"'${Version}'"'"' libdbi-perl)" = 1.647-1ubuntu0.26.04.4
     test "$(wc -l < /usr/share/pasturestack/security/libdbi-perl-runtime.sha256)" -eq 2
     sha256sum -c /usr/share/pasturestack/security/libdbi-perl-runtime.sha256
     test "$(dpkg-query -W -f='"'"'${Version}'"'"' libfreetype6)" = 2.14.2+dfsg-1ubuntu0.2

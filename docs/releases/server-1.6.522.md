@@ -49,6 +49,14 @@ normal publication CI output and is still pending.
 
 ## Publication prerequisites
 
+The final image also uses Ubuntu's official `libdbi-perl`
+`1.647-1ubuntu0.26.04.4`, addressing
+[USN-8912-1](https://ubuntu.com/security/notices/USN-8912-1).
+The original `.deb` is SHA256-pinned to
+`3040f61cc06ebf363e5895db4cc2c7a2db8951296d39d4ef5fa0fc3fd364654e`;
+package identity, runtime bytes and loading are checked. Other dated Ubuntu
+inputs and the strict vulnerability/VEX/vendor-pending policy are unchanged.
+
 The formal recipe, builder defaults and coordinate assertions must use the
 released component identities above and the verified Engine schema hashes.
 An uncommitted local build checksum or integration image is not an official
