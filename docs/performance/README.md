@@ -8,9 +8,8 @@ The following example is appropriate as a starting point for a dedicated
 16-vCPU host with about 32 GiB of RAM. It is not a universal performance
 profile; measure the real workload before increasing it further.
 
-The example matches the prepared `v1.6.522` source candidate: run it only after
-its official release and image have been published and read back. This candidate
-is not yet available from GHCR; see the [candidate release note](../releases/server-1.6.522.md).
+The example uses the published `v1.6.522` image. See the
+[release note](../releases/server-1.6.522.md) for exact identities and acceptance limits.
 
 ```yaml
 services:

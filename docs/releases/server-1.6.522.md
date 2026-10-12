@@ -1,8 +1,15 @@
-# Server v1.6.522 candidate
+# Server v1.6.522
 
-Prepared source only; no Server image or release has been published.
-The candidate uses released Engine `v0.183.340` and Web Console `1.6.183`.
-The published Server remains `v1.6.521`.
+The [official release](https://github.com/PastureStack/server/releases/tag/v1.6.522)
+packages Engine `v0.183.340` and Web Console `1.6.183` from Server source
+`cb1b71035ad6389760f76b6257699037a62a481a`.
+Successful [publication run 38251097504](https://github.com/PastureStack/server/actions/runs/38251097504)
+produced the linux/amd64 image with one runtime layer. Its immutable registry
+manifest is `ghcr.io/pasturestack/server:v1.6.522@sha256:9569cdcc49156ee0bcdefd493d0067b7c6c1c32a8d39aed55710e83c5661f149`.
+The OCI configuration is a different identity:
+`sha256:6f1e91d67014d50ab7d3a64c0e9b272a0ffe6967a01b2a0befa958652929ebdd`.
+The version tag, manifest, configuration, source, 24 release asset checksums and
+publication receipt have been independently read back.
 
 ## Minimal onboarding changes
 
@@ -45,7 +52,7 @@ Web Console `1.6.183` uses normally merged source
 These components use clean merged source and the original component packagers;
 the official versioned release assets and checksums were independently read back.
 They are not CI-produced component artifacts. The Server image is a separate
-normal publication CI output and is still pending.
+normal publication CI output and has passed its existing gates.
 
 ## Publication prerequisites
 
@@ -62,12 +69,15 @@ released component identities above and the verified Engine schema hashes.
 An uncommitted local build checksum or integration image is not an official
 release identity.
 
-The normal Server publication workflow still requires a clean exact source,
+The normal Server publication workflow passed with a clean exact source,
 source gates, formal image build and flatten comparison, isolated startup and
 restart, proxy/cache contracts, native MFA/API smoke, final merged-rootfs
 security and SBOM gates, provenance, immutable numeric publication, and release
 asset readback. Existing vulnerability decisions and review deadlines remain;
-the new version is not permission to widen or reset them.
+the new version is not permission to widen or reset them. Eight vendor-pending
+Medium findings covering four CVEs remain, with review due 2026-10-20.
+Untracked, Critical/High, fixed-available and secret findings are zero; this is
+not a claim that the image has no vulnerabilities.
 
 ## Native acceptance boundary
 
@@ -78,8 +88,8 @@ The 34 focused Engine340 creation/authority tests passed, and their compiled
 classes match the packaged clean-main artifact. The unchanged registration
 tests are carried by identical source and compiled classes, not rerun.
 
-The final Server's seven-check native registration gate remains pending. It must
-verify native token creation and readiness, generated script retrieval,
+The final Server's seven-check native registration gate passed, verifying
+native token creation and readiness, generated script retrieval,
 `GET /v1/register`, the restricted registration schema, ordinary API Key Basic
 authentication and invalid-token rejection even with a valid cookie.
 Successful HTTP entry alone does not prove an agent connection or active node.
@@ -87,7 +97,7 @@ The real agent lifecycle and active-node acceptance also remain pending.
 
 ## Install, upgrade and rollback
 
-After publication and readback, use the numeric image tag
+Use the published numeric image tag
 `ghcr.io/pasturestack/server:v1.6.522` shown in the README. Keep all three existing
 volumes, environment variables, networking, restart policy and security options.
 The intended changes do not add a database migration or authentication setting.
