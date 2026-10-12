@@ -13,8 +13,8 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-Server [`v1.6.522`](https://github.com/PastureStack/server/releases/tag/v1.6.522) packages
-released Web Console `1.6.183` and Orchestration Engine `v0.183.340`. Registration
+Server [`v1.6.523`](https://github.com/PastureStack/server/releases/tag/v1.6.523) packages
+released Web Console `1.6.183` and Orchestration Engine `v0.183.341`. Registration
 tokens use their dedicated Basic authentication route. Add-host access follows
 the form's actual operation: Custom requires RegistrationToken POST; built-in
 and Other drivers require Host POST. Cancel / Go Back retains the return route
@@ -22,10 +22,18 @@ across driver changes and API-host settings refresh, with Hosts as the fallback
 for a missing or self-referencing target.
 Native project creation with a legacy or full API Key also retains the creator's
 initial membership and default networks, without granting unrelated resources.
-The official image, component assets and release checksums have been read back.
+HA database dumps use the configured connection and a private temporary spool;
+the response ZIP is committed only after successful, nonempty SQL output.
+Failure and timeout clean up owned files without returning CLI stderr or secrets.
+Existing database-export authorization is unchanged.
+The immutable release, registry identities and component inputs were verified.
 Startup/restart, native MFA and the seven-check registration entry gate passed.
+Native HA export checks passed on both API roots: full access returned complete
+SQL ZIPs; readonly and read-plus-export Keys were denied, with matching audit
+events, unchanged protected resource snapshots and no export jobs.
+The complete role matrix and deployment acceptance remain separate gates.
 An HTTP entry check is not active-node lifecycle acceptance. See the
-[release note](docs/releases/server-1.6.522.md) for exact identities and scope.
+[release note](docs/releases/server-1.6.523.md) for exact identities and scope.
 
 The console supports OIDC, TOTP and passkeys, role-aware resource operations,
 container resource/hardware settings, and movable terminal/log windows.
@@ -67,7 +75,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.522
+  ghcr.io/pasturestack/server:v1.6.523
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -75,7 +83,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.522
+    image: ghcr.io/pasturestack/server:v1.6.523
     restart: unless-stopped
     ports:
       - "8080:8080"
