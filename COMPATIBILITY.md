@@ -1,9 +1,9 @@
 # Compatibility Contract
 
-## Server v1.6.522 published
+## Server v1.6.523 published
 
-The minimal onboarding release uses released Engine `v0.183.340` and Web Console
-`1.6.183`. It restores dedicated registration-token Basic authentication.
+The minimal HA backup release uses released Engine `v0.183.341` and Web Console
+`1.6.183`. Dedicated registration-token Basic authentication is preserved.
 Custom add-host requires RegistrationToken POST; built-in and Other drivers
 require Host POST, using the current project's loaded native schemas.
 Cancel / Go Back preserves the external return target across driver changes and
@@ -12,17 +12,27 @@ Native project creation with legacy/full API Keys now binds initial work to the
 actual manager-created project and rechecks ownership after that phase. Existing
 roles and non-creation authorization, other components and the broker are unchanged.
 
+HA dumps use the configured database connection and private temporary output.
+Only successful, nonempty SQL output is committed to the ZIP response; failure
+and timeout clean up owned files without returning CLI stderr or secrets.
+Existing export authorization is unchanged.
+
 Clean merged component source, official assets and the final image have been
-read back. Publication run `38251097504` passed startup/restart, native MFA,
+verified. Publication run `38287883898` passed startup/restart, native MFA,
 the seven-check registration entry gate, security, SBOM and provenance gates.
 The image is linux/amd64 with one runtime layer, built from
-`cb1b71035ad6389760f76b6257699037a62a481a`. Its registry manifest is
-`ghcr.io/pasturestack/server:v1.6.522@sha256:9569cdcc49156ee0bcdefd493d0067b7c6c1c32a8d39aed55710e83c5661f149`;
+`d20b39b896631b7e7e384ed9c60dc29080679f67`. Its registry manifest is
+`ghcr.io/pasturestack/server:v1.6.523@sha256:ba9eddbdaa2d7b10c402f59f767de9b5728e48e69d07120c12d9e630c2d2d57a`;
 the separate OCI configuration is
-`sha256:6f1e91d67014d50ab7d3a64c0e9b272a0ffe6967a01b2a0befa958652929ebdd`.
+`sha256:02a25d1bd58e1ab4e7b8f7986bd0b7eb61e2c5c08a1034ebbae9209f5d4bfdec`.
+Six native HA cases passed: both API roots returned complete SQL ZIPs for full
+access and denied readonly/read-plus-export Keys. Twelve matching audit events,
+unchanged protected resource snapshots, no export jobs and exact temporary
+resource cleanup were verified. Full role matrix and deployment acceptance
+remain separate gates.
 Entry-only checks do not establish an active node or a full permission matrix.
 Integration candidates are not this published release. See the
-[release note](docs/releases/server-1.6.522.md) for component identities and scope.
+[release note](docs/releases/server-1.6.523.md) for component identities and scope.
 
 ## Server v1.6.521 published
 
