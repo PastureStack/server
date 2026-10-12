@@ -1,5 +1,20 @@
 # Compatibility Contract
 
+## Server v1.6.524 published
+
+The internal-lookup repair packages released Engine `v0.183.342` and unchanged
+Web Console `1.6.183`. Internal reads necessary for an already-authorized
+mutation do not grant external read/list or expand the owner's live RBAC.
+Other components, role schemas, onboarding and HA behavior are unchanged.
+The immutable published source is `cc52ce16363333ef77345ff768acddcdf839dde7`; the linux/amd64 image has one
+runtime layer. Its registry manifest is
+`ghcr.io/pasturestack/server:v1.6.524@sha256:0b4ae5f87ef54f25081d728e2ae5eda51ea093ab52768bb7451229ab512092ba`;
+the distinct OCI configuration digest is `sha256:65061d2f1d4baf2b7e1fd75fe96cfcfaa4a0a22e251ac2ea7fd9ec4c74d61cd6`.
+The final image passed 96 native update/delete and read-isolation cases without
+adding read grants. Startup and restart preserved the existing runtime settings
+and three data volumes. The complete role/resource matrix remains separate.
+See the [release note](docs/releases/server-1.6.524.md).
+
 ## Server v1.6.523 published
 
 The minimal HA backup release uses released Engine `v0.183.341` and Web Console
