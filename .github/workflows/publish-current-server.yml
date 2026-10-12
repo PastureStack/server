@@ -336,8 +336,10 @@ jobs:
           # Exercise the published API and real auth overlay on this fresh,
           # disposable database before the image is allowed to be released.
           python3 source/scripts/test-mfa-policy-api.py \
-            --port 18082 --disposable |
+            --port 18082 --disposable --registration-basic |
             tee "$evidence/mfa-policy-api-smoke.txt"
+          grep -E '^REGISTRATION_BASIC_API_OK checks=7 ordinary_user=true entry_only=true node_active_verified=false script_sha256=[0-9a-f]{64}$' \
+            "$evidence/mfa-policy-api-smoke.txt" >"$evidence/registration-basic-api-smoke.txt"
 
           docker stop "$CANDIDATE_NAME" >/dev/null
           mkdir -p "$rootfs"
@@ -585,6 +587,7 @@ jobs:
               host-api-package-check.txt \
               image-inspect.txt \
               mfa-policy-api-smoke.txt \
+              registration-basic-api-smoke.txt \
               published.txt \
               push.log \
               release-notes.md \
@@ -615,6 +618,7 @@ jobs:
             "$evidence/host-api-package-check.txt" \
             "$evidence/image-inspect.txt" \
             "$evidence/mfa-policy-api-smoke.txt" \
+            "$evidence/registration-basic-api-smoke.txt" \
             "$evidence/published.txt" \
             "$evidence/push.log" \
             "$evidence/release-notes.md" \

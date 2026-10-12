@@ -9,72 +9,68 @@ Rancher 1.6 ecosystem. It is not affiliated with Rancher Labs or SUSE.
 This fork of [`rancher/rancher`](https://github.com/rancher/rancher) preserves
 upstream history, authorship, licenses, and notices.
 
-## Current release
+<a id="current-release"></a>
 
-Server `v1.6.521` packages Web Console `1.6.181`
-and Orchestration Engine `v0.183.337`. API Keys support full, custom and closed
-policies, optional expiry, and key-scoped durable audit records. Their permissions
-remain bounded by the owner's current role and environment access. Delegated
-terminal/log access requires the verified Host API audit capability and the
-compatible Linux Node Agent lifecycle.
-Custom Key Project targets share the normal API's live membership checks;
-membership never bypasses Key rules or unrelated resource authorization.
+## Current source candidate
+
+Server `v1.6.522` is a prepared source candidate, not a published image. It targets
+released Web Console `1.6.183` and Orchestration Engine `v0.183.339`. Registration
+tokens use their dedicated Basic authentication route. Add-host access follows
+the form's actual operation: Custom requires RegistrationToken POST; built-in
+and Other drivers require Host POST. Cancel / Go Back retains the return route
+across driver changes and API-host settings refresh, with Hosts as the fallback
+for a missing or self-referencing target.
+Component validation and official asset readback have passed; final Server image
+publication, its native registration gate and active-node acceptance remain pending.
+The published Server remains
+[`v1.6.521`](https://github.com/PastureStack/server/releases/tag/v1.6.521); its
+registration-token Basic route has a known authentication regression. Its
+[release note](docs/releases/server-1.6.521.md) retains the published identity. See the
+[candidate release note](docs/releases/server-1.6.522.md) for the release boundary.
 
 The console supports OIDC, TOTP and passkeys, role-aware resource operations,
 container resource/hardware settings, and movable terminal/log windows.
 Hardware options require compatible node software and actual host capabilities;
-GPU device access is not exclusive GPU allocation. Audit queries and exports
-cover retained records with environment-aware access and bounded pagination.
-Explicit date bounds remain attached to every audit page, so an older interval
-does not scan newer records first. Oversized queries retain the console filters
-and offer explicit narrowing or retry. Export failures are translated on the
-page instead of downloaded as error files. An export failure keeps successful
-query results intact; scan and export limits are retained.
-The Key modal owns initial focus and yields to keyboard or pointer interaction.
-Audit export closes its own menu before locking the request, allowing consecutive
-JSON, CSV and XLSX downloads without leaving a disabled menu open.
-Key scope choices use the viewer's authorized environment list. Environment,
-stack and resource selectors close before dependent loading or verification.
-Failed Key edits use a consistent public Key ID in audit records. Per-Key audit
-also reads historical numeric-ID records within the same ownership and environment
-authorization checks; existing records are not rewritten.
-See the [published v1.6.521 release](https://github.com/PastureStack/server/releases/tag/v1.6.521)
-and [release note](docs/releases/server-1.6.521.md) for exact
-component identities and verification boundaries. A version or packaged feature
-does not establish that every resource/role/hardware combination has been tested.
+GPU device access is not exclusive GPU allocation. Audit queries and JSON, CSV
+and XLSX exports preserve environment authorization, explicit date bounds and
+bounded pagination. Query/export errors retain filters and successful query
+results. See the [Host compatibility guide](docs/hosts/README.md) before enrolling
+a host and the [API Key guide](docs/api-keys.md) for policy and audit behavior.
+A packaged feature does not establish that every resource, role or hardware
+combination has been tested.
 
 ## API Keys
 
 Choose allow-by-default with deny exceptions, or deny-by-default with allow
 exceptions, with optional expiry. Without exceptions these retain full or closed
 access. Search for resource names; the editor and reviewed changes include a
-resource-by-operation policy matrix, not an extra grant of authority. The maximum access
-is always the Key owner's current account/environment RBAC; a Key never grants
-an additional role. Existing legacy Keys are not automatically narrowed on upgrade.
+resource-by-operation policy matrix, not an extra grant of authority. The maximum
+access is the Key owner's current account/environment RBAC, including live
+membership checks; a Key never grants an additional role. Existing legacy Keys
+are not automatically narrowed on upgrade.
 New Key secrets are shown once at creation and are not returned by later lists or
 details. Per-Key audit separates authorization, the HTTP response and any later
 job/stream completion. A successful WebSocket upgrade is recorded as a successful
 HTTP `101` handshake, not as proof of the stream's later completion.
 Environment-Key audit rechecks live Engine access in
 Engine-verified project contexts; a caller-supplied project header is not a grant.
-Open a Key's audit from its action menu; the close control follows the audit
-filters, results and details, below the audit block.
-Scope options and unselected hints use readable light/dark theme text, including
-keyboard highlighting; narrow layouts keep the matrix in its own scroll region.
-Errors use the existing API status/code and console error
-handling. See the [API Key guide](docs/api-keys.md) for policy and audit contracts.
+Delegated terminal/log access requires the verified Host API audit capability
+and a compatible Linux Node Agent lifecycle. Open a Key's audit from its action
+menu. See the [API Key guide](docs/api-keys.md) for policy and audit contracts.
 
 ## Quick start
 
-Public GHCR downloads do not require a registry login. Use the published numeric
-version tag and keep all three named volumes:
+Public GHCR downloads do not require a registry login. The examples below target
+the prepared numeric `v1.6.522` tag: run them only after its official release and
+image have been published and read back. This candidate is not yet available
+from GHCR. Keep all three named volumes:
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.521
+  ghcr.io/pasturestack/server:v1.6.522
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -82,7 +78,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.521
+    image: ghcr.io/pasturestack/server:v1.6.522
     restart: unless-stopped
     ports:
       - "8080:8080"

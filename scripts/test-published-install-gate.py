@@ -20,6 +20,25 @@ FILES = {
     'COMPATIBILITY.md': 'Server v1.6.499 preparing; no published digest.\nPublished Server v1.6.498\n' + PUBLISHED_IMAGE,
     'docs/releases/server-1.6.498.md': '# Server v1.6.498\n\nOfficially published: ' + PUBLISHED_IMAGE,
 }
+CANDIDATE_IMAGE = 'ghcr.io/pasturestack/server:v1.6.522'
+CANDIDATE_FILES = dict(FILES)
+intro, quick = FILES['README.md'].split('## Quick start', 1)
+CANDIDATE_FILES['README.md'] = (
+    '<a id="current-release"></a>\n\n' +
+    intro.replace('## Current release', '## Current source candidate') +
+    'Server `v1.6.522` is a prepared source candidate, not a published image.\n'
+    '[candidate note](docs/releases/server-1.6.522.md)\n\n## Quick start\n\n'
+    'run them only after its official release\nThis candidate is not yet available\n' +
+    quick.replace(INSTALL_IMAGE, CANDIDATE_IMAGE))
+CANDIDATE_FILES[PERFORMANCE] = (
+    'run it only after its official release and image have been published and read back.\n'
+    'is not yet available from GHCR\n[candidate note](../releases/server-1.6.522.md)\n' +
+    FILES[PERFORMANCE].replace(INSTALL_IMAGE, CANDIDATE_IMAGE))
+CANDIDATE_FILES['COMPATIBILITY.md'] = (
+    '## Server v1.6.522 prepared, not published\n\n' + FILES['COMPATIBILITY.md'])
+CANDIDATE_FILES['docs/releases/server-1.6.522.md'] = (
+    '# Server v1.6.522 candidate\n\n'
+    'Prepared source only; no Server image or release has been published.\n')
 
 
 def verify(files):
@@ -35,11 +54,51 @@ class Tests(unittest.TestCase):
         tags = set(re.findall(r'https://github\.com/PastureStack/server/releases/tag/(v[0-9]+\.[0-9]+\.[0-9]+)', readme))
         files = {'README.md': readme, 'COMPATIBILITY.md': (REPO / 'COMPATIBILITY.md').read_text(encoding='utf-8'),
                  PERFORMANCE: (REPO / PERFORMANCE).read_text(encoding='utf-8')}
-        for tag in tags:
-            notes = REPO / ('docs/releases/server-' + tag[1:] + '.md')
+        note_paths = {'docs/releases/server-' + tag[1:] + '.md' for tag in tags}
+        note_paths.update(re.findall(r'\((docs/releases/server-[0-9.]+\.md)\)', readme))
+        for name in note_paths:
+            notes = REPO / name
             if notes.is_file():
-                files['docs/releases/server-' + tag[1:] + '.md'] = notes.read_text(encoding='utf-8')
+                files[name] = notes.read_text(encoding='utf-8')
         verify(files)
+
+    def test_explicit_522_candidate_keeps_publication_evidence_and_numeric_examples(self):
+        verify(CANDIDATE_FILES)
+        files = dict(CANDIDATE_FILES)
+        files['COMPATIBILITY.md'] = files['COMPATIBILITY.md'].replace(PUBLISHED_IMAGE, '')
+        with self.assertRaisesRegex(SystemExit, 'IDENTITY_MISSING'):
+            verify(files)
+
+    def test_candidate_cannot_hide_warning_mismatch_or_fabricate_publication(self):
+        for name, old, new, error in (
+                ('README.md', '<a id="current-release"></a>', '', 'DISCLOSURE_MISSING'),
+                ('README.md', 'run them only after its official release', '', 'DISCLOSURE_MISSING'),
+                (PERFORMANCE, 'is not yet available from GHCR', '', 'DISCLOSURE_MISSING'),
+                (PERFORMANCE, CANDIDATE_IMAGE, INSTALL_IMAGE, 'PERFORMANCE_MISMATCH'),
+                ('docs/releases/server-1.6.522.md', '# Server v1.6.522 candidate', '# Server v1.6.522', 'NOTES_MISMATCH'),
+                ('README.md', 'Server `v1.6.522` is a prepared source candidate, not a published image.',
+                 'Server `v1.6.522` is a prepared source candidate, not a published image.\n' +
+                 CANDIDATE_IMAGE + '@sha256:' + 'a' * 64, 'PUBLICATION_MISMATCH'),
+                ('COMPATIBILITY.md', '## Server v1.6.522 prepared, not published',
+                 '## Server v1.6.522 published\n' + CANDIDATE_IMAGE + '@sha256:' + 'a' * 64,
+                 'PUBLICATION_MISMATCH')):
+            with self.subTest(name=name, old=old):
+                files = dict(CANDIDATE_FILES)
+                files[name] = files[name].replace(old, new)
+                with self.assertRaisesRegex(SystemExit, error):
+                    verify(files)
+
+    def test_actual_522_publication_needs_correct_docs_not_a_gate_code_change(self):
+        files = dict(FILES)
+        files['README.md'] = files['README.md'].replace('v1.6.498', 'v1.6.522').replace('server-1.6.498.md', 'server-1.6.522.md')
+        files[PERFORMANCE] = files[PERFORMANCE].replace('v1.6.498', 'v1.6.522')
+        image = CANDIDATE_IMAGE + '@sha256:' + 'a' * 64
+        files['COMPATIBILITY.md'] += '\n' + image
+        files['docs/releases/server-1.6.522.md'] = '# Server v1.6.522\n\nOfficially published: ' + image
+        verify(files)
+        files['docs/releases/server-1.6.522.md'] = CANDIDATE_FILES['docs/releases/server-1.6.522.md']
+        with self.assertRaisesRegex(SystemExit, 'QUICK_START_MISMATCH'):
+            verify(files)
 
     def test_current_release_and_quick_start_need_no_readme_history(self):
         self.assertNotRegex(FILES['README.md'], r'(?m)^## v[0-9]')

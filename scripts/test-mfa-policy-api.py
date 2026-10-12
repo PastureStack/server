@@ -10,7 +10,9 @@ import base64
 import hashlib
 import hmac
 import http.client
+import importlib.util
 import json
+from pathlib import Path
 import secrets
 import struct
 import time
@@ -21,6 +23,8 @@ def main():
     parser.add_argument('--port', required=True, type=int)
     parser.add_argument('--disposable', action='store_true', required=True)
     parser.add_argument('--api-version', choices=('v1', 'v2-beta'), default='v2-beta')
+    parser.add_argument('--registration-basic', action='store_true',
+                        help='Run native registration entry checks using this same fresh administrator session.')
     args = parser.parse_args()
     assert 1 <= args.port <= 65535
     # Fixed loopback authority: callers cannot supply a remote URL, and the
@@ -93,6 +97,16 @@ def main():
     local['enabled'] = True
     call('POST', '/v1/localauthconfigs', local)
     check('authenticated-administrator', call('GET', api + '/accounts').get('type') == 'collection')
+
+    if args.registration_basic:
+        # Share only RAM session material; do not enable local auth a second time
+        # or create another bootstrap administrator. Run before MFA enrollment.
+        spec = importlib.util.spec_from_file_location('registration_basic_smoke',
+            Path(__file__).with_name('test-registration-basic-api.py'))
+        registration = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(registration)
+        registration.run(port=args.port, administrator_jwt=token,
+                         administrator_account_id=login['accountId'], disposable=args.disposable)
 
     # The token resource intentionally has no public schema entry.  Its
     # clientSessionId contract is therefore verified below through observable
