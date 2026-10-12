@@ -1,7 +1,7 @@
 # API Keys
 
-This guide describes published Server `v1.6.521`, with Engine `0.183.337`
-and Web Console `1.6.181`. Publication does not mean that every role/resource
+This guide describes published Server `v1.6.523`, with Engine `0.183.341`
+and Web Console `1.6.183`. Publication does not mean that every role/resource
 combination has passed acceptance. Use the published numeric image tag in the
 [installation guide](../README.md#quick-start).
 
@@ -80,7 +80,7 @@ handshake returns `ApiKeyExpired` (401) and records `DENY`/`FAILED`, phase
 is unavailable, it returns `AuditUnavailable` (503), without starting execution
 or claiming that the denial was durably recorded.
 
-See the [published release and component boundary](releases/server-1.6.521.md).
+See the [published release and component boundary](releases/server-1.6.523.md).
 Deploy the complete compatible Server image and preserve existing volumes and
 backups. Do not downgrade restricted or expired Keys to a policy-unaware Engine,
 or convert them to unrestricted legacy Keys as a workaround. Follow the
