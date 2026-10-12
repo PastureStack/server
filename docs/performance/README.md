@@ -8,13 +8,13 @@ The following example is appropriate as a starting point for a dedicated
 16-vCPU host with about 32 GiB of RAM. It is not a universal performance
 profile; measure the real workload before increasing it further.
 
-The example uses the published `v1.6.522` image. See the
-[release note](../releases/server-1.6.522.md) for exact identities and acceptance limits.
+The example uses the published `v1.6.524` image. See the
+[release note](../releases/server-1.6.524.md) for exact identities and acceptance limits.
 
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.523
+    image: ghcr.io/pasturestack/server:v1.6.524
     restart: unless-stopped
     ports:
       - "8080:8080"

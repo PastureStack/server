@@ -1,9 +1,14 @@
 # Server v1.6.524
 
-This source release packages officially published Engine `v0.183.342` and
-unchanged Web Console `1.6.183`. At source preparation, Server524 publication,
-final-image native repair acceptance and deployment are not yet verified.
-Current installation examples continue to use the published Server523.
+This immutable published release packages Engine `v0.183.342` and unchanged
+Web Console `1.6.183`. Current installation examples use the numeric
+`ghcr.io/pasturestack/server:v1.6.524` tag.
+
+The published producer is `cc52ce16363333ef77345ff768acddcdf839dde7`.
+The linux/amd64 image contains one runtime layer. Its registry reference is
+`ghcr.io/pasturestack/server:v1.6.524@sha256:0b4ae5f87ef54f25081d728e2ae5eda51ea093ab52768bb7451229ab512092ba`;
+the distinct OCI configuration digest is
+`sha256:65061d2f1d4baf2b7e1fd75fe96cfcfaa4a0a22e251ac2ea7fd9ec4c74d61cd6`.
 
 ## Authorized mutation internal lookup repair
 
@@ -11,7 +16,13 @@ Engine342 repairs internal resource loading for an already-authorized operation,
 including an update-only Key updating an existing Stack. The internal lookup
 is not an external GET/list grant. Live owner RBAC, Key policy, scope, expiry,
 and the actual mutation remain authoritative; no additional role is granted.
-Focused component evidence is separate from final-image native acceptance.
+The final image passed 96 native cases across four writable roles, two
+independent accounts per role and both v1/v2-beta API roots: 32 update/delete
+operations succeeded, 32 direct GETs were denied, and 32 collection GETs
+returned no unauthorized rows. Each request used its own write-only Key,
+with matching decision/response audit events and protected-resource readback.
+No read grant was added. Test containers, accounts, Keys and owned volumes
+were removed; existing data was preserved.
 The full API Key matrix is not claimed PASS by this release or by a prior run.
 
 ## Released component inputs
@@ -34,10 +45,12 @@ it is not a new Server524 native PASS or a replacement for required gates.
 
 The original source, image-build/flatten, startup/restart, MFA, seven-check
 registration entry, merged-rootfs security/SBOM, provenance and immutable
-numeric-release gates remain mandatory. Entry-only checks do not establish an
+numeric-release gates passed. Entry-only checks do not establish an
 active node. Existing VEX decisions and vendor-pending policy are unchanged.
-Final Server524 native update/denial/owner-boundary evidence and deployment
-must be recorded separately; unknown outcomes remain pending.
+Native mutation/read-boundary acceptance, startup and one restart passed.
+The upgrade preserved runtime settings, AppArmor and all three named volumes,
+with pre/post resource counts unchanged. Whole role/resource lifecycles remain
+separate; unknown outcomes remain pending.
 Preserve all three named volumes, backups, environment and security settings.
 Rollback to published Server523 preserves onboarding and HA repairs but restores
 the known update-only internal-read defect. Follow the API Key rollback guide;
