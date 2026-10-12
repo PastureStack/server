@@ -20,8 +20,8 @@ COMPATIBILITY_CODE = 'SERVER_CREATE_RESPONSE_ORDER_COMPATIBILITY_MISSING'
 WEB_SHA = '8540758ad4521f901f53fc79473570cf98862add2addcb49271d8dbf125b4217'
 WEB_SOURCE = 'e056a0111d20816742eff17a65dfabb5d003dae2'
 CATALOG_COMMIT = 'b6b658888fce50d3ec217eb4eba0f26ab0113baf'
-ENGINE_SHA = 'bce020a298ebb89ef3d14ba0666f040e4a732288d1b100da9859dcf957a7981d'
-ENGINE_SOURCE = '436a37215bc5702e516ecf1feb6753b4be5bf602'
+ENGINE_SHA = '5e5a1b908b43bf3824fc3bb2108bd661cd5199ce9bcfd187e0b18b5608a38cea'
+ENGINE_SOURCE = 'ff0a41e7676211043eb4f755a306a9e2a19abee1'
 OLD_COORDINATES = {
     'v1.6.522': 'v1.6.521',
     '1.6.183': '1.6.181',
@@ -29,7 +29,7 @@ OLD_COORDINATES = {
     WEB_SOURCE: '7f2bdad0c90a3241693c2ddd4475202ababba550',
     CATALOG_COMMIT: '7670ffd81d5f0b5570197fb03c7e55b46da45bf3',
 }
-# Engine339 and Web183 use independently read-back official release identities.
+# Engine340 and Web183 use independently read-back official release identities.
 # Published521 component values remain mutation controls.
 # Component coordinates do not establish Server522 artifact/runtime PASS.
 CATALOG_FIELDS = (
@@ -41,7 +41,7 @@ CATALOG_FIELDS = (
     ('LICENSE_SHA256', 'license_sha256', '0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594'),
 )
 LEGACY_ENGINE_COORDINATES = {
-    '0.183.339': '0.183.337',
+    '0.183.340': '0.183.337',
     ENGINE_SHA: '7e45189f2b57097efc7929c04ddf7767aebbe027d1b9f90023aa6711522c5c80',
     ENGINE_SOURCE: 'ba041fe312dfe97fc1e5144af576ddcf1b573d8e',
 }
@@ -80,18 +80,18 @@ for _upper, _lower, _value in CATALOG_FIELDS:
 CREATE_RESPONSE_CODES = ['SERVER_WEB_CREATE_IDENTITY_BUILD_GATE_MISSING','SERVER_WEB_CANONICAL_RECORD_BUILD_GATE_MISSING','SERVER_WEB_CREATE_IDENTITY_RUNTIME_GATE_MISSING','SERVER_WEB_CANONICAL_RECORD_RUNTIME_GATE_MISSING']
 ENGINE_EXPECTED = {
     'SERVER_INCREMENTAL_ENGINE_REPLACEMENT_MISSING': (DOCKER, 'release_engine_marker', (
-        'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.339',
+        'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.340',
         'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar',
         'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=' + ENGINE_SHA,
         'ARG ORCHESTRATION_ENGINE_COMMIT=' + ENGINE_SOURCE,
-        'ARG ORCHESTRATION_ENGINE_VERSION=0.183.339',
+        'ARG ORCHESTRATION_ENGINE_VERSION=0.183.340',
         'grep -Fx "Implementation-Version: ${ORCHESTRATION_ENGINE_VERSION}"',
         'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar',
         'cattle-app-config-${ORCHESTRATION_ENGINE_VERSION}.jar',
         'ENV CATTLE_CATTLE_VERSION=${ORCHESTRATION_ENGINE_RELEASE_TAG}',
     )),
     'SERVER_INCREMENTAL_ENGINE_BUILD_COORDINATE_MISSING': (BUILD, 'release_engine_build_marker', (
-        'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.339}',
+        'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.340}',
         'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}',
         'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-' + ENGINE_SHA + '}',
         'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-' + ENGINE_SOURCE + '}',
@@ -478,7 +478,7 @@ def verify(files, gate=GATE):
         raise AssertionError('CURRENT_VEX_RELEASE_MISMATCH')
     if json.loads(files[VENDOR]).get('release') != 'v1.6.522':
         raise AssertionError('CURRENT_VENDOR_RELEASE_MISMATCH')
-    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.522 base=v1.6.460 engine=0.183.339 web_console=1.6.183 catalog_service=0.20.13 ' not in gate:
+    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.522 base=v1.6.460 engine=0.183.340 web_console=1.6.183 catalog_service=0.20.13 ' not in gate:
         raise AssertionError('CURRENT_SUMMARY_MISMATCH')
     verify_incremental_contract(files, gate)
 
@@ -496,8 +496,8 @@ def previous_gate(gate=GATE):
             'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.521"',
         '"$vendor_pending_fixture" v1.6.522 >/dev/null':
             '"$vendor_pending_fixture" v1.6.521 >/dev/null',
-        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.522 base=v1.6.460 engine=0.183.339 web_console=1.6.183 catalog_service=0.20.13 ':
-            'SERVER_API_EXPLORER_PATCH_OK release=v1.6.521 base=v1.6.460 engine=0.183.339 web_console=1.6.181 catalog_service=0.20.12 ',
+        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.522 base=v1.6.460 engine=0.183.340 web_console=1.6.183 catalog_service=0.20.13 ':
+            'SERVER_API_EXPLORER_PATCH_OK release=v1.6.521 base=v1.6.460 engine=0.183.340 web_console=1.6.181 catalog_service=0.20.12 ',
     })
     for marker, stale_marker in replacements.items():
         if gate.count(marker) != 1:
@@ -915,6 +915,26 @@ class Tests(unittest.TestCase):
                 with self.subTest(name=name, marker=marker):
                     files = dict(FILES)
                     files[name] = files[name].replace(marker, stale_engine(marker))
+                    with self.assertRaisesRegex(AssertionError, code):
+                        verify(files)
+        self.assertGreater(checked, 0)
+
+    def test_immediately_previous_engine339_cannot_be_packaged(self):
+        old = {'0.183.340': '0.183.339',
+               ENGINE_SHA: 'bce020a298ebb89ef3d14ba0666f040e4a732288d1b100da9859dcf957a7981d',
+               ENGINE_SOURCE: '436a37215bc5702e516ecf1feb6753b4be5bf602'}
+        checked = 0
+        for code, (name, _, markers) in ENGINE_EXPECTED.items():
+            for marker in markers:
+                previous = marker
+                for current, stale_value in old.items():
+                    previous = previous.replace(current, stale_value)
+                if previous == marker:
+                    continue
+                checked += 1
+                with self.subTest(name=name, marker=marker):
+                    files = dict(FILES)
+                    files[name] = files[name].replace(marker, previous)
                     with self.assertRaisesRegex(AssertionError, code):
                         verify(files)
         self.assertGreater(checked, 0)

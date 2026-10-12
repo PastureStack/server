@@ -2,14 +2,15 @@
 
 ## Server v1.6.522 prepared, not published
 
-The minimal onboarding candidate uses released Engine `v0.183.339` and Web Console
+The minimal onboarding candidate uses released Engine `v0.183.340` and Web Console
 `1.6.183`. It restores dedicated registration-token Basic authentication.
 Custom add-host requires RegistrationToken POST; built-in and Other drivers
 require Host POST, using the current project's loaded native schemas.
 Cancel / Go Back preserves the external return target across driver changes and
 API-host settings refresh; missing or self-referencing targets return to Hosts.
-Backend roles, resource authorization, other Server components and the console
-broker are unchanged.
+Native project creation with legacy/full API Keys now binds initial work to the
+actual manager-created project and rechecks ownership after that phase. Existing
+roles and non-creation authorization, other components and the broker are unchanged.
 
 Clean merged component source and official asset checksums have been read back;
 the original component packagers produced those assets. Focused component and

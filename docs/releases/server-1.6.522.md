@@ -1,7 +1,7 @@
 # Server v1.6.522 candidate
 
 Prepared source only; no Server image or release has been published.
-The candidate uses released Engine `v0.183.339` and Web Console `1.6.183`.
+The candidate uses released Engine `v0.183.340` and Web Console `1.6.183`.
 The published Server remains `v1.6.521`.
 
 ## Minimal onboarding changes
@@ -10,6 +10,14 @@ Engine gives the reserved `registrationToken` Basic username to its dedicated
 registration lookup before ordinary API Key authentication. A rejected native
 token does not fall through to an API Key or browser session. This does not
 broaden the register schema, API Key permissions or account RBAC.
+
+The formal publication gate also exposed a project-create lifecycle regression:
+the new project inherited the user kind, and ordinary Key authorization ran
+before its initial owner membership existed. Engine340 sets project kind before
+INSERT and binds the initial account/member/default-network work to the actual
+manager-created project. Legacy/full Keys retain native creation; custom policies
+do not gain this exception. After the manager scope closes, live owner membership
+is mandatory. Existing volume/instance process rules remain unchanged.
 
 Web Console gates each add-host form by its actual submission path: Custom
 creates a RegistrationToken and requires RegistrationToken POST; built-in and
@@ -26,9 +34,9 @@ unchanged; this is not the broader API Key integration candidate.
 
 ## Released component inputs
 
-Engine `v0.183.339` uses source
-`436a37215bc5702e516ecf1feb6753b4be5bf602`; official `cattle.jar` SHA-256 is
-`bce020a298ebb89ef3d14ba0666f040e4a732288d1b100da9859dcf957a7981d`.
+Engine `v0.183.340` uses source
+`ff0a41e7676211043eb4f755a306a9e2a19abee1`; official `cattle.jar` SHA-256 is
+`5e5a1b908b43bf3824fc3bb2108bd661cd5199ce9bcfd187e0b18b5608a38cea`.
 Web Console `1.6.183` uses normally merged source
 `e056a0111d20816742eff17a65dfabb5d003dae2`; official
 `web-console-1.6.183.tar.gz` SHA-256 is
@@ -58,6 +66,9 @@ the new version is not permission to widen or reset them.
 Eleven focused native-schema and return-history component cases and the native
 add-host UI checks passed on the component source/tree used for the released
 Web bundle. They validate the component changes only, not a final Server image.
+The 34 focused Engine340 creation/authority tests passed, and their compiled
+classes match the packaged clean-main artifact. The unchanged registration
+tests are carried by identical source and compiled classes, not rerun.
 
 The final Server's seven-check native registration gate remains pending. It must
 verify native token creation and readiness, generated script retrieval,
