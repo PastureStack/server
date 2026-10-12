@@ -56,6 +56,14 @@ class RegistrationSmokeTests(unittest.TestCase):
                 client.post('/v2-beta/accounts', {'kind': 'user', 'name': 'fresh'}, 'Bearer RAM')
         self.assertEqual(client.request.call_count, 1)
 
+    def test_failed_http_status_is_diagnostic_without_response_or_credentials(self):
+        client = r.Client(r.PORT)
+        client.request = Mock(return_value=(500, b'{"secret":"never print"}', (None, None)))
+        with self.assertRaisesRegex(r.SmokeFailure, 'HTTP_STATUS_500_EXPECTED_201') as failure:
+            client.post('/v2-beta/projects', {'name': 'fresh'}, 'Basic RAM')
+        self.assertNotIn('never print', str(failure.exception))
+        self.assertNotIn('Basic RAM', str(failure.exception))
+
     def test_failure_cannot_echo_secret_and_workflow_reuses_existing_bootstrap(self):
         secret = 'RAM-secret-marker-1234567890'
         output = io.StringIO()

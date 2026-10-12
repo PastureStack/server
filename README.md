@@ -14,12 +14,14 @@ upstream history, authorship, licenses, and notices.
 ## Current source candidate
 
 Server `v1.6.522` is a prepared source candidate, not a published image. It targets
-released Web Console `1.6.183` and Orchestration Engine `v0.183.339`. Registration
+released Web Console `1.6.183` and Orchestration Engine `v0.183.340`. Registration
 tokens use their dedicated Basic authentication route. Add-host access follows
 the form's actual operation: Custom requires RegistrationToken POST; built-in
 and Other drivers require Host POST. Cancel / Go Back retains the return route
 across driver changes and API-host settings refresh, with Hosts as the fallback
 for a missing or self-referencing target.
+Native project creation with a legacy or full API Key also retains the creator's
+initial membership and default networks, without granting unrelated resources.
 Component validation and official asset readback have passed; final Server image
 publication, its native registration gate and active-node acceptance remain pending.
 The published Server remains

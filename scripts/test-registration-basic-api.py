@@ -93,7 +93,7 @@ class Client:
 
     def json(self, method, path, data=None, auth=None, cookie=None, expected=200):
         status, raw, principal = self.request(method, path, data, auth, cookie)
-        require(status == expected, 'HTTP_STATUS')
+        require(status == expected, 'HTTP_STATUS_' + str(status) + '_EXPECTED_' + str(expected))
         value = json.loads(raw); require(isinstance(value, dict), 'JSON_OBJECT')
         return value, raw, principal
 

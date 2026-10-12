@@ -8,8 +8,8 @@ runtime gates have passed.
 ## Release notes
 
 - [Server v1.6.522 candidate](releases/server-1.6.522.md) — prepared source using
-  released Engine `0.183.339` and Web Console `1.6.183`; dedicated registration
-  authentication and schema-bound add-host access/navigation. Component checks
+  released Engine `0.183.340` and Web Console `1.6.183`; dedicated registration
+  authentication, native Key project creation and schema-bound add-host access/navigation. Component checks
   passed; the final Server image, native registration gate and active-node
   acceptance remain pending. It is not a published image.
 
