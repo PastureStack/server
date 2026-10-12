@@ -323,6 +323,7 @@ check_server497_published_docs
 
 # Install examples must follow the highest actually published numeric release;
 # Install commands use numeric tags; digest identity stays in publication evidence.
+# An explicitly guarded522 source candidate may show numeric examples, not claim publication.
 python3 - <<'PY'
 import pathlib
 import re
@@ -332,7 +333,11 @@ install_pattern = r'ghcr\.io/pasturestack/server:v[0-9]+\.[0-9]+\.[0-9]+'
 image_pattern = install_pattern + r'@sha256:[0-9a-f]{64}'
 reference_pattern = r'''ghcr\.io/pasturestack/server:[^\s`"'<>()\[\]{},;]+'''
 current = re.search(r'(?ms)^## Current release\n(.*?)(?=^## |\Z)', readme)
-tags = re.findall(r'https://github\.com/PastureStack/server/releases/tag/(v[0-9]+\.[0-9]+\.[0-9]+)(?=[)\s])', current[1] if current else '')
+candidate = re.search(r'(?ms)^## Current source candidate\n(.*?)(?=^## |\Z)', readme)
+if bool(current) == bool(candidate):
+    raise SystemExit('SERVER_LATEST_PUBLISHED_IDENTITY_MISSING')
+context = current if current else candidate
+tags = re.findall(r'https://github\.com/PastureStack/server/releases/tag/(v[0-9]+\.[0-9]+\.[0-9]+)(?=[)\s])', context[1])
 if len(tags) != 1:
     raise SystemExit('SERVER_LATEST_PUBLISHED_IDENTITY_MISSING')
 tag = tags[0]
@@ -342,12 +347,34 @@ if len(references) != 2 or references[0] != references[1] or not re.fullmatch(in
     raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
 image = references[0]
 notes_path = 'docs/releases/server-' + tag[1:] + '.md'
-if image != 'ghcr.io/pasturestack/server:' + tag or '(' + notes_path + ')' not in current[1]:
+expected_install_tag = 'v1.6.522' if candidate else tag
+if image != 'ghcr.io/pasturestack/server:' + expected_install_tag or '(' + notes_path + ')' not in context[1]:
     raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
 performance = pathlib.Path('docs/performance/README.md').read_text(encoding='utf-8')
 performance_references = re.findall(r'ghcr\.io/pasturestack/server:[^\s`"<>]+', performance)
 if performance_references != [image]:
     raise SystemExit('SERVER_LATEST_PUBLISHED_PERFORMANCE_MISMATCH')
+if candidate:
+    candidate_path = 'docs/releases/server-1.6.522.md'
+    candidate_notes = pathlib.Path(candidate_path).read_text(encoding='utf-8')
+    required = (
+        'Server `v1.6.522` is a prepared source candidate, not a published image.',
+        '(' + candidate_path + ')',
+    )
+    if '<a id="current-release"></a>' not in readme or \
+            any(marker not in context[1] for marker in required) or not all(marker in quick[1] for marker in (
+            'run them only after its official release',
+            'This candidate is not yet available')):
+        raise SystemExit('SERVER_SOURCE_CANDIDATE_DISCLOSURE_MISSING')
+    normalized_performance = ' '.join(performance.split())
+    if not all(marker in normalized_performance for marker in (
+            'run it only after its official release and image have been published and read back.',
+            'is not yet available from GHCR',
+            '(../releases/server-1.6.522.md)')):
+        raise SystemExit('SERVER_SOURCE_CANDIDATE_PERFORMANCE_DISCLOSURE_MISSING')
+    if not re.search(r'(?m)^# Server v1\.6\.522 candidate[ \t]*$', candidate_notes) or \
+            'Prepared source only; no Server image or release has been published.' not in candidate_notes:
+        raise SystemExit('SERVER_SOURCE_CANDIDATE_NOTES_MISMATCH')
 notes = pathlib.Path(notes_path).read_text(encoding='utf-8')
 compat = pathlib.Path('COMPATIBILITY.md').read_text(encoding='utf-8')
 published = [reference for reference in re.findall(reference_pattern, compat)
@@ -356,6 +383,11 @@ if not published:
     raise SystemExit('SERVER_LATEST_PUBLISHED_IDENTITY_MISSING')
 latest_tag = max((reference.split('@')[0].rsplit(':', 1)[1] for reference in published),
                  key=lambda value: tuple(map(int, value[1:].split('.'))))
+if candidate:
+    if tuple(map(int, expected_install_tag[1:].split('.'))) <= tuple(map(int, latest_tag[1:].split('.'))) or \
+            '## Server v1.6.522 prepared, not published' not in compat or \
+            'ghcr.io/pasturestack/server:v1.6.522@' in readme + performance + compat + candidate_notes:
+        raise SystemExit('SERVER_SOURCE_CANDIDATE_PUBLICATION_MISMATCH')
 if tag != latest_tag or not re.search(r'(?m)^# Server ' + re.escape(tag) + r'[ \t]*$', notes):
     raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
 publication_identity = None
@@ -368,7 +400,10 @@ for text in (notes, compat):
         publication_identity = identities[0]
     if any(reference != publication_identity for reference in identities):
         raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
-print('SERVER_LATEST_PUBLISHED_QUICK_START_OK release=' + tag)
+if candidate:
+    print('SERVER_SOURCE_CANDIDATE_INSTALL_OK release=' + expected_install_tag + ' published=' + tag)
+else:
+    print('SERVER_LATEST_PUBLISHED_QUICK_START_OK release=' + tag)
 PY
 python3 scripts/test-published-install-gate.py
 python3 scripts/test-current-server-packaging-contract.py
@@ -491,7 +526,7 @@ require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
-    'ARG SERVER_RELEASE_TAG=v1.6.519' \
+    'ARG SERVER_RELEASE_TAG=v1.6.522' \
     SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"' \
@@ -532,16 +567,16 @@ require_marker "$publish_workflow" \
     'bash source/server/artifacts/verify-host-api-package.sh' \
     SERVER_HOST_API_PRODUCER_RELEASE_CHECK_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.181' \
+    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.183' \
     SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.181.tar.gz' \
+    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.183.tar.gz' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=9199681f2c4311f3fbe8727fcf0f6fa136c9bafe9fbe9d13878c55df442a7a03' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=8540758ad4521f901f53fc79473570cf98862add2addcb49271d8dbf125b4217' \
     SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=7f2bdad0c90a3241693c2ddd4475202ababba550' \
+    'ARG WEB_CONSOLE_COMMIT=e056a0111d20816742eff17a65dfabb5d003dae2' \
     SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING
 require_marker "$release_dockerfile" \
     "grep -aF 'hostsPage.permissionDenied'" \
@@ -550,16 +585,16 @@ require_marker "$release_dockerfile" \
     '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ZH_TW_PERMISSION_MESSAGE_MISSING
 require_marker "$build_script" \
-    'web_console_commit=${WEB_CONSOLE_COMMIT:-7f2bdad0c90a3241693c2ddd4475202ababba550}' \
+    'web_console_commit=${WEB_CONSOLE_COMMIT:-e056a0111d20816742eff17a65dfabb5d003dae2}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING
 require_marker "$build_script" \
-    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.181}' \
+    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.183}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.181.tar.gz}' \
+    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.183.tar.gz}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING
 require_marker "$build_script" \
-    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-9199681f2c4311f3fbe8727fcf0f6fa136c9bafe9fbe9d13878c55df442a7a03}' \
+    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-8540758ad4521f901f53fc79473570cf98862add2addcb49271d8dbf125b4217}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING
 require_marker "$release_dockerfile" \
     'ARG CATALOG_SERVICE_VERSION=0.20.13' \
@@ -1024,21 +1059,21 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.519}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.522}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.519}' \
+    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.522}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING
 require_marker "$build_script" \
     'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"' \
     SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING
 for release_engine_marker in \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.334' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.339' \
     'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=a62d8f6ddd61c850e71bbb6fd30352b3a73c7c09e605bb5c45d549074e8824e8' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=66a87ea6901296fa11ada5df58b0618a4ca96975' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=bce020a298ebb89ef3d14ba0666f040e4a732288d1b100da9859dcf957a7981d' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=436a37215bc5702e516ecf1feb6753b4be5bf602' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
-    'ARG ORCHESTRATION_ENGINE_VERSION=0.183.334' \
+    'ARG ORCHESTRATION_ENGINE_VERSION=0.183.339' \
     'grep -Fx "Implementation-Version: ${ORCHESTRATION_ENGINE_VERSION}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'cattle-app-config-${ORCHESTRATION_ENGINE_VERSION}.jar' \
@@ -1059,10 +1094,10 @@ for release_engine_marker in \
         SERVER_INCREMENTAL_ENGINE_REPLACEMENT_MISSING
 done
 for release_engine_build_marker in \
-    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.334}' \
+    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.339}' \
     'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}' \
-    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-a62d8f6ddd61c850e71bbb6fd30352b3a73c7c09e605bb5c45d549074e8824e8}' \
-    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-66a87ea6901296fa11ada5df58b0618a4ca96975}' \
+    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-bce020a298ebb89ef3d14ba0666f040e4a732288d1b100da9859dcf957a7981d}' \
+    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-436a37215bc5702e516ecf1feb6753b4be5bf602}' \
     'CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.5.jar"'; do
@@ -1505,10 +1540,7 @@ for current_release_marker in \
         SERVER_CURRENT_RELEASE_NOTES_IDENTITY_MISSING
 done
 for current_readme_marker in \
-    '## Current release' \
     '## Quick start' \
-    'Use the published numeric' \
-    'keep all three named volumes' \
     '[performance settings](docs/performance/README.md)' \
     '## Upgrade and rollback' \
     'Back up the database and volumes, test a restore' \
@@ -1520,6 +1552,27 @@ for current_readme_marker in \
     require_marker README.md "$current_readme_marker" \
         SERVER_CURRENT_README_IDENTITY_MISSING
 done
+if ! grep -Fqi 'keep all three named volumes' README.md; then
+    echo SERVER_CURRENT_README_VOLUME_CONTRACT_MISSING >&2
+    exit 1
+fi
+# The earlier install proof validates the actual candidate/published body and identities.
+if grep -Fxq '## Current source candidate' README.md; then
+    for candidate_readme_marker in \
+        '<a id="current-release"></a>' \
+        'Server `v1.6.522` is a prepared source candidate, not a published image.' \
+        'run them only after its official release' \
+        'This candidate is not yet available' \
+        'ghcr.io/pasturestack/server:v1.6.522'; do
+        require_marker README.md "$candidate_readme_marker" \
+            SERVER_CURRENT_CANDIDATE_README_MISSING
+    done
+elif grep -Fxq '## Current release' README.md; then
+    require_marker README.md '## Current release' SERVER_CURRENT_PUBLISHED_README_MISSING
+else
+    echo SERVER_CURRENT_README_STATUS_MISSING >&2
+    exit 1
+fi
 for historical_v481_marker in \
     '# Server v1.6.481' \
     'This release assembles Web Console `1.6.146`' \
@@ -2091,7 +2144,7 @@ done
 
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.519"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.522"
   and (.statements | length) == 51
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -2117,7 +2170,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.519 >/dev/null
+    "$vendor_pending_fixture" v1.6.522 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -2206,4 +2259,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.519 base=v1.6.460 engine=0.183.334 web_console=1.6.181 catalog_service=0.20.13 webhook_automation_service=0.10.4 authentication_service=0.4.43 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.522 base=v1.6.460 engine=0.183.339 web_console=1.6.183 catalog_service=0.20.13 webhook_automation_service=0.10.4 authentication_service=0.4.43 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
