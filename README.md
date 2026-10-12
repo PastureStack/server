@@ -11,9 +11,9 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current source candidate
+## Current release
 
-Server `v1.6.522` is a prepared source candidate, not a published image. It targets
+Server [`v1.6.522`](https://github.com/PastureStack/server/releases/tag/v1.6.522) packages
 released Web Console `1.6.183` and Orchestration Engine `v0.183.340`. Registration
 tokens use their dedicated Basic authentication route. Add-host access follows
 the form's actual operation: Custom requires RegistrationToken POST; built-in
@@ -22,13 +22,10 @@ across driver changes and API-host settings refresh, with Hosts as the fallback
 for a missing or self-referencing target.
 Native project creation with a legacy or full API Key also retains the creator's
 initial membership and default networks, without granting unrelated resources.
-Component validation and official asset readback have passed; final Server image
-publication, its native registration gate and active-node acceptance remain pending.
-The published Server remains
-[`v1.6.521`](https://github.com/PastureStack/server/releases/tag/v1.6.521); its
-registration-token Basic route has a known authentication regression. Its
-[release note](docs/releases/server-1.6.521.md) retains the published identity. See the
-[candidate release note](docs/releases/server-1.6.522.md) for the release boundary.
+The official image, component assets and release checksums have been read back.
+Startup/restart, native MFA and the seven-check registration entry gate passed.
+An HTTP entry check is not active-node lifecycle acceptance. See the
+[release note](docs/releases/server-1.6.522.md) for exact identities and scope.
 
 The console supports OIDC, TOTP and passkeys, role-aware resource operations,
 container resource/hardware settings, and movable terminal/log windows.
@@ -62,10 +59,8 @@ menu. See the [API Key guide](docs/api-keys.md) for policy and audit contracts.
 
 ## Quick start
 
-Public GHCR downloads do not require a registry login. The examples below target
-the prepared numeric `v1.6.522` tag: run them only after its official release and
-image have been published and read back. This candidate is not yet available
-from GHCR. Keep all three named volumes:
+Public GHCR downloads do not require a registry login. Use the released numeric
+tag below and keep all three named volumes:
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \

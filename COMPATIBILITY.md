@@ -1,8 +1,8 @@
 # Compatibility Contract
 
-## Server v1.6.522 prepared, not published
+## Server v1.6.522 published
 
-The minimal onboarding candidate uses released Engine `v0.183.340` and Web Console
+The minimal onboarding release uses released Engine `v0.183.340` and Web Console
 `1.6.183`. It restores dedicated registration-token Basic authentication.
 Custom add-host requires RegistrationToken POST; built-in and Other drivers
 require Host POST, using the current project's loaded native schemas.
@@ -12,12 +12,17 @@ Native project creation with legacy/full API Keys now binds initial work to the
 actual manager-created project and rechecks ownership after that phase. Existing
 roles and non-creation authorization, other components and the broker are unchanged.
 
-Clean merged component source and official asset checksums have been read back;
-the original component packagers produced those assets. Focused component and
-native UI validation passed, but the final Server image, its seven-check native
-registration gate and active-node lifecycle acceptance remain pending.
+Clean merged component source, official assets and the final image have been
+read back. Publication run `38251097504` passed startup/restart, native MFA,
+the seven-check registration entry gate, security, SBOM and provenance gates.
+The image is linux/amd64 with one runtime layer, built from
+`cb1b71035ad6389760f76b6257699037a62a481a`. Its registry manifest is
+`ghcr.io/pasturestack/server:v1.6.522@sha256:9569cdcc49156ee0bcdefd493d0067b7c6c1c32a8d39aed55710e83c5661f149`;
+the separate OCI configuration is
+`sha256:6f1e91d67014d50ab7d3a64c0e9b272a0ffe6967a01b2a0befa958652929ebdd`.
+Entry-only checks do not establish an active node or a full permission matrix.
 Integration candidates are not this published release. See the
-[candidate note](docs/releases/server-1.6.522.md) for exact component identities.
+[release note](docs/releases/server-1.6.522.md) for component identities and scope.
 
 ## Server v1.6.521 published
 
