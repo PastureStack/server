@@ -95,5 +95,7 @@ linux/amd64 manifest is
 `sha256:ba9eddbdaa2d7b10c402f59f767de9b5728e48e69d07120c12d9e630c2d2d57a`;
 the distinct configuration digest is
 `sha256:02a25d1bd58e1ab4e7b8f7986bd0b7eb61e2c5c08a1034ebbae9209f5d4bfdec`.
+Immutable image reference:
+`ghcr.io/pasturestack/server:v1.6.523@sha256:ba9eddbdaa2d7b10c402f59f767de9b5728e48e69d07120c12d9e630c2d2d57a`.
 Native HA evidence SHA-256:
 `5c3769956bc249cc348ec14a051e55d05ef5ee31ec0ea1985f921434bc9852e8`.
