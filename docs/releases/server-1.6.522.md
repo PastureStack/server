@@ -93,7 +93,13 @@ native token creation and readiness, generated script retrieval,
 `GET /v1/register`, the restricted registration schema, ordinary API Key Basic
 authentication and invalid-token rejection even with a valid cookie.
 Successful HTTP entry alone does not prove an agent connection or active node.
-The real agent lifecycle and active-node acceptance also remain pending.
+A separate fresh-volume Linux rehearsal using this published image passed
+ordinary-Key project creation, native registration, the real LAN add-host copy
+and close buttons, and a reported active host matching the intended node.
+The launched node agent used new credentials and the correct isolated Server;
+the original test VM was restored and the temporary Server/volumes were removed.
+This proves initial enrollment, not the complete node restart/upgrade/rollback
+lifecycle or the two-source six-role API Key matrix.
 
 ## Install, upgrade and rollback
 
