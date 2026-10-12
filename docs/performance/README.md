@@ -14,7 +14,7 @@ The example uses the published `v1.6.522` image. See the
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.522
+    image: ghcr.io/pasturestack/server:v1.6.523
     restart: unless-stopped
     ports:
       - "8080:8080"

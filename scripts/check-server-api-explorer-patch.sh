@@ -526,7 +526,7 @@ require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
-    'ARG SERVER_RELEASE_TAG=v1.6.523' \
+    'ARG SERVER_RELEASE_TAG=v1.6.524' \
     SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"' \
@@ -1059,21 +1059,21 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.523}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.524}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.523}' \
+    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.524}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING
 require_marker "$build_script" \
     'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"' \
     SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING
 for release_engine_marker in \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.341' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.342' \
     'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=3ede1ad28b7a7e0754c4c953bd486162f7ffe0b2f76ce384ec485632af6b8e6d' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=b245cf778479445ded0786d3898b03fea153212e' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=3533f247392795329c92516a7966510aafbe81a52e3f922e5ec657a2071363b5' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=ddae4bb8e12806f70816f5782cd999eccd0f2ce6' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
-    'ARG ORCHESTRATION_ENGINE_VERSION=0.183.341' \
+    'ARG ORCHESTRATION_ENGINE_VERSION=0.183.342' \
     'grep -Fx "Implementation-Version: ${ORCHESTRATION_ENGINE_VERSION}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'cattle-app-config-${ORCHESTRATION_ENGINE_VERSION}.jar' \
@@ -1094,10 +1094,10 @@ for release_engine_marker in \
         SERVER_INCREMENTAL_ENGINE_REPLACEMENT_MISSING
 done
 for release_engine_build_marker in \
-    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.341}' \
+    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.342}' \
     'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}' \
-    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-3ede1ad28b7a7e0754c4c953bd486162f7ffe0b2f76ce384ec485632af6b8e6d}' \
-    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-b245cf778479445ded0786d3898b03fea153212e}' \
+    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-3533f247392795329c92516a7966510aafbe81a52e3f922e5ec657a2071363b5}' \
+    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-ddae4bb8e12806f70816f5782cd999eccd0f2ce6}' \
     'CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.5.jar"'; do
@@ -2146,7 +2146,7 @@ done
 
 jq -e '
   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.523"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.524"
   and (.statements | length) == 51
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -2172,7 +2172,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.523 >/dev/null
+    "$vendor_pending_fixture" v1.6.524 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -2261,4 +2261,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.523 base=v1.6.460 engine=0.183.341 web_console=1.6.183 catalog_service=0.20.13 webhook_automation_service=0.10.4 authentication_service=0.4.43 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.524 base=v1.6.460 engine=0.183.342 web_console=1.6.183 catalog_service=0.20.13 webhook_automation_service=0.10.4 authentication_service=0.4.43 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
