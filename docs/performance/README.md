@@ -11,6 +11,10 @@ profile; measure the real workload before increasing it further.
 The example uses the published `v1.6.528` image. See the
 [release note](../releases/server-1.6.528.md) for exact identities and acceptance limits.
 
+The [Server529 source candidate](../releases/server-1.6.529.md) does not change
+these settings. Keep the published numeric installation tag until its official
+image publication and readback; candidate startup/restart are not yet verified.
+
 ```yaml
 services:
   pasturestack-server:

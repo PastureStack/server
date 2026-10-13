@@ -21,6 +21,12 @@ without granting ordinary read/list access or broader resource scope.
 Stack-scoped Container and Instance Link queries retain live ancestry checks
 and work with MariaDB's default optimizer, including nullable Stack references.
 
+The `v1.6.529` source candidate pairs Engine `v0.183.347` with Web Console
+`1.6.184` for subscription terminal audit and its translated target label.
+Component focused checks are separate from Server publication, native acceptance
+and deployment, which remain pending. See the [candidate note](docs/releases/server-1.6.529.md).
+Installation examples below remain on the published `v1.6.528` image.
+
 Registration tokens use dedicated Basic authentication. Native project creation
 preserves the creator's initial membership and default networks. HA database
 exports return a SQL ZIP only after successful, nonempty output; failures clean
