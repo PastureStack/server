@@ -7,6 +7,13 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.524](releases/server-1.6.524.md) — officially published using
+  released Engine `0.183.342` and Web Console `1.6.183`; operation-specific resource
+  lookups retain external read, scope and live owner-RBAC boundaries.
+  Immutable publication and isolated QA deployment were verified separately.
+  96 native write-only mutation/read-isolation cases passed; the complete
+  role/resource matrix and active-node lifecycle remain separate acceptance gates.
+
 - [Server v1.6.522](releases/server-1.6.522.md) — officially published using
   released Engine `0.183.340` and Web Console `1.6.183`; dedicated registration
   authentication, native Key project creation and schema-bound add-host access/navigation. Component checks
