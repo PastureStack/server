@@ -7,6 +7,11 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.526](releases/server-1.6.526.md) — published with Engine
+  `0.183.344` and unchanged Web Console `1.6.183`; operation-specific linked/action
+  lookups retain ordinary-read and owner-authority boundaries. Targeted native
+  acceptance and an isolated QA upgrade were verified; full coverage remains separate.
+
 - [Server v1.6.524](releases/server-1.6.524.md) — officially published using
   released Engine `0.183.342` and Web Console `1.6.183`; operation-specific resource
   lookups retain external read, scope and live owner-RBAC boundaries.

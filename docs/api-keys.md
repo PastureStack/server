@@ -1,6 +1,6 @@
 # API Keys
 
-This guide describes published Server `v1.6.524`, with Engine `0.183.342`
+This guide describes published Server `v1.6.526`, with Engine `0.183.344`
 and Web Console `1.6.183`. Publication does not mean that every role/resource
 combination has passed acceptance. Use the published numeric image tag in the
 [installation guide](../README.md#quick-start).
@@ -19,9 +19,10 @@ Every policy is intersected with the owner's current RBAC. It neither snapshots
 nor adds a role. Browser operation choices are not proof of backend authority.
 Untouched legacy Keys are not automatically narrowed during an upgrade.
 
-An update-only grant does not grant external GET/list. Internal resource
-loading for an already-authorized mutation remains bound to the actual
-operation, Key policy and live owner authority.
+An update-only or export-only grant does not grant ordinary GET/list access.
+Resource loading needed by an authorized mutation, named export or registered
+action remains bound to the actual operation, exact target, Key policy and live
+owner authority. Ordinary reads, lists and input references keep their own checks.
 
 The editor and reviewed changes show the same resource-by-operation policy
 matrix. It explains deny precedence, partial scopes, unresolved ancestry and
@@ -84,7 +85,7 @@ handshake returns `ApiKeyExpired` (401) and records `DENY`/`FAILED`, phase
 is unavailable, it returns `AuditUnavailable` (503), without starting execution
 or claiming that the denial was durably recorded.
 
-See the [published release and component boundary](releases/server-1.6.524.md).
+See the [published release and component boundary](releases/server-1.6.526.md).
 Deploy the complete compatible Server image and preserve existing volumes and
 backups. Do not downgrade restricted or expired Keys to a policy-unaware Engine,
 or convert them to unrestricted legacy Keys as a workaround. Follow the
