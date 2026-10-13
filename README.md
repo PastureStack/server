@@ -13,17 +13,19 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-Server [`v1.6.526`](https://github.com/PastureStack/server/releases/tag/v1.6.526)
-packages Web Console `1.6.183` and Orchestration Engine `v0.183.344`.
+Server [`v1.6.528`](https://github.com/PastureStack/server/releases/tag/v1.6.528)
+packages Web Console `1.6.183` and Orchestration Engine `v0.183.346`.
 API Key permissions follow the actual operation and the owner's live authority.
 Authorized compose exports and registered actions can load their exact target
 without granting ordinary read/list access or broader resource scope.
+Stack-scoped Container and Instance Link queries retain live ancestry checks
+and work with MariaDB's default optimizer, including nullable Stack references.
 
 Registration tokens use dedicated Basic authentication. Native project creation
 preserves the creator's initial membership and default networks. HA database
 exports return a SQL ZIP only after successful, nonempty output; failures clean
 up temporary files without returning command stderr or secrets.
-See the [release note](docs/releases/server-1.6.526.md) for component identities
+See the [release note](docs/releases/server-1.6.528.md) for component identities
 and acceptance limits.
 
 The console supports OIDC, TOTP and passkeys, role-aware resource operations,
@@ -66,7 +68,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.526
+  ghcr.io/pasturestack/server:v1.6.528
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -74,7 +76,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.526
+    image: ghcr.io/pasturestack/server:v1.6.528
     restart: unless-stopped
     ports:
       - "8080:8080"

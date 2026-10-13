@@ -7,6 +7,11 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.528](releases/server-1.6.528.md) — published with Engine
+  `0.183.346` and unchanged Web Console `1.6.183`; fixes MariaDB Stack-ancestry
+  queries without expanding authorization. Sixteen scoped native reads and a
+  separate isolated upgrade/restart passed; full matrix coverage remains separate.
+
 - [Server v1.6.526](releases/server-1.6.526.md) — published with Engine
   `0.183.344` and unchanged Web Console `1.6.183`; operation-specific linked/action
   lookups retain ordinary-read and owner-authority boundaries. Targeted native
