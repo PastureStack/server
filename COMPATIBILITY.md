@@ -1,5 +1,16 @@
 # Compatibility Contract
 
+## Server v1.6.530 source candidate, not published
+
+This candidate packages immutable Web Console `1.6.185` with unchanged Engine
+`v0.183.347`. Authenticated users without an environment can open their own
+API Keys at `/account/keys`; the page shares the existing Key editor and audit
+viewer, loads both personal Key subtypes and does not request environment Keys.
+Existing environment navigation, owner RBAC, MFA and Key policy are unchanged.
+Ten focused Web tests passed. Server publication, packaged native acceptance
+and deployment are pending; the current installation remains published
+`v1.6.529`. See the [candidate note](docs/releases/server-1.6.530.md).
+
 ## Server v1.6.529 published
 
 This release packages Engine `v0.183.347` and Web Console `1.6.184`.
