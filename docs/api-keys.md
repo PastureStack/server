@@ -1,6 +1,6 @@
 # API Keys
 
-This guide describes published Server `v1.6.526`, with Engine `0.183.344`
+This guide describes published Server `v1.6.528`, with Engine `0.183.346`
 and Web Console `1.6.183`. Publication does not mean that every role/resource
 combination has passed acceptance. Use the published numeric image tag in the
 [installation guide](../README.md#quick-start).
@@ -23,6 +23,12 @@ An update-only or export-only grant does not grant ordinary GET/list access.
 Resource loading needed by an authorized mutation, named export or registered
 action remains bound to the actual operation, exact target, Key policy and live
 owner authority. Ordinary reads, lists and input references keep their own checks.
+
+Container and native `instanceLink` reads derive scope from persisted live
+Project/Stack ancestry before collection pagination. Link scope follows its
+source Instance, not the destination; reading a Link does not grant an ordinary
+Instance read. Missing, foreign or contradictory ancestry fails closed. Nullable
+Stack comparisons and parent lookups work with MariaDB's default optimizer.
 
 The editor and reviewed changes show the same resource-by-operation policy
 matrix. It explains deny precedence, partial scopes, unresolved ancestry and

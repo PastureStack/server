@@ -1,24 +1,28 @@
 # Compatibility Contract
 
-## Server v1.6.526 published
+## Server v1.6.528 published
 
-This release packages Engine `v0.183.344` and unchanged Web Console `1.6.183`.
+This release packages Engine `v0.183.346` and unchanged Web Console `1.6.183`.
 Operation-specific lookups allow an authorized named export or registered action
 to load its exact operand while ordinary GET/list, references, owner RBAC, scope,
 deny precedence and expiry retain their existing boundaries. Method dispatch and
 old queued-Key checks remain in force. Other components, role schemas,
 authentication, broker, registration, HA and runtime settings are unchanged.
+Container/Instance Link Stack ancestry uses total null-safe comparisons and a
+unique-PK scalar marker, avoiding MariaDB's unsupported row/IN optimization.
+No global optimizer setting is changed or read authority broadened.
 
-The immutable producer is `dd95830037925ad00ecb98021aa8c8f2de8feb04`.
+The immutable producer is `cbd0a988d0cd2882842f4f2a8012af3f841b479e`.
 The linux/amd64 image has one runtime layer. Its actual registry manifest is
-`ghcr.io/pasturestack/server:v1.6.526@sha256:2c724739d37d4bef2c5f1013f334f3109ef8279dcbe390ff0ed68e4e2ff18379`;
+`ghcr.io/pasturestack/server:v1.6.528@sha256:1d6bbc1081b5ead8cabcd3f72ff17bf3522d90d94ad97ed83add425a9880e42f`;
 the distinct OCI configuration digest is
-`sha256:e92382b15773dcb4335ef01c5bb9634d4716ee8eeefcc99c267f4f0875ca2944`.
-Original publication and immutable readback passed. Targeted native linked/action
-and read-boundary acceptance passed on both API roots. The isolated QA upgrade
-from published Server524 and one restart preserved runtime settings and all three
-volumes. Complete role/action/resource coverage remains separate.
-See the [release note](docs/releases/server-1.6.526.md) for the exact scope.
+`sha256:d420681bc58de55239ae212b7d929d37e9eca2beb484a44d48368f609054fa0c`.
+Original publication and immutable readback passed. Sixteen scoped Link/Container
+direct/list hit/miss reads on both API roots passed with 32 matched audit events,
+unchanged database snapshots and owned cleanup. The separate isolated QA upgrade
+from Server526 and one restart preserved runtime settings and all three volumes.
+Complete role/action/resource coverage remains separate.
+See the [release note](docs/releases/server-1.6.528.md) for the exact scope.
 
 ## Server v1.6.524 published
 
