@@ -1,5 +1,20 @@
 # Compatibility Contract
 
+## Server v1.6.529 source candidate
+
+The candidate pairs Engine `v0.183.347` with Web Console `1.6.184`.
+Subscription terminal audit retains the first close/failure result, bounded
+delivery retry and exactly-once physical cleanup without restoring authorization.
+The console labels event subscriptions, including completion records without a
+target ID; this adds no resource-picker or grant capability. Full/legacy behavior,
+live restricted-Key checks, owner RBAC and audit bounds remain unchanged.
+
+Thirty focused Engine tests and three focused Web unit tests, including actual
+labels in all thirteen production locales, passed at the component level.
+Server publication, immutable image readback, native acceptance and deployment
+remain pending; the published installation pairing below remains `v1.6.528`.
+See the [candidate note](docs/releases/server-1.6.529.md) for exact input identities.
+
 ## Server v1.6.528 published
 
 This release packages Engine `v0.183.346` and unchanged Web Console `1.6.183`.

@@ -5,6 +5,10 @@ and Web Console `1.6.183`. Publication does not mean that every role/resource
 combination has passed acceptance. Use the published numeric image tag in the
 [installation guide](../README.md#quick-start).
 
+The [Server529 source candidate](releases/server-1.6.529.md) pairs Engine
+`0.183.347` with Web Console `1.6.184` for subscription terminal audit.
+Its Server publication, native acceptance and deployment remain pending.
+
 ## Access and expiry
 
 Full retains the owner's existing account/environment scope. Closed allows no
@@ -76,6 +80,14 @@ instance ID (`1i` prefix) consistently across decision, response and terminal
 records, even when an agent schema has no `container` alias. Errors retain the
 existing API status/code/request-id and console handling; no alternate login,
 role override or secret recovery path is introduced.
+
+In the Server529 candidate, subscription close, I/O failure and live authorization
+failure retain the first terminal outcome and bounded audit delivery retry.
+Closed registrations are removed and cannot resume resource-body delivery.
+Only lifecycle metadata is retained for retry, not a token, request or grant;
+client close text and Throwable contents are not logged. The console translates
+the `subscribe` audit target even with an empty target ID. This display label is
+not a selectable policy resource and adds no authority.
 
 ## Integration and recovery
 
