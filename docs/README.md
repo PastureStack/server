@@ -7,10 +7,11 @@ runtime gates have passed.
 
 ## Release notes
 
-- [Server v1.6.529](releases/server-1.6.529.md) — source candidate with Engine
+- [Server v1.6.529](releases/server-1.6.529.md) — published with Engine
   `0.183.347` and Web Console `1.6.184` for subscription terminal audit and its
-  translated target label. Server publication, native acceptance and deployment
-  remain pending; use the published `v1.6.528` installation guide below.
+  translated target label. Official publication and immutable readback passed;
+  thirty-six focused native subscription cases passed. Whole-matrix acceptance
+  remains separate.
 
 - [Server v1.6.528](releases/server-1.6.528.md) — published with Engine
   `0.183.346` and unchanged Web Console `1.6.183`; fixes MariaDB Stack-ancestry
