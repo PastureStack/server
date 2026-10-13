@@ -1,8 +1,8 @@
 # Server v1.6.529
 
-Prepared source only; no Server image or release has been published.
+Server `v1.6.529` 已完成正式不可變發行與匿名讀回。
 
-本候選組裝 Engine `v0.183.347` 與 Web Console `1.6.184`。
+本版組裝 Engine `v0.183.347` 與 Web Console `1.6.184`。
 Engine 補齊 API Key WebSocket 訂閱的終止稽核：保留首次關閉／失敗原因、
 清除關閉後才完成的註冊，並以既有有界排程重試終止事件傳遞。
 實際資源清理仍只執行一次；重試只保留生命週期 metadata，
@@ -27,14 +27,28 @@ nftables、Compose／HA／runtime 設定與資料庫結構均不修改。
 安全清單只更新本版數字識別，既有 VEX 決策與 vendor-pending 條件不變。
 原歷史 Engine 負控制保留，另加入舊 346 不得冒充 347 的封裝檢查。
 
-## 尚待完成
+## 正式發行與驗收邊界
 
 Engine 與 Web 元件已正式發行並匿名讀回相同 SHA-256 成品。
-Server 來源／封裝、安全／SBOM、必要 CodeQL、正式工作流、不可變映像
-發行與讀回仍須依原有 gates 完成。
-Server 訂閱 native 驗收、啟動／一次重啟與部署尚待驗，不宣稱完整矩陣、
-全角色、active-node 註冊生命週期或公司正式站通過。
-目前安裝文件保持已發布 `v1.6.528` 的數字 tag，不使用候選 digest。
+Server 正常合併 producer：`f0a1edd7258b4005c5b9fa205c1b93435f759583`。
+[原正式工作流 38405824990](https://github.com/PastureStack/server/actions/runs/38405824990)
+已通過來源／封裝、安全／SBOM 與發行 gates；必要 CodeQL 未繞過。
+linux/amd64 成品有一個 runtime layer，不可變 tag 與實際讀回吻合。
+Registry manifest：
+`ghcr.io/pasturestack/server:v1.6.529@sha256:0e85f22039a17d114a0d86cf1b682063695773a09bf1a0c308baf32aa2ed394a`。
+不同的 OCI config：
+`sha256:00d56e427357b5e3f7517ebbb3ba3def64d022944f3ad2cb8e5ac8295067bdc2`。
+
+正式映像的 36 個訂閱子案通過：全域管理者、owner、member、restricted、
+readonly、no-access 各兩個 local-MFA 帳號；涵蓋 Full、Closed、自訂全域唯讀、
+client close、owner 自訂 Key 撤權、HTTP101 與 terminal 分開、requestId 配對及
+單筆終止事件。兩個已通過子案沿用，沒有重跑；專屬容器與三卷已刪除。
+這不是整個角色／資源矩陣、OIDC 或 active-node 生命週期通過。
+Project／Stack 唯讀白名單不會取得 synthetic subscribe 的無範圍握手授權；
+此既有保護未放寬。隔離升級後首次啟動與一次重啟均為 HTTP200／pong；
+原環境變數、三個 named volumes、AppArmor、network 與 restart policy 保留，
+資料庫五表筆數未變，前一版容器與 SQL 備份保留。公司正式站未部署。
+目前安裝文件使用已發布 `v1.6.529` 的數字 tag；immutable digest 只用於發行身分。
 
 ## 升級與回復
 

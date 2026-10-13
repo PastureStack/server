@@ -1,8 +1,8 @@
 # Compatibility Contract
 
-## Server v1.6.529 source candidate
+## Server v1.6.529 published
 
-The candidate pairs Engine `v0.183.347` with Web Console `1.6.184`.
+This release packages Engine `v0.183.347` and Web Console `1.6.184`.
 Subscription terminal audit retains the first close/failure result, bounded
 delivery retry and exactly-once physical cleanup without restoring authorization.
 The console labels event subscriptions, including completion records without a
@@ -11,9 +11,20 @@ live restricted-Key checks, owner RBAC and audit bounds remain unchanged.
 
 Thirty focused Engine tests and three focused Web unit tests, including actual
 labels in all thirteen production locales, passed at the component level.
-Server publication, immutable image readback, native acceptance and deployment
-remain pending; the published installation pairing below remains `v1.6.528`.
-See the [candidate note](docs/releases/server-1.6.529.md) for exact input identities.
+The immutable producer is `f0a1edd7258b4005c5b9fa205c1b93435f759583`.
+Official workflow [38405824990](https://github.com/PastureStack/server/actions/runs/38405824990)
+and immutable readback passed. The linux/amd64 image has one runtime layer;
+its registry manifest is
+`ghcr.io/pasturestack/server:v1.6.529@sha256:0e85f22039a17d114a0d86cf1b682063695773a09bf1a0c308baf32aa2ed394a`.
+The distinct OCI configuration digest is
+`sha256:00d56e427357b5e3f7517ebbb3ba3def64d022944f3ad2cb8e5ac8295067bdc2`.
+Thirty-six native subscription cases passed with twelve local-MFA actors:
+global admin, owner, member, restricted, readonly and no-access, two per role.
+Full, Closed and global-read Custom admission, client-close audit, owner Custom
+revocation and exact disposable cleanup were verified. Two unaffected passed
+cases were carried, not replayed. No full matrix
+or active-agent lifecycle PASS is inferred. Historical results below keep their
+original release scope. See the [release note](docs/releases/server-1.6.529.md).
 
 ## Server v1.6.528 published
 

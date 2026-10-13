@@ -13,25 +13,27 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-Server [`v1.6.528`](https://github.com/PastureStack/server/releases/tag/v1.6.528)
-packages Web Console `1.6.183` and Orchestration Engine `v0.183.346`.
+Server [`v1.6.529`](https://github.com/PastureStack/server/releases/tag/v1.6.529)
+packages Web Console `1.6.184` and Orchestration Engine `v0.183.347`.
 API Key permissions follow the actual operation and the owner's live authority.
 Authorized compose exports and registered actions can load their exact target
 without granting ordinary read/list access or broader resource scope.
 Stack-scoped Container and Instance Link queries retain live ancestry checks
 and work with MariaDB's default optimizer, including nullable Stack references.
 
-The `v1.6.529` source candidate pairs Engine `v0.183.347` with Web Console
-`1.6.184` for subscription terminal audit and its translated target label.
-Component focused checks are separate from Server publication, native acceptance
-and deployment, which remain pending. See the [candidate note](docs/releases/server-1.6.529.md).
-Installation examples below remain on the published `v1.6.528` image.
+API Key subscriptions retain their first terminal close/failure outcome and
+bounded audit delivery retry without restoring authorization. The console labels
+event subscriptions even when a completion record has no target ID; no resource
+picker or grant capability is added. Official publication and immutable readback
+passed. Thirty-six focused subscription cases passed with two local-MFA accounts
+per tested role, including live revocation and separate handshake/terminal audit.
+This is not acceptance of every resource or operation in the permission matrix.
 
 Registration tokens use dedicated Basic authentication. Native project creation
 preserves the creator's initial membership and default networks. HA database
 exports return a SQL ZIP only after successful, nonempty output; failures clean
 up temporary files without returning command stderr or secrets.
-See the [release note](docs/releases/server-1.6.528.md) for component identities
+See the [release note](docs/releases/server-1.6.529.md) for component identities
 and acceptance limits.
 
 The console supports OIDC, TOTP and passkeys, role-aware resource operations,
@@ -74,7 +76,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.528
+  ghcr.io/pasturestack/server:v1.6.529
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -82,7 +84,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.528
+    image: ghcr.io/pasturestack/server:v1.6.529
     restart: unless-stopped
     ports:
       - "8080:8080"
