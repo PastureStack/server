@@ -1,5 +1,25 @@
 # Compatibility Contract
 
+## Server v1.6.526 published
+
+This release packages Engine `v0.183.344` and unchanged Web Console `1.6.183`.
+Operation-specific lookups allow an authorized named export or registered action
+to load its exact operand while ordinary GET/list, references, owner RBAC, scope,
+deny precedence and expiry retain their existing boundaries. Method dispatch and
+old queued-Key checks remain in force. Other components, role schemas,
+authentication, broker, registration, HA and runtime settings are unchanged.
+
+The immutable producer is `dd95830037925ad00ecb98021aa8c8f2de8feb04`.
+The linux/amd64 image has one runtime layer. Its actual registry manifest is
+`ghcr.io/pasturestack/server:v1.6.526@sha256:2c724739d37d4bef2c5f1013f334f3109ef8279dcbe390ff0ed68e4e2ff18379`;
+the distinct OCI configuration digest is
+`sha256:e92382b15773dcb4335ef01c5bb9634d4716ee8eeefcc99c267f4f0875ca2944`.
+Original publication and immutable readback passed. Targeted native linked/action
+and read-boundary acceptance passed on both API roots. The isolated QA upgrade
+from published Server524 and one restart preserved runtime settings and all three
+volumes. Complete role/action/resource coverage remains separate.
+See the [release note](docs/releases/server-1.6.526.md) for the exact scope.
+
 ## Server v1.6.524 published
 
 The internal-lookup repair packages released Engine `v0.183.342` and unchanged
