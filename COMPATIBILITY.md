@@ -1,15 +1,23 @@
 # Compatibility Contract
 
-## Server v1.6.530 source candidate, not published
+## Server v1.6.531 source candidate, not published
 
-This candidate packages immutable Web Console `1.6.185` with unchanged Engine
-`v0.183.347`. Authenticated users without an environment can open their own
-API Keys at `/account/keys`; the page shares the existing Key editor and audit
-viewer, loads both personal Key subtypes and does not request environment Keys.
-Existing environment navigation, owner RBAC, MFA and Key policy are unchanged.
-Ten focused Web tests passed. Server publication, packaged native acceptance
-and deployment are pending; the current installation remains published
-`v1.6.529`. See the [candidate note](docs/releases/server-1.6.530.md).
+This candidate packages immutable Engine `v0.183.348` and Web Console `1.6.186`.
+The shared Default uses the configured public Native project template; catalog
+reload also repairs its empty binding when the template is already installed.
+Existing bindings, custom settings and other projects are preserved. Definitions
+may exist with zero hosts; service activation waits for an active host.
+Native machine-driver cards display their distinct API names without changing
+driver records, IDs, initialization or action targets. Catalog localization and
+intentional empty display names are preserved. The personal API Key page,
+owner RBAC, role schemas, HTTPS, MFA and provider/backend behavior are unchanged.
+
+Fourteen focused Engine and four rendered Web cases passed. Both component
+releases passed immutable anonymous readback; this does not establish Server
+publication, fresh-install/first-host readiness or driver initialization/restart
+acceptance. Server packaging, publication and native acceptance are pending.
+Installation examples retain an existing released tag until those gates pass.
+See the [candidate note](docs/releases/server-1.6.531.md).
 
 ## Server v1.6.529 published
 
