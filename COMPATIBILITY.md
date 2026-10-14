@@ -32,6 +32,8 @@ The immutable published producer is `aea01351c270133607bcc0104236c58ff91fc7fd`.
 Official Server publication and immutable readback are complete. The registry
 manifest for `ghcr.io/pasturestack/server:v1.6.531` is
 `sha256:950a9cee2400c3ac0a97aac75e5ff278994d03293e28ac7c821b782e8bed48a4`.
+Published artifact identity (not an installation command):
+`ghcr.io/pasturestack/server:v1.6.531@sha256:950a9cee2400c3ac0a97aac75e5ff278994d03293e28ac7c821b782e8bed48a4`.
 Installation examples use the released numeric `v1.6.531` tag; documentation
 commits do not replace the published producer or image.
 
