@@ -1,7 +1,6 @@
 # Server v1.6.531
 
-本版目前為來源組裝候選，尚未發布 Server 映像。
-組裝已正式不可變發行的 Engine `v0.183.348` 與 Web Console `1.6.186`。
+本版組裝已正式不可變發行的 Engine `v0.183.348` 與 Web Console `1.6.186`。
 
 Engine 的預設專案範本名稱對齊真正 Catalog `project.yml` 的
 `PastureStack Native`。乾淨安裝的共用 Default 能自動綁定範本；
@@ -37,12 +36,43 @@ Web 的原共用 driver card 在模型沒有 `catalogDisplayName` 時顯示 nati
 
 其他元件及 pins、工具鏈、readonly/restricted schema SHA、後端、角色、
 HTTPS origin、MFA、nftables、Compose／HA 與資料庫結構均保留。
-安全清單僅更新 Server 數字識別；VEX 決策、vendor-pending exact-set、
-原必要 gates 與既有元件歷史負控制不弱化。
+安全清單更新 Server 數字識別及下列精確 vendor-pending 範圍；VEX 決策、
+vendor-pending exact-set、原必要 gates 與既有元件歷史負控制不弱化。
 
-Server 原來源／封裝、安全／SBOM、CodeQL、不可變發行及成品讀回仍須通過。
-乾淨安裝的零主機／首台主機 readiness、driver 初始化／重啟識別及部署待驗。
-README 安裝範例暫維持已存在發行 tag；531 實際發行及原生驗收後才更新。
+## 待 vendor 的安全範圍
+
+正式發布 run `38507013620` 在 merged-rootfs 安全 exact-set gate 停止，
+尚未發布 Server 映像。該次 Trivy 原始掃描新增 6 個 PCRE2 CVE，
+各對應 Ubuntu 26.04 `libpcre2-8-0` 與 `libpcre2-posix3` 的
+`10.46-1build1`，合計 12 筆 MEDIUM，`FixedVersion` 均為空。
+vendor-pending 現記錄共 10 個 CVE／20 筆精確 MEDIUM package findings，
+覆核期限維持 `2026-10-20`。
+
+2026-10-14 03:45 UTC 直接讀回 Ubuntu 官方 HTTP 200 頁面：
+
+- Ubuntu 26.04 pcre2 標為 Vulnerable：
+  [CVE-2026-103111](https://ubuntu.com/security/CVE-2026-103111)、
+  [CVE-2026-89156](https://ubuntu.com/security/CVE-2026-89156)、
+  [CVE-2026-89157](https://ubuntu.com/security/CVE-2026-89157)、
+  [CVE-2026-89158](https://ubuntu.com/security/CVE-2026-89158)、
+  [CVE-2026-89160](https://ubuntu.com/security/CVE-2026-89160)，
+  頁面最後更新為 2026-10-13。
+- Ubuntu 26.04 pcre2 標為 Needs evaluation：
+  [CVE-2026-89162](https://ubuntu.com/security/CVE-2026-89162)，
+  頁面最後更新為 2026-09-16。
+
+上述官方狀態未列出 Ubuntu 26.04 已發布修復版本。
+tracker 的 `needs-evaluation` 沿用本專案的到期覆核狀態，
+不是 Canonical 的套件狀態；新增項目的 `upstreamVendorStatus` 與
+`verifiedAt` 保留此次官方讀回。這些 finding 仍待 vendor，未宣告已修復、
+未改成 VEX not-affected 或安全豁免。允許 severity、空 `FixedVersion`、
+精確 package/CVE/version/target 比對與原發布 gates 保持原契約；
+正式 pipeline 仍須用最新掃描重新通過安全與發布驗證。
+
+發行流程保留原來源／封裝、安全／SBOM、CodeQL、不可變發行及成品讀回閘門。
+部署驗收涵蓋零主機／首台主機 readiness、driver 初始化／重啟識別；
+上述元件測試不等於完整角色／資源矩陣通過。安裝及元件配對見 Server README，
+正式映像身分與安全掃描結果由同版本 GitHub Release 提供。
 
 ## 升級與回復
 
