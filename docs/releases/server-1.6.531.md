@@ -1,7 +1,6 @@
 # Server v1.6.531
 
-本版目前為來源組裝候選，尚未發布 Server 映像。
-組裝已正式不可變發行的 Engine `v0.183.348` 與 Web Console `1.6.186`。
+本版組裝已正式不可變發行的 Engine `v0.183.348` 與 Web Console `1.6.186`。
 
 Engine 的預設專案範本名稱對齊真正 Catalog `project.yml` 的
 `PastureStack Native`。乾淨安裝的共用 Default 能自動綁定範本；
@@ -70,9 +69,10 @@ tracker 的 `needs-evaluation` 沿用本專案的到期覆核狀態，
 精確 package/CVE/version/target 比對與原發布 gates 保持原契約；
 正式 pipeline 仍須用最新掃描重新通過安全與發布驗證。
 
-Server 原來源／封裝、安全／SBOM、CodeQL、不可變發行及成品讀回仍須通過。
-乾淨安裝的零主機／首台主機 readiness、driver 初始化／重啟識別及部署待驗。
-README 安裝範例暫維持已存在發行 tag；531 實際發行及原生驗收後才更新。
+發行流程保留原來源／封裝、安全／SBOM、CodeQL、不可變發行及成品讀回閘門。
+部署驗收涵蓋零主機／首台主機 readiness、driver 初始化／重啟識別；
+上述元件測試不等於完整角色／資源矩陣通過。安裝及元件配對見 Server README，
+正式映像身分與安全掃描結果由同版本 GitHub Release 提供。
 
 ## 升級與回復
 
