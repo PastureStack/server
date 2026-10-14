@@ -1,6 +1,11 @@
 # Server v1.6.531
 
 本版組裝已正式不可變發行的 Engine `v0.183.348` 與 Web Console `1.6.186`。
+Server 數字 tag `v1.6.531` 已正式發布並完成不可變成品讀回，producer source 為
+`aea01351c270133607bcc0104236c58ff91fc7fd`；
+`ghcr.io/pasturestack/server:v1.6.531` 的 registry manifest 為
+`sha256:950a9cee2400c3ac0a97aac75e5ff278994d03293e28ac7c821b782e8bed48a4`。
+文件更新不替換此正式 source 或映像身分。
 
 Engine 的預設專案範本名稱對齊真正 Catalog `project.yml` 的
 `PastureStack Native`。乾淨安裝的共用 Default 能自動綁定範本；
@@ -12,7 +17,7 @@ catalog reload 也可補上已安裝範本、但 `adminProject` 仍未綁定的�
 
 零主機時可先有 network-services、IPsec、scheduler 與 healthcheck 定義，
 服務啟動沿用首台 active host 的正常觸發。Network、Metadata、DNS 與 health
-實際就緒仍須完成首台主機原生驗收，不能以 API 啟動或空容器清單宣告成功。
+本版隔離首台主機原生驗收已確認實際就緒。
 
 Web 的原共用 driver card 在模型沒有 `catalogDisplayName` 時顯示 native API
 名稱，讓共用通用圖示的 `hyperv`、`libvirt`、`vmwarefusion`、`virtualbox`
@@ -41,8 +46,7 @@ vendor-pending exact-set、原必要 gates 與既有元件歷史負控制不弱�
 
 ## 待 vendor 的安全範圍
 
-正式發布 run `38507013620` 在 merged-rootfs 安全 exact-set gate 停止，
-尚未發布 Server 映像。該次 Trivy 原始掃描新增 6 個 PCRE2 CVE，
+本版安全 tracker 收錄 Trivy 原始掃描新增的 6 個 PCRE2 CVE，
 各對應 Ubuntu 26.04 `libpcre2-8-0` 與 `libpcre2-posix3` 的
 `10.46-1build1`，合計 12 筆 MEDIUM，`FixedVersion` 均為空。
 vendor-pending 現記錄共 10 個 CVE／20 筆精確 MEDIUM package findings，
@@ -67,12 +71,31 @@ tracker 的 `needs-evaluation` 沿用本專案的到期覆核狀態，
 `verifiedAt` 保留此次官方讀回。這些 finding 仍待 vendor，未宣告已修復、
 未改成 VEX not-affected 或安全豁免。允許 severity、空 `FixedVersion`、
 精確 package/CVE/version/target 比對與原發布 gates 保持原契約；
-正式 pipeline 仍須用最新掃描重新通過安全與發布驗證。
+正式 Server 發布與不可變讀回已完成；待 vendor 清單仍依原 exact-set 契約覆核。
 
 發行流程保留原來源／封裝、安全／SBOM、CodeQL、不可變發行及成品讀回閘門。
-部署驗收涵蓋零主機／首台主機 readiness、driver 初始化／重啟識別；
-上述元件測試不等於完整角色／資源矩陣通過。安裝及元件配對見 Server README，
+安裝及元件配對見 Server README，
 正式映像身分與安全掃描結果由同版本 GitHub Release 提供。
+
+## 受影響路徑原生驗收
+
+現有 Server 530 未綁定 Default 的升級補綁與一輪重啟通過，沒有新增重複
+stack、service 或 driver。Fresh Server 531 使用三個持久化 volumes，經正常
+公開流程註冊一次首台主機；Default 綁定範本 `1pt1`，四個 core stacks 與六個
+core services 均 active／healthy。Metadata、managed DNS、HTTPS egress HTTP
+200，以及公開 host port `18297` 到 probe port `18080` 的存取均通過。
+
+隔離 Server restart、Docker restart、guest reboot（boot ID 已改變）後保留
+上述 readiness；再經正常 native API 重建 probe workload，`1i15` 到 `1i16`
+仍通過。正式發行映像的現有安裝部署與後續 restart 亦已通過。
+
+真實 Chrome 154.0.8037.98 載入 Server 531／Web 186：十一個不同 driver ID 與
+名稱在 v1／v2-beta exact-set 相符，zh-tw／en-us 的 1440px／390px 都顯示正確。
+四個 generic icons 對應不同記錄；重啟後 IDs／names 不變，page errors 為零，
+五張截圖均已人工檢視。沒有刪除或合併 driver。
+
+Narrow affected-path acceptance completed。驗收使用既有 host 預設 backend，
+role logic 未變；範圍涵蓋上述受影響路徑，不宣稱所有角色／backend 矩陣完成。
 
 ## 升級與回復
 

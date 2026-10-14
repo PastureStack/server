@@ -1,8 +1,8 @@
 # Compatibility Contract
 
-## Server v1.6.531 source candidate, not published
+## Current release: Server v1.6.531 published
 
-This candidate packages immutable Engine `v0.183.348` and Web Console `1.6.186`.
+This release packages immutable Engine `v0.183.348` and Web Console `1.6.186`.
 The shared Default uses the configured public Native project template; catalog
 reload also repairs its empty binding when the template is already installed.
 Existing bindings, custom settings and other projects are preserved. Definitions
@@ -12,12 +12,30 @@ driver records, IDs, initialization or action targets. Catalog localization and
 intentional empty display names are preserved. The personal API Key page,
 owner RBAC, role schemas, HTTPS, MFA and provider/backend behavior are unchanged.
 
-Fourteen focused Engine and four rendered Web cases passed. Both component
-releases passed immutable anonymous readback; this does not establish Server
-publication, fresh-install/first-host readiness or driver initialization/restart
-acceptance. Server packaging, publication and native acceptance are pending.
-Installation examples retain an existing released tag until those gates pass.
-See the [candidate note](docs/releases/server-1.6.531.md).
+The immutable published producer is `aea01351c270133607bcc0104236c58ff91fc7fd`.
+Official Server publication and immutable readback are complete. The registry
+manifest for `ghcr.io/pasturestack/server:v1.6.531` is
+`sha256:950a9cee2400c3ac0a97aac75e5ff278994d03293e28ac7c821b782e8bed48a4`.
+Installation examples use the released numeric `v1.6.531` tag; documentation
+commits do not replace the published producer or image.
+
+Fourteen focused Engine and four rendered Web cases passed, and both component
+releases passed immutable readback. The isolated upgrade from Server 530
+repaired an existing unbound Default and introduced no duplicate stacks, services
+or drivers after restart. A fresh three-volume installation registered one host
+through the public workflow: Default bound to template `1pt1`, with four core
+stacks and six active, healthy services. Metadata, managed DNS, HTTPS egress
+HTTP 200 and published host port `18297` to probe port `18080` passed. Readiness
+survived Server restart, Docker restart, guest reboot with a changed boot ID,
+and native API probe recreation from `1i15` to `1i16`.
+
+Native Chrome 154.0.8037.98 confirmed eleven distinct driver IDs/names on v1 and
+v2-beta, zh-tw/en-us at 1440px/390px, four generic icons without duplicate
+records, and the same identities after restart. Page errors were zero, and all
+five screenshots were visually reviewed. The published deployment and its
+subsequent restart also passed. Narrow affected-path acceptance completed with
+the existing host defaults and unchanged role logic; broader role/backend
+matrices are outside this verification. See the [release note](docs/releases/server-1.6.531.md).
 
 ## Server v1.6.529 published
 
