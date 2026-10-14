@@ -18,7 +18,7 @@ startup and one restart both returned HTTP 200/pong.
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.529
+    image: ghcr.io/pasturestack/server:v1.6.531
     restart: unless-stopped
     ports:
       - "8080:8080"

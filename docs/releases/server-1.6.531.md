@@ -6,6 +6,8 @@ Server 數字 tag `v1.6.531` 已正式發布並完成不可變成品讀回，pro
 `ghcr.io/pasturestack/server:v1.6.531` 的 registry manifest 為
 `sha256:950a9cee2400c3ac0a97aac75e5ff278994d03293e28ac7c821b782e8bed48a4`。
 文件更新不替換此正式 source 或映像身分。
+完整成品識別（不是安裝指令）：
+`ghcr.io/pasturestack/server:v1.6.531@sha256:950a9cee2400c3ac0a97aac75e5ff278994d03293e28ac7c821b782e8bed48a4`。
 
 Engine 的預設專案範本名稱對齊真正 Catalog `project.yml` 的
 `PastureStack Native`。乾淨安裝的共用 Default 能自動綁定範本；
