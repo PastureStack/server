@@ -8,6 +8,8 @@ This patch packages immutable Engine `v0.183.349` with unchanged Web Console
 `6e61f05598c12941c3b07ebfcf81f40e7fb1bd5439ec4c7d9c34484306378f04`.
 
 Server producer: `6b7dca3a4d9154e37f9475e7b47d73bce26e1938`.
+Artifact identity (not an installation command):
+`ghcr.io/pasturestack/server:v1.6.535@sha256:634613baf631d54e4cf576aeaa2f9f003b035fdfec4a28e28aa3c8f0aa38283d`.
 Official workflow [38672753267](https://github.com/PastureStack/server/actions/runs/38672753267)
 and immutable readback of 24 assets passed without bypassing required checks.
 The linux/amd64 image has one runtime layer. Manifest:

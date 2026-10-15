@@ -14,6 +14,8 @@ layer; its manifest is
 The distinct OCI config is
 `sha256:599313735f18cc95330e0bbb76bd76bd74251c8bc4f56cba019afed4a0a3fc31`.
 Installation examples use the numeric `v1.6.535` tag, not a digest-pinned command.
+Artifact identity (not an installation command):
+`ghcr.io/pasturestack/server:v1.6.535@sha256:634613baf631d54e4cf576aeaa2f9f003b035fdfec4a28e28aa3c8f0aa38283d`.
 Later documentation commits do not replace this producer.
 
 ## Scoped API Key action repair
