@@ -1,8 +1,21 @@
 # Compatibility Contract
 
-## Server v1.6.532 candidate
+## Server v1.6.533 candidate
 
-This candidate packages immutable Web Console `1.6.187` with unchanged Engine
+This candidate packages immutable Web Console `1.6.188`, source
+`8e12216fd6f8d843ed043b4c0afcec995d33caeb`, archive SHA-256
+`3467dfb37d7723b9293bc64145603d09ba24799ad726feb89177c9fa38b4ed92`.
+Native non-bubbling pointer events are owned by the tooltip element lifecycle,
+with run-loop entry and listener cleanup. Existing action-menu overrides and
+static context forwarding are preserved. Four new actual-DOM focused cases
+passed. Engine `v0.183.348`, APIs, registration, authentication, permissions,
+networking and all other component inputs are unchanged. Server publication,
+deployment and 52 actual-browser views plus ordinary HTTP copy remain pending.
+See [the release note](docs/releases/server-1.6.533.md).
+
+## Server v1.6.532 published; browser acceptance incomplete
+
+This release packages immutable Web Console `1.6.187` with unchanged Engine
 `v0.183.348`. Shared clipboard messages initialize before rendering and report
 success/failure in all 13 supported locales. Copy hints fit the viewport; Custom
 host commands remain LTR in RTL interfaces. Commands, registration APIs, native
@@ -12,9 +25,15 @@ Thirteen focused rendered cases and one corrected-caption case passed; 32 keys
 across 13 locales passed the targeted resource contract. The Web archive has
 SHA-256 `b9797c08cf8c698e7cabac4bc9cd12fba0faa181c8781875d93a3de7109f2db3`
 from signed normally merged source `b45f8ee73c72b5f58b010dd55c64d5aef7406c61`.
-Its official immutable release and anonymous readback are complete. Server
-publication and the real-browser locale/theme/viewport matrix are still separate
-gates, not inferred from source tests. See [the release note](docs/releases/server-1.6.532.md).
+Its official immutable release and anonymous readback are complete. Server532
+source is `77f1120f2b8796344ef1c2f8c4a6de8d54eb21fd`; exact artifact:
+`ghcr.io/pasturestack/server:v1.6.532@sha256:28dc6b10cfa37843f3c737a4d3bc15bb4c180791fcb710f034d19150458456ce`.
+The distinct OCI config is `sha256:cfeec9c242c0aa3952cbb01162a80bd374f742c27d9fee1a783c3f9841c2a8b4`.
+Official publication, startup/restart HTTP200/pong and preservation checks passed.
+Real-browser acceptance found missing native hover event dispatch after the
+Ember upgrade, so532 is not a completed52-view acceptance.188/533 addresses it;
+the matrix is not inferred from source tests.
+See [the release note](docs/releases/server-1.6.532.md).
 
 ## Server v1.6.531 published
 

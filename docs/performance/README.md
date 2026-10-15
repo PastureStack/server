@@ -8,17 +8,20 @@ The following example is appropriate as a starting point for a dedicated
 16-vCPU host with about 32 GiB of RAM. It is not a universal performance
 profile; measure the real workload before increasing it further.
 
-The example uses the published `v1.6.529` image. See the
-[release note](../releases/server-1.6.529.md) for exact identities and acceptance limits.
+The example uses the published `v1.6.532` image, packaging Web Console `1.6.187`
+and Engine `v0.183.348`. See the [release note](../releases/server-1.6.532.md)
+for exact identities and acceptance limits.
 
 This release does not change these settings. Official image publication and
-readback passed. The isolated upgrade preserved runtime overrides and volumes;
-startup and one restart both returned HTTP 200/pong.
+immutable readback passed. The QA 8080 switch preserved runtime overrides and
+volumes; startup and restart checks passed. Native hover and static-tooltip
+context defects remain in Web `1.6.187`, and the 52 actual-browser cases are
+incomplete; the new Web `1.6.188` candidate takes over the browser repairs.
 
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.531
+    image: ghcr.io/pasturestack/server:v1.6.532
     restart: unless-stopped
     ports:
       - "8080:8080"

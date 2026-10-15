@@ -13,8 +13,10 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-Server [`v1.6.531`](https://github.com/PastureStack/server/releases/tag/v1.6.531)
-packages Web Console `1.6.186` and Orchestration Engine `v0.183.348`.
+Server [`v1.6.532`](https://github.com/PastureStack/server/releases/tag/v1.6.532)
+packages Web Console `1.6.187` and Orchestration Engine `v0.183.348`.
+The console includes scoped clipboard message and feedback changes across all
+13 supported locales; actual-browser acceptance remains incomplete.
 The shared Default uses the configured public Native project template, with
 system-stack definitions available before host registration and service
 activation triggered by the first active host. Machine driver cards display
@@ -37,10 +39,14 @@ Registration tokens use dedicated Basic authentication. Native project creation
 preserves the creator's initial membership and default networks. HA database
 exports return a SQL ZIP only after successful, nonempty output; failures clean
 up temporary files without returning command stderr or secrets.
-See the [release note](docs/releases/server-1.6.531.md) for component identities
+See the [release note](docs/releases/server-1.6.532.md) for component identities
 and acceptance limits.
 
-Narrow affected-path acceptance completed; see the release note for its scope.
+Official publication, immutable readback and QA 8080 deployment passed, including
+startup and restart checks with preserved volumes and runtime overrides.
+Actual-browser verification found native hover and static-tooltip context defects
+in Web Console `1.6.187`. A new `1.6.188` candidate takes over those repairs;
+the 52 locale/width/theme browser cases remain incomplete.
 
 The console supports OIDC, TOTP and passkeys, role-aware resource operations,
 container resource/hardware settings, and movable terminal/log windows.
@@ -82,7 +88,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.531
+  ghcr.io/pasturestack/server:v1.6.532
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -90,7 +96,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.531
+    image: ghcr.io/pasturestack/server:v1.6.532
     restart: unless-stopped
     ports:
       - "8080:8080"
