@@ -407,6 +407,7 @@ else:
 PY
 python3 scripts/test-published-install-gate.py
 python3 scripts/test-current-server-packaging-contract.py
+python3 scripts/test-cli-download-defaults536.py
 
 require_marker docs/releases/server-1.6.498.md '# Server v1.6.498' \
     SERVER_GENERIC_OBJECT_PATCH_NOTES_MISSING
@@ -526,7 +527,7 @@ require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
-    'ARG SERVER_RELEASE_TAG=v1.6.535' \
+    'ARG SERVER_RELEASE_TAG=v1.6.536' \
     SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"' \
@@ -540,6 +541,18 @@ require_marker "$release_dockerfile" \
 require_marker "$release_dockerfile" \
     'ENV CATTLE_RANCHER_SERVER_VERSION=${SERVER_RELEASE_TAG}' \
     SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING
+for cli_platform in LINUX DARWIN WINDOWS; do
+    case "$cli_platform" in
+        LINUX) cli_suffix=linux-amd64.tar.gz ;;
+        DARWIN) cli_suffix=darwin-amd64.tar.gz ;;
+        WINDOWS) cli_suffix=windows-amd64.zip ;;
+    esac
+    cli_url="https://github.com/PastureStack/cli/releases/download/v0.6.18/pasturestack-cli-0.6.18-${cli_suffix}"
+    require_marker "$release_dockerfile" "ENV DEFAULT_CATTLE_RANCHER_CLI_${cli_platform}_URL=${cli_url}" SERVER_CLI_DOWNLOAD_DEFAULT_MISSING
+    require_marker "$build_script" "DEFAULT_CATTLE_RANCHER_CLI_${cli_platform}_URL=${cli_url}" SERVER_CLI_DOWNLOAD_RUNTIME_READBACK_MISSING
+done
+require_marker "$release_dockerfile" 'ENV CATTLE_RANCHER_CLI_VERSION=v0.6.18' SERVER_CLI_VERSION_DEFAULT_MISSING
+require_marker "$build_script" 'CATTLE_RANCHER_CLI_VERSION=v0.6.18' SERVER_CLI_VERSION_RUNTIME_READBACK_MISSING
 require_marker "$release_dockerfile" \
     'COPY --from=release_artifacts /out/host-api.tar.gz /usr/share/cattle/artifacts/host-api-${HOST_API_VERSION}.tar.gz' \
     SERVER_HOST_API_SHA256_PACKAGE_MISSING
@@ -1059,10 +1072,10 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.535}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.536}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.535}' \
+    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.536}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING
 require_marker "$build_script" \
     'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"' \
@@ -2158,7 +2171,7 @@ done
 jq -e '
   ["CVE-2026-107928","CVE-2026-107929","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"] as $curl_fixed_cves
   |   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.535"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.536"
   and (.statements | length) == 69
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -2196,7 +2209,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.535 >/dev/null
+    "$vendor_pending_fixture" v1.6.536 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -2285,4 +2298,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.535 base=v1.6.460 engine=0.183.349 web_console=1.6.189 catalog_service=0.20.13 webhook_automation_service=0.10.4 authentication_service=0.4.43 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.536 base=v1.6.460 engine=0.183.349 web_console=1.6.189 catalog_service=0.20.13 webhook_automation_service=0.10.4 authentication_service=0.4.43 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'

@@ -14,7 +14,7 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.535}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.536}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
@@ -101,7 +101,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-5ce
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-e62a21270142181315293d7e11482288ffe8fc4d91cc8fe07dacc90b461f3709}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.535}
+image=${IMAGE:-pasturestack-validation/server:v1.6.536}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -339,6 +339,10 @@ image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
     CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}" \
+    CATTLE_RANCHER_CLI_VERSION=v0.6.18 \
+    DEFAULT_CATTLE_RANCHER_CLI_LINUX_URL=https://github.com/PastureStack/cli/releases/download/v0.6.18/pasturestack-cli-0.6.18-linux-amd64.tar.gz \
+    DEFAULT_CATTLE_RANCHER_CLI_DARWIN_URL=https://github.com/PastureStack/cli/releases/download/v0.6.18/pasturestack-cli-0.6.18-darwin-amd64.tar.gz \
+    DEFAULT_CATTLE_RANCHER_CLI_WINDOWS_URL=https://github.com/PastureStack/cli/releases/download/v0.6.18/pasturestack-cli-0.6.18-windows-amd64.zip \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}" \
     RC16_GO_AGENT_VERSION="${node_agent_version}" \
