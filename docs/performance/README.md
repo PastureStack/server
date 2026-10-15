@@ -8,18 +8,20 @@ The following example is appropriate as a starting point for a dedicated
 16-vCPU host with about 32 GiB of RAM. It is not a universal performance
 profile; measure the real workload before increasing it further.
 
-The example uses published Server `v1.6.536`, packaging Web Console `1.6.189`
-and Engine `v0.183.349`. See the [release note](../releases/server-1.6.536.md)
-for immutable identities and acceptance limits.
+The example targets prepared Server `v1.6.537`, Web Console `1.6.190` and Engine
+`v0.183.350`; run it only after its official release and image have been published and read back.
+This candidate is not yet available from GHCR. See the
+[candidate note](../releases/server-1.6.537.md) for pinned component identities
+and the bounded pre-release acceptance evidence.
 
 This release retains the same performance-setting contract. Existing runtime
-overrides and volumes must be preserved on upgrade or code rollback. The CLI download-default update does not establish a performance improvement
-or complete broader acceptance.
+overrides and volumes must be preserved on upgrade or code rollback. Archive and
+restore do not establish a performance improvement or complete broader acceptance.
 
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.536
+    image: ghcr.io/pasturestack/server:v1.6.537
     restart: unless-stopped
     ports:
       - "8080:8080"

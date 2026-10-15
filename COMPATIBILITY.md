@@ -1,5 +1,38 @@
 # Compatibility Contract
 
+## Server v1.6.537 prepared, not published
+
+This candidate targets Web Console `1.6.190` and Engine `v0.183.350`.
+Component producer commits and artifact SHA-256 values are pinned in the recipe.
+Server producer, final image identity and official release checks remain pending. See the
+[candidate note](docs/releases/server-1.6.537.md). No Server537 publication or
+deployment is claimed; the Server536 identities below remain historical facts.
+
+Stack and Service `archived` is a persisted boolean with missing values treated
+as false. Archive requires stopped services and instances, rejects system/driver
+resources, and has no start/stop/delete or storage lifecycle side effect. Empty
+Stacks may be archived. Parent and child flags remain independent; restore does
+not clear separately archived children. Archived resources must be restored
+before starting or adding/moving children into them. Archive/restore uses the
+existing update authorization and native v1/v2-beta APIs, not a new role grant.
+Older Engines do not implement archive enforcement; code rollback does not
+promise retained archive behavior and archive never replaces data backups.
+
+The console's personal, per-environment archive switch changes only visibility.
+Read-only users may include archived resources without gaining write controls;
+the effective schema and update capability remain authoritative. Older Engines
+without a readable/updatable boolean field do not offer the action. The modal
+warns that mounts and volumes are retained and require operator backups.
+
+Reviewed pre-release isolated evidence covers focused tests, native role/Key
+archive/restore, thirteen-locale layouts, owner-read Key audit, and separate
+physical workload/mount preservation and first-host checks. It does not establish
+the final537 image or future published190/350 artifact identities. Existing API
+Key policy, authentication/OIDC/MFA, three-volume persistence, CLI defaults,
+performance overrides and firewall contracts are not changed by this feature.
+Security document release IDs advance only; VEX statements, vendor findings and
+their review deadlines are preserved pending the new final-image security gate.
+
 ## Server v1.6.536 published
 
 Immutable Server producer `b8cefb51db7f5e88341fdf231f6ae43d773fb9c7` passed the original official workflow [38681298101](https://github.com/PastureStack/server/actions/runs/38681298101) and anonymous release readback. Manifest: `sha256:84b701244ccd83abc313cfad47c52edf9c58fa49cdd5c2da129cdac0c81d8094`. Distinct OCI config: `sha256:4b56a5f4f58edf2ff08414fde91cc70da440562d7b6264ec62aaca133c256237`. Artifact identity (not an installation command): `ghcr.io/pasturestack/server:v1.6.536@sha256:84b701244ccd83abc313cfad47c52edf9c58fa49cdd5c2da129cdac0c81d8094`. Documentation commits do not replace the producer. Numeric installation tags remain required.
