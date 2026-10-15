@@ -2156,12 +2156,13 @@ for oidc_policy_smoke_marker in \
 done
 
 jq -e '
-  .["@context"] == "https://openvex.dev/ns/v0.2.0"
+  ["CVE-2026-107928","CVE-2026-107929","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"] as $curl_fixed_cves
+  |   .["@context"] == "https://openvex.dev/ns/v0.2.0"
   and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.533"
-  and (.statements | length) == 51
+  and (.statements | length) == 69
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
-      == ["CVE-2024-52005","CVE-2026-12087","CVE-2026-13221","CVE-2026-18798","CVE-2026-27171","CVE-2026-56391","CVE-2026-57432","CVE-2026-57433","CVE-2026-75803","CVE-2026-8932"]
+      == ["CVE-2024-52005","CVE-2026-107928","CVE-2026-107929","CVE-2026-12087","CVE-2026-13221","CVE-2026-18798","CVE-2026-27171","CVE-2026-56391","CVE-2026-57432","CVE-2026-57433","CVE-2026-75803","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-8932","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"]
   and ([.statements[] | select(.status == "not_affected") | .vulnerability.name] | sort)
       == ["CVE-2024-2236","CVE-2024-56433","CVE-2025-1352","CVE-2025-1376","CVE-2025-66382","CVE-2026-13757","CVE-2026-18374","CVE-2026-18477","CVE-2026-18508","CVE-2026-27456","CVE-2026-3184","CVE-2026-32776","CVE-2026-32777","CVE-2026-32778","CVE-2026-40228","CVE-2026-41080","CVE-2026-45186","CVE-2026-50219","CVE-2026-53910","CVE-2026-54371","CVE-2026-56131","CVE-2026-56132","CVE-2026-56392","CVE-2026-56403","CVE-2026-56404","CVE-2026-56405","CVE-2026-56406","CVE-2026-56407","CVE-2026-56408","CVE-2026-56409","CVE-2026-56410","CVE-2026-56411","CVE-2026-56412","CVE-2026-56855","CVE-2026-57062","CVE-2026-66046","CVE-2026-72522","CVE-2026-76641","CVE-2026-76957","CVE-2026-78662","GO-2026-5932"]
   and ([.statements[] | select(.status == "under_investigation") | .vulnerability.name] | sort)
@@ -2170,6 +2171,18 @@ jq -e '
   and all(.statements[].products[]; (.["@id"] | startswith("pkg:") and (contains("*") | not)))
   and all(.statements[] | select(.status == "not_affected");
           (.justification | type) == "string" and (.impact_statement | length) > 20)
+  and all(.statements[] | select(.vulnerability.name as $cve | $curl_fixed_cves | index($cve));
+          .status == "fixed"
+          and (.vulnerability.name as $cve | .impact_statement | contains($cve))
+          and ([.products[]."@id"] | sort) == ["pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04","pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04","pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"]
+          and (.impact_statement | contains("https://ubuntu.com/security/notices/USN-8927-1")
+               and contains("8.18.0-1ubuntu2.8")
+               and contains("debian/patches/")
+               and contains("https://github.com/curl/curl/commit/")
+               and contains("2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc")
+               and contains("8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e")
+               and contains("7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266")))
+
 ' "$runtime_vex" >/dev/null
 
 vendor_pending_fixture=$(mktemp)

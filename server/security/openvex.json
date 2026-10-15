@@ -2,8 +2,8 @@
   "@context": "https://openvex.dev/ns/v0.2.0",
   "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.533",
   "author": "PastureStack Security",
-  "timestamp": "2026-10-02T22:05:00Z",
-  "version": 53,
+  "timestamp": "2026-10-15T00:38:08Z",
+  "version": 54,
   "statements": [
     {
       "vulnerability": {
@@ -777,6 +777,330 @@
       ],
       "status": "fixed",
       "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed package revision for CVE-2026-57433. The final image installs and exact-verifies that revision for libperl5.40, perl, perl-base, and perl-modules-5.40 from the signed 2026-09-10 snapshot."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-107928"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-107928. The signed official package changelog records debian/patches/CVE-2026-107928.patch; upstream fix: https://github.com/curl/curl/commit/64fb3e7a7b116f6909660. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-107929"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-107929. The signed official package changelog records debian/patches/CVE-2026-107929.patch; upstream fix: https://github.com/curl/curl/commit/d37d79df1e01066417aff0a9e. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-86409"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-86409. The signed official package changelog records debian/patches/CVE-2026-86409.patch; upstream fix: https://github.com/curl/curl/commit/c3c70440e8d9938c0bb732595751e8. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-86410"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-86410. The signed official package changelog records debian/patches/CVE-2026-86410.patch; upstream fix: https://github.com/curl/curl/commit/6ae9befb2fb6bdfdb5fc11fdf76b. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-86412"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-86412. The signed official package changelog records debian/patches/CVE-2026-86412.patch; upstream fix: https://github.com/curl/curl/commit/6ded3e594455d6f018fab5f2f5d91. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-86414"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-86414. The signed official package changelog records debian/patches/CVE-2026-86414.patch; upstream fix: https://github.com/curl/curl/commit/2956af6c7451029fb12c12f8166. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-87862"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-87862. The signed official package changelog records debian/patches/CVE-2026-87862.patch; upstream fix: https://github.com/curl/curl/commit/a1614c3bcf1593eb524b37792124357. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-87863"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-87863. The signed official package changelog records debian/patches/CVE-2026-87863.patch; upstream fix: https://github.com/curl/curl/commit/08d50a791b3197a3d0a4fc2f778e24. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-87864"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-87864. The signed official package changelog records debian/patches/CVE-2026-87864.patch; upstream fix: https://github.com/curl/curl/commit/3b547de301342b347fb3c6ea6ae797. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-87865"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-87865. The signed official package changelog records debian/patches/CVE-2026-87865.patch; upstream fix: https://github.com/curl/curl/commit/323c184b6bdf5b1988a10c0a61560. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-92386"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-92386. The signed official package changelog records debian/patches/CVE-2026-92386.patch; upstream fix: https://github.com/curl/curl/commit/445aa87e13f91c94bc742f5434. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-92387"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-92387. The signed official package changelog records debian/patches/CVE-2026-92387.patch; upstream fix: https://github.com/curl/curl/commit/753735af87f5c30cb6f60a7. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-92388"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-92388. The signed official package changelog records debian/patches/CVE-2026-92388-1.patch and debian/patches/CVE-2026-92388-2.patch; upstream fix: https://github.com/curl/curl/commit/ba8f8a7f27a5c5e19e4ef212. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-92389"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-92389. The signed official package changelog records debian/patches/CVE-2026-92389.patch; upstream fix: https://github.com/curl/curl/commit/63dd390fab905a239a97e270. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-92390"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-92390. The signed official package changelog records debian/patches/CVE-2026-92390.patch; upstream fix: https://github.com/curl/curl/commit/c24a69d8cd368de4e25e35. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-92391"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-92391. The signed official package changelog records debian/patches/CVE-2026-92391.patch; upstream fix: https://github.com/curl/curl/commit/d7546809d5bd548b69ec49fca2. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-94266"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-94266. The signed official package changelog records debian/patches/CVE-2026-94266.patch; upstream fix: https://github.com/curl/curl/commit/7a6bd027d0de2b6857472d35d. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-92392"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/curl@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl3t64-gnutls@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libcurl4t64@8.18.0-1ubuntu2.8?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-92392. The signed official package changelog records debian/patches/CVE-2026-92392.patch; upstream fix: https://github.com/curl/curl/commit/8b0744af5b1b631da5b938ca31c. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
     }
   ]
 }
