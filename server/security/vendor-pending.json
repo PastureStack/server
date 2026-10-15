@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "release": "v1.6.535",
-  "generatedAt": "2026-10-14T00:00:00Z",
+  "generatedAt": "2026-10-15T02:44:00Z",
   "policy": {
     "allowedSeverities": [
       "LOW",
@@ -24,6 +24,20 @@
       "packages": [
         { "name": "libpcre2-8-0", "installedVersion": "10.46-1build1" },
         { "name": "libpcre2-posix3", "installedVersion": "10.46-1build1" }
+      ]
+    },
+    {
+      "vulnerabilityId": "CVE-2026-107161",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "upstreamVendorStatus": "Needs evaluation",
+      "verifiedAt": "2026-10-15T02:44:00Z",
+      "source": "https://ubuntu.com/security/CVE-2026-107161",
+      "reviewAfter": "2026-10-20",
+      "severityBasis": "Ubuntu priority Medium and the scanner's vendor severity; upstream CVSS v3 7.5 High is not a fix or a not-affected decision.",
+      "packages": [
+        { "name": "libsasl2-2", "installedVersion": "2.1.28+dfsg1-9ubuntu3" },
+        { "name": "libsasl2-modules-db", "installedVersion": "2.1.28+dfsg1-9ubuntu3" }
       ]
     },
     {
