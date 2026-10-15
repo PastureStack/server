@@ -526,7 +526,7 @@ require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
-    'ARG SERVER_RELEASE_TAG=v1.6.533' \
+    'ARG SERVER_RELEASE_TAG=v1.6.534' \
     SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"' \
@@ -567,16 +567,16 @@ require_marker "$publish_workflow" \
     'bash source/server/artifacts/verify-host-api-package.sh' \
     SERVER_HOST_API_PRODUCER_RELEASE_CHECK_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.188' \
+    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.189' \
     SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.188.tar.gz' \
+    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.189.tar.gz' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=3467dfb37d7723b9293bc64145603d09ba24799ad726feb89177c9fa38b4ed92' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=1c90e273b7db8ebf9d851a0ae1ec49dc59067b5ee1099ea3886919c1a79ccdfc' \
     SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=8e12216fd6f8d843ed043b4c0afcec995d33caeb' \
+    'ARG WEB_CONSOLE_COMMIT=f30f5e81dd9ee25878c3aff681eed5bb61883453' \
     SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING
 require_marker "$release_dockerfile" \
     "grep -aF 'hostsPage.permissionDenied'" \
@@ -585,16 +585,16 @@ require_marker "$release_dockerfile" \
     '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ZH_TW_PERMISSION_MESSAGE_MISSING
 require_marker "$build_script" \
-    'web_console_commit=${WEB_CONSOLE_COMMIT:-8e12216fd6f8d843ed043b4c0afcec995d33caeb}' \
+    'web_console_commit=${WEB_CONSOLE_COMMIT:-f30f5e81dd9ee25878c3aff681eed5bb61883453}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING
 require_marker "$build_script" \
-    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.188}' \
+    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.189}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.188.tar.gz}' \
+    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.189.tar.gz}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING
 require_marker "$build_script" \
-    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-3467dfb37d7723b9293bc64145603d09ba24799ad726feb89177c9fa38b4ed92}' \
+    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-1c90e273b7db8ebf9d851a0ae1ec49dc59067b5ee1099ea3886919c1a79ccdfc}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING
 require_marker "$release_dockerfile" \
     'ARG CATALOG_SERVICE_VERSION=0.20.13' \
@@ -1059,10 +1059,10 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.533}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.534}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.533}' \
+    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.534}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING
 require_marker "$build_script" \
     'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"' \
@@ -2158,7 +2158,7 @@ done
 jq -e '
   ["CVE-2026-107928","CVE-2026-107929","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"] as $curl_fixed_cves
   |   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.533"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.534"
   and (.statements | length) == 69
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -2196,7 +2196,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.533 >/dev/null
+    "$vendor_pending_fixture" v1.6.534 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -2285,4 +2285,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.533 base=v1.6.460 engine=0.183.348 web_console=1.6.188 catalog_service=0.20.13 webhook_automation_service=0.10.4 authentication_service=0.4.43 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.534 base=v1.6.460 engine=0.183.348 web_console=1.6.189 catalog_service=0.20.13 webhook_automation_service=0.10.4 authentication_service=0.4.43 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
