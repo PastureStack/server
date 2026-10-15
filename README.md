@@ -44,7 +44,7 @@ and acceptance limits.
 
 Official publication, immutable readback and QA 8080 deployment passed, including
 startup and restart checks with preserved volumes and runtime overrides.
-Actual-browser verification found native hover and static-tooltip context defects
+Actual-browser verification found a native hover event-lifecycle defect
 in Web Console `1.6.187`. A new `1.6.188` candidate takes over those repairs;
 the 52 locale/width/theme browser cases remain incomplete.
 

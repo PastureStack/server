@@ -14,8 +14,8 @@ for exact identities and acceptance limits.
 
 This release does not change these settings. Official image publication and
 immutable readback passed. The QA 8080 switch preserved runtime overrides and
-volumes; startup and restart checks passed. Native hover and static-tooltip
-context defects remain in Web `1.6.187`, and the 52 actual-browser cases are
+volumes; startup and restart checks passed. A native hover event-lifecycle
+defect remains in Web `1.6.187`, and the 52 actual-browser cases are
 incomplete; the new Web `1.6.188` candidate takes over the browser repairs.
 
 ```yaml
