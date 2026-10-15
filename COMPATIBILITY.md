@@ -1,12 +1,18 @@
 # Compatibility Contract
 
-## Server v1.6.537 prepared, not published
+## Server v1.6.537 published
 
-This candidate targets Web Console `1.6.190` and Engine `v0.183.350`.
-Component producer commits and artifact SHA-256 values are pinned in the recipe.
-Server producer, final image identity and official release checks remain pending. See the
-[candidate note](docs/releases/server-1.6.537.md). No Server537 publication or
-deployment is claimed; the Server536 identities below remain historical facts.
+Immutable Server producer `f1df33f2a8b9e9265a9b8eeb9ad464786eb7f62e` packages
+official Web Console `1.6.190` and Engine `v0.183.350`. Official workflow
+[38742185175](https://github.com/PastureStack/server/actions/runs/38742185175)
+and anonymous exact-set readback of all 24 assets passed without bypassing checks.
+Manifest: `sha256:81aafa0347910449ef528526f02e75a12acfce2f3987b803b92cb3b96fd0ac2d`.
+Distinct OCI config: `sha256:f49f36d2d6d2bd397c62330a0ff616aa8a3bbd5fce9cba10da45efabf9144363`.
+Artifact identity (not an installation command):
+`ghcr.io/pasturestack/server:v1.6.537@sha256:81aafa0347910449ef528526f02e75a12acfce2f3987b803b92cb3b96fd0ac2d`.
+The linux/amd64 image has one runtime layer; documentation commits do not replace
+the producer. Numeric installation tags remain required. See the
+[release note](docs/releases/server-1.6.537.md).
 
 Stack and Service `archived` is a persisted boolean with missing values treated
 as false. Archive requires stopped services and instances, rejects system/driver
@@ -27,11 +33,16 @@ warns that mounts and volumes are retained and require operator backups.
 Reviewed pre-release isolated evidence covers focused tests, native role/Key
 archive/restore, thirteen-locale layouts, owner-read Key audit, and separate
 physical workload/mount preservation and first-host checks. It does not establish
-the final537 image or future published190/350 artifact identities. Existing API
+an exhaustive preserved-database upgrade or distributed race matrix. Separate
+official final-image startup/restart passed with HTTP200/pong after 12/8 polling
+attempts, with 34 MFA-policy API checks and seven registration-entry checks; this
+is not a Docker Healthcheck or a company-production deployment claim. Existing API
 Key policy, authentication/OIDC/MFA, three-volume persistence, CLI defaults,
 performance overrides and firewall contracts are not changed by this feature.
-Security document release IDs advance only; VEX statements, vendor findings and
-their review deadlines are preserved pending the new final-image security gate.
+The new final-image scan records 66 raw findings and the existing exact 22 unfixed
+package findings across 11 CVEs after VEX policy, review 2026-10-20. Its gate passed
+with zero untracked, critical/high, fixed-available or secret findings. VEX and
+vendor tracking are not remediation, a HIGH waiver or a zero-risk claim.
 
 ## Server v1.6.536 published
 
