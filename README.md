@@ -13,21 +13,21 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-Server [`v1.6.533`](https://github.com/PastureStack/server/releases/tag/v1.6.533)
-packages Web Console `1.6.188` and Orchestration Engine `v0.183.348`.
-It repairs native clipboard hover and localized feedback and includes Ubuntu's
-official curl security update. Publication, immutable readback, QA startup and
-restart passed with preserved volumes and runtime settings.
+Server [`v1.6.534`](https://github.com/PastureStack/server/releases/tag/v1.6.534)
+packages Web Console `1.6.189` and Orchestration Engine `v0.183.348`.
+Native clipboard behavior from 188 is retained and RTL step-circle alignment is repaired;
+the image also includes Ubuntu's official curl `8.18.0-1ubuntu2.8` security backport.
 
-The 52 clipboard locale/width/theme combinations and ordinary-HTTP copy passed.
-Visual review found a separate RTL step-background alignment defect; its fix
-requires a new immutable component and Server patch. This is not complete
-whole-page or broader role/lifecycle acceptance. See the
-[release note](docs/releases/server-1.6.533.md) for identities and evidence.
+Official publication, immutable readback and QA startup/restart passed with
+preserved volumes and runtime overrides. The final 52 browser cases comprise 44
+unaffected 188 results and 8 new 189 fa-ir/en-us views; HTTP fallback was newly run on 189.
+Broader role/backend/lifecycle acceptance and historical pending cases remain
+incomplete. See the [release note](docs/releases/server-1.6.534.md) for
+exact component identities, curl/VEX evidence and acceptance limits.
 
 Personal API Keys remain available without an accessible environment. Existing
-API authorization, registration, OIDC/MFA and performance contracts are retained.
-See the [Host guide](docs/hosts/README.md) before enrolling a host.
+API authorization, registration, OIDC/MFA and performance settings retain their
+contracts. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
 ## API Keys
 
@@ -58,7 +58,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.533
+  ghcr.io/pasturestack/server:v1.6.534
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -66,7 +66,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.533
+    image: ghcr.io/pasturestack/server:v1.6.534
     restart: unless-stopped
     ports:
       - "8080:8080"

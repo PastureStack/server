@@ -1,5 +1,21 @@
 # Compatibility Contract
 
+## Server v1.6.534 published
+
+This release packages immutable Web Console `1.6.189` and unchanged Engine `v0.183.348`.
+
+The immutable Server producer is `52714c372b38ea0b6f56bb205fbdfb0a584707e1`. Official workflow [38663986172](https://github.com/PastureStack/server/actions/runs/38663986172) and readback of 24 assets passed without bypassing required checks. The linux/amd64 image has one runtime layer. Registry manifest: `sha256:e218bd31b39207c969f331aab097fd9773ef0071216e794f9a4bd23010d8fc96`. Distinct OCI config: `sha256:1d31677fbc05073830eaee66592a8c274edd7d4cf743c3c3371383b5e36bd7fd`. Artifact identity, not an installation command: `ghcr.io/pasturestack/server:v1.6.534@sha256:e218bd31b39207c969f331aab097fd9773ef0071216e794f9a4bd23010d8fc96`. Documentation commits do not replace the producer.
+
+Immutable Web producer: `f30f5e81dd9ee25878c3aff681eed5bb61883453`. `web-console-1.6.189.tar.gz` is 3,024,592 bytes, SHA-256 `1c90e273b7db8ebf9d851a0ae1ec49dc59067b5ee1099ea3886919c1a79ccdfc`. Official publication and anonymous readback passed; later documentation commits do not replace this producer.
+
+Official QA deployment and restart passed with preserved volumes and runtime overrides. The final 52-case matrix covers 13 locales, 1440px/390px widths and light/dark themes: 44 unaffected Web 188 results are carried, and eight fa-ir/en-us views were newly run on Web 189 after the step-circle RTL fix. These are not 52 new Web 189 runs. A separate ordinary-HTTP native copy was newly verified on Web 189 with the Clipboard API absent. Clipboard payloads matched exactly. Permission rejection was an explicit denial fixture, distinct from the real HTTP fallback. Preferences, presentation and clipboard were restored; page errors, missing translations and unexpected resource writes were zero.
+
+Six new focused CSS cases passed for the exact shared step-list change, SVG geometry, generated LTR/RTL background and number alignment, both themes and version identities. Four actual-DOM cases added and passed on Web 188 are carried for native hover/leave, real static tooltip content, feedback success/failure, listener cleanup after destruction, action-menu overrides and host registration copy. The earlier thirteen clipboard/host cases and one corrected-caption rerun retain their original evidence; they were not replayed. The unchanged 32-key resource contract across 13 locales is carried from the same translation sources, not presented as a new resource run.
+
+The official curl packages use Ubuntu's `8.18.0-1ubuntu2.8` security backport. The scanner feed still reports the 54 exact curl findings covered by evidence-backed OpenVEX `fixed` statements; raw findings are retained rather than reported as zero. The original 20 MEDIUM findings across 10 CVEs remain vendor-pending for review on 2026-10-20. See the release note for the exact package/PURL boundaries and unchanged gates.
+
+Focused acceptance does not complete the broader role/backend/lifecycle matrix; historical HOLDs and deferred KVM cases retain their status. See the [release note](docs/releases/server-1.6.534.md).
+
 ## Server v1.6.533 published; RTL visual follow-up required
 
 This candidate packages immutable Web Console `1.6.188`, source

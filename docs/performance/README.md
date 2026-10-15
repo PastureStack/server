@@ -8,21 +8,20 @@ The following example is appropriate as a starting point for a dedicated
 16-vCPU host with about 32 GiB of RAM. It is not a universal performance
 profile; measure the real workload before increasing it further.
 
-The example uses the published `v1.6.533` image, packaging Web Console `1.6.188`
-and Engine `v0.183.348`. See the [release note](../releases/server-1.6.533.md)
-for exact identities and acceptance limits.
+The example uses published Server `v1.6.534`, packaging Web Console `1.6.189`
+and Engine `v0.183.348`. See the [release note](../releases/server-1.6.534.md)
+for immutable identities and acceptance limits.
 
-This release does not change these settings. Official image publication and
-immutable readback passed. The QA 8080 switch preserved runtime overrides and
-volumes; startup and restart checks passed. A native hover event-lifecycle
-repair and 52 clipboard combinations passed in Web `1.6.188`. A separate RTL
-step-background alignment defect remains pending; it does not change these
-performance settings or establish a performance benchmark.
+This release retains these performance settings. Official image readback and
+QA startup/restart passed with preserved runtime overrides and volumes. The
+final 52 browser cases use 44 carried 188 results plus 8 new 189 views; ordinary-HTTP
+copy was newly verified on 189. This does
+not establish a performance benchmark or complete broader acceptance.
 
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.533
+    image: ghcr.io/pasturestack/server:v1.6.534
     restart: unless-stopped
     ports:
       - "8080:8080"
