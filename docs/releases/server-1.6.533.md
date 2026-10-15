@@ -32,6 +32,16 @@ Server正式發行、成品讀回、8080部署、13語系×桌面／窄版×亮�
 本次 curl 三包由上述獨立官方 ADD 與 checksum 提供，不來自該舊 snapshot。
 不新增 HIGH 豁免或 vendor-pending；仍須由正式成品安全 gate 確認修補結果。
 
+第二次官方掃描已讀回三包 `.8`，未解決輸出仍列 74 筆：上述 curl
+18 個 CVE／54 筆（含 3 筆 HIGH）及原本 20 筆 MEDIUM，curl 的
+`FixedVersion` 欄位仍空白。正式 `.8` deb 的變更紀錄逐項列出這 18 個
+CVE 的安全補丁，並與 Ubuntu USN-8927-1、curl 上游修補 commit 交叉核對。
+本版以 OpenVEX `fixed` 記錄已套用的 Ubuntu backport；每項只對三個精確
+`.8` PURL 生效，附官方公告、補丁與已驗簽 deb SHA-256。
+gate 同步精確鎖定 69 項聲明及這 18 項修補集合，舊 `.7`、缺包、
+`not_affected` 或無證據的新 CVE 都不得通過。保留 scanner 原始判斷，
+不宣稱原始掃描為零，不降低 HIGH gate，仍需正式 workflow 以原 gate 重驗。
+
 ## 邊界與升級
 
 不改註冊API、帳號權限、OIDC、MFA、HAProxy、DB、網路後端或效能設定。
