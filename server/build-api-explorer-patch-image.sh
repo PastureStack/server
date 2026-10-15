@@ -14,7 +14,7 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.532}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.533}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
@@ -48,10 +48,10 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
 api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.187}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.187.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-b9797c08cf8c698e7cabac4bc9cd12fba0faa181c8781875d93a3de7109f2db3}
-web_console_commit=${WEB_CONSOLE_COMMIT:-b45f8ee73c72b5f58b010dd55c64d5aef7406c61}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.188}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.188.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-3467dfb37d7723b9293bc64145603d09ba24799ad726feb89177c9fa38b4ed92}
+web_console_commit=${WEB_CONSOLE_COMMIT:-8e12216fd6f8d843ed043b4c0afcec995d33caeb}
 catalog_service_release_base_url=${CATALOG_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/catalog-service/releases/download}
 catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.13}
 catalog_service_commit=${CATALOG_SERVICE_COMMIT:-4c39c73a8131ba06e9ff0aaec3b95cc27e049324}
@@ -101,7 +101,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-5ce
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-e62a21270142181315293d7e11482288ffe8fc4d91cc8fe07dacc90b461f3709}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.532}
+image=${IMAGE:-pasturestack-validation/server:v1.6.533}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
