@@ -7,6 +7,10 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.537 candidate](releases/server-1.6.537.md) — prepared for Web
+  Console `1.6.190` and Engine `v0.183.350` archive/restore. Component identities
+  are pinned; official Server image/publication gates remain pending.
+
 - [Server v1.6.529](releases/server-1.6.529.md) — published with Engine
   `0.183.347` and Web Console `1.6.184` for subscription terminal audit and its
   translated target label. Official publication and immutable readback passed;
