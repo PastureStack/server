@@ -288,7 +288,9 @@ setup_agent_artifact_overrides()
 setup_cli_artifact_overrides()
 {
     local artifact_base="${RC16_ARTIFACT_BASE_URL%/}"
-    if [ -z "$artifact_base" ]; then
+    local cli_release_base="${PASTURESTACK_CLI_RELEASE_BASE_URL:-}"
+    cli_release_base="${cli_release_base%/}"
+    if [ -z "$artifact_base" ] && [ -z "$cli_release_base" ]; then
         return 0
     fi
 
@@ -297,15 +299,26 @@ setup_cli_artifact_overrides()
     local compose_asset_version="${compose_version#v}"
     local cli_asset_version="${cli_version#v}"
 
-    export CATTLE_RANCHER_COMPOSE_VERSION="$compose_version"
-    export DEFAULT_CATTLE_RANCHER_COMPOSE_LINUX_URL="${DEFAULT_CATTLE_RANCHER_COMPOSE_LINUX_URL:-${artifact_base}/compose-cli-${compose_asset_version}-linux-amd64.tar.gz}"
-    export DEFAULT_CATTLE_RANCHER_COMPOSE_DARWIN_URL="${DEFAULT_CATTLE_RANCHER_COMPOSE_DARWIN_URL:-${artifact_base}/compose-cli-${compose_asset_version}-darwin-amd64.tar.gz}"
-    export DEFAULT_CATTLE_RANCHER_COMPOSE_WINDOWS_URL="${DEFAULT_CATTLE_RANCHER_COMPOSE_WINDOWS_URL:-${artifact_base}/compose-cli-${compose_asset_version}-windows-amd64.zip}"
+    if [ -n "$artifact_base" ]; then
+        export CATTLE_RANCHER_COMPOSE_VERSION="$compose_version"
+        export DEFAULT_CATTLE_RANCHER_COMPOSE_LINUX_URL="${DEFAULT_CATTLE_RANCHER_COMPOSE_LINUX_URL:-${artifact_base}/compose-cli-${compose_asset_version}-linux-amd64.tar.gz}"
+        export DEFAULT_CATTLE_RANCHER_COMPOSE_DARWIN_URL="${DEFAULT_CATTLE_RANCHER_COMPOSE_DARWIN_URL:-${artifact_base}/compose-cli-${compose_asset_version}-darwin-amd64.tar.gz}"
+        export DEFAULT_CATTLE_RANCHER_COMPOSE_WINDOWS_URL="${DEFAULT_CATTLE_RANCHER_COMPOSE_WINDOWS_URL:-${artifact_base}/compose-cli-${compose_asset_version}-windows-amd64.zip}"
+    fi
 
+    local cli_linux_url="${artifact_base}/pasturestack-cli-${cli_asset_version}-linux-amd64.tar.gz"
+    local cli_darwin_url="${artifact_base}/pasturestack-cli-${cli_asset_version}-darwin-amd64.tar.gz"
+    local cli_windows_url="${artifact_base}/pasturestack-cli-${cli_asset_version}-windows-amd64.zip"
+    if [ -n "$cli_release_base" ]; then
+        local cli_base="${cli_release_base}/v${cli_asset_version}"
+        cli_linux_url="${cli_base}/pasturestack-cli-linux-amd64-${cli_asset_version}.tar.gz"
+        cli_darwin_url="${cli_base}/pasturestack-cli-darwin-amd64-${cli_asset_version}.tar.gz"
+        cli_windows_url="${cli_base}/pasturestack-cli-windows-amd64-${cli_asset_version}.zip"
+    fi
     export CATTLE_RANCHER_CLI_VERSION="$cli_version"
-    export DEFAULT_CATTLE_RANCHER_CLI_LINUX_URL="${DEFAULT_CATTLE_RANCHER_CLI_LINUX_URL:-${artifact_base}/pasturestack-cli-${cli_asset_version}-linux-amd64.tar.gz}"
-    export DEFAULT_CATTLE_RANCHER_CLI_DARWIN_URL="${DEFAULT_CATTLE_RANCHER_CLI_DARWIN_URL:-${artifact_base}/pasturestack-cli-${cli_asset_version}-darwin-amd64.tar.gz}"
-    export DEFAULT_CATTLE_RANCHER_CLI_WINDOWS_URL="${DEFAULT_CATTLE_RANCHER_CLI_WINDOWS_URL:-${artifact_base}/pasturestack-cli-${cli_asset_version}-windows-amd64.zip}"
+    export DEFAULT_CATTLE_RANCHER_CLI_LINUX_URL="${DEFAULT_CATTLE_RANCHER_CLI_LINUX_URL:-$cli_linux_url}"
+    export DEFAULT_CATTLE_RANCHER_CLI_DARWIN_URL="${DEFAULT_CATTLE_RANCHER_CLI_DARWIN_URL:-$cli_darwin_url}"
+    export DEFAULT_CATTLE_RANCHER_CLI_WINDOWS_URL="${DEFAULT_CATTLE_RANCHER_CLI_WINDOWS_URL:-$cli_windows_url}"
 }
 
 setup_default_service_flags()
