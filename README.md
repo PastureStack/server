@@ -13,18 +13,9 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-Server [`v1.6.535`](https://github.com/PastureStack/server/releases/tag/v1.6.535)
-packages Web Console `1.6.189` and Orchestration Engine `v0.183.349`.
-Scoped API Keys recognize additional existing Stack, Service, Container and Volume
-actions through a resource-typed central registry. Full and legacy Keys retain
-the normal authorization path; a Key cannot exceed its owner's live permissions.
-See the [release note](docs/releases/server-1.6.535.md) for artifact identities,
-focused acceptance and upgrade/rollback boundaries. This is not a claim that
-every platform action or historical matrix item has been verified.
+Server [`v1.6.536`](https://github.com/PastureStack/server/releases/tag/v1.6.536) packages unchanged Web Console `1.6.189` and Engine `v0.183.349`, with maintained external CLI `v0.6.18` download defaults. Explicit saved URLs and operator overrides remain authoritative. See the [release note](docs/releases/server-1.6.536.md) for immutable identities, native command evidence and remaining acceptance boundaries. Existing API authorization, OIDC/MFA, registration and performance contracts remain unchanged.
 
-Personal API Keys remain available without an accessible environment. Existing
-API authorization, registration, OIDC/MFA and performance settings retain their
-contracts. See the [Host guide](docs/hosts/README.md) before enrolling a host.
+Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
 ## API Keys
 
@@ -44,8 +35,7 @@ Engine-verified project contexts; a caller-supplied project header is not a gran
 Delegated terminal/log access requires the verified Host API audit capability
 and a compatible Linux Node Agent lifecycle. Open a Key's audit from its action
 menu. See the [API Key guide](docs/api-keys.md) for policy and audit contracts.
-For automation, check HTTP status explicitly: legacy CLI `0.6.14` can silently
-exit successfully after a rejected request. See [client compatibility](COMPATIBILITY.md#legacy-cli-error-reporting).
+Maintained CLI `0.6.18` propagates rejected requests as nonzero errors. Legacy `0.6.14` can silently exit zero; see [client compatibility](COMPATIBILITY.md#maintained-cli-error-reporting) and check HTTP status explicitly for automation.
 
 ## Quick start
 
@@ -57,7 +47,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.535
+  ghcr.io/pasturestack/server:v1.6.536
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -65,7 +55,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.535
+    image: ghcr.io/pasturestack/server:v1.6.536
     restart: unless-stopped
     ports:
       - "8080:8080"
