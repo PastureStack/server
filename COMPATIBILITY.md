@@ -1,5 +1,58 @@
 # Compatibility Contract
 
+## Server v1.6.535 published
+
+This patch packages immutable Engine `v0.183.349` with unchanged Web Console
+`1.6.189`. Engine producer: `0733430fac11892a17ba53749fe02d99d26b1f52`;
+`cattle.jar` SHA-256:
+`6e61f05598c12941c3b07ebfcf81f40e7fb1bd5439ec4c7d9c34484306378f04`.
+
+Server producer: `6b7dca3a4d9154e37f9475e7b47d73bce26e1938`.
+Official workflow [38672753267](https://github.com/PastureStack/server/actions/runs/38672753267)
+and immutable readback of 24 assets passed without bypassing required checks.
+The linux/amd64 image has one runtime layer. Manifest:
+`sha256:634613baf631d54e4cf576aeaa2f9f003b035fdfec4a28e28aa3c8f0aa38283d`.
+Distinct OCI config:
+`sha256:599313735f18cc95330e0bbb76bd76bd74251c8bc4f56cba019afed4a0a3fc31`.
+Documentation commits are separate from the immutable producer.
+
+Fifteen resource-typed action pairs extend scoped-Key admission and queued
+reclassification without adding restrictions to Full/legacy Keys or widening
+owner authority. The focused Engine suite passed 150 cases and affected Server
+packaging contracts passed 38 cases; unaffected suites are carried forward.
+No schema migration, runtime patch, authentication or firewall change is needed.
+
+The official 535 image passed QA startup/restart and ten bounded native Stack
+output cases across both API roots, with eight audit pairs and normal fixture
+cleanup. Actual 535 -> retained 534 -> 535 code rollback retained Closed/expired
+Key policy, revision and expiry in twelve denial cases without restoring the
+database. The final container was ready 535 and the two test Keys were removed.
+Prior six-role OIDC A comparisons retain their original 534 provenance; neither
+this release nor those results claim completion of every role/action combination.
+
+The final-image gate reports zero untracked, critical/high, fixed-available or
+secret findings under its existing vendor/VEX policy. It retains 22 unfixed
+MEDIUM package findings across 11 CVEs for review on 2026-10-20. Newly reported
+CVE-2026-107161 remains Ubuntu 26.04 Needs evaluation; its upstream CVSS 7.5 High
+score is retained, not represented as fixed or not affected. See the
+[release note](docs/releases/server-1.6.535.md) for acceptance and rollback limits.
+
+### Legacy CLI error reporting
+
+The configured official CLI `0.6.14` download is an external client, not an
+executable installed inside Server. Native Full and stored-null legacy Key
+`inspect` commands produced identical data with no extra authentication headers.
+Legacy policy readback is canonical Full with revision zero, not JSON null.
+
+The same client returned exit code zero and no output when a Closed Key was
+correctly rejected with HTTP 403 `KeyPolicyDenied`; the server's matching audit
+pair confirms denial, not successful access. This client error-reporting defect
+remains open. The maintained `0.6.17` source propagates the error, but it is not a
+published product and its original release gates have not passed. Do not treat
+empty CLI output or exit zero as proof of a successful API operation. Use an
+HTTP client that checks response status for constrained-Key automation until a
+verified maintained CLI is released. The server does not waive the Key policy.
+
 ## Server v1.6.534 published
 
 This release packages immutable Web Console `1.6.189` and unchanged Engine `v0.183.348`.
