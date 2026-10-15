@@ -1025,9 +1025,7 @@ LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
 
 ENV CATTLE_RANCHER_SERVER_VERSION=${SERVER_RELEASE_TAG}
 ENV CATTLE_RANCHER_CLI_VERSION=v0.6.18
-ENV DEFAULT_CATTLE_RANCHER_CLI_LINUX_URL=https://github.com/PastureStack/cli/releases/download/v0.6.18/pasturestack-cli-0.6.18-linux-amd64.tar.gz
-ENV DEFAULT_CATTLE_RANCHER_CLI_DARWIN_URL=https://github.com/PastureStack/cli/releases/download/v0.6.18/pasturestack-cli-0.6.18-darwin-amd64.tar.gz
-ENV DEFAULT_CATTLE_RANCHER_CLI_WINDOWS_URL=https://github.com/PastureStack/cli/releases/download/v0.6.18/pasturestack-cli-0.6.18-windows-amd64.zip
+ENV PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download
 ENV CATTLE_CATTLE_VERSION=${ORCHESTRATION_ENGINE_RELEASE_TAG}
 ENV RC16_HOST_API_VERSION=${HOST_API_VERSION}
 ENV PASTURESTACK_HOST_API_PACKAGE_ID=${HOST_API_PACKAGE_ID}

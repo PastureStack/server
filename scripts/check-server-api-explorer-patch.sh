@@ -541,16 +541,8 @@ require_marker "$release_dockerfile" \
 require_marker "$release_dockerfile" \
     'ENV CATTLE_RANCHER_SERVER_VERSION=${SERVER_RELEASE_TAG}' \
     SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING
-for cli_platform in LINUX DARWIN WINDOWS; do
-    case "$cli_platform" in
-        LINUX) cli_suffix=linux-amd64.tar.gz ;;
-        DARWIN) cli_suffix=darwin-amd64.tar.gz ;;
-        WINDOWS) cli_suffix=windows-amd64.zip ;;
-    esac
-    cli_url="https://github.com/PastureStack/cli/releases/download/v0.6.18/pasturestack-cli-0.6.18-${cli_suffix}"
-    require_marker "$release_dockerfile" "ENV DEFAULT_CATTLE_RANCHER_CLI_${cli_platform}_URL=${cli_url}" SERVER_CLI_DOWNLOAD_DEFAULT_MISSING
-    require_marker "$build_script" "DEFAULT_CATTLE_RANCHER_CLI_${cli_platform}_URL=${cli_url}" SERVER_CLI_DOWNLOAD_RUNTIME_READBACK_MISSING
-done
+require_marker "$release_dockerfile" 'ENV PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download' SERVER_CLI_DOWNLOAD_DEFAULT_MISSING
+require_marker "$build_script" 'PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download' SERVER_CLI_DOWNLOAD_RUNTIME_READBACK_MISSING
 require_marker "$release_dockerfile" 'ENV CATTLE_RANCHER_CLI_VERSION=v0.6.18' SERVER_CLI_VERSION_DEFAULT_MISSING
 require_marker "$build_script" 'CATTLE_RANCHER_CLI_VERSION=v0.6.18' SERVER_CLI_VERSION_RUNTIME_READBACK_MISSING
 require_marker "$release_dockerfile" \

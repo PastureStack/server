@@ -340,9 +340,7 @@ image_environment=$(docker image inspect "$image" \
 for marker in \
     CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}" \
     CATTLE_RANCHER_CLI_VERSION=v0.6.18 \
-    DEFAULT_CATTLE_RANCHER_CLI_LINUX_URL=https://github.com/PastureStack/cli/releases/download/v0.6.18/pasturestack-cli-0.6.18-linux-amd64.tar.gz \
-    DEFAULT_CATTLE_RANCHER_CLI_DARWIN_URL=https://github.com/PastureStack/cli/releases/download/v0.6.18/pasturestack-cli-0.6.18-darwin-amd64.tar.gz \
-    DEFAULT_CATTLE_RANCHER_CLI_WINDOWS_URL=https://github.com/PastureStack/cli/releases/download/v0.6.18/pasturestack-cli-0.6.18-windows-amd64.zip \
+    PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download \
     CATTLE_API_UI_VERSION=1.1.18 \
     CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}" \
     RC16_GO_AGENT_VERSION="${node_agent_version}" \
