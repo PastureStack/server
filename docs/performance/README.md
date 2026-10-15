@@ -8,20 +8,21 @@ The following example is appropriate as a starting point for a dedicated
 16-vCPU host with about 32 GiB of RAM. It is not a universal performance
 profile; measure the real workload before increasing it further.
 
-The example uses the published `v1.6.532` image, packaging Web Console `1.6.187`
-and Engine `v0.183.348`. See the [release note](../releases/server-1.6.532.md)
+The example uses the published `v1.6.533` image, packaging Web Console `1.6.188`
+and Engine `v0.183.348`. See the [release note](../releases/server-1.6.533.md)
 for exact identities and acceptance limits.
 
 This release does not change these settings. Official image publication and
 immutable readback passed. The QA 8080 switch preserved runtime overrides and
 volumes; startup and restart checks passed. A native hover event-lifecycle
-defect remains in Web `1.6.187`, and the 52 actual-browser cases are
-incomplete; the new Web `1.6.188` candidate takes over the browser repairs.
+repair and 52 clipboard combinations passed in Web `1.6.188`. A separate RTL
+step-background alignment defect remains pending; it does not change these
+performance settings or establish a performance benchmark.
 
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.532
+    image: ghcr.io/pasturestack/server:v1.6.533
     restart: unless-stopped
     ports:
       - "8080:8080"

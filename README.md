@@ -13,51 +13,21 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-Server [`v1.6.532`](https://github.com/PastureStack/server/releases/tag/v1.6.532)
-packages Web Console `1.6.187` and Orchestration Engine `v0.183.348`.
-The console includes scoped clipboard message and feedback changes across all
-13 supported locales; actual-browser acceptance remains incomplete.
-The shared Default uses the configured public Native project template, with
-system-stack definitions available before host registration and service
-activation triggered by the first active host. Machine driver cards display
-each driver's API name, including drivers sharing the generic icon; catalog
-names retain localization and formatting. Personal API Keys are available
-without an accessible environment.
+Server [`v1.6.533`](https://github.com/PastureStack/server/releases/tag/v1.6.533)
+packages Web Console `1.6.188` and Orchestration Engine `v0.183.348`.
+It repairs native clipboard hover and localized feedback and includes Ubuntu's
+official curl security update. Publication, immutable readback, QA startup and
+restart passed with preserved volumes and runtime settings.
 
-API Key permissions follow the actual operation and the owner's live authority.
-Authorized compose exports and registered actions can load their exact target
-without granting ordinary read/list access or broader resource scope.
-Stack-scoped Container and Instance Link queries retain live ancestry checks
-and work with MariaDB's default optimizer, including nullable Stack references.
+The 52 clipboard locale/width/theme combinations and ordinary-HTTP copy passed.
+Visual review found a separate RTL step-background alignment defect; its fix
+requires a new immutable component and Server patch. This is not complete
+whole-page or broader role/lifecycle acceptance. See the
+[release note](docs/releases/server-1.6.533.md) for identities and evidence.
 
-Subscription audit retains the first terminal close/failure outcome and bounded
-delivery retry without restoring authorization.
-The console labels event subscriptions even when a completion record has no
-target ID; resource-picker and grant capabilities retain their existing boundaries.
-
-Registration tokens use dedicated Basic authentication. Native project creation
-preserves the creator's initial membership and default networks. HA database
-exports return a SQL ZIP only after successful, nonempty output; failures clean
-up temporary files without returning command stderr or secrets.
-See the [release note](docs/releases/server-1.6.532.md) for component identities
-and acceptance limits.
-
-Official publication, immutable readback and QA 8080 deployment passed, including
-startup and restart checks with preserved volumes and runtime overrides.
-Actual-browser verification found a native hover event-lifecycle defect
-in Web Console `1.6.187`. A new `1.6.188` candidate takes over those repairs;
-the 52 locale/width/theme browser cases remain incomplete.
-
-The console supports OIDC, TOTP and passkeys, role-aware resource operations,
-container resource/hardware settings, and movable terminal/log windows.
-Hardware options require compatible node software and actual host capabilities;
-GPU device access is not exclusive GPU allocation. Audit queries and JSON, CSV
-and XLSX exports preserve environment authorization, explicit date bounds and
-bounded pagination. Query/export errors retain filters and successful query
-results. See the [Host compatibility guide](docs/hosts/README.md) before enrolling
-a host and the [API Key guide](docs/api-keys.md) for policy and audit behavior.
-A packaged feature does not establish that every resource, role or hardware
-combination has been tested.
+Personal API Keys remain available without an accessible environment. Existing
+API authorization, registration, OIDC/MFA and performance contracts are retained.
+See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
 ## API Keys
 
@@ -88,7 +58,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.532
+  ghcr.io/pasturestack/server:v1.6.533
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -96,7 +66,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.532
+    image: ghcr.io/pasturestack/server:v1.6.533
     restart: unless-stopped
     ports:
       - "8080:8080"

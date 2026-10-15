@@ -1,6 +1,6 @@
 # Compatibility Contract
 
-## Server v1.6.533 candidate
+## Server v1.6.533 published; RTL visual follow-up required
 
 This candidate packages immutable Web Console `1.6.188`, source
 `8e12216fd6f8d843ed043b4c0afcec995d33caeb`, archive SHA-256
@@ -9,8 +9,15 @@ Native non-bubbling pointer events are owned by the tooltip element lifecycle,
 with run-loop entry and listener cleanup. Existing action-menu overrides and
 static context forwarding are preserved. Four new actual-DOM focused cases
 passed. Engine `v0.183.348`, APIs, registration, authentication, permissions,
-networking and all other component inputs are unchanged. Server publication,
-deployment and 52 actual-browser views plus ordinary HTTP copy remain pending.
+networking and all other component inputs are unchanged. Official publication,
+QA startup and restart passed. Producer: `6ef201a937500f894f8ec0f5a589cb7f796b66c3`.
+Artifact identity, not an installation command:
+`ghcr.io/pasturestack/server:v1.6.533@sha256:f5bc5eb860bec0d6477d03da7e02ee3c683d23c67e9a3d850d36a2a256fb6216`.
+The distinct OCI config is `sha256:011862871af1ac207f3ba72ba68c51e41faf7cfc15527ad9ea321b0d339289e4`.
+All 52 actual-browser clipboard views and ordinary-HTTP copy passed; subsequent
+visual review found the existing RTL step background remained left while its
+number moved right. This is not complete whole-page layout acceptance; the
+alignment repair requires a new immutable component and Server patch.
 See [the release note](docs/releases/server-1.6.533.md).
 
 ## Server v1.6.532 published; browser acceptance incomplete
