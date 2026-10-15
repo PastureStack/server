@@ -460,7 +460,7 @@ RUN set -eux; \
 FROM ${UBUNTU_SECURITY_IMAGE} AS runtime_security_packages
 
 ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20261002T000000Z
-ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7
+ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.8
 ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7
 ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4
 ARG FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2
@@ -479,6 +479,15 @@ ADD --checksum=sha256:f24a7f7c0428d74e33ea934696987b7336ec0962f212535185f0493792
 ADD --checksum=sha256:3040f61cc06ebf363e5895db4cc2c7a2db8951296d39d4ef5fa0fc3fd364654e \
     https://security.ubuntu.com/ubuntu/pool/main/libd/libdbi-perl/libdbi-perl_1.647-1ubuntu0.26.04.4_amd64.deb \
     /tmp/libdbi-perl.deb
+ADD --checksum=sha256:2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc \
+    https://security.ubuntu.com/ubuntu/pool/main/c/curl/curl_8.18.0-1ubuntu2.8_amd64.deb \
+    /tmp/curl.deb
+ADD --checksum=sha256:8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e \
+    https://security.ubuntu.com/ubuntu/pool/main/c/curl/libcurl3t64-gnutls_8.18.0-1ubuntu2.8_amd64.deb \
+    /tmp/libcurl3t64-gnutls.deb
+ADD --checksum=sha256:7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266 \
+    https://security.ubuntu.com/ubuntu/pool/main/c/curl/libcurl4t64_8.18.0-1ubuntu2.8_amd64.deb \
+    /tmp/libcurl4t64.deb
 RUN set -eux; \
     mkdir -p /tmp/ca-bootstrap /etc/ssl/certs; \
     dpkg-deb --extract /tmp/ca-certificates.deb /tmp/ca-bootstrap; \
@@ -511,11 +520,8 @@ RUN set -eux; \
     sha256sum usr/lib/x86_64-linux-gnu/libpng16.so.16 > /out/libpng-runtime.sha256; \
     test "$(wc -l < /out/libpng-runtime.sha256)" -eq 1; \
     cd /out/packages; \
-    apt-get download \
-      "curl=${CURL_PACKAGE_VERSION}" \
-      "libcurl3t64-gnutls=${CURL_PACKAGE_VERSION}" \
-      "libcurl4t64=${CURL_PACKAGE_VERSION}"; \
     for package in curl libcurl3t64-gnutls libcurl4t64; do \
+      cp "/tmp/${package}.deb" "/out/packages/${package}_${CURL_PACKAGE_VERSION}_amd64.deb"; \
       package_file="$(find . -maxdepth 1 -type f -name "${package}_*.deb" -print)"; \
       test -n "${package_file}"; \
       test "$(printf '%s\n' "${package_file}" | wc -l)" -eq 1; \
@@ -581,7 +587,7 @@ ARG NODE_AGENT_VERSION=0.13.28
 ARG NODE_AGENT_COMMIT=bb4e057c089e5384bc9836b42db206326c690387
 ARG NODE_AGENT_ARCHIVE_SHA256=a16ae6be5fb72fa2ba38bd1076fd3b9e0536c48e70995ffa49d17b8063e2f8d0
 ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20261002T000000Z
-ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7
+ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.8
 ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7
 ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4
 ARG FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2

@@ -264,7 +264,7 @@ class ComponentRecipeTest(unittest.TestCase):
     def test_security_pins_and_overlay_path_are_retained(self):
         text = (ROOT / "server/Dockerfile.web-compose-release").read_text()
         for marker in ("ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403",
-                       "OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7", "CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7",
+                       "OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7", "CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.8",
                        "FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2", "UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20261002T000000Z",
                        "PatchV1GlobalSubscribe verify-hardware", "schema/service/service-auth.json", "db/core-124.xml"):
             self.assertIn(marker, text)

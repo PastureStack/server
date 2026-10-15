@@ -23,6 +23,15 @@ Server正式發行、成品讀回、8080部署、13語系×桌面／窄版×亮�
 以及普通HTTP複製仍各自待完成，不將來源測試當成瀏覽器通過。
 歷史矩陣與KVM待驗維持原狀。
 
+正式成品安全 gate 發現 curl `8.18.0-1ubuntu2.7` 的 `CVE-2026-92392` HIGH。
+本候選版改用 Ubuntu 2026-10-14 [USN-8927-1](https://ubuntu.com/security/notices/USN-8927-1)
+正式修補的 `curl`、`libcurl3t64-gnutls`、`libcurl4t64` `8.18.0-1ubuntu2.8`。
+三包直接取自官方安全套件庫，以簽章索引與實際 deb bytes 核對 SHA-256 後鎖定；
+保留其他套件的既有 snapshot、原套件 metadata、授權與安裝路徑。
+既有 `PASTURESTACK_CURL_SECURITY_SNAPSHOT=20261002T000000Z` 僅保留為 apt 來源標記；
+本次 curl 三包由上述獨立官方 ADD 與 checksum 提供，不來自該舊 snapshot。
+不新增 HIGH 豁免或 vendor-pending；仍須由正式成品安全 gate 確認修補結果。
+
 ## 邊界與升級
 
 不改註冊API、帳號權限、OIDC、MFA、HAProxy、DB、網路後端或效能設定。

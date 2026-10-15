@@ -508,6 +508,58 @@ def previous_gate(gate=GATE):
 
 
 class Tests(unittest.TestCase):
+    def test_official_curl_fixed_debs_are_pinned_outside_the_unchanged_snapshot(self):
+        recipe, builder = FILES[DOCKER], FILES[BUILD]
+        version = '8.18.0-1ubuntu2.8'
+        expected = {
+            'curl': '2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc',
+            'libcurl3t64-gnutls': '8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e',
+            'libcurl4t64': '7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266',
+        }
+        declared = engine_gate_markers(GATE, 'release_curl_official_deb_marker')
+        normalized = recipe.replace('\\\n', ' ')
+        for package, digest in expected.items():
+            url = 'https://security.ubuntu.com/ubuntu/pool/main/c/curl/' + package + '_' + version + '_amd64.deb'
+            pattern = (r'^ADD --checksum=sha256:' + digest + r'\s+' + re.escape(url)
+                       + r'\s+/tmp/' + re.escape(package) + r'[.]deb\s*$')
+            self.assertRegex(normalized, re.compile(pattern, re.M))
+            self.assertIn('ADD --checksum=sha256:' + digest, declared)
+            self.assertIn(url, declared)
+        self.assertEqual(recipe.count('ARG CURL_PACKAGE_VERSION=' + version), 2)
+        self.assertEqual(recipe.count('ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20261002T000000Z'), 2)
+        self.assertNotRegex(recipe, r'apt-get download\s+\\\s*\n\s*"curl=')
+        copy = 'cp "/tmp/${package}.deb" "/out/packages/${package}_${CURL_PACKAGE_VERSION}_amd64.deb"'
+        self.assertIn(copy, declared)
+        self.assertIn(copy + ';', recipe)
+        self.assertIn('PASTURESTACK_CURL_PACKAGE_VERSION=' + version, builder)
+        self.assertIn('"' + version + '"', builder)
+        self.assertNotIn('8.18.0-1ubuntu2.7', recipe + builder + FILES[VEX] + GATE)
+        for field in ('Package', 'Version', 'Architecture'):
+            self.assertIn('dpkg-deb -f "${package_file}" ' + field, recipe)
+        fixed = next(item for item in json.loads(FILES[VEX])['statements']
+                     if item['vulnerability']['name'] == 'CVE-2026-8932')
+        self.assertEqual(fixed['status'], 'fixed')
+        self.assertEqual({item['@id'] for item in fixed['products']},
+                         {'pkg:deb/ubuntu/' + package + '@' + version + '?arch=amd64&distro=ubuntu-26.04'
+                          for package in expected})
+
+    def test_official_curl_gate_rejects_replaced_deb_inputs(self):
+        declared = engine_gate_markers(GATE, 'release_curl_official_deb_marker')
+        recipe = FILES[DOCKER]
+        self.assertEqual(len(declared), 7)
+        self.assertTrue(all(marker in recipe for marker in declared))
+        for marker in declared:
+            replacements = ['REMOVED_CURL_PIN']
+            if '8.18.0-1ubuntu2.8' in marker:
+                replacements.append(marker.replace('8.18.0-1ubuntu2.8', '8.18.0-1ubuntu2.7'))
+            if 'ADD --checksum=sha256:' in marker:
+                replacements.append('ADD --checksum=sha256:' + '0' * 64)
+            for replacement in replacements:
+                with self.subTest(marker=marker, replacement=replacement):
+                    mutated = recipe.replace(marker, replacement)
+                    self.assertFalse(all(required in mutated for required in declared),
+                                     'the actual require_marker set rejects a removed, stale or wrong-hash input')
+
     def test_official_dbi_security_update_is_isolated_and_hash_pinned(self):
         recipe, builder = FILES[DOCKER], FILES[BUILD]
         digest = '3040f61cc06ebf363e5895db4cc2c7a2db8951296d39d4ef5fa0fc3fd364654e'

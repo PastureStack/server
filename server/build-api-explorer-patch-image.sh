@@ -356,7 +356,7 @@ for marker in \
     PASTURESTACK_RUNTIME_GO_VERSION=1.27.2 \
     PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10 \
     PASTURESTACK_CURL_SECURITY_SNAPSHOT=20261002T000000Z \
-    PASTURESTACK_CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7 \
+    PASTURESTACK_CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.8 \
     PASTURESTACK_GLIBC_CVE_2026_18374_FIX=not-in-execute-path \
     PASTURESTACK_GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4 \
     PASTURESTACK_PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3 \
@@ -847,7 +847,7 @@ EOF
     }
     for curl_package in curl libcurl3t64-gnutls libcurl4t64; do
         test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${curl_package}")" = \
-            "8.18.0-1ubuntu2.7"
+            "8.18.0-1ubuntu2.8"
     done
     for glibc_package in libc6 libc-bin libc-gconv-modules-extra; do
         test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${glibc_package}")" = \
@@ -966,7 +966,7 @@ EOF
 docker run --rm -i --network none --entrypoint bash "$image" -s \
     < scripts/test-server-openssl-tls.sh
 
-printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s catalog_service=%s catalog_service_commit=%s catalog_service_archive_sha256=%s catalog_service_binary_sha256=%s catalog_service_sqlite_binary_sha256=%s authentication_service=%s authentication_service_commit=%s authentication_service_archive_sha256=%s authentication_service_binary_sha256=%s websocket_proxy=%s websocket_proxy_commit=%s websocket_proxy_archive_sha256=%s websocket_proxy_binary_sha256=%s compose_executor=%s compose_executor_commit=%s compose_executor_archive_sha256=%s compose_executor_binary_sha256=%s vsphere_cli=%s vsphere_cli_commit=%s vsphere_cli_archive_sha256=%s govc_binary_sha256=%s runtime_go=1.27.2 orchestration_updated=1 wrappers_pinned=1 audit_log_filters=1 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 vendor_pending=exact-set artifact_scan=required\n' \
+printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s catalog_service=%s catalog_service_commit=%s catalog_service_archive_sha256=%s catalog_service_binary_sha256=%s catalog_service_sqlite_binary_sha256=%s authentication_service=%s authentication_service_commit=%s authentication_service_archive_sha256=%s authentication_service_binary_sha256=%s websocket_proxy=%s websocket_proxy_commit=%s websocket_proxy_archive_sha256=%s websocket_proxy_binary_sha256=%s compose_executor=%s compose_executor_commit=%s compose_executor_archive_sha256=%s compose_executor_binary_sha256=%s vsphere_cli=%s vsphere_cli_commit=%s vsphere_cli_archive_sha256=%s govc_binary_sha256=%s runtime_go=1.27.2 orchestration_updated=1 wrappers_pinned=1 audit_log_filters=1 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 vendor_pending=exact-set artifact_scan=required\n' \
     "$image" "$revision" "$base_image" "${orchestration_engine_release_tag#v}" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "${api_explorer_release_tag#v}" "$api_explorer_commit" "$api_explorer_artifact_sha256" \
