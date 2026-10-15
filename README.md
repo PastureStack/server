@@ -13,17 +13,14 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-Server [`v1.6.534`](https://github.com/PastureStack/server/releases/tag/v1.6.534)
-packages Web Console `1.6.189` and Orchestration Engine `v0.183.348`.
-Native clipboard behavior from 188 is retained and RTL step-circle alignment is repaired;
-the image also includes Ubuntu's official curl `8.18.0-1ubuntu2.8` security backport.
-
-Official publication, immutable readback and QA startup/restart passed with
-preserved volumes and runtime overrides. The final 52 browser cases comprise 44
-unaffected 188 results and 8 new 189 fa-ir/en-us views; HTTP fallback was newly run on 189.
-Broader role/backend/lifecycle acceptance and historical pending cases remain
-incomplete. See the [release note](docs/releases/server-1.6.534.md) for
-exact component identities, curl/VEX evidence and acceptance limits.
+Server [`v1.6.535`](https://github.com/PastureStack/server/releases/tag/v1.6.535)
+packages Web Console `1.6.189` and Orchestration Engine `v0.183.349`.
+Scoped API Keys recognize additional existing Stack, Service, Container and Volume
+actions through a resource-typed central registry. Full and legacy Keys retain
+the normal authorization path; a Key cannot exceed its owner's live permissions.
+See the [release note](docs/releases/server-1.6.535.md) for artifact identities,
+focused acceptance and upgrade/rollback boundaries. This is not a claim that
+every platform action or historical matrix item has been verified.
 
 Personal API Keys remain available without an accessible environment. Existing
 API authorization, registration, OIDC/MFA and performance settings retain their
@@ -47,6 +44,8 @@ Engine-verified project contexts; a caller-supplied project header is not a gran
 Delegated terminal/log access requires the verified Host API audit capability
 and a compatible Linux Node Agent lifecycle. Open a Key's audit from its action
 menu. See the [API Key guide](docs/api-keys.md) for policy and audit contracts.
+For automation, check HTTP status explicitly: legacy CLI `0.6.14` can silently
+exit successfully after a rejected request. See [client compatibility](COMPATIBILITY.md#legacy-cli-error-reporting).
 
 ## Quick start
 
@@ -58,7 +57,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.534
+  ghcr.io/pasturestack/server:v1.6.535
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -66,7 +65,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.534
+    image: ghcr.io/pasturestack/server:v1.6.535
     restart: unless-stopped
     ports:
       - "8080:8080"
