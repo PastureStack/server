@@ -29,13 +29,13 @@ Producer `6ef201a937500f894f8ec0f5a589cb7f796b66c3`；正式成品識別（非�
 歷史矩陣與KVM待驗維持原狀。
 
 正式成品安全 gate 發現 curl `8.18.0-1ubuntu2.7` 的 `CVE-2026-92392` HIGH。
-本候選版改用 Ubuntu 2026-10-14 [USN-8927-1](https://ubuntu.com/security/notices/USN-8927-1)
+本版採用 Ubuntu 2026-10-14 [USN-8927-1](https://ubuntu.com/security/notices/USN-8927-1)
 正式修補的 `curl`、`libcurl3t64-gnutls`、`libcurl4t64` `8.18.0-1ubuntu2.8`。
 三包直接取自官方安全套件庫，以簽章索引與實際 deb bytes 核對 SHA-256 後鎖定；
 保留其他套件的既有 snapshot、原套件 metadata、授權與安裝路徑。
 既有 `PASTURESTACK_CURL_SECURITY_SNAPSHOT=20261002T000000Z` 僅保留為 apt 來源標記；
 本次 curl 三包由上述獨立官方 ADD 與 checksum 提供，不來自該舊 snapshot。
-不新增 HIGH 豁免或 vendor-pending；仍須由正式成品安全 gate 確認修補結果。
+不新增 HIGH 豁免或 vendor-pending；正式 workflow 已以既有成品安全 gate 通過。
 
 第二次官方掃描已讀回三包 `.8`，未解決輸出仍列 74 筆：上述 curl
 18 個 CVE／54 筆（含 3 筆 HIGH）及原本 20 筆 MEDIUM，curl 的
@@ -45,12 +45,12 @@ CVE 的安全補丁，並與 Ubuntu USN-8927-1、curl 上游修補 commit 交叉
 `.8` PURL 生效，附官方公告、補丁與已驗簽 deb SHA-256。
 gate 同步精確鎖定 69 項聲明及這 18 項修補集合，舊 `.7`、缺包、
 `not_affected` 或無證據的新 CVE 都不得通過。保留 scanner 原始判斷，
-不宣稱原始掃描為零，不降低 HIGH gate，仍需正式 workflow 以原 gate 重驗。
+不宣稱原始掃描為零，不降低 HIGH gate；正式 workflow 已以同一精確集合 gate 通過。
 
 ## 邊界與升級
 
 不改註冊API、帳號權限、OIDC、MFA、HAProxy、DB、網路後端或效能設定。
-官方成品確認後只更新Server數字tag，保留既有三卷、環境變數、restart、
+安裝／升級只使用已發布Server數字tag，保留既有三卷、環境變數、restart、
 AppArmor及Runtime。無DB遷移，保留532容器／SQL備份作回復點。
 
 保留既有OpenVEX判斷與vendor-pending精確集合；20筆MEDIUM／10CVE仍無官方
