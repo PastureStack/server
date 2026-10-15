@@ -1731,7 +1731,7 @@ fi
 for release_curl_security_marker in \
     'FROM ${UBUNTU_SECURITY_IMAGE} AS runtime_security_packages' \
     'ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20261002T000000Z' \
-    'ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7' \
+    'ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.8' \
     'ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7' \
     'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg' \
     'Acquire::AllowInsecureRepositories "false"' \
@@ -1752,6 +1752,17 @@ for release_curl_security_marker in \
     'ENV PASTURESTACK_OPENSSL_SECURITY_SNAPSHOT=${UBUNTU_RUNTIME_SECURITY_SNAPSHOT}'; do
     require_marker "$release_dockerfile" "$release_curl_security_marker" \
         SERVER_INCREMENTAL_CURL_SECURITY_REFRESH_MISSING
+done
+for release_curl_official_deb_marker in \
+    'ADD --checksum=sha256:2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc' \
+    'https://security.ubuntu.com/ubuntu/pool/main/c/curl/curl_8.18.0-1ubuntu2.8_amd64.deb' \
+    'ADD --checksum=sha256:8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e' \
+    'https://security.ubuntu.com/ubuntu/pool/main/c/curl/libcurl3t64-gnutls_8.18.0-1ubuntu2.8_amd64.deb' \
+    'ADD --checksum=sha256:7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266' \
+    'https://security.ubuntu.com/ubuntu/pool/main/c/curl/libcurl4t64_8.18.0-1ubuntu2.8_amd64.deb' \
+    'cp "/tmp/${package}.deb" "/out/packages/${package}_${CURL_PACKAGE_VERSION}_amd64.deb"'; do
+    require_marker "$release_dockerfile" "$release_curl_official_deb_marker" \
+        SERVER_CURL_OFFICIAL_FIXED_DEB_PIN_MISSING
 done
 for release_libdbi_security_marker in \
     'ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4' \
@@ -1831,7 +1842,7 @@ require_marker "$build_script" \
     'PASTURESTACK_CURL_SECURITY_SNAPSHOT=20261002T000000Z' \
     SERVER_CURL_IMAGE_SNAPSHOT_GATE_MISSING
 require_marker "$build_script" \
-    'PASTURESTACK_CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.7' \
+    'PASTURESTACK_CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.8' \
     SERVER_CURL_IMAGE_VERSION_GATE_MISSING
 require_marker "$build_script" \
     'PASTURESTACK_GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4' \
@@ -2261,4 +2272,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.533 base=v1.6.460 engine=0.183.348 web_console=1.6.188 catalog_service=0.20.13 webhook_automation_service=0.10.4 authentication_service=0.4.43 curl=8.18.0-1ubuntu2.7 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.533 base=v1.6.460 engine=0.183.348 web_console=1.6.188 catalog_service=0.20.13 webhook_automation_service=0.10.4 authentication_service=0.4.43 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
