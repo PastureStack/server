@@ -7,9 +7,11 @@ runtime gates have passed.
 
 ## Release notes
 
-- [Server v1.6.537 candidate](releases/server-1.6.537.md) — prepared for Web
-  Console `1.6.190` and Engine `v0.183.350` archive/restore. Component identities
-  are pinned; official Server image/publication gates remain pending.
+- [Server v1.6.537](releases/server-1.6.537.md) — published Web Console `1.6.190`
+  and Engine `v0.183.350` archive/restore; official source/build, fresh startup/restart,
+  final-image security/SBOM and anonymous 24-asset/image readback passed.
+  Immutable producer and manifest/config identities are recorded separately from
+  documentation. Pre-release feature acceptance retains its bounded original scope.
 
 - [Server v1.6.529](releases/server-1.6.529.md) — published with Engine
   `0.183.347` and Web Console `1.6.184` for subscription terminal audit and its

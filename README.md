@@ -11,15 +11,19 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current source candidate
+## Current release
 
-Server `v1.6.537` is a prepared source candidate, not a published image.
-It targets Web Console `1.6.190` and Engine `v0.183.350` for persistent
-Stack/Service archive and restore. See the [candidate note](docs/releases/server-1.6.537.md)
-for the behavior, isolated acceptance scope, pinned component identities and
-remaining Server publication gates.
-The latest published release remains [Server `v1.6.536`](https://github.com/PastureStack/server/releases/tag/v1.6.536);
-its [release note](docs/releases/server-1.6.536.md) retains the official artifact evidence.
+[Server `v1.6.537`](https://github.com/PastureStack/server/releases/tag/v1.6.537)
+packages Web Console `1.6.190` and Engine `v0.183.350` for persistent
+Stack/Service archive and restore. The official source/build, fresh startup/restart,
+security/SBOM and anonymous artifact readback gates passed. See the
+[release note](docs/releases/server-1.6.537.md) for the immutable producer and
+image identities, archive behavior and bounded acceptance evidence.
+
+Producer: `f1df33f2a8b9e9265a9b8eeb9ad464786eb7f62e`.
+Manifest: `sha256:81aafa0347910449ef528526f02e75a12acfce2f3987b803b92cb3b96fd0ac2d`;
+distinct OCI config: `sha256:f49f36d2d6d2bd397c62330a0ff616aa8a3bbd5fce9cba10da45efabf9144363`.
+Documentation updates do not replace the producer or its immutable artifacts.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -46,9 +50,7 @@ Maintained CLI `0.6.18` propagates rejected requests as nonzero errors. Legacy `
 ## Quick start
 
 Public GHCR downloads do not require a registry login. Keep all three named volumes.
-The examples below target the prepared numeric `v1.6.537` tag; run them only after its official release.
-This candidate is not yet available from GHCR. Until publication, use the latest
-published release identified above.
+The examples below use the published numeric `v1.6.537` tag.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \

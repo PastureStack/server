@@ -1,11 +1,37 @@
-# Server v1.6.537 candidate
+# Server v1.6.537
 
-Prepared source only; no Server image or release has been published.
-
-This candidate targets Web Console `1.6.190` and Engine `v0.183.350` for
+Published Server `v1.6.537` packages Web Console `1.6.190` and Engine `v0.183.350` for
 Stack/Service archive and restore. It retains the pinned Server460 build base,
 the other component producers, maintained CLI `v0.6.18` defaults, authentication,
 performance settings and the three-volume persistence contract.
+
+## Immutable publication
+
+Producer: `f1df33f2a8b9e9265a9b8eeb9ad464786eb7f62e`.
+Official workflow
+[38742185175](https://github.com/PastureStack/server/actions/runs/38742185175)
+passed all source/build, fresh startup/restart, final-image security/SBOM and
+publication gates without bypassing required checks. Anonymous readback verified
+the exact 24-asset roster and SHA-256 values, registry identity, versions and source.
+
+Manifest: `sha256:81aafa0347910449ef528526f02e75a12acfce2f3987b803b92cb3b96fd0ac2d`.
+Distinct OCI config: `sha256:f49f36d2d6d2bd397c62330a0ff616aa8a3bbd5fce9cba10da45efabf9144363`.
+Artifact identity (not an installation command):
+`ghcr.io/pasturestack/server:v1.6.537@sha256:81aafa0347910449ef528526f02e75a12acfce2f3987b803b92cb3b96fd0ac2d`.
+The single linux/amd64 runtime layer was flattened from 22 build layers with
+identical runtime configuration. Documentation commits do not replace the producer.
+
+The official disposable database started/restarted to HTTP200/pong after 12/8
+polling attempts, including public-origin/private-cache checks, 34 MFA-policy API
+checks and seven registration-entry checks. These are not a Docker Healthcheck,
+an active-node registration proof or a company-production deployment claim.
+
+The final merged-rootfs scan (Trivy0.74.0) records 66 raw findings. After the
+existing exact VEX/vendor policy, 22 unfixed package findings across 11 CVEs remain
+tracked for review on 2026-10-20. The gate passed with zero untracked,
+critical/high, fixed-available or secret findings. Tracking is not remediation,
+not_affected or a HIGH waiver, and neither a source SBOM nor this gate proves zero risk.
+Image provenance and SBOM attestations were published for the manifest above.
 
 ## Behavior
 
@@ -27,10 +53,10 @@ older Engines without the field do not offer archive. Native v1/v2-beta writes
 retain the original role and API Key `update` authorization, including live
 owner RBAC and scope limits. Archive writes send only `archived`.
 
-## Reviewed isolated candidate evidence
+## Reviewed isolated pre-release evidence
 
 The following local acceptance receipts concern pre-release feature inputs,
-not the final537 image or the future published190/350 artifact identities:
+not a rerun of the final537 image or a whole-platform acceptance matrix:
 
 - `backend-tests.json`: 63 unique focused tests, zero failures/errors/skips.
 - `frontend-tests.json`: 37 unique focused tests; 36 unaffected results are
@@ -57,15 +83,15 @@ not the final537 image or the future published190/350 artifact identities:
 
 These checks do not claim a full preserved-database upgrade, distributed
 multi-node race test, unrelated OIDC/MFA rerun or final release-image validation.
-Formal image health/restart, security scan/SBOM, anonymous asset readback and
-publication remain separate gates. Do not turn these local receipt names into
-published asset claims without attaching their reviewed immutable evidence.
+The separate final-image publication gates are recorded above. Do not turn these
+local receipt names into published asset claims without attaching their reviewed
+immutable evidence.
 
-## Component identities and remaining release gates
+## Component identities
 
 The recipe pins the following reviewed packager outputs, not previous189/349
-identities. Official component publication/readback must complete before Server
-assembly; the pins alone do not establish a published Server image.
+identities. Official Web190 and Engine350 publication and anonymous artifact
+readback completed before Server assembly; the pins alone are not publication evidence.
 
 | Input | Pinned value | Locations |
 | --- | --- | --- |
@@ -84,19 +110,16 @@ Its `WEB-INF/lib/cattle-resources-0.183.350.jar` contains `schema/v1/readonly.se
 and `schema/v1/restricted.ser` (355,023 bytes, SHA-256
 `f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51`).
 These actual reads confirm the retained frozen-schema pins for this artifact.
-Server537 producer commit, manifest/config digests, workflow and publication
-readback are also pending and must be recorded from the actual final outputs.
 
 The existing coordinate predicates continue to reject placeholders. OpenVEX and
 vendor tracking advance their release IDs only: the 69 VEX statements, 11
 vendor-pending CVEs/22 package rows, severities, fix policy and 2026-10-20 review
-deadline are unchanged. This metadata update is not a new scan or remediation;
-the new final-image security gate must still verify the exact current findings.
+deadline are unchanged. The metadata update is not remediation; the separate
+final-image scan verified the exact current findings as recorded above.
 
 ## Install and rollback boundary
 
 Operational examples use only `ghcr.io/pasturestack/server:v1.6.537`, never a
-digest-qualified or SHA-only installation tag. Run them only after official
-publication and readback. Preserve all three existing named volumes, runtime
-overrides and a working rollback container; do not restore old policy/revocation
+digest-qualified or SHA-only installation tag. Preserve all three existing named
+volumes, runtime overrides and a working rollback container; do not restore old policy/revocation
 or database state merely to roll back code. See the [upgrade guide](../upgrades/README.md).
