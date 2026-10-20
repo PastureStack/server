@@ -230,6 +230,18 @@ public class TestPatchV1GlobalSubscribe {
     }
 
     public static void main(String[] args) throws Exception {
+        // Exercise actual libnet/libnio loading, not only standalone ldd.
+        if (java.net.NetworkInterface.getNetworkInterfaces() == null) {
+            throw new IllegalStateException("native network interfaces unavailable");
+        }
+        try (java.nio.channels.Selector selector = java.nio.channels.Selector.open();
+             java.nio.channels.DatagramChannel channel = java.nio.channels.DatagramChannel.open()) {
+            channel.bind(new java.net.InetSocketAddress(java.net.InetAddress.getLoopbackAddress(), 0));
+            if (!selector.isOpen() || !channel.isOpen()) {
+                throw new IllegalStateException("native NIO unavailable");
+            }
+        }
+        System.out.println("SERVER_JDK25_NATIVE_RUNTIME_OK libnet=1 libnio=1");
         new java.io.File("schema/v1").mkdirs();
 
         List<Schema> project = new ArrayList<Schema>();
@@ -337,13 +349,14 @@ if [ -n "$jdk_home" ]; then
   )
 else
   docker run --rm \
-    --network host \
+    --network none \
+    --entrypoint /bin/bash \
     -u "$(id -u):$(id -g)" \
     -e HOME=/tmp \
     -v "$tmp":/work \
     -w /work \
     "$image" \
-    bash -lc '
+    -lc '
     set -euo pipefail
     javac -version
     javac -Xlint:deprecation -Werror -cp lib/commons-io.jar -d classes \

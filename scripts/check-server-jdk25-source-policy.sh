@@ -98,9 +98,14 @@ for marker in (
     'RC16_JDK25_CHECK_IMAGE="$CANDIDATE_IMAGE" bash scripts/check-server-java-patches-jdk25.sh',
     'SERVER_JAVA_SECURITY_RUNTIME_OK version=25.0.4.1+1',
     'java-security-runtime.txt',
+    'LD_LIBRARY_PATH=/opt/java/openjdk/lib:/opt/java/openjdk/lib/server ldd',
 ):
     if marker not in publish_workflow:
         fail('SERVER_CURRENT_JDK_ACTUAL_CANDIDATE_GATE_MISSING', marker)
+for marker in ('--entrypoint /bin/bash', 'java.nio.channels.DatagramChannel.open()',
+               'SERVER_JDK25_NATIVE_RUNTIME_OK libnet=1 libnio=1'):
+    if marker not in java_patch_gate:
+        fail('SERVER_CURRENT_JDK_NATIVE_RUNTIME_GATE_MISSING', marker)
 
 if dockerfile.startswith("# syntax=docker/dockerfile:1.7"):
     pass_("SERVER_JDK25_SOURCE_POLICY_DOCKERFILE_SYNTAX_OK")

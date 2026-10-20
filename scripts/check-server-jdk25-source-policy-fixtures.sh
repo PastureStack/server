@@ -45,6 +45,7 @@ CURRENT
 RC16_JDK25_CHECK_IMAGE="$CANDIDATE_IMAGE" bash scripts/check-server-java-patches-jdk25.sh
 SERVER_JAVA_SECURITY_RUNTIME_OK version=25.0.4.1+1
 java-security-runtime.txt
+LD_LIBRARY_PATH=/opt/java/openjdk/lib:/opt/java/openjdk/lib/server ldd
 CURRENT
 
   cat >"$root/server/Dockerfile.auth-hotfix" <<DOCKER
@@ -77,6 +78,9 @@ jdk_home="\${RC16_JDK25_HOME:-}"
 javac -Xlint:deprecation -Werror -cp lib/commons-io.jar -d classes
 javap -verbose classes/PatchV1GlobalSubscribe.class | grep -q "major version: 69"
 echo "SERVER_JAVA_PATCH_JDK25_OK file=server/patches/PatchV1GlobalSubscribe.java image=\$image class_major=69 suppresswarnings=0 runtime_smoke=1"
+# --entrypoint /bin/bash
+# java.nio.channels.DatagramChannel.open()
+# SERVER_JDK25_NATIVE_RUNTIME_OK libnet=1 libnio=1
 PATCHGATE
 
   cat >"$root/scripts/check-server-cattle-jdk25-release-evidence.sh" <<'RELEASEGATE'
@@ -191,4 +195,22 @@ if RC16_SERVER_SOURCE_ROOT="$missing_candidate_gate" scripts/check-server-jdk25-
 fi
 grep -Fq 'SERVER_CURRENT_JDK_ACTUAL_CANDIDATE_GATE_MISSING' "$workdir/missing-candidate-gate.out"
 
-echo "SERVER_JDK25_SOURCE_POLICY_FIXTURES_OK cases=10"
+missing_loader="$workdir/missing-loader"
+write_fixture_tree "$missing_loader"
+sed -i '/LD_LIBRARY_PATH=/d' "$missing_loader/.github/workflows/publish-current-server.yml"
+if RC16_SERVER_SOURCE_ROOT="$missing_loader" scripts/check-server-jdk25-source-policy.sh >"$workdir/missing-loader.out" 2>&1; then
+  echo "expected missing-loader fixture to fail" >&2
+  exit 1
+fi
+grep -Fq 'SERVER_CURRENT_JDK_ACTUAL_CANDIDATE_GATE_MISSING' "$workdir/missing-loader.out"
+
+missing_native="$workdir/missing-native"
+write_fixture_tree "$missing_native"
+sed -i '/--entrypoint/d' "$missing_native/scripts/check-server-java-patches-jdk25.sh"
+if RC16_SERVER_SOURCE_ROOT="$missing_native" scripts/check-server-jdk25-source-policy.sh >"$workdir/missing-native.out" 2>&1; then
+  echo "expected missing-native fixture to fail" >&2
+  exit 1
+fi
+grep -Fq 'SERVER_CURRENT_JDK_NATIVE_RUNTIME_GATE_MISSING' "$workdir/missing-native.out"
+
+echo "SERVER_JDK25_SOURCE_POLICY_FIXTURES_OK cases=12"
