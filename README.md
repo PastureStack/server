@@ -19,7 +19,7 @@ Temurin `25.0.4.1+1` security fixes, retaining Engine `v0.183.350`.
 The official build, candidate JDK/native and serialization checks,
 startup/restart, security/SBOM and anonymous artifact readback passed.
 See the [release note](docs/releases/server-1.6.538.md) for immutable identities,
-remaining tracked risks and the separate, pending QA8080 deployment acceptance.
+remaining tracked risks and the passed, narrowly scoped QA8080 deployment checks.
 Documentation updates do not replace the producer or its immutable artifacts.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.

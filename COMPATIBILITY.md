@@ -27,7 +27,17 @@ fixed-available or secret findings. Tracking/VEX is not remediation or zero risk
 
 Engine `v0.183.350`, authentication, API Key/RBAC, archive, performance environment
 variables and three-volume contracts are unchanged. Targeted QA8080 deployment
-acceptance is pending and is separate from the completed official image gates.
+acceptance passed separately from the official image gates, preserving the three
+named volumes and runtime overrides through startup/restart. Both existing
+Schedulers completed normal Catalog revision4 to revision5 / `v0.8.19` upgrades
+with their original runtime configuration retained; both are active/healthy and
+all three existing Hosts/Agents remain active.
+
+The bounded acceptance total is 29 unique narrow checks: 25 carried PASS receipts,
+two API Explorer locale cases and two additional Scheduler workload cases. It is
+not a rerun of all thirteen locales, the role matrix, OIDC or Passkey acceptance.
+Owned test fixtures were removed and read back; VM writes and company-production
+changes were zero. The previous working image/container and backup were retained.
 No company site deployment or whole historical matrix PASS is implied. See the
 [release note](docs/releases/server-1.6.538.md).
 
