@@ -1,6 +1,24 @@
-# Server v1.6.538 candidate
+# Server v1.6.538
 
-Prepared source only; no Server image or release has been published.
+Officially published on 2026-10-20. Targeted QA8080 deployment acceptance is
+pending; publication is not a claim of company-production deployment or whole
+historical matrix acceptance.
+
+## Immutable publication identity
+
+- Signed, verified producer: `9dd8f1da85c57fc2424b9f58c278331cf679b8fc`.
+- Official workflow: [39362063157](https://github.com/PastureStack/server/actions/runs/39362063157), completed successfully without bypassing required checks.
+- Manifest: `sha256:10284f7c3e3a04d7212accae9bdb6daac89ea2f23bc39cd1064e937415af231e`.
+- Distinct OCI config: `sha256:cd754a3eb44536004322bd28471bc094a5c13ead64b420fcde07a97d9a1912a5`.
+- Artifact identity, not an installation command:
+  `ghcr.io/pasturestack/server:v1.6.538@sha256:10284f7c3e3a04d7212accae9bdb6daac89ea2f23bc39cd1064e937415af231e`.
+- Platform: linux/amd64; one flattened runtime layer, 540,239,336 compressed bytes.
+- [Immutable release](https://github.com/PastureStack/server/releases/tag/v1.6.538): all 25 official assets passed anonymous digest and `SHA256SUMS` readback.
+
+Documentation commits and the current release body do not replace the producer,
+image or immutable assets. The attached `release-notes.md` preserves the
+producer's build-time source snapshot, including its then-candidate wording;
+this document records the subsequent publication and acceptance status.
 
 ## Security changes
 
@@ -46,14 +64,28 @@ firewall architecture are unchanged. Source-only LZ4/RabbitMQ dependency fixes
 in distributed-cache-runtime do not require a new core JAR or Engine release:
 the published core artifact does not contain either dependency.
 
-Required evidence before calling this release complete: signed/protected PRs,
-exact official component assets, actual candidate Java identity and schema
-serialization fixture, startup/restart with existing auth/registration smoke,
-fresh merged-rootfs SBOM/security scan, immutable registry/release readback,
-then QA8080 upgrade preserving configuration and volumes. Run only affected
-UI/API/JDK and scheduler lifecycle checks; retain unaffected PASS receipts and
-leave KVM and unrelated historical pending items pending. Final identities and
-results will be added after publication and QA readback.
+The official producer passed the actual candidate JDK identity, module, native
+libnet/libnio and Java schema serialization fixture, including the twelve-role
+frozen identity-security schema contract. `java-security-runtime.txt` records
+Temurin `25.0.4.1+1` and the exact official archive checksum above.
+
+The final image returned HTTP200/pong on fresh startup and restart after 11/7
+polling attempts, retaining the configured public origin and private API
+`no-store` contract. The existing MFA-policy API smoke passed 34 checks;
+registration passed seven entry-only checks, not active-node acceptance.
+These are isolated official candidate gates, not a Docker Healthcheck claim.
+
+The fresh merged-rootfs security/SBOM gate records 73 raw findings and 29 exact
+unfixed LOW/MEDIUM package occurrences across 18 CVEs after the existing VEX
+policy. Review is due 2026-10-27; untracked, critical/high, fixed-available and
+secret findings are all zero. The attached raw scan, effective scan, exact
+vendor tracker and VEX remain separate evidence; neither tracking nor VEX
+constitutes remediation, a HIGH waiver or a zero-risk claim.
+
+QA8080 upgrade and affected UI/API/JDK and normal Catalog Scheduler lifecycle
+checks remain pending. Preserve configuration and volumes, retain unaffected
+PASS receipts within their original scope, and leave KVM and unrelated
+historical pending items pending.
 
 ## Upgrade and rollback
 

@@ -1,15 +1,35 @@
 # Compatibility Contract
 
-## Server v1.6.538 prepared, not published
+## Server v1.6.538 published
 
-The current recipe pins the official Web Console `1.6.191` and API Explorer
-`1.1.19` artifacts, and replaces the inherited Server460 JDK with the official
-Temurin `25.0.4.1+1` archive. Engine `v0.183.350`, authentication, API Key/RBAC,
-archive, performance environment variables and three-volume contracts are
-unchanged. Actual candidate JDK identity and the Java schema-patch fixture must
-pass before publication, followed by targeted QA8080 readback. No company site
-deployment or whole historical matrix PASS is implied. See the
-[candidate release note](docs/releases/server-1.6.538.md).
+Immutable Server producer `9dd8f1da85c57fc2424b9f58c278331cf679b8fc` packages
+official Web Console `1.6.191` and API Explorer `1.1.19`, and replaces the inherited
+Server460 JDK with official Temurin `25.0.4.1+1`. Official workflow
+[39362063157](https://github.com/PastureStack/server/actions/runs/39362063157)
+and anonymous digest/checksum readback of all 25 release assets passed without
+bypassing required checks. Manifest:
+`sha256:10284f7c3e3a04d7212accae9bdb6daac89ea2f23bc39cd1064e937415af231e`.
+Distinct OCI config:
+`sha256:cd754a3eb44536004322bd28471bc094a5c13ead64b420fcde07a97d9a1912a5`.
+Artifact identity (not an installation command):
+`ghcr.io/pasturestack/server:v1.6.538@sha256:10284f7c3e3a04d7212accae9bdb6daac89ea2f23bc39cd1064e937415af231e`.
+The linux/amd64 image has one flattened runtime layer (540,239,336 compressed
+bytes). Numeric installation tags remain required; documentation commits do not
+replace the producer or its immutable build-time evidence.
+
+Actual candidate JDK identity, native libnet/libnio operations and Java schema
+serialization passed. Fresh final-image startup/restart returned HTTP200/pong
+after 11/7 polling attempts; 34 MFA-policy API and seven registration-entry checks
+passed. Registration entry checks do not prove an active node. The final-image
+security gate records 73 raw findings and 29 exact unfixed LOW/MEDIUM package
+occurrences across 18 CVEs, review 2026-10-27, with zero untracked, critical/high,
+fixed-available or secret findings. Tracking/VEX is not remediation or zero risk.
+
+Engine `v0.183.350`, authentication, API Key/RBAC, archive, performance environment
+variables and three-volume contracts are unchanged. Targeted QA8080 deployment
+acceptance is pending and is separate from the completed official image gates.
+No company site deployment or whole historical matrix PASS is implied. See the
+[release note](docs/releases/server-1.6.538.md).
 
 ## Server v1.6.537 published
 
