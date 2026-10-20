@@ -87,13 +87,14 @@ constitutes remediation, a HIGH waiver or a zero-risk claim.
 The QA runtime was switched to this exact published producer, manifest and config
 identity. Startup and restart health passed with all three named volumes and
 runtime overrides unchanged. The prior working `v1.6.537` image/container and
-pre-upgrade backup were retained. VM writes and company-production changes were
-zero.
+pre-upgrade backup were retained. VM definitions/disks were not removed or
+reconfigured; company production was not modified.
 
 Both existing QA Schedulers completed the normal Catalog revision4 to revision5
 upgrade from `v0.8.18` to `v0.8.19`, with HTTP202 for both upgrade and
-finish-upgrade. Original answers, scale, command, health, logging, network and
-privileged configuration were preserved. Both Schedulers are active/healthy;
+finish-upgrade. Existing explicit answers and effective runtime configuration
+(scale, command, health, logging, network and privileged settings) were preserved.
+Both Schedulers are active/healthy;
 all three existing Hosts and Agents are active. New disposable workloads were
 observed on their intended Hosts and became healthy; native exec returned
 HTTP101 with the expected marker, and canonical own-service DNS and egress passed.
