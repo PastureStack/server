@@ -1,5 +1,44 @@
 # Compatibility Contract
 
+## Server v1.6.539 published
+
+Producer `95ed547ccfe5c1c7d5c9f049e11f27b81c0a00f9` passed required checks and
+[official publication](https://github.com/PastureStack/server/actions/runs/39412956932).
+All 25 release assets passed anonymous checksum/exact-set readback. Manifest:
+`sha256:c9550fa6257da54d1d57e1acff2563f89908a346d4088853bc550d82ac3644ae`.
+Distinct OCI config:
+`sha256:08f38f6169e2e7b2c0d9a2d6e4e29a3a787e77b2f7e7265bf801e2d5c0878e86`.
+Artifact identity, not an installation command:
+`ghcr.io/pasturestack/server:v1.6.539@sha256:c9550fa6257da54d1d57e1acff2563f89908a346d4088853bc550d82ac3644ae`.
+The linux/amd64 image has one runtime layer, 540,238,249 compressed bytes.
+
+Linux Node Agent `v0.13.29` uses a consistent host mount view, retains usable
+partitions after partial collection failure, excludes read-only Snap images and
+reports new local-storage budgets in whole MiB. Web Console `1.6.192` treats
+unknown capacity as unknown rather than zero. Bootstrap image `v1.2.31` and the
+Windows Go package `v0.13.27` remain distinct and unchanged.
+Existing `localStorageMb` is a persisted scheduler budget, not a live free-space
+meter: upgrading the Agent does not silently overwrite it or an operator's
+override. The QA repair used normal project-scoped Host PUT for three exact,
+proven historical unit errors, preserving the original budget and rollback
+values; other installations must review their own provenance, not copy QA values.
+
+Fresh persisted-data README installation was exercised on official 538: initial
+local administrator, four automatic system stacks, first Host, DNS/egress/port,
+terminal/log streams, container recreation, Server/Docker restart and VM reboot.
+Its disk finding was then fixed and verified on published 539 across three
+existing Hosts, using the running Agent executable, native filesystem capacity,
+API data and six rendered Host pages. These are separate evidence scopes, not
+a claim that every historical matrix case or a new OS install was repeated.
+Volumes, runtime overrides, AppArmor and the previous recovery image were kept.
+The actual iptables-nft backend was preserved; native Docker nftables mode and
+KVM are not certified by these checks. Company production was not changed.
+
+Final-image security remains 73 raw findings and 29 exact unfixed LOW/MEDIUM
+package occurrences across 18 CVEs, review 2026-10-27. Required gates found zero
+untracked, CRITICAL/HIGH, fixed-available or secret findings. Tracking is not a
+remediation claim. See the [release note](docs/releases/server-1.6.539.md).
+
 ## Server v1.6.538 published
 
 Immutable Server producer `9dd8f1da85c57fc2424b9f58c278331cf679b8fc` packages
