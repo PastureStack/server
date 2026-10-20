@@ -69,6 +69,12 @@ class Tests(unittest.TestCase):
         with self.assertRaisesRegex(SystemExit, 'IDENTITY_MISSING'):
             verify(files)
 
+    def test_numeric_candidate_advances_without_relabeling_the_gate(self):
+        for version in ('1.6.538', '1.6.539'):
+            files = {name.replace('1.6.537', version): value.replace('1.6.537', version)
+                     for name, value in CANDIDATE_FILES.items()}
+            verify(files)
+
     def test_candidate_cannot_hide_warning_mismatch_or_fabricate_publication(self):
         for name, old, new, error in (
                 ('README.md', '<a id="current-release"></a>', '', 'DISCLOSURE_MISSING'),

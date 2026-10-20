@@ -323,7 +323,7 @@ check_server497_published_docs
 
 # Install examples must follow the highest actually published numeric release;
 # Install commands use numeric tags; digest identity stays in publication evidence.
-# An explicitly guarded538 source candidate may show numeric examples, not claim publication.
+# A disclosed numeric source candidate may show examples, not claim publication.
 python3 - <<'PY'
 import pathlib
 import re
@@ -347,7 +347,7 @@ if len(references) != 2 or references[0] != references[1] or not re.fullmatch(in
     raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
 image = references[0]
 notes_path = 'docs/releases/server-' + tag[1:] + '.md'
-expected_install_tag = 'v1.6.538' if candidate else tag
+expected_install_tag = image.rsplit(':', 1)[1] if candidate else tag
 if image != 'ghcr.io/pasturestack/server:' + expected_install_tag or '(' + notes_path + ')' not in context[1]:
     raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
 performance = pathlib.Path('docs/performance/README.md').read_text(encoding='utf-8')
@@ -355,10 +355,10 @@ performance_references = re.findall(r'ghcr\.io/pasturestack/server:[^\s`"<>]+', 
 if performance_references != [image]:
     raise SystemExit('SERVER_LATEST_PUBLISHED_PERFORMANCE_MISMATCH')
 if candidate:
-    candidate_path = 'docs/releases/server-1.6.538.md'
+    candidate_path = 'docs/releases/server-' + expected_install_tag[1:] + '.md'
     candidate_notes = pathlib.Path(candidate_path).read_text(encoding='utf-8')
     required = (
-        'Server `v1.6.538` is a prepared source candidate, not a published image.',
+        'Server `' + expected_install_tag + '` is a prepared source candidate, not a published image.',
         '(' + candidate_path + ')',
     )
     if '<a id="current-release"></a>' not in readme or \
@@ -370,9 +370,9 @@ if candidate:
     if not all(marker in normalized_performance for marker in (
             'run it only after its official release and image have been published and read back.',
             'is not yet available from GHCR',
-            '(../releases/server-1.6.538.md)')):
+            '(../releases/server-' + expected_install_tag[1:] + '.md)')):
         raise SystemExit('SERVER_SOURCE_CANDIDATE_PERFORMANCE_DISCLOSURE_MISSING')
-    if not re.search(r'(?m)^# Server v1\.6\.538 candidate[ \t]*$', candidate_notes) or \
+    if not re.search(r'(?m)^# Server ' + re.escape(expected_install_tag) + r' candidate[ \t]*$', candidate_notes) or \
             'Prepared source only; no Server image or release has been published.' not in candidate_notes:
         raise SystemExit('SERVER_SOURCE_CANDIDATE_NOTES_MISMATCH')
 notes = pathlib.Path(notes_path).read_text(encoding='utf-8')
@@ -385,8 +385,8 @@ latest_tag = max((reference.split('@')[0].rsplit(':', 1)[1] for reference in pub
                  key=lambda value: tuple(map(int, value[1:].split('.'))))
 if candidate:
     if tuple(map(int, expected_install_tag[1:].split('.'))) <= tuple(map(int, latest_tag[1:].split('.'))) or \
-            '## Server v1.6.538 prepared, not published' not in compat or \
-            'ghcr.io/pasturestack/server:v1.6.538@' in readme + performance + compat + candidate_notes:
+            '## Server ' + expected_install_tag + ' prepared, not published' not in compat or \
+            'ghcr.io/pasturestack/server:' + expected_install_tag + '@' in readme + performance + compat + candidate_notes:
         raise SystemExit('SERVER_SOURCE_CANDIDATE_PUBLICATION_MISMATCH')
 if tag != latest_tag or not re.search(r'(?m)^# Server ' + re.escape(tag) + r'[ \t]*$', notes):
     raise SystemExit('SERVER_LATEST_PUBLISHED_QUICK_START_MISMATCH')
@@ -1267,13 +1267,38 @@ require_marker "$dockerfile" \
     'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.27' \
     SERVER_API_EXPLORER_PATCH_LB_IMAGE_UUID_MISSING
 require_marker "$dockerfile" \
-    'ENV CATTLE_API_UI_VERSION=1.1.19' \
+    'ENV CATTLE_API_UI_VERSION=1.1.18' \
     SERVER_API_EXPLORER_PATCH_API_VERSION_MISSING
-require_marker "$dockerfile" \
+# These checks own the current assembly; the historical patch recipe above
+# remains pinned to the original 1.1.18 artifact.
+for api_explorer_release_marker in \
+    'ARG API_EXPLORER_RELEASE_TAG=v1.1.19' \
+    'ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.19.tar.gz' \
     'ARG API_EXPLORER_ARTIFACT_SHA256=d1602ab6033512f0b86dc8ceafee2061364ce2fc5da2a9b7119f900d9e0f3c25' \
+    'ARG API_EXPLORER_COMMIT=dda3fe8a806d9736de771d325e3ca98ab4067cd2' \
+    'COPY --chmod=0755 artifacts/prepare-api-explorer.sh /usr/local/bin/prepare-api-explorer' \
+    'fetch-server-component "${COMPONENT_ARTIFACT_MODE}" "${API_EXPLORER_RELEASE_BASE_URL%/}/${API_EXPLORER_RELEASE_TAG}/${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT_SHA256}" /tmp/api-explorer.tar.gz;' \
+    'prepare-api-explorer /tmp/api-explorer.tar.gz 1.1.19 "${API_EXPLORER_COMMIT}" /out/api-explorer;' \
+    'COPY --from=release_artifacts /out/api-explorer/ /tmp/pasturestack-api-ui/' \
+    'COPY --from=release_artifacts /out/api-explorer.sha256 /tmp/pasturestack-api-ui.sha256' \
+    'mv /tmp/pasturestack-api-ui api-ui;' \
+    '(cd api-ui && sha256sum -c /tmp/pasturestack-api-ui.sha256);' \
+    'ENV CATTLE_API_UI_VERSION=1.1.19' \
+    'ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.19' \
+    'ENV PASTURESTACK_API_EXPLORER_COMMIT=${API_EXPLORER_COMMIT}' \
+    'ENV PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256=${API_EXPLORER_ARTIFACT_SHA256}'; do
+    require_marker "$release_dockerfile" "$api_explorer_release_marker" SERVER_CURRENT_API_EXPLORER_FLOW_MISSING
+done
+if grep -Fq 'cp -a "${old_web_root}/api-ui" /tmp/pasturestack-api-ui' "$release_dockerfile"; then
+    echo SERVER_CURRENT_API_EXPLORER_INHERITS_OLD_PRODUCT >&2
+    exit 1
+fi
+bash -n server/artifacts/prepare-api-explorer.sh
+require_marker "$dockerfile" \
+    'ARG API_EXPLORER_ARTIFACT_SHA256=92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c' \
     SERVER_API_EXPLORER_PATCH_HASH_MISSING
 require_marker "$dockerfile" \
-    'ARG API_EXPLORER_COMMIT=dda3fe8a806d9736de771d325e3ca98ab4067cd2' \
+    'ARG API_EXPLORER_COMMIT=3b1c39e8a116f58649d94233a384a0362c02b43e' \
     SERVER_API_EXPLORER_PATCH_COMMIT_MISSING
 require_marker "$dockerfile" \
     'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.298' \

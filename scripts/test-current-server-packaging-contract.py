@@ -220,8 +220,28 @@ INCREMENTAL_CONTRACTS = [
         ]
     ]
 ]
+INCREMENTAL_CONTRACTS += [
+    ('api_explorer_release_marker', DOCKER, [
+        'ARG API_EXPLORER_RELEASE_TAG=v1.1.19',
+        'ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.19.tar.gz',
+        'ARG API_EXPLORER_ARTIFACT_SHA256=d1602ab6033512f0b86dc8ceafee2061364ce2fc5da2a9b7119f900d9e0f3c25',
+        'ARG API_EXPLORER_COMMIT=dda3fe8a806d9736de771d325e3ca98ab4067cd2',
+        'COPY --chmod=0755 artifacts/prepare-api-explorer.sh /usr/local/bin/prepare-api-explorer',
+        'fetch-server-component "${COMPONENT_ARTIFACT_MODE}" "${API_EXPLORER_RELEASE_BASE_URL%/}/${API_EXPLORER_RELEASE_TAG}/${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT_SHA256}" /tmp/api-explorer.tar.gz;',
+        'prepare-api-explorer /tmp/api-explorer.tar.gz 1.1.19 "${API_EXPLORER_COMMIT}" /out/api-explorer;',
+        'COPY --from=release_artifacts /out/api-explorer/ /tmp/pasturestack-api-ui/',
+        'COPY --from=release_artifacts /out/api-explorer.sha256 /tmp/pasturestack-api-ui.sha256',
+        'mv /tmp/pasturestack-api-ui api-ui;',
+        '(cd api-ui && sha256sum -c /tmp/pasturestack-api-ui.sha256);',
+        'ENV CATTLE_API_UI_VERSION=1.1.19',
+        'ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.19',
+        'ENV PASTURESTACK_API_EXPLORER_COMMIT=${API_EXPLORER_COMMIT}',
+        'ENV PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256=${API_EXPLORER_ARTIFACT_SHA256}',
+    ]),
+]
 EXACT_COMPONENT_INPUTS = [
     "\"$orchestration_engine_artifact|$orchestration_engine_artifact_sha256\"",
+    "\"$api_explorer_artifact|$api_explorer_artifact_sha256\"",
     "\"$web_console_artifact|$web_console_artifact_sha256\"",
     "\"websocket-proxy-${websocket_proxy_version}-linux-amd64.tar.xz|$websocket_proxy_archive_sha256\"",
     "\"host-api-${host_api_version}.tar.gz|$host_api_archive_sha256\"",
@@ -418,6 +438,10 @@ def verify_incremental_contract(files, gate=GATE):
         for marker in markers:
             if marker not in files[name]:
                 raise AssertionError('CURRENT_INCREMENTAL_SOURCE_CONTRACT_MISMATCH')
+            if variable == 'api_explorer_release_marker' and marker.startswith(('ARG ', 'COPY ', 'ENV ')):
+                occurrences = 2 if marker.startswith(('ARG API_EXPLORER_RELEASE_TAG=', 'ARG API_EXPLORER_ARTIFACT_SHA256=', 'ARG API_EXPLORER_COMMIT=')) else 1
+                if files[name].splitlines().count(marker) != occurrences:
+                    raise AssertionError('CURRENT_API_EXPLORER_STAGE_FLOW_MISMATCH')
             # Commands, unlike ARG/COPY/ENV text, must remain executable and
             # fail closed. A comment or "|| true" is not an equivalent guard.
             if marker.endswith(';'):
@@ -771,14 +795,14 @@ class Tests(unittest.TestCase):
         self.assertIn(shlex.quote('test "${compose_version_output}" = "compose-executor version ${COMPOSE_EXECUTOR_VERSION}"'), GATE)
         self.assertIn('"pasturestack-compose version ${PASTURESTACK_COMPOSE_EXECUTOR_VERSION}"', FILES[BUILD])
 
-    def test_original_fourteen_component_inputs_keep_exact_sha_fetch_and_separate_jdk_stage(self):
+    def test_fifteen_component_inputs_keep_exact_sha_fetch_and_separate_jdk_stage(self):
         verify_incremental_contract(FILES)
         block = FILES[BUILD].split('    component_assets=(\n', 1)[1].split('    )', 1)[0]
         self.assertEqual([line.strip() for line in block.splitlines()], EXACT_COMPONENT_INPUTS)
-        self.assertEqual(len(EXACT_COMPONENT_INPUTS), 14)
+        self.assertEqual(len(EXACT_COMPONENT_INPUTS), 15)
         self.assertEqual(len(re.findall(r'^FROM ', FILES[DOCKER], re.M)), 6)
         self.assertIn('FROM scratch AS component_input', FILES[DOCKER])
-        self.assertEqual(len(re.findall(r'^\s+fetch-server-component ', FILES[DOCKER], re.M)), 12)
+        self.assertEqual(len(re.findall(r'^\s+fetch-server-component ', FILES[DOCKER], re.M)), 13)
         self.assertIn('"${release_url%/}/v${version}/${artifact}" "${artifact}" "${archive_sha}"', FILES[DOCKER])
         release_stage = FILES[DOCKER].split('FROM ${ARTIFACT_HELPER_IMAGE} AS release_artifacts', 1)[1].split('FROM ${UBUNTU_SECURITY_IMAGE}', 1)[0]
         self.assertNotIn('curl -fsSL', release_stage)

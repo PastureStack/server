@@ -43,12 +43,18 @@ FROM ${ARTIFACT_HELPER_IMAGE} AS release_artifacts
 ARG SOURCE_DATE_EPOCH
 COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host-api-sha256
 COPY --chmod=0755 artifacts/fetch-server-component.sh /usr/local/bin/fetch-server-component
+COPY --chmod=0755 artifacts/prepare-api-explorer.sh /usr/local/bin/prepare-api-explorer
 COPY --chmod=0755 artifacts/verify-runtime-producer.sh /usr/local/bin/verify-runtime-producer
 COPY --chmod=0755 artifacts/verify-host-api-package.sh /usr/local/bin/verify-host-api-package
 COPY --chmod=0755 artifacts/verify-agent-package.sh /usr/local/bin/verify-agent-package.sh
 COPY --from=component_input / /tmp/pasturestack-component-input/
 ARG COMPONENT_ARTIFACT_MODE=remote
 ARG PASTURESTACK_ALLOW_LOOPBACK_ARTIFACTS=0
+ARG API_EXPLORER_RELEASE_BASE_URL=https://github.com/PastureStack/api-explorer/releases/download
+ARG API_EXPLORER_RELEASE_TAG=v1.1.19
+ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.19.tar.gz
+ARG API_EXPLORER_ARTIFACT_SHA256=d1602ab6033512f0b86dc8ceafee2061364ce2fc5da2a9b7119f900d9e0f3c25
+ARG API_EXPLORER_COMMIT=dda3fe8a806d9736de771d325e3ca98ab4067cd2
 ARG HOST_API_VERSION=0.38.5
 ARG HOST_API_PACKAGE_MODE=producer
 ARG HOST_API_RELEASE_BASE_URL=https://github.com/PastureStack/host-api/releases/download
@@ -404,6 +410,14 @@ RUN set -eux; \
         /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null
 
 RUN set -eux; \
+    test "${API_EXPLORER_RELEASE_TAG}" = v1.1.19; \
+    fetch-server-component "${COMPONENT_ARTIFACT_MODE}" "${API_EXPLORER_RELEASE_BASE_URL%/}/${API_EXPLORER_RELEASE_TAG}/${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT_SHA256}" /tmp/api-explorer.tar.gz; \
+    prepare-api-explorer /tmp/api-explorer.tar.gz 1.1.19 "${API_EXPLORER_COMMIT}" /out/api-explorer; \
+    cd /out/api-explorer; \
+    find . -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum > /out/api-explorer.sha256; \
+    rm -f /tmp/api-explorer.tar.gz
+
+RUN set -eux; \
     for component in host-provisioner secret-delivery-api usage-telemetry-agent; do \
         case "$component" in \
             host-provisioner) version="${HOST_PROVISIONER_VERSION}"; commit="${HOST_PROVISIONER_COMMIT}"; archive_sha="${HOST_PROVISIONER_ARCHIVE_SHA256}"; binary_sha="${HOST_PROVISIONER_BINARY_SHA256}"; release_url="${HOST_PROVISIONER_RELEASE_BASE_URL}" ;; \
@@ -596,6 +610,9 @@ RUN set -eux; \
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
 ARG SERVER_RELEASE_TAG=v1.6.538
+ARG API_EXPLORER_RELEASE_TAG=v1.1.19
+ARG API_EXPLORER_ARTIFACT_SHA256=d1602ab6033512f0b86dc8ceafee2061364ce2fc5da2a9b7119f900d9e0f3c25
+ARG API_EXPLORER_COMMIT=dda3fe8a806d9736de771d325e3ca98ab4067cd2
 ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.350
 ARG ORCHESTRATION_ENGINE_VERSION=0.183.350
 ARG ENGINE_READONLY_SCHEMA_SHA256=7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233
@@ -699,6 +716,9 @@ RUN set -eux; \
     rm -f /usr/bin/tar
 
 COPY --from=release_artifacts /out/web-console/ /tmp/pasturestack-web-console/
+RUN rm -rf /tmp/pasturestack-api-ui
+COPY --from=release_artifacts /out/api-explorer/ /tmp/pasturestack-api-ui/
+COPY --from=release_artifacts /out/api-explorer.sha256 /tmp/pasturestack-api-ui.sha256
 COPY --from=release_artifacts --chmod=0755 /out/runtime-bin/ /usr/bin/
 COPY --from=release_artifacts /out/runtime-licenses/ /usr/share/licenses/pasturestack/
 COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar
@@ -753,8 +773,6 @@ RUN set -eux; \
         *) echo "Unsafe existing document root: ${old_web_root}" >&2; exit 1 ;; \
     esac; \
     test -L /usr/share/cattle/war; \
-    test -d "${old_web_root}/api-ui"; \
-    cp -a "${old_web_root}/api-ui" /tmp/pasturestack-api-ui; \
     install -m 0644 "${archive}" /usr/share/cattle/cattle.jar; \
     engine_hash="$(sha256sum /usr/share/cattle/cattle.jar | awk '{print $1}')"; \
     new_web_root="/usr/share/cattle/${engine_hash}"; \
@@ -838,6 +856,10 @@ RUN set -eux; \
     cd "${new_web_root}"; \
     rm -rf api-ui; \
     mv /tmp/pasturestack-api-ui api-ui; \
+    (cd api-ui && sha256sum -c /tmp/pasturestack-api-ui.sha256); \
+    rm -f /tmp/pasturestack-api-ui.sha256; \
+    sed -i '/^export \(DEFAULT_\)\?CATTLE_API_UI_VERSION=/d' /usr/share/cattle/env_vars; \
+    printf 'export DEFAULT_CATTLE_API_UI_VERSION=1.1.19\nexport CATTLE_API_UI_VERSION=1.1.19\n' >> /usr/share/cattle/env_vars; \
     test "$(readlink -f /usr/share/cattle/war)" = "${new_web_root}"; \
     unzip -p "${resources_jar}" db/core-124.xml | \
         grep -F 'pasturestack-catalog-pinned-commit' >/dev/null; \
@@ -1048,6 +1070,10 @@ ENV CATTLE_RANCHER_SERVER_VERSION=${SERVER_RELEASE_TAG}
 ENV CATTLE_RANCHER_CLI_VERSION=v0.6.18
 ENV PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download
 ENV CATTLE_CATTLE_VERSION=${ORCHESTRATION_ENGINE_RELEASE_TAG}
+ENV CATTLE_API_UI_VERSION=1.1.19
+ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.19
+ENV PASTURESTACK_API_EXPLORER_COMMIT=${API_EXPLORER_COMMIT}
+ENV PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256=${API_EXPLORER_ARTIFACT_SHA256}
 ENV RC16_HOST_API_VERSION=${HOST_API_VERSION}
 ENV PASTURESTACK_HOST_API_PACKAGE_ID=${HOST_API_PACKAGE_ID}
 ENV PASTURESTACK_HOST_API_COMMIT=${HOST_API_COMMIT}

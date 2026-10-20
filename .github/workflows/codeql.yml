@@ -69,12 +69,23 @@ jobs:
 
       - name: Set up the production Java compiler
         if: matrix.language == 'java-kotlin'
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
-        with:
-          # server/Dockerfile TEMURIN_JDK25_VERSION.
-          distribution: temurin
-          java-version: '25.0.4+7.0.LTS'
-          check-latest: false
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          # Use the same verified official patch archive as the product image.
+          archive="$RUNNER_TEMP/temurin-jdk25.tar.gz"
+          jdk="$RUNNER_TEMP/temurin-jdk25"
+          curl --fail --silent --show-error --location \
+            --proto '=https' --proto-redir '=https' \
+            --retry 3 --connect-timeout 15 --max-time 600 --output "$archive" \
+            'https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4.1%2B1/OpenJDK25U-jdk_x64_linux_hotspot_25.0.4.1_1.tar.gz'
+          printf '%s  %s\n' dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e "$archive" |
+            sha256sum --check --strict
+          mkdir "$jdk"
+          tar -xzf "$archive" --strip-components=1 -C "$jdk"
+          "$jdk/bin/javac" -version | grep -F '25.0.4.1'
+          printf 'JAVA_HOME=%s\n' "$jdk" >>"$GITHUB_ENV"
+          printf '%s/bin\n' "$jdk" >>"$GITHUB_PATH"
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3

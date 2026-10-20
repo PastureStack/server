@@ -199,6 +199,7 @@ if [[ -n ${PASTURESTACK_COMPONENT_ARTIFACT_DIR:-} ]]; then
     test -z "$(find "$component_directory" -type l -print -quit)"
     component_assets=(
         "$orchestration_engine_artifact|$orchestration_engine_artifact_sha256"
+        "$api_explorer_artifact|$api_explorer_artifact_sha256"
         "$web_console_artifact|$web_console_artifact_sha256"
         "websocket-proxy-${websocket_proxy_version}-linux-amd64.tar.xz|$websocket_proxy_archive_sha256"
         "host-api-${host_api_version}.tar.gz|$host_api_archive_sha256"
@@ -718,11 +719,12 @@ docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_versi
     test -s "${api_dir}/licenses/bootstrap-5.3.8/LICENSE"
     test -s "${api_dir}/licenses/bootstrap-icons-1.13.1/LICENSE"
     test -s "${api_dir}/licenses/jquery-4.0.0/LICENSE.txt"
-    test -s "${api_dir}/licenses/handlebars-4.7.9/LICENSE"
+    test -s "${api_dir}/licenses/handlebars-4.7.10/LICENSE"
     test ! -e "${api_dir}/js/bootstrap.js"
     test "$(find "${api_dir}" -type f -name "*.map" | wc -l)" -eq 0
     grep -F '"'"'"version": "1.1.19"'"'"' "${api_dir}/version.json" >/dev/null
-    grep -F '"'"'"commit": "3b1c39e"'"'"' "${api_dir}/version.json" >/dev/null
+    grep -F '"'"'"commit": "dda3fe8"'"'"' "${api_dir}/version.json" >/dev/null
+    grep -aF "handlebars v4.7.10" "${api_dir}/ui.js" >/dev/null
     for marker in \
         PastureStackUi \
         pasturestack:modal:shown \
