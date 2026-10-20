@@ -10,6 +10,14 @@ Prepared source only; no Server image or release has been published.
 - API Explorer `1.1.19`: official Handlebars `4.7.10`, with actual packaged
   runtime/escaping tests. Producer `dda3fe8a806d9736de771d325e3ca98ab4067cd2`;
   archive SHA-256 `d1602ab6033512f0b86dc8ceafee2061364ce2fc5da2a9b7119f900d9e0f3c25`.
+- Catalog producer `71ec6b2c27355e709f5092c954db24efa800bc41` selects
+  Scheduler revision5 / `v0.8.19`; previous revisions1-4 are unchanged.
+  The signed Scheduler producer is `d1720ddb65a285ed615f1461ccb44e50c2ad67a7`,
+  image manifest `sha256:46dfecc72fc1fceab5c66f881f46449874b6a084a208f59c6ef1184a0d15c3f9`.
+  Its official OS/toolchain security fixes retain the scheduling protocol,
+  health endpoint and module boundary. Existing installations upgrade the
+  Scheduler through the normal Catalog upgrade/finish-upgrade lifecycle;
+  changing the Server image alone does not replace an already running service.
 - Replace the actual inherited JDK `25.0.3`, not only the separate from-scratch
   Dockerfile, with official Temurin `25.0.4.1+1`. The complete archive is verified
   against SHA-256 `dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e`.
