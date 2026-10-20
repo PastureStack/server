@@ -1,68 +1,99 @@
 # Server v1.6.539
 
-Prepared source candidate, not a published Server image. No Server539 artifact,
-runtime, clean-install or deployment acceptance is claimed by this note.
-The current published installation remains Server `v1.6.538` until the normal
-release process completes; do not substitute this candidate in installation
-commands before its official publication.
+Officially published producer: `95ed547ccfe5c1c7d5c9f049e11f27b81c0a00f9`.
+[Publication workflow](https://github.com/PastureStack/server/actions/runs/39412956932)
+and anonymous checksum/exact-set readback of all 25 assets passed.
+Manifest: `sha256:c9550fa6257da54d1d57e1acff2563f89908a346d4088853bc550d82ac3644ae`.
+Distinct OCI config:
+`sha256:08f38f6169e2e7b2c0d9a2d6e4e29a3a787e77b2f7e7265bf801e2d5c0878e86`.
+Artifact identity (not an installation command):
+`ghcr.io/pasturestack/server:v1.6.539@sha256:c9550fa6257da54d1d57e1acff2563f89908a346d4088853bc550d82ac3644ae`.
+Use the numeric tag in the README installation examples. Documentation updates
+do not replace the producer or rewrite its immutable build-time attachments.
 
-## Targeted changes
+## Targeted correction
 
-- Node Agent `0.13.29` is intended to collect host disk capacity and availability
-  from the host mount namespace rather than treating a container mount view as
-  the host filesystem. Candidate source:
-  `514a3c1605809628693430007b30a33f4b1efbb4`; package ID
-  `514a3c1605809628693430007b30a33f`.
-  [Scoped producer CI](https://github.com/PastureStack/node-agent/actions/runs/39411416316)
-  passed, and the original CI archive and its contained binary/apply script were
-  downloaded and verified. Candidate SHA-256 identities are:
-  - `node-agent-0.13.29.tar.gz`:
-    `95884c07307d48ae68ecb79b4fa1778cf748d87ea839489dd7bc84c83ea85943`.
-  - `bin/node-agent`:
-    `35a5c898666e35ce8ca593769a5e54b6817412a8b279dae5ab2cb482a34406f2`.
-  - `apply.sh`:
-    `dd8cb342518a43e7468cc121db5c4e44b16731f2620b77ea0fd03c02c03766a9`.
-- Official Web Console `1.6.192` distinguishes unknown disk values from a real
-  zero instead of displaying missing data as `0 B`. Producer:
-  `a8e2ab0c8242355f06c1ab2584978ccfc4d76c02`; immutable archive
-  `web-console-1.6.192.tar.gz`, 3,037,760 bytes, SHA-256
+The old Linux collector enumerated host mounts but measured them in the Agent
+container's mount view. An inaccessible Snap mount could also erase all collected
+partitions. This produced missing capacity or repeated, incorrect totals.
+
+- Official Linux Node Agent `v0.13.29`, producer
+  `514a3c1605809628693430007b30a33f4b1efbb4`, measures the same host view used
+  for enumeration, keeps valid partial results and excludes read-only Snap images.
+  Namespace-link contents are validated identifiers, never followable paths.
+  [Focused CI](https://github.com/PastureStack/node-agent/actions/runs/39411416316)
+  and [required CodeQL](https://github.com/PastureStack/node-agent/actions/runs/39411415233)
+  passed. Archive SHA-256:
+  `95884c07307d48ae68ecb79b4fa1778cf748d87ea839489dd7bc84c83ea85943`;
+  running binary SHA-256:
+  `35a5c898666e35ce8ca593769a5e54b6817412a8b279dae5ab2cb482a34406f2`.
+- Official Web Console `1.6.192`, producer
+  `a8e2ab0c8242355f06c1ab2584978ccfc4d76c02`, distinguishes missing/invalid
+  capacity from a genuine zero and shares the validated data between summary
+  and detail. [Native browser model tests and production builds](https://github.com/PastureStack/web-console/actions/runs/39408830305)
+  passed, including eight Host model cases. Archive SHA-256:
   `52840ebf2800f9588ec7910fe617b7782a6e92a27046b4876e9656ef4883e609`.
-  [Producer validation](https://github.com/PastureStack/web-console/actions/runs/39408830305)
-  and the [official component release](https://github.com/PastureStack/web-console/releases/tag/1.6.192)
-  are component evidence, not Server539 acceptance.
 
-The Node029 pins identify revised, verified original CI bytes, not an official
-Node publication. The earlier unreleased Node029 candidate is superseded and
-must not be published; its retained evidence is historical only. The revised
-candidate's required default CodeQL checks, independent read-only review,
-normal merge and formal release are still pending. The official component
-release must preserve these exact source
-and artifact identities before Server publication; do not overwrite an old tag
-or reuse the Node028 artifact identity for Node029. Static recipe agreement and
-CI artifact checks do not establish Server539 build or runtime acceptance.
+The bootstrap container remains `v1.2.31`; it installs the Go package above through
+the normal configuration lifecycle. Windows package `v0.13.27`, Engine
+`v0.183.350`, API Explorer `1.1.19`, JDK and Catalog/Scheduler pins are unchanged.
 
-## Preserved boundaries
+## Acceptance boundaries
 
-The base image, Engine, API Explorer, Catalog/Scheduler, JDK, Host API and all
-other component pins remain unchanged from the prepared base. Existing artifact
-integrity, native-runtime, security, attestation and required CI gates remain in
-force. This targeted disk-data correction does not claim an additional CVE fix.
-The exact VEX decisions and unresolved vendor findings retain their previous
-contents, severity policy and 2026-10-27 review deadline; only the candidate
-Server subject changes to `v1.6.539`.
+The clean persisted-data README test used official Server `v1.6.538` on an
+existing isolated Ubuntu 26.04.1/Docker 29.8.0 VM and three newly created volumes,
+not a fresh OS installation. It covered first local administrator, four automatic
+system stacks, first Host registration, automatically healthy system services,
+workload DNS/egress/Host port, terminal/log streams, container recreation,
+Server restart, Docker restart and an actual VM reboot. Ordinary HTTP copy and
+close controls, distinct driver identities and English/Traditional Chinese
+layouts also passed. The observed disk error was retained as a failure, not
+counted as a clean visual PASS.
 
-Focused acceptance is still pending for the final published Node/Web inputs:
-host-root disk collection, genuinely unknown versus zero UI values, actual
-packaged component identities and the resulting Server image. Unaffected prior
-PASS evidence keeps its original scope; this candidate does not promote any
-historical pending item or KVM item to PASS.
+Published 539 was then deployed to the existing QA8080 instance with its exact
+runtime settings, named volumes, AppArmor and rollback image retained. Startup
+and restart passed. Three running Linux Agent binaries matched the published
+producer, and their disk payloads matched native host filesystem capacities.
+Six actual Host pages, three Hosts at 1440/960 widths, showed the corrected data
+without horizontal document overflow, missing translations, client exceptions
+or passive token deletion after responsive layout settled.
 
-## Upgrade and rollback
+This carries unaffected 538 evidence forward; it does not claim a complete 539
+fresh-OS rerun, every historical role case, native Docker nftables mode or KVM.
+The existing iptables-nft backend was retained. Owned workload fixtures were
+normally removed; VMs, disks and volumes were not deleted. No company-production
+site or HAProxy was modified.
 
-Changing a Server image alone does not prove replacement of an already running
-Node Agent. Verify the actual host-agent producer and disk payload in the
-targeted acceptance environment after the normal agent lifecycle.
-Keep the working published `v1.6.538` image/container and matching recovery
-evidence. Preserve existing settings and named volumes; do not reset databases
-or credential state. VM definitions/disks must not be removed or reconfigured.
-No company-production deployment is included in this candidate preparation.
+## Existing Host storage budgets
+
+`localStorageMb` is a persisted scheduler budget, initially populated by the
+Agent; it is not the live free-space display. The Agent's new initial value is
+whole MiB (`freeBytes / 1048576`), replacing the old erroneous divisor of 1000.
+The Engine intentionally does not overwrite an existing value on every ping.
+An image upgrade therefore does not automatically repair historical values.
+
+Before changing an existing budget, preserve its value, Host UUID, operator
+override and original provenance. For a value proven to have been generated by
+the old divisor, the possible original byte interval is
+`[old * 1000, old * 1000 + 999]`. Only if both endpoints produce the same whole
+MiB value is conversion unambiguous. Use normal authorized, project-scoped Host
+update and read it back; do not change an operator's intentional override, use
+the current free space as a replacement budget, or copy another installation's
+numbers. The three QA corrections followed this method and retained old values;
+no direct SQL update was used.
+
+## Security, upgrade and rollback
+
+The final-image gates passed with 73 raw findings and 29 exact unfixed
+LOW/MEDIUM package occurrences across 18 CVEs, reviewed again by 2026-10-27.
+Untracked, CRITICAL/HIGH, fixed-available and secret findings are zero. VEX and
+vendor tracking are not fixes or a zero-risk claim. This disk patch adds no
+claimed CVE remediation.
+
+Back up the database and preserve all three volumes, effective settings,
+environment overrides and firewall backend. Upgrade using the published numeric
+tag; confirm the actual running Agent, not only the downloaded package. Keep
+`v1.6.538` and matching backup for recovery. If an operator-approved budget
+correction must be reversed, restore the recorded value through the same
+authorized Host update. Follow the existing API Key rollback guide before any
+policy-unaware downgrade; do not reset the database or credential state.

@@ -22,7 +22,7 @@ restore do not establish a performance improvement or complete broader acceptanc
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.538
+    image: ghcr.io/pasturestack/server:v1.6.539
     restart: unless-stopped
     ports:
       - "8080:8080"
