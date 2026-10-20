@@ -11,15 +11,15 @@ commands before its official publication.
 - Node Agent `0.13.29` is intended to collect host disk capacity and availability
   from the host mount namespace rather than treating a container mount view as
   the host filesystem. Candidate source:
-  `28803d4baa7012734f7ae5162db32d263f464860`; package ID
-  `28803d4baa7012734f7ae5162db32d26`.
-  [Scoped producer CI](https://github.com/PastureStack/node-agent/actions/runs/39409627071)
+  `514a3c1605809628693430007b30a33f4b1efbb4`; package ID
+  `514a3c1605809628693430007b30a33f`.
+  [Scoped producer CI](https://github.com/PastureStack/node-agent/actions/runs/39411416316)
   passed, and the original CI archive and its contained binary/apply script were
   downloaded and verified. Candidate SHA-256 identities are:
   - `node-agent-0.13.29.tar.gz`:
-    `0783deb5958d7d3be317725256ed42e0966f626535f240eb805335ac98bfa7d3`.
+    `95884c07307d48ae68ecb79b4fa1778cf748d87ea839489dd7bc84c83ea85943`.
   - `bin/node-agent`:
-    `e5049052c555f3eb35732d9de56f9c34c2b103fb90eeb64252cf97b08127cc71`.
+    `35a5c898666e35ce8ca593769a5e54b6817412a8b279dae5ab2cb482a34406f2`.
   - `apply.sh`:
     `dd8cb342518a43e7468cc121db5c4e44b16731f2620b77ea0fd03c02c03766a9`.
 - Official Web Console `1.6.192` distinguishes unknown disk values from a real
@@ -31,9 +31,12 @@ commands before its official publication.
   and the [official component release](https://github.com/PastureStack/web-console/releases/tag/1.6.192)
   are component evidence, not Server539 acceptance.
 
-The Node029 pins identify verified original CI bytes, not an official Node
-publication. Its required CodeQL review, normal merge and formal release are
-still pending. The official component release must preserve these exact source
+The Node029 pins identify revised, verified original CI bytes, not an official
+Node publication. The earlier unreleased Node029 candidate is superseded and
+must not be published; its retained evidence is historical only. The revised
+candidate's required default CodeQL checks, independent read-only review,
+normal merge and formal release are still pending. The official component
+release must preserve these exact source
 and artifact identities before Server publication; do not overwrite an old tag
 or reuse the Node028 artifact identity for Node029. Static recipe agreement and
 CI artifact checks do not establish Server539 build or runtime acceptance.
