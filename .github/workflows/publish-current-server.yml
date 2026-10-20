@@ -190,7 +190,9 @@ jobs:
               test -s /opt/java/openjdk/lib/security/cacerts
               test -s /opt/java/openjdk/legal/java.base/LICENSE
               for lib in lib/server/libjvm.so lib/libnet.so lib/libnio.so; do
-                deps=$(ldd "/opt/java/openjdk/$lib")
+                # The launcher loads libjvm before libnet/libnio. Model only
+                # those JDK-owned directories for this standalone ELF check.
+                deps=$(LD_LIBRARY_PATH=/opt/java/openjdk/lib:/opt/java/openjdk/lib/server ldd "/opt/java/openjdk/$lib")
                 if grep -F "not found" <<<"$deps"; then exit 1; fi
               done
               java --list-modules | grep -E "^(java.naming|java.security.jgss|jdk.crypto.ec)@25.0.4.1"
