@@ -14,7 +14,7 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.537}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.538}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
@@ -43,15 +43,15 @@ node_agent_binary_sha256=${NODE_AGENT_BINARY_SHA256:-ce8342e10da07c50cc414b471ca
 node_agent_apply_sha256=${NODE_AGENT_APPLY_SHA256:-dd8cb342518a43e7468cc121db5c4e44b16731f2620b77ea0fd03c02c03766a9}
 component_artifact_mode=remote
 api_explorer_release_base_url=${API_EXPLORER_RELEASE_BASE_URL:-https://github.com/PastureStack/api-explorer/releases/download}
-api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.18}
-api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.18.tar.gz}
-api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c}
-api_explorer_commit=${API_EXPLORER_COMMIT:-3b1c39e8a116f58649d94233a384a0362c02b43e}
+api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.19}
+api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.19.tar.gz}
+api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-d1602ab6033512f0b86dc8ceafee2061364ce2fc5da2a9b7119f900d9e0f3c25}
+api_explorer_commit=${API_EXPLORER_COMMIT:-dda3fe8a806d9736de771d325e3ca98ab4067cd2}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.190}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.190.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-b06612812113fb4b54cf0f2b4754af077406306fd72407e04b17f2ad9f4dc927}
-web_console_commit=${WEB_CONSOLE_COMMIT:-9ff823c2233e2041c2f00bb56a91d147a7feaa1d}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.191}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.191.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-f9b28c25ae27057ae39e55fb29400b8ac459e07632a441eea011591f305950ab}
+web_console_commit=${WEB_CONSOLE_COMMIT:-1452148e0ca2c0dc798dc08a653eb90196d4f88b}
 catalog_service_release_base_url=${CATALOG_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/catalog-service/releases/download}
 catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.13}
 catalog_service_commit=${CATALOG_SERVICE_COMMIT:-4c39c73a8131ba06e9ff0aaec3b95cc27e049324}
@@ -101,7 +101,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-5ce
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-e62a21270142181315293d7e11482288ffe8fc4d91cc8fe07dacc90b461f3709}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.537}
+image=${IMAGE:-pasturestack-validation/server:v1.6.538}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -199,6 +199,7 @@ if [[ -n ${PASTURESTACK_COMPONENT_ARTIFACT_DIR:-} ]]; then
     test -z "$(find "$component_directory" -type l -print -quit)"
     component_assets=(
         "$orchestration_engine_artifact|$orchestration_engine_artifact_sha256"
+        "$api_explorer_artifact|$api_explorer_artifact_sha256"
         "$web_console_artifact|$web_console_artifact_sha256"
         "websocket-proxy-${websocket_proxy_version}-linux-amd64.tar.xz|$websocket_proxy_archive_sha256"
         "host-api-${host_api_version}.tar.gz|$host_api_archive_sha256"
@@ -341,7 +342,7 @@ for marker in \
     CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}" \
     CATTLE_RANCHER_CLI_VERSION=v0.6.18 \
     PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download \
-    CATTLE_API_UI_VERSION=1.1.18 \
+    CATTLE_API_UI_VERSION=1.1.19 \
     CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}" \
     RC16_GO_AGENT_VERSION="${node_agent_version}" \
     RC16_WINDOWS_AGENT_VERSION=0.13.27 \
@@ -379,7 +380,7 @@ for marker in \
     PASTURESTACK_GPG_VERIFIER=removed \
     PASTURESTACK_CONTAINER_SOURCE_BUILD_MODE=removed \
     PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.2 \
-    PASTURESTACK_API_EXPLORER_PACKAGE=1.1.18 \
+    PASTURESTACK_API_EXPLORER_PACKAGE=1.1.19 \
     PASTURESTACK_API_EXPLORER_COMMIT="${api_explorer_commit}" \
     PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256="${api_explorer_artifact_sha256}" \
     PASTURESTACK_WEB_CONSOLE_PACKAGE="${web_console_release_tag}" \
@@ -423,9 +424,9 @@ for marker in \
     PASTURESTACK_VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256="${vsphere_cli_bundle_archive_sha256}" \
     PASTURESTACK_GOVC_BINARY_SHA256="${govc_binary_sha256}" \
     PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-08-28 \
-    PASTURESTACK_CATALOG_COMMIT=b6b658888fce50d3ec217eb4eba0f26ab0113baf \
-    'DEFAULT_CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"b6b658888fce50d3ec217eb4eba0f26ab0113baf"}}}' \
-    'CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"b6b658888fce50d3ec217eb4eba0f26ab0113baf"}}}'; do
+    PASTURESTACK_CATALOG_COMMIT=71ec6b2c27355e709f5092c954db24efa800bc41 \
+    'DEFAULT_CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"71ec6b2c27355e709f5092c954db24efa800bc41"}}}' \
+    'CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"71ec6b2c27355e709f5092c954db24efa800bc41"}}}'; do
     test "$(grep -Fxc "$marker" <<<"$image_environment")" = 1
 done
 
@@ -718,11 +719,12 @@ docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_versi
     test -s "${api_dir}/licenses/bootstrap-5.3.8/LICENSE"
     test -s "${api_dir}/licenses/bootstrap-icons-1.13.1/LICENSE"
     test -s "${api_dir}/licenses/jquery-4.0.0/LICENSE.txt"
-    test -s "${api_dir}/licenses/handlebars-4.7.9/LICENSE"
+    test -s "${api_dir}/licenses/handlebars-4.7.10/LICENSE"
     test ! -e "${api_dir}/js/bootstrap.js"
     test "$(find "${api_dir}" -type f -name "*.map" | wc -l)" -eq 0
-    grep -F '"'"'"version": "1.1.18"'"'"' "${api_dir}/version.json" >/dev/null
-    grep -F '"'"'"commit": "3b1c39e"'"'"' "${api_dir}/version.json" >/dev/null
+    grep -F '"'"'"version": "1.1.19"'"'"' "${api_dir}/version.json" >/dev/null
+    grep -F '"'"'"commit": "dda3fe8"'"'"' "${api_dir}/version.json" >/dev/null
+    grep -aF "handlebars v4.7.10" "${api_dir}/ui.js" >/dev/null
     for marker in \
         PastureStackUi \
         pasturestack:modal:shown \

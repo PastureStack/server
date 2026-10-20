@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "release": "v1.6.537",
-  "generatedAt": "2026-10-15T13:03:57Z",
+  "release": "v1.6.538",
+  "generatedAt": "2026-10-20T01:35:18Z",
   "policy": {
     "allowedSeverities": [
       "LOW",
@@ -14,140 +14,326 @@
   },
   "findings": [
     {
+      "vulnerabilityId": "CVE-2026-102473",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-102473",
+      "reviewAfter": "2026-10-27",
+      "packages": [
+        {
+          "name": "dash",
+          "installedVersion": "0.5.12-12ubuntu3"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-102473.json"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-102474",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-102474",
+      "reviewAfter": "2026-10-27",
+      "packages": [
+        {
+          "name": "dash",
+          "installedVersion": "0.5.12-12ubuntu3"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-102474.json"
+    },
+    {
       "vulnerabilityId": "CVE-2026-103111",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "upstreamVendorStatus": "Vulnerable",
-      "verifiedAt": "2026-10-14T03:45:54Z",
       "source": "https://ubuntu.com/security/CVE-2026-103111",
-      "reviewAfter": "2026-10-20",
+      "reviewAfter": "2026-10-27",
       "packages": [
-        { "name": "libpcre2-8-0", "installedVersion": "10.46-1build1" },
-        { "name": "libpcre2-posix3", "installedVersion": "10.46-1build1" }
-      ]
+        {
+          "name": "libpcre2-8-0",
+          "installedVersion": "10.46-1build1"
+        },
+        {
+          "name": "libpcre2-posix3",
+          "installedVersion": "10.46-1build1"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-103111.json"
     },
     {
       "vulnerabilityId": "CVE-2026-107161",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "upstreamVendorStatus": "Needs evaluation",
-      "verifiedAt": "2026-10-15T02:44:00Z",
       "source": "https://ubuntu.com/security/CVE-2026-107161",
-      "reviewAfter": "2026-10-20",
+      "reviewAfter": "2026-10-27",
       "severityBasis": "Ubuntu priority Medium and the scanner's vendor severity; upstream CVSS v3 7.5 High is not a fix or a not-affected decision.",
       "packages": [
-        { "name": "libsasl2-2", "installedVersion": "2.1.28+dfsg1-9ubuntu3" },
-        { "name": "libsasl2-modules-db", "installedVersion": "2.1.28+dfsg1-9ubuntu3" }
-      ]
+        {
+          "name": "libsasl2-2",
+          "installedVersion": "2.1.28+dfsg1-9ubuntu3"
+        },
+        {
+          "name": "libsasl2-modules-db",
+          "installedVersion": "2.1.28+dfsg1-9ubuntu3"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-107161.json"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-67693",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-67693",
+      "reviewAfter": "2026-10-27",
+      "packages": [
+        {
+          "name": "libgnutls30t64",
+          "installedVersion": "3.8.12-2ubuntu1.1"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-67693.json"
     },
     {
       "vulnerabilityId": "CVE-2026-85091",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-85091",
-      "reviewAfter": "2026-10-20",
+      "reviewAfter": "2026-10-27",
       "packages": [
-        { "name": "zlib1g", "installedVersion": "1:1.3.dfsg+really1.3.1-1ubuntu3.1" }
-      ]
+        {
+          "name": "zlib1g",
+          "installedVersion": "1:1.3.dfsg+really1.3.1-1ubuntu3.1"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-85091.json"
     },
     {
       "vulnerabilityId": "CVE-2026-86145",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-86145",
-      "reviewAfter": "2026-10-20",
+      "reviewAfter": "2026-10-27",
       "packages": [
-        { "name": "libpcre2-8-0", "installedVersion": "10.46-1build1" },
-        { "name": "libpcre2-posix3", "installedVersion": "10.46-1build1" }
-      ]
+        {
+          "name": "libpcre2-8-0",
+          "installedVersion": "10.46-1build1"
+        },
+        {
+          "name": "libpcre2-posix3",
+          "installedVersion": "10.46-1build1"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-86145.json"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-88647",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-88647",
+      "reviewAfter": "2026-10-27",
+      "packages": [
+        {
+          "name": "libgnutls30t64",
+          "installedVersion": "3.8.12-2ubuntu1.1"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-88647.json"
     },
     {
       "vulnerabilityId": "CVE-2026-89092",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-89092",
-      "reviewAfter": "2026-10-20",
+      "reviewAfter": "2026-10-27",
       "packages": [
-        { "name": "libc-bin", "installedVersion": "2.43-2ubuntu2.4" },
-        { "name": "libc-gconv-modules-extra", "installedVersion": "2.43-2ubuntu2.4" },
-        { "name": "libc6", "installedVersion": "2.43-2ubuntu2.4" }
-      ]
+        {
+          "name": "libc-bin",
+          "installedVersion": "2.43-2ubuntu2.4"
+        },
+        {
+          "name": "libc-gconv-modules-extra",
+          "installedVersion": "2.43-2ubuntu2.4"
+        },
+        {
+          "name": "libc6",
+          "installedVersion": "2.43-2ubuntu2.4"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-89092.json"
     },
     {
       "vulnerabilityId": "CVE-2026-89156",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "upstreamVendorStatus": "Vulnerable",
-      "verifiedAt": "2026-10-14T03:45:55Z",
       "source": "https://ubuntu.com/security/CVE-2026-89156",
-      "reviewAfter": "2026-10-20",
+      "reviewAfter": "2026-10-27",
       "packages": [
-        { "name": "libpcre2-8-0", "installedVersion": "10.46-1build1" },
-        { "name": "libpcre2-posix3", "installedVersion": "10.46-1build1" }
-      ]
+        {
+          "name": "libpcre2-8-0",
+          "installedVersion": "10.46-1build1"
+        },
+        {
+          "name": "libpcre2-posix3",
+          "installedVersion": "10.46-1build1"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-89156.json"
     },
     {
       "vulnerabilityId": "CVE-2026-89157",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "upstreamVendorStatus": "Vulnerable",
-      "verifiedAt": "2026-10-14T03:45:55Z",
       "source": "https://ubuntu.com/security/CVE-2026-89157",
-      "reviewAfter": "2026-10-20",
+      "reviewAfter": "2026-10-27",
       "packages": [
-        { "name": "libpcre2-8-0", "installedVersion": "10.46-1build1" },
-        { "name": "libpcre2-posix3", "installedVersion": "10.46-1build1" }
-      ]
+        {
+          "name": "libpcre2-8-0",
+          "installedVersion": "10.46-1build1"
+        },
+        {
+          "name": "libpcre2-posix3",
+          "installedVersion": "10.46-1build1"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-89157.json"
     },
     {
       "vulnerabilityId": "CVE-2026-89158",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "upstreamVendorStatus": "Vulnerable",
-      "verifiedAt": "2026-10-14T03:45:29Z",
       "source": "https://ubuntu.com/security/CVE-2026-89158",
-      "reviewAfter": "2026-10-20",
+      "reviewAfter": "2026-10-27",
       "packages": [
-        { "name": "libpcre2-8-0", "installedVersion": "10.46-1build1" },
-        { "name": "libpcre2-posix3", "installedVersion": "10.46-1build1" }
-      ]
+        {
+          "name": "libpcre2-8-0",
+          "installedVersion": "10.46-1build1"
+        },
+        {
+          "name": "libpcre2-posix3",
+          "installedVersion": "10.46-1build1"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-89158.json"
     },
     {
       "vulnerabilityId": "CVE-2026-89160",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "upstreamVendorStatus": "Vulnerable",
-      "verifiedAt": "2026-10-14T03:45:28Z",
       "source": "https://ubuntu.com/security/CVE-2026-89160",
-      "reviewAfter": "2026-10-20",
+      "reviewAfter": "2026-10-27",
       "packages": [
-        { "name": "libpcre2-8-0", "installedVersion": "10.46-1build1" },
-        { "name": "libpcre2-posix3", "installedVersion": "10.46-1build1" }
-      ]
+        {
+          "name": "libpcre2-8-0",
+          "installedVersion": "10.46-1build1"
+        },
+        {
+          "name": "libpcre2-posix3",
+          "installedVersion": "10.46-1build1"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-89160.json"
     },
     {
       "vulnerabilityId": "CVE-2026-89161",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-89161",
-      "reviewAfter": "2026-10-20",
+      "reviewAfter": "2026-10-27",
       "packages": [
-        { "name": "libpcre2-8-0", "installedVersion": "10.46-1build1" },
-        { "name": "libpcre2-posix3", "installedVersion": "10.46-1build1" }
-      ]
+        {
+          "name": "libpcre2-8-0",
+          "installedVersion": "10.46-1build1"
+        },
+        {
+          "name": "libpcre2-posix3",
+          "installedVersion": "10.46-1build1"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-89161.json"
     },
     {
       "vulnerabilityId": "CVE-2026-89162",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "upstreamVendorStatus": "Needs evaluation",
-      "verifiedAt": "2026-10-14T03:45:28Z",
       "source": "https://ubuntu.com/security/CVE-2026-89162",
-      "reviewAfter": "2026-10-20",
+      "reviewAfter": "2026-10-27",
       "packages": [
-        { "name": "libpcre2-8-0", "installedVersion": "10.46-1build1" },
-        { "name": "libpcre2-posix3", "installedVersion": "10.46-1build1" }
-      ]
+        {
+          "name": "libpcre2-8-0",
+          "installedVersion": "10.46-1build1"
+        },
+        {
+          "name": "libpcre2-posix3",
+          "installedVersion": "10.46-1build1"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-89162.json"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-95184",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-95184",
+      "reviewAfter": "2026-10-27",
+      "packages": [
+        {
+          "name": "libgnutls30t64",
+          "installedVersion": "3.8.12-2ubuntu1.1"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-95184.json"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-95209",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-95209",
+      "reviewAfter": "2026-10-27",
+      "packages": [
+        {
+          "name": "libgnutls30t64",
+          "installedVersion": "3.8.12-2ubuntu1.1"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-95209.json"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-95210",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-95210",
+      "reviewAfter": "2026-10-27",
+      "packages": [
+        {
+          "name": "libgnutls30t64",
+          "installedVersion": "3.8.12-2ubuntu1.1"
+        }
+      ],
+      "verifiedAt": "2026-10-20T01:35:18Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-95210.json"
     }
   ]
 }

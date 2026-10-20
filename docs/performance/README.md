@@ -8,15 +8,11 @@ The following example is appropriate as a starting point for a dedicated
 16-vCPU host with about 32 GiB of RAM. It is not a universal performance
 profile; measure the real workload before increasing it further.
 
-The example uses published Server `v1.6.537`, Web Console `1.6.190` and Engine
-`v0.183.350`. Official workflow
-[38742185175](https://github.com/PastureStack/server/actions/runs/38742185175)
-and anonymous release/image readback passed. Immutable producer:
-`f1df33f2a8b9e9265a9b8eeb9ad464786eb7f62e`;
-manifest `sha256:81aafa0347910449ef528526f02e75a12acfce2f3987b803b92cb3b96fd0ac2d`;
-distinct OCI config `sha256:f49f36d2d6d2bd397c62330a0ff616aa8a3bbd5fce9cba10da45efabf9144363`.
-See the [release note](../releases/server-1.6.537.md) for component identities
-and the bounded acceptance evidence. Documentation changes do not replace the producer.
+The example prepares Server `v1.6.538` with Web Console `1.6.191` and unchanged
+Engine `v0.183.350`; run it only after its official release and image have been published and read back.
+The candidate is not yet available from GHCR. See the
+[candidate release note](../releases/server-1.6.538.md). The last published
+baseline remains `v1.6.537`; source changes do not establish deployment.
 
 This release retains the same performance-setting contract. Existing runtime
 overrides and volumes must be preserved on upgrade or code rollback. Archive and
@@ -25,7 +21,7 @@ restore do not establish a performance improvement or complete broader acceptanc
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.537
+    image: ghcr.io/pasturestack/server:v1.6.538
     restart: unless-stopped
     ports:
       - "8080:8080"

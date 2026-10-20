@@ -19,7 +19,7 @@ ENTRY = ROOT / "server/build-component-candidate.sh"
 BUILD = ROOT / "server/build-api-explorer-patch-image.sh"
 VERIFY = ROOT / "server/artifacts/verify-host-api-package.sh"
 COMMITS = ("ORCHESTRATION_ENGINE_COMMIT", "WEB_CONSOLE_COMMIT", "WEBSOCKET_PROXY_COMMIT", "HOST_API_COMMIT", "NODE_AGENT_COMMIT")
-HASHES = ("ORCHESTRATION_ENGINE_ARTIFACT_SHA256", "ENGINE_READONLY_SCHEMA_SHA256", "ENGINE_RESTRICTED_SCHEMA_SHA256",
+HASHES = ("ORCHESTRATION_ENGINE_ARTIFACT_SHA256", "ENGINE_READONLY_SCHEMA_SHA256", "ENGINE_RESTRICTED_SCHEMA_SHA256", "API_EXPLORER_ARTIFACT_SHA256",
           "WEB_CONSOLE_ARTIFACT_SHA256", "WEBSOCKET_PROXY_ARCHIVE_SHA256", "WEBSOCKET_PROXY_BINARY_SHA256",
           "HOST_API_ARCHIVE_SHA256", "HOST_API_BINARY_SHA256", "HOST_API_APPLY_SHA256",
           "NODE_AGENT_ARCHIVE_SHA256", "NODE_AGENT_BINARY_SHA256", "NODE_AGENT_APPLY_SHA256",
@@ -27,6 +27,7 @@ HASHES = ("ORCHESTRATION_ENGINE_ARTIFACT_SHA256", "ENGINE_READONLY_SCHEMA_SHA256
           "CATALOG_SERVICE_ARCHIVE_SHA256", "CATALOG_SERVICE_LICENSE_SHA256", "AUTHENTICATION_SERVICE_ARCHIVE_SHA256",
           "WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256", "COMPOSE_EXECUTOR_ARCHIVE_SHA256", "VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256")
 LOCAL_ASSETS = (("cattle.jar", "ORCHESTRATION_ENGINE_ARTIFACT_SHA256"),
+                ("api-explorer-1.1.19.tar.gz", "API_EXPLORER_ARTIFACT_SHA256"),
                 ("web-console-1.6.181.tar.gz", "WEB_CONSOLE_ARTIFACT_SHA256"),
                 ("websocket-proxy-0.23.15-linux-amd64.tar.xz", "WEBSOCKET_PROXY_ARCHIVE_SHA256"),
                 ("host-api-0.38.5.tar.gz", "HOST_API_ARCHIVE_SHA256"),
@@ -43,7 +44,9 @@ LOCAL_ASSETS = (("cattle.jar", "ORCHESTRATION_ENGINE_ARTIFACT_SHA256"),
 
 
 def fixture_environment():
-    environment = {"PATH": os.environ["PATH"], "SOURCE_DATE_EPOCH": "1"}
+    environment = {"PATH": os.environ["PATH"], "SOURCE_DATE_EPOCH": "1",
+                   "SERVER_RELEASE_TAG": "v1.6.519", "ORCHESTRATION_ENGINE_RELEASE_TAG": "v0.183.334",
+                   "WEB_CONSOLE_RELEASE_TAG": "1.6.181"}
     for name in COMMITS:
         environment[name] = hashlib.sha1(("unit-fixture-" + name).encode()).hexdigest()
     for name in HASHES:
@@ -96,11 +99,11 @@ class ComponentRecipeTest(unittest.TestCase):
                            FIXTURE_TRACE=str(path / "docker-arguments"))
         return environment, assets
 
-    def test_fourteen_local_assets_are_hashed_and_named_context_reaches_formal_recipe(self):
+    def test_fifteen_local_assets_are_hashed_and_named_context_reaches_formal_recipe(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary)
             environment, assets = self.local_fixture(path)
-            self.assertEqual(14, len(LOCAL_ASSETS))
+            self.assertEqual(15, len(LOCAL_ASSETS))
             self.assertEqual({name for name, _ in LOCAL_ASSETS}, {asset.name for asset in assets.iterdir()})
             result = self.run_entry(environment)
             self.assertEqual(88, result.returncode, result.stderr)

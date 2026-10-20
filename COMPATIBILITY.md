@@ -1,5 +1,16 @@
 # Compatibility Contract
 
+## Server v1.6.538 prepared, not published
+
+The current recipe pins the official Web Console `1.6.191` and API Explorer
+`1.1.19` artifacts, and replaces the inherited Server460 JDK with the official
+Temurin `25.0.4.1+1` archive. Engine `v0.183.350`, authentication, API Key/RBAC,
+archive, performance environment variables and three-volume contracts are
+unchanged. Actual candidate JDK identity and the Java schema-patch fixture must
+pass before publication, followed by targeted QA8080 readback. No company site
+deployment or whole historical matrix PASS is implied. See the
+[candidate release note](docs/releases/server-1.6.538.md).
+
 ## Server v1.6.537 published
 
 Immutable Server producer `f1df33f2a8b9e9265a9b8eeb9ad464786eb7f62e` packages
