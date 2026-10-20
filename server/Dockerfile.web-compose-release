@@ -3,6 +3,18 @@ ARG ARTIFACT_HELPER_IMAGE=golang:1.27.2-bookworm@sha256:5cf287a799e6b94384bad13d
 ARG UBUNTU_SECURITY_IMAGE=ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b
 ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403
 
+FROM ${ARTIFACT_HELPER_IMAGE} AS temurin_security_runtime
+ADD --checksum=sha256:dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e \
+    https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4.1%2B1/OpenJDK25U-jdk_x64_linux_hotspot_25.0.4.1_1.tar.gz \
+    /tmp/temurin-jdk25.tar.gz
+RUN set -eux; \
+    mkdir -p /out/java; \
+    tar -xzf /tmp/temurin-jdk25.tar.gz --strip-components=1 -C /out/java; \
+    /out/java/bin/java -version 2>&1 | grep -F '25.0.4.1'; \
+    /out/java/bin/javac -version 2>&1 | grep -F '25.0.4.1'; \
+    test -s /out/java/legal/java.base/LICENSE; \
+    rm -f /tmp/temurin-jdk25.tar.gz
+
 FROM ${ARTIFACT_HELPER_IMAGE} AS console_broker_build
 
 WORKDIR /src
@@ -55,9 +67,9 @@ ARG NODE_AGENT_BINARY_SHA256=ce8342e10da07c50cc414b471cadc67db4dd390e6e2dcb632b3
 ARG NODE_AGENT_APPLY_SHA256=dd8cb342518a43e7468cc121db5c4e44b16731f2620b77ea0fd03c02c03766a9
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.190
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.190.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=b06612812113fb4b54cf0f2b4754af077406306fd72407e04b17f2ad9f4dc927
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.191
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.191.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=f9b28c25ae27057ae39e55fb29400b8ac459e07632a441eea011591f305950ab
 ARG CATALOG_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/catalog-service/releases/download
 ARG CATALOG_SERVICE_VERSION=0.20.13
 ARG CATALOG_SERVICE_COMMIT=4c39c73a8131ba06e9ff0aaec3b95cc27e049324
@@ -572,9 +584,18 @@ RUN set -eux; \
 
 FROM ${BASE_IMAGE}
 
+RUN rm -rf /opt/java/openjdk
+COPY --from=temurin_security_runtime /out/java/ /opt/java/openjdk/
+ENV JAVA_VERSION=jdk-25.0.4.1+1 \
+    PASTURESTACK_JAVA_ARCHIVE_SHA256=dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e
+RUN set -eux; \
+    test "$(readlink -f /usr/bin/java)" = /opt/java/openjdk/bin/java; \
+    /opt/java/openjdk/bin/java -version 2>&1 | grep -F '25.0.4.1'; \
+    /opt/java/openjdk/bin/javac -version 2>&1 | grep -F '25.0.4.1'
+
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
-ARG SERVER_RELEASE_TAG=v1.6.537
+ARG SERVER_RELEASE_TAG=v1.6.538
 ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.350
 ARG ORCHESTRATION_ENGINE_VERSION=0.183.350
 ARG ENGINE_READONLY_SCHEMA_SHA256=7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233
@@ -594,9 +615,9 @@ ARG FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2
 ARG LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.190
-ARG WEB_CONSOLE_ARTIFACT_SHA256=b06612812113fb4b54cf0f2b4754af077406306fd72407e04b17f2ad9f4dc927
-ARG WEB_CONSOLE_COMMIT=9ff823c2233e2041c2f00bb56a91d147a7feaa1d
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.191
+ARG WEB_CONSOLE_ARTIFACT_SHA256=f9b28c25ae27057ae39e55fb29400b8ac459e07632a441eea011591f305950ab
+ARG WEB_CONSOLE_COMMIT=1452148e0ca2c0dc798dc08a653eb90196d4f88b
 ARG CATALOG_SERVICE_VERSION=0.20.13
 ARG CATALOG_SERVICE_COMMIT=4c39c73a8131ba06e9ff0aaec3b95cc27e049324
 ARG CATALOG_SERVICE_ARCHIVE_SHA256=29626181cb8489b016e5975ffaddc00b2a32d290b1c0066e833d27fa7a5edf83

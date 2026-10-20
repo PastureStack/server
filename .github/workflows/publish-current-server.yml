@@ -169,6 +169,36 @@ jobs:
           cleanup_extract
           trap - EXIT
 
+      - name: Verify the actual candidate JDK security runtime
+        shell: bash
+        working-directory: source
+        run: |
+          set -Eeuo pipefail
+          {
+            test "$(docker image inspect "$CANDIDATE_IMAGE" --format '{{range .Config.Env}}{{println .}}{{end}}' |
+              sed -n 's/^JAVA_VERSION=//p')" = jdk-25.0.4.1+1
+            test "$(docker image inspect "$CANDIDATE_IMAGE" --format '{{range .Config.Env}}{{println .}}{{end}}' |
+              sed -n 's/^PASTURESTACK_JAVA_ARCHIVE_SHA256=//p')" = \
+              dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e
+            docker run --rm --network none --entrypoint /bin/bash "$CANDIDATE_IMAGE" -ec '
+              test "$(command -v java)" = /opt/java/openjdk/bin/java
+              test "$(readlink -f /usr/bin/java)" = /opt/java/openjdk/bin/java
+              test "$(readlink -f /usr/bin/javac)" = /opt/java/openjdk/bin/javac
+              java -version 2>&1 | tee /tmp/java-version
+              grep -F "25.0.4.1+1" /tmp/java-version
+              javac -version
+              test -s /opt/java/openjdk/lib/security/cacerts
+              test -s /opt/java/openjdk/legal/java.base/LICENSE
+              for lib in lib/server/libjvm.so lib/libnet.so lib/libnio.so; do
+                deps=$(ldd "/opt/java/openjdk/$lib")
+                if grep -F "not found" <<<"$deps"; then exit 1; fi
+              done
+              java --list-modules | grep -E "^(java.naming|java.security.jgss|jdk.crypto.ec)@25.0.4.1"
+            '
+            RC16_JDK25_CHECK_IMAGE="$CANDIDATE_IMAGE" bash scripts/check-server-java-patches-jdk25.sh
+            printf 'SERVER_JAVA_SECURITY_RUNTIME_OK version=25.0.4.1+1 official_archive_sha256=dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e actual_candidate=1\n'
+          } |& tee "$RUNNER_TEMP/server-evidence/java-security-runtime.txt"
+
       - name: Start, restart, and export the candidate
         shell: bash
         run: |
@@ -586,6 +616,7 @@ jobs:
               "host-api-${HOST_API_VERSION}.tar.gz" \
               host-api-package-check.txt \
               image-inspect.txt \
+              java-security-runtime.txt \
               mfa-policy-api-smoke.txt \
               registration-basic-api-smoke.txt \
               published.txt \
@@ -617,6 +648,7 @@ jobs:
             "$evidence/host-api-${HOST_API_VERSION}.tar.gz" \
             "$evidence/host-api-package-check.txt" \
             "$evidence/image-inspect.txt" \
+            "$evidence/java-security-runtime.txt" \
             "$evidence/mfa-policy-api-smoke.txt" \
             "$evidence/registration-basic-api-smoke.txt" \
             "$evidence/published.txt" \

@@ -66,6 +66,7 @@ run_gate webhook_automation_service_artifact scripts/check-server-webhook-automa
 run_gate per_host_subnet_artifact scripts/check-server-per-host-subnet-artifact.sh
 run_gate windows_node_agent_artifact scripts/check-server-windows-node-agent-artifact.sh
 run_gate server_jdk25_source_policy bash scripts/check-server-jdk25-source-policy.sh
+run_gate server_jdk25_source_policy_fixtures bash scripts/check-server-jdk25-source-policy-fixtures.sh
 run_gate cattle_artifact_mirror scripts/check-server-cattle-artifact-mirror.sh
 run_gate console_workspace_patch scripts/check-server-console-workspace-patch.sh
 run_gate docker_host_support_patch scripts/check-server-docker-host-support-patch.sh

@@ -13,14 +13,14 @@ write_fixture_tree() {
   local source_gate_line=${4:-'run_gate server_jdk25_source_policy bash scripts/check-server-jdk25-source-policy.sh'}
   local patch_gate_image=${5:-'image="${RC16_JDK25_CHECK_IMAGE:-eclipse-temurin:25.0.4_7-jdk}"'}
 
-  mkdir -p "$root/server/patches" "$root/scripts"
+  mkdir -p "$root/server/patches" "$root/scripts" "$root/.github/workflows"
 
   cat >"$root/server/Dockerfile" <<DOCKER
 # syntax=docker/dockerfile:1.7
 ${docker_base}
-ARG TEMURIN_JDK25_VERSION="25.0.4+7"
-ARG TEMURIN_JDK25_URL="https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4%2B7/OpenJDK25U-jdk_x64_linux_hotspot_25.0.4_7.tar.gz"
-ARG TEMURIN_JDK25_SHA256="e58fcdcd637b25c03ca84cbbcefc70d11efb8f4b4cbd05decc9f661769d77f94"
+ARG TEMURIN_JDK25_VERSION="25.0.4.1+1"
+ARG TEMURIN_JDK25_URL="https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4.1%2B1/OpenJDK25U-jdk_x64_linux_hotspot_25.0.4.1_1.tar.gz"
+ARG TEMURIN_JDK25_SHA256="dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e"
 ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH=\${JAVA_HOME}/bin:\${PATH}
 RUN apt-get update && apt-get upgrade -y
@@ -31,6 +31,21 @@ RUN ln -s \${JAVA_HOME}/bin/java /usr/bin/java && \
     java -version
 RUN ${javac_command}
 DOCKER
+
+  cat >"$root/server/Dockerfile.web-compose-release" <<'CURRENT'
+FROM helper AS temurin_security_runtime
+ADD --checksum=sha256:dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e https://example.test/OpenJDK25U-jdk_x64_linux_hotspot_25.0.4.1_1.tar.gz /tmp/jdk.tar.gz
+FROM base
+RUN rm -rf /opt/java/openjdk
+COPY --from=temurin_security_runtime /out/java/ /opt/java/openjdk/
+ENV JAVA_VERSION=jdk-25.0.4.1+1 \
+    PASTURESTACK_JAVA_ARCHIVE_SHA256=dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e
+CURRENT
+  cat >"$root/.github/workflows/publish-current-server.yml" <<'CURRENT'
+RC16_JDK25_CHECK_IMAGE="$CANDIDATE_IMAGE" bash scripts/check-server-java-patches-jdk25.sh
+SERVER_JAVA_SECURITY_RUNTIME_OK version=25.0.4.1+1
+java-security-runtime.txt
+CURRENT
 
   cat >"$root/server/Dockerfile.auth-hotfix" <<DOCKER
 ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.266
@@ -158,4 +173,22 @@ if RC16_SERVER_SOURCE_ROOT="$extra_java" scripts/check-server-jdk25-source-polic
 fi
 grep -Fq 'SERVER_JDK25_SOURCE_POLICY_JAVA_SURFACE_DRIFT' "$workdir/extra-java.out"
 
-echo "SERVER_JDK25_SOURCE_POLICY_FIXTURES_OK"
+missing_current_runtime="$workdir/missing-current-runtime"
+write_fixture_tree "$missing_current_runtime"
+sed -i '/COPY --from=temurin_security_runtime/d' "$missing_current_runtime/server/Dockerfile.web-compose-release"
+if RC16_SERVER_SOURCE_ROOT="$missing_current_runtime" scripts/check-server-jdk25-source-policy.sh >"$workdir/missing-current-runtime.out" 2>&1; then
+  echo "expected missing-current-runtime fixture to fail" >&2
+  exit 1
+fi
+grep -Fq 'SERVER_CURRENT_JDK_SECURITY_PIN_MISSING' "$workdir/missing-current-runtime.out"
+
+missing_candidate_gate="$workdir/missing-candidate-gate"
+write_fixture_tree "$missing_candidate_gate"
+sed -i '/RC16_JDK25_CHECK_IMAGE=/d' "$missing_candidate_gate/.github/workflows/publish-current-server.yml"
+if RC16_SERVER_SOURCE_ROOT="$missing_candidate_gate" scripts/check-server-jdk25-source-policy.sh >"$workdir/missing-candidate-gate.out" 2>&1; then
+  echo "expected missing-candidate-gate fixture to fail" >&2
+  exit 1
+fi
+grep -Fq 'SERVER_CURRENT_JDK_ACTUAL_CANDIDATE_GATE_MISSING' "$workdir/missing-candidate-gate.out"
+
+echo "SERVER_JDK25_SOURCE_POLICY_FIXTURES_OK cases=10"
