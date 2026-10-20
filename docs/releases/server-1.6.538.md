@@ -1,6 +1,24 @@
-# Server v1.6.538 candidate
+# Server v1.6.538
 
-Prepared source only; no Server image or release has been published.
+Officially published on 2026-10-20. Targeted QA8080 deployment acceptance passed
+within the 29-check narrow scope below; this is not a claim of company-production
+deployment or whole historical matrix acceptance.
+
+## Immutable publication identity
+
+- Signed, verified producer: `9dd8f1da85c57fc2424b9f58c278331cf679b8fc`.
+- Official workflow: [39362063157](https://github.com/PastureStack/server/actions/runs/39362063157), completed successfully without bypassing required checks.
+- Manifest: `sha256:10284f7c3e3a04d7212accae9bdb6daac89ea2f23bc39cd1064e937415af231e`.
+- Distinct OCI config: `sha256:cd754a3eb44536004322bd28471bc094a5c13ead64b420fcde07a97d9a1912a5`.
+- Artifact identity, not an installation command:
+  `ghcr.io/pasturestack/server:v1.6.538@sha256:10284f7c3e3a04d7212accae9bdb6daac89ea2f23bc39cd1064e937415af231e`.
+- Platform: linux/amd64; one flattened runtime layer, 540,239,336 compressed bytes.
+- [Immutable release](https://github.com/PastureStack/server/releases/tag/v1.6.538): all 25 official assets passed anonymous digest and `SHA256SUMS` readback.
+
+Documentation commits and the current release body do not replace the producer,
+image or immutable assets. The attached `release-notes.md` preserves the
+producer's build-time source snapshot, including its then-candidate wording;
+this document records the subsequent publication and acceptance status.
 
 ## Security changes
 
@@ -46,14 +64,59 @@ firewall architecture are unchanged. Source-only LZ4/RabbitMQ dependency fixes
 in distributed-cache-runtime do not require a new core JAR or Engine release:
 the published core artifact does not contain either dependency.
 
-Required evidence before calling this release complete: signed/protected PRs,
-exact official component assets, actual candidate Java identity and schema
-serialization fixture, startup/restart with existing auth/registration smoke,
-fresh merged-rootfs SBOM/security scan, immutable registry/release readback,
-then QA8080 upgrade preserving configuration and volumes. Run only affected
-UI/API/JDK and scheduler lifecycle checks; retain unaffected PASS receipts and
-leave KVM and unrelated historical pending items pending. Final identities and
-results will be added after publication and QA readback.
+The official producer passed the actual candidate JDK identity, module, native
+libnet/libnio and Java schema serialization fixture, including the twelve-role
+frozen identity-security schema contract. `java-security-runtime.txt` records
+Temurin `25.0.4.1+1` and the exact official archive checksum above.
+
+The final image returned HTTP200/pong on fresh startup and restart after 11/7
+polling attempts, retaining the configured public origin and private API
+`no-store` contract. The existing MFA-policy API smoke passed 34 checks;
+registration passed seven entry-only checks, not active-node acceptance.
+These are isolated official candidate gates, not a Docker Healthcheck claim.
+
+The fresh merged-rootfs security/SBOM gate records 73 raw findings and 29 exact
+unfixed LOW/MEDIUM package occurrences across 18 CVEs after the existing VEX
+policy. Review is due 2026-10-27; untracked, critical/high, fixed-available and
+secret findings are all zero. The attached raw scan, effective scan, exact
+vendor tracker and VEX remain separate evidence; neither tracking nor VEX
+constitutes remediation, a HIGH waiver or a zero-risk claim.
+
+### Targeted QA8080 acceptance
+
+The QA runtime was switched to this exact published producer, manifest and config
+identity. Startup and restart health passed with all three named volumes and
+runtime overrides unchanged. The prior working `v1.6.537` image/container and
+pre-upgrade backup were retained. VM definitions/disks were not removed or
+reconfigured; company production was not modified.
+
+Both existing QA Schedulers completed the normal Catalog revision4 to revision5
+upgrade from `v0.8.18` to `v0.8.19`, with HTTP202 for both upgrade and
+finish-upgrade. Existing explicit answers and effective runtime configuration
+(scale, command, health, logging, network and privileged settings) were preserved.
+Both Schedulers are active/healthy;
+all three existing Hosts and Agents are active. New disposable workloads were
+observed on their intended Hosts and became healthy; native exec returned
+HTTP101 with the expected marker, and canonical own-service DNS and egress passed.
+
+Acceptance totals 29 unique narrow checks: 25 carried PASS receipts, two API
+Explorer locale cases, and two additional workload cases for the second
+Scheduler. API Explorer `en-US` and `zh-TW` loaded the packaged Handlebars `4.7.10`
+runtime without a compiler, visible load error or overflow. Native browser
+Stack/Key-list and cookie-authenticated reads returned HTTP200; the existing
+WebSocket check received 23 frames. Page errors, passive DELETE requests and
+blocked writes were zero. Four 1440x1000 screenshots (Stack, Key list and the two
+API Explorer locales) were reviewed with no visible errors, overflow or missing
+translations.
+
+All owned temporary Stacks, Services and Keys were removed with actual ID/UUID
+readback; no VM, persistent volume, retained rollback container or existing
+non-test workload was deleted. These receipts are bounded acceptance, not a
+rerun of the full role matrix, thirteen locales, OIDC or Passkey suites. Unaffected
+PASS receipts retain their original scope; KVM and unrelated historical pending
+items remain pending. An inherited API Explorer `iv="header-body"` markup typo
+is recorded for separate review only, not changed by this CVE release; the browser
+oracle verified actual loaded schemas, rendered content and client error state.
 
 ## Upgrade and rollback
 
