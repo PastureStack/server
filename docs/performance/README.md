@@ -8,12 +8,10 @@ The following example is appropriate as a starting point for a dedicated
 16-vCPU host with about 32 GiB of RAM. It is not a universal performance
 profile; measure the real workload before increasing it further.
 
-The example uses published Server `v1.6.538` with Web Console `1.6.191`, API Explorer
-`1.1.19`, Temurin `25.0.4.1+1` and unchanged Engine `v0.183.350`. Official image
-publication and anonymous readback passed. See the
-[release note](../releases/server-1.6.538.md) for immutable identities and the
-separate, narrowly scoped QA8080 deployment acceptance. Startup/restart preserved
-the existing runtime overrides and all three named volumes.
+The example uses the published numeric Server tag shown below. See the
+[current release](../../README.md#current-release) for its component versions,
+immutable identities and acceptance evidence. Startup/restart preserves the
+existing runtime overrides and all three named volumes.
 
 This release retains the same performance-setting contract. Existing runtime
 overrides and volumes must be preserved on upgrade or code rollback. Archive and
