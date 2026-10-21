@@ -417,9 +417,10 @@ jobs:
         run: |
           set -Eeuo pipefail
           evidence="$RUNNER_TEMP/server-evidence"
-          python3 source/server/artifacts/prepare-nested-agent-scan.py \
-            "$RUNNER_TEMP/server-rootfs" source/server/Dockerfile.web-compose-release \
-            "$RUNNER_TEMP/server-nested-payloads" >"$RUNNER_TEMP/server-nested-qualified.json"
+          (
+            cd "$RUNNER_TEMP"
+            python3 "$GITHUB_WORKSPACE/source/server/artifacts/prepare-nested-agent-scan.py"
+          ) >"$RUNNER_TEMP/server-nested-qualified.json"
           mkdir -p "$RUNNER_TEMP/trivy-cache"
           docker pull "$TRIVY_IMAGE" >/dev/null
           docker image inspect "$TRIVY_IMAGE" --format '{{json .RepoDigests}}' |

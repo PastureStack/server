@@ -106,6 +106,12 @@ def prepare(rootfs, recipe, output):
 
 
 if __name__ == '__main__':
-    need(len(sys.argv) == 4, 'USAGE_ROOTFS_RECIPE_NEW_OUTPUT')
-    result = prepare(Path(sys.argv[1]), Path(sys.argv[2]).read_text(encoding='utf-8'), Path(sys.argv[3]))
+    # This is a fixed CI stage, not a general-purpose filesystem utility.
+    # The workflow selects its owned working directory; callers cannot choose
+    # arbitrary read/write destinations through command-line paths.
+    need(len(sys.argv) == 1, 'NO_PATH_ARGUMENTS_ACCEPTED')
+    recipe = Path(__file__).resolve().parents[1] / 'Dockerfile.web-compose-release'
+    workspace = Path.cwd()
+    result = prepare(workspace / 'server-rootfs', recipe.read_text(encoding='utf-8'),
+                     workspace / 'server-nested-payloads')
     print(json.dumps(result, sort_keys=True, indent=2))
