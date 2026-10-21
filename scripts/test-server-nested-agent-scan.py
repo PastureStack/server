@@ -5,6 +5,8 @@ import importlib.util
 import io
 import os
 from pathlib import Path
+import subprocess
+import sys
 import tarfile
 import tempfile
 import unittest
@@ -22,6 +24,15 @@ INSTALL = b'controlled installer fixture, never executed'
 
 
 class NestedPayloads(unittest.TestCase):
+    def test_entrypoint_rejects_arbitrary_path_arguments_before_filesystem_io(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / 'must-not-be-created'
+            result = subprocess.run([sys.executable, str(SPEC.origin), temporary,
+                                     temporary, str(target)], capture_output=True, text=True)
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn('NO_PATH_ARGUMENTS_ACCEPTED', result.stderr)
+            self.assertFalse(target.exists())
+
     def fixture(self, parent, duplicate=False):
         rootfs = parent / 'rootfs'
         folder = rootfs / 'usr/share/cattle/artifacts'
