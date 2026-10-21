@@ -44,11 +44,11 @@ echo "$binary_sha  $output/$type" | sha256sum -c -
 chmod 0755 "$output/$type"
 "$output/$type" "$version_flag" | grep -F "$version" >/dev/null
 metadata=$(go version -m "$output/$type")
-test "$(printf '%s\n' "$metadata" | awk 'NR==1 {print $2}')" = go1.27.2
+test "$(printf '%s\n' "$metadata" | awk 'NR==1 {print $2}')" = go1.27.3
 for field in 'CGO_ENABLED=0' 'GOOS=linux' 'GOARCH=amd64' 'GOAMD64=v1'; do
-    printf '%s\n' "$metadata" | grep -F "$field" >/dev/null
+    printf '%s\n' "$metadata" | grep -Fx "$(printf '\tbuild\t%s' "$field")" >/dev/null
 done
-printf '%s\n' "Release source commit: $commit" "Binary SHA-256: $binary_sha" "Go compiler: 1.27.2" > "$output/SERVER-PRODUCER-SOURCES.txt"
+printf '%s\n' "Release source commit: $commit" "Binary SHA-256: $binary_sha" "Go compiler: 1.27.3" > "$output/SERVER-PRODUCER-SOURCES.txt"
 mkdir -p "/out/$type-licenses"
 for entry in "$output"/*; do
     if [[ "${entry##*/}" != "$type" ]]; then mv -- "$entry" "/out/$type-licenses/"; fi

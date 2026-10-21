@@ -8,12 +8,20 @@ Current composition consumes official Engine `v0.183.351`, WAR producer
 Server 540 itself is prepared, not published; install examples stay on published
 Server 539 until the new immutable Server release has been read back.
 
-The official artifact helper and Server-built console broker use pinned Go
-1.27.3. Other Go runtime components retain their published binaries, hashes and
-Go 1.27.2 producer identity; a helper update is not a rebuild of those artifacts.
-Binary build information and runtime readback remain required. This source
+The official artifact helper, Server-built console broker and ten runtime
+executables use Go 1.27.3. The runtime replacements come from nine independently
+published component releases, not a compiler-marker rewrite. Exact archive and
+binary hashes, actual producer commits, legal files and runtime readback remain
+required. Historical build recipes are retained unchanged. This source
 preparation is not a published Server 540 or a passing final-image scan, and
 adds no scanner exception. See the [540 note](docs/releases/server-1.6.540.md).
+
+The assembly also selects official Host API `0.38.6`, Linux/Windows Node Agent
+`0.13.30` and CLI `0.6.19`. The Node/Host exact-version contract is preserved.
+All three active Host/Node compressed payloads receive independent inner-binary
+qualification, vulnerability/secret scans and a nested SBOM; legacy versioned
+copies are removed only inside the new image build, not from running machines.
+The Windows package is cross-built, not natively certified.
 
 ## Server v1.6.539 published
 

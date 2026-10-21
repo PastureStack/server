@@ -65,6 +65,8 @@ run_gate usage_telemetry_agent_artifact scripts/check-server-usage-telemetry-age
 run_gate webhook_automation_service_artifact scripts/check-server-webhook-automation-service-artifact.sh
 run_gate per_host_subnet_artifact scripts/check-server-per-host-subnet-artifact.sh
 run_gate windows_node_agent_artifact scripts/check-server-windows-node-agent-artifact.sh
+run_gate nested_agent_binary_qualification python3 scripts/test-server-nested-agent-scan.py
+run_gate component_candidate_contract python3 scripts/test-server-component-candidate.py
 run_gate server_jdk25_source_policy bash scripts/check-server-jdk25-source-policy.sh
 run_gate server_jdk25_source_policy_fixtures bash scripts/check-server-jdk25-source-policy-fixtures.sh
 run_gate cattle_artifact_mirror scripts/check-server-cattle-artifact-mirror.sh
