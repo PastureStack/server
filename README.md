@@ -13,14 +13,16 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.539`](https://github.com/PastureStack/server/releases/tag/v1.6.539)
-packages Web Console `1.6.192` and Linux Node Agent `v0.13.29`, correcting Host
-disk collection and unknown-capacity display. Engine `v0.183.350`, API Explorer
-`1.1.19` and Temurin `25.0.4.1+1` are retained.
-The official build, required security checks, startup/restart and anonymous
-artifact readback passed. See the [release note](docs/releases/server-1.6.539.md)
-for clean-install evidence, targeted QA deployment, existing-Host storage-unit
-handling and remaining tracked risks.
+[Server `v1.6.540`](https://github.com/PastureStack/server/releases/tag/v1.6.540)
+packages Engine `v0.183.351`, Web Console `1.6.192`, Host API `0.38.6`,
+Linux/Windows Node Agent `0.13.30`, CLI `0.6.19`, LB `0.9.32` and Temurin
+`25.0.4.1+1`. The official build, required security checks and anonymous artifact
+readback passed. Targeted QA startup/restart preserved all three volumes,
+runtime overrides and existing LB database settings. This does not establish
+full native-matrix or Windows networking acceptance. See the
+[540 release note](docs/releases/server-1.6.540.md) and
+[compatibility contract](COMPATIBILITY.md#server-v16540-published-baseline)
+for exact immutable identities and remaining scope boundaries.
 Documentation updates do not replace the producer or its immutable artifacts.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
@@ -43,19 +45,19 @@ Engine-verified project contexts; a caller-supplied project header is not a gran
 Delegated terminal/log access requires the verified Host API audit capability
 and a compatible Linux Node Agent lifecycle. Open a Key's audit from its action
 menu. See the [API Key guide](docs/api-keys.md) for policy and audit contracts.
-Maintained CLI `0.6.18` propagates rejected requests as nonzero errors. Legacy `0.6.14` can silently exit zero; see [client compatibility](COMPATIBILITY.md#maintained-cli-error-reporting) and check HTTP status explicitly for automation.
+Maintained CLI `0.6.19` propagates rejected requests as nonzero errors. Legacy `0.6.14` can silently exit zero; see [client compatibility](COMPATIBILITY.md#maintained-cli-error-reporting) and check HTTP status explicitly for automation.
 
 ## Quick start
 
 Public GHCR downloads do not require a registry login. Keep all three named volumes.
-The examples below use the published numeric `v1.6.539` tag.
+The examples below use the published numeric `v1.6.540` tag.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.539
+  ghcr.io/pasturestack/server:v1.6.540
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -63,7 +65,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.539
+    image: ghcr.io/pasturestack/server:v1.6.540
     restart: unless-stopped
     ports:
       - "8080:8080"

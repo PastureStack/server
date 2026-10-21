@@ -1,27 +1,51 @@
 # Compatibility Contract
 
-## Server v1.6.540 source preparation
+## Server v1.6.541 source preparation
 
-Current composition consumes official Engine `v0.183.351`, WAR producer
+Server `v1.6.541` is prepared, not published or deployed. Its only component
+replacement from official Server `v1.6.540` is the Windows per-host-subnet
+`v0.2.5` bundle. The original-CI producer is
+`e102e0bb38d84b0a9cbf87e5458cf1bc74d01904`; its normal verified integration main
+`188f53ae35adf54eca7f357750a210cb2ab6edb8` has the same complete source tree.
+The Windows PE is Go `1.27.3`, CGO disabled, amd64. The existing producer uses
+`-buildvcs=false`: no embedded VCS is expected, not a claim of `vcs.modified=false`.
+Exact original-CI archive, PE, startup and provenance-receipt SHA256 pins bind
+this CNI-only contract. Host/Node retain exact embedded producer revision and
+`vcs.modified=false`; there is no general no-VCS fallback.
+
+Engine `v0.183.351` still uses actual WAR producer
 `1befd83278618f9a5b7cdaf96522004dd89918ba` and JAR SHA256
 `efd0e826364c551f782b281f081d53cadb48faa7d5c37c2f101e6f9c7d7f9ea6`.
-Server 540 itself is prepared, not published; install examples stay on published
-Server 539 until the new immutable Server release has been read back.
+Host API `0.38.6`, Linux/Windows Node Agent `0.13.30`, CLI `0.6.19`, LB `0.9.32`
+and all other 540 component byte pins are unchanged; final readback must prove
+those bytes before carrying their unaffected acceptance forward.
 
-The official artifact helper, Server-built console broker and ten runtime
-executables use Go 1.27.3. The runtime replacements come from nine independently
-published component releases, not a compiler-marker rewrite. Exact archive and
-binary hashes, actual producer commits, legal files and runtime readback remain
-required. Historical build recipes are retained unchanged. This source
-preparation is not a published Server 540 or a passing final-image scan, and
-adds no scanner exception. See the [540 note](docs/releases/server-1.6.540.md).
+Four active compressed Host/Node/CNI payloads require independent actual-Go-binary
+qualification, vulnerability/secret scans and a nested SBOM. Local build inputs
+are 17; the public immutable release envelope remains 26 assets. The CNI legacy
+`rancher/per-host-subnet.exe` and `rancher/startup_per-host-subnet.ps1` paths stay
+compatible. Only superseded CNI024 is removed inside the new image after active
+files and all references are validated; unrelated bundles, live hosts, data
+volumes and rollback images are not cleanup targets. The new image's
+`CATTLE_AGENT_PACKAGE_PER_HOST_SUBNET_URL` selects 025, but does not silently
+replace an already-installed Windows CNI. Normal explicit Windows upgrade and
+native networking validation remain required. No new scanner exception or
+Windows-native certification is claimed. See the [541 note](docs/releases/server-1.6.541.md).
 
-The assembly also selects official Host API `0.38.6`, Linux/Windows Node Agent
-`0.13.30` and CLI `0.6.19`. The Node/Host exact-version contract is preserved.
-All three active Host/Node compressed payloads receive independent inner-binary
-qualification, vulnerability/secret scans and a nested SBOM; legacy versioned
-copies are removed only inside the new image build, not from running machines.
-The Windows package is cross-built, not natively certified.
+## Server v1.6.540 published baseline
+
+Official source `cb78888bd156f9aca3b0c31b2b2076319bc116cf` was anonymously read
+back and deployed to the owned QA125 target with startup/restart health, all
+three volumes, runtime overrides and the two LB DB settings preserved. This is
+a targeted deployment result, not full native-matrix PASS. Its registry manifest
+`sha256:b6b3909578f4e05a3cdccb1c24640ee3fbc6f8919d0b06a787ee1d3830d7e1c2`
+and OCI config
+`sha256:2a2377f42dfa0dccf2940528d484cbe333c9e7e817a6902ba968bf3021c6a14e`
+are different identities. Artifact identity, not an installation command:
+`ghcr.io/pasturestack/server:v1.6.540@sha256:b6b3909578f4e05a3cdccb1c24640ee3fbc6f8919d0b06a787ee1d3830d7e1c2`.
+A Docker local image ID may equal either manifest or config according to
+its image store. This baseline does not establish any 541 artifact or runtime
+result.
 
 ## Server v1.6.539 published
 

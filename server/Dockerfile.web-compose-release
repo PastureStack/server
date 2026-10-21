@@ -76,6 +76,15 @@ ARG NODE_AGENT_WINDOWS_ARCHIVE_SHA256=6ac46680bffd16d9a12927d6ef533045e1a4b6bd06
 ARG NODE_AGENT_WINDOWS_BINARY_SHA256=8d079e4b7082a7c95e076e046c1127b174a2050ab9faff57a2b8ce9cc79c0c97
 ARG NODE_AGENT_WINDOWS_STARTUP_SHA256=e1e84e1c5125db2b8f0c1a83ada8294556cb2390de969398a2436d9481378fca
 
+# Official original-CI CNI025 bytes; no embedded VCS by the producer's buildvcs=false contract.
+ARG PER_HOST_SUBNET_VERSION=0.2.5
+ARG PER_HOST_SUBNET_RELEASE_BASE_URL=https://github.com/PastureStack/per-host-subnet/releases/download
+ARG PER_HOST_SUBNET_PRODUCER_COMMIT=e102e0bb38d84b0a9cbf87e5458cf1bc74d01904
+ARG PER_HOST_SUBNET_ARCHIVE_SHA256=7237e83e96a64e7f3de64eb86bff9721c4e879c35cda9e9de1e4cb1ba225f298
+ARG PER_HOST_SUBNET_BINARY_SHA256=3d0e5b3f32eacf88cde9a8700432b64ad157810a053e59ebffe82a924a18ee30
+ARG PER_HOST_SUBNET_STARTUP_SHA256=f22b41f18d1733c037babed4d2e0474efeedc6017a96849d4309dd864f5f86d1
+ARG PER_HOST_SUBNET_PROVENANCE_SHA256=afa2db0e0755c6bd3ee28e111937c521a6d84e6d71d563e99202cf4693000eaf
+
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
 ARG WEB_CONSOLE_RELEASE_TAG=1.6.192
 ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.192.tar.gz
@@ -488,7 +497,10 @@ RUN set -eux; \
         "${NODE_AGENT_BINARY_SHA256}" "${NODE_AGENT_APPLY_SHA256}" "${NODE_AGENT_COMMIT}" 1.27.3 "${NODE_AGENT_VERSION}"; \
     fetch-server-component "${COMPONENT_ARTIFACT_MODE}" \
         "${NODE_AGENT_RELEASE_BASE_URL%/}/v${NODE_AGENT_VERSION}/node-agent-${NODE_AGENT_VERSION}-windows-amd64.zip" \
-        "node-agent-${NODE_AGENT_VERSION}-windows-amd64.zip" "${NODE_AGENT_WINDOWS_ARCHIVE_SHA256}" /out/node-agent-windows.zip
+        "node-agent-${NODE_AGENT_VERSION}-windows-amd64.zip" "${NODE_AGENT_WINDOWS_ARCHIVE_SHA256}" /out/node-agent-windows.zip; \
+    fetch-server-component "${COMPONENT_ARTIFACT_MODE}" \
+        "${PER_HOST_SUBNET_RELEASE_BASE_URL%/}/v${PER_HOST_SUBNET_VERSION}/per-host-subnet-${PER_HOST_SUBNET_VERSION}-windows-amd64.zip" \
+        "per-host-subnet-${PER_HOST_SUBNET_VERSION}-windows-amd64.zip" "${PER_HOST_SUBNET_ARCHIVE_SHA256}" /out/per-host-subnet.zip
 
 FROM ${UBUNTU_SECURITY_IMAGE} AS runtime_security_packages
 
@@ -616,7 +628,11 @@ RUN set -eux; \
 
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
-ARG SERVER_RELEASE_TAG=v1.6.540
+ARG PER_HOST_SUBNET_VERSION=0.2.5
+ARG PER_HOST_SUBNET_PRODUCER_COMMIT=e102e0bb38d84b0a9cbf87e5458cf1bc74d01904
+ARG PER_HOST_SUBNET_ARCHIVE_SHA256=7237e83e96a64e7f3de64eb86bff9721c4e879c35cda9e9de1e4cb1ba225f298
+ARG PER_HOST_SUBNET_PROVENANCE_SHA256=afa2db0e0755c6bd3ee28e111937c521a6d84e6d71d563e99202cf4693000eaf
+ARG SERVER_RELEASE_TAG=v1.6.541
 ARG API_EXPLORER_RELEASE_TAG=v1.1.19
 ARG API_EXPLORER_ARTIFACT_SHA256=d1602ab6033512f0b86dc8ceafee2061364ce2fc5da2a9b7119f900d9e0f3c25
 ARG API_EXPLORER_COMMIT=dda3fe8a806d9736de771d325e3ca98ab4067cd2
@@ -732,6 +748,7 @@ COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-e
 COPY --from=release_artifacts /out/host-api.tar.gz /usr/share/cattle/artifacts/host-api-${HOST_API_VERSION}.tar.gz
 COPY --from=release_artifacts /out/node-agent.tar.gz /usr/share/cattle/artifacts/node-agent-${NODE_AGENT_VERSION}.tar.gz
 COPY --from=release_artifacts /out/node-agent-windows.zip /usr/share/cattle/artifacts/node-agent-${NODE_AGENT_VERSION}-windows-amd64.zip
+COPY --from=release_artifacts /out/per-host-subnet.zip /usr/share/cattle/artifacts/per-host-subnet-${PER_HOST_SUBNET_VERSION}-windows-amd64.zip
 COPY --chmod=0755 artifacts/prune-superseded-agent-packages.sh /tmp/prune-superseded-agent-packages.sh
 RUN set -eux; \
     cd /usr/share/cattle/artifacts; \
@@ -748,7 +765,10 @@ RUN set -eux; \
     sed -i '/^export \(DEFAULT_\)\?CATTLE_AGENT_PACKAGE_WINDOWS_AGENT_URL=/d' /usr/share/cattle/env_vars; \
     printf 'export DEFAULT_CATTLE_AGENT_PACKAGE_WINDOWS_AGENT_URL=/usr/share/cattle/artifacts/node-agent-%s-windows-amd64.zip\nexport CATTLE_AGENT_PACKAGE_WINDOWS_AGENT_URL=/usr/share/cattle/artifacts/node-agent-%s-windows-amd64.zip\n' \
         "${NODE_AGENT_VERSION}" "${NODE_AGENT_VERSION}" >> /usr/share/cattle/env_vars; \
-    /tmp/prune-superseded-agent-packages.sh /usr/share/cattle/artifacts /usr/share/cattle/env_vars "${HOST_API_VERSION}" "${NODE_AGENT_VERSION}"; \
+    sed -i '/^export \(DEFAULT_\)\?CATTLE_AGENT_PACKAGE_PER_HOST_SUBNET_URL=/d' /usr/share/cattle/env_vars; \
+    printf 'export DEFAULT_CATTLE_AGENT_PACKAGE_PER_HOST_SUBNET_URL=/usr/share/cattle/artifacts/per-host-subnet-%s-windows-amd64.zip\nexport CATTLE_AGENT_PACKAGE_PER_HOST_SUBNET_URL=/usr/share/cattle/artifacts/per-host-subnet-%s-windows-amd64.zip\n' \
+        "${PER_HOST_SUBNET_VERSION}" "${PER_HOST_SUBNET_VERSION}" >> /usr/share/cattle/env_vars; \
+    /tmp/prune-superseded-agent-packages.sh /usr/share/cattle/artifacts /usr/share/cattle/env_vars "${HOST_API_VERSION}" "${NODE_AGENT_VERSION}" "${PER_HOST_SUBNET_VERSION}"; \
     rm -f /tmp/prune-superseded-agent-packages.sh
 COPY --from=console_broker_build --chmod=0755 /out/pasturestack-console-broker /usr/bin/pasturestack-console-broker
 COPY patches/service-auth.json /tmp/pasturestack-server-overlays/schema/service/service-auth.json
@@ -1096,6 +1116,10 @@ ENV PASTURESTACK_HOST_API_PACKAGE_ID=${HOST_API_PACKAGE_ID}
 ENV PASTURESTACK_HOST_API_COMMIT=${HOST_API_COMMIT}
 ENV PASTURESTACK_HOST_API_ARCHIVE_SHA256=${HOST_API_ARCHIVE_SHA256}
 ENV RC16_GO_AGENT_VERSION=${NODE_AGENT_VERSION}
+ENV RC16_PER_HOST_SUBNET_VERSION=${PER_HOST_SUBNET_VERSION}
+ENV PASTURESTACK_PER_HOST_SUBNET_PRODUCER_COMMIT=${PER_HOST_SUBNET_PRODUCER_COMMIT}
+ENV PASTURESTACK_PER_HOST_SUBNET_ARCHIVE_SHA256=${PER_HOST_SUBNET_ARCHIVE_SHA256}
+ENV PASTURESTACK_PER_HOST_SUBNET_PROVENANCE_SHA256=${PER_HOST_SUBNET_PROVENANCE_SHA256}
 ENV RC16_WINDOWS_AGENT_VERSION=${NODE_AGENT_VERSION}
 ENV RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-${NODE_AGENT_VERSION}.tar.gz
 ENV PASTURESTACK_NODE_AGENT_VERSION=${NODE_AGENT_VERSION}

@@ -439,7 +439,9 @@ jobs:
             -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
             "$TRIVY_IMAGE" rootfs --scanners vuln,secret --format json \
             --output /evidence/server-nested-scan-raw.json /payloads
-          jq -e '.SchemaVersion == 2 and ([.Results[]? | select(.Type == "gobinary")] | length) == 3' \
+          jq -e '.SchemaVersion == 2 and ([.Results[]? | select(.Type == "gobinary")] | length) == 4
+            and ([.Results[]? | select(.Type == "gobinary") | .Target | split("/") | last] | sort)
+              == (["host-api-linux-amd64","node-agent-linux-amd64","node-agent-windows-amd64.exe","per-host-subnet-windows-amd64.exe"] | sort)' \
             "$evidence/server-nested-scan-raw.json" >/dev/null
           docker run --rm \
             -v "$RUNNER_TEMP/server-nested-payloads:/payloads:ro" \

@@ -1,10 +1,26 @@
-# PastureStack Server v1.6.540
+# Server v1.6.540
 
-This document describes the Server `v1.6.540` assembly. Source changes alone are
-not publication proof. Before installing, verify the official release assets,
-producer and immutable registry digest; do not use a guessed tag or treat prior
-Server evidence as 540 results. Follow the current published installation
-instructions in the [README](../../README.md#quick-start).
+Published Server `v1.6.540` is the immutable image
+`ghcr.io/pasturestack/server:v1.6.540@sha256:b6b3909578f4e05a3cdccb1c24640ee3fbc6f8919d0b06a787ee1d3830d7e1c2`,
+from source `cb78888bd156f9aca3b0c31b2b2076319bc116cf` and successful
+[publication run `39683753151`](https://github.com/PastureStack/server/actions/runs/39683753151).
+All 26 official assets were anonymously read back with exact sizes and SHA256.
+The linux/amd64 image has one runtime layer, 516,223,196 compressed bytes.
+OCI config `sha256:2a2377f42dfa0dccf2940528d484cbe333c9e7e817a6902ba968bf3021c6a14e`
+is not the registry manifest digest. Use the published numeric tag in the
+[README installation commands](../../README.md#quick-start), not a guessed
+future version or a digest pasted into the command.
+
+The release gate recorded 73 raw findings and 29 exact vendor-pending package
+occurrences across 18 CVEs, with zero untracked, CRITICAL/HIGH, fixed-available
+or secret findings in its recorded scan scope. Tracking is not remediation or a
+zero-CVE claim. The owned QA125 deployment then passed startup/restart health
+while preserving all three volumes, runtime overrides and the two LB DB settings.
+This is targeted acceptance, not full native-matrix or Windows networking PASS.
+Publication receipt SHA256 is
+`061ea5608abda9561f740b0577ad5731885d4803a5c428469d6d7d9309efb80c`;
+the separate targeted-switch receipt is
+`1ae315d416a2554456b29c27971b29ee476a4ebb59345ffd027ad167d3b0e5ad`.
 
 The current assembly consumes the immutable, anonymously read-back official
 Engine `v0.183.351` release (two assets). Its actual WAR producer is
@@ -98,7 +114,7 @@ not rewritten as a successful new 540 build, scan or runtime result.
 
 ## Evidence boundaries
 
-The official release workflow must pass source, packaging, startup/restart,
+The official release workflow passed source, packaging, startup/restart,
 runtime-security and artifact checks before publication. Its immutable release
 assets identify the exact producer, component hashes, SBOM, vulnerability review
 and image digest. Targeted QA runtime results are separate from build checks;
@@ -122,8 +138,8 @@ fixes or a zero-risk claim.
 
 ## Upgrade and rollback
 
-Only after the official Server `v1.6.540` release and image are published and
-read back, use its numeric tag with the existing Compose configuration. Follow
+The official Server `v1.6.540` release and image have been published and
+read back; use its numeric tag with the existing Compose configuration. Follow
 the [current published instructions](../../README.md#quick-start).
 Preserve all three named volumes, restart
 policy, AppArmor, public HTTPS origin, OIDC/MFA settings, performance parameters
