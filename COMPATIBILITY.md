@@ -1,9 +1,22 @@
 # Compatibility Contract
 
-## Server v1.6.541 source preparation
+## Server v1.6.541 published
 
-Server `v1.6.541` is prepared, not published or deployed. Its only component
-replacement from official Server `v1.6.540` is the Windows per-host-subnet
+Official source `b4bbc6807f83e2bcc1a7ba46c132e4259ff48e79` passed
+[publisher39691051968](https://github.com/PastureStack/server/actions/runs/39691051968)
+and anonymous exact-set/checksum readback of all 26 immutable release assets.
+Its manifest is
+`sha256:05976db2df0c39e2df6e133f2b228da6273676d7b0e6c82172be89704b14aff4`;
+the distinct OCI config is
+`sha256:3edd57c76ece4fe7b2a478abea6a03fecf10c7a5d56fbc03a4bda77b5cf7c599`.
+The linux/amd64 image has one runtime layer, 516,480,269 compressed bytes.
+Artifact identity, not an installation command:
+`ghcr.io/pasturestack/server:v1.6.541@sha256:05976db2df0c39e2df6e133f2b228da6273676d7b0e6c82172be89704b14aff4`.
+The QA upgrade and actual restart passed with all three persisted volumes,
+runtime overrides and LB database settings preserved, and a 540 rollback retained.
+This deployment evidence does not establish full native-matrix acceptance.
+
+Its only component replacement from official Server `v1.6.540` is Windows per-host-subnet
 `v0.2.5` bundle. The original-CI producer is
 `e102e0bb38d84b0a9cbf87e5458cf1bc74d01904`; its normal verified integration main
 `188f53ae35adf54eca7f357750a210cb2ab6edb8` has the same complete source tree.
@@ -17,11 +30,19 @@ Engine `v0.183.351` still uses actual WAR producer
 `1befd83278618f9a5b7cdaf96522004dd89918ba` and JAR SHA256
 `efd0e826364c551f782b281f081d53cadb48faa7d5c37c2f101e6f9c7d7f9ea6`.
 Host API `0.38.6`, Linux/Windows Node Agent `0.13.30`, CLI `0.6.19`, LB `0.9.32`
-and all other 540 component byte pins are unchanged; final readback must prove
-those bytes before carrying their unaffected acceptance forward.
+and all other 540 component byte pins are unchanged. Read-only comparison of
+the actual 540 baseline and final 541 image confirmed eleven runtime/JAR files,
+88 console assets and thirteen translation files byte-for-byte. This supports
+carry of their unaffected 540 acceptance only; it does not replay those cases
+or certify the changed Windows CNI's native networking.
 
-Four active compressed Host/Node/CNI payloads require independent actual-Go-binary
-qualification, vulnerability/secret scans and a nested SBOM. Local build inputs
+Four active compressed Host/Node/CNI payloads passed independent actual-Go-binary
+qualification and scans: four positive `gobinary` targets, each with zero
+vulnerabilities/secrets, and a CycloneDX1.7 nested SBOM with 128 components.
+The final merged-rootfs gate retains 73 raw findings and 29 exact unfixed LOW/MEDIUM
+package occurrences across 18 CVEs, review 2026-10-27; untracked, HIGH/CRITICAL,
+fixed-available and secrets are zero. Tracking is not remediation or zero risk.
+Local build inputs
 are 17; the public immutable release envelope remains 26 assets. The CNI legacy
 `rancher/per-host-subnet.exe` and `rancher/startup_per-host-subnet.ps1` paths stay
 compatible. Only superseded CNI024 is removed inside the new image after active
