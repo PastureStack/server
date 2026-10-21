@@ -23,24 +23,26 @@ HASHES = ("ORCHESTRATION_ENGINE_ARTIFACT_SHA256", "ENGINE_READONLY_SCHEMA_SHA256
           "WEB_CONSOLE_ARTIFACT_SHA256", "WEBSOCKET_PROXY_ARCHIVE_SHA256", "WEBSOCKET_PROXY_BINARY_SHA256",
           "HOST_API_ARCHIVE_SHA256", "HOST_API_BINARY_SHA256", "HOST_API_APPLY_SHA256",
           "NODE_AGENT_ARCHIVE_SHA256", "NODE_AGENT_BINARY_SHA256", "NODE_AGENT_APPLY_SHA256",
+          "NODE_AGENT_WINDOWS_ARCHIVE_SHA256", "NODE_AGENT_WINDOWS_BINARY_SHA256", "NODE_AGENT_WINDOWS_STARTUP_SHA256",
           "HOST_PROVISIONER_ARCHIVE_SHA256", "SECRET_DELIVERY_API_ARCHIVE_SHA256", "USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256",
           "CATALOG_SERVICE_ARCHIVE_SHA256", "CATALOG_SERVICE_LICENSE_SHA256", "AUTHENTICATION_SERVICE_ARCHIVE_SHA256",
           "WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256", "COMPOSE_EXECUTOR_ARCHIVE_SHA256", "VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256")
 LOCAL_ASSETS = (("cattle.jar", "ORCHESTRATION_ENGINE_ARTIFACT_SHA256"),
                 ("api-explorer-1.1.19.tar.gz", "API_EXPLORER_ARTIFACT_SHA256"),
                 ("web-console-1.6.181.tar.gz", "WEB_CONSOLE_ARTIFACT_SHA256"),
-                ("websocket-proxy-0.23.15-linux-amd64.tar.xz", "WEBSOCKET_PROXY_ARCHIVE_SHA256"),
-                ("host-api-0.38.5.tar.gz", "HOST_API_ARCHIVE_SHA256"),
-                ("node-agent-0.13.29.tar.gz", "NODE_AGENT_ARCHIVE_SHA256"),
-                ("host-provisioner-0.39.8-linux-amd64.tar.xz", "HOST_PROVISIONER_ARCHIVE_SHA256"),
-                ("secret-delivery-api-0.3.2-linux-amd64.tar.xz", "SECRET_DELIVERY_API_ARCHIVE_SHA256"),
-                ("usage-telemetry-agent-0.4.2-linux-amd64.tar.xz", "USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256"),
-                ("catalog-service-0.20.13.tar.xz", "CATALOG_SERVICE_ARCHIVE_SHA256"),
-                ("catalog-service-0.20.13-LICENSE.txt", "CATALOG_SERVICE_LICENSE_SHA256"),
-                ("authentication-service-0.4.43-linux-amd64.tar.xz", "AUTHENTICATION_SERVICE_ARCHIVE_SHA256"),
-                ("webhook-automation-service-0.10.4-linux-amd64.tar.xz", "WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256"),
-                ("compose-executor-0.14.37-linux-amd64.gz", "COMPOSE_EXECUTOR_ARCHIVE_SHA256"),
-                ("vsphere-cli-bundle-0.55.3-linux-amd64.tar.xz", "VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256"))
+                ("websocket-proxy-0.23.16-linux-amd64.tar.xz", "WEBSOCKET_PROXY_ARCHIVE_SHA256"),
+                ("host-api-0.38.6.tar.gz", "HOST_API_ARCHIVE_SHA256"),
+                ("node-agent-0.13.30.tar.gz", "NODE_AGENT_ARCHIVE_SHA256"),
+                ("node-agent-0.13.30-windows-amd64.zip", "NODE_AGENT_WINDOWS_ARCHIVE_SHA256"),
+                ("host-provisioner-0.39.9-linux-amd64.tar.xz", "HOST_PROVISIONER_ARCHIVE_SHA256"),
+                ("secret-delivery-api-0.3.3-linux-amd64.tar.xz", "SECRET_DELIVERY_API_ARCHIVE_SHA256"),
+                ("usage-telemetry-agent-0.4.3-linux-amd64.tar.xz", "USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256"),
+                ("catalog-service-0.20.14.tar.xz", "CATALOG_SERVICE_ARCHIVE_SHA256"),
+                ("catalog-service-0.20.14-LICENSE.txt", "CATALOG_SERVICE_LICENSE_SHA256"),
+                ("authentication-service-0.4.44-linux-amd64.tar.xz", "AUTHENTICATION_SERVICE_ARCHIVE_SHA256"),
+                ("webhook-automation-service-0.10.5-linux-amd64.tar.xz", "WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256"),
+                ("compose-executor-0.14.38-linux-amd64.gz", "COMPOSE_EXECUTOR_ARCHIVE_SHA256"),
+                ("vsphere-cli-bundle-0.55.4-linux-amd64.tar.xz", "VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256"))
 
 
 def fixture_environment():
@@ -72,7 +74,7 @@ class ComponentRecipeTest(unittest.TestCase):
         environment = fixture_environment()
         result = self.run_entry(environment, "--check-inputs")
         self.assertEqual(0, result.returncode, result.stderr)
-        self.assertIn("server=v1.6.519 engine=v0.183.334 web=1.6.181 proxy=0.23.15 host=0.38.5 node=0.13.29", result.stdout)
+        self.assertIn("server=v1.6.519 engine=v0.183.334 web=1.6.181 proxy=0.23.16 host=0.38.6 node=0.13.30", result.stdout)
         self.assertIn(environment["HOST_API_COMMIT"][:32], result.stdout)
         environment["HOST_API_PACKAGE_ID"] = "301025de31c07073cc03efa17e1ab8ef"
         self.assertNotEqual(0, self.run_entry(environment, "--check-inputs").returncode)
@@ -99,11 +101,11 @@ class ComponentRecipeTest(unittest.TestCase):
                            FIXTURE_TRACE=str(path / "docker-arguments"))
         return environment, assets
 
-    def test_fifteen_local_assets_are_hashed_and_named_context_reaches_formal_recipe(self):
+    def test_sixteen_local_assets_are_hashed_and_named_context_reaches_formal_recipe(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary)
             environment, assets = self.local_fixture(path)
-            self.assertEqual(15, len(LOCAL_ASSETS))
+            self.assertEqual(16, len(LOCAL_ASSETS))
             self.assertEqual({name for name, _ in LOCAL_ASSETS}, {asset.name for asset in assets.iterdir()})
             result = self.run_entry(environment)
             self.assertEqual(88, result.returncode, result.stderr)
@@ -195,9 +197,10 @@ class ComponentRecipeTest(unittest.TestCase):
             self.assertNotEqual(0, self.run_entry(environment).returncode)
             self.assertFalse((path / "docker-arguments").exists())
 
-    def producer_archive(self, directory, corrupt=False, component="host-api"):
+    def producer_archive(self, directory, corrupt=False, component="host-api", binary_script=None):
         package_id = hashlib.sha1(b"unit-fixture-host-package").hexdigest()[:32]
-        content = {package_id + "/bin/" + component: b"unit fixture binary", package_id + "/apply.sh": b"unit fixture apply",
+        content = {package_id + "/bin/" + component: b"unit fixture binary" if binary_script is None else binary_script,
+                   package_id + "/apply.sh": b"unit fixture apply",
                    package_id + "/licenses/LICENSE test.txt": b"unit fixture license"}
         binary_hash = hashlib.sha256(content[package_id + "/bin/" + component]).hexdigest()
         apply_hash = hashlib.sha256(content[package_id + "/apply.sh"]).hexdigest()
@@ -213,8 +216,126 @@ class ComponentRecipeTest(unittest.TestCase):
         with tarfile.open(archive, "w:gz") as output:
             for name, value in content.items():
                 member = tarfile.TarInfo(name); member.size = len(value)
+                if binary_script is not None and name == package_id + "/bin/" + component:
+                    member.mode = 0o755
                 output.addfile(member, io.BytesIO(value))
         return archive, package_id, binary_hash, apply_hash
+
+    def test_owned_version_fixture_is_executable_and_manifest_bound(self):
+        script = b"#!/bin/sh\nprintf '%s\\n' '0.13.30'\n"
+        with tempfile.TemporaryDirectory() as temporary:
+            archive, package_id, binary_hash, _ = self.producer_archive(
+                Path(temporary), component="node-agent", binary_script=script)
+            name = package_id + "/bin/node-agent"
+            with tarfile.open(archive, "r:gz") as package:
+                member = package.getmember(name)
+                self.assertEqual(0o755, member.mode)
+                self.assertEqual(script, package.extractfile(member).read())
+                self.assertEqual(hashlib.sha256(script).hexdigest(), binary_hash)
+                manifest = package.extractfile(package_id + "/SHA256SUMS").read().decode()
+                self.assertIn(binary_hash + " *" + name + "\n", manifest)
+
+    @unittest.skipUnless(os.name == "posix", "Owned executable fixtures require the Linux source gate")
+    def test_optional_agent_metadata_checks_exact_build_fields_and_version(self):
+        # Only owned printf scripts run: no SDK, downloaded payload or agent service.
+        verifier = ROOT / "server/artifacts/verify-agent-package.sh"
+        source = hashlib.sha1(b"unit-fixture-agent-source").hexdigest()
+        fields = {"CGO_ENABLED": "0", "GOOS": "linux", "GOARCH": "amd64", "GOAMD64": "v1",
+                  "vcs.revision": source, "vcs.modified": "false"}
+        cases = (
+            ("exact", "go1.27.3", {}, "", "0.13.30", True),
+            ("cgo-substring", "go1.27.3", {"CGO_ENABLED": "1"}, "CGO_ENABLED=0", "0.13.30", False),
+            ("source-substring", "go1.27.3", {"vcs.revision": "b" * 40}, "vcs.revision=" + source, "0.13.30", False),
+            ("dirty-substring", "go1.27.3", {"vcs.modified": "true"}, "vcs.modified=false", "0.13.30", False),
+            ("old-go", "go1.27.2", {}, "", "0.13.30", False),
+            ("wrong-os", "go1.27.3", {"GOOS": "windows"}, "", "0.13.30", False),
+            ("wrong-arch", "go1.27.3", {"GOARCH": "arm64"}, "", "0.13.30", False),
+            ("wrong-amd64", "go1.27.3", {"GOAMD64": "v3"}, "", "0.13.30", False),
+            ("wrong-version", "go1.27.3", {}, "", "0.13.31", False),
+        )
+        for name, compiler, changes, spoof, version, accepted in cases:
+            with self.subTest(case=name), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                trace = directory / "owned-version-invocation"
+                script = ("#!/bin/sh\n"
+                          "[ \"$#\" -eq 1 ] && [ \"$1\" = --version ] || exit 3\n"
+                          "printf '%s\\n' '--version' >" + shlex.quote(str(trace)) + "\n"
+                          "printf '%s\\n' 'node-agent version v0.13.30'\n").encode()
+                values = self.producer_archive(directory, component="node-agent", binary_script=script)
+                commands = directory / "commands"
+                commands.mkdir()
+                selected = dict(fields, **changes)
+                metadata = "owned-fixture: " + compiler + "\n"
+                metadata += "".join("\tbuild\t" + key + "=" + value + "\n" for key, value in selected.items())
+                if spoof:
+                    metadata += "\tbuild\t-ldflags=\"-X main.spoof=" + spoof + "\"\n"
+                fake_go = commands / "go"
+                fake_go.write_text("#!/bin/sh\n"
+                                   "[ \"$#\" -eq 3 ] && [ \"$1\" = version ] && [ \"$2\" = -m ] || exit 4\n"
+                                   "printf '%s' " + shlex.quote(metadata) + "\n", encoding="utf-8")
+                fake_go.chmod(0o755)
+                environment = dict(os.environ, PATH=str(commands) + os.pathsep + os.environ["PATH"])
+                result = subprocess.run(["bash", str(verifier), "node-agent", *map(str, values),
+                                         source, "1.27.3", version], env=environment,
+                                        text=True, capture_output=True)
+                if accepted:
+                    self.assertEqual(0, result.returncode, result.stderr)
+                    self.assertIn("AGENT_NESTED_BINARY_OK component=node-agent go=1.27.3 version=0.13.30", result.stdout)
+                else:
+                    self.assertNotEqual(0, result.returncode, result.stdout)
+                    self.assertNotIn("AGENT_NESTED_BINARY_OK", result.stdout)
+                if accepted or name == "wrong-version":
+                    self.assertEqual("--version\n", trace.read_text())
+                else:
+                    self.assertFalse(trace.exists(), "invalid metadata must fail before executing even the owned script")
+
+    @unittest.skipUnless(os.name == "posix", "Build-only pruning uses the Linux source gate")
+    def test_build_only_pruning_preserves_active_aliases_other_packages_and_rejects_unsafe_targets(self):
+        helper = ROOT / "server/artifacts/prune-superseded-agent-packages.sh"
+        active = ("host-api-0.38.6.tar.gz", "node-agent-0.13.30.tar.gz",
+                  "node-agent-0.13.30-windows-amd64.zip")
+        old = ("host-api-0.38.4.tar.gz", "node-agent-0.13.22.tar.gz",
+               "node-agent-0.13.27-windows-amd64.zip")
+        for failure in ("none", "reference", "symlink", "unexpected-name", "missing-active"):
+            with self.subTest(case=failure), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                packages = directory / "artifacts"
+                packages.mkdir()
+                for name in active + old:
+                    (packages / name).write_bytes(name.encode())
+                other = packages / "per-host-subnet-0.2.4-windows-amd64.zip"
+                other.write_bytes(b"unrelated-package")
+                (packages / "go-agent.tar.gz").symlink_to(active[1])
+                (packages / "host-api.tar.gz").symlink_to(active[0])
+                env = directory / "env_vars"
+                env.write_text("\n".join(active), encoding="utf-8")
+                outside = directory / "outside"
+                outside.write_bytes(b"must-remain")
+                if failure == "reference":
+                    env.write_text(old[1], encoding="utf-8")
+                elif failure == "symlink":
+                    (packages / old[1]).unlink()
+                    (packages / old[1]).symlink_to(outside)
+                elif failure == "unexpected-name":
+                    (packages / "node-agent-unexpected.tar.gz").write_bytes(b"unknown")
+                elif failure == "missing-active":
+                    (packages / active[2]).unlink()
+                before = {path.name: path.read_bytes() for path in packages.iterdir() if path.is_file()}
+                result = subprocess.run(["sh", str(helper), str(packages), str(env), "0.38.6", "0.13.30"],
+                                        text=True, capture_output=True)
+                if failure == "none":
+                    self.assertEqual(0, result.returncode, result.stderr)
+                    self.assertTrue(all(not (packages / name).exists() for name in old))
+                else:
+                    self.assertNotEqual(0, result.returncode)
+                    self.assertEqual(before, {path.name: path.read_bytes() for path in packages.iterdir() if path.is_file()})
+                for name in active:
+                    if not (failure == "missing-active" and name == active[2]):
+                        self.assertEqual(name.encode(), (packages / name).read_bytes())
+                self.assertEqual(b"unrelated-package", other.read_bytes())
+                self.assertEqual(b"must-remain", outside.read_bytes())
+                self.assertTrue((packages / "go-agent.tar.gz").is_symlink())
+                self.assertTrue((packages / "host-api.tar.gz").is_symlink())
 
     def test_producer_checksums_and_license_files_are_accepted_without_legacy_repair(self):
         with tempfile.TemporaryDirectory() as temporary:

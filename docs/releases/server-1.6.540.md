@@ -53,23 +53,48 @@ its normal service upgrade/review/finish or rollback flow. A runtime-socket-only
 override is not a persisted port-rule setting; use the normal configuration when
 an intentional zero must survive a reload.
 
-Web Console `1.6.192`, Linux Node Agent `v0.13.29`, API Explorer `1.1.19` and the
-patched Temurin `25.0.4.1+1` are retained. There is no schema/data migration, new
-required volume or firewall-backend switch.
+Web Console `1.6.192`, API Explorer `1.1.19` and the patched Temurin
+`25.0.4.1+1` are retained. There is no schema/data migration, new required
+volume or firewall-backend switch.
 
-## Go helper security input
+## Go runtime security update
 
 The digest-pinned official Go helper advances to 1.27.3, including the
 crypto/x509 security update. The Server-built console broker is compiled with
 that exact toolchain and its binary build information and runtime marker are
 checked. Its go.mod minimum remains unchanged.
 
-Other Go executables are retained as their exact published component artifacts,
-including their Go 1.27.2 producer metadata and hashes. Updating the helper does
-not rebuild or remediate those binaries. Their existing vulnerability checks
-remain required; this change adds no VEX exception or release-threshold change.
-Server 539 publication evidence is historical and is not rewritten as a 540
-build, scan or runtime result.
+The ten other runtime executables are replaced by exact official component
+artifacts compiled with Go 1.27.3: Authentication Service 0.4.44, Catalog Service
+0.20.14 (both binaries), WebSocket Proxy 0.23.16, Compose CLI 0.14.38,
+Host Provisioner 0.39.9, Secret Delivery API 0.3.3, Usage Telemetry Agent 0.4.3,
+Webhook Automation Service 0.10.5 and vSphere CLI Bundle 0.55.4. Their actual
+artifact producers may differ from signed squash-merge or later documentation
+commits; the recipe pins the actual producer and both archive/binary hashes.
+Legal attribution, compatibility aliases and component ownership are preserved.
+
+Delivered Host API `0.38.6`, Node Agent `0.13.30` (Linux and Windows) and
+CLI `0.6.19` also use the fixed toolchain. Node Agent retains exact Host API
+version matching, now paired to `0.38.6`; no fallback or authentication bypass
+is introduced. The Windows ZIP retains its own existing package layout and
+has no Linux package ID. Cross-build qualification is not Windows native QA.
+
+The final-image gate verifies the exact active Host/Node archives and their
+inner executable and installer hashes, inspects Go producer metadata, and
+scans all three inner executables for vulnerabilities and secrets. Their raw
+scan and CycloneDX inventory are retained in `server-nested-payloads.json`
+alongside the unchanged rootfs scan; compressed content is not assumed covered
+by an outer filesystem scan. Superseded versioned Host/Node bundles are removed
+only while constructing the new image, after active download references are
+updated. Active aliases and unrelated packages are preserved; no live VM,
+container, volume or rollback image is removed.
+
+The first Server540 publication attempt correctly blocked retained Go 1.27.2
+binaries for fixed-available `CVE-2026-111943`; that failed attempt created no
+release tag or image. Updating only the helper was insufficient. The component
+releases and final-image gate remain required; there is no Go VEX exception or
+release-threshold change. Server539 and failed-attempt evidence remain historical,
+not rewritten as a successful new 540 build, scan or runtime result.
 
 ## Evidence boundaries
 
@@ -79,12 +104,15 @@ assets identify the exact producer, component hashes, SBOM, vulnerability review
 and image digest. Targeted QA runtime results are separate from build checks;
 source tests or one successful request are not a whole permission-matrix PASS.
 
-The LB's two-instance causal reload test observed controller-owned zero,
-temporary initial zero after reload, recovery to formal weights `1`/`7`, and
-HTTP 200 through both routes. A no-reload condition, every manual-control branch
-and the broader state-transition matrix are not implied by that result. The
-observation did not prove the target Docker restart epoch and is not a complete
-native acceptance PASS.
+Separate QA on the published LB `v0.9.32` proved a new target Docker restart
+epoch, controller-owned drain zero and recovery through both LB instances for
+default weight `1` and custom weight `7` in separate runs. Both preserved a
+persisted zero and an independent weight `1`, with successful HTTP traffic after
+recovery. Both LB PIDs reloaded; the no-reload precondition was not reached.
+The earlier default-weight verifier failures remain historical, not product
+failures or passing evidence. Every manual-control branch and the broader
+lifecycle matrix remain separate. None of these observations is a Server540
+deployment result or a whole-matrix PASS.
 
 Unchanged acceptance evidence is carried forward without rerunning unrelated
 cases. KVM remains deferred. Officially unfixed LOW/MEDIUM findings are tracked

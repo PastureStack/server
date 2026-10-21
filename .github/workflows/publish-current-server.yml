@@ -417,6 +417,10 @@ jobs:
         run: |
           set -Eeuo pipefail
           evidence="$RUNNER_TEMP/server-evidence"
+          (
+            cd "$RUNNER_TEMP"
+            python3 "$GITHUB_WORKSPACE/source/server/artifacts/prepare-nested-agent-scan.py"
+          ) >"$RUNNER_TEMP/server-nested-qualified.json"
           mkdir -p "$RUNNER_TEMP/trivy-cache"
           docker pull "$TRIVY_IMAGE" >/dev/null
           docker image inspect "$TRIVY_IMAGE" --format '{{json .RepoDigests}}' |
@@ -426,6 +430,30 @@ jobs:
           cp source/server/security/openvex.json "$evidence/server.openvex.json"
           cp source/server/security/vendor-pending.json \
             "$evidence/server.vendor-pending.json"
+
+          # Compressed delivery bundles need a separate actual-binary scan.
+          # Preserve the raw rootfs report; publish the nested raw scan and SBOM.
+          docker run --rm \
+            -v "$RUNNER_TEMP/server-nested-payloads:/payloads:ro" \
+            -v "$evidence:/evidence" \
+            -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
+            "$TRIVY_IMAGE" rootfs --scanners vuln,secret --format json \
+            --output /evidence/server-nested-scan-raw.json /payloads
+          jq -e '.SchemaVersion == 2 and ([.Results[]? | select(.Type == "gobinary")] | length) == 3' \
+            "$evidence/server-nested-scan-raw.json" >/dev/null
+          docker run --rm \
+            -v "$RUNNER_TEMP/server-nested-payloads:/payloads:ro" \
+            -v "$evidence:/evidence" \
+            -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
+            "$TRIVY_IMAGE" rootfs --format cyclonedx \
+            --output /evidence/server-nested-sbom.cdx.json /payloads
+          jq -e '.bomFormat == "CycloneDX" and (.components | length) > 0' \
+            "$evidence/server-nested-sbom.cdx.json" >/dev/null
+          jq -n --slurpfile qualified "$RUNNER_TEMP/server-nested-qualified.json" \
+            --slurpfile raw "$evidence/server-nested-scan-raw.json" \
+            --slurpfile sbom "$evidence/server-nested-sbom.cdx.json" \
+            '{qualification:$qualified[0],raw:$raw[0],sbom:$sbom[0]}' \
+            >"$evidence/server-nested-payloads.json"
 
           docker run --rm \
             -v "$RUNNER_TEMP/server-rootfs:/rootfs:ro" \
@@ -445,11 +473,21 @@ jobs:
           ' "$evidence/server-security-scan-raw.json" | LC_ALL=C sort -u \
             >"$evidence/server-vulnerabilities-raw.tsv"
           jq -r '
+            .raw.Results[]? | .Target as $target | .Vulnerabilities[]?
+            | [.Severity, .VulnerabilityID, .PkgName, .InstalledVersion,
+               (.FixedVersion // ""), ("active-payload/" + $target)] | @tsv
+          ' "$evidence/server-nested-payloads.json" | LC_ALL=C sort -u \
+            >>"$evidence/server-vulnerabilities-raw.tsv"
+          jq -r '
             .Results[]? | .Target as $target | .Secrets[]?
             | [.RuleID, .Category, .Severity, (.Title // ""), ($target // "")]
             | @tsv
           ' "$evidence/server-security-scan-raw.json" | LC_ALL=C sort -u \
             >"$evidence/server-secrets.tsv"
+          jq -r '
+            .raw.Results[]? | .Target as $target | .Secrets[]?
+            | [.RuleID, .Category, .Severity, (.Title // ""), ("active-payload/" + $target)] | @tsv
+          ' "$evidence/server-nested-payloads.json" >>"$evidence/server-secrets.tsv"
           test ! -s "$evidence/server-secrets.tsv"
 
           docker run --rm \
@@ -471,6 +509,12 @@ jobs:
                (.FixedVersion // ""), ($target // "")] | @tsv
           ' "$evidence/server-security-scan.json" | LC_ALL=C sort -u \
             >"$evidence/server-vulnerabilities-unresolved.tsv"
+          jq -r '
+            .raw.Results[]? | .Target as $target | .Vulnerabilities[]?
+            | [.Severity, .VulnerabilityID, .PkgName, .InstalledVersion,
+               (.FixedVersion // ""), ("active-payload/" + $target)] | @tsv
+          ' "$evidence/server-nested-payloads.json" | LC_ALL=C sort -u \
+            >>"$evidence/server-vulnerabilities-unresolved.tsv"
           bash source/scripts/validate-vendor-pending-findings.sh \
             "$evidence/server.vendor-pending.json" \
             "$evidence/server-vulnerabilities-unresolved.tsv" \
@@ -491,7 +535,7 @@ jobs:
           ' "$evidence/server.cdx.json" >/dev/null
           raw_count="$(wc -l <"$evidence/server-vulnerabilities-raw.tsv")"
           vendor_pending_count="$(wc -l <"$evidence/server-vulnerabilities-unresolved.tsv" | tr -d ' ')"
-          printf 'SERVER_SECURITY_GATE_OK untracked=0 vendor_pending=%s critical_high=0 fixed_available=0 secrets=0 raw_findings=%s vex=openvex-0.2.0 scan_target=merged-rootfs trivy=0.74.0\n' \
+          printf 'SERVER_SECURITY_GATE_OK untracked=0 vendor_pending=%s critical_high=0 fixed_available=0 secrets=0 raw_findings=%s vex=openvex-0.2.0 scan_target=merged-rootfs-and-active-payloads trivy=0.74.0\n' \
             "$vendor_pending_count" "$raw_count" |
             tee "$evidence/security-summary.txt"
 
@@ -632,6 +676,7 @@ jobs:
               server.vendor-pending.json \
               server-security-scan-raw.json \
               server-security-scan.json \
+              server-nested-payloads.json \
               server-vulnerabilities-raw.tsv \
               server-vulnerabilities-unresolved.tsv \
               server.cdx.json \
@@ -664,6 +709,7 @@ jobs:
             "$evidence/server.vendor-pending.json" \
             "$evidence/server-security-scan-raw.json" \
             "$evidence/server-security-scan.json" \
+            "$evidence/server-nested-payloads.json" \
             "$evidence/server-vulnerabilities-raw.tsv" \
             "$evidence/server-vulnerabilities-unresolved.tsv" \
             "$evidence/server.cdx.json" \
@@ -707,6 +753,8 @@ jobs:
             "$RUNNER_TEMP/server-rootfs" \
             "$RUNNER_TEMP/server-rootfs.tar" \
             "$RUNNER_TEMP/trivy-cache" \
+            "$RUNNER_TEMP/server-nested-payloads" \
+            "$RUNNER_TEMP/server-nested-qualified.json" \
             "$RUNNER_TEMP/daemon-current.json" \
             "$RUNNER_TEMP/daemon-containerd.json" \
             "$RUNNER_TEMP/ping-body"
