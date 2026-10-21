@@ -10,17 +10,19 @@ profile; measure the real workload before increasing it further.
 
 The example uses the published numeric Server tag shown below. See the
 [current release](../../README.md#current-release) for its component versions,
-immutable identities and acceptance evidence. Startup/restart preserves the
-existing runtime overrides and all three named volumes.
+immutable identities and scoped acceptance evidence. Preserve the existing
+runtime overrides and all three named volumes during an upgrade or restart.
 
 This release retains the same performance-setting contract. Existing runtime
 overrides and volumes must be preserved on upgrade or code rollback. Archive and
 restore do not establish a performance improvement or complete broader acceptance.
+The 541 QA upgrade and actual restart preserved the existing overrides and all
+three volumes; this is preservation evidence, not a performance benchmark.
 
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.540
+    image: ghcr.io/pasturestack/server:v1.6.541
     restart: unless-stopped
     ports:
       - "8080:8080"
