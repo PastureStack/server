@@ -27,11 +27,13 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def member_bytes(archive, name, windows):
+def member_bytes(archive, name, windows, cni=False):
     if windows:
         with zipfile.ZipFile(archive) as stream:
-            need(set(stream.namelist()) == {'pasturestack/', 'pasturestack/node-agent.exe',
-                 'pasturestack/startup_node-agent.ps1'} and len(stream.namelist()) == 3,
+            layout = ({'rancher/', 'rancher/per-host-subnet.exe', 'rancher/startup_per-host-subnet.ps1'}
+                      if cni else {'pasturestack/', 'pasturestack/node-agent.exe',
+                                   'pasturestack/startup_node-agent.ps1'})
+            need(set(stream.namelist()) == layout and len(stream.namelist()) == 3,
                  'EXACT_WINDOWS_PACKAGE_LAYOUT_REQUIRED')
             need(stream.namelist().count(name) == 1, 'UNIQUE_BINARY_MEMBER_REQUIRED')
             item = stream.getinfo(name)
@@ -55,14 +57,63 @@ def metadata(path, source, windows):
         need(field in fields, 'EXACT_BINARY_PRODUCER_METADATA_REQUIRED')
 
 
+def cni_metadata(path):
+    """Only the producer's explicit buildvcs=false CNI contract; never a general fallback."""
+    text = subprocess.check_output(['go', 'version', '-m', str(path)], text=True)
+    need(text.splitlines()[0].split()[-1] == 'go1.27.3', 'FIXED_GO_COMPILER_REQUIRED')
+    fields = {line.strip().split('\t', 1)[1] for line in text.splitlines()
+              if line.strip().startswith('build\t')}
+    for field in ('CGO_ENABLED=0', 'GOARCH=amd64', 'GOOS=windows', 'GOAMD64=v1'):
+        need(field in fields, 'EXACT_CNI_METADATA_REQUIRED')
+    need(not any(field.startswith(('vcs=', 'vcs.')) for field in fields),
+         'CNI_PRODUCER_NO_VCS_CONTRACT_REQUIRED')
+
+
+def cni_payload(rootfs, pins, output):
+    version = pins['PER_HOST_SUBNET_VERSION']
+    producer = pins['PER_HOST_SUBNET_PRODUCER_COMMIT']
+    provenance = pins['PER_HOST_SUBNET_PROVENANCE_SHA256']
+    need(version == '0.2.5' and re.fullmatch(r'[0-9a-f]{40}', producer) and
+         re.fullmatch(r'[0-9a-f]{64}', provenance), 'FORMAL_CNI_PROVENANCE_PINS_REQUIRED')
+    archive = rootfs / 'usr/share/cattle/artifacts' / ('per-host-subnet-' + version + '-windows-amd64.zip')
+    need(archive.is_file() and not archive.is_symlink() and archive.resolve().is_relative_to(rootfs),
+         'REGULAR_ROOTFS_ARCHIVE_REQUIRED')
+    need(archive.stat().st_size <= 64 * 1024 * 1024, 'BOUNDED_ARCHIVE_REQUIRED')
+    archive_sha = digest(archive.read_bytes())
+    need(archive_sha == pins['PER_HOST_SUBNET_ARCHIVE_SHA256'], 'ARCHIVE_SHA256_MISMATCH')
+    binary = member_bytes(archive, 'rancher/per-host-subnet.exe', True, cni=True)
+    binary_sha = digest(binary)
+    need(binary_sha == pins['PER_HOST_SUBNET_BINARY_SHA256'], 'BINARY_SHA256_MISMATCH')
+    startup = member_bytes(archive, 'rancher/startup_per-host-subnet.ps1', True, cni=True)
+    need(digest(startup) == pins['PER_HOST_SUBNET_STARTUP_SHA256'], 'INSTALLER_SHA256_MISMATCH')
+    pe = int.from_bytes(binary[60:64], 'little')
+    need(binary[:2] == b'MZ' and len(binary) >= 64 and pe + 26 <= len(binary) and
+         binary[pe:pe+6] == b'PE\0\0\x64\x86' and binary[pe+24:pe+26] == b'\x0b\x02',
+         'CNI_PE32_PLUS_AMD64_REQUIRED')
+    target = output / 'per-host-subnet-windows-amd64.exe'
+    with target.open('xb') as stream:
+        stream.write(binary)
+    target.chmod(0o700)
+    cni_metadata(target)
+    # Provenance is the reviewed official CI/readback receipt, not embedded VCS.
+    # The formal original-CI receipt binds these pins; this is not a source field.
+    return {'component': 'per-host-subnet', 'platform': 'windows/amd64', 'version': version,
+            'producerSource': producer, 'provenanceReceiptSha256': provenance,
+            'vcsMetadata': 'ABSENT_BY_PRODUCER_BUILDVCS_FALSE_CONTRACT',
+            'compiler': 'go1.27.3', 'archive': archive.name, 'archiveSha256': archive_sha,
+            'binary': target.name, 'binarySha256': binary_sha, 'bytes': len(binary),
+            'payloadExecuted': False}
+
+
 def prepare(rootfs, recipe, output):
     rootfs = rootfs.resolve(strict=True)
     pins = defaults(recipe)
     expected_archives = {'host-api-' + pins['HOST_API_VERSION'] + '.tar.gz',
                          'node-agent-' + pins['NODE_AGENT_VERSION'] + '.tar.gz',
-                         'node-agent-' + pins['NODE_AGENT_VERSION'] + '-windows-amd64.zip'}
+                         'node-agent-' + pins['NODE_AGENT_VERSION'] + '-windows-amd64.zip',
+                         'per-host-subnet-' + pins['PER_HOST_SUBNET_VERSION'] + '-windows-amd64.zip'}
     actual_archives = {path.name for path in (rootfs / 'usr/share/cattle/artifacts').iterdir()
-                       if re.fullmatch(r'(host-api|node-agent)-[0-9]+\.[0-9]+\.[0-9]+(\.tar\.gz|-windows-amd64\.zip)', path.name)}
+                       if re.fullmatch(r'(?:(host-api|node-agent)-[0-9]+\.[0-9]+\.[0-9]+(\.tar\.gz|-windows-amd64\.zip)|per-host-subnet-[0-9]+\.[0-9]+\.[0-9]+-windows-amd64\.zip)', path.name)}
     need(actual_archives == expected_archives, 'ONLY_ACTIVE_AGENT_BUNDLES_REQUIRED')
     need(not output.exists(), 'NEW_PRIVATE_OUTPUT_REQUIRED')
     output.mkdir(mode=0o700)
@@ -101,8 +152,9 @@ def prepare(rootfs, recipe, output):
                         'archive': archive.name, 'archiveSha256': archive_sha,
                         'binary': target.name, 'binarySha256': binary_sha, 'bytes': len(binary),
                         'payloadExecuted': False})
+    records.append(cni_payload(rootfs, pins, output))
     return {'schemaVersion': 1, 'status': 'PASS_EXACT_FINAL_ROOTFS_PAYLOADS',
-            'records': records, 'payloadCount': 3, 'runtimeWrites': 0}
+            'records': records, 'payloadCount': 4, 'runtimeWrites': 0}
 
 
 if __name__ == '__main__':

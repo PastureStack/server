@@ -14,7 +14,7 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.540}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.541}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
@@ -44,6 +44,18 @@ node_agent_apply_sha256=${NODE_AGENT_APPLY_SHA256:-dd8cb342518a43e7468cc121db5c4
 node_agent_windows_archive_sha256=${NODE_AGENT_WINDOWS_ARCHIVE_SHA256:-6ac46680bffd16d9a12927d6ef533045e1a4b6bd06182f9a9559d46c1d73fc4c}
 node_agent_windows_binary_sha256=${NODE_AGENT_WINDOWS_BINARY_SHA256:-8d079e4b7082a7c95e076e046c1127b174a2050ab9faff57a2b8ce9cc79c0c97}
 node_agent_windows_startup_sha256=${NODE_AGENT_WINDOWS_STARTUP_SHA256:-e1e84e1c5125db2b8f0c1a83ada8294556cb2390de969398a2436d9481378fca}
+per_host_subnet_version=${PER_HOST_SUBNET_VERSION:-0.2.5}
+per_host_subnet_release_base_url=${PER_HOST_SUBNET_RELEASE_BASE_URL:-https://github.com/PastureStack/per-host-subnet/releases/download}
+per_host_subnet_producer_commit=${PER_HOST_SUBNET_PRODUCER_COMMIT:-e102e0bb38d84b0a9cbf87e5458cf1bc74d01904}
+per_host_subnet_archive_sha256=${PER_HOST_SUBNET_ARCHIVE_SHA256:-7237e83e96a64e7f3de64eb86bff9721c4e879c35cda9e9de1e4cb1ba225f298}
+per_host_subnet_binary_sha256=${PER_HOST_SUBNET_BINARY_SHA256:-3d0e5b3f32eacf88cde9a8700432b64ad157810a053e59ebffe82a924a18ee30}
+per_host_subnet_startup_sha256=${PER_HOST_SUBNET_STARTUP_SHA256:-f22b41f18d1733c037babed4d2e0474efeedc6017a96849d4309dd864f5f86d1}
+per_host_subnet_provenance_sha256=${PER_HOST_SUBNET_PROVENANCE_SHA256:-afa2db0e0755c6bd3ee28e111937c521a6d84e6d71d563e99202cf4693000eaf}
+[[ "$per_host_subnet_version" = 0.2.5 && "$per_host_subnet_producer_commit" =~ ^[0-9a-f]{40}$ ]]
+for cni_hash in "$per_host_subnet_archive_sha256" "$per_host_subnet_binary_sha256" "$per_host_subnet_startup_sha256" "$per_host_subnet_provenance_sha256"; do
+    [[ "$cni_hash" =~ ^[0-9a-f]{64}$ ]]
+done
+case "$per_host_subnet_release_base_url" in https://*) ;; *) exit 1 ;; esac
 component_artifact_mode=remote
 api_explorer_release_base_url=${API_EXPLORER_RELEASE_BASE_URL:-https://github.com/PastureStack/api-explorer/releases/download}
 api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.19}
@@ -104,7 +116,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-7f3
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-63e574d6aea42b548723457f4073ac3b8acd9ae3e8818cdce596512b346919e4}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.540}
+image=${IMAGE:-pasturestack-validation/server:v1.6.541}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -208,6 +220,7 @@ if [[ -n ${PASTURESTACK_COMPONENT_ARTIFACT_DIR:-} ]]; then
         "host-api-${host_api_version}.tar.gz|$host_api_archive_sha256"
         "node-agent-${node_agent_version}.tar.gz|$node_agent_archive_sha256"
         "node-agent-${node_agent_version}-windows-amd64.zip|$node_agent_windows_archive_sha256"
+        "per-host-subnet-${per_host_subnet_version}-windows-amd64.zip|$per_host_subnet_archive_sha256"
         "host-provisioner-${host_provisioner_version}-linux-amd64.tar.xz|$host_provisioner_archive_sha256"
         "secret-delivery-api-${secret_delivery_api_version}-linux-amd64.tar.xz|$secret_delivery_api_archive_sha256"
         "usage-telemetry-agent-${usage_telemetry_agent_version}-linux-amd64.tar.xz|$usage_telemetry_agent_archive_sha256"
@@ -262,6 +275,13 @@ docker buildx build \
     --build-arg "NODE_AGENT_WINDOWS_ARCHIVE_SHA256=${node_agent_windows_archive_sha256}" \
     --build-arg "NODE_AGENT_WINDOWS_BINARY_SHA256=${node_agent_windows_binary_sha256}" \
     --build-arg "NODE_AGENT_WINDOWS_STARTUP_SHA256=${node_agent_windows_startup_sha256}" \
+    --build-arg "PER_HOST_SUBNET_VERSION=${per_host_subnet_version}" \
+    --build-arg "PER_HOST_SUBNET_RELEASE_BASE_URL=${per_host_subnet_release_base_url}" \
+    --build-arg "PER_HOST_SUBNET_PRODUCER_COMMIT=${per_host_subnet_producer_commit}" \
+    --build-arg "PER_HOST_SUBNET_ARCHIVE_SHA256=${per_host_subnet_archive_sha256}" \
+    --build-arg "PER_HOST_SUBNET_BINARY_SHA256=${per_host_subnet_binary_sha256}" \
+    --build-arg "PER_HOST_SUBNET_STARTUP_SHA256=${per_host_subnet_startup_sha256}" \
+    --build-arg "PER_HOST_SUBNET_PROVENANCE_SHA256=${per_host_subnet_provenance_sha256}" \
     --build-arg "ORCHESTRATION_ENGINE_RELEASE_BASE_URL=${orchestration_engine_release_base_url}" \
     --build-arg "ORCHESTRATION_ENGINE_RELEASE_TAG=${orchestration_engine_release_tag}" \
     --build-arg "ORCHESTRATION_ENGINE_ARTIFACT=${orchestration_engine_artifact}" \
@@ -354,6 +374,10 @@ for marker in \
     DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.32 \
     DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.32 \
     RC16_GO_AGENT_VERSION="${node_agent_version}" \
+    RC16_PER_HOST_SUBNET_VERSION="${per_host_subnet_version}" \
+    PASTURESTACK_PER_HOST_SUBNET_PRODUCER_COMMIT="${per_host_subnet_producer_commit}" \
+    PASTURESTACK_PER_HOST_SUBNET_ARCHIVE_SHA256="${per_host_subnet_archive_sha256}" \
+    PASTURESTACK_PER_HOST_SUBNET_PROVENANCE_SHA256="${per_host_subnet_provenance_sha256}" \
     RC16_WINDOWS_AGENT_VERSION="${node_agent_version}" \
     RC16_HOST_API_VERSION="${host_api_version}" \
     PASTURESTACK_HOST_API_PACKAGE_ID="${host_api_package_id}" \
@@ -486,12 +510,18 @@ docker run --rm \
     --env "NODE_AGENT_VERSION=${node_agent_version}" \
     --env "NODE_AGENT_ARCHIVE_SHA256=${node_agent_archive_sha256}" \
     --env "NODE_AGENT_WINDOWS_ARCHIVE_SHA256=${node_agent_windows_archive_sha256}" \
+    --env "PER_HOST_SUBNET_VERSION=${per_host_subnet_version}" \
+    --env "PER_HOST_SUBNET_ARCHIVE_SHA256=${per_host_subnet_archive_sha256}" \
     --entrypoint sh "$image" -eu -c '
     printf "%s\n" \
       "$NODE_AGENT_ARCHIVE_SHA256  /usr/share/cattle/artifacts/node-agent-${NODE_AGENT_VERSION}.tar.gz" \
       "$NODE_AGENT_WINDOWS_ARCHIVE_SHA256  /usr/share/cattle/artifacts/node-agent-${NODE_AGENT_VERSION}-windows-amd64.zip" | sha256sum -c -
     test "$(readlink /usr/share/cattle/artifacts/go-agent.tar.gz)" = "node-agent-${NODE_AGENT_VERSION}.tar.gz"
     . /usr/share/cattle/env_vars
+    printf "%s  %s\n" "$PER_HOST_SUBNET_ARCHIVE_SHA256" "/usr/share/cattle/artifacts/per-host-subnet-${PER_HOST_SUBNET_VERSION}-windows-amd64.zip" | sha256sum -c -
+    test "$CATTLE_AGENT_PACKAGE_PER_HOST_SUBNET_URL" = "/usr/share/cattle/artifacts/per-host-subnet-${PER_HOST_SUBNET_VERSION}-windows-amd64.zip"
+    test "$DEFAULT_CATTLE_AGENT_PACKAGE_PER_HOST_SUBNET_URL" = "$CATTLE_AGENT_PACKAGE_PER_HOST_SUBNET_URL"
+    test ! -e /usr/share/cattle/artifacts/per-host-subnet-0.2.4-windows-amd64.zip
     test "$DEFAULT_CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL" = "/usr/share/cattle/artifacts/node-agent-${NODE_AGENT_VERSION}.tar.gz"
     test "$CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL" = "/usr/share/cattle/artifacts/node-agent-${NODE_AGENT_VERSION}.tar.gz"
     test "$DEFAULT_CATTLE_AGENT_PACKAGE_WINDOWS_AGENT_URL" = "/usr/share/cattle/artifacts/node-agent-${NODE_AGENT_VERSION}-windows-amd64.zip"

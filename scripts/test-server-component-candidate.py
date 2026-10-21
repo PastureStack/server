@@ -18,12 +18,13 @@ ROOT = Path(__file__).resolve().parents[1]
 ENTRY = ROOT / "server/build-component-candidate.sh"
 BUILD = ROOT / "server/build-api-explorer-patch-image.sh"
 VERIFY = ROOT / "server/artifacts/verify-host-api-package.sh"
-COMMITS = ("ORCHESTRATION_ENGINE_COMMIT", "WEB_CONSOLE_COMMIT", "WEBSOCKET_PROXY_COMMIT", "HOST_API_COMMIT", "NODE_AGENT_COMMIT")
+COMMITS = ("ORCHESTRATION_ENGINE_COMMIT", "WEB_CONSOLE_COMMIT", "WEBSOCKET_PROXY_COMMIT", "HOST_API_COMMIT", "NODE_AGENT_COMMIT", "PER_HOST_SUBNET_PRODUCER_COMMIT")
 HASHES = ("ORCHESTRATION_ENGINE_ARTIFACT_SHA256", "ENGINE_READONLY_SCHEMA_SHA256", "ENGINE_RESTRICTED_SCHEMA_SHA256", "API_EXPLORER_ARTIFACT_SHA256",
           "WEB_CONSOLE_ARTIFACT_SHA256", "WEBSOCKET_PROXY_ARCHIVE_SHA256", "WEBSOCKET_PROXY_BINARY_SHA256",
           "HOST_API_ARCHIVE_SHA256", "HOST_API_BINARY_SHA256", "HOST_API_APPLY_SHA256",
           "NODE_AGENT_ARCHIVE_SHA256", "NODE_AGENT_BINARY_SHA256", "NODE_AGENT_APPLY_SHA256",
           "NODE_AGENT_WINDOWS_ARCHIVE_SHA256", "NODE_AGENT_WINDOWS_BINARY_SHA256", "NODE_AGENT_WINDOWS_STARTUP_SHA256",
+          "PER_HOST_SUBNET_ARCHIVE_SHA256", "PER_HOST_SUBNET_BINARY_SHA256", "PER_HOST_SUBNET_STARTUP_SHA256", "PER_HOST_SUBNET_PROVENANCE_SHA256",
           "HOST_PROVISIONER_ARCHIVE_SHA256", "SECRET_DELIVERY_API_ARCHIVE_SHA256", "USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256",
           "CATALOG_SERVICE_ARCHIVE_SHA256", "CATALOG_SERVICE_LICENSE_SHA256", "AUTHENTICATION_SERVICE_ARCHIVE_SHA256",
           "WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256", "COMPOSE_EXECUTOR_ARCHIVE_SHA256", "VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256")
@@ -34,6 +35,7 @@ LOCAL_ASSETS = (("cattle.jar", "ORCHESTRATION_ENGINE_ARTIFACT_SHA256"),
                 ("host-api-0.38.6.tar.gz", "HOST_API_ARCHIVE_SHA256"),
                 ("node-agent-0.13.30.tar.gz", "NODE_AGENT_ARCHIVE_SHA256"),
                 ("node-agent-0.13.30-windows-amd64.zip", "NODE_AGENT_WINDOWS_ARCHIVE_SHA256"),
+                ("per-host-subnet-0.2.5-windows-amd64.zip", "PER_HOST_SUBNET_ARCHIVE_SHA256"),
                 ("host-provisioner-0.39.9-linux-amd64.tar.xz", "HOST_PROVISIONER_ARCHIVE_SHA256"),
                 ("secret-delivery-api-0.3.3-linux-amd64.tar.xz", "SECRET_DELIVERY_API_ARCHIVE_SHA256"),
                 ("usage-telemetry-agent-0.4.3-linux-amd64.tar.xz", "USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256"),
@@ -101,11 +103,11 @@ class ComponentRecipeTest(unittest.TestCase):
                            FIXTURE_TRACE=str(path / "docker-arguments"))
         return environment, assets
 
-    def test_sixteen_local_assets_are_hashed_and_named_context_reaches_formal_recipe(self):
+    def test_seventeen_local_assets_are_hashed_and_named_context_reaches_formal_recipe(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary)
             environment, assets = self.local_fixture(path)
-            self.assertEqual(16, len(LOCAL_ASSETS))
+            self.assertEqual(17, len(LOCAL_ASSETS))
             self.assertEqual({name for name, _ in LOCAL_ASSETS}, {asset.name for asset in assets.iterdir()})
             result = self.run_entry(environment)
             self.assertEqual(88, result.returncode, result.stderr)
@@ -293,17 +295,17 @@ class ComponentRecipeTest(unittest.TestCase):
     def test_build_only_pruning_preserves_active_aliases_other_packages_and_rejects_unsafe_targets(self):
         helper = ROOT / "server/artifacts/prune-superseded-agent-packages.sh"
         active = ("host-api-0.38.6.tar.gz", "node-agent-0.13.30.tar.gz",
-                  "node-agent-0.13.30-windows-amd64.zip")
+                  "node-agent-0.13.30-windows-amd64.zip", "per-host-subnet-0.2.5-windows-amd64.zip")
         old = ("host-api-0.38.4.tar.gz", "node-agent-0.13.22.tar.gz",
-               "node-agent-0.13.27-windows-amd64.zip")
-        for failure in ("none", "reference", "symlink", "unexpected-name", "missing-active"):
+               "node-agent-0.13.27-windows-amd64.zip", "per-host-subnet-0.2.4-windows-amd64.zip")
+        for failure in ("none", "reference", "symlink", "unexpected-name", "missing-active", "cni-reference", "cni-symlink", "missing-cni"):
             with self.subTest(case=failure), tempfile.TemporaryDirectory() as temporary:
                 directory = Path(temporary)
                 packages = directory / "artifacts"
                 packages.mkdir()
                 for name in active + old:
                     (packages / name).write_bytes(name.encode())
-                other = packages / "per-host-subnet-0.2.4-windows-amd64.zip"
+                other = packages / "unrelated-driver-1.2.3.zip"
                 other.write_bytes(b"unrelated-package")
                 (packages / "go-agent.tar.gz").symlink_to(active[1])
                 (packages / "host-api.tar.gz").symlink_to(active[0])
@@ -320,8 +322,14 @@ class ComponentRecipeTest(unittest.TestCase):
                     (packages / "node-agent-unexpected.tar.gz").write_bytes(b"unknown")
                 elif failure == "missing-active":
                     (packages / active[2]).unlink()
+                if failure == "cni-reference":
+                    env.write_text(old[3], encoding="utf-8")
+                elif failure == "cni-symlink":
+                    (packages / old[3]).unlink(); (packages / old[3]).symlink_to(outside)
+                elif failure == "missing-cni":
+                    (packages / active[3]).unlink()
                 before = {path.name: path.read_bytes() for path in packages.iterdir() if path.is_file()}
-                result = subprocess.run(["sh", str(helper), str(packages), str(env), "0.38.6", "0.13.30"],
+                result = subprocess.run(["sh", str(helper), str(packages), str(env), "0.38.6", "0.13.30", "0.2.5"],
                                         text=True, capture_output=True)
                 if failure == "none":
                     self.assertEqual(0, result.returncode, result.stderr)
@@ -330,7 +338,7 @@ class ComponentRecipeTest(unittest.TestCase):
                     self.assertNotEqual(0, result.returncode)
                     self.assertEqual(before, {path.name: path.read_bytes() for path in packages.iterdir() if path.is_file()})
                 for name in active:
-                    if not (failure == "missing-active" and name == active[2]):
+                    if not ((failure == "missing-active" and name == active[2]) or (failure == "missing-cni" and name == active[3])):
                         self.assertEqual(name.encode(), (packages / name).read_bytes())
                 self.assertEqual(b"unrelated-package", other.read_bytes())
                 self.assertEqual(b"must-remain", outside.read_bytes())
