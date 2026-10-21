@@ -1,8 +1,10 @@
-# Server v1.6.541 source preparation
+# Server v1.6.541
 
-Server `v1.6.541` is a source candidate, not a published or deployed image.
-Use the numeric installation examples only after official immutable publication
-and anonymous readback. No final-image scan or full native acceptance is claimed.
+Server `v1.6.541` updates the Windows per-host-subnet bundle and its final-image
+qualification. Install only the official immutable release after its publication
+checks succeed. The release's `published.txt`, `SHA256SUMS`, scan reports and
+SBOM identify the actual image and artifacts; this document does not substitute
+for those results or establish deployment and full native-matrix acceptance.
 
 ## Change and exact producer bytes
 
@@ -32,8 +34,9 @@ their exact embedded producer and clean VCS metadata; this adds no fallback.
 Local component inputs become 17. The qualifier and Trivy must identify exactly
 four inner Go binaries (Host Linux, Node Linux/Windows, CNI Windows). The nested
 raw/SBOM/qualification remain in the existing envelope; public release assets
-remain exactly 26. Original rootfs raw evidence, severity policy and exact
-vendor-pending set are unchanged; no new VEX suppression is added. Only VEX and
+remain exactly 26. Severity policy and the tracked vendor-pending set are
+unchanged; raw findings and SBOM are generated from the actual image, not reused
+from 540. No new VEX suppression is added. Only VEX and
 vendor-document release identities move to 541, without changing findings.
 The six stages remain; the current final-stage recipe has 31 RUN/COPY/ADD
 instructions, within the existing 32 limit. Final CI must establish actual
