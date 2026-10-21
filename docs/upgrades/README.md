@@ -21,6 +21,26 @@ image versions are separate; a template-only upgrade may keep the same image.
 
 ## Persisted runtime coordinates
 
+The current composition source prepares Load Balancer Service `v0.9.32` as
+the image default and in both HA Compose templates. This is a source candidate,
+not a claim that a new Server image has been published. Database settings and
+explicit operator overrides take precedence over the new image defaults.
+An existing persisted `v0.9.27` pair therefore stays on `v0.9.27`; an administrator
+must explicitly update both `lb.instance.image` and `lb.instance.image.uuid`
+to select `v0.9.32` for newly created load balancers. Preserve custom images and
+mixed settings for operator review.
+
+Changing these defaults or settings does not replace existing Services or their
+containers. Upgrade only the selected load-balancer Service, verify its new
+containers, then explicitly finish or roll back the upgrade. Do not use a bulk
+environment upgrade for this change: it can also replace custom load-balancer
+images and finish their upgrades automatically.
+
+The coordinate migration tool below retains its earlier reviewed targets. Its
+`apply` action overwrites allowlisted settings, including custom LB coordinates;
+it is not an automatic `v0.9.27` to `v0.9.32` upgrade path. Use its read-only audit
+to inspect persisted configuration before choosing a migration.
+
 A new container image does not automatically replace values already stored in
 an existing control-plane database. Older installations can therefore continue
 to request a private registry, a temporary HTTP server, or an obsolete Catalog

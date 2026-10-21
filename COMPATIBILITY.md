@@ -1,5 +1,20 @@
 # Compatibility Contract
 
+## Server v1.6.540 source preparation
+
+Current composition consumes official Engine `v0.183.351`, WAR producer
+`1befd83278618f9a5b7cdaf96522004dd89918ba` and JAR SHA256
+`efd0e826364c551f782b281f081d53cadb48faa7d5c37c2f101e6f9c7d7f9ea6`.
+Server 540 itself is prepared, not published; install examples stay on published
+Server 539 until the new immutable Server release has been read back.
+
+The official artifact helper and Server-built console broker use pinned Go
+1.27.3. Other Go runtime components retain their published binaries, hashes and
+Go 1.27.2 producer identity; a helper update is not a rebuild of those artifacts.
+Binary build information and runtime readback remain required. This source
+preparation is not a published Server 540 or a passing final-image scan, and
+adds no scanner exception. See the [540 note](docs/releases/server-1.6.540.md).
+
 ## Server v1.6.539 published
 
 Producer `95ed547ccfe5c1c7d5c9f049e11f27b81c0a00f9` passed required checks and
