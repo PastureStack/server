@@ -6,7 +6,9 @@ cd "$repo_root"
 
 approved_registry=ghcr.io/pasturestack
 approved_agent="${approved_registry}/node-agent:v1.2.31"
-approved_balancer="${approved_registry}/load-balancer-service:v0.9.27"
+approved_balancer="${approved_registry}/load-balancer-service:v0.9.32"
+# Historical recipes and opt-in migration tools keep their reviewed coordinates.
+historical_balancer="${approved_registry}/load-balancer-service:v0.9.27"
 
 grep -Fq 'IMAGE_PREFIX=${IMAGE_PREFIX:-ghcr.io/pasturestack}' scripts/build || {
     echo SERVER_BUILD_IMAGE_PREFIX_NOT_APPROVED >&2
@@ -32,21 +34,39 @@ balancer_count=$(grep -Fxc "  image: ${approved_balancer}" \
 }
 
 grep -Fq "ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=${approved_balancer}" \
+    server/Dockerfile.web-compose-release || {
+    echo SERVER_CURRENT_LOAD_BALANCER_REFERENCE_MISMATCH >&2
+    exit 1
+}
+
+grep -Fq "ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:${approved_balancer}" \
+    server/Dockerfile.web-compose-release || {
+    echo SERVER_CURRENT_LOAD_BALANCER_UUID_REFERENCE_MISMATCH >&2
+    exit 1
+}
+
+grep -Fq 'COPY artifacts/compose/ /usr/share/cattle/compose/' \
+    server/Dockerfile.web-compose-release || {
+    echo SERVER_CURRENT_COMPOSE_COPY_MISSING >&2
+    exit 1
+}
+
+grep -Fq "ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=${historical_balancer}" \
     server/Dockerfile || {
     echo SERVER_DOCKERFILE_LOAD_BALANCER_REFERENCE_MISMATCH >&2
     exit 1
 }
-grep -Fq "ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:${approved_balancer}" \
+grep -Fq "ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:${historical_balancer}" \
     server/Dockerfile || {
     echo SERVER_DOCKERFILE_LOAD_BALANCER_UUID_REFERENCE_MISMATCH >&2
     exit 1
 }
-grep -Fq "ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=${approved_balancer}" \
+grep -Fq "ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=${historical_balancer}" \
     server/Dockerfile.runtime-hotfix || {
     echo SERVER_RUNTIME_HOTFIX_LOAD_BALANCER_REFERENCE_MISMATCH >&2
     exit 1
 }
-grep -Fq "ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:${approved_balancer}" \
+grep -Fq "ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:${historical_balancer}" \
     server/Dockerfile.runtime-hotfix || {
     echo SERVER_RUNTIME_HOTFIX_LOAD_BALANCER_UUID_REFERENCE_MISMATCH >&2
     exit 1
@@ -88,7 +108,7 @@ grep -Fq \
     exit 1
 }
 grep -Fq \
-    "RC16_LB_INSTANCE_IMAGE=\"\${RC16_LB_INSTANCE_IMAGE:-${approved_balancer}}\"" \
+    "RC16_LB_INSTANCE_IMAGE=\"\${RC16_LB_INSTANCE_IMAGE:-${historical_balancer}}\"" \
     scripts/migrate-server-mysql55-to-mariadb118.sh || {
     echo SERVER_MIGRATION_LOAD_BALANCER_REFERENCE_MISMATCH >&2
     exit 1
@@ -98,7 +118,7 @@ grep -Fq "APPROVED_AGENT_IMAGE=\"${approved_agent}\"" \
     echo APPROVED_COORDINATE_AGENT_REFERENCE_MISMATCH >&2
     exit 1
 }
-grep -Fq "APPROVED_LB_IMAGE=\"${approved_balancer}\"" \
+grep -Fq "APPROVED_LB_IMAGE=\"${historical_balancer}\"" \
     scripts/migrate-approved-runtime-coordinates.sh || {
     echo APPROVED_COORDINATE_LOAD_BALANCER_REFERENCE_MISMATCH >&2
     exit 1
@@ -169,6 +189,7 @@ fi
 
 if grep -En '^ENV DEFAULT_CATTLE_(AGENT|BOOTSTRAP_REQUIRED|LB_INSTANCE)_IMAGE(_UUID)?=.*@sha256:' \
     server/Dockerfile \
+    server/Dockerfile.web-compose-release \
     server/Dockerfile.auth-hotfix ||
    grep -En '^[[:space:]]*image:[[:space:]].*@sha256:' \
     server/artifacts/compose/docker-compose.yml ||

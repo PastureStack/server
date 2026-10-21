@@ -527,7 +527,7 @@ require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
-    'ARG SERVER_RELEASE_TAG=v1.6.539' \
+    'ARG SERVER_RELEASE_TAG=v1.6.540' \
     SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"' \
@@ -734,10 +734,11 @@ for incremental_producer_runtime_marker in \
         SERVER_INCREMENTAL_RUNTIME_PRODUCER_GUARD_MISSING
 done
 for incremental_go_marker in \
-    'ARG ARTIFACT_HELPER_IMAGE=golang:1.27.2-bookworm@sha256:5cf287a799e6b94384bad13d16b14904c531f51ba65792237e122ce42b392f61' \
-    'test "$(go version | awk '"'"'{print $3}'"'"')" = go1.27.2;' \
+    'ARG ARTIFACT_HELPER_IMAGE=golang:1.27.3-bookworm@sha256:972b4110ba0f47539a975c31e52c64765e1ff19f2d74469ae4a595c6676e80a5' \
+    'test "$(go version | awk '"'"'{print $3}'"'"')" = go1.27.3;' \
+    'test "$(go version -m /out/pasturestack-console-broker | awk '"'"'NR==1 {print $2}'"'"')" = go1.27.3;' \
     'ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.2' \
-    'ENV PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.2' \
+    'ENV PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.3' \
     'ARG ENGINE_READONLY_SCHEMA_SHA256=7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233' \
     'ARG ENGINE_RESTRICTED_SCHEMA_SHA256=f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51'; do
     require_marker "$release_dockerfile" "$incremental_go_marker" \
@@ -745,7 +746,10 @@ for incremental_go_marker in \
 done
 for incremental_go_build_marker in \
     'PASTURESTACK_RUNTIME_GO_VERSION=1.27.2' \
-    'PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.2' \
+    'PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.3' \
+    'test -x /usr/bin/pasturestack-console-broker' \
+    'grep -aF "go1.27.3" /usr/bin/pasturestack-console-broker >/dev/null' \
+    'console_broker_go=1.27.3' \
     'grep -aF "go1.27.2" "${binary}" >/dev/null' \
     'runtime_go=1.27.2' \
     'engine_readonly_schema_sha256=${ENGINE_READONLY_SCHEMA_SHA256:-7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233}' \
@@ -1064,21 +1068,21 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.539}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.540}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.539}' \
+    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.540}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING
 require_marker "$build_script" \
     'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"' \
     SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING
 for release_engine_marker in \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.350' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.351' \
     'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=637ddaa42cd93c019b4d0813d7053b71dc42797a7f3ac2aa4b10fcc7e304cb31' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=9c884710e5ea3d4136d80a870d9de9485674f3c3' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=efd0e826364c551f782b281f081d53cadb48faa7d5c37c2f101e6f9c7d7f9ea6' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=1befd83278618f9a5b7cdaf96522004dd89918ba' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
-    'ARG ORCHESTRATION_ENGINE_VERSION=0.183.350' \
+    'ARG ORCHESTRATION_ENGINE_VERSION=0.183.351' \
     'grep -Fx "Implementation-Version: ${ORCHESTRATION_ENGINE_VERSION}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'cattle-app-config-${ORCHESTRATION_ENGINE_VERSION}.jar' \
@@ -1099,10 +1103,10 @@ for release_engine_marker in \
         SERVER_INCREMENTAL_ENGINE_REPLACEMENT_MISSING
 done
 for release_engine_build_marker in \
-    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.350}' \
+    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.351}' \
     'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}' \
-    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-637ddaa42cd93c019b4d0813d7053b71dc42797a7f3ac2aa4b10fcc7e304cb31}' \
-    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-9c884710e5ea3d4136d80a870d9de9485674f3c3}' \
+    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-efd0e826364c551f782b281f081d53cadb48faa7d5c37c2f101e6f9c7d7f9ea6}' \
+    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-1befd83278618f9a5b7cdaf96522004dd89918ba}' \
     'CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.5.jar"'; do
@@ -1271,6 +1275,25 @@ require_marker "$dockerfile" \
     SERVER_API_EXPLORER_PATCH_API_VERSION_MISSING
 # These checks own the current assembly; the historical patch recipe above
 # remains pinned to the original 1.1.18 artifact.
+for current_lb_default_marker in \
+    'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.32' \
+    'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.32' \
+    'COPY artifacts/compose/ /usr/share/cattle/compose/'; do
+    require_marker "$release_dockerfile" "$current_lb_default_marker" SERVER_CURRENT_LB_DEFAULT_MISSING
+done
+for current_lb_runtime_marker in \
+    'DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.32' \
+    'DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.32' \
+    'test -z "${CATTLE_LB_INSTANCE_IMAGE:-}${CATTLE_LB_INSTANCE_IMAGE_UUID:-}${RC16_LB_INSTANCE_IMAGE:-}${RC16_LB_INSTANCE_IMAGE_UUID:-}"' \
+    'test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE" = ghcr.io/pasturestack/load-balancer-service:v0.9.32' \
+    'test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID" = docker:ghcr.io/pasturestack/load-balancer-service:v0.9.32' \
+    'test "$(grep -Fxc "  image: ghcr.io/pasturestack/load-balancer-service:v0.9.32" /usr/share/cattle/compose/docker-compose.yml)" = 2'; do
+    require_marker "$build_script" "$current_lb_runtime_marker" SERVER_CURRENT_LB_RUNTIME_GATE_MISSING
+done
+if [ "$(grep -Fxc '  image: ghcr.io/pasturestack/load-balancer-service:v0.9.32' server/artifacts/compose/docker-compose.yml)" -ne 2 ]; then
+    echo SERVER_CURRENT_LB_COMPOSE_REFERENCE_MISMATCH >&2
+    exit 1
+fi
 for api_explorer_release_marker in \
     'ARG API_EXPLORER_RELEASE_TAG=v1.1.19' \
     'ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.19.tar.gz' \
@@ -1590,10 +1613,10 @@ fi
 if grep -Fxq '## Current source candidate' README.md; then
     for candidate_readme_marker in \
         '<a id="current-release"></a>' \
-        'Server `v1.6.539` is a prepared source candidate, not a published image.' \
+        'Server `v1.6.540` is a prepared source candidate, not a published image.' \
         'run them only after its official release' \
         'This candidate is not yet available' \
-        'ghcr.io/pasturestack/server:v1.6.539'; do
+        'ghcr.io/pasturestack/server:v1.6.540'; do
         require_marker README.md "$candidate_readme_marker" \
             SERVER_CURRENT_CANDIDATE_README_MISSING
     done
@@ -2188,7 +2211,7 @@ done
 jq -e '
   ["CVE-2026-107928","CVE-2026-107929","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"] as $curl_fixed_cves
   |   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.539"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.540"
   and (.statements | length) == 69
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -2226,7 +2249,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.539 >/dev/null
+    "$vendor_pending_fixture" v1.6.540 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -2315,4 +2338,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.539 base=v1.6.460 engine=0.183.350 web_console=1.6.192 catalog_service=0.20.13 webhook_automation_service=0.10.4 authentication_service=0.4.43 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.540 base=v1.6.460 engine=0.183.351 web_console=1.6.192 catalog_service=0.20.13 webhook_automation_service=0.10.4 authentication_service=0.4.43 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
