@@ -1,5 +1,25 @@
 # Compatibility Contract
 
+## Server v1.6.542 assembly
+
+Server `v1.6.542` packages official Engine `v0.183.352`. Its project-scope
+checks preserve live membership and inactive-project authority without adding
+request-local capabilities or object grants while filtering account responses.
+Normal Project manager capabilities and Full/legacy Key boundaries remain.
+This corrects a permission-check side effect; it is not evidence of an
+unauthorized write.
+
+The actual WAR producer is `70ba8cff544fcd5607f3054d30ac8b5cf09783d6`, not
+integration main `109f2623f00ca3a3a9079414a0f0f8bd23cd1eb2`.
+The official `cattle.jar` SHA256 is
+`1f17603554f1ee3fb651c6570690cb2d7b8c2fa27de17ae260d0cc68b402d826`.
+All other 541 component pins, frozen schemas, settings and persistence
+contracts are retained. A source assembly is not Server publication,
+deployment or complete native acceptance; use official release assets and
+actual image identity. See the [542 note](docs/releases/server-1.6.542.md).
+The installation examples continue to follow the latest documented published
+Server release.
+
 ## Server v1.6.541 published
 
 Official source `b4bbc6807f83e2bcc1a7ba46c132e4259ff48e79` passed
