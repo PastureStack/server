@@ -31,7 +31,7 @@ HASHES = ("ORCHESTRATION_ENGINE_ARTIFACT_SHA256", "ENGINE_READONLY_SCHEMA_SHA256
 LOCAL_ASSETS = (("cattle.jar", "ORCHESTRATION_ENGINE_ARTIFACT_SHA256"),
                 ("api-explorer-1.1.19.tar.gz", "API_EXPLORER_ARTIFACT_SHA256"),
                 ("web-console-1.6.181.tar.gz", "WEB_CONSOLE_ARTIFACT_SHA256"),
-                ("websocket-proxy-0.23.16-linux-amd64.tar.xz", "WEBSOCKET_PROXY_ARCHIVE_SHA256"),
+                ("websocket-proxy-0.23.17-linux-amd64.tar.xz", "WEBSOCKET_PROXY_ARCHIVE_SHA256"),
                 ("host-api-0.38.6.tar.gz", "HOST_API_ARCHIVE_SHA256"),
                 ("node-agent-0.13.30.tar.gz", "NODE_AGENT_ARCHIVE_SHA256"),
                 ("node-agent-0.13.30-windows-amd64.zip", "NODE_AGENT_WINDOWS_ARCHIVE_SHA256"),
@@ -76,7 +76,7 @@ class ComponentRecipeTest(unittest.TestCase):
         environment = fixture_environment()
         result = self.run_entry(environment, "--check-inputs")
         self.assertEqual(0, result.returncode, result.stderr)
-        self.assertIn("server=v1.6.519 engine=v0.183.334 web=1.6.181 proxy=0.23.16 host=0.38.6 node=0.13.30", result.stdout)
+        self.assertIn("server=v1.6.519 engine=v0.183.334 web=1.6.181 proxy=0.23.17 host=0.38.6 node=0.13.30", result.stdout)
         self.assertIn(environment["HOST_API_COMMIT"][:32], result.stdout)
         environment["HOST_API_PACKAGE_ID"] = "301025de31c07073cc03efa17e1ab8ef"
         self.assertNotEqual(0, self.run_entry(environment, "--check-inputs").returncode)
