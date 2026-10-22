@@ -1,5 +1,21 @@
 # Compatibility Contract
 
+## Server v1.6.543 prepared assembly
+
+The prepared assembly replaces only WebSocket Proxy `0.23.16` with the
+immutable official `0.23.17` bytes. The actual CI/binary producer is
+`6fc9f6a2ee3c010b5376887b387a32f243240026`; the numeric tag points at verified
+merged main `9eb4bed975db048cf41acedfd03a058da34dd992`, with an identical tree.
+Authenticated Host API backends require canonical `0.38.x` patch >= 5 and
+the exact `key-audit-v1` / `key-delegation-v1` capabilities. Unknown protocol
+families, malformed versions and unauthenticated declarations remain rejected.
+Engine `0.183.352`, all other component pins, security gates and persistence
+contracts are unchanged from published 542. See the [543 assembly note](docs/releases/server-1.6.543.md).
+
+This is not Server publication, deployment or native acceptance evidence.
+Published installation examples remain on `v1.6.542` until official 543
+artifact readback succeeds.
+
 ## Server v1.6.542 published
 
 Official source `c7244b0e0ca1038286fdd451f7208453f7e3805d` passed

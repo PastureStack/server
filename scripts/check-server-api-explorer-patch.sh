@@ -527,7 +527,7 @@ require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
-    'ARG SERVER_RELEASE_TAG=v1.6.542' \
+    'ARG SERVER_RELEASE_TAG=v1.6.543' \
     SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"' \
@@ -885,10 +885,10 @@ if grep -Eq 'dacf7353a1e72e933ac883c3e4c5521e12bb9017706475a7d94f2803c5b5b216|23
     exit 1
 fi
 for release_proxy_marker in \
-    'ARG WEBSOCKET_PROXY_VERSION=0.23.16' \
-    'ARG WEBSOCKET_PROXY_COMMIT=637aad98240a23098797c55c3df8062fcb81aea3' \
-    'ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=4692897583d54c2a949926c3519828304ca53f0e547feae60fe5e00c9cc3163d' \
-    'ARG WEBSOCKET_PROXY_BINARY_SHA256=eb2779bb53fc9cb65147177bb13fdfdb0e4af7d93928d69d021b3e18cec9257b' \
+    'ARG WEBSOCKET_PROXY_VERSION=0.23.17' \
+    'ARG WEBSOCKET_PROXY_COMMIT=6fc9f6a2ee3c010b5376887b387a32f243240026' \
+    'ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=7c252aa0724b6b3d59aa77bc59bb9bb2516faecc67594a6ed0966e14547afd9a' \
+    'ARG WEBSOCKET_PROXY_BINARY_SHA256=68e1385ffed804382c74a49bb647306aab2f43060b7912ac437581c876926494' \
     'tar --no-same-owner --no-same-permissions -xJf "${websocket_archive}"' \
     'install -m 0755 /out/websocket-proxy/websocket-proxy /out/runtime-bin/websocket-proxy.real;' \
     '/usr/bin/websocket-proxy.real --help 2>&1 | grep -F -- '\''-platform-public-origin'\'''; do
@@ -896,9 +896,9 @@ for release_proxy_marker in \
         SERVER_INCREMENTAL_WEBSOCKET_PROXY_REPLACEMENT_MISSING
 done
 for release_proxy_build_marker in \
-    'websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-637aad98240a23098797c55c3df8062fcb81aea3}' \
-    'websocket_proxy_archive_sha256=${WEBSOCKET_PROXY_ARCHIVE_SHA256:-4692897583d54c2a949926c3519828304ca53f0e547feae60fe5e00c9cc3163d}' \
-    'websocket_proxy_binary_sha256=${WEBSOCKET_PROXY_BINARY_SHA256:-eb2779bb53fc9cb65147177bb13fdfdb0e4af7d93928d69d021b3e18cec9257b}' \
+    'websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-6fc9f6a2ee3c010b5376887b387a32f243240026}' \
+    'websocket_proxy_archive_sha256=${WEBSOCKET_PROXY_ARCHIVE_SHA256:-7c252aa0724b6b3d59aa77bc59bb9bb2516faecc67594a6ed0966e14547afd9a}' \
+    'websocket_proxy_binary_sha256=${WEBSOCKET_PROXY_BINARY_SHA256:-68e1385ffed804382c74a49bb647306aab2f43060b7912ac437581c876926494}' \
     'PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256="${websocket_proxy_binary_sha256}"' \
     'echo "${PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256}  /usr/bin/websocket-proxy.real" | sha256sum -c -'; do
     require_marker "$build_script" "$release_proxy_build_marker" \
@@ -1069,10 +1069,10 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.542}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.543}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.542}' \
+    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.543}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING
 require_marker "$build_script" \
     'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"' \
@@ -1614,10 +1614,10 @@ fi
 if grep -Fxq '## Current source candidate' README.md; then
     for candidate_readme_marker in \
         '<a id="current-release"></a>' \
-        'Server `v1.6.542` is a prepared source candidate, not a published image.' \
+        'Server `v1.6.543` is a prepared source candidate, not a published image.' \
         'run them only after its official release' \
         'This candidate is not yet available' \
-        'ghcr.io/pasturestack/server:v1.6.542'; do
+        'ghcr.io/pasturestack/server:v1.6.543'; do
         require_marker README.md "$candidate_readme_marker" \
             SERVER_CURRENT_CANDIDATE_README_MISSING
     done
@@ -2212,7 +2212,7 @@ done
 jq -e '
   ["CVE-2026-107928","CVE-2026-107929","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"] as $curl_fixed_cves
   |   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.542"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.543"
   and (.statements | length) == 69
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -2250,7 +2250,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.542 >/dev/null
+    "$vendor_pending_fixture" v1.6.543 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -2339,4 +2339,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.542 base=v1.6.460 engine=0.183.352 web_console=1.6.192 catalog_service=0.20.14 webhook_automation_service=0.10.5 authentication_service=0.4.44 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.543 base=v1.6.460 engine=0.183.352 web_console=1.6.192 catalog_service=0.20.14 webhook_automation_service=0.10.5 authentication_service=0.4.44 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
