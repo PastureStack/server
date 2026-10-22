@@ -36,10 +36,10 @@ COMPATIBILITY_CODE = 'SERVER_CREATE_RESPONSE_ORDER_COMPATIBILITY_MISSING'
 WEB_SHA = '52840ebf2800f9588ec7910fe617b7782a6e92a27046b4876e9656ef4883e609'
 WEB_SOURCE = 'a8e2ab0c8242355f06c1ab2584978ccfc4d76c02'
 CATALOG_COMMIT = '71ec6b2c27355e709f5092c954db24efa800bc41'
-ENGINE_SHA = 'efd0e826364c551f782b281f081d53cadb48faa7d5c37c2f101e6f9c7d7f9ea6'
-ENGINE_SOURCE = '1befd83278618f9a5b7cdaf96522004dd89918ba'
+ENGINE_SHA = '1f17603554f1ee3fb651c6570690cb2d7b8c2fa27de17ae260d0cc68b402d826'
+ENGINE_SOURCE = '70ba8cff544fcd5607f3054d30ac8b5cf09783d6'
 OLD_COORDINATES = {
-    'v1.6.541': 'v1.6.521',
+    'v1.6.542': 'v1.6.521',
     '1.6.192': '1.6.181',
     WEB_SHA: '9199681f2c4311f3fbe8727fcf0f6fa136c9bafe9fbe9d13878c55df442a7a03',
     WEB_SOURCE: '7f2bdad0c90a3241693c2ddd4475202ababba550',
@@ -57,13 +57,13 @@ CATALOG_FIELDS = (
     ('LICENSE_SHA256', 'license_sha256', '0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594'),
 )
 LEGACY_ENGINE_COORDINATES = {
-    '0.183.351': '0.183.337',
+    '0.183.352': '0.183.337',
     ENGINE_SHA: '7e45189f2b57097efc7929c04ddf7767aebbe027d1b9f90023aa6711522c5c80',
     ENGINE_SOURCE: 'ba041fe312dfe97fc1e5144af576ddcf1b573d8e',
 }
 EXPECTED = {
     COMPATIBILITY_CODE: (COMPATIBILITY, PUBLISHED_508),
-    'SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING': (DOCKER, 'ARG SERVER_RELEASE_TAG=v1.6.541'),
+    'SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING': (DOCKER, 'ARG SERVER_RELEASE_TAG=v1.6.542'),
     'SERVER_INCREMENTAL_RELEASE_VERSION_MISSING': (DOCKER, 'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"'),
     'SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING': (DOCKER, 'ENV CATTLE_RANCHER_SERVER_VERSION=${SERVER_RELEASE_TAG}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RELEASE_TAG=1.6.192'),
@@ -74,8 +74,8 @@ EXPECTED = {
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING': (BUILD, 'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.192}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING': (BUILD, 'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.192.tar.gz}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING': (BUILD, 'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-' + WEB_SHA + '}'),
-    'SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING': (BUILD, 'image=${IMAGE:-pasturestack-validation/server:v1.6.541}'),
-    'SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING': (BUILD, 'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.541}'),
+    'SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING': (BUILD, 'image=${IMAGE:-pasturestack-validation/server:v1.6.542}'),
+    'SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING': (BUILD, 'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.542}'),
     'SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING': (BUILD, 'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"'),
     'SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING': (BUILD, 'test "$(cat "${web_root}/VERSION.txt")" = "${WEB_CONSOLE_RELEASE_TAG}"'),
     'SERVER_VOLUME_NATIVE_READ_ONLY_BUILD_GATE_MISSING': (DOCKER, 'grep -F \'"volume.isNative" : "r"\' >/dev/null'),
@@ -96,18 +96,18 @@ for _upper, _lower, _value in CATALOG_FIELDS:
 CREATE_RESPONSE_CODES = ['SERVER_WEB_CREATE_IDENTITY_BUILD_GATE_MISSING','SERVER_WEB_CANONICAL_RECORD_BUILD_GATE_MISSING','SERVER_WEB_CREATE_IDENTITY_RUNTIME_GATE_MISSING','SERVER_WEB_CANONICAL_RECORD_RUNTIME_GATE_MISSING']
 ENGINE_EXPECTED = {
     'SERVER_INCREMENTAL_ENGINE_REPLACEMENT_MISSING': (DOCKER, 'release_engine_marker', (
-        'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.351',
+        'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.352',
         'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar',
         'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=' + ENGINE_SHA,
         'ARG ORCHESTRATION_ENGINE_COMMIT=' + ENGINE_SOURCE,
-        'ARG ORCHESTRATION_ENGINE_VERSION=0.183.351',
+        'ARG ORCHESTRATION_ENGINE_VERSION=0.183.352',
         'grep -Fx "Implementation-Version: ${ORCHESTRATION_ENGINE_VERSION}"',
         'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar',
         'cattle-app-config-${ORCHESTRATION_ENGINE_VERSION}.jar',
         'ENV CATTLE_CATTLE_VERSION=${ORCHESTRATION_ENGINE_RELEASE_TAG}',
     )),
     'SERVER_INCREMENTAL_ENGINE_BUILD_COORDINATE_MISSING': (BUILD, 'release_engine_build_marker', (
-        'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.351}',
+        'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.352}',
         'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}',
         'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-' + ENGINE_SHA + '}',
         'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-' + ENGINE_SOURCE + '}',
@@ -567,15 +567,15 @@ def verify(files, gate=GATE):
                 pipeline = r'(?:^|[;\n])\s*' + re.escape(marker) + r'(?=\s*(?:;|\n|$))'
                 if len(re.findall(pipeline, source)) != 1:
                     raise AssertionError('CURRENT_CATALOG_HASH_BYPASS')
-    if 'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.541"' not in gate:
+    if 'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.542"' not in gate:
         raise AssertionError('CURRENT_VEX_GATE_PIN_MISMATCH')
-    if '"$vendor_pending_fixture" v1.6.541 >/dev/null' not in gate:
+    if '"$vendor_pending_fixture" v1.6.542 >/dev/null' not in gate:
         raise AssertionError('CURRENT_VENDOR_GATE_PIN_MISMATCH')
-    if json.loads(files[VEX]).get('@id') != 'https://github.com/PastureStack/server/security/openvex/v1.6.541':
+    if json.loads(files[VEX]).get('@id') != 'https://github.com/PastureStack/server/security/openvex/v1.6.542':
         raise AssertionError('CURRENT_VEX_RELEASE_MISMATCH')
-    if json.loads(files[VENDOR]).get('release') != 'v1.6.541':
+    if json.loads(files[VENDOR]).get('release') != 'v1.6.542':
         raise AssertionError('CURRENT_VENDOR_RELEASE_MISMATCH')
-    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.541 base=v1.6.460 engine=0.183.351 web_console=1.6.192 catalog_service=0.20.14 ' not in gate:
+    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.542 base=v1.6.460 engine=0.183.352 web_console=1.6.192 catalog_service=0.20.14 ' not in gate:
         raise AssertionError('CURRENT_SUMMARY_MISMATCH')
     verify_incremental_contract(files, gate)
     verify_load_balancer_contract(files, gate)
@@ -590,11 +590,11 @@ def previous_gate(gate=GATE):
         if stale(marker) != marker:
             replacements["'" + marker + "' "] = "'" + stale(marker) + "' "
     replacements.update({
-        'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.541"':
+        'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.542"':
             'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.521"',
-        '"$vendor_pending_fixture" v1.6.541 >/dev/null':
+        '"$vendor_pending_fixture" v1.6.542 >/dev/null':
             '"$vendor_pending_fixture" v1.6.521 >/dev/null',
-        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.541 base=v1.6.460 engine=0.183.351 web_console=1.6.192 catalog_service=0.20.14 ':
+        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.542 base=v1.6.460 engine=0.183.352 web_console=1.6.192 catalog_service=0.20.14 ':
             'SERVER_API_EXPLORER_PATCH_OK release=v1.6.521 base=v1.6.460 engine=0.183.340 web_console=1.6.181 catalog_service=0.20.12 ',
     })
     for marker, stale_marker in replacements.items():
@@ -1158,7 +1158,7 @@ class Tests(unittest.TestCase):
         self.assertGreater(checked, 0)
 
     def test_historical_engine340_cannot_be_packaged(self):
-        old = {'0.183.351': '0.183.340',
+        old = {'0.183.352': '0.183.340',
                ENGINE_SHA: '5e5a1b908b43bf3824fc3bb2108bd661cd5199ce9bcfd187e0b18b5608a38cea',
                ENGINE_SOURCE: 'ff0a41e7676211043eb4f755a306a9e2a19abee1'}
         checked = 0
@@ -1177,15 +1177,18 @@ class Tests(unittest.TestCase):
                         verify(files)
         self.assertGreater(checked, 0)
 
-    def test_engine351_actual_war_producer_and_previous350_boundary(self):
+    def test_engine352_actual_war_producer_and_previous351_350_boundary(self):
         candidate = (REPO / 'server/build-component-candidate.sh').read_text(encoding='utf-8')
-        self.assertIn('export SERVER_RELEASE_TAG=${SERVER_RELEASE_TAG:-v1.6.541}', candidate)
-        self.assertIn('export ORCHESTRATION_ENGINE_RELEASE_TAG=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.351}', candidate)
+        self.assertIn('export SERVER_RELEASE_TAG=${SERVER_RELEASE_TAG:-v1.6.542}', candidate)
+        self.assertIn('export ORCHESTRATION_ENGINE_RELEASE_TAG=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.352}', candidate)
         for old in (
-            {'0.183.351': '0.183.350',
+            {'0.183.352': '0.183.351',
+             ENGINE_SHA: 'efd0e826364c551f782b281f081d53cadb48faa7d5c37c2f101e6f9c7d7f9ea6',
+             ENGINE_SOURCE: '1befd83278618f9a5b7cdaf96522004dd89918ba'},
+            {'0.183.352': '0.183.350',
              ENGINE_SHA: '637ddaa42cd93c019b4d0813d7053b71dc42797a7f3ac2aa4b10fcc7e304cb31',
              ENGINE_SOURCE: '9c884710e5ea3d4136d80a870d9de9485674f3c3'},
-            {ENGINE_SOURCE: 'fdc5ae7862f3c44b156955aab9cf016365d5d67d'},
+            {ENGINE_SOURCE: '109f2623f00ca3a3a9079414a0f0f8bd23cd1eb2'},
         ):
             checked = 0
             for code, (name, _, markers) in ENGINE_EXPECTED.items():
@@ -1205,7 +1208,7 @@ class Tests(unittest.TestCase):
 
 
     def test_immediately_previous_engine341_cannot_be_packaged(self):
-        old = {'0.183.351': '0.183.341',
+        old = {'0.183.352': '0.183.341',
                ENGINE_SHA: '3ede1ad28b7a7e0754c4c953bd486162f7ffe0b2f76ce384ec485632af6b8e6d',
                ENGINE_SOURCE: 'b245cf778479445ded0786d3898b03fea153212e'}
         checked = 0
@@ -1226,7 +1229,7 @@ class Tests(unittest.TestCase):
 
 
     def test_immediately_previous_engine342_cannot_be_packaged(self):
-        old = {'0.183.351': '0.183.342',
+        old = {'0.183.352': '0.183.342',
                ENGINE_SHA: '3533f247392795329c92516a7966510aafbe81a52e3f922e5ec657a2071363b5',
                ENGINE_SOURCE: 'ddae4bb8e12806f70816f5782cd999eccd0f2ce6'}
         checked = 0
@@ -1247,7 +1250,7 @@ class Tests(unittest.TestCase):
 
 
     def test_immediately_previous_engine343_cannot_be_packaged(self):
-        old = {'0.183.351': '0.183.343',
+        old = {'0.183.352': '0.183.343',
                ENGINE_SHA: 'b29c0057f96dbae38bfe2c663c63bbe4c8b5c755b3090f39414aa51f9813025f',
                ENGINE_SOURCE: '5aa9d8978c75a7fe63330453c399a92716d88568'}
         checked = 0
@@ -1268,7 +1271,7 @@ class Tests(unittest.TestCase):
 
 
     def test_immediately_previous_engine344_cannot_be_packaged(self):
-        old = {'0.183.351': '0.183.344',
+        old = {'0.183.352': '0.183.344',
                ENGINE_SHA: 'ffafa4700156b74ec11bcae1b830738e49943f1a3b8b0565895ed6d7726eebf1',
                ENGINE_SOURCE: '72c42e6f2000301fe03ffd2442fb9ee89aee120c'}
         checked = 0
@@ -1288,7 +1291,7 @@ class Tests(unittest.TestCase):
         self.assertGreater(checked, 0)
 
     def test_immediately_previous_engine345_cannot_be_packaged(self):
-        old = {'0.183.351': '0.183.345',
+        old = {'0.183.352': '0.183.345',
                ENGINE_SHA: '780263c4a884527fa80a28b998ad4bda88b9ad6002a687f9f074602ecad46e62',
                ENGINE_SOURCE: 'd27d4ac73fa05ae43b9ae0c32875780e8a3765b1'}
         checked = 0
@@ -1308,7 +1311,7 @@ class Tests(unittest.TestCase):
         self.assertGreater(checked, 0)
 
     def test_immediately_previous_engine346_cannot_be_packaged(self):
-        old = {'0.183.351': '0.183.346',
+        old = {'0.183.352': '0.183.346',
                ENGINE_SHA: '9deeda5758b7f04135441a203092dd0308d90b65d25037b62ef4f9361d3cf806',
                ENGINE_SOURCE: 'e250e4a17958216c30c1f5d0d31f7b6418a968d5'}
         checked = 0
@@ -1463,7 +1466,7 @@ class Tests(unittest.TestCase):
     def test_current_readme_status_specific_prose_does_not_block_publication_transition(self):
         common = GATE.split('for current_readme_marker in ', 1)[1].split('; do', 1)[0]
         self.assertNotIn('candidate', common)
-        self.assertNotIn('v1.6.541', common)
+        self.assertNotIn('v1.6.542', common)
         self.assertIn("grep -Fqi 'keep all three named volumes' README.md", GATE)
         status = GATE.split("if grep -Fxq '## Current source candidate' README.md; then", 1)[1]
         candidate, published = status.split("elif grep -Fxq '## Current release' README.md; then", 1)
@@ -1472,7 +1475,7 @@ class Tests(unittest.TestCase):
         self.assertIn('This candidate is not yet available', candidate)
         self.assertIn('SERVER_CURRENT_PUBLISHED_README_MISSING', published)
         self.assertNotIn('candidate', published)
-        self.assertNotIn('v1.6.541', published)
+        self.assertNotIn('v1.6.542', published)
 
 
 if __name__ == '__main__':
