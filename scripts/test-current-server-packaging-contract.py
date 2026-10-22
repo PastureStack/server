@@ -39,7 +39,7 @@ CATALOG_COMMIT = '71ec6b2c27355e709f5092c954db24efa800bc41'
 ENGINE_SHA = '1f17603554f1ee3fb651c6570690cb2d7b8c2fa27de17ae260d0cc68b402d826'
 ENGINE_SOURCE = '70ba8cff544fcd5607f3054d30ac8b5cf09783d6'
 OLD_COORDINATES = {
-    'v1.6.543': 'v1.6.521',
+    'v1.6.544': 'v1.6.521',
     '1.6.192': '1.6.181',
     WEB_SHA: '9199681f2c4311f3fbe8727fcf0f6fa136c9bafe9fbe9d13878c55df442a7a03',
     WEB_SOURCE: '7f2bdad0c90a3241693c2ddd4475202ababba550',
@@ -63,7 +63,7 @@ LEGACY_ENGINE_COORDINATES = {
 }
 EXPECTED = {
     COMPATIBILITY_CODE: (COMPATIBILITY, PUBLISHED_508),
-    'SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING': (DOCKER, 'ARG SERVER_RELEASE_TAG=v1.6.543'),
+    'SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING': (DOCKER, 'ARG SERVER_RELEASE_TAG=v1.6.544'),
     'SERVER_INCREMENTAL_RELEASE_VERSION_MISSING': (DOCKER, 'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"'),
     'SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING': (DOCKER, 'ENV CATTLE_RANCHER_SERVER_VERSION=${SERVER_RELEASE_TAG}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RELEASE_TAG=1.6.192'),
@@ -74,8 +74,8 @@ EXPECTED = {
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING': (BUILD, 'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.192}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING': (BUILD, 'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.192.tar.gz}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING': (BUILD, 'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-' + WEB_SHA + '}'),
-    'SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING': (BUILD, 'image=${IMAGE:-pasturestack-validation/server:v1.6.543}'),
-    'SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING': (BUILD, 'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.543}'),
+    'SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING': (BUILD, 'image=${IMAGE:-pasturestack-validation/server:v1.6.544}'),
+    'SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING': (BUILD, 'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.544}'),
     'SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING': (BUILD, 'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"'),
     'SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING': (BUILD, 'test "$(cat "${web_root}/VERSION.txt")" = "${WEB_CONSOLE_RELEASE_TAG}"'),
     'SERVER_VOLUME_NATIVE_READ_ONLY_BUILD_GATE_MISSING': (DOCKER, 'grep -F \'"volume.isNative" : "r"\' >/dev/null'),
@@ -567,15 +567,15 @@ def verify(files, gate=GATE):
                 pipeline = r'(?:^|[;\n])\s*' + re.escape(marker) + r'(?=\s*(?:;|\n|$))'
                 if len(re.findall(pipeline, source)) != 1:
                     raise AssertionError('CURRENT_CATALOG_HASH_BYPASS')
-    if 'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.543"' not in gate:
+    if 'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.544"' not in gate:
         raise AssertionError('CURRENT_VEX_GATE_PIN_MISMATCH')
-    if '"$vendor_pending_fixture" v1.6.543 >/dev/null' not in gate:
+    if '"$vendor_pending_fixture" v1.6.544 >/dev/null' not in gate:
         raise AssertionError('CURRENT_VENDOR_GATE_PIN_MISMATCH')
-    if json.loads(files[VEX]).get('@id') != 'https://github.com/PastureStack/server/security/openvex/v1.6.543':
+    if json.loads(files[VEX]).get('@id') != 'https://github.com/PastureStack/server/security/openvex/v1.6.544':
         raise AssertionError('CURRENT_VEX_RELEASE_MISMATCH')
-    if json.loads(files[VENDOR]).get('release') != 'v1.6.543':
+    if json.loads(files[VENDOR]).get('release') != 'v1.6.544':
         raise AssertionError('CURRENT_VENDOR_RELEASE_MISMATCH')
-    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.543 base=v1.6.460 engine=0.183.352 web_console=1.6.192 catalog_service=0.20.14 ' not in gate:
+    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.544 base=v1.6.460 engine=0.183.352 web_console=1.6.192 catalog_service=0.20.14 ' not in gate:
         raise AssertionError('CURRENT_SUMMARY_MISMATCH')
     verify_incremental_contract(files, gate)
     verify_load_balancer_contract(files, gate)
@@ -590,11 +590,11 @@ def previous_gate(gate=GATE):
         if stale(marker) != marker:
             replacements["'" + marker + "' "] = "'" + stale(marker) + "' "
     replacements.update({
-        'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.543"':
+        'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.544"':
             'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.521"',
-        '"$vendor_pending_fixture" v1.6.543 >/dev/null':
+        '"$vendor_pending_fixture" v1.6.544 >/dev/null':
             '"$vendor_pending_fixture" v1.6.521 >/dev/null',
-        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.543 base=v1.6.460 engine=0.183.352 web_console=1.6.192 catalog_service=0.20.14 ':
+        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.544 base=v1.6.460 engine=0.183.352 web_console=1.6.192 catalog_service=0.20.14 ':
             'SERVER_API_EXPLORER_PATCH_OK release=v1.6.521 base=v1.6.460 engine=0.183.340 web_console=1.6.181 catalog_service=0.20.12 ',
     })
     for marker, stale_marker in replacements.items():
@@ -928,6 +928,49 @@ class Tests(unittest.TestCase):
         self.assertIn("'vcsMetadata': 'ABSENT_BY_PRODUCER_BUILDVCS_FALSE_CONTRACT'", qualifier)
         self.assertIn("records.append(cni_payload(rootfs, pins, output))", qualifier)
 
+    def test_current_host_node_coordinates_match_official_original_bytes(self):
+        coordinates = {
+            'HOST_API_VERSION': '0.38.7',
+            'HOST_API_RELEASE_TAG': 'v0.38.7',
+            'HOST_API_COMMIT': 'cd2a8d2b5e37f1b79a4b487760db5f3f7b3f818b',
+            'HOST_API_PACKAGE_ID': 'cd2a8d2b5e37f1b79a4b487760db5f3f',
+            'HOST_API_ARCHIVE_SHA256': 'f0e0033da7661d1444b73e2dc43f8b5c5dad6c9169ff2d19c1dcb6aa1c4435d9',
+            'HOST_API_BINARY_SHA256': '8dc40eb10807e56679c087a1a0b458a49acd545715c4f04e2bcb90a5d5538d5f',
+            'HOST_API_APPLY_SHA256': '8a21f63099832afb571755011bbcf8d97710994a50c419b20700cbc31efced0f',
+            'NODE_AGENT_VERSION': '0.13.31',
+            'NODE_AGENT_COMMIT': '68ae58d886621540208b98378ed517b3525244e0',
+            'NODE_AGENT_PACKAGE_ID': '68ae58d886621540208b98378ed517b3',
+            'NODE_AGENT_ARCHIVE_SHA256': 'd12da35517448fd26467ee71249976b224da8d07c9dd9feec7c3e49d2977df62',
+            'NODE_AGENT_BINARY_SHA256': 'bec0d2e9e2bfdb6015cdcc2d65f692ce5b0dfcfdbf32f72032b67f2860e4ffaa',
+            'NODE_AGENT_APPLY_SHA256': 'dd8cb342518a43e7468cc121db5c4e44b16731f2620b77ea0fd03c02c03766a9',
+            'NODE_AGENT_WINDOWS_ARCHIVE_SHA256': '5b5e4610200139e89d962e2f10b6961d85ca2972a86cc4d4ddddbb8b600115ae',
+            'NODE_AGENT_WINDOWS_BINARY_SHA256': 'b5155ffb8919b68be6da206d0ccedef00917d15b19fb3da6e0381237b456ab3e',
+            'NODE_AGENT_WINDOWS_STARTUP_SHA256': 'e1e84e1c5125db2b8f0c1a83ada8294556cb2390de969398a2436d9481378fca',
+        }
+        repeated = {'HOST_API_VERSION', 'HOST_API_COMMIT', 'HOST_API_PACKAGE_ID',
+                    'HOST_API_ARCHIVE_SHA256', 'NODE_AGENT_VERSION',
+                    'NODE_AGENT_COMMIT', 'NODE_AGENT_ARCHIVE_SHA256'}
+
+        def verify(files):
+            for name, value in coordinates.items():
+                rows = re.findall(r'^ARG ' + name + r'=(.+)$', files[DOCKER], re.M)
+                if rows != [value] * (2 if name in repeated else 1):
+                    raise ValueError('CURRENT_HOST_NODE_EXACT_RECIPE_COORDINATES')
+                fallback = '${node_agent_commit:0:32}' if name == 'NODE_AGENT_PACKAGE_ID' else value
+                marker = name.lower() + '=${' + name + ':-' + fallback + '}'
+                if marker not in files[BUILD]:
+                    raise ValueError('CURRENT_HOST_NODE_EXACT_BUILD_COORDINATES')
+                if "'ARG " + name + '=' + value + "'" not in GATE:
+                    raise ValueError('CURRENT_HOST_NODE_EXACT_SOURCE_GATE')
+
+        verify(FILES)
+        for name, value in coordinates.items():
+            for path in (DOCKER, BUILD):
+                broken = dict(FILES)
+                broken[path] = broken[path].replace(value, 'stale-component-pin')
+                with self.subTest(coordinate=name, path=path), self.assertRaises(ValueError):
+                    verify(broken)
+
     def test_seventeen_component_inputs_keep_exact_sha_fetch_and_separate_jdk_stage(self):
         verify_incremental_contract(FILES)
         block = FILES[BUILD].split('    component_assets=(\n', 1)[1].split('    )', 1)[0]
@@ -1179,7 +1222,7 @@ class Tests(unittest.TestCase):
 
     def test_engine352_actual_war_producer_and_previous351_350_boundary(self):
         candidate = (REPO / 'server/build-component-candidate.sh').read_text(encoding='utf-8')
-        self.assertIn('export SERVER_RELEASE_TAG=${SERVER_RELEASE_TAG:-v1.6.543}', candidate)
+        self.assertIn('export SERVER_RELEASE_TAG=${SERVER_RELEASE_TAG:-v1.6.544}', candidate)
         self.assertIn('export ORCHESTRATION_ENGINE_RELEASE_TAG=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.352}', candidate)
         for old in (
             {'0.183.352': '0.183.351',
@@ -1466,7 +1509,7 @@ class Tests(unittest.TestCase):
     def test_current_readme_status_specific_prose_does_not_block_publication_transition(self):
         common = GATE.split('for current_readme_marker in ', 1)[1].split('; do', 1)[0]
         self.assertNotIn('candidate', common)
-        self.assertNotIn('v1.6.543', common)
+        self.assertNotIn('v1.6.544', common)
         self.assertIn("grep -Fqi 'keep all three named volumes' README.md", GATE)
         status = GATE.split("if grep -Fxq '## Current source candidate' README.md; then", 1)[1]
         candidate, published = status.split("elif grep -Fxq '## Current release' README.md; then", 1)
@@ -1475,7 +1518,7 @@ class Tests(unittest.TestCase):
         self.assertIn('This candidate is not yet available', candidate)
         self.assertIn('SERVER_CURRENT_PUBLISHED_README_MISSING', published)
         self.assertNotIn('candidate', published)
-        self.assertNotIn('v1.6.543', published)
+        self.assertNotIn('v1.6.544', published)
 
 
 if __name__ == '__main__':

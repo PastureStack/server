@@ -41,7 +41,7 @@ class NestedPayloads(unittest.TestCase):
         pins = {}
         for component, prefix, windows in (('host-api', 'HOST_API', False),
                 ('node-agent', 'NODE_AGENT', False), ('node-agent', 'NODE_AGENT', True)):
-            version = '0.38.6' if prefix == 'HOST_API' else '0.13.30'
+            version = '0.38.7' if prefix == 'HOST_API' else '0.13.31'
             archive = folder / (component + '-' + version + ('-windows-amd64.zip' if windows else '.tar.gz'))
             if windows:
                 with zipfile.ZipFile(archive, 'w') as stream:
@@ -140,13 +140,13 @@ class NestedPayloads(unittest.TestCase):
             with patch.object(M, 'defaults', return_value=pins), self.assertRaisesRegex(ValueError, 'ONLY_ACTIVE_AGENT_BUNDLES_REQUIRED'):
                 M.prepare(rootfs, '', parent / 'out')
             old.unlink()
-            (rootfs / 'usr/share/cattle/artifacts/node-agent-0.13.30-windows-amd64.zip').unlink()
+            (rootfs / 'usr/share/cattle/artifacts/node-agent-0.13.31-windows-amd64.zip').unlink()
             with patch.object(M, 'defaults', return_value=pins), self.assertRaisesRegex(ValueError, 'ONLY_ACTIVE_AGENT_BUNDLES_REQUIRED'):
                 M.prepare(rootfs, '', parent / 'second')
 
     def test_conflicting_recipe_defaults_rejected(self):
         with self.assertRaisesRegex(ValueError, 'CONFLICTING_RECIPE_DEFAULT'):
-            M.defaults('ARG HOST_API_VERSION=0.38.6\nARG HOST_API_VERSION=0.38.5\n')
+            M.defaults('ARG HOST_API_VERSION=0.38.7\nARG HOST_API_VERSION=0.38.5\n')
 
     def test_old_go_wrong_source_platform_and_dirty_binary_rejected(self):
         expected = ['CGO_ENABLED=0', 'GOARCH=amd64', 'vcs.modified=false',
