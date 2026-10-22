@@ -6,6 +6,31 @@ alone are not Server publication or deployment proof; use the official
 release's `published.txt`, checksums, scan reports, SBOM and actual image digest.
 It does not establish complete native-matrix acceptance.
 
+## Official publication and QA upgrade
+
+Official source `c7244b0e0ca1038286fdd451f7208453f7e3805d` passed
+[publisher39706118112](https://github.com/PastureStack/server/actions/runs/39706118112).
+All 26 immutable release assets passed anonymous exact-set/checksum readback,
+without bypassing required checks. The linux/amd64 image has one runtime layer,
+516,485,802 compressed bytes. Its manifest is
+`sha256:b64293f7d815603b29c65395ff83aa6f4e00b1053b639685f501553c5f538c18`;
+the distinct OCI config is
+`sha256:bbba300dad5659d4868cab053b034428bf7c719f434cc28023e0560e8bc323dc`.
+Artifact identity, not an installation command:
+`ghcr.io/pasturestack/server:v1.6.542@sha256:b64293f7d815603b29c65395ff83aa6f4e00b1053b639685f501553c5f538c18`.
+
+The QA upgrade and actual restart passed, preserving all three persisted volumes,
+runtime overrides and LB database settings, with the previous official 541 image
+retained for rollback. This is scoped deployment evidence, not full native-matrix
+acceptance.
+
+The actual merged-rootfs-and-active-payloads security gate reports 73 raw findings
+and 29 tracked unfixed LOW/MEDIUM package occurrences across 18 CVEs, review
+2026-10-27. Untracked, HIGH/CRITICAL, fixed-available and secrets are zero.
+Tracking is not remediation or zero risk. The release includes independent
+qualification/scans of the four active inner Go payloads and their nested SBOM
+in `server-nested-payloads.json`.
+
 ## Project permission-check boundary
 
 Custom API Key project-scope and ancestry checks use the same live membership
@@ -50,11 +75,12 @@ Temurin `25.0.4.1+1` and every other 541 component source/archive/binary pin
 are unchanged. The four nested Go payload qualifications and exact release
 asset envelope remain required. Existing Compose, public-origin, three-volume,
 runtime-override, LB database-override and rollback contracts are preserved.
+The custom audit-directory contract is unchanged.
 
 Only current release identities in VEX and vendor tracking move to 542;
 statements, package findings, policy and security thresholds are unchanged.
-Final scans and SBOMs must be generated from the actual new Server image,
-not copied from 541.
+The published final scans and SBOMs were generated from the actual new Server
+image, not copied from 541.
 
 Custom24/OIDC, audit sink/flush and active-stream checks remain separate bounded
 acceptance work. No whole-row, whole-matrix, UI or Windows-native networking

@@ -1,6 +1,20 @@
 # Compatibility Contract
 
-## Server v1.6.542 assembly
+## Server v1.6.542 published
+
+Official source `c7244b0e0ca1038286fdd451f7208453f7e3805d` passed
+[publisher39706118112](https://github.com/PastureStack/server/actions/runs/39706118112)
+and anonymous exact-set/checksum readback of all 26 immutable release assets.
+Its manifest is
+`sha256:b64293f7d815603b29c65395ff83aa6f4e00b1053b639685f501553c5f538c18`;
+the distinct OCI config is
+`sha256:bbba300dad5659d4868cab053b034428bf7c719f434cc28023e0560e8bc323dc`.
+The linux/amd64 image has one runtime layer, 516,485,802 compressed bytes.
+Artifact identity, not an installation command:
+`ghcr.io/pasturestack/server:v1.6.542@sha256:b64293f7d815603b29c65395ff83aa6f4e00b1053b639685f501553c5f538c18`.
+The QA upgrade and actual restart passed with all three persisted volumes,
+runtime overrides and LB database settings preserved, and a 541 rollback retained.
+This deployment evidence is not complete native-matrix acceptance.
 
 Server `v1.6.542` packages official Engine `v0.183.352`. Its project-scope
 checks preserve live membership and inactive-project authority without adding
@@ -14,11 +28,13 @@ integration main `109f2623f00ca3a3a9079414a0f0f8bd23cd1eb2`.
 The official `cattle.jar` SHA256 is
 `1f17603554f1ee3fb651c6570690cb2d7b8c2fa27de17ae260d0cc68b402d826`.
 All other 541 component pins, frozen schemas, settings and persistence
-contracts are retained. A source assembly is not Server publication,
-deployment or complete native acceptance; use official release assets and
-actual image identity. See the [542 note](docs/releases/server-1.6.542.md).
-The installation examples continue to follow the latest documented published
-Server release.
+contracts are retained, including the custom audit-directory contract.
+The actual merged-rootfs-and-active-payloads gate reports 73 raw findings and
+29 tracked unfixed LOW/MEDIUM package occurrences across 18 CVEs, review
+2026-10-27; untracked, HIGH/CRITICAL, fixed-available and secrets are zero.
+Tracking is not remediation or zero risk. Custom24/OIDC and active-stream
+acceptance remain separate; no whole-matrix PASS is implied. See the
+[542 note](docs/releases/server-1.6.542.md).
 
 ## Server v1.6.541 published
 
