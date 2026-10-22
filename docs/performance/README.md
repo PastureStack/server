@@ -9,20 +9,17 @@ The following example is appropriate as a starting point for a dedicated
 profile; measure the real workload before increasing it further.
 
 The example uses the published numeric Server tag shown below. See the
-[current release](../../README.md#current-release) for its component versions,
-immutable identities and scoped acceptance evidence. Preserve the existing
-runtime overrides and all three named volumes during an upgrade or restart.
+[current release](../../README.md#current-release) for component versions and
+release details. Preserve the existing runtime overrides and all three named
+volumes during an upgrade or restart.
 
-This release retains the same performance-setting contract. Existing runtime
-overrides and volumes must be preserved on upgrade or code rollback. Archive and
-restore do not establish a performance improvement or complete broader acceptance.
-The 541 QA upgrade and actual restart preserved the existing overrides and all
-three volumes; this is preservation evidence, not a performance benchmark.
+This release retains the same performance-setting contract. Upgrade or restore
+evidence is not a performance benchmark; measure the actual workload.
 
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.541
+    image: ghcr.io/pasturestack/server:v1.6.542
     restart: unless-stopped
     ports:
       - "8080:8080"
