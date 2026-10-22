@@ -32,9 +32,9 @@ LOCAL_ASSETS = (("cattle.jar", "ORCHESTRATION_ENGINE_ARTIFACT_SHA256"),
                 ("api-explorer-1.1.19.tar.gz", "API_EXPLORER_ARTIFACT_SHA256"),
                 ("web-console-1.6.181.tar.gz", "WEB_CONSOLE_ARTIFACT_SHA256"),
                 ("websocket-proxy-0.23.17-linux-amd64.tar.xz", "WEBSOCKET_PROXY_ARCHIVE_SHA256"),
-                ("host-api-0.38.6.tar.gz", "HOST_API_ARCHIVE_SHA256"),
-                ("node-agent-0.13.30.tar.gz", "NODE_AGENT_ARCHIVE_SHA256"),
-                ("node-agent-0.13.30-windows-amd64.zip", "NODE_AGENT_WINDOWS_ARCHIVE_SHA256"),
+                ("host-api-0.38.7.tar.gz", "HOST_API_ARCHIVE_SHA256"),
+                ("node-agent-0.13.31.tar.gz", "NODE_AGENT_ARCHIVE_SHA256"),
+                ("node-agent-0.13.31-windows-amd64.zip", "NODE_AGENT_WINDOWS_ARCHIVE_SHA256"),
                 ("per-host-subnet-0.2.5-windows-amd64.zip", "PER_HOST_SUBNET_ARCHIVE_SHA256"),
                 ("host-provisioner-0.39.9-linux-amd64.tar.xz", "HOST_PROVISIONER_ARCHIVE_SHA256"),
                 ("secret-delivery-api-0.3.3-linux-amd64.tar.xz", "SECRET_DELIVERY_API_ARCHIVE_SHA256"),
@@ -76,7 +76,7 @@ class ComponentRecipeTest(unittest.TestCase):
         environment = fixture_environment()
         result = self.run_entry(environment, "--check-inputs")
         self.assertEqual(0, result.returncode, result.stderr)
-        self.assertIn("server=v1.6.519 engine=v0.183.334 web=1.6.181 proxy=0.23.17 host=0.38.6 node=0.13.30", result.stdout)
+        self.assertIn("server=v1.6.519 engine=v0.183.334 web=1.6.181 proxy=0.23.17 host=0.38.7 node=0.13.31", result.stdout)
         self.assertIn(environment["HOST_API_COMMIT"][:32], result.stdout)
         environment["HOST_API_PACKAGE_ID"] = "301025de31c07073cc03efa17e1ab8ef"
         self.assertNotEqual(0, self.run_entry(environment, "--check-inputs").returncode)
@@ -224,7 +224,7 @@ class ComponentRecipeTest(unittest.TestCase):
         return archive, package_id, binary_hash, apply_hash
 
     def test_owned_version_fixture_is_executable_and_manifest_bound(self):
-        script = b"#!/bin/sh\nprintf '%s\\n' '0.13.30'\n"
+        script = b"#!/bin/sh\nprintf '%s\\n' '0.13.31'\n"
         with tempfile.TemporaryDirectory() as temporary:
             archive, package_id, binary_hash, _ = self.producer_archive(
                 Path(temporary), component="node-agent", binary_script=script)
@@ -245,15 +245,15 @@ class ComponentRecipeTest(unittest.TestCase):
         fields = {"CGO_ENABLED": "0", "GOOS": "linux", "GOARCH": "amd64", "GOAMD64": "v1",
                   "vcs.revision": source, "vcs.modified": "false"}
         cases = (
-            ("exact", "go1.27.3", {}, "", "0.13.30", True),
-            ("cgo-substring", "go1.27.3", {"CGO_ENABLED": "1"}, "CGO_ENABLED=0", "0.13.30", False),
-            ("source-substring", "go1.27.3", {"vcs.revision": "b" * 40}, "vcs.revision=" + source, "0.13.30", False),
-            ("dirty-substring", "go1.27.3", {"vcs.modified": "true"}, "vcs.modified=false", "0.13.30", False),
-            ("old-go", "go1.27.2", {}, "", "0.13.30", False),
-            ("wrong-os", "go1.27.3", {"GOOS": "windows"}, "", "0.13.30", False),
-            ("wrong-arch", "go1.27.3", {"GOARCH": "arm64"}, "", "0.13.30", False),
-            ("wrong-amd64", "go1.27.3", {"GOAMD64": "v3"}, "", "0.13.30", False),
-            ("wrong-version", "go1.27.3", {}, "", "0.13.31", False),
+            ("exact", "go1.27.3", {}, "", "0.13.31", True),
+            ("cgo-substring", "go1.27.3", {"CGO_ENABLED": "1"}, "CGO_ENABLED=0", "0.13.31", False),
+            ("source-substring", "go1.27.3", {"vcs.revision": "b" * 40}, "vcs.revision=" + source, "0.13.31", False),
+            ("dirty-substring", "go1.27.3", {"vcs.modified": "true"}, "vcs.modified=false", "0.13.31", False),
+            ("old-go", "go1.27.2", {}, "", "0.13.31", False),
+            ("wrong-os", "go1.27.3", {"GOOS": "windows"}, "", "0.13.31", False),
+            ("wrong-arch", "go1.27.3", {"GOARCH": "arm64"}, "", "0.13.31", False),
+            ("wrong-amd64", "go1.27.3", {"GOAMD64": "v3"}, "", "0.13.31", False),
+            ("wrong-version", "go1.27.3", {}, "", "0.13.30", False),
         )
         for name, compiler, changes, spoof, version, accepted in cases:
             with self.subTest(case=name), tempfile.TemporaryDirectory() as temporary:
@@ -262,7 +262,7 @@ class ComponentRecipeTest(unittest.TestCase):
                 script = ("#!/bin/sh\n"
                           "[ \"$#\" -eq 1 ] && [ \"$1\" = --version ] || exit 3\n"
                           "printf '%s\\n' '--version' >" + shlex.quote(str(trace)) + "\n"
-                          "printf '%s\\n' 'node-agent version v0.13.30'\n").encode()
+                          "printf '%s\\n' 'node-agent version v0.13.31'\n").encode()
                 values = self.producer_archive(directory, component="node-agent", binary_script=script)
                 commands = directory / "commands"
                 commands.mkdir()
@@ -282,7 +282,7 @@ class ComponentRecipeTest(unittest.TestCase):
                                         text=True, capture_output=True)
                 if accepted:
                     self.assertEqual(0, result.returncode, result.stderr)
-                    self.assertIn("AGENT_NESTED_BINARY_OK component=node-agent go=1.27.3 version=0.13.30", result.stdout)
+                    self.assertIn("AGENT_NESTED_BINARY_OK component=node-agent go=1.27.3 version=0.13.31", result.stdout)
                 else:
                     self.assertNotEqual(0, result.returncode, result.stdout)
                     self.assertNotIn("AGENT_NESTED_BINARY_OK", result.stdout)
@@ -294,8 +294,8 @@ class ComponentRecipeTest(unittest.TestCase):
     @unittest.skipUnless(os.name == "posix", "Build-only pruning uses the Linux source gate")
     def test_build_only_pruning_preserves_active_aliases_other_packages_and_rejects_unsafe_targets(self):
         helper = ROOT / "server/artifacts/prune-superseded-agent-packages.sh"
-        active = ("host-api-0.38.6.tar.gz", "node-agent-0.13.30.tar.gz",
-                  "node-agent-0.13.30-windows-amd64.zip", "per-host-subnet-0.2.5-windows-amd64.zip")
+        active = ("host-api-0.38.7.tar.gz", "node-agent-0.13.31.tar.gz",
+                  "node-agent-0.13.31-windows-amd64.zip", "per-host-subnet-0.2.5-windows-amd64.zip")
         old = ("host-api-0.38.4.tar.gz", "node-agent-0.13.22.tar.gz",
                "node-agent-0.13.27-windows-amd64.zip", "per-host-subnet-0.2.4-windows-amd64.zip")
         for failure in ("none", "reference", "symlink", "unexpected-name", "missing-active", "cni-reference", "cni-symlink", "missing-cni"):
@@ -329,7 +329,7 @@ class ComponentRecipeTest(unittest.TestCase):
                 elif failure == "missing-cni":
                     (packages / active[3]).unlink()
                 before = {path.name: path.read_bytes() for path in packages.iterdir() if path.is_file()}
-                result = subprocess.run(["sh", str(helper), str(packages), str(env), "0.38.6", "0.13.30", "0.2.5"],
+                result = subprocess.run(["sh", str(helper), str(packages), str(env), "0.38.7", "0.13.31", "0.2.5"],
                                         text=True, capture_output=True)
                 if failure == "none":
                     self.assertEqual(0, result.returncode, result.stderr)

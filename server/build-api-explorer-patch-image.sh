@@ -14,7 +14,7 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.543}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.544}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
@@ -25,24 +25,24 @@ orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-70ba8cff544fcd5607f30
 orchestration_engine_version=${orchestration_engine_release_tag#v}
 engine_readonly_schema_sha256=${ENGINE_READONLY_SCHEMA_SHA256:-7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233}
 engine_restricted_schema_sha256=${ENGINE_RESTRICTED_SCHEMA_SHA256:-f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51}
-host_api_version=${HOST_API_VERSION:-0.38.6}
+host_api_version=${HOST_API_VERSION:-0.38.7}
 host_api_package_mode=${HOST_API_PACKAGE_MODE:-producer}
 host_api_release_base_url=${HOST_API_RELEASE_BASE_URL:-https://github.com/PastureStack/host-api/releases/download}
-host_api_release_tag=${HOST_API_RELEASE_TAG:-v0.38.6}
-host_api_archive_sha256=${HOST_API_ARCHIVE_SHA256:-6e785a9ac4f7a1a17055a2a98daedc45ec1ba300fc434a28d032d186a3e5547a}
-host_api_package_id=${HOST_API_PACKAGE_ID:-167efda3eb050ef3e9c051b460310fb3}
-host_api_binary_sha256=${HOST_API_BINARY_SHA256:-c8549d7dd0554c1e96dc083355e945257ab48fa8047706ee1b6a6bb68b8c0e7f}
+host_api_release_tag=${HOST_API_RELEASE_TAG:-v0.38.7}
+host_api_archive_sha256=${HOST_API_ARCHIVE_SHA256:-f0e0033da7661d1444b73e2dc43f8b5c5dad6c9169ff2d19c1dcb6aa1c4435d9}
+host_api_package_id=${HOST_API_PACKAGE_ID:-cd2a8d2b5e37f1b79a4b487760db5f3f}
+host_api_binary_sha256=${HOST_API_BINARY_SHA256:-8dc40eb10807e56679c087a1a0b458a49acd545715c4f04e2bcb90a5d5538d5f}
 host_api_apply_sha256=${HOST_API_APPLY_SHA256:-8a21f63099832afb571755011bbcf8d97710994a50c419b20700cbc31efced0f}
-host_api_commit=${HOST_API_COMMIT:-167efda3eb050ef3e9c051b460310fb3724947ba}
-node_agent_version=${NODE_AGENT_VERSION:-0.13.30}
+host_api_commit=${HOST_API_COMMIT:-cd2a8d2b5e37f1b79a4b487760db5f3f7b3f818b}
+node_agent_version=${NODE_AGENT_VERSION:-0.13.31}
 node_agent_release_base_url=${NODE_AGENT_RELEASE_BASE_URL:-https://github.com/PastureStack/node-agent/releases/download}
-node_agent_commit=${NODE_AGENT_COMMIT:-246df59e7d5014078be1d64e24ff33fd0ad50976}
+node_agent_commit=${NODE_AGENT_COMMIT:-68ae58d886621540208b98378ed517b3525244e0}
 node_agent_package_id=${NODE_AGENT_PACKAGE_ID:-${node_agent_commit:0:32}}
-node_agent_archive_sha256=${NODE_AGENT_ARCHIVE_SHA256:-6d428f36330df3620f030d475794a81ef51c785fdfa95f3097831b3e31790dc9}
-node_agent_binary_sha256=${NODE_AGENT_BINARY_SHA256:-db056c042f9d13eb1b23b155c74f0da8ca65e10f92fd28c3191707a3692c1fd0}
+node_agent_archive_sha256=${NODE_AGENT_ARCHIVE_SHA256:-d12da35517448fd26467ee71249976b224da8d07c9dd9feec7c3e49d2977df62}
+node_agent_binary_sha256=${NODE_AGENT_BINARY_SHA256:-bec0d2e9e2bfdb6015cdcc2d65f692ce5b0dfcfdbf32f72032b67f2860e4ffaa}
 node_agent_apply_sha256=${NODE_AGENT_APPLY_SHA256:-dd8cb342518a43e7468cc121db5c4e44b16731f2620b77ea0fd03c02c03766a9}
-node_agent_windows_archive_sha256=${NODE_AGENT_WINDOWS_ARCHIVE_SHA256:-6ac46680bffd16d9a12927d6ef533045e1a4b6bd06182f9a9559d46c1d73fc4c}
-node_agent_windows_binary_sha256=${NODE_AGENT_WINDOWS_BINARY_SHA256:-8d079e4b7082a7c95e076e046c1127b174a2050ab9faff57a2b8ce9cc79c0c97}
+node_agent_windows_archive_sha256=${NODE_AGENT_WINDOWS_ARCHIVE_SHA256:-5b5e4610200139e89d962e2f10b6961d85ca2972a86cc4d4ddddbb8b600115ae}
+node_agent_windows_binary_sha256=${NODE_AGENT_WINDOWS_BINARY_SHA256:-b5155ffb8919b68be6da206d0ccedef00917d15b19fb3da6e0381237b456ab3e}
 node_agent_windows_startup_sha256=${NODE_AGENT_WINDOWS_STARTUP_SHA256:-e1e84e1c5125db2b8f0c1a83ada8294556cb2390de969398a2436d9481378fca}
 per_host_subnet_version=${PER_HOST_SUBNET_VERSION:-0.2.5}
 per_host_subnet_release_base_url=${PER_HOST_SUBNET_RELEASE_BASE_URL:-https://github.com/PastureStack/per-host-subnet/releases/download}
@@ -116,7 +116,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-7f3
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-63e574d6aea42b548723457f4073ac3b8acd9ae3e8818cdce596512b346919e4}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.543}
+image=${IMAGE:-pasturestack-validation/server:v1.6.544}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]

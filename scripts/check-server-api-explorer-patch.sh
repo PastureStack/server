@@ -527,7 +527,7 @@ require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
-    'ARG SERVER_RELEASE_TAG=v1.6.543' \
+    'ARG SERVER_RELEASE_TAG=v1.6.544' \
     SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"' \
@@ -555,18 +555,31 @@ require_marker "$publish_workflow" \
     'bash source/scripts/check-server-host-api-package.sh' \
     SERVER_HOST_API_RELEASE_CHECK_MISSING
 for release_host_marker in \
-    'ARG HOST_API_VERSION=0.38.6' \
+    'ARG HOST_API_VERSION=0.38.7' \
     'ARG HOST_API_PACKAGE_MODE=producer' \
     'ARG HOST_API_RELEASE_BASE_URL=https://github.com/PastureStack/host-api/releases/download' \
-    'ARG HOST_API_RELEASE_TAG=v0.38.6' \
-    'ARG HOST_API_COMMIT=167efda3eb050ef3e9c051b460310fb3724947ba' \
-    'ARG HOST_API_PACKAGE_ID=167efda3eb050ef3e9c051b460310fb3' \
-    'ARG HOST_API_ARCHIVE_SHA256=6e785a9ac4f7a1a17055a2a98daedc45ec1ba300fc434a28d032d186a3e5547a' \
-    'ARG HOST_API_BINARY_SHA256=c8549d7dd0554c1e96dc083355e945257ab48fa8047706ee1b6a6bb68b8c0e7f' \
+    'ARG HOST_API_RELEASE_TAG=v0.38.7' \
+    'ARG HOST_API_COMMIT=cd2a8d2b5e37f1b79a4b487760db5f3f7b3f818b' \
+    'ARG HOST_API_PACKAGE_ID=cd2a8d2b5e37f1b79a4b487760db5f3f' \
+    'ARG HOST_API_ARCHIVE_SHA256=f0e0033da7661d1444b73e2dc43f8b5c5dad6c9169ff2d19c1dcb6aa1c4435d9' \
+    'ARG HOST_API_BINARY_SHA256=8dc40eb10807e56679c087a1a0b458a49acd545715c4f04e2bcb90a5d5538d5f' \
     'ARG HOST_API_APPLY_SHA256=8a21f63099832afb571755011bbcf8d97710994a50c419b20700cbc31efced0f' \
     'verify-host-api-package /out/host-api.tar.gz'; do
     require_marker "$release_dockerfile" "$release_host_marker" \
         SERVER_HOST_API_PRODUCER_IDENTITY_MISSING
+done
+for release_node_marker in \
+    'ARG NODE_AGENT_VERSION=0.13.31' \
+    'ARG NODE_AGENT_COMMIT=68ae58d886621540208b98378ed517b3525244e0' \
+    'ARG NODE_AGENT_PACKAGE_ID=68ae58d886621540208b98378ed517b3' \
+    'ARG NODE_AGENT_ARCHIVE_SHA256=d12da35517448fd26467ee71249976b224da8d07c9dd9feec7c3e49d2977df62' \
+    'ARG NODE_AGENT_BINARY_SHA256=bec0d2e9e2bfdb6015cdcc2d65f692ce5b0dfcfdbf32f72032b67f2860e4ffaa' \
+    'ARG NODE_AGENT_APPLY_SHA256=dd8cb342518a43e7468cc121db5c4e44b16731f2620b77ea0fd03c02c03766a9' \
+    'ARG NODE_AGENT_WINDOWS_ARCHIVE_SHA256=5b5e4610200139e89d962e2f10b6961d85ca2972a86cc4d4ddddbb8b600115ae' \
+    'ARG NODE_AGENT_WINDOWS_BINARY_SHA256=b5155ffb8919b68be6da206d0ccedef00917d15b19fb3da6e0381237b456ab3e' \
+    'ARG NODE_AGENT_WINDOWS_STARTUP_SHA256=e1e84e1c5125db2b8f0c1a83ada8294556cb2390de969398a2436d9481378fca'; do
+    require_marker "$release_dockerfile" "$release_node_marker" \
+        SERVER_NODE_AGENT_PRODUCER_IDENTITY_MISSING
 done
 require_marker "$publish_workflow" \
     'bash source/server/artifacts/verify-host-api-package.sh' \
@@ -1069,10 +1082,10 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.543}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.544}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.543}' \
+    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.544}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING
 require_marker "$build_script" \
     'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"' \
@@ -1614,10 +1627,10 @@ fi
 if grep -Fxq '## Current source candidate' README.md; then
     for candidate_readme_marker in \
         '<a id="current-release"></a>' \
-        'Server `v1.6.543` is a prepared source candidate, not a published image.' \
+        'Server `v1.6.544` is a prepared source candidate, not a published image.' \
         'run them only after its official release' \
         'This candidate is not yet available' \
-        'ghcr.io/pasturestack/server:v1.6.543'; do
+        'ghcr.io/pasturestack/server:v1.6.544'; do
         require_marker README.md "$candidate_readme_marker" \
             SERVER_CURRENT_CANDIDATE_README_MISSING
     done
@@ -2212,7 +2225,7 @@ done
 jq -e '
   ["CVE-2026-107928","CVE-2026-107929","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"] as $curl_fixed_cves
   |   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.543"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.544"
   and (.statements | length) == 69
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -2250,7 +2263,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.543 >/dev/null
+    "$vendor_pending_fixture" v1.6.544 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -2339,4 +2352,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.543 base=v1.6.460 engine=0.183.352 web_console=1.6.192 catalog_service=0.20.14 webhook_automation_service=0.10.5 authentication_service=0.4.44 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.544 base=v1.6.460 engine=0.183.352 web_console=1.6.192 catalog_service=0.20.14 webhook_automation_service=0.10.5 authentication_service=0.4.44 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'

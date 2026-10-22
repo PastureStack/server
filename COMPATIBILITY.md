@@ -1,5 +1,32 @@
 # Compatibility Contract
 
+## Server v1.6.544 assembly
+
+The 544 assembly consumes the original tested bytes of official Host API
+`0.38.7` and Node Agent `0.13.31`, including the Windows Node package. Host API
+keeps confirmed scoped authorization loss from being overwritten by a later
+transport disconnect or cancellation-derived backend error. Its bounded final
+check distinguishes confirmed denial from an unavailable authorization service;
+ordinary JWT handling, genuine completion and backend failures remain unchanged.
+The terminal reason describes authorization at finalization, not which watcher
+first closed the connection. Node Agent retains exact Host API `0.38.7` matching
+without a legacy fallback.
+
+Host API's actual binary producer is
+`cd2a8d2b5e37f1b79a4b487760db5f3f7b3f818b`; Node Agent's Linux and Windows
+producer is `68ae58d886621540208b98378ed517b3525244e0`. The numeric component
+tags bind their original CI bytes, not a rebuild from later documentation commits.
+Engine `0.183.352`, Proxy `0.23.17`, Web Console `1.6.192`, CNI `0.2.5`, CLI
+`0.6.19`, LB `0.9.32`, frozen schemas and all other pins remain unchanged.
+
+The 17 local component inputs, 26 release assets, four nested Go payloads,
+separate JDK stage and one-runtime-layer assembly remain required. Preserve
+all three persistent volumes, runtime overrides, LB database settings, custom
+audit directories and the previous official image and backups for rollback.
+Bundled package changes do not prove that existing running hosts have upgraded.
+Source assembly alone is not Server publication, deployment or full native-matrix
+evidence. See the [544 assembly note](docs/releases/server-1.6.544.md).
+
 ## Server v1.6.543 published
 
 Official source `a9559b6ae3c46955e9665a0ccce7358707480af7` passed
