@@ -1,8 +1,23 @@
 # Compatibility Contract
 
-## Server v1.6.543 prepared assembly
+## Server v1.6.543 published
 
-The prepared assembly replaces only WebSocket Proxy `0.23.16` with the
+Official source `a9559b6ae3c46955e9665a0ccce7358707480af7` passed
+[publisher39714403303](https://github.com/PastureStack/server/actions/runs/39714403303)
+and anonymous exact-set/checksum readback of all 26 immutable release assets.
+Its manifest is
+`sha256:d5664f64924c089ff67ba155cd5a1fc195f06a45ed71c855e9a558fb689240a3`;
+the distinct OCI config is
+`sha256:b8cdbdd45afc1d69c36bdd5f960218bad63b62f04d333cb0913c4873e6250b51`.
+The linux/amd64 image has one runtime layer, 516,486,942 compressed bytes.
+Artifact identity, not an installation command:
+`ghcr.io/pasturestack/server:v1.6.543@sha256:d5664f64924c089ff67ba155cd5a1fc195f06a45ed71c855e9a558fb689240a3`.
+The QA8080 upgrade and actual restart passed with matching source and image
+identities, all three persistent volumes, runtime overrides and LB database
+settings preserved, and a 542 rollback and backup retained. This is not stream
+or complete native-matrix acceptance.
+
+The assembly replaces only WebSocket Proxy `0.23.16` with the
 immutable official `0.23.17` bytes. The actual CI/binary producer is
 `6fc9f6a2ee3c010b5376887b387a32f243240026`; the numeric tag points at verified
 merged main `9eb4bed975db048cf41acedfd03a058da34dd992`, with an identical tree.
@@ -10,11 +25,16 @@ Authenticated Host API backends require canonical `0.38.x` patch >= 5 and
 the exact `key-audit-v1` / `key-delegation-v1` capabilities. Unknown protocol
 families, malformed versions and unauthenticated declarations remain rejected.
 Engine `0.183.352`, all other component pins, security gates and persistence
-contracts are unchanged from published 542. See the [543 assembly note](docs/releases/server-1.6.543.md).
+contracts are unchanged from published 542, including custom audit directories.
+The final merged-rootfs-and-active-payloads gate reports 73 raw findings and
+29 tracked unfixed LOW/MEDIUM package occurrences across 18 CVEs, review
+2026-10-27; untracked, HIGH/CRITICAL, fixed-available and secrets are zero.
+Tracking is not remediation or zero risk. The four active nested payloads retain
+their separate actual-binary qualification, scans and SBOM.
 
-This is not Server publication, deployment or native acceptance evidence.
-Published installation examples remain on `v1.6.542` until official 543
-artifact readback succeeds.
+Preserve the three volumes, runtime overrides, LB database settings and previous
+official image and backups for rollback. Publication evidence does not establish
+complete native-matrix acceptance. See the [543 release note](docs/releases/server-1.6.543.md).
 
 ## Server v1.6.542 published
 

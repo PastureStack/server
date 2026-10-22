@@ -1,8 +1,31 @@
-# Server v1.6.543 prepared assembly
+# Server v1.6.543
 
-This source candidate replaces only WebSocket Proxy `0.23.16` with the
-official immutable `0.23.17` release. Server `v1.6.543` is not yet published
-or deployed.
+This release replaces only WebSocket Proxy `0.23.16` with the official immutable
+`0.23.17` release. Engine `0.183.352` and all other component pins are retained.
+
+## Official Server release
+
+[Server v1.6.543](https://github.com/PastureStack/server/releases/tag/v1.6.543)
+was built from source `a9559b6ae3c46955e9665a0ccce7358707480af7` by successful
+[publisher39714403303](https://github.com/PastureStack/server/actions/runs/39714403303).
+All 26 immutable release assets passed anonymous exact-set/checksum readback
+without bypassing required checks. The linux/amd64 image has one runtime layer,
+516,486,942 compressed bytes.
+
+| Image identity | Value |
+| --- | --- |
+| Registry manifest | `sha256:d5664f64924c089ff67ba155cd5a1fc195f06a45ed71c855e9a558fb689240a3` |
+| Distinct OCI config | `sha256:b8cdbdd45afc1d69c36bdd5f960218bad63b62f04d333cb0913c4873e6250b51` |
+
+Artifact identity, not an installation command:
+`ghcr.io/pasturestack/server:v1.6.543@sha256:d5664f64924c089ff67ba155cd5a1fc195f06a45ed71c855e9a558fb689240a3`.
+Use the published numeric `v1.6.543` tag in the
+[installation examples](../../README.md#quick-start).
+
+The QA8080 upgrade and actual restart passed with matching source and image
+identities. All three persistent volumes, runtime overrides and LB database
+settings were preserved; a 542 rollback and backup were retained. This result
+does not establish stream or complete native-matrix acceptance.
 
 ## Official Proxy bytes
 
@@ -42,14 +65,15 @@ active nested Go payload qualifications remain required; no extra payload is
 introduced. Compose, all three persistent volumes, runtime overrides, LB
 database settings, custom audit-directory and rollback protections are retained.
 
-Only current release identities in VEX and vendor tracking move to 543;
-statements, findings, review dates, policies and thresholds are unchanged.
-Normal required PR checks and official Server final-image build, scan, SBOM
-and anonymous artifact readback are still necessary. No Server digest,
-publisher run, deployment result or stream/full-matrix/native PASS is claimed.
+The final merged-rootfs-and-active-payloads security gate reports 73 raw findings
+and 29 tracked unfixed LOW/MEDIUM package occurrences across 18 CVEs, review
+2026-10-27. Untracked, HIGH/CRITICAL, fixed-available and secrets are zero.
+The four nested Host/Node/CNI payloads retain separate actual-binary qualification,
+raw scans and CycloneDX SBOM in `server-nested-payloads.json`. Only current release
+identities in VEX and vendor tracking move to 543; statements, policies and
+thresholds are unchanged. Tracking is not remediation or zero risk. Publication
+and candidate startup/restart checks are not complete native-matrix acceptance.
 
-README installation examples remain on the actual published numeric
-`v1.6.542` until official 543 publication and readback. Back up the database
-and preserve all three persistent volumes and the previous official image
-for rollback; do not restore stale Key policies, patch deployed binaries or
-weaken MFA to apply the update.
+Back up the database and preserve all three persistent volumes, runtime overrides,
+LB database settings and the previous official image for rollback; do not restore
+stale Key policies, patch deployed binaries or weaken MFA to apply the update.
