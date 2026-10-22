@@ -4,6 +4,29 @@ This document describes the 544 assembly. Source changes alone are not publicati
 proof; official release assets and `published.txt` identify the actual Server
 source and distinct registry manifest and OCI config digests.
 
+## Official Server release
+
+[Server v1.6.544](https://github.com/PastureStack/server/releases/tag/v1.6.544)
+was built from source `d6e966329b588693a6b904989865e18f731ffbad` by successful
+[publisher39726684553](https://github.com/PastureStack/server/actions/runs/39726684553).
+All 26 immutable release assets passed anonymous exact-set/checksum readback
+without bypassing required checks. The linux/amd64 image has one runtime layer,
+516,490,074 compressed bytes.
+
+| Image identity | Value |
+| --- | --- |
+| Registry manifest | `sha256:e9015d5e6d6525a684feb0161918aa7d089ecaee136907119170a7b82cdda19d` |
+| Distinct OCI config | `sha256:7ca8a7082b15e8d03ea3cfdc19d61fe77b35c012c1e63daf9f4a96a31fe46eb8` |
+
+Use the published numeric `v1.6.544` tag in the
+[installation examples](../../README.md#quick-start).
+
+The QA8080 upgrade and actual restart passed with matching source and image
+identities. All three persistent volumes, runtime overrides and LB database
+settings were preserved; a 543 rollback and backup were retained. This Server
+switch does not establish upgraded Host/Node processes, active-stream remediation
+or complete native-matrix acceptance.
+
 ## Official component bytes
 
 The assembly consumes the original tested Linux bytes from
@@ -39,9 +62,13 @@ Engine `0.183.352`, Web Console `1.6.192`, CNI `0.2.5`, CLI `0.6.19`, LB
 `0.9.32` and all remaining component pins and frozen schemas are unchanged.
 The 17 local inputs, 26 release assets, four actual nested Go qualifications,
 independent nested scans/SBOM, separate JDK stage and one runtime layer remain
-required. VEX and vendor tracking change only their current release identity;
-the actual new publisher scan determines findings, not the preceding release's
-counts. Policies, exclusions and security thresholds are not changed.
+required. The final merged-rootfs-and-active-payloads security gate reports 73 raw
+findings and 29 tracked unfixed LOW/MEDIUM package occurrences across 18 CVEs,
+review 2026-10-27. Untracked, HIGH/CRITICAL, fixed-available and secrets are zero.
+The four nested payloads retain their separate actual-binary qualifications,
+raw scans and CycloneDX SBOM in `server-nested-payloads.json`. VEX and vendor
+tracking change only their current release identity; policies, exclusions and
+security thresholds are unchanged. Tracking is not remediation or zero risk.
 
 Keep all three persistent volumes, runtime overrides, LB database settings,
 custom audit directories and the previous official image and backups for rollback.

@@ -1,6 +1,20 @@
 # Compatibility Contract
 
-## Server v1.6.544 assembly
+## Server v1.6.544 published
+
+Official source `d6e966329b588693a6b904989865e18f731ffbad` passed
+[publisher39726684553](https://github.com/PastureStack/server/actions/runs/39726684553)
+and anonymous exact-set/checksum readback of all 26 immutable release assets.
+Its manifest is
+`sha256:e9015d5e6d6525a684feb0161918aa7d089ecaee136907119170a7b82cdda19d`;
+the distinct OCI config is
+`sha256:7ca8a7082b15e8d03ea3cfdc19d61fe77b35c012c1e63daf9f4a96a31fe46eb8`.
+The linux/amd64 image has one runtime layer, 516,490,074 compressed bytes.
+The QA8080 upgrade and actual restart passed with matching source and image
+identities. All three persistent volumes, runtime overrides and LB database
+settings were preserved; a 543 rollback and backup were retained. This Server
+switch does not establish upgraded Host/Node processes, active-stream remediation
+or complete native-matrix acceptance.
 
 The 544 assembly consumes the original tested bytes of official Host API
 `0.38.7` and Node Agent `0.13.31`, including the Windows Node package. Host API
@@ -24,8 +38,12 @@ separate JDK stage and one-runtime-layer assembly remain required. Preserve
 all three persistent volumes, runtime overrides, LB database settings, custom
 audit directories and the previous official image and backups for rollback.
 Bundled package changes do not prove that existing running hosts have upgraded.
-Source assembly alone is not Server publication, deployment or full native-matrix
-evidence. See the [544 assembly note](docs/releases/server-1.6.544.md).
+The final merged-rootfs-and-active-payloads gate reports 73 raw findings and
+29 tracked unfixed LOW/MEDIUM package occurrences across 18 CVEs, review
+2026-10-27; untracked, HIGH/CRITICAL, fixed-available and secrets are zero.
+Tracking is not remediation or zero risk. The four nested payloads retain their
+separate actual-binary qualification, raw scans and CycloneDX SBOM.
+See the [544 release note](docs/releases/server-1.6.544.md).
 
 ## Server v1.6.543 published
 
