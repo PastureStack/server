@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "release": "v1.6.545",
-  "generatedAt": "2026-10-20T01:35:18Z",
+  "generatedAt": "2026-10-23T03:05:10Z",
   "policy": {
     "allowedSeverities": [
       "LOW",
@@ -147,6 +147,23 @@
       ],
       "verifiedAt": "2026-10-20T01:35:18Z",
       "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-88647.json"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-88648",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "upstreamVendorStatus": "deferred",
+      "source": "https://ubuntu.com/security/CVE-2026-88648",
+      "reviewAfter": "2026-10-27",
+      "packages": [
+        {
+          "name": "libgnutls30t64",
+          "installedVersion": "3.8.12-2ubuntu1.1"
+        }
+      ],
+      "verifiedAt": "2026-10-23T03:05:10Z",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-88648.json",
+      "notes": "Canonical lists Ubuntu 26.04 gnutls28 as vulnerable with its fix deferred. The official OSV range has no fixed event and the current runtime scan has an empty FixedVersion. Retain the raw finding; do not claim remediation or not_affected."
     },
     {
       "vulnerabilityId": "CVE-2026-89092",

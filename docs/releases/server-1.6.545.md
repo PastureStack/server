@@ -46,6 +46,15 @@ an exception to the artifact security gate.
 
 ## Acceptance boundary
 
+The fresh runtime scan also identifies `CVE-2026-88648` on
+`libgnutls30t64` `3.8.12-2ubuntu1.1`. Canonical marks Ubuntu 26.04 as
+vulnerable with a deferred fix, and its official OSV data has no fixed version.
+This Medium finding is recorded for review on 2026-10-27, not suppressed or
+claimed as fixed. The exact-match pending register now contains 30 package
+occurrences across 19 CVEs; High/Critical, available fixes, untracked findings
+and secrets still block release. See the
+[official status](https://ubuntu.com/security/CVE-2026-88648).
+
 Required evidence includes the stale-endpoint regression, the complete Web
 Console and JDK 25 Engine test suites, and a real QA service upgrade with a
 published port and persistent volume. The browser must send no complete
