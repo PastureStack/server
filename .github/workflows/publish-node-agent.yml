@@ -1,0 +1,87 @@
+name: Publish Node Agent Runtime
+
+on:
+  workflow_dispatch:
+    inputs:
+      component:
+        description: Component to build, verify, and optionally publish
+        required: true
+        type: choice
+        options: [base, agent]
+      publish:
+        description: Publish the exact verified image under its new semantic tag
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: node-agent-release-${{ inputs.component }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.repository == 'PastureStack/server' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    steps:
+      - name: Check out exact protected source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Build and verify the runtime before publication
+        id: runtime
+        env:
+          COMPONENT: ${{ inputs.component }}
+          PUBLISH: ${{ inputs.publish }}
+          GH_TOKEN: ${{ github.token }}
+          REGISTRY_TOKEN: ${{ github.token }}
+          EVIDENCE_DIR: ${{ runner.temp }}/node-agent-evidence
+        run: bash scripts/build-agent-release.sh
+
+      - name: Authenticate registry attestation publication
+        if: inputs.publish
+        env:
+          REGISTRY_TOKEN: ${{ github.token }}
+        run: printf '%s' "$REGISTRY_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+
+      - name: Attest published image provenance
+        if: inputs.publish
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-name: ${{ steps.runtime.outputs.repository }}
+          subject-digest: ${{ steps.runtime.outputs.digest }}
+          push-to-registry: true
+
+      - name: Attest published image SBOM
+        if: inputs.publish
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-name: ${{ steps.runtime.outputs.repository }}
+          subject-digest: ${{ steps.runtime.outputs.digest }}
+          sbom-path: ${{ runner.temp }}/node-agent-evidence/image.cdx.json
+          push-to-registry: true
+
+      - name: Clear registry credentials
+        if: always()
+        run: docker logout ghcr.io
+
+      - name: Retain source, runtime, registry, and scan evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: node-agent-${{ inputs.component }}-${{ github.sha }}
+          path: ${{ runner.temp }}/node-agent-evidence/
+          if-no-files-found: error
+          retention-days: 30

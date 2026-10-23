@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-IMAGE=${IMAGE:-ghcr.io/pasturestack/node-agent-base:v0.3.5}
+IMAGE=${IMAGE:-ghcr.io/pasturestack/node-agent-base:v0.3.6}
 
 SHARE_MNT_BIN="${SHARE_MNT_BIN:-}"
 if [ -z "$SHARE_MNT_BIN" ] || [ ! -f "$SHARE_MNT_BIN" ]; then
@@ -27,7 +27,8 @@ cp Dockerfile pasturestack-entrypoint.sh "$tmpdir"/
 cp "$SHARE_MNT_BIN" "$tmpdir/share-mnt"
 cp "$R_BIN" "$tmpdir/r"
 cp ../server/bin/update-platform-ssl "$tmpdir/update-platform-ssl"
+cp -R ../tools/pip-security-overlay "$tmpdir/pip-security-overlay"
 
 echo "Building $IMAGE"
-docker build -t "$IMAGE" "$tmpdir"
+docker build --build-arg "VCS_REF=$(git rev-parse HEAD)" -t "$IMAGE" "$tmpdir"
 echo "Built $IMAGE"
