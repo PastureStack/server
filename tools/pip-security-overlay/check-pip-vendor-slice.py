@@ -72,9 +72,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
     # The security proof is about the interpreter's actual selected seed, not
     # an arbitrary file supplied through a CLI path.
-    import ensurepip
-    with ensurepip._get_pip_whl_path_ctx() as wheel:
-        result = verify(Path(wheel))
+    try:
+        import ensurepip
+    except ImportError:
+        # compose's distro runtime intentionally has no ensurepip package.
+        # Its build retains the verified input at this fixed, non-user path.
+        result = verify(Path("/opt/python-security/pip-26.2.2+pasturestack.1-py3-none-any.whl"))
+    else:
+        with ensurepip._get_pip_whl_path_ctx() as wheel:
+            result = verify(Path(wheel))
     data = json.dumps(result, indent=2) + "\n"
     if args.output:
         args.output.write_text(data)
