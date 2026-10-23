@@ -68,6 +68,7 @@ jobs:
           test "$(git -C source rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git -C source status --short)"
           python3 source/server/security/test_scan_coverage.py
+          python3 source/scripts/test-render-server-release-notes.py
 
           declared_release="$(sed -n 's/^ARG SERVER_RELEASE_TAG=//p' \
             source/server/Dockerfile.web-compose-release | sort -u)"
@@ -655,11 +656,14 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          PUBLISHED_DIGEST: ${{ steps.publish.outputs.digest }}
         run: |
           set -Eeuo pipefail
           evidence="$RUNNER_TEMP/server-evidence"
           release_notes="source/docs/releases/server-${RELEASE_TAG#v}.md"
-          cp "$release_notes" "$evidence/release-notes.md"
+          python3 source/scripts/render-server-release-notes.py \
+            "$release_notes" "$RELEASE_TAG" "$PUBLISHED_DIGEST" "$SOURCE_SHA" \
+            >"$evidence/release-notes.md"
           (
             cd "$evidence"
             sha256sum \
