@@ -34,16 +34,21 @@ if [[ "$COMPONENT" = base ]]; then
   [[ "$MOUNT_PROPAGATION_VERSION" = 1.0.12 ]]
   [[ "$MOUNT_PROPAGATION_SHA256" =~ ^[0-9a-f]{64}$ ]]
   [[ "$MOUNT_PROPAGATION_ASSET" = mount-propagation-v1.0.12-linux-amd64 ]]
-  release_json="$scratch/mount-release.json"
-  gh api "repos/PastureStack/mount-propagation/releases/tags/v${MOUNT_PROPAGATION_VERSION}" >"$release_json"
-  jq -e --arg asset "$MOUNT_PROPAGATION_ASSET" --arg sha "sha256:$MOUNT_PROPAGATION_SHA256" \
-    '.draft == false and .immutable == true and ([.assets[] | select(.name == $asset and .digest == $sha)] | length) == 1' \
-    "$release_json" >/dev/null
+  export MOUNT_PROPAGATION_VERSION MOUNT_PROPAGATION_ASSET MOUNT_PROPAGATION_SHA256
+  export MOUNT_PROPAGATION_ASSET_ID MOUNT_PROPAGATION_ASSET_SIZE MOUNT_PROPAGATION_SOURCE
+  export MOUNT_PROPAGATION_TREE MOUNT_PROPAGATION_TAG_OBJECT
+  gh api "repos/PastureStack/mount-propagation/releases/tags/v${MOUNT_PROPAGATION_VERSION}" >"$evidence/mount-release.json"
+  gh api "repos/PastureStack/mount-propagation/git/ref/tags/v${MOUNT_PROPAGATION_VERSION}" >"$evidence/mount-ref.json"
+  gh api "repos/PastureStack/mount-propagation/git/tags/${MOUNT_PROPAGATION_TAG_OBJECT}" >"$evidence/mount-tag.json"
+  gh api "repos/PastureStack/mount-propagation/git/commits/${MOUNT_PROPAGATION_SOURCE}" >"$evidence/mount-commit.json"
+  python3 scripts/check-agent-helper-release.py --self-test
+  python3 scripts/check-agent-helper-release.py "$evidence"
   curl --proto '=https' --proto-redir '=https' --fail --silent --show-error --location \
     --retry 3 --connect-timeout 15 --max-time 300 \
     --output "$scratch/share-mnt" \
     "https://github.com/PastureStack/mount-propagation/releases/download/v${MOUNT_PROPAGATION_VERSION}/${MOUNT_PROPAGATION_ASSET}"
   printf '%s  %s\n' "$MOUNT_PROPAGATION_SHA256" "$scratch/share-mnt" | sha256sum --check --strict
+  test "$(wc -c <"$scratch/share-mnt")" -eq "$MOUNT_PROPAGATION_ASSET_SIZE"
   docker pull --platform linux/amd64 "$LEGACY_HELPER_IMAGE"
   docker create --name "$helper_container" "$LEGACY_HELPER_IMAGE" >/dev/null
   docker cp "$helper_container:/usr/bin/r" "$scratch/r"
@@ -96,6 +101,13 @@ docker run --rm --network none --entrypoint python3 \
 docker run --rm --network none --entrypoint python3 \
   -e PYTHONDONTWRITEBYTECODE=1 -v "$PWD:/source:ro" -w /source "$candidate" \
   scripts/check-agent-control-plane-url.py |& tee "$evidence/control-plane-url-tests.txt"
+docker run --rm --network none --entrypoint bash \
+  -e PYTHONDONTWRITEBYTECODE=1 -v "$PWD:/source:ro" -w /source "$candidate" \
+  tools/pip-security-overlay/verify-pip-runtime.sh |& tee "$evidence/pip-overlay-runtime.txt"
+docker run --rm --network none --entrypoint python3 \
+  -e PYTHONDONTWRITEBYTECODE=1 -v "$PWD:/source:ro" -w /source "$candidate" \
+  tools/pip-security-overlay/check-pip-vendor-slice.py >"$evidence/pip-vendor-slice.json"
+python3 tools/pip-security-overlay/test-pip-vex.py |& tee "$evidence/pip-vex-negative-controls.txt"
 docker run --rm --entrypoint python3 "$candidate" -c \
   'import json, urllib.request; r=urllib.request.urlopen("https://pypi.org/pypi/pip/26.2.2/json", timeout=30); assert r.status == 200; assert json.load(r)["info"]["version"] == "26.2.2"; print("OFFICIAL_PYPI_TLS_OK")' \
   |& tee "$evidence/public-tls.txt"
@@ -106,12 +118,16 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
   -v "$evidence:/evidence" "$trivy" image --format cyclonedx \
   --output /evidence/image.cdx.json "$candidate"
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-  -v "$evidence:/evidence" "$trivy" image --scanners vuln,secret --format json \
+  -v "$evidence:/evidence" "$trivy" image --scanners vuln,secret --list-all-pkgs --format json \
   --output /evidence/image-security.json "$candidate"
+python3 tools/pip-security-overlay/filter-pip-vendor-findings.py \
+  --raw "$evidence/image-security.json" --proof "$evidence/pip-vendor-slice.json" \
+  --output "$evidence/image-security-effective.json" --vex "$evidence/image.vex.json" \
+  --subject "urn:sha256:${local_id#sha256:}"
 python3 - "$evidence" <<'PY'
 import json, pathlib, sys
 root = pathlib.Path(sys.argv[1])
-scan = json.loads((root / 'image-security.json').read_text())
+scan = json.loads((root / 'image-security-effective.json').read_text())
 vulns = [v for r in scan.get('Results', []) for v in r.get('Vulnerabilities', [])]
 secrets = [s for r in scan.get('Results', []) for s in r.get('Secrets', [])]
 blocking = [v for v in vulns if v.get('Severity') in ('CRITICAL', 'HIGH') or v.get('FixedVersion')]
@@ -140,6 +156,10 @@ if [[ "$PUBLISH" = true ]]; then
   # This readback is anonymous, by immutable digest, and must be the tested image.
   docker pull "$repository@$digest"
   test "$(docker image inspect "$repository@$digest" --format '{{.Id}}')" = "$local_id"
+  python3 tools/pip-security-overlay/filter-pip-vendor-findings.py \
+    --raw "$evidence/image-security.json" --proof "$evidence/pip-vendor-slice.json" \
+    --output "$evidence/image-security-effective.json" --vex "$evidence/image.vex.json" \
+    --subject "https://ghcr.io/v2/${repository#ghcr.io/}/manifests/$digest"
   printf 'repository=%s\nversion=%s\nsource=%s\ndigest=%s\nimage_id=%s\n' \
     "$repository" "$version" "$source_sha" "$digest" "$local_id" | tee "$evidence/published.txt"
   printf 'repository=%s\ndigest=%s\n' "$repository" "$digest" >>"$GITHUB_OUTPUT"

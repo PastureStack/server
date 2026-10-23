@@ -6,6 +6,13 @@ Docker CLI 29.7.2, and uses the fixed Ubuntu 26.04 snapshot
 `20261023T000000Z`. Builder and runtime package inventories are compared;
 the runtime verifies the patched OpenSSL, curl, libc and CA package versions.
 
+The shared `tools/pip-security-overlay` helper builds the clearly identified
+downstream wheel `pip 26.2.2+pasturestack.1` from pinned official inputs using
+upstream vendoring machinery. Only urllib3 changes to 2.8.0; unrelated vendored
+sources and licenses are byte-preserved. Both live pip and the embedded
+ensurepip wheel are updated, and a fresh venv runs the same streaming/TLS tests.
+This repack is not an official PyPA pip release.
+
 `release-inputs.env` pins the published mount-propagation 1.0.12 binary and
 the existing `r` helper from the previous immutable base. The helper is
 checked by SHA-256 before entering the build context. No running host or

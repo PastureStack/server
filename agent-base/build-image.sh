@@ -27,6 +27,7 @@ cp Dockerfile pasturestack-entrypoint.sh "$tmpdir"/
 cp "$SHARE_MNT_BIN" "$tmpdir/share-mnt"
 cp "$R_BIN" "$tmpdir/r"
 cp ../server/bin/update-platform-ssl "$tmpdir/update-platform-ssl"
+cp -R ../tools/pip-security-overlay "$tmpdir/pip-security-overlay"
 
 echo "Building $IMAGE"
 docker build --build-arg "VCS_REF=$(git rev-parse HEAD)" -t "$IMAGE" "$tmpdir"

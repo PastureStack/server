@@ -70,8 +70,8 @@ def rejected_tls(url, context):
 
 
 assert sys.version_info[:3] == (3, 14, 9), sys.version
-assert ensurepip.version() == "26.2.2", ensurepip.version()
-assert pip.__version__ == "26.2.2", pip.__version__
+assert ensurepip.version() == "26.2.2+pasturestack.1", ensurepip.version()
+assert pip.__version__ == "26.2.2+pasturestack.1", pip.__version__
 assert bundled_certifi.__version__ == "2026.10.19", bundled_certifi.__version__
 system_trust = ssl.create_default_context()
 bundled_trust = ssl.create_default_context(cafile=bundled_certifi.where())

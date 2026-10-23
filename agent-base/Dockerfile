@@ -7,6 +7,8 @@ ENV PYTHON_VERSION=3.14.9
 ENV PYTHON_SHA256=e02d9ac21cebda6e46435369744a92c65cc7cd8669697694122cf97ffacd1e53
 ARG UBUNTU_SNAPSHOT=20261023T000000Z
 
+COPY ./pip-security-overlay /tmp/pip-security-overlay
+
 ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd \
     https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb \
     /tmp/ca-certificates.deb
@@ -51,6 +53,13 @@ RUN set -eux; \
     ./configure --prefix=/usr/local --enable-shared --with-ensurepip=install && \
     make -j"$(nproc)" && \
     make install && \
+    ldconfig && \
+    python3 /tmp/pip-security-overlay/build-pip-overlay.py --work /tmp/pip-build --output /tmp/pip-dist && \
+    echo 'be5f63d537bbe611dc422fabb6740a44b5997888b592888df5091727f023802a  /tmp/pip-dist/pip-26.2.2+pasturestack.1-py3-none-any.whl' | sha256sum -c - && \
+    python3 /tmp/pip-security-overlay/install-ensurepip-wheel.py --stdlib /usr/local/lib/python3.14 --wheel /tmp/pip-dist/pip-26.2.2+pasturestack.1-py3-none-any.whl --sha256 be5f63d537bbe611dc422fabb6740a44b5997888b592888df5091727f023802a && \
+    python3 -m pip install --no-index --no-deps /tmp/pip-dist/pip-26.2.2+pasturestack.1-py3-none-any.whl && \
+    install -Dm0644 /tmp/pip-dist/build-evidence.json /usr/share/pasturestack/pip-build-evidence.json && \
+    install -Dm0644 /tmp/pip-dist/pip-vendor.cdx.json /usr/share/pasturestack/pip-vendor.cdx.json && \
     dpkg-query -W -f='${binary:Package}\t${Version}\n' > /usr/share/pasturestack/python-builder-packages.tsv
 
 FROM ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b
@@ -67,6 +76,7 @@ RUN rm -f /usr/bin/pebble
 COPY --from=python-builder /usr/local /usr/local
 COPY --from=python-builder /usr/share/pasturestack/ca-certificates.deb /tmp/ca-certificates.deb
 COPY --from=python-builder /usr/share/pasturestack/python-builder-packages.tsv /usr/share/pasturestack/
+COPY --from=python-builder /usr/share/pasturestack/pip-build-evidence.json /usr/share/pasturestack/pip-vendor.cdx.json /usr/share/pasturestack/
 COPY ./pasturestack-entrypoint.sh /
 COPY ./share-mnt /usr/bin/share-mnt
 COPY ./r /usr/bin/r
@@ -120,7 +130,7 @@ RUN rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.
     ln -sf /usr/local/bin/python3.14 /usr/local/bin/python3 && \
     ln -sf /usr/local/bin/python3 /usr/local/bin/python && \
     test "$(python3 --version)" = 'Python 3.14.9' && \
-    python3 -c "import pip, pip._vendor.certifi as certifi; assert pip.__version__ == '26.2.2'; assert certifi.__version__ == '2026.10.19'" && \
+    python3 -c "import pip, ensurepip, pip._vendor.certifi as certifi, pip._vendor.urllib3 as urllib3; assert pip.__version__ == ensurepip.version() == '26.2.2+pasturestack.1'; assert urllib3.__version__ == '2.8.0'; assert certifi.__version__ == '2026.10.19'" && \
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p /var/lib/cattle /var/lib/rancher && \
     chmod +x /usr/bin/share-mnt /usr/bin/r /usr/bin/update-platform-ssl && \
