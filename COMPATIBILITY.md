@@ -1,6 +1,6 @@
 # Compatibility Contract
 
-## Server v1.6.546 security refresh
+## Server v1.6.546 prepared, not published
 
 This source candidate consumes independently verified security releases.
 It keeps the existing authentication, authorization, registration, storage,
@@ -27,6 +27,13 @@ publish three-platform legacy Compose CLI downloads. The optional
 `RC16_ARTIFACT_BASE_URL` compatibility URLs are therefore not changed to
 nonexistent 0.14.39 CLI archives; those URLs remain an operator-supplied
 integration, separate from the bundled executor and maintained PastureStack CLI.
+
+The immutable machine-driver bundle 0.16.5 replaces the inherited 0.14.0
+executable with Go 1.27.3 security updates. Both executable hashes, the archive,
+source metadata and legal files are verified. Existing provider configurations
+are preserved; the retired Packet provider is not enabled for new hosts.
+The bundled machine package becomes the default, without overriding an
+operator's explicit `CATTLE_SERVICE_PACKAGE_DOCKER_MACHINE_URL`.
 
 ## Server v1.6.545 published
 

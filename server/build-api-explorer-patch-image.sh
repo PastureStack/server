@@ -75,10 +75,10 @@ catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-948a528987113a2d3
 catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-b890cfc7941ad3ba1bde4038c0acde4098fa101512553159d4615e540f8bb659}
 catalog_service_license_sha256=${CATALOG_SERVICE_LICENSE_SHA256:-0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594}
 authentication_service_release_base_url=${AUTHENTICATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/authentication-service/releases/download}
-authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.45}
-authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-2f54018191ffd4ff008c5ad2bfb6d6ace7890b39}
-authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-cd3d4a81ae694e53f38ab1be761bb0e8d266fd69cc1c19a5e5a9cdcfed04446b}
-authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-2198ad367405c0f329e85ddb5a882b1568a40eaa002dafa71e772688feb8a25c}
+authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.46}
+authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-35333ee3e40d9de032c10307ee80113c980be00a}
+authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-15950344ac9cc688610eae6d1c023ae6ba66182de675f04445f4c98ced2f19ec}
+authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192}
 websocket_proxy_release_base_url=${WEBSOCKET_PROXY_RELEASE_BASE_URL:-https://github.com/PastureStack/websocket-proxy/releases/download}
 websocket_proxy_version=${WEBSOCKET_PROXY_VERSION:-0.23.18}
 websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-d3f71afb5945b8dedc1b6b80892be6145238cad1}
@@ -95,6 +95,17 @@ compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-53a33bdc13ae99f4bc4a2dc5cc760
 compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-4ab4685af67a8b8b11f3dd4996de9e087c26391ec401cf02cdcafe4c93094bab}
 compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-0f0c0ada23564572b569e1c73951ca363c0dc262fe7bba9c2474106650c4eac5}
 vsphere_cli_bundle_release_base_url=${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL:-https://github.com/PastureStack/vsphere-cli-bundle/releases/download}
+machine_driver_bundle_release_base_url=${MACHINE_DRIVER_BUNDLE_RELEASE_BASE_URL:-https://github.com/PastureStack/machine-driver-bundle/releases/download}
+machine_driver_bundle_version=${MACHINE_DRIVER_BUNDLE_VERSION:-0.16.5}
+machine_driver_bundle_commit=${MACHINE_DRIVER_BUNDLE_COMMIT:-f8d9d86f896ca14a50f3788c2f6a200a1c3b6b21}
+machine_driver_bundle_archive_sha256=${MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256:-d9f33bcb16f478ceab44da4b185fb1fbadcab4f0f441f259c96a9805a854a28b}
+machine_driver_binary_sha256=${MACHINE_DRIVER_BINARY_SHA256:-9d379214de116542cb0e2b1a09c17409fd59fd2b0109428896d81de9cf9c0d31}
+packet_driver_binary_sha256=${PACKET_DRIVER_BINARY_SHA256:-b3e5c71928fcebe1bb648f79ebbf38af9ad32d6f6dbb87587e1b92c6c331e100}
+[[ "$machine_driver_bundle_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ && "$machine_driver_bundle_commit" =~ ^[0-9a-f]{40}$ ]]
+for machine_hash in "$machine_driver_bundle_archive_sha256" "$machine_driver_binary_sha256" "$packet_driver_binary_sha256"; do
+    [[ "$machine_hash" =~ ^[0-9a-f]{64}$ ]]
+done
+[[ "$machine_driver_bundle_release_base_url" == https://* ]]
 vsphere_cli_bundle_version=${VSPHERE_CLI_BUNDLE_VERSION:-0.55.4}
 vsphere_cli_bundle_commit=${VSPHERE_CLI_BUNDLE_COMMIT:-35ca999b775a41e7fb34e9a6b6ceb4fa51f3f242}
 vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-abec8c22504adde66e2ccd89b7b764c8a643c5e1e4425dafb2964abde75806a0}
@@ -230,6 +241,7 @@ if [[ -n ${PASTURESTACK_COMPONENT_ARTIFACT_DIR:-} ]]; then
         "webhook-automation-service-${webhook_automation_service_version}-linux-amd64.tar.xz|$webhook_automation_service_archive_sha256"
         "compose-executor-${compose_executor_version}-linux-amd64.gz|$compose_executor_archive_sha256"
         "vsphere-cli-bundle-${vsphere_cli_bundle_version}-linux-amd64.tar.xz|$vsphere_cli_bundle_archive_sha256"
+        "machine-driver-bundle-${machine_driver_bundle_version}-linux-amd64.tar.xz|$machine_driver_bundle_archive_sha256"
     )
     expected_components=$(printf '%s\n' "${component_assets[@]%%|*}" | LC_ALL=C sort)
     actual_components=$(find "$component_directory" -mindepth 1 -printf '%P\n' | LC_ALL=C sort)
@@ -325,6 +337,12 @@ docker buildx build \
     --build-arg "COMPOSE_EXECUTOR_ARCHIVE_SHA256=${compose_executor_archive_sha256}" \
     --build-arg "COMPOSE_EXECUTOR_BINARY_SHA256=${compose_executor_binary_sha256}" \
     --build-arg "VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL=${vsphere_cli_bundle_release_base_url}" \
+    --build-arg "MACHINE_DRIVER_BUNDLE_RELEASE_BASE_URL=${machine_driver_bundle_release_base_url}" \
+    --build-arg "MACHINE_DRIVER_BUNDLE_VERSION=${machine_driver_bundle_version}" \
+    --build-arg "MACHINE_DRIVER_BUNDLE_COMMIT=${machine_driver_bundle_commit}" \
+    --build-arg "MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256=${machine_driver_bundle_archive_sha256}" \
+    --build-arg "MACHINE_DRIVER_BINARY_SHA256=${machine_driver_binary_sha256}" \
+    --build-arg "PACKET_DRIVER_BINARY_SHA256=${packet_driver_binary_sha256}" \
     --build-arg "VSPHERE_CLI_BUNDLE_VERSION=${vsphere_cli_bundle_version}" \
     --build-arg "VSPHERE_CLI_BUNDLE_COMMIT=${vsphere_cli_bundle_commit}" \
     --build-arg "VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=${vsphere_cli_bundle_archive_sha256}" \
@@ -458,6 +476,11 @@ for marker in \
     PASTURESTACK_VSPHERE_CLI_BUNDLE_COMMIT="${vsphere_cli_bundle_commit}" \
     PASTURESTACK_VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256="${vsphere_cli_bundle_archive_sha256}" \
     PASTURESTACK_GOVC_BINARY_SHA256="${govc_binary_sha256}" \
+    PASTURESTACK_MACHINE_DRIVER_BUNDLE_VERSION="${machine_driver_bundle_version}" \
+    PASTURESTACK_MACHINE_DRIVER_BUNDLE_COMMIT="${machine_driver_bundle_commit}" \
+    PASTURESTACK_MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256="${machine_driver_bundle_archive_sha256}" \
+    PASTURESTACK_MACHINE_DRIVER_BINARY_SHA256="${machine_driver_binary_sha256}" \
+    PASTURESTACK_PACKET_DRIVER_BINARY_SHA256="${packet_driver_binary_sha256}" \
     PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-08-28 \
     PASTURESTACK_CATALOG_COMMIT=71ec6b2c27355e709f5092c954db24efa800bc41 \
     'DEFAULT_CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"71ec6b2c27355e709f5092c954db24efa800bc41"}}}' \
@@ -834,7 +857,7 @@ docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_versi
         sha256sum -c -
     rm -f /tmp/hazelcast.jar
     cat <<'"'"'EOF'"'"' | sha256sum -c -
-2198ad367405c0f329e85ddb5a882b1568a40eaa002dafa71e772688feb8a25c  /usr/bin/authentication-service.real
+e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192  /usr/bin/authentication-service.real
 0f0c0ada23564572b569e1c73951ca363c0dc262fe7bba9c2474106650c4eac5  /usr/bin/compose-executor.real
 92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff  /usr/bin/host-provisioner.real
 e4928ca7359975ba4ad73456296baace8ef0b428c0901055a0317244a17e4665  /usr/bin/secret-delivery-api
@@ -861,7 +884,7 @@ EOF
     done
     test -x /usr/bin/pasturestack-console-broker
     grep -aF "go1.27.3" /usr/bin/pasturestack-console-broker >/dev/null
-    /usr/bin/authentication-service.real --version | grep -F "0.4.45" >/dev/null
+    /usr/bin/authentication-service.real --version | grep -F "0.4.46" >/dev/null
     for marker in \
         oidcAccessPolicyUpdate \
         LocalRecoveryRequired \
@@ -886,6 +909,17 @@ EOF
     grep -Fx "Release source commit: 4da77ccac464bc7f7cd2020e0659a666a5d1ff7e" \
         /usr/share/licenses/pasturestack/webhook-automation-service/webhook-automation-service-SOURCES.txt >/dev/null
     test "$(/usr/bin/govc version)" = "govc ${PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION}"
+    test "$(/usr/bin/docker-machine version)" = "docker-machine version ${PASTURESTACK_MACHINE_DRIVER_BUNDLE_VERSION}, build 95d190cb"
+    printf "%s  %s\n" "$PASTURESTACK_MACHINE_DRIVER_BINARY_SHA256" /usr/bin/docker-machine "$PASTURESTACK_PACKET_DRIVER_BINARY_SHA256" /usr/bin/docker-machine-driver-packet | sha256sum -c -
+    printf "%s  %s\n" "$PASTURESTACK_MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256" "/usr/share/cattle/artifacts/machine-driver-bundle-${PASTURESTACK_MACHINE_DRIVER_BUNDLE_VERSION}-linux-amd64.tar.xz" | sha256sum -c -
+    for machine_binary in /usr/bin/docker-machine /usr/bin/docker-machine-driver-packet; do
+        grep -aF "go1.27.3" "$machine_binary" >/dev/null
+    done
+    grep -Fx "PACKET_DRIVER_NEW_INSTALL_DEFAULT=false" /usr/share/licenses/pasturestack/machine-driver-bundle/machine-driver-bundle-SOURCES.txt
+    machine_storage=$(mktemp -d)
+    /usr/bin/docker-machine --storage-path "$machine_storage" ls -q > "$machine_storage/list"
+    test ! -s "$machine_storage/list"
+    rm -r -- "$machine_storage"
     grep -aF "$(printf "dep\tgolang.org/x/text\tv0.41.0\t")" /usr/bin/govc >/dev/null
     grep -Fx "Security dependency: golang.org/x/text v0.41.0" \
         /usr/share/licenses/pasturestack/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null

@@ -46,6 +46,7 @@ COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host
 COPY --chmod=0755 artifacts/fetch-server-component.sh /usr/local/bin/fetch-server-component
 COPY --chmod=0755 artifacts/prepare-api-explorer.sh /usr/local/bin/prepare-api-explorer
 COPY --chmod=0755 artifacts/verify-runtime-producer.sh /usr/local/bin/verify-runtime-producer
+COPY --chmod=0755 artifacts/verify-machine-driver-bundle.sh /usr/local/bin/verify-machine-driver-bundle
 COPY --chmod=0755 artifacts/verify-host-api-package.sh /usr/local/bin/verify-host-api-package
 COPY --chmod=0755 artifacts/verify-agent-package.sh /usr/local/bin/verify-agent-package.sh
 COPY --from=component_input / /tmp/pasturestack-component-input/
@@ -97,9 +98,9 @@ ARG CATALOG_SERVICE_BINARY_SHA256=948a528987113a2d37f5ee519c4f682e09af4aa10ff64d
 ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=b890cfc7941ad3ba1bde4038c0acde4098fa101512553159d4615e540f8bb659
 ARG CATALOG_SERVICE_LICENSE_SHA256=0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594
 ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
-ARG AUTHENTICATION_SERVICE_VERSION=0.4.45
-ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=cd3d4a81ae694e53f38ab1be761bb0e8d266fd69cc1c19a5e5a9cdcfed04446b
-ARG AUTHENTICATION_SERVICE_BINARY_SHA256=2198ad367405c0f329e85ddb5a882b1568a40eaa002dafa71e772688feb8a25c
+ARG AUTHENTICATION_SERVICE_VERSION=0.4.46
+ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=15950344ac9cc688610eae6d1c023ae6ba66182de675f04445f4c98ced2f19ec
+ARG AUTHENTICATION_SERVICE_BINARY_SHA256=e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192
 ARG WEBSOCKET_PROXY_RELEASE_BASE_URL=https://github.com/PastureStack/websocket-proxy/releases/download
 ARG WEBSOCKET_PROXY_VERSION=0.23.18
 ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=9b1cbb2eac08eafadc4e69aca728ca33787b58923abbf3b585db2aa729f09434
@@ -136,6 +137,12 @@ ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.4
 ARG USAGE_TELEMETRY_AGENT_COMMIT=4ee641bc1273cf582a77609af71d00b72f17b628
 ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866
 ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be
+ARG MACHINE_DRIVER_BUNDLE_RELEASE_BASE_URL=https://github.com/PastureStack/machine-driver-bundle/releases/download
+ARG MACHINE_DRIVER_BUNDLE_VERSION=0.16.5
+ARG MACHINE_DRIVER_BUNDLE_COMMIT=f8d9d86f896ca14a50f3788c2f6a200a1c3b6b21
+ARG MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256=d9f33bcb16f478ceab44da4b185fb1fbadcab4f0f441f259c96a9805a854a28b
+ARG MACHINE_DRIVER_BINARY_SHA256=9d379214de116542cb0e2b1a09c17409fd59fd2b0109428896d81de9cf9c0d31
+ARG PACKET_DRIVER_BINARY_SHA256=b3e5c71928fcebe1bb648f79ebbf38af9ad32d6f6dbb87587e1b92c6c331e100
 
 RUN set -eux; \
     for release_base_url in "${COMPOSE_EXECUTOR_RELEASE_BASE_URL}" "${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL}"; do \
@@ -442,6 +449,11 @@ RUN set -eux; \
         verify-runtime-producer "$component" "$version" "$commit" "/tmp/${artifact}" "$binary_sha" "/out/$component"; \
     done
 
+RUN set -eux; \
+    artifact="machine-driver-bundle-${MACHINE_DRIVER_BUNDLE_VERSION}-linux-amd64.tar.xz"; \
+    fetch-server-component "${COMPONENT_ARTIFACT_MODE}" "${MACHINE_DRIVER_BUNDLE_RELEASE_BASE_URL%/}/v${MACHINE_DRIVER_BUNDLE_VERSION}/${artifact}" "${artifact}" "${MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256}" /out/machine-driver-bundle.tar.xz; \
+    verify-machine-driver-bundle "${MACHINE_DRIVER_BUNDLE_VERSION}" "${MACHINE_DRIVER_BUNDLE_COMMIT}" /out/machine-driver-bundle.tar.xz "${MACHINE_DRIVER_BINARY_SHA256}" "${PACKET_DRIVER_BINARY_SHA256}" /out/machine-driver-bundle
+
 # Assemble verified products in the build stage; retain component-specific legal
 # directories and .real targets so runtime wrappers remain unchanged. Two COPYs
 # replace per-component layers without flattening the multi-stage build.
@@ -457,6 +469,9 @@ RUN set -eux; \
     install -m 0755 /out/host-provisioner/host-provisioner /out/runtime-bin/host-provisioner.real; \
     install -m 0755 /out/secret-delivery-api/secret-delivery-api /out/runtime-bin/secret-delivery-api; \
     install -m 0755 /out/usage-telemetry-agent/usage-telemetry-agent /out/runtime-bin/usage-telemetry-agent; \
+    install -m 0755 /out/machine-driver-bundle/docker-machine /out/runtime-bin/docker-machine; \
+    install -m 0755 /out/machine-driver-bundle/docker-machine-driver-packet /out/runtime-bin/docker-machine-driver-packet; \
+    cp -a /out/machine-driver-bundle/licenses /out/runtime-licenses/machine-driver-bundle; \
     cp -a /out/catalog-service-licenses /out/runtime-licenses/catalog-service; \
     cp -a /out/host-provisioner-licenses /out/runtime-licenses/host-provisioner; \
     cp -a /out/secret-delivery-api-licenses /out/runtime-licenses/secret-delivery-api; \
@@ -471,8 +486,8 @@ RUN set -eux; \
         /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt \
         /out/vsphere-cli-bundle/vsphere-cli-bundle-THIRD-PARTY-NOTICES.txt \
         /out/runtime-licenses/vsphere-cli-bundle/; \
-    test "$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 10; \
-    test "$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 6; \
+    test "$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 12; \
+    test "$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 7; \
     test -z "$(find /out/runtime-bin /out/runtime-licenses -type l -print -quit)"
 
 RUN set -eux; \
@@ -669,10 +684,10 @@ ARG CATALOG_SERVICE_ARCHIVE_SHA256=7c059101265d897e4b176f503a9217b112946d37d91da
 ARG CATALOG_SERVICE_BINARY_SHA256=948a528987113a2d37f5ee519c4f682e09af4aa10ff64d490d9851ba7b633364
 ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=b890cfc7941ad3ba1bde4038c0acde4098fa101512553159d4615e540f8bb659
 ARG CATALOG_SERVICE_LICENSE_SHA256=0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594
-ARG AUTHENTICATION_SERVICE_VERSION=0.4.45
-ARG AUTHENTICATION_SERVICE_COMMIT=2f54018191ffd4ff008c5ad2bfb6d6ace7890b39
-ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=cd3d4a81ae694e53f38ab1be761bb0e8d266fd69cc1c19a5e5a9cdcfed04446b
-ARG AUTHENTICATION_SERVICE_BINARY_SHA256=2198ad367405c0f329e85ddb5a882b1568a40eaa002dafa71e772688feb8a25c
+ARG AUTHENTICATION_SERVICE_VERSION=0.4.46
+ARG AUTHENTICATION_SERVICE_COMMIT=35333ee3e40d9de032c10307ee80113c980be00a
+ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=15950344ac9cc688610eae6d1c023ae6ba66182de675f04445f4c98ced2f19ec
+ARG AUTHENTICATION_SERVICE_BINARY_SHA256=e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192
 ARG WEBSOCKET_PROXY_VERSION=0.23.18
 ARG WEBSOCKET_PROXY_COMMIT=d3f71afb5945b8dedc1b6b80892be6145238cad1
 ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=9b1cbb2eac08eafadc4e69aca728ca33787b58923abbf3b585db2aa729f09434
@@ -703,6 +718,11 @@ ARG VSPHERE_CLI_BUNDLE_VERSION=0.55.4
 ARG VSPHERE_CLI_BUNDLE_COMMIT=35ca999b775a41e7fb34e9a6b6ceb4fa51f3f242
 ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=abec8c22504adde66e2ccd89b7b764c8a643c5e1e4425dafb2964abde75806a0
 ARG GOVC_BINARY_SHA256=8f43086cc85de88a93e510efe9375a1ff6e265ca12e764c1fc8ae4c35be69ded
+ARG MACHINE_DRIVER_BUNDLE_VERSION=0.16.5
+ARG MACHINE_DRIVER_BUNDLE_COMMIT=f8d9d86f896ca14a50f3788c2f6a200a1c3b6b21
+ARG MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256=d9f33bcb16f478ceab44da4b185fb1fbadcab4f0f441f259c96a9805a854a28b
+ARG MACHINE_DRIVER_BINARY_SHA256=9d379214de116542cb0e2b1a09c17409fd59fd2b0109428896d81de9cf9c0d31
+ARG PACKET_DRIVER_BINARY_SHA256=b3e5c71928fcebe1bb648f79ebbf38af9ad32d6f6dbb87587e1b92c6c331e100
 
 COPY --from=runtime_security_packages /out/ /tmp/pasturestack-runtime-security/
 COPY --from=runtime_security_packages /out/tar /usr/bin/tar
@@ -759,14 +779,16 @@ COPY --from=release_artifacts /out/host-api.tar.gz /usr/share/cattle/artifacts/h
 COPY --from=release_artifacts /out/node-agent.tar.gz /usr/share/cattle/artifacts/node-agent-${NODE_AGENT_VERSION}.tar.gz
 COPY --from=release_artifacts /out/node-agent-windows.zip /usr/share/cattle/artifacts/node-agent-${NODE_AGENT_VERSION}-windows-amd64.zip
 COPY --from=release_artifacts /out/per-host-subnet.zip /usr/share/cattle/artifacts/per-host-subnet-${PER_HOST_SUBNET_VERSION}-windows-amd64.zip
+COPY --from=release_artifacts /out/machine-driver-bundle.tar.xz /usr/share/cattle/artifacts/machine-driver-bundle-${MACHINE_DRIVER_BUNDLE_VERSION}-linux-amd64.tar.xz
 COPY --chmod=0755 artifacts/prune-superseded-agent-packages.sh /tmp/prune-superseded-agent-packages.sh
 RUN set -eux; \
     cd /usr/share/cattle/artifacts; \
     ln -sfn "host-api-${HOST_API_VERSION}.tar.gz" host-api.tar.gz; \
     sed -i '/^export \(DEFAULT_\)\?CATTLE_AGENT_PACKAGE_HOST_API_URL=/d' /usr/share/cattle/env_vars; \
     printf 'export DEFAULT_CATTLE_AGENT_PACKAGE_HOST_API_URL=/usr/share/cattle/artifacts/host-api-%s.tar.gz\nexport CATTLE_AGENT_PACKAGE_HOST_API_URL=/usr/share/cattle/artifacts/host-api-%s.tar.gz\n' \
-        "${HOST_API_VERSION}" "${HOST_API_VERSION}" >> /usr/share/cattle/env_vars
-RUN set -eux; \
+        "${HOST_API_VERSION}" "${HOST_API_VERSION}" >> /usr/share/cattle/env_vars; \
+    sed -i '/^export \(DEFAULT_\)\?CATTLE_SERVICE_PACKAGE_DOCKER_MACHINE_URL=/d' /usr/share/cattle/env_vars; \
+    printf 'export DEFAULT_CATTLE_SERVICE_PACKAGE_DOCKER_MACHINE_URL=/usr/share/cattle/artifacts/machine-driver-bundle-%s-linux-amd64.tar.xz,docker-machine\n' "${MACHINE_DRIVER_BUNDLE_VERSION}" >> /usr/share/cattle/env_vars; \
     cd /usr/share/cattle/artifacts; \
     ln -sfn "node-agent-${NODE_AGENT_VERSION}.tar.gz" go-agent.tar.gz; \
     sed -i '/^export \(DEFAULT_\)\?CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL=/d' /usr/share/cattle/env_vars; \
@@ -1164,6 +1186,12 @@ ENV PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT=${AUTHENTICATION_SERVICE_COMMIT}
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_ARCHIVE_SHA256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256}
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_BINARY_SHA256=${AUTHENTICATION_SERVICE_BINARY_SHA256}
 ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.3
+ENV PASTURESTACK_MACHINE_DRIVER_BUNDLE_VERSION=${MACHINE_DRIVER_BUNDLE_VERSION}
+ENV PASTURESTACK_MACHINE_DRIVER_BUNDLE_COMMIT=${MACHINE_DRIVER_BUNDLE_COMMIT}
+ENV PASTURESTACK_MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256=${MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256}
+ENV PASTURESTACK_MACHINE_DRIVER_BINARY_SHA256=${MACHINE_DRIVER_BINARY_SHA256}
+ENV PASTURESTACK_PACKET_DRIVER_BINARY_SHA256=${PACKET_DRIVER_BINARY_SHA256}
+ENV DEFAULT_CATTLE_SERVICE_PACKAGE_DOCKER_MACHINE_URL=/usr/share/cattle/artifacts/machine-driver-bundle-${MACHINE_DRIVER_BUNDLE_VERSION}-linux-amd64.tar.xz,docker-machine
 ENV PASTURESTACK_SYSTEM_SECURITY_SNAPSHOT=20261023T000000Z
 ENV PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.3
 ENV PASTURESTACK_HOST_PROVISIONER_VERSION=${HOST_PROVISIONER_VERSION}

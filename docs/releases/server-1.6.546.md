@@ -1,8 +1,9 @@
-# Server v1.6.546
+# Server v1.6.546 candidate
 
 Security-refresh source candidate. The Server image has not yet been published
 or accepted on the 8080 test installation. This document must not be used as
 runtime acceptance evidence until those results are added.
+Prepared source only; no Server image or release has been published.
 
 ## Verified component inputs
 
@@ -21,6 +22,9 @@ runtime acceptance evidence until those results are added.
   checksums; cross-compiling the Windows package is not Windows-host QA.
 - CLI 0.6.20 preserves its existing command and authorization behavior and
   provides the original CI-tested platform archives through numeric URLs.
+- Machine-driver bundle 0.16.5 replaces the inherited 0.14.0 runtime binary.
+  The original archive, both Go executables and legal metadata are verified;
+  Packet stays retired for new hosts and explicit operator URLs are retained.
 - Temurin 25.0.5+8 and fixed Ubuntu 26.04 packages retain the existing ABI
   and installed-package set. APT security refresh uses private index/cache
   directories so it does not remove source indexes needed by other builds.

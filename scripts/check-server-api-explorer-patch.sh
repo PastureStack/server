@@ -407,6 +407,7 @@ else:
 PY
 python3 scripts/test-published-install-gate.py
 python3 scripts/test-current-server-packaging-contract.py
+python3 scripts/test-machine-driver-producer.py
 python3 scripts/test-cli-download-defaults536.py
 
 require_marker docs/releases/server-1.6.498.md '# Server v1.6.498' \
@@ -819,8 +820,8 @@ for incremental_layout_marker in \
     '/out/runtime-licenses/vsphere-cli-bundle/' \
     'COPY --from=release_artifacts --chmod=0755 /out/runtime-bin/ /usr/bin/' \
     'COPY --from=release_artifacts /out/runtime-licenses/ /usr/share/licenses/pasturestack/' \
-    'test "$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 10;' \
-    'test "$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 6;' \
+    'test "$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 12;' \
+    'test "$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 7;' \
     'test -z "$(find /out/runtime-bin /out/runtime-licenses -type l -print -quit)"'; do
     require_marker "$release_dockerfile" "$incremental_layout_marker" \
         SERVER_INCREMENTAL_RUNTIME_LAYOUT_MISSING
@@ -1141,10 +1142,10 @@ if grep -Eq '9ce9358d91ff002c0b64a8c1efd037b26f43ccbe11508a1446760f3baffcb564|60
 fi
 for release_auth_marker in \
     'ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download' \
-    'ARG AUTHENTICATION_SERVICE_VERSION=0.4.45' \
-    'ARG AUTHENTICATION_SERVICE_COMMIT=2f54018191ffd4ff008c5ad2bfb6d6ace7890b39' \
-    'ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=cd3d4a81ae694e53f38ab1be761bb0e8d266fd69cc1c19a5e5a9cdcfed04446b' \
-    'ARG AUTHENTICATION_SERVICE_BINARY_SHA256=2198ad367405c0f329e85ddb5a882b1568a40eaa002dafa71e772688feb8a25c' \
+    'ARG AUTHENTICATION_SERVICE_VERSION=0.4.46' \
+    'ARG AUTHENTICATION_SERVICE_COMMIT=35333ee3e40d9de032c10307ee80113c980be00a' \
+    'ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=15950344ac9cc688610eae6d1c023ae6ba66182de675f04445f4c98ced2f19ec' \
+    'ARG AUTHENTICATION_SERVICE_BINARY_SHA256=e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192' \
     'Authentication Service archive may not contain links' \
     'install -m 0755 /out/authentication-service/authentication-service /out/runtime-bin/authentication-service.real;' \
     'ENV PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT=${AUTHENTICATION_SERVICE_COMMIT}' \
@@ -1153,14 +1154,14 @@ for release_auth_marker in \
         SERVER_INCREMENTAL_AUTHENTICATION_SERVICE_REPLACEMENT_MISSING
 done
 for release_auth_build_marker in \
-    'authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.45}' \
-    'authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-2f54018191ffd4ff008c5ad2bfb6d6ace7890b39}' \
-    'authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-cd3d4a81ae694e53f38ab1be761bb0e8d266fd69cc1c19a5e5a9cdcfed04446b}' \
-    'authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-2198ad367405c0f329e85ddb5a882b1568a40eaa002dafa71e772688feb8a25c}' \
+    'authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.46}' \
+    'authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-35333ee3e40d9de032c10307ee80113c980be00a}' \
+    'authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-15950344ac9cc688610eae6d1c023ae6ba66182de675f04445f4c98ced2f19ec}' \
+    'authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192}' \
     '--build-arg "AUTHENTICATION_SERVICE_VERSION=${authentication_service_version}"' \
     'PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT="${authentication_service_commit}"' \
-    '2198ad367405c0f329e85ddb5a882b1568a40eaa002dafa71e772688feb8a25c  /usr/bin/authentication-service.real' \
-    '/usr/bin/authentication-service.real --version | grep -F "0.4.45"'; do
+    'e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192  /usr/bin/authentication-service.real' \
+    '/usr/bin/authentication-service.real --version | grep -F "0.4.46"'; do
     require_marker "$build_script" "$release_auth_build_marker" \
         SERVER_INCREMENTAL_AUTHENTICATION_SERVICE_BUILD_GATE_MISSING
 done
@@ -2350,4 +2351,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.546 base=v1.6.460 engine=0.183.354 web_console=1.6.194 catalog_service=0.20.15 webhook_automation_service=0.10.5 authentication_service=0.4.45 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.546 base=v1.6.460 engine=0.183.354 web_console=1.6.194 catalog_service=0.20.15 webhook_automation_service=0.10.5 authentication_service=0.4.46 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'

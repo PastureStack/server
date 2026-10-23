@@ -277,7 +277,8 @@ EXACT_COMPONENT_INPUTS = [
     "\"authentication-service-${authentication_service_version}-linux-amd64.tar.xz|$authentication_service_archive_sha256\"",
     "\"webhook-automation-service-${webhook_automation_service_version}-linux-amd64.tar.xz|$webhook_automation_service_archive_sha256\"",
     "\"compose-executor-${compose_executor_version}-linux-amd64.gz|$compose_executor_archive_sha256\"",
-    "\"vsphere-cli-bundle-${vsphere_cli_bundle_version}-linux-amd64.tar.xz|$vsphere_cli_bundle_archive_sha256\""
+    "\"vsphere-cli-bundle-${vsphere_cli_bundle_version}-linux-amd64.tar.xz|$vsphere_cli_bundle_archive_sha256\"",
+    "\"machine-driver-bundle-${machine_driver_bundle_version}-linux-amd64.tar.xz|$machine_driver_bundle_archive_sha256\""
 ]
 
 
@@ -321,9 +322,21 @@ RUNTIME_BINARIES = [
     [
         "/out/usage-telemetry-agent/usage-telemetry-agent",
         "/out/runtime-bin/usage-telemetry-agent"
+    ],
+    [
+        "/out/machine-driver-bundle/docker-machine",
+        "/out/runtime-bin/docker-machine"
+    ],
+    [
+        "/out/machine-driver-bundle/docker-machine-driver-packet",
+        "/out/runtime-bin/docker-machine-driver-packet"
     ]
 ]
 RUNTIME_LEGAL = [
+    [
+        "/out/machine-driver-bundle/licenses",
+        "/out/runtime-licenses/machine-driver-bundle"
+    ],
     [
         "/out/catalog-service-licenses",
         "/out/runtime-licenses/catalog-service"
@@ -380,8 +393,8 @@ RUNTIME_LAYOUT_MARKERS = [
     "/out/runtime-licenses/vsphere-cli-bundle/",
     "COPY --from=release_artifacts --chmod=0755 /out/runtime-bin/ /usr/bin/",
     "COPY --from=release_artifacts /out/runtime-licenses/ /usr/share/licenses/pasturestack/",
-    "test \"$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)\" -eq 10;",
-    "test \"$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)\" -eq 6;",
+    "test \"$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)\" -eq 12;",
+    "test \"$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)\" -eq 7;",
     "test -z \"$(find /out/runtime-bin /out/runtime-licenses -type l -print -quit)\""
 ]
 
@@ -736,10 +749,10 @@ class Tests(unittest.TestCase):
                        'sha256sum -c /usr/share/pasturestack/security/libdbi-perl-runtime.sha256', 'Unexpected DBI runtime version'):
             self.assertIn(marker, recipe)
 
-    def test_runtime_aggregate_keeps_exact_ten_binaries_six_legal_dirs_and_two_copies(self):
+    def test_runtime_aggregate_keeps_exact_twelve_binaries_seven_legal_dirs_and_two_copies(self):
         verify_runtime_layout(FILES)
-        self.assertEqual(len(RUNTIME_BINARIES), 10)
-        self.assertEqual(len(RUNTIME_LEGAL), 6)
+        self.assertEqual(len(RUNTIME_BINARIES), 12)
+        self.assertEqual(len(RUNTIME_LEGAL), 7)
         for command in (['install -m 0755 ' + ' '.join(row) + ';' for row in RUNTIME_BINARIES]
                         + ['cp -a ' + ' '.join(row) + ';' for row in RUNTIME_LEGAL]):
             normalized = FILES[DOCKER].replace('\\\n', ' ')
@@ -759,11 +772,11 @@ class Tests(unittest.TestCase):
         for marker in (
             'COPY --from=release_artifacts --chmod=0755 /out/runtime-bin/ /usr/bin/',
             'COPY --from=release_artifacts /out/runtime-licenses/ /usr/share/licenses/pasturestack/',
-            'test "$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 10;',
-            'test "$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 6;',
+            'test "$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 12;',
+            'test "$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 7;',
             'test -z "$(find /out/runtime-bin /out/runtime-licenses -type l -print -quit)"',
         ):
-            for replacement in ('# ' + marker, marker.replace('0755', '0644').replace('-eq 10', '-eq 11').replace('-eq 6', '-eq 7'),
+            for replacement in ('# ' + marker, marker.replace('0755', '0644').replace('-eq 12', '-eq 11').replace('-eq 7', '-eq 6'),
                                 marker.rstrip(';') + ' || true;'):
                 if replacement == marker:
                     continue
@@ -776,10 +789,10 @@ class Tests(unittest.TestCase):
     [
         "AUTHENTICATION_SERVICE",
         "authentication_service",
-        "0.4.45",
-        "2f54018191ffd4ff008c5ad2bfb6d6ace7890b39",
-        "cd3d4a81ae694e53f38ab1be761bb0e8d266fd69cc1c19a5e5a9cdcfed04446b",
-        "2198ad367405c0f329e85ddb5a882b1568a40eaa002dafa71e772688feb8a25c"
+        "0.4.46",
+        "35333ee3e40d9de032c10307ee80113c980be00a",
+        "15950344ac9cc688610eae6d1c023ae6ba66182de675f04445f4c98ced2f19ec",
+        "e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192"
     ],
     [
         "WEBSOCKET_PROXY",
@@ -1005,16 +1018,16 @@ class Tests(unittest.TestCase):
                 with self.subTest(coordinate=name, path=path), self.assertRaises(ValueError):
                     verify(broken)
 
-    def test_seventeen_component_inputs_keep_exact_sha_fetch_and_separate_jdk_stage(self):
+    def test_eighteen_component_inputs_keep_exact_sha_fetch_and_separate_jdk_stage(self):
         verify_incremental_contract(FILES)
         block = FILES[BUILD].split('    component_assets=(\n', 1)[1].split('    )', 1)[0]
         self.assertEqual([line.strip() for line in block.splitlines()], EXACT_COMPONENT_INPUTS)
-        self.assertEqual(len(EXACT_COMPONENT_INPUTS), 17)
+        self.assertEqual(len(EXACT_COMPONENT_INPUTS), 18)
         self.assertEqual(len(re.findall(r'^FROM ', FILES[DOCKER], re.M)), 6)
         self.assertIn('FROM scratch AS component_input', FILES[DOCKER])
         final = FILES[DOCKER].rsplit('FROM ${BASE_IMAGE}', 1)[1]
         self.assertLessEqual(len(re.findall(r'^(RUN|COPY|ADD)\b', final, re.M)), 32)
-        self.assertEqual(len(re.findall(r'^\s+fetch-server-component ', FILES[DOCKER], re.M)), 15)
+        self.assertEqual(len(re.findall(r'^\s+fetch-server-component ', FILES[DOCKER], re.M)), 16)
         self.assertIn('"${release_url%/}/v${version}/${artifact}" "${artifact}" "${archive_sha}"', FILES[DOCKER])
         release_stage = FILES[DOCKER].split('FROM ${ARTIFACT_HELPER_IMAGE} AS release_artifacts', 1)[1].split('FROM ${UBUNTU_SECURITY_IMAGE}', 1)[0]
         self.assertNotIn('curl -fsSL', release_stage)
@@ -1539,6 +1552,26 @@ class Tests(unittest.TestCase):
         readme = (REPO / 'README.md').read_text(encoding='utf-8')
         for marker in markers:
             self.assertIn(marker, readme)
+
+    def test_machine_actual_binary_package_and_retired_boundary_are_verified(self):
+        for name, value in (
+            ('MACHINE_DRIVER_BUNDLE_VERSION', '0.16.5'),
+            ('MACHINE_DRIVER_BUNDLE_COMMIT', 'f8d9d86f896ca14a50f3788c2f6a200a1c3b6b21'),
+            ('MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256', 'd9f33bcb16f478ceab44da4b185fb1fbadcab4f0f441f259c96a9805a854a28b'),
+            ('MACHINE_DRIVER_BINARY_SHA256', '9d379214de116542cb0e2b1a09c17409fd59fd2b0109428896d81de9cf9c0d31'),
+            ('PACKET_DRIVER_BINARY_SHA256', 'b3e5c71928fcebe1bb648f79ebbf38af9ad32d6f6dbb87587e1b92c6c331e100'),
+        ):
+            self.assertEqual(2, FILES[DOCKER].count('ARG ' + name + '=' + value))
+            self.assertIn(name.lower() + '=${' + name + ':-' + value + '}', FILES[BUILD])
+            self.assertIn('--build-arg "' + name + '=${' + name.lower() + '}"', FILES[BUILD])
+        helper = (REPO / 'server/artifacts/verify-machine-driver-bundle.sh').read_text(encoding='utf-8')
+        self.assertIn('LC_ALL=C sort "$listing" | cmp "$expected" -', helper)
+        self.assertIn("! grep -Eq '^[^-]' \"$verbose\"", helper)
+        self.assertIn('PACKET_DRIVER_NEW_INSTALL_DEFAULT=false', helper)
+        self.assertIn('preserve-for-rollback', helper)
+        self.assertIn('COPY --from=release_artifacts /out/machine-driver-bundle.tar.xz', FILES[DOCKER])
+        self.assertIn('export DEFAULT_CATTLE_SERVICE_PACKAGE_DOCKER_MACHINE_URL=', FILES[DOCKER])
+        self.assertNotRegex(FILES[DOCKER], r'(?m)^ENV CATTLE_SERVICE_PACKAGE_DOCKER_MACHINE_URL=')
 
     def test_current_readme_status_specific_prose_does_not_block_publication_transition(self):
         common = GATE.split('for current_readme_marker in ', 1)[1].split('; do', 1)[0]

@@ -7,6 +7,7 @@ ROOT_BINARIES = frozenset({
     'catalog-service.real', 'catalog-service-sqlite', 'websocket-proxy.real',
     'host-provisioner.real', 'usage-telemetry-agent', 'compose-executor.real',
     'secret-delivery-api', 'webhook-automation-service', 'govc',
+    'docker-machine', 'docker-machine-driver-packet',
 })
 NESTED_BINARIES = frozenset({
     'host-api-linux-amd64', 'node-agent-linux-amd64',

@@ -22,7 +22,8 @@ See the [546 release note](docs/releases/server-1.6.546.md) and
 [compatibility contract](COMPATIBILITY.md#server-v16546-security-refresh)
 for dependency identities and acceptance boundaries.
 This candidate is not yet available; the last published Server is
-[v1.6.545](https://github.com/PastureStack/server/releases/tag/v1.6.545).
+[v1.6.545](https://github.com/PastureStack/server/releases/tag/v1.6.545)
+([published release evidence](docs/releases/server-1.6.545.md)).
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -51,6 +52,7 @@ Maintained CLI `0.6.20` propagates rejected requests as nonzero errors. Legacy `
 Public GHCR downloads do not require a registry login. Keep all three named volumes.
 The examples below use the candidate numeric `v1.6.546` tag;
 run them only after its official release.
+This candidate is not yet available from GHCR.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
