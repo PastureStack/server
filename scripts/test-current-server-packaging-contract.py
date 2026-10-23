@@ -951,12 +951,12 @@ class Tests(unittest.TestCase):
 
     def test_current_host_node_coordinates_match_official_original_bytes(self):
         coordinates = {
-            'HOST_API_VERSION': '0.38.7',
+            'HOST_API_VERSION': '0.38.8',
             'HOST_API_RELEASE_TAG': 'v0.38.7',
-            'HOST_API_COMMIT': 'cd2a8d2b5e37f1b79a4b487760db5f3f7b3f818b',
-            'HOST_API_PACKAGE_ID': 'cd2a8d2b5e37f1b79a4b487760db5f3f',
-            'HOST_API_ARCHIVE_SHA256': 'f0e0033da7661d1444b73e2dc43f8b5c5dad6c9169ff2d19c1dcb6aa1c4435d9',
-            'HOST_API_BINARY_SHA256': '8dc40eb10807e56679c087a1a0b458a49acd545715c4f04e2bcb90a5d5538d5f',
+            'HOST_API_COMMIT': '4810ffbb4499c24d9f7066d64de3203f9a6771e4',
+            'HOST_API_PACKAGE_ID': '4810ffbb4499c24d9f7066d64de3203f',
+            'HOST_API_ARCHIVE_SHA256': '6903ffb6a618f5a9bc8c7c8997a1e0419c93a8bbdeaee6d288957366dccef444',
+            'HOST_API_BINARY_SHA256': '85fceccc5e2724aa896560392123fc8927786915b03f6d42eb688e151a402b8a',
             'HOST_API_APPLY_SHA256': '8a21f63099832afb571755011bbcf8d97710994a50c419b20700cbc31efced0f',
             'NODE_AGENT_VERSION': '0.13.31',
             'NODE_AGENT_COMMIT': '68ae58d886621540208b98378ed517b3525244e0',
