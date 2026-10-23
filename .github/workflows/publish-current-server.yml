@@ -67,6 +67,7 @@ jobs:
           git -C source checkout --detach "$SOURCE_SHA"
           test "$(git -C source rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git -C source status --short)"
+          python3 source/server/security/test_scan_coverage.py
 
           declared_release="$(sed -n 's/^ARG SERVER_RELEASE_TAG=//p' \
             source/server/Dockerfile.web-compose-release | sort -u)"
@@ -437,7 +438,7 @@ jobs:
             -v "$RUNNER_TEMP/server-nested-payloads:/payloads:ro" \
             -v "$evidence:/evidence" \
             -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
-            "$TRIVY_IMAGE" rootfs --scanners vuln,secret --format json \
+            "$TRIVY_IMAGE" rootfs --scanners vuln,secret --list-all-pkgs --format json \
             --output /evidence/server-nested-scan-raw.json /payloads
           jq -e '.SchemaVersion == 2 and ([.Results[]? | select(.Type == "gobinary")] | length) == 4
             and ([.Results[]? | select(.Type == "gobinary") | .Target | split("/") | last] | sort)
@@ -462,12 +463,16 @@ jobs:
             -v "$evidence:/evidence" \
             -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
             "$TRIVY_IMAGE" rootfs \
-            --scanners vuln,secret \
+            --scanners vuln,secret --list-all-pkgs \
             --format json \
             --output /evidence/server-security-scan-raw.json \
             /rootfs
           jq -e '.SchemaVersion == 2 and (.Results | type == "array")' \
             "$evidence/server-security-scan-raw.json" >/dev/null
+          (
+            cd "$evidence"
+            python3 "$GITHUB_WORKSPACE/source/server/security/check_scan_coverage.py"
+          ) | tee "$evidence/server-go-scan-coverage.txt"
           jq -r '
             .Results[]? | .Target as $target | .Vulnerabilities[]?
             | [.Severity, .VulnerabilityID, .PkgName, .InstalledVersion,
