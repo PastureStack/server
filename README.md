@@ -13,15 +13,18 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-Server [`v1.6.547`](https://github.com/PastureStack/server/releases/tag/v1.6.547) is published.
-It retains the security refresh and uses Catalog `v0.3.15` with Network Plugin
-Manager `v0.8.24` to preserve Server ownership of Metadata/DNS replacement.
+Server [`v1.6.548`](https://github.com/PastureStack/server/releases/tag/v1.6.548) is published.
+It retains the security refresh and uses Catalog `v0.3.16` with Network Plugin
+Manager `v0.8.25` and Metadata Service `v0.10.6` for CNI provider handoff and
+opaque metadata change-token preservation during infrastructure upgrades.
 Authentication, API Key authorization and host registration contracts remain unchanged.
 Engine `v0.183.354`, Web Console `1.6.194`, Host API `0.38.8`,
 WebSocket Proxy `0.23.18`, and Temurin `25.0.5+8` are verified component inputs.
-See the [547 release note](docs/releases/server-1.6.547.md) and
-[compatibility contract](COMPATIBILITY.md#server-v16547-network-lifecycle)
+See the [548 release note](docs/releases/server-1.6.548.md) and
+[compatibility contract](COMPATIBILITY.md#server-v16548-provider-watch)
 for dependency identities and acceptance boundaries.
+Scoped infrastructure upgrades, browser checks and controlled Server restarts
+passed; this is not a complete feature-matrix claim.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -48,14 +51,14 @@ Maintained CLI `0.6.20` propagates rejected requests as nonzero errors. Legacy `
 ## Quick start
 
 Public GHCR downloads do not require a registry login. Keep all three named volumes.
-The examples below use the published numeric `v1.6.547` tag.
+The examples below use the published numeric `v1.6.548` tag.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.547
+  ghcr.io/pasturestack/server:v1.6.548
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -63,7 +66,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.547
+    image: ghcr.io/pasturestack/server:v1.6.548
     restart: unless-stopped
     ports:
       - "8080:8080"

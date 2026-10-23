@@ -1,8 +1,18 @@
-# Server v1.6.548 candidate
+# Server v1.6.548
 
-This is a source candidate. No Server v1.6.548 image has been published or
-accepted on the QA deployment yet. Use the published release documented in
-the README until this candidate passes the required release checks.
+Published from producer `62dddd5269e2f4b9b8925e424f55359146c786ae` via
+[publisher 40018625225](https://github.com/PastureStack/server/actions/runs/40018625225).
+All 26 immutable release assets and their SHA-256 checksums passed anonymous
+readback. Image provenance and SBOM attestations were independently verified
+against the same source, workflow and published digest.
+
+Published image identity:
+`ghcr.io/pasturestack/server:v1.6.548@sha256:a20b7f32d53152a7be11b28ff0c081679e42161e3142718424a3bcabfab115be`.
+The distinct OCI config is
+`sha256:58c9ac3c9d9002a0a02aac683caf5d7544d239930b55da5fd41ac18c5b7201b7`.
+This linux/amd64 image has one runtime layer. Installation commands use the
+numeric `ghcr.io/pasturestack/server:v1.6.548` tag; the full identity above is
+for verification and traceability. Publication is not real-host acceptance.
 
 ## Verified component inputs
 
@@ -40,20 +50,54 @@ upgrade exposed the separate provider-event/retry defect. That failed attempt
 and its normal Stack rollback are retained as QA evidence, not counted as a
 successful upgrade.
 
-## Required acceptance
+## Security evidence
 
-- Confirm the published Network Plugin Manager source, image digest and required
-  checks, and the corresponding Metadata Service identity, before pinning the
-  new Catalog commit.
-- Complete Network Services and IPsec upgrades on the QA hosts through normal
-  platform actions. Verify provider selection, final service health, DNS,
-  container egress, cross-host traffic, version-watch updates and unchanged
-  workload data. Verify replacement endpoint discovery and health reporting
-  on both hosts, not only steady-state traffic to old containers.
-- Verify OIDC/TOTP, API access and a newly opened WebSocket before and after one
-  controlled restart of the QA Server.
-- Retain existing Compose settings, volumes, AppArmor and the previous Server
-  rollback container. Company production is outside this change.
+The complete runtime gate retains 51 raw findings. After exact existing VEX
+dispositions, 29 officially unfixed LOW/MEDIUM package occurrences across 18
+CVEs remain tracked. HIGH/CRITICAL, fixed-available, untracked findings and
+detected secrets are zero. These exact dispositions are not a claim of zero
+vulnerabilities or a substitute for deployment acceptance.
+
+## Upgrade, rollback and acceptance
+
+The exact published image passed a controlled first start and health check.
+Operator environment variables, HostConfig, volumes and AppArmor were
+preserved, with the v1.6.547 rollback container and verified database backup
+retained.
+
+Seven infrastructure stacks completed normal platform upgrades in this run;
+the unchanged eighth Policy stack retained its previously accepted upgrade and
+passed a fresh readback. Aggregate acceptance covered eight stacks, eleven
+services and fourteen image launches, with no unfinished selected Stack or
+Service processes. The CNI wrapper selects the running v0.14.40
+provider. Bidirectional traffic between the new overlay endpoints, internal
+DNS, strict TLS, IPsec security associations and new health-check endpoints
+passed. Metadata passed coherent dated/latest reads and two real change-token
+notifications. All three original Hosts and Agents, application settings,
+data, mounts and both reviewed image database settings were preserved.
+
+Chrome 155.0.8059.41 passed OIDC/TOTP login, seven authenticated JSON API reads
+(HTTP 200), refresh, three active Hosts and Agents, and the same browser cookie
+across a real Server restart. A new WebSocket received a post-restart frame;
+the passive browser checks issued no DELETE requests.
+
+Two controlled same-version Server restarts returned healthy with configuration
+preserved. The first restart is retained separately; a test-harness stdin
+handoff issue required the second restart to complete the same-session browser
+proof. Five transient WebSocket handshake 502 responses occurred during
+controlled downtime. Normal before/after browser, API and request-failure
+checks were clean; this is not a claim that every log entry was error-free.
+The original workload primary, sidekick, volume and data marker were unchanged
+after restart. This is scoped acceptance, not a complete feature matrix or a
+production deployment.
+
+Managers older than v0.8.24 retain their destructive Metadata/DNS reaper. Merely
+recreating the Server does not upgrade existing infrastructure services.
+Follow the [normal Catalog upgrade procedure](../upgrades/README.md), verify
+the replacement providers and Metadata watch behavior, and finish or roll back
+through platform actions rather than deleting dependency containers manually.
+Preserve custom Catalog/agent overrides and matching database/volume backups;
+after a data migration, selecting an older image alone may not be a safe rollback.
 
 Do not infer deployment acceptance from component or Server publication.
 Upgrade through the normal platform actions and retain a verified rollback
