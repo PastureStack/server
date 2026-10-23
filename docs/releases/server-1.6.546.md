@@ -25,7 +25,7 @@ runtime acceptance evidence until those results are added.
 Existing OIDC, MFA, API Key, service-upgrade and permission contracts are not
 changed. The publisher must pass the normal source, CodeQL, artifact,
 security, startup and restart checks before publication. QA then verifies the
-exact image on 10.0.0.125:8080, including login, authenticated APIs, WebSocket,
+exact image on the isolated QA deployment, including login, authenticated APIs, WebSocket,
 host/agent connectivity and retained workload data. Unrelated previously
 accepted features are not represented as newly retested.
 
@@ -41,4 +41,4 @@ variables, restart policy, AppArmor profile, HTTPS origin, OIDC settings and
 the host's selected firewall backend. Back up the database before cutover and
 keep the previously accepted v1.6.545 image/container. Do not run
 `docker compose down -v`. Restore matching data if a rollback requires it.
-No production stack.ascdc.tw configuration or data is changed by this QA.
+No production configuration or data is changed by this QA.
