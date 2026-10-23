@@ -91,6 +91,7 @@ with tempfile.TemporaryDirectory(prefix="agent-tls-") as name:
         "-keyout", str(key), "-out", str(cert),
     ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     server_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    server_context.minimum_version = ssl.TLSVersion.TLSv1_2
     server_context.load_cert_chain(cert, key)
     with fixture_server(server_context) as server:
         port = server.server_address[1]
