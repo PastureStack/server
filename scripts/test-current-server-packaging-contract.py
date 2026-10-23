@@ -1050,7 +1050,7 @@ class Tests(unittest.TestCase):
             'test "$(printf \'%s\\n\' "$metadata" | awk \'NR==1 {print $2}\')" = go1.27.3',
             "'CGO_ENABLED=0' 'GOOS=linux' 'GOARCH=amd64' 'GOAMD64=v1'",
             'test ! -s "$duplicates"',
-            "! grep -Eq '^[lh]' \"$verbose\"",
+            "if grep -Eq '^[lh]' \"$verbose\"; then",
             'tar --no-same-owner --no-same-permissions --strip-components=1 -xJf "$archive"',
             '[[ "$output" == "/out/$type" && ! -e "$output" ]]',
             'grep -Fx "Release source commit: $commit"',
@@ -1566,11 +1566,12 @@ class Tests(unittest.TestCase):
             self.assertIn('--build-arg "' + name + '=${' + name.lower() + '}"', FILES[BUILD])
         helper = (REPO / 'server/artifacts/verify-machine-driver-bundle.sh').read_text(encoding='utf-8')
         self.assertIn('LC_ALL=C sort "$listing" | cmp "$expected" -', helper)
-        self.assertIn("! grep -Eq '^[^-]' \"$verbose\"", helper)
+        self.assertIn("if grep -Eq '^[^-]' \"$verbose\"; then", helper)
         self.assertIn('PACKET_DRIVER_NEW_INSTALL_DEFAULT=false', helper)
         self.assertIn('preserve-for-rollback', helper)
         self.assertIn('COPY --from=release_artifacts /out/machine-driver-bundle.tar.xz', FILES[DOCKER])
-        self.assertIn('export DEFAULT_CATTLE_SERVICE_PACKAGE_DOCKER_MACHINE_URL=', FILES[DOCKER])
+        self.assertIn('ENV DEFAULT_CATTLE_SERVICE_PACKAGE_DOCKER_MACHINE_URL=', FILES[DOCKER])
+        self.assertNotIn("printf 'export DEFAULT_CATTLE_SERVICE_PACKAGE_DOCKER_MACHINE_URL=", FILES[DOCKER])
         self.assertNotRegex(FILES[DOCKER], r'(?m)^ENV CATTLE_SERVICE_PACKAGE_DOCKER_MACHINE_URL=')
 
     def test_current_readme_status_specific_prose_does_not_block_publication_transition(self):

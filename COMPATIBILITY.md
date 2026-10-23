@@ -1,5 +1,7 @@
 # Compatibility Contract
 
+<a id="server-v16546-security-refresh"></a>
+
 ## Server v1.6.546 prepared, not published
 
 This source candidate consumes independently verified security releases.

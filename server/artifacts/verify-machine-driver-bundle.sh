@@ -18,7 +18,10 @@ printf '%s\n' docker-machine docker-machine-driver-packet \
 # Exact members reject traversal, absolute paths, duplicates and extra payloads.
 LC_ALL=C sort "$listing" | cmp "$expected" -
 tar -tvJf "$archive" > "$verbose"
-! grep -Eq '^[^-]' "$verbose"
+if grep -Eq '^[^-]' "$verbose"; then
+    echo 'Machine bundle permits regular files only' >&2
+    exit 1
+fi
 mkdir -p "$output"
 tar --no-same-owner --no-same-permissions -xJf "$archive" -C "$output"
 printf '%s  %s\n' "$machine_sha" "$output/docker-machine" "$packet_sha" "$output/docker-machine-driver-packet" | sha256sum -c -

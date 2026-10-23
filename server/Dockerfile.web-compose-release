@@ -788,7 +788,6 @@ RUN set -eux; \
     printf 'export DEFAULT_CATTLE_AGENT_PACKAGE_HOST_API_URL=/usr/share/cattle/artifacts/host-api-%s.tar.gz\nexport CATTLE_AGENT_PACKAGE_HOST_API_URL=/usr/share/cattle/artifacts/host-api-%s.tar.gz\n' \
         "${HOST_API_VERSION}" "${HOST_API_VERSION}" >> /usr/share/cattle/env_vars; \
     sed -i '/^export \(DEFAULT_\)\?CATTLE_SERVICE_PACKAGE_DOCKER_MACHINE_URL=/d' /usr/share/cattle/env_vars; \
-    printf 'export DEFAULT_CATTLE_SERVICE_PACKAGE_DOCKER_MACHINE_URL=/usr/share/cattle/artifacts/machine-driver-bundle-%s-linux-amd64.tar.xz,docker-machine\n' "${MACHINE_DRIVER_BUNDLE_VERSION}" >> /usr/share/cattle/env_vars; \
     cd /usr/share/cattle/artifacts; \
     ln -sfn "node-agent-${NODE_AGENT_VERSION}.tar.gz" go-agent.tar.gz; \
     sed -i '/^export \(DEFAULT_\)\?CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL=/d' /usr/share/cattle/env_vars; \

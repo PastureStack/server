@@ -14,7 +14,7 @@ Prepared source only; no Server image or release has been published.
 - Web Console 1.6.194 and API Explorer v1.1.20 retain their UI/API behavior
   while refreshing fixed tooling and dependencies. Original published bytes
   are used, not locally rebuilt substitutes.
-- Host API 0.38.8, WebSocket Proxy 0.23.18, authentication service 0.4.45,
+- Host API 0.38.8, WebSocket Proxy 0.23.18, authentication service 0.4.46,
   host provisioner 0.39.10, telemetry 0.4.4, catalog service 0.20.15 and
   compose executor 0.14.39 use exact published archives and binary checksums.
 - Node Agent 0.13.32 includes the matching Host API 0.38.8 supervisor

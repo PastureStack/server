@@ -11,11 +11,17 @@ verbose=$(mktemp /tmp/runtime-producer-verbose.XXXXXXXX)
 duplicates=$(mktemp /tmp/runtime-producer-duplicates.XXXXXXXX)
 trap 'rm -f -- "$listing" "$expected" "$verbose" "$duplicates"' EXIT
 tar -tJf "$archive" > "$listing"
-! grep -Eq '(^/|(^|/)\.\.(/|$))' "$listing"
+if grep -Eq '(^/|(^|/)\.\.(/|$))' "$listing"; then
+    echo 'Unsafe runtime producer archive path' >&2
+    exit 1
+fi
 sort "$listing" | uniq -d > "$duplicates"
 test ! -s "$duplicates"
 tar -tvJf "$archive" > "$verbose"
-! grep -Eq '^[lh]' "$verbose"
+if grep -Eq '^[lh]' "$verbose"; then
+    echo 'Runtime producer archive may not contain links' >&2
+    exit 1
+fi
 case "$type" in
     host-provisioner)
         package_root="host-provisioner-${version}-linux-amd64"

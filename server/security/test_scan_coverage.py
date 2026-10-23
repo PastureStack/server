@@ -22,6 +22,13 @@ class CoverageTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Missing active'):
             validate_coverage(report, ROOT_BINARIES)
 
+    def test_machine_and_packet_payloads_cannot_escape_scanning(self):
+        machines = {'docker-machine', 'docker-machine-driver-packet'}
+        self.assertTrue(machines.issubset(ROOT_BINARIES))
+        for missing in machines:
+            with self.subTest(missing=missing), self.assertRaisesRegex(ValueError, 'Missing active'):
+                validate_coverage(self.fixture(ROOT_BINARIES - {missing}), ROOT_BINARIES)
+
     def test_empty_or_missing_packages_blocks(self):
         for packages in (None, [], {}):
             report = self.fixture(NESTED_BINARIES)

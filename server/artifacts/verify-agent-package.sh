@@ -10,10 +10,16 @@ test -s "$archive" && test ! -L "$archive"
 scratch=$(mktemp -d)
 trap 'rm -rf -- "$scratch"' EXIT
 tar -tzf "$archive" >"$scratch/listing"
-! grep -Eq '(^/|(^|/)\.\.(/|$))' "$scratch/listing"
+if grep -Eq '(^/|(^|/)\.\.(/|$))' "$scratch/listing"; then
+    echo 'Unsafe agent archive path' >&2
+    exit 1
+fi
 test -z "$(LC_ALL=C sort "$scratch/listing" | uniq -d)"
 tar -tvzf "$archive" >"$scratch/verbose"
-! grep -Eq '^[lh]' "$scratch/verbose"
+if grep -Eq '^[lh]' "$scratch/verbose"; then
+    echo 'Agent archive may not contain links' >&2
+    exit 1
+fi
 while IFS= read -r member; do
     case "$member" in "$root/"|"$root/"*) ;; *) echo 'Unexpected agent package root' >&2; exit 1 ;; esac
 done <"$scratch/listing"
