@@ -16,4 +16,4 @@ trap cleanup EXIT
 cp Dockerfile control_plane_url.py register.py resolve_url.py run.sh loglevel "$tmpdir"/
 
 echo Building $IMAGE
-docker build -t "${IMAGE}" "$tmpdir"
+docker build --build-arg "VCS_REF=$(git rev-parse HEAD)" -t "${IMAGE}" "$tmpdir"
