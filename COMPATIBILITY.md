@@ -2,9 +2,9 @@
 
 <a id="server-v16546-security-refresh"></a>
 
-## Server v1.6.546 prepared, not published
+## Server v1.6.546 published
 
-This source candidate consumes independently verified security releases.
+This release consumes independently verified security releases.
 It keeps the existing authentication, authorization, registration, storage,
 service-upgrade and API contracts. Ubuntu packages stay on the installed
 26.04 series; host Docker daemons and firewall backends are not changed.
@@ -23,6 +23,18 @@ Tracking an unfixed LOW/MEDIUM finding does not mean it is fixed or risk-free.
 HIGH/CRITICAL, available fixes, unregistered findings and secrets remain
 release blockers. Existing operator environment variables and named volumes
 must be preserved. See [release details](docs/releases/server-1.6.546.md).
+
+Official producer `c1b4b335f77f8faaae8239af9e8d5a8189ce07b8` passed
+[publisher 40000369416](https://github.com/PastureStack/server/actions/runs/40000369416).
+All 26 immutable release assets, the anonymous registry readback, and the
+provenance/SBOM attestations were verified. The one-layer linux/amd64 image
+manifest is `sha256:7b29b87ab40f427c2a6a5909330dd859745e9f0780166658ffd0556b6f0873d2`;
+its distinct OCI config is
+`sha256:22fbb5fe50be0317a25571b8d0ac4d1782a0bfae9959d0b72666ed8ca897f2ca`.
+The complete gate reports 51 raw findings and 29 tracked, officially unfixed
+LOW/MEDIUM occurrences across 18 CVEs, due for review on 2026-10-27.
+HIGH/CRITICAL, fixed-available, untracked findings and secrets are zero;
+this is not a zero-vulnerability claim.
 
 The internal compose executor is updated to 0.14.39. That release does not
 publish three-platform legacy Compose CLI downloads. The optional

@@ -11,9 +11,9 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current source candidate
+## Current release
 
-Server `v1.6.546` is a prepared source candidate, not a published image.
+Server [`v1.6.546`](https://github.com/PastureStack/server/releases/tag/v1.6.546) is published.
 It updates maintained security dependencies while preserving authentication,
 API Key authorization, host registration and service-upgrade behavior.
 Engine `v0.183.354`, Web Console `1.6.194`, Host API `0.38.8`,
@@ -21,9 +21,6 @@ WebSocket Proxy `0.23.18`, and Temurin `25.0.5+8` are verified component inputs.
 See the [546 release note](docs/releases/server-1.6.546.md) and
 [compatibility contract](COMPATIBILITY.md#server-v16546-security-refresh)
 for dependency identities and acceptance boundaries.
-This candidate is not yet available; the last published Server is
-[v1.6.545](https://github.com/PastureStack/server/releases/tag/v1.6.545)
-([published release evidence](docs/releases/server-1.6.545.md)).
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -50,9 +47,7 @@ Maintained CLI `0.6.20` propagates rejected requests as nonzero errors. Legacy `
 ## Quick start
 
 Public GHCR downloads do not require a registry login. Keep all three named volumes.
-The examples below use the candidate numeric `v1.6.546` tag;
-run them only after its official release.
-This candidate is not yet available from GHCR.
+The examples below use the published numeric `v1.6.546` tag.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \

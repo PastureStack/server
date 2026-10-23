@@ -1,9 +1,18 @@
-# Server v1.6.546 candidate
+# Server v1.6.546
 
-Security-refresh source candidate. The Server image has not yet been published
-or accepted on the 8080 test installation. This document must not be used as
-runtime acceptance evidence until those results are added.
-Prepared source only; no Server image or release has been published.
+Published security refresh from producer
+`c1b4b335f77f8faaae8239af9e8d5a8189ce07b8` via
+[publisher 40000369416](https://github.com/PastureStack/server/actions/runs/40000369416).
+The immutable release contains 26 assets with verified SHA-256 checksums;
+anonymous registry and asset readback, provenance and SBOM attestations passed.
+
+- Manifest: `sha256:7b29b87ab40f427c2a6a5909330dd859745e9f0780166658ffd0556b6f0873d2`.
+- OCI config: `sha256:22fbb5fe50be0317a25571b8d0ac4d1782a0bfae9959d0b72666ed8ca897f2ca`.
+- Platform: linux/amd64; one runtime layer. The maintained multi-stage build
+  and component verification are retained.
+
+Install with `ghcr.io/pasturestack/server:v1.6.546`; the digests above identify
+the artifact, not a replacement for the numeric-tag installation examples.
 
 ## Verified component inputs
 
@@ -45,11 +54,13 @@ Prepared source only; no Server image or release has been published.
 ## Compatibility and evidence
 
 Existing OIDC, MFA, API Key, service-upgrade and permission contracts are not
-changed. The publisher must pass the normal source, CodeQL, artifact,
-security, startup and restart checks before publication. QA then verifies the
-exact image on the isolated QA deployment, including login, authenticated APIs, WebSocket,
-host/agent connectivity and retained workload data. Unrelated previously
-accepted features are not represented as newly retested.
+changed. The publisher passed normal source, CodeQL, artifact,
+security, startup and restart checks. Deployment to the isolated QA installation
+preserved the existing environment overrides, HostConfig, persistent mounts,
+AppArmor and previous rollback container. The running zlib backport's bytes,
+MariaDB linkage and a read-only compression roundtrip were verified. Existing
+primary/sidekick identities and volume content remained intact.
+Unrelated previously accepted features are not represented as newly retested.
 
 Raw scans and SBOMs remain separate from vulnerability dispositions. An
 officially unfixed LOW/MEDIUM finding is tracked against its exact artifact,
@@ -59,6 +70,13 @@ The OpenPGP module advisory retains the independently reviewed component
 dispositions. Before applying them, the publisher verifies each affected
 executable path, module version and exact binary SHA256; a new or changed
 consumer cannot inherit the exception just by using the same module version.
+
+The complete artifact gate retained 51 raw occurrences. After exact existing
+VEX dispositions, 29 officially unfixed LOW/MEDIUM occurrences across 18 CVEs
+remain tracked for review by 2026-10-27. There are no HIGH/CRITICAL,
+fixed-available or unregistered findings, or detected secrets. No severity or
+release check was bypassed; seven rejected publisher attempts produced no
+release and remain historical evidence.
 
 ## Upgrade and rollback
 
