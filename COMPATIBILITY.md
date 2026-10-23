@@ -31,6 +31,9 @@ provenance/SBOM attestations were verified. The one-layer linux/amd64 image
 manifest is `sha256:7b29b87ab40f427c2a6a5909330dd859745e9f0780166658ffd0556b6f0873d2`;
 its distinct OCI config is
 `sha256:22fbb5fe50be0317a25571b8d0ac4d1782a0bfae9959d0b72666ed8ca897f2ca`.
+The published image identity is
+`ghcr.io/pasturestack/server:v1.6.546@sha256:7b29b87ab40f427c2a6a5909330dd859745e9f0780166658ffd0556b6f0873d2`;
+installation examples keep the numeric tag without a digest suffix.
 The complete gate reports 51 raw findings and 29 tracked, officially unfixed
 LOW/MEDIUM occurrences across 18 CVEs, due for review on 2026-10-27.
 HIGH/CRITICAL, fixed-available, untracked findings and secrets are zero;

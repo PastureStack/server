@@ -58,6 +58,11 @@ jobs:
             "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"
           test "$(git rev-parse HEAD)" = "$EVENT_SHA"
 
+      - name: Verify current published installation documentation
+        if: matrix.language == 'python'
+        shell: bash
+        run: python3 scripts/test-published-install-gate.py
+
       - name: Set up the production Go compiler
         if: matrix.language == 'go'
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
