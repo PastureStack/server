@@ -71,7 +71,7 @@ check 'MariaDB startup verifies live readback' \
     has_marker server/artifacts/mysql.sh 'verify_mariadb_performance_settings'
 check 'incremental release image installs the canonical scripts' \
     has_marker server/Dockerfile.web-compose-release \
-        'COPY --chmod=0755 artifacts/cattle.sh artifacts/mysql.sh artifacts/performance-env.sh /usr/share/cattle/'
+        'COPY --chmod=0755 artifacts/cattle.sh artifacts/mysql.sh artifacts/performance-env.sh artifacts/verify-engine-archive.sh /usr/share/cattle/'
 check 'external-DB image keeps the Java helper dependency' \
     has_marker server/Dockerfile.externaldb \
         'COPY --chmod=0755 artifacts/cattle.sh artifacts/performance-env.sh /usr/share/cattle/'
