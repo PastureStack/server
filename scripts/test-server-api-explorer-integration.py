@@ -7,6 +7,7 @@ import importlib.util
 import io
 import json
 from pathlib import Path
+import re
 import subprocess
 import tarfile
 import tempfile
@@ -14,7 +15,18 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 PREPARE = ROOT / 'server/artifacts/prepare-api-explorer.sh'
-COMMIT = 'dda3fe8a806d9736de771d325e3ca98ab4067cd2'
+RECIPE = (ROOT / 'server/Dockerfile.web-compose-release').read_text()
+
+
+def pin(name):
+    matches = sorted(set(re.findall(r'^ARG ' + name + r'=(\S+)$', RECIPE, re.MULTILINE)))
+    if len(matches) != 1:
+        raise ValueError('Expected one current recipe pin: ' + name)
+    return matches[0]
+
+
+VERSION = pin('API_EXPLORER_RELEASE_TAG').removeprefix('v')
+COMMIT = pin('API_EXPLORER_COMMIT')
 COPY = 'COPY --from=release_artifacts /out/api-explorer/ /tmp/pasturestack-api-ui/'
 SPEC = importlib.util.spec_from_file_location('packaging', ROOT / 'scripts/test-current-server-packaging-contract.py')
 PACKAGING = importlib.util.module_from_spec(SPEC)
@@ -23,7 +35,7 @@ SPEC.loader.exec_module(PACKAGING)
 
 def product():
     files = {
-        'version.json': json.dumps({'version': '1.1.19', 'commit': COMMIT[:7]}).encode(),
+        'version.json': json.dumps({'version': VERSION, 'commit': COMMIT[:7]}).encode(),
         'ui.js': b'handlebars v4.7.10 PastureStackUi pasturestack:modal:shown pasturestack:modal:hidden data-pasturestack-toggle',
         'ui.min.js': b'fixture-minified-runtime',
         'ui.css': b'Bootstrap v5.3.8 url("./fonts/bootstrap-icons.woff2")',
@@ -65,7 +77,7 @@ def archive(destination, files, mutate=None):
 
 
 class ExplorerIntegration(unittest.TestCase):
-    def run_product(self, files=None, mutate=None, existing=False):
+    def run_product(self, files=None, mutate=None, existing=False, expected_version=VERSION):
         with tempfile.TemporaryDirectory(prefix='server-api-install-') as temporary:
             directory = Path(temporary)
             artifact = directory / 'api.tar.gz'
@@ -73,7 +85,7 @@ class ExplorerIntegration(unittest.TestCase):
             if existing:
                 (directory / 'out').mkdir()
                 (directory / 'out/preserve').write_text('existing-output')
-            result = subprocess.run(['bash', str(PREPARE), str(artifact), '1.1.19', COMMIT, str(directory / 'out')],
+            result = subprocess.run(['bash', str(PREPARE), str(artifact), expected_version, COMMIT, str(directory / 'out')],
                                     text=True, capture_output=True)
             self.assertFalse((directory.parent / 'escaped-api-member').exists())
             if existing:
@@ -83,15 +95,20 @@ class ExplorerIntegration(unittest.TestCase):
     def test_valid_product_and_all_licenses_install(self):
         result = self.run_product()
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-        self.assertIn('SERVER_API_EXPLORER_PRODUCT_OK version=1.1.19', result.stdout)
+        self.assertIn('SERVER_API_EXPLORER_PRODUCT_OK version=' + VERSION, result.stdout)
+
+    def test_invalid_requested_version_is_rejected(self):
+        for version in ('', '../1.1.20', 'latest', VERSION + '-unverified'):
+            with self.subTest(version=version):
+                self.assertNotEqual(0, self.run_product(expected_version=version).returncode)
 
     def test_existing_output_is_never_overwritten(self):
         self.assertNotEqual(0, self.run_product(existing=True).returncode)
 
     def test_stale_version_commit_runtime_and_missing_legal_rejected(self):
         mutations = (
-            ('old-version', 'version.json', b'{"version":"1.1.18","commit":"dda3fe8"}'),
-            ('old-commit', 'version.json', b'{"version":"1.1.19","commit":"3b1c39e"}'),
+            ('old-version', 'version.json', json.dumps({'version': '1.1.19', 'commit': COMMIT[:7]}).encode()),
+            ('old-commit', 'version.json', json.dumps({'version': VERSION, 'commit': '3b1c39e'}).encode()),
             ('old-runtime', 'ui.js', product()['ui.js'].replace(b'4.7.10', b'4.7.9')),
             ('missing-license', 'licenses/handlebars-4.7.10/LICENSE', None),
             ('empty-license', 'licenses/LICENSE.txt', b''),
