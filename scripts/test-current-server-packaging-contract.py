@@ -49,11 +49,11 @@ OLD_COORDINATES = {
 # Published521 component values remain mutation controls.
 # Component coordinates do not establish Server545 artifact/runtime PASS.
 CATALOG_FIELDS = (
-    ('VERSION', 'version', '0.20.14'),
-    ('COMMIT', 'commit', '9b0c0f40dc81eb83673df85f3de96f7e6f89b985'),
-    ('ARCHIVE_SHA256', 'archive_sha256', '00380a63e1f95b3d9a1dfb8e2fb3f038d876d7decb0ae5c7798ea1b7d8dc54b6'),
-    ('BINARY_SHA256', 'binary_sha256', '86f2bb33254161bb49d6fb8208ea351ab1924922dabc8dfe8aa8c1b897d11282'),
-    ('SQLITE_BINARY_SHA256', 'sqlite_binary_sha256', '672ab1a50cb80077faacdb218f66fea2da233454d0110ef14bbf7b9c30d05da5'),
+    ('VERSION', 'version', '0.20.15'),
+    ('COMMIT', 'commit', '6ea547594065f7f95d5877b82f0c1bc553e72640'),
+    ('ARCHIVE_SHA256', 'archive_sha256', '7c059101265d897e4b176f503a9217b112946d37d91daa0c40f421fb16e4bb6b'),
+    ('BINARY_SHA256', 'binary_sha256', '948a528987113a2d37f5ee519c4f682e09af4aa10ff64d490d9851ba7b633364'),
+    ('SQLITE_BINARY_SHA256', 'sqlite_binary_sha256', 'b890cfc7941ad3ba1bde4038c0acde4098fa101512553159d4615e540f8bb659'),
     ('LICENSE_SHA256', 'license_sha256', '0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594'),
 )
 LEGACY_ENGINE_COORDINATES = {
@@ -575,7 +575,7 @@ def verify(files, gate=GATE):
         raise AssertionError('CURRENT_VEX_RELEASE_MISMATCH')
     if json.loads(files[VENDOR]).get('release') != 'v1.6.545':
         raise AssertionError('CURRENT_VENDOR_RELEASE_MISMATCH')
-    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.545 base=v1.6.460 engine=0.183.353 web_console=1.6.194 catalog_service=0.20.14 ' not in gate:
+    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.545 base=v1.6.460 engine=0.183.353 web_console=1.6.194 catalog_service=0.20.15 ' not in gate:
         raise AssertionError('CURRENT_SUMMARY_MISMATCH')
     verify_incremental_contract(files, gate)
     verify_load_balancer_contract(files, gate)
@@ -594,7 +594,7 @@ def previous_gate(gate=GATE):
             'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.521"',
         '"$vendor_pending_fixture" v1.6.545 >/dev/null':
             '"$vendor_pending_fixture" v1.6.521 >/dev/null',
-        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.545 base=v1.6.460 engine=0.183.353 web_console=1.6.194 catalog_service=0.20.14 ':
+        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.545 base=v1.6.460 engine=0.183.353 web_console=1.6.194 catalog_service=0.20.15 ':
             'SERVER_API_EXPLORER_PATCH_OK release=v1.6.521 base=v1.6.460 engine=0.183.340 web_console=1.6.181 catalog_service=0.20.12 ',
     })
     for marker, stale_marker in replacements.items():
@@ -771,10 +771,10 @@ class Tests(unittest.TestCase):
     [
         "WEBSOCKET_PROXY",
         "websocket_proxy",
-        "0.23.17",
-        "6fc9f6a2ee3c010b5376887b387a32f243240026",
-        "7c252aa0724b6b3d59aa77bc59bb9bb2516faecc67594a6ed0966e14547afd9a",
-        "68e1385ffed804382c74a49bb647306aab2f43060b7912ac437581c876926494"
+        "0.23.18",
+        "d3f71afb5945b8dedc1b6b80892be6145238cad1",
+        "9b1cbb2eac08eafadc4e69aca728ca33787b58923abbf3b585db2aa729f09434",
+        "72e67b9ff5ce6cf59a03860960ad59a06f6e6d7af9926f73c1f5dbec05dd97e7"
     ],
     [
         "WEBHOOK_AUTOMATION_SERVICE",
@@ -1473,9 +1473,9 @@ class Tests(unittest.TestCase):
 
     def test_proxy_binary_readback_uses_the_verified_component_parameter(self):
         for field, value in (
-            ('COMMIT', '6fc9f6a2ee3c010b5376887b387a32f243240026'),
-            ('ARCHIVE_SHA256', '7c252aa0724b6b3d59aa77bc59bb9bb2516faecc67594a6ed0966e14547afd9a'),
-            ('BINARY_SHA256', '68e1385ffed804382c74a49bb647306aab2f43060b7912ac437581c876926494'),
+            ('COMMIT', 'd3f71afb5945b8dedc1b6b80892be6145238cad1'),
+            ('ARCHIVE_SHA256', '9b1cbb2eac08eafadc4e69aca728ca33787b58923abbf3b585db2aa729f09434'),
+            ('BINARY_SHA256', '72e67b9ff5ce6cf59a03860960ad59a06f6e6d7af9926f73c1f5dbec05dd97e7'),
         ):
             docker_marker = 'ARG WEBSOCKET_PROXY_' + field + '=' + value
             build_marker = 'websocket_proxy_' + field.lower() + '=${WEBSOCKET_PROXY_' + field + ':-' + value + '}'

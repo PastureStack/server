@@ -615,34 +615,34 @@ require_marker "$build_script" \
     'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-fe83f57dd1202766579b848f1bee75e7c05536db2fbb1f58de2bbb21829b1221}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_VERSION=0.20.14' \
+    'ARG CATALOG_SERVICE_VERSION=0.20.15' \
     SERVER_INCREMENTAL_CATALOG_VERSION_MISSING
 require_marker "$build_script" \
-    'catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.14}' \
+    'catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.15}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_COMMIT=9b0c0f40dc81eb83673df85f3de96f7e6f89b985' \
+    'ARG CATALOG_SERVICE_COMMIT=6ea547594065f7f95d5877b82f0c1bc553e72640' \
     SERVER_INCREMENTAL_CATALOG_COMMIT_MISSING
 require_marker "$build_script" \
-    'catalog_service_commit=${CATALOG_SERVICE_COMMIT:-9b0c0f40dc81eb83673df85f3de96f7e6f89b985}' \
+    'catalog_service_commit=${CATALOG_SERVICE_COMMIT:-6ea547594065f7f95d5877b82f0c1bc553e72640}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_COMMIT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_ARCHIVE_SHA256=00380a63e1f95b3d9a1dfb8e2fb3f038d876d7decb0ae5c7798ea1b7d8dc54b6' \
+    'ARG CATALOG_SERVICE_ARCHIVE_SHA256=7c059101265d897e4b176f503a9217b112946d37d91daa0c40f421fb16e4bb6b' \
     SERVER_INCREMENTAL_CATALOG_ARCHIVE_SHA256_MISSING
 require_marker "$build_script" \
-    'catalog_service_archive_sha256=${CATALOG_SERVICE_ARCHIVE_SHA256:-00380a63e1f95b3d9a1dfb8e2fb3f038d876d7decb0ae5c7798ea1b7d8dc54b6}' \
+    'catalog_service_archive_sha256=${CATALOG_SERVICE_ARCHIVE_SHA256:-7c059101265d897e4b176f503a9217b112946d37d91daa0c40f421fb16e4bb6b}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_ARCHIVE_SHA256_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_BINARY_SHA256=86f2bb33254161bb49d6fb8208ea351ab1924922dabc8dfe8aa8c1b897d11282' \
+    'ARG CATALOG_SERVICE_BINARY_SHA256=948a528987113a2d37f5ee519c4f682e09af4aa10ff64d490d9851ba7b633364' \
     SERVER_INCREMENTAL_CATALOG_BINARY_SHA256_MISSING
 require_marker "$build_script" \
-    'catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-86f2bb33254161bb49d6fb8208ea351ab1924922dabc8dfe8aa8c1b897d11282}' \
+    'catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-948a528987113a2d37f5ee519c4f682e09af4aa10ff64d490d9851ba7b633364}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_BINARY_SHA256_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=672ab1a50cb80077faacdb218f66fea2da233454d0110ef14bbf7b9c30d05da5' \
+    'ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=b890cfc7941ad3ba1bde4038c0acde4098fa101512553159d4615e540f8bb659' \
     SERVER_INCREMENTAL_CATALOG_SQLITE_BINARY_SHA256_MISSING
 require_marker "$build_script" \
-    'catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-672ab1a50cb80077faacdb218f66fea2da233454d0110ef14bbf7b9c30d05da5}' \
+    'catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-b890cfc7941ad3ba1bde4038c0acde4098fa101512553159d4615e540f8bb659}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_SQLITE_BINARY_SHA256_MISSING
 require_marker "$release_dockerfile" \
     'ARG CATALOG_SERVICE_LICENSE_SHA256=0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594' \
@@ -898,10 +898,10 @@ if grep -Eq 'dacf7353a1e72e933ac883c3e4c5521e12bb9017706475a7d94f2803c5b5b216|23
     exit 1
 fi
 for release_proxy_marker in \
-    'ARG WEBSOCKET_PROXY_VERSION=0.23.17' \
-    'ARG WEBSOCKET_PROXY_COMMIT=6fc9f6a2ee3c010b5376887b387a32f243240026' \
-    'ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=7c252aa0724b6b3d59aa77bc59bb9bb2516faecc67594a6ed0966e14547afd9a' \
-    'ARG WEBSOCKET_PROXY_BINARY_SHA256=68e1385ffed804382c74a49bb647306aab2f43060b7912ac437581c876926494' \
+    'ARG WEBSOCKET_PROXY_VERSION=0.23.18' \
+    'ARG WEBSOCKET_PROXY_COMMIT=d3f71afb5945b8dedc1b6b80892be6145238cad1' \
+    'ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=9b1cbb2eac08eafadc4e69aca728ca33787b58923abbf3b585db2aa729f09434' \
+    'ARG WEBSOCKET_PROXY_BINARY_SHA256=72e67b9ff5ce6cf59a03860960ad59a06f6e6d7af9926f73c1f5dbec05dd97e7' \
     'tar --no-same-owner --no-same-permissions -xJf "${websocket_archive}"' \
     'install -m 0755 /out/websocket-proxy/websocket-proxy /out/runtime-bin/websocket-proxy.real;' \
     '/usr/bin/websocket-proxy.real --help 2>&1 | grep -F -- '\''-platform-public-origin'\'''; do
@@ -909,9 +909,9 @@ for release_proxy_marker in \
         SERVER_INCREMENTAL_WEBSOCKET_PROXY_REPLACEMENT_MISSING
 done
 for release_proxy_build_marker in \
-    'websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-6fc9f6a2ee3c010b5376887b387a32f243240026}' \
-    'websocket_proxy_archive_sha256=${WEBSOCKET_PROXY_ARCHIVE_SHA256:-7c252aa0724b6b3d59aa77bc59bb9bb2516faecc67594a6ed0966e14547afd9a}' \
-    'websocket_proxy_binary_sha256=${WEBSOCKET_PROXY_BINARY_SHA256:-68e1385ffed804382c74a49bb647306aab2f43060b7912ac437581c876926494}' \
+    'websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-d3f71afb5945b8dedc1b6b80892be6145238cad1}' \
+    'websocket_proxy_archive_sha256=${WEBSOCKET_PROXY_ARCHIVE_SHA256:-9b1cbb2eac08eafadc4e69aca728ca33787b58923abbf3b585db2aa729f09434}' \
+    'websocket_proxy_binary_sha256=${WEBSOCKET_PROXY_BINARY_SHA256:-72e67b9ff5ce6cf59a03860960ad59a06f6e6d7af9926f73c1f5dbec05dd97e7}' \
     'PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256="${websocket_proxy_binary_sha256}"' \
     'echo "${PASTURESTACK_WEBSOCKET_PROXY_BINARY_SHA256}  /usr/bin/websocket-proxy.real" | sha256sum -c -'; do
     require_marker "$build_script" "$release_proxy_build_marker" \
@@ -2350,4 +2350,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.545 base=v1.6.460 engine=0.183.353 web_console=1.6.194 catalog_service=0.20.14 webhook_automation_service=0.10.5 authentication_service=0.4.45 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.545 base=v1.6.460 engine=0.183.353 web_console=1.6.194 catalog_service=0.20.15 webhook_automation_service=0.10.5 authentication_service=0.4.45 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
