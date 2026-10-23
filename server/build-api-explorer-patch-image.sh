@@ -21,14 +21,14 @@ orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-h
 orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.354}
 orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}
 orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-f4889bfb8759a7664f07524bb129d0cda19f35604a06c877b6ca7033246df6fa}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-e094944cd81da614187dbeba1f06354682af1d45}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-dc5a8d7bc44131f609f72a6504483b692d47ce16}
 orchestration_engine_version=${orchestration_engine_release_tag#v}
 engine_readonly_schema_sha256=${ENGINE_READONLY_SCHEMA_SHA256:-7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233}
 engine_restricted_schema_sha256=${ENGINE_RESTRICTED_SCHEMA_SHA256:-f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51}
 host_api_version=${HOST_API_VERSION:-0.38.8}
 host_api_package_mode=${HOST_API_PACKAGE_MODE:-producer}
 host_api_release_base_url=${HOST_API_RELEASE_BASE_URL:-https://github.com/PastureStack/host-api/releases/download}
-host_api_release_tag=${HOST_API_RELEASE_TAG:-v0.38.7}
+host_api_release_tag=${HOST_API_RELEASE_TAG:-v0.38.8}
 host_api_archive_sha256=${HOST_API_ARCHIVE_SHA256:-6903ffb6a618f5a9bc8c7c8997a1e0419c93a8bbdeaee6d288957366dccef444}
 host_api_package_id=${HOST_API_PACKAGE_ID:-4810ffbb4499c24d9f7066d64de3203f}
 host_api_binary_sha256=${HOST_API_BINARY_SHA256:-85fceccc5e2724aa896560392123fc8927786915b03f6d42eb688e151a402b8a}
@@ -90,10 +90,10 @@ webhook_automation_service_commit=${WEBHOOK_AUTOMATION_SERVICE_COMMIT:-4da77ccac
 webhook_automation_service_archive_sha256=${WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256:-f2df8874d5a00a2d5713594609063256164ed624d29a733149d00cb271f0f66b}
 webhook_automation_service_binary_sha256=${WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256:-b98e55db2739ab45119eacc94c8f65cb44371480ebcebec95e5470fd67c72a4c}
 compose_executor_release_base_url=${COMPOSE_EXECUTOR_RELEASE_BASE_URL:-https://github.com/PastureStack/compose-cli/releases/download}
-compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.38}
-compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-142bc116f7517b1c12458e02b2747381036973b4}
-compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-1a38cfea389543381cffb0d678cb7beaafb5064c52739aa31fa4f8964005e3e0}
-compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-2e5568465842ae0af9838adf9bfc91eee23f09ea08cde951081f12d0e5cbd073}
+compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.39}
+compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-53a33bdc13ae99f4bc4a2dc5cc760b6b2d098388}
+compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-4ab4685af67a8b8b11f3dd4996de9e087c26391ec401cf02cdcafe4c93094bab}
+compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-0f0c0ada23564572b569e1c73951ca363c0dc262fe7bba9c2474106650c4eac5}
 vsphere_cli_bundle_release_base_url=${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL:-https://github.com/PastureStack/vsphere-cli-bundle/releases/download}
 vsphere_cli_bundle_version=${VSPHERE_CLI_BUNDLE_VERSION:-0.55.4}
 vsphere_cli_bundle_commit=${VSPHERE_CLI_BUNDLE_COMMIT:-35ca999b775a41e7fb34e9a6b6ceb4fa51f3f242}
@@ -833,7 +833,7 @@ docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_versi
     rm -f /tmp/hazelcast.jar
     cat <<'"'"'EOF'"'"' | sha256sum -c -
 2198ad367405c0f329e85ddb5a882b1568a40eaa002dafa71e772688feb8a25c  /usr/bin/authentication-service.real
-2e5568465842ae0af9838adf9bfc91eee23f09ea08cde951081f12d0e5cbd073  /usr/bin/compose-executor.real
+0f0c0ada23564572b569e1c73951ca363c0dc262fe7bba9c2474106650c4eac5  /usr/bin/compose-executor.real
 92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff  /usr/bin/host-provisioner.real
 e4928ca7359975ba4ad73456296baace8ef0b428c0901055a0317244a17e4665  /usr/bin/secret-delivery-api
 90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be  /usr/bin/usage-telemetry-agent

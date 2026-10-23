@@ -37,7 +37,7 @@ WEB_SHA = 'fe83f57dd1202766579b848f1bee75e7c05536db2fbb1f58de2bbb21829b1221'
 WEB_SOURCE = 'f47283ff6d18516040c0ee0782ac0a0314b67538'
 CATALOG_COMMIT = '71ec6b2c27355e709f5092c954db24efa800bc41'
 ENGINE_SHA = 'f4889bfb8759a7664f07524bb129d0cda19f35604a06c877b6ca7033246df6fa'
-ENGINE_SOURCE = 'e094944cd81da614187dbeba1f06354682af1d45'
+ENGINE_SOURCE = 'dc5a8d7bc44131f609f72a6504483b692d47ce16'
 OLD_COORDINATES = {
     'v1.6.545': 'v1.6.521',
     '1.6.194': '1.6.181',
@@ -134,8 +134,8 @@ INCREMENTAL_CONTRACTS = [
             "ARG USAGE_TELEMETRY_AGENT_COMMIT=4ee641bc1273cf582a77609af71d00b72f17b628",
             "ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866",
             "ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be",
-            "ARG COMPOSE_EXECUTOR_COMMIT=142bc116f7517b1c12458e02b2747381036973b4",
-            "ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=1a38cfea389543381cffb0d678cb7beaafb5064c52739aa31fa4f8964005e3e0"
+            "ARG COMPOSE_EXECUTOR_COMMIT=53a33bdc13ae99f4bc4a2dc5cc760b6b2d098388",
+            "ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=4ab4685af67a8b8b11f3dd4996de9e087c26391ec401cf02cdcafe4c93094bab"
         ]
     ],
     [
@@ -154,10 +154,10 @@ INCREMENTAL_CONTRACTS = [
             "usage_telemetry_agent_commit=${USAGE_TELEMETRY_AGENT_COMMIT:-4ee641bc1273cf582a77609af71d00b72f17b628}",
             "usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866}",
             "usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be}",
-            "compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.38}",
-            "compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-142bc116f7517b1c12458e02b2747381036973b4}",
-            "compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-1a38cfea389543381cffb0d678cb7beaafb5064c52739aa31fa4f8964005e3e0}",
-            "compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-2e5568465842ae0af9838adf9bfc91eee23f09ea08cde951081f12d0e5cbd073}"
+            "compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.39}",
+            "compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-53a33bdc13ae99f4bc4a2dc5cc760b6b2d098388}",
+            "compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-4ab4685af67a8b8b11f3dd4996de9e087c26391ec401cf02cdcafe4c93094bab}",
+            "compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-0f0c0ada23564572b569e1c73951ca363c0dc262fe7bba9c2474106650c4eac5}"
         ]
     ],
     [
@@ -787,10 +787,10 @@ class Tests(unittest.TestCase):
     [
         "COMPOSE_EXECUTOR",
         "compose_executor",
-        "0.14.38",
-        "142bc116f7517b1c12458e02b2747381036973b4",
-        "1a38cfea389543381cffb0d678cb7beaafb5064c52739aa31fa4f8964005e3e0",
-        "2e5568465842ae0af9838adf9bfc91eee23f09ea08cde951081f12d0e5cbd073"
+        "0.14.39",
+        "53a33bdc13ae99f4bc4a2dc5cc760b6b2d098388",
+        "4ab4685af67a8b8b11f3dd4996de9e087c26391ec401cf02cdcafe4c93094bab",
+        "0f0c0ada23564572b569e1c73951ca363c0dc262fe7bba9c2474106650c4eac5"
     ],
     [
         "VSPHERE_CLI_BUNDLE",
@@ -952,7 +952,7 @@ class Tests(unittest.TestCase):
     def test_current_host_node_coordinates_match_official_original_bytes(self):
         coordinates = {
             'HOST_API_VERSION': '0.38.8',
-            'HOST_API_RELEASE_TAG': 'v0.38.7',
+            'HOST_API_RELEASE_TAG': 'v0.38.8',
             'HOST_API_COMMIT': '4810ffbb4499c24d9f7066d64de3203f9a6771e4',
             'HOST_API_PACKAGE_ID': '4810ffbb4499c24d9f7066d64de3203f',
             'HOST_API_ARCHIVE_SHA256': '6903ffb6a618f5a9bc8c7c8997a1e0419c93a8bbdeaee6d288957366dccef444',
