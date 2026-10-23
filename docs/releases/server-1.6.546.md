@@ -35,6 +35,12 @@ Prepared source only; no Server image or release has been published.
   already-present, older packages from that verified offline bundle; it does
   not need network access or an APT signature executable. The package manifest
   is retained under `/usr/share/pasturestack/security/` for inspection.
+- Ubuntu's zlib security backport `1:1.3.dfsg+really1.3.1-1ubuntu3.2`
+  replaces the formerly preferred upstream 1.3.2 library. This fixes
+  [CVE-2026-85091](https://ubuntu.com/security/notices/USN-8954-1) while retaining
+  the earlier CVE-2026-27171 fix. Assembly removes the superseded library;
+  post-build checks verify the active linker target and package-owned bytes,
+  not just the version recorded in the package database.
 
 ## Compatibility and evidence
 

@@ -422,7 +422,8 @@ for marker in \
     PASTURESTACK_COREUTILS_PROVIDER=gnu \
     PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11 \
     PASTURESTACK_COREUTILS_UNIQ_FIX=d64e35a8a4c0e4608321433e0d84d917e4e36371 \
-    PASTURESTACK_ZLIB_VERSION=1.3.2 \
+    PASTURESTACK_ZLIB_VERSION=1.3.1 \
+    PASTURESTACK_ZLIB_PACKAGE_VERSION=1:1.3.dfsg+really1.3.1-1ubuntu3.2 \
     PASTURESTACK_OPENSSL_VERSION=3.5.5 \
     PASTURESTACK_OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7 \
     PASTURESTACK_OPENSSL_SECURITY_SNAPSHOT=20261002T000000Z \
@@ -783,8 +784,11 @@ docker run --rm --env "WEB_CONSOLE_RELEASE_TAG=${web_console_release_tag}" --ent
 docker run --rm -i --entrypoint sh "$image" -s -- \
     /usr/share/cattle/cattle.jar "${orchestration_engine_version}" "${orchestration_engine_artifact_sha256}" \
     < "${server_dir}/artifacts/verify-engine-archive.sh"
-docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_version}" --entrypoint bash "$image" -lc '
-    set -euo pipefail
+docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_version}" \
+    --env "API_EXPLORER_COMMIT=${api_explorer_commit}" \
+    --env "API_EXPLORER_RELEASE_TAG=${api_explorer_release_tag}" --entrypoint bash "$image" -lc '
+    set -Eeuo pipefail
+    trap "printf \"SERVER_RUNTIME_CONTRACT_FAILED line=%s\\n\" \"\${LINENO}\" >&2" ERR
     api_dir=/usr/share/cattle/war/api-ui
     test -d "${api_dir}"
     test -s "${api_dir}/ui.min.js"
@@ -799,8 +803,8 @@ docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_versi
     test -s "${api_dir}/licenses/handlebars-4.7.10/LICENSE"
     test ! -e "${api_dir}/js/bootstrap.js"
     test "$(find "${api_dir}" -type f -name "*.map" | wc -l)" -eq 0
-    grep -F '"'"'"version": "1.1.20"'"'"' "${api_dir}/version.json" >/dev/null
-    grep -F '"'"'"commit": "dda3fe8"'"'"' "${api_dir}/version.json" >/dev/null
+    grep -F "\"version\": \"${API_EXPLORER_RELEASE_TAG#v}\"" "${api_dir}/version.json" >/dev/null
+    grep -F "\"commit\": \"${API_EXPLORER_COMMIT:0:7}\"" "${api_dir}/version.json" >/dev/null
     grep -aF "handlebars v4.7.10" "${api_dir}/ui.js" >/dev/null
     for marker in \
         PastureStackUi \
@@ -931,6 +935,20 @@ EOF
         status=$(dpkg-query -W -f='"'"'${db:Status-Status}'"'"' "$1" 2>/dev/null || true)
         test "$status" = installed
     }
+    require_package_absent()
+    {
+        if package_is_installed "$1"; then
+            printf "Unexpected runtime package: %s\n" "$1" >&2
+            return 1
+        fi
+    }
+    require_resolved_linkage()
+    {
+        if printf "%s\n" "$1" | grep -E "not found|undefined symbol"; then
+            printf "Unresolved runtime linkage\n" >&2
+            return 1
+        fi
+    }
     for curl_package in curl libcurl3t64-gnutls libcurl4t64; do
         test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${curl_package}")" = \
             "8.18.0-1ubuntu2.8"
@@ -958,10 +976,10 @@ EOF
     version_at_least util-linux 2.41.3-3ubuntu2.2
     version_at_least git 1:2.53.0-1ubuntu1
     version_at_least git-man 1:2.53.0-1ubuntu1
-    version_at_least libexpat1 2.7.4-1
+    version_at_least libexpat1 2.7.4-1ubuntu0.2
     package_is_installed coreutils-from-gnu
-    ! package_is_installed coreutils-from-uutils
-    ! package_is_installed rust-coreutils
+    require_package_absent coreutils-from-uutils
+    require_package_absent rust-coreutils
     ls --version | grep -Fq "GNU coreutils"
     test "$(git --version)" = "git version 2.53.0"
     uniq --version | grep -Fq "uniq (GNU coreutils) 9.11"
@@ -970,8 +988,15 @@ EOF
     printf "%s\n" "${longline}" >/tmp/uniq-expected
     LC_ALL=C.UTF-8 uniq -w256 /tmp/uniq-input >/tmp/uniq-output
     cmp /tmp/uniq-expected /tmp/uniq-output
-    grep -aF "1.3.2" /usr/lib/x86_64-linux-gnu/libz.so.1.3.2 >/dev/null
+    test "$(dpkg-query -W -f='"'"'${Version}'"'"' zlib1g)" = 1:1.3.dfsg+really1.3.1-1ubuntu3.2
+    test "$PASTURESTACK_ZLIB_VERSION" = 1.3.1
+    test "$PASTURESTACK_ZLIB_PACKAGE_VERSION" = 1:1.3.dfsg+really1.3.1-1ubuntu3.2
+    test ! -e /usr/lib/x86_64-linux-gnu/libz.so.1.3.2
+    test "$(readlink -f /usr/lib/x86_64-linux-gnu/libz.so.1)" = /usr/lib/x86_64-linux-gnu/libz.so.1.3.1
+    zlib_integrity=$(dpkg --verify zlib1g)
+    test -z "$zlib_integrity"
     ldd /usr/sbin/mariadbd | grep -F "/usr/lib/x86_64-linux-gnu/libz.so.1" >/dev/null
+    printf "%s  %s\n" 27fa6c6cb94fb5b099ead61758a300dbc392d1dbf307fff6c16a9b8e57fdc9de /usr/lib/x86_64-linux-gnu/libz.so.1.3.1 | sha256sum -c -
     for package in openssl libssl3t64 openssl-provider-legacy; do
         test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${package}")" = 3.5.5-1ubuntu3.7
     done
@@ -988,7 +1013,7 @@ EOF
     test "$(wc -l < /usr/share/pasturestack/security/libpng-runtime.sha256)" -eq 1
     sha256sum -c /usr/share/pasturestack/security/libpng-runtime.sha256
     libpng_linkage=$(ldd -r /usr/lib/x86_64-linux-gnu/libpng16.so.16 2>&1)
-    ! printf "%s\n" "$libpng_linkage" | grep -E "not found|undefined symbol"
+    require_resolved_linkage "$libpng_linkage"
     test "$(readlink -f /usr/lib/x86_64-linux-gnu/libfreetype.so.6)" = /usr/lib/x86_64-linux-gnu/libfreetype.so.6.20.5
     perl -MDBI -e '"'"'die "Unexpected DBI runtime version\n" unless $DBI::VERSION eq "1.647"'"'"'
     openssl version | grep -E "^OpenSSL 3\\.5\\.5 .*\\(Library: OpenSSL 3\\.5\\.5 " >/dev/null
@@ -999,14 +1024,14 @@ EOF
     printf abc | openssl dgst -provider default -provider legacy -md4 | grep -F a448017aaf21d8525fc10ae87aa6729d >/dev/null
     for target in /usr/bin/curl /usr/sbin/mariadbd /usr/bin/mariadb /usr/lib/x86_64-linux-gnu/libssh2.so.1 /usr/lib/x86_64-linux-gnu/libfreetype.so.6; do
         linkage=$(ldd -r "$target" 2>&1)
-        ! printf "%s\n" "$linkage" | grep -E "not found|undefined symbol"
+        require_resolved_linkage "$linkage"
     done
     ldd /usr/bin/curl | grep -F "/usr/lib/x86_64-linux-gnu/libssl.so.3" >/dev/null
     ldd /usr/bin/curl | grep -F "/usr/lib/x86_64-linux-gnu/libcrypto.so.3" >/dev/null
     ldd /usr/sbin/mariadbd | grep -F "/usr/lib/x86_64-linux-gnu/libssl.so.3" >/dev/null
     ldd /usr/sbin/mariadbd | grep -F "/usr/lib/x86_64-linux-gnu/libcrypto.so.3" >/dev/null
     for removed_package in fontconfig keychain libfontconfig1 openssh-client; do
-        ! package_is_installed "${removed_package}"
+        require_package_absent "${removed_package}"
     done
     for removed_path in \
         /usr/bin/gpgv \
@@ -1033,17 +1058,20 @@ EOF
         /usr/share/cattle/install_cattle_binaries; do
         test ! -e "${removed_path}"
     done
-    ! ldconfig -p | grep -Fq "libexpat.so"
+    if ldconfig -p | grep -F "libexpat.so"; then
+        printf "Unexpected Expat runtime linkage\n" >&2
+        exit 1
+    fi
     test -z "$(find /run -xdev -type s -path "*p11-kit*" -print -quit 2>/dev/null)"
-    libgcrypt_user="$(
+    unexpected_native_dependency="$(
         find /usr/bin /usr/sbin /usr/share/cattle -xdev -type f -perm /0111 -print0 |
         while IFS= read -r -d "" executable; do
-            if ldd "${executable}" 2>/dev/null | grep -Fq "libgcrypt.so"; then
+            if ldd "${executable}" 2>/dev/null | grep -Eq "libgcrypt[.]so|libexpat[.]so"; then
                 printf "%s\n" "${executable}"
             fi
         done | head -n 1
     )"
-    test -z "${libgcrypt_user}"
+    test -z "${unexpected_native_dependency}"
     if grep -Eq "(^|[[:space:]])(git clone|git -C|apt-get install|tar xzf)([[:space:]]|$)" /usr/share/cattle/cattle.sh; then
         exit 1
     fi
