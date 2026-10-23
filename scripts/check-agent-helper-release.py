@@ -3,7 +3,6 @@
 import copy
 import json
 import os
-from pathlib import Path
 import sys
 
 
@@ -59,11 +58,9 @@ if __name__ == "__main__":
     if sys.argv[1:] == ["--self-test"]:
         self_test()
     else:
-        root = Path(os.environ["RUNNER_TEMP"]) / "node-agent-evidence"
         expected = {name.removeprefix("MOUNT_PROPAGATION_"): value
                     for name, value in os.environ.items() if name.startswith("MOUNT_PROPAGATION_")}
-        validate(expected, json.loads((root / "mount-release.json").read_text()),
-                 json.loads((root / "mount-ref.json").read_text()),
-                 json.loads((root / "mount-tag.json").read_text()),
-                 json.loads((root / "mount-commit.json").read_text()))
+        evidence = json.load(sys.stdin)
+        validate(expected, evidence["release"], evidence["ref"],
+                 evidence["tag"], evidence["commit"])
         print("HELPER_RELEASE_IDENTITY_OK")

@@ -42,7 +42,11 @@ if [[ "$COMPONENT" = base ]]; then
   gh api "repos/PastureStack/mount-propagation/git/tags/${MOUNT_PROPAGATION_TAG_OBJECT}" >"$evidence/mount-tag.json"
   gh api "repos/PastureStack/mount-propagation/git/commits/${MOUNT_PROPAGATION_SOURCE}" >"$evidence/mount-commit.json"
   python3 scripts/check-agent-helper-release.py --self-test
-  python3 scripts/check-agent-helper-release.py
+  jq -n --slurpfile release "$evidence/mount-release.json" \
+    --slurpfile ref "$evidence/mount-ref.json" --slurpfile tag "$evidence/mount-tag.json" \
+    --slurpfile commit "$evidence/mount-commit.json" \
+    '{release:$release[0],ref:$ref[0],tag:$tag[0],commit:$commit[0]}' \
+    | python3 scripts/check-agent-helper-release.py
   curl --proto '=https' --proto-redir '=https' --fail --silent --show-error --location \
     --retry 3 --connect-timeout 15 --max-time 300 \
     --output "$scratch/share-mnt" \
@@ -93,8 +97,11 @@ docker run --rm --network none --entrypoint /bin/bash "$candidate" -ec \
   'ldd "$(python3 -c "import _ssl; print(_ssl.__file__)")"; curl --version' \
   >"$evidence/python-ssl-linkage.txt"
 docker run --rm --network none --entrypoint /bin/bash "$candidate" -ec \
-  'test "$(dpkg-query -W ca-certificates | cut -f2)" = 20260816ubuntu0.26.04.1; docker --version | grep -E "^Docker version 29[.]7[.]2, build [0-9a-f]+$"; test -s /usr/bin/share-mnt; test -x /usr/bin/r' \
+  'test "$(dpkg-query -W ca-certificates | cut -f2)" = 20260816ubuntu0.26.04.1; docker --version | grep -Fx "Docker version 29.9.2, build a82e528"; printf "6c71cfe71faff949a602946a4df4799b563232e79d0b8b6fd343d0ef081c9621  /usr/bin/docker\n" | sha256sum -c -; test -s /usr/bin/share-mnt; test -x /usr/bin/r' \
   |& tee "$evidence/runtime-tools.txt"
+docker run --rm --network none --entrypoint cat "$candidate" /usr/bin/docker >"$scratch/docker-cli"
+go version -m "$scratch/docker-cli" | tee "$evidence/docker-cli-go-version.txt"
+head -1 "$evidence/docker-cli-go-version.txt" | grep -F 'go1.26.10'
 docker run --rm --network none --entrypoint python3 \
   -e PYTHONDONTWRITEBYTECODE=1 -v "$PWD:/source:ro" -w /source "$candidate" \
   scripts/check-agent-python-runtime.py |& tee "$evidence/python-tls-registration.json"

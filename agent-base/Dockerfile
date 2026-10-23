@@ -82,8 +82,9 @@ COPY ./share-mnt /usr/bin/share-mnt
 COPY ./r /usr/bin/r
 COPY ./update-platform-ssl /usr/bin/update-platform-ssl
 
-ARG DOCKER_VERSION=29.7.2
-ARG DOCKER_SHA256=803d433f226db4776e1768fd319fc6c6e4935a456acf84fcc0080818b854bc8f
+ARG DOCKER_VERSION=29.9.2
+ARG DOCKER_SHA256=9ac225999fd5e863f7694c728ef23d480616b1e5639328fa309befd4243d69eb
+ARG DOCKER_BINARY_SHA256=6c71cfe71faff949a602946a4df4799b563232e79d0b8b6fd343d0ef081c9621
 ARG UBUNTU_SNAPSHOT=20261023T000000Z
 
 COPY --from=python-builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
@@ -139,6 +140,7 @@ RUN rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.
         -o "$docker_tgz" "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz" && \
     echo "${DOCKER_SHA256}  $docker_tgz" | sha256sum -c - && \
     tar xzf "$docker_tgz" -C /usr/bin --strip-components=1 docker/docker && \
+    echo "${DOCKER_BINARY_SHA256}  /usr/bin/docker" | sha256sum -c - && \
     rm -f "$docker_tgz" && \
     chmod +x /usr/bin/docker && \
     rm /var/run && \

@@ -2,7 +2,7 @@
 
 The compatibility base targets `ghcr.io/pasturestack/node-agent-base:v0.3.6`.
 It builds Python 3.14.9 from the official SHA-256-verified archive, retains
-Docker CLI 29.7.2, and uses the fixed Ubuntu 26.04 snapshot
+Docker CLI 29.9.2 (official Go 1.26.10 build), and uses the fixed Ubuntu 26.04 snapshot
 `20261023T000000Z`. Builder and runtime package inventories are compared;
 the runtime verifies the patched OpenSSL, curl, libc and CA package versions.
 
