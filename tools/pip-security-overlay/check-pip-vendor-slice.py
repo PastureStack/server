@@ -68,16 +68,13 @@ if __name__ == "__main__":
     if sys.flags.optimize:
         raise RuntimeError("Security verification must not run with Python optimization")
     parser = argparse.ArgumentParser()
-    parser.add_argument("--wheel", type=Path)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    if args.wheel:
-        result = verify(args.wheel)
-    else:
-        # CPython/Ubuntu 3.14 exposes its actual selected bundled wheel here.
-        import ensurepip
-        with ensurepip._get_pip_whl_path_ctx() as wheel:
-            result = verify(Path(wheel))
+    # The security proof is about the interpreter's actual selected seed, not
+    # an arbitrary file supplied through a CLI path.
+    import ensurepip
+    with ensurepip._get_pip_whl_path_ctx() as wheel:
+        result = verify(Path(wheel))
     data = json.dumps(result, indent=2) + "\n"
     if args.output:
         args.output.write_text(data)

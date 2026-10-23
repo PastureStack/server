@@ -42,7 +42,7 @@ if [[ "$COMPONENT" = base ]]; then
   gh api "repos/PastureStack/mount-propagation/git/tags/${MOUNT_PROPAGATION_TAG_OBJECT}" >"$evidence/mount-tag.json"
   gh api "repos/PastureStack/mount-propagation/git/commits/${MOUNT_PROPAGATION_SOURCE}" >"$evidence/mount-commit.json"
   python3 scripts/check-agent-helper-release.py --self-test
-  python3 scripts/check-agent-helper-release.py "$evidence"
+  python3 scripts/check-agent-helper-release.py
   curl --proto '=https' --proto-redir '=https' --fail --silent --show-error --location \
     --retry 3 --connect-timeout 15 --max-time 300 \
     --output "$scratch/share-mnt" \
