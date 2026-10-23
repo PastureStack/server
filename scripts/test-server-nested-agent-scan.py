@@ -99,7 +99,7 @@ class NestedPayloads(unittest.TestCase):
 
     def test_actual_binary_scanner_and_inventory_count_are_mandatory(self):
         workflow = (ROOT / '.github/workflows/publish-current-server.yml').read_text(encoding='utf-8')
-        self.assertIn('"$TRIVY_IMAGE" rootfs --scanners vuln,secret --format json', workflow)
+        self.assertIn('"$TRIVY_IMAGE" rootfs --scanners vuln,secret --list-all-pkgs --format json', workflow)
         self.assertIn('"$TRIVY_IMAGE" rootfs --format cyclonedx', workflow)
         self.assertIn('select(.Type == "gobinary")] | length) == 4', workflow)
 

@@ -130,10 +130,11 @@ class ExplorerIntegration(unittest.TestCase):
             with self.assertRaises(AssertionError):
                 PACKAGING.verify_incremental_contract(files)
         for old, new in (
-            ('api-explorer-1.1.19.tar.gz', 'api-explorer-1.1.18.tar.gz'),
-            ('d1602ab6033512f0b86dc8ceafee2061364ce2fc5da2a9b7119f900d9e0f3c25', '92b718c46163018ea40c008ac552911f0eb610647377725405f4046dcd411f2c'),
+            ('api-explorer-1.1.20.tar.gz', 'api-explorer-1.1.19.tar.gz'),
+            ('c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb', 'd1602ab6033512f0b86dc8ceafee2061364ce2fc5da2a9b7119f900d9e0f3c25'),
         ):
             files = dict(PACKAGING.FILES)
+            self.assertIn(old, files[PACKAGING.DOCKER], 'mutation must change the current recipe')
             files[PACKAGING.DOCKER] = files[PACKAGING.DOCKER].replace(old, new)
             with self.assertRaises(AssertionError):
                 PACKAGING.verify_incremental_contract(files)
