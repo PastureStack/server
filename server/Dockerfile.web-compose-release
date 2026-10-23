@@ -730,6 +730,9 @@ ARG PACKET_DRIVER_BINARY_SHA256=b3e5c71928fcebe1bb648f79ebbf38af9ad32d6f6dbb8758
 
 COPY --from=runtime_security_packages /out/ /tmp/pasturestack-runtime-security/
 COPY scripts/install-ubuntu-security-updates.sh security/ubuntu-security-packages.lock /tmp/pasturestack-security-input/
+# Keep the official zlib backport active: ldconfig otherwise prefers the old
+# upstream 1.3.2 library, which is affected by USN-8954-1 / CVE-2026-85091.
+# Retain the base image's removed, unused Git DAV/Expat surface after updating.
 RUN set -eux; \
     printf '%s\n' "${WEB_CONSOLE_COMMIT}" | grep -Eq '^[0-9a-f]{40}$'; \
     cd /tmp/pasturestack-runtime-security; \
@@ -738,6 +741,15 @@ RUN set -eux; \
     dpkg -i packages/*.deb; \
     install -D -m 0644 /tmp/pasturestack-security-input/ubuntu-security-packages.lock /usr/share/pasturestack/security/ubuntu-security-packages.lock; \
     sh /tmp/pasturestack-security-input/install-ubuntu-security-updates.sh /usr/share/pasturestack/security/ubuntu-security-packages.lock /tmp/pasturestack-runtime-security/security-updates; \
+    rm -f /usr/lib/x86_64-linux-gnu/libz.so.1.3.2; \
+    ldconfig; \
+    test "$(readlink -f /usr/lib/x86_64-linux-gnu/libz.so.1)" = /usr/lib/x86_64-linux-gnu/libz.so.1.3.1; \
+    zlib_integrity="$(dpkg --verify zlib1g)"; \
+    test -z "${zlib_integrity}"; \
+    printf '%s  %s\n' 27fa6c6cb94fb5b099ead61758a300dbc392d1dbf307fff6c16a9b8e57fdc9de /usr/lib/x86_64-linux-gnu/libz.so.1.3.1 | sha256sum -c -; \
+    test ! -e /usr/lib/git-core/git-http-push; \
+    rm -f /usr/lib/x86_64-linux-gnu/libexpat.so.1 /usr/lib/x86_64-linux-gnu/libexpat.so.1.11.2; \
+    ldconfig; \
     install -D -m 0644 security-updates/manifest.tsv /usr/share/pasturestack/security/ubuntu-security-updates-manifest.tsv; \
     rm -rf /tmp/pasturestack-security-input; \
     test "$(dpkg-query -W -f='${Version}' ca-certificates)" = "${CA_CERTIFICATES_PACKAGE_VERSION}"; \
@@ -1152,6 +1164,8 @@ ENV PASTURESTACK_NODE_AGENT_VERSION=${NODE_AGENT_VERSION}
 ENV PASTURESTACK_NODE_AGENT_COMMIT=${NODE_AGENT_COMMIT}
 ENV PASTURESTACK_NODE_AGENT_ARCHIVE_SHA256=${NODE_AGENT_ARCHIVE_SHA256}
 ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-10-23
+ENV PASTURESTACK_ZLIB_VERSION=1.3.1
+ENV PASTURESTACK_ZLIB_PACKAGE_VERSION=1:1.3.dfsg+really1.3.1-1ubuntu3.2
 ENV PASTURESTACK_CURL_SECURITY_SNAPSHOT=${UBUNTU_RUNTIME_SECURITY_SNAPSHOT}
 ENV PASTURESTACK_CURL_PACKAGE_VERSION=${CURL_PACKAGE_VERSION}
 ENV PASTURESTACK_OPENSSL_VERSION=3.5.5

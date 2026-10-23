@@ -2,9 +2,33 @@
   "@context": "https://openvex.dev/ns/v0.2.0",
   "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.546",
   "author": "PastureStack Security",
-  "timestamp": "2026-10-20T01:35:18Z",
-  "version": 58,
+  "timestamp": "2026-10-23T17:46:40Z",
+  "version": 59,
   "statements": [
+    {
+      "vulnerability": {
+        "name": "CVE-2026-27171"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/zlib1g@1.3.dfsg%2Breally1.3.1-1ubuntu3.2?arch=amd64&distro=ubuntu-26.04&epoch=1"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu fixes CVE-2026-27171 in 1:1.3.dfsg+really1.3.1-1ubuntu3.1 (https://ubuntu.com/security/CVE-2026-27171). This runtime uses the subsequent official 3.2 package and its package-owned library bytes. Assembly removes the old upstream 1.3.2 library; post-build checks verify the active linker target and dpkg integrity, preserving the earlier security backport."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-85091"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/zlib1g@1.3.dfsg%2Breally1.3.1-1ubuntu3.2?arch=amd64&distro=ubuntu-26.04&epoch=1"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "USN-8954-1 (https://ubuntu.com/security/notices/USN-8954-1) fixes CVE-2026-85091 in Ubuntu 26.04 package 1:1.3.dfsg+really1.3.1-1ubuntu3.2. The exact signed-snapshot package is installed, the superseded upstream 1.3.2 library is removed, and the active library symlink and package-owned bytes are checked during assembly and post-build validation."
+    },
     {
       "vulnerability": {
         "name": "CVE-2024-2236"
@@ -95,19 +119,6 @@
     },
     {
       "vulnerability": {
-        "name": "CVE-2025-66382"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final runtime removes both libexpat.so.1 and git-http-push, the sole executable that linked to Expat; Catalog requires only Git HTTPS clone, fetch, and checkout."
-    },
-    {
-      "vulnerability": {
         "name": "CVE-2026-13757"
       },
       "products": [
@@ -180,18 +191,6 @@
       ],
       "status": "fixed",
       "impact_statement": "Ubuntu identifies 3.5.5-1ubuntu3.5 as fixed for CVE-2026-75803. The final runtime installs the subsequent official 3.5.5-1ubuntu3.6 packages from a signed snapshot, replacing the former upstream 3.5.8 CLI, libraries, engines and legacy provider. Installed versions, package-owned bytes, provider paths and curl/MariaDB linkage are validated; no package-metadata-only replacement is accepted."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-27171"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/zlib1g@1.3.dfsg%2Breally1.3.1-1ubuntu3?arch=amd64&distro=ubuntu-26.04&epoch=1"
-        }
-      ],
-      "status": "fixed",
-      "impact_statement": "The package database describes the base layer, but the final runtime replaces libz.so.1 with verified upstream zlib 1.3.2 and validates the active mariadbd linkage."
     },
     {
       "vulnerability": {
@@ -349,292 +348,6 @@
       "status": "not_affected",
       "justification": "vulnerable_code_not_present",
       "impact_statement": "GO-2026-5932 applies only to the unmaintained golang.org/x/crypto/openpgp packages. The committed source graph and govulncheck evidence contain no openpgp import or reachable symbol in authentication-service, compose-executor, or host-provisioner."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-32776"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-32777"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-32778"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-41080"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-45186"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-50219"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-56131"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-56132"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-56403"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-56404"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-56405"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-56406"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-56407"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-56408"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-56409"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-56410"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-56411"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-56412"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-66046"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-72522"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-76641"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
-    },
-    {
-      "vulnerability": {
-        "name": "CVE-2026-76957"
-      },
-      "products": [
-        {
-          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1?arch=amd64&distro=ubuntu-26.04"
-        }
-      ],
-      "status": "not_affected",
-      "justification": "vulnerable_code_not_present",
-      "impact_statement": "The final merged runtime removes libexpat.so.1, its implementation library and git-http-push. The image build and post-build validation check file absence and reject any libexpat entry in the dynamic linker cache. The remaining finding is package-database metadata, not an executable XML parser."
     },
     {
       "vulnerability": {
@@ -1101,6 +814,19 @@
       ],
       "status": "fixed",
       "impact_statement": "Ubuntu https://ubuntu.com/security/notices/USN-8927-1 identifies 8.18.0-1ubuntu2.8 as fixed for CVE-2026-92392. The signed official package changelog records debian/patches/CVE-2026-92392.patch; upstream fix: https://github.com/curl/curl/commit/8b0744af5b1b631da5b938ca31c. Verified official deb SHA-256: curl=2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc; libcurl3t64-gnutls=8db913e1fa5a694ca6ba7b828bd18c5204e6853ac07fe7ed9c6e1f94e3444d8e; libcurl4t64=7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc5e0266. The image recipe pins these exact deb bytes and checks installed package versions. This records the applied Ubuntu backport while the scan feed omits FixedVersion; it is not a severity exception."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2025-66382"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/libexpat1@2.7.4-1ubuntu0.2?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "The official libexpat1 2.7.4-1ubuntu0.2 package update retains the base image runtime surface: git-http-push, libexpat.so.1 and libexpat.so.1.11.2 are absent. Post-build validation checks both files, the linker cache and native executable dependencies. This is component absence, not an upstream fix; Canonical still defers CVE-2025-66382 for Ubuntu 26.04."
     }
   ]
 }
