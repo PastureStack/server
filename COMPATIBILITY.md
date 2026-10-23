@@ -21,6 +21,8 @@ Official source `d6e966329b588693a6b904989865e18f731ffbad` passed
 and anonymous exact-set/checksum readback of all 26 immutable release assets.
 Its manifest is
 `sha256:e9015d5e6d6525a684feb0161918aa7d089ecaee136907119170a7b82cdda19d`;
+the immutable image coordinate is
+`ghcr.io/pasturestack/server:v1.6.544@sha256:e9015d5e6d6525a684feb0161918aa7d089ecaee136907119170a7b82cdda19d`.
 the distinct OCI config is
 `sha256:7ca8a7082b15e8d03ea3cfdc19d61fe77b35c012c1e63daf9f4a96a31fe46eb8`.
 The linux/amd64 image has one runtime layer, 516,490,074 compressed bytes.
