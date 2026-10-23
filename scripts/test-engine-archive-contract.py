@@ -105,7 +105,9 @@ class EngineArchiveContract(unittest.TestCase):
         self.assertNotIn('${listing}', engine_run)
         self.assertNotIn('listing=', engine_run)
         final = re.split(r'(?m)^FROM ', docker)[-1]
-        self.assertEqual(len(re.findall(r'(?m)^(?:RUN|COPY|ADD) ', final)), 32)
+        self.assertLessEqual(1 + len(re.findall(r'(?m)^(?:RUN|COPY|ADD) ', final)), 32)
+        self.assertNotIn('COPY --from=runtime_security_packages /out/tar /usr/bin/tar', final)
+        self.assertIn('sha256sum -c SHA256SUMS; \\\n    install -m 0755 tar /usr/bin/tar; \\\n    dpkg -i packages/*.deb;', final)
 
 
 if __name__ == '__main__':

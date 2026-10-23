@@ -1038,7 +1038,8 @@ class Tests(unittest.TestCase):
         self.assertEqual(len(re.findall(r'^FROM ', FILES[DOCKER], re.M)), 6)
         self.assertIn('FROM scratch AS component_input', FILES[DOCKER])
         final = FILES[DOCKER].rsplit('FROM ${BASE_IMAGE}', 1)[1]
-        self.assertLessEqual(len(re.findall(r'^(RUN|COPY|ADD)\b', final, re.M)), 32)
+        # The already-flattened base contributes one real layer too.
+        self.assertLessEqual(1 + len(re.findall(r'^(RUN|COPY|ADD)\b', final, re.M)), 32)
         self.assertEqual(len(re.findall(r'^\s+fetch-server-component ', FILES[DOCKER], re.M)), 16)
         self.assertIn('"${release_url%/}/v${version}/${artifact}" "${artifact}" "${archive_sha}"', FILES[DOCKER])
         release_stage = FILES[DOCKER].split('FROM ${ARTIFACT_HELPER_IMAGE} AS release_artifacts', 1)[1].split('FROM ${UBUNTU_SECURITY_IMAGE}', 1)[0]
