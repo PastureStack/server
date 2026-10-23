@@ -16,6 +16,11 @@ runtime acceptance evidence until those results are added.
 - Host API 0.38.8, WebSocket Proxy 0.23.18, authentication service 0.4.45,
   host provisioner 0.39.10, telemetry 0.4.4, catalog service 0.20.15 and
   compose executor 0.14.39 use exact published archives and binary checksums.
+- Node Agent 0.13.32 includes the matching Host API 0.38.8 supervisor
+  contract. Linux and Windows packages retain their independently verified
+  checksums; cross-compiling the Windows package is not Windows-host QA.
+- CLI 0.6.20 preserves its existing command and authorization behavior and
+  provides the original CI-tested platform archives through numeric URLs.
 - Temurin 25.0.5+8 and fixed Ubuntu 26.04 packages retain the existing ABI
   and installed-package set. APT security refresh uses private index/cache
   directories so it does not remove source indexes needed by other builds.
