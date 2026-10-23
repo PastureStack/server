@@ -1,6 +1,16 @@
 # Compatibility Contract
 
-## Server v1.6.545 candidate
+## Server v1.6.545 published
+
+Official source `858ec54df70b8089ef900a16bed1287d94e7f692` passed
+[publisher 39893305304](https://github.com/PastureStack/server/actions/runs/39893305304).
+All 26 immutable release assets passed checksum verification. The manifest is
+`sha256:f79279d9d00d0301353663e000dc41b1ed49efe45e4ed878e03d1207cfea2a44`;
+the distinct OCI config is
+`sha256:6fc2e01d80288d65991b3886cea5390395a754f3d22e3a9acd1576007f62ec6a`.
+The linux/amd64 image has one runtime layer, 516,540,955 compressed bytes.
+Artifact identity, not an installation command:
+`ghcr.io/pasturestack/server:v1.6.545@sha256:f79279d9d00d0301353663e000dc41b1ed49efe45e4ed878e03d1207cfea2a44`.
 
 Engine `0.183.353` compares complete public-endpoint identities, including the
 service, host and instance references. Web Console `1.6.193` sends the existing
@@ -9,10 +19,20 @@ PUTting a full service clone. Normal create/edit, shared saving/error lifecycle,
 authorization and `InvalidReference` validation remain unchanged.
 
 All other component pins, frozen authorization schemas and runtime settings are
-retained. This is a source candidate; component CI, Server publication and the
-real QA upgrade/refresh/restart results must be verified separately. See the
-[545 release note](docs/releases/server-1.6.545.md). Keep the previous image and
-database backup and all existing persistent volumes and operator overrides.
+retained. The final merged-rootfs-and-active-payloads gate reports 74 raw
+findings and 30 tracked unfixed LOW/MEDIUM package occurrences across 19 CVEs;
+HIGH/CRITICAL, fixed-available, untracked findings and secrets are zero.
+Tracking is not remediation or zero risk.
+
+The QA rollout and actual Server restart passed, preserving all three volumes,
+operator overrides and AppArmor. A primary service and sidekick upgraded from
+BusyBox 1.36.1 to 1.37.0 without a full service PUT. The upgrade returned 202,
+the subsequent link update returned 200, and the normal Finish Upgrade UI
+returned 202. API, database and Docker readback confirmed the new instances,
+unchanged published address/port, retained volume data and configuration, and
+the same new instance identities after Server restart. See the
+[545 release note](docs/releases/server-1.6.545.md). Keep the previous image,
+database backup, persistent volumes and operator overrides for rollback.
 
 ## Server v1.6.544 published
 
