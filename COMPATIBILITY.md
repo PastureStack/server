@@ -1,5 +1,27 @@
 # Compatibility Contract
 
+## Server v1.6.546 security refresh
+
+This source candidate consumes independently verified security releases.
+It keeps the existing authentication, authorization, registration, storage,
+service-upgrade and API contracts. Ubuntu packages stay on the installed
+26.04 series; host Docker daemons and firewall backends are not changed.
+Temurin changes to 25.0.5+8; embedded Go products use the reviewed fixed
+toolchains and same-major dependency updates.
+
+The Engine's build environment uses the official pip 26.2.2 source with a
+reproducible urllib3 2.8.0 vendoring rebuild, identified as
+26.2.2+pasturestack.1. This is a build dependency version, not a new project
+release-tag convention. Its stream-size and TLS regressions, ensurepip,
+venv and virtualenv paths are checked. No JWT, MFA or TLS verification is
+disabled.
+
+Raw findings, exact package versions and official unfixed status are retained.
+Tracking an unfixed LOW/MEDIUM finding does not mean it is fixed or risk-free.
+HIGH/CRITICAL, available fixes, unregistered findings and secrets remain
+release blockers. Existing operator environment variables and named volumes
+must be preserved. See [release details](docs/releases/server-1.6.546.md).
+
 ## Server v1.6.545 published
 
 Official source `858ec54df70b8089ef900a16bed1287d94e7f692` passed
