@@ -42,3 +42,10 @@ the host's selected firewall backend. Back up the database before cutover and
 keep the previously accepted v1.6.545 image/container. Do not run
 `docker compose down -v`. Restore matching data if a rollback requires it.
 No production configuration or data is changed by this QA.
+
+An explicitly stored `agent.image` or `bootstrap.required.image` value takes
+precedence over the new image defaults. Review those settings when upgrading
+an existing installation; selecting the maintained Agent version is separate
+from changing the Server image. Custom image choices must not be silently
+overwritten. The embedded Host API and Go Agent package URLs are verified
+independently through their effective values.
