@@ -65,9 +65,11 @@ Operator environment variables, HostConfig, volumes and AppArmor were
 preserved, with the v1.6.547 rollback container and verified database backup
 retained.
 
-Normal platform upgrades completed for all eight selected infrastructure
-stacks, eleven services and fourteen image launches, with no unfinished
-selected Stack or Service processes. The CNI wrapper selects the running v0.14.40
+Seven infrastructure stacks completed normal platform upgrades in this run;
+the unchanged eighth Policy stack retained its previously accepted upgrade and
+passed a fresh readback. Aggregate acceptance covered eight stacks, eleven
+services and fourteen image launches, with no unfinished selected Stack or
+Service processes. The CNI wrapper selects the running v0.14.40
 provider. Bidirectional traffic between the new overlay endpoints, internal
 DNS, strict TLS, IPsec security associations and new health-check endpoints
 passed. Metadata passed coherent dated/latest reads and two real change-token
