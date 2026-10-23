@@ -1,5 +1,41 @@
 # Compatibility Contract
 
+<a id="server-v16548-provider-watch"></a>
+
+## Server v1.6.548 published
+
+Official producer `62dddd5269e2f4b9b8925e424f55359146c786ae` passed
+[publisher 40018625225](https://github.com/PastureStack/server/actions/runs/40018625225).
+All 26 immutable release assets passed anonymous checksum readback. Image
+provenance and SBOM attestations were independently verified against the exact
+source, workflow and published image identity.
+
+The one-layer linux/amd64 published image is
+`ghcr.io/pasturestack/server:v1.6.548@sha256:a20b7f32d53152a7be11b28ff0c081679e42161e3142718424a3bcabfab115be`.
+Its distinct OCI config is
+`sha256:58c9ac3c9d9002a0a02aac683caf5d7544d239930b55da5fd41ac18c5b7201b7`.
+Installation examples use only the numeric tag.
+
+Catalog `v0.3.16`, pinned to source
+`070e08d8f85ffc2779a0f97eb4e356c857812d34`, adds Network Services revision 13
+with Network Plugin Manager `v0.8.25` and Metadata Service `v0.10.6`.
+The manager reselects authorized, running local CNI providers on lifecycle
+events and bounded retries. Metadata retains each local dataset's opaque
+version token; explicit external-metadata version overrides remain unchanged.
+Internal DNS, older template revisions, questions, sidekicks, volumes,
+firewall-backend choices and operator overrides are preserved.
+
+The complete runtime gate reports 51 raw findings and 29 tracked, officially
+unfixed LOW/MEDIUM occurrences across 18 CVEs after exact existing VEX
+dispositions. HIGH/CRITICAL, fixed-available, untracked findings and secrets
+are zero; tracking does not mean remediation or zero risk. Scoped real-host
+acceptance passed for eight infrastructure stacks, network/watch behavior,
+browser authentication and two controlled same-version Server restarts.
+Five transient WebSocket handshake 502 responses during controlled downtime
+are retained separately from the failure-free normal before/after checks.
+See the [release note](docs/releases/server-1.6.548.md) and
+[upgrade guidance](docs/upgrades/README.md).
+
 <a id="server-v16547-network-lifecycle"></a>
 
 ## Server v1.6.547 published

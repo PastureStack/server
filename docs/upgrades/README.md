@@ -19,16 +19,25 @@ Do not remove retained containers manually or disable the confirmation step
 to make a status badge disappear. Catalog template versions and component
 image versions are separate; a template-only upgrade may keep the same image.
 
-Server `v1.6.547` pins Catalog `v0.3.15`, whose Network Services revision 12
-uses Network Plugin Manager `v0.8.24`. Earlier managers can delete legitimate
-overlapping Metadata/DNS instances during replacement. The new manager leaves
-dependency removal to the Server lifecycle; a successful Stack API response
-alone does not prove a healthy migration. Retain the rollback point and verify
-Metadata, DNS and the actual host-network path before finishing an upgrade.
+Server `v1.6.548` pins Catalog `v0.3.16`, whose Network Services revision 13
+uses Network Plugin Manager `v0.8.25` and Metadata Service `v0.10.6`.
+The manager reselects live, authorized CNI providers when an old driver stops
+or its replacement starts; Metadata preserves the engine's opaque change token
+so endpoint watchers observe new containers. Dependency removal remains with
+the Server lifecycle. Managers older than v0.8.24 retain their destructive
+Metadata/DNS reaper; upgrading only the Server image does not replace those
+already running services.
+
+A successful Stack API response alone does not prove a healthy migration.
+Retain the rollback point and verify Metadata version changes, DNS, replacement
+CNI selection and the actual cross-host network path before finishing an
+upgrade. The [548 release note](../releases/server-1.6.548.md) separates verified
+publication from its completed, scoped real-host acceptance. Those results do
+not replace verification of an operator's own upgrade and rollback points.
 
 ## Persisted runtime coordinates
 
-Server `v1.6.547` retains Load Balancer Service `v0.9.33` as
+Server `v1.6.548` retains Load Balancer Service `v0.9.33` as
 the image default and in both HA Compose templates. Database settings and
 explicit operator overrides take precedence over the new image defaults.
 An existing persisted `v0.9.27` pair therefore stays on `v0.9.27`; an administrator

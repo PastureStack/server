@@ -7,6 +7,11 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.548](releases/server-1.6.548.md) — published Catalog revision 13
+  with CNI provider lifecycle and opaque Metadata version-watch repairs;
+  scoped eight-stack upgrades, browser authentication/session recovery and
+  two controlled Server restarts passed. The release note retains the exact
+  acceptance scope and controlled-downtime WebSocket errors.
 - [Server v1.6.547](releases/server-1.6.547.md) — published Catalog and Network
   Plugin Manager lifecycle repair; exact image identity and publication
   evidence are separate from real-host upgrade acceptance.
