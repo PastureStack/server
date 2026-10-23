@@ -6,6 +6,10 @@ Published security refresh from producer
 The immutable release contains 26 assets with verified SHA-256 checksums;
 anonymous registry and asset readback, provenance and SBOM attestations passed.
 
+Published image identity:
+`ghcr.io/pasturestack/server:v1.6.546@sha256:7b29b87ab40f427c2a6a5909330dd859745e9f0780166658ffd0556b6f0873d2`.
+This identifies the artifact; installation commands below retain a numeric tag.
+
 - Manifest: `sha256:7b29b87ab40f427c2a6a5909330dd859745e9f0780166658ffd0556b6f0873d2`.
 - OCI config: `sha256:22fbb5fe50be0317a25571b8d0ac4d1782a0bfae9959d0b72666ed8ca897f2ca`.
 - Platform: linux/amd64; one runtime layer. The maintained multi-stage build
