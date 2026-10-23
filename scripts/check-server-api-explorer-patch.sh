@@ -527,7 +527,7 @@ require_marker "$release_dockerfile" \
     'ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403' \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 require_marker "$release_dockerfile" \
-    'ARG SERVER_RELEASE_TAG=v1.6.544' \
+    'ARG SERVER_RELEASE_TAG=v1.6.545' \
     SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"' \
@@ -585,16 +585,16 @@ require_marker "$publish_workflow" \
     'bash source/server/artifacts/verify-host-api-package.sh' \
     SERVER_HOST_API_PRODUCER_RELEASE_CHECK_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.192' \
+    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.193' \
     SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.192.tar.gz' \
+    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.193.tar.gz' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=52840ebf2800f9588ec7910fe617b7782a6e92a27046b4876e9656ef4883e609' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=07dd68dddecec1d95c6932d4dd31084401ee67d517fb820ecbbe6afaa052a888' \
     SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=a8e2ab0c8242355f06c1ab2584978ccfc4d76c02' \
+    'ARG WEB_CONSOLE_COMMIT=fa7fd399e3aef2a67282e8fbbe9f3fc83002710d' \
     SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING
 require_marker "$release_dockerfile" \
     "grep -aF 'hostsPage.permissionDenied'" \
@@ -603,16 +603,16 @@ require_marker "$release_dockerfile" \
     '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ZH_TW_PERMISSION_MESSAGE_MISSING
 require_marker "$build_script" \
-    'web_console_commit=${WEB_CONSOLE_COMMIT:-a8e2ab0c8242355f06c1ab2584978ccfc4d76c02}' \
+    'web_console_commit=${WEB_CONSOLE_COMMIT:-fa7fd399e3aef2a67282e8fbbe9f3fc83002710d}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING
 require_marker "$build_script" \
-    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.192}' \
+    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.193}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.192.tar.gz}' \
+    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.193.tar.gz}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING
 require_marker "$build_script" \
-    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-52840ebf2800f9588ec7910fe617b7782a6e92a27046b4876e9656ef4883e609}' \
+    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-07dd68dddecec1d95c6932d4dd31084401ee67d517fb820ecbbe6afaa052a888}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING
 require_marker "$release_dockerfile" \
     'ARG CATALOG_SERVICE_VERSION=0.20.14' \
@@ -1082,21 +1082,21 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.544}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.545}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.544}' \
+    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.545}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING
 require_marker "$build_script" \
     'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"' \
     SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING
 for release_engine_marker in \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.352' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.353' \
     'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=1f17603554f1ee3fb651c6570690cb2d7b8c2fa27de17ae260d0cc68b402d826' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=70ba8cff544fcd5607f3054d30ac8b5cf09783d6' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=d0a353b40b8b9f739ddd30b9ccae6fbf3ca64d45547cd95e9194aad738538f40' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=e094944cd81da614187dbeba1f06354682af1d45' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
-    'ARG ORCHESTRATION_ENGINE_VERSION=0.183.352' \
+    'ARG ORCHESTRATION_ENGINE_VERSION=0.183.353' \
     'grep -Fx "Implementation-Version: ${ORCHESTRATION_ENGINE_VERSION}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'cattle-app-config-${ORCHESTRATION_ENGINE_VERSION}.jar' \
@@ -1117,10 +1117,10 @@ for release_engine_marker in \
         SERVER_INCREMENTAL_ENGINE_REPLACEMENT_MISSING
 done
 for release_engine_build_marker in \
-    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.352}' \
+    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.353}' \
     'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}' \
-    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-1f17603554f1ee3fb651c6570690cb2d7b8c2fa27de17ae260d0cc68b402d826}' \
-    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-70ba8cff544fcd5607f3054d30ac8b5cf09783d6}' \
+    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-d0a353b40b8b9f739ddd30b9ccae6fbf3ca64d45547cd95e9194aad738538f40}' \
+    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-e094944cd81da614187dbeba1f06354682af1d45}' \
     'CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.5.jar"'; do
@@ -1236,29 +1236,27 @@ require_marker "$dockerfile" \
 require_marker "$dockerfile" \
     'ARG UBUNTU_SNAPSHOT=20260910T100000Z' \
     SERVER_API_EXPLORER_PATCH_UBUNTU_SNAPSHOT_NOT_CURRENT
-for bootstrap_dockerfile in "$dockerfile" "$core_dockerfile"; do
+# The moving archive removed this version. This signed snapshot serves the
+# identical package bytes; keep the exact path and checksum, not an arbitrary
+# snapshot or a replacement hash for an HTTP error page.
+ca_bootstrap_url='https://snapshot.ubuntu.com/ubuntu/20260826T000000Z/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb'
+for bootstrap_dockerfile in "$dockerfile" "$core_dockerfile" "$release_dockerfile"; do
     require_marker "$bootstrap_dockerfile" \
-        'https://security.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb' \
+        "$ca_bootstrap_url" \
         SERVER_CA_CERTIFICATES_OFFICIAL_BOOTSTRAP_SOURCE_MISSING
     require_marker "$bootstrap_dockerfile" \
         'ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90' \
         SERVER_CA_CERTIFICATES_BOOTSTRAP_HASH_MISSING
-done
-if grep -Fq 'https://launchpad.net/ubuntu/+archive/primary/+files/' \
-    "$dockerfile" "$core_dockerfile"; then
-    echo 'SERVER_CA_CERTIFICATES_MUTABLE_BOOTSTRAP_SOURCE_BLOCKED' >&2
-    exit 1
-fi
-if grep -Fq '/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb' \
-    "$dockerfile" "$core_dockerfile" && \
-   grep -Fq 'https://snapshot.ubuntu.com/ubuntu/' \
-    "$dockerfile" "$core_dockerfile"; then
-    if grep -F 'https://snapshot.ubuntu.com/ubuntu/' \
-        "$dockerfile" "$core_dockerfile" | \
-       grep -Fq '/pool/main/c/ca-certificates/'; then
-        echo 'SERVER_CA_CERTIFICATES_SNAPSHOT_POOL_BOOTSTRAP_BLOCKED' >&2
+    if grep -F '/pool/main/c/ca-certificates/' "$bootstrap_dockerfile" | \
+        grep -Fv "$ca_bootstrap_url" >/dev/null; then
+        echo 'SERVER_CA_CERTIFICATES_UNREVIEWED_BOOTSTRAP_SOURCE_BLOCKED' >&2
         exit 1
     fi
+done
+if grep -Fq 'https://launchpad.net/ubuntu/+archive/primary/+files/' \
+    "$dockerfile" "$core_dockerfile" "$release_dockerfile"; then
+    echo 'SERVER_CA_CERTIFICATES_MUTABLE_BOOTSTRAP_SOURCE_BLOCKED' >&2
+    exit 1
 fi
 require_marker "$dockerfile" \
     'org.opencontainers.image.version="v1.6.428"' \
@@ -1627,10 +1625,10 @@ fi
 if grep -Fxq '## Current source candidate' README.md; then
     for candidate_readme_marker in \
         '<a id="current-release"></a>' \
-        'Server `v1.6.544` is a prepared source candidate, not a published image.' \
+        'Server `v1.6.545` is a prepared source candidate, not a published image.' \
         'run them only after its official release' \
         'This candidate is not yet available' \
-        'ghcr.io/pasturestack/server:v1.6.544'; do
+        'ghcr.io/pasturestack/server:v1.6.545'; do
         require_marker README.md "$candidate_readme_marker" \
             SERVER_CURRENT_CANDIDATE_README_MISSING
     done
@@ -2225,7 +2223,7 @@ done
 jq -e '
   ["CVE-2026-107928","CVE-2026-107929","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"] as $curl_fixed_cves
   |   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.544"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.545"
   and (.statements | length) == 69
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -2263,7 +2261,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.544 >/dev/null
+    "$vendor_pending_fixture" v1.6.545 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -2352,4 +2350,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.544 base=v1.6.460 engine=0.183.352 web_console=1.6.192 catalog_service=0.20.14 webhook_automation_service=0.10.5 authentication_service=0.4.44 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.545 base=v1.6.460 engine=0.183.353 web_console=1.6.193 catalog_service=0.20.14 webhook_automation_service=0.10.5 authentication_service=0.4.44 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'

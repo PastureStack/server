@@ -11,19 +11,24 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current release
+## Current source candidate
 
-[Server `v1.6.544`](https://github.com/PastureStack/server/releases/tag/v1.6.544)
-packages Engine `v0.183.352`, Web Console `1.6.192`, Host API `0.38.7`,
+Server `v1.6.545` is a prepared source candidate, not a published image.
+This candidate is not yet available from the registry; use the previous
+[published release](https://github.com/PastureStack/server/releases/tag/v1.6.544)
+until its required checks and publisher finish. Candidate installation examples
+below are release coordinates: run them only after its official release.
+
+The candidate packages Engine `v0.183.353`, Web Console `1.6.193`, Host API `0.38.7`,
 Linux/Windows Node Agent `0.13.31`, Windows CNI `0.2.5`, CLI `0.6.19`, LB `0.9.32`,
-WebSocket Proxy `0.23.17` and Temurin `25.0.4.1+1`. Scoped streams preserve
-confirmed authorization-loss reasons without treating connection failures as
-revocation. Node Agent requires the matching Host API version. Engine's pure live
-project-rights checks avoid capability side effects in Custom API Key account
-responses; normal Project and Full/legacy boundaries remain.
-See the [544 release note](docs/releases/server-1.6.544.md) and
-[compatibility contract](COMPATIBILITY.md#server-v16544-published) for immutable
-artifact identities, upgrade protections and acceptance boundaries.
+WebSocket Proxy `0.23.17` and Temurin `25.0.4.1+1`. Service upgrades send the
+upgrade strategy without first saving a complete service clone. Endpoint
+reconciliation tracks the owning service, host and instance as well as address
+and port. Existing authentication, API Key authorization and scoped-stream
+contracts remain unchanged.
+See the [545 release note](docs/releases/server-1.6.545.md) and
+[compatibility contract](COMPATIBILITY.md#server-v16545-candidate) for upgrade
+protections and acceptance boundaries.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -50,14 +55,15 @@ Maintained CLI `0.6.19` propagates rejected requests as nonzero errors. Legacy `
 ## Quick start
 
 Public GHCR downloads do not require a registry login. Keep all three named volumes.
-The examples below use the published numeric `v1.6.544` tag.
+The examples below use the candidate numeric `v1.6.545` tag; run them only after
+its official release.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.544
+  ghcr.io/pasturestack/server:v1.6.545
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -65,7 +71,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.544
+    image: ghcr.io/pasturestack/server:v1.6.545
     restart: unless-stopped
     ports:
       - "8080:8080"
