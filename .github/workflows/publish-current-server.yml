@@ -176,16 +176,16 @@ jobs:
           set -Eeuo pipefail
           {
             test "$(docker image inspect "$CANDIDATE_IMAGE" --format '{{range .Config.Env}}{{println .}}{{end}}' |
-              sed -n 's/^JAVA_VERSION=//p')" = jdk-25.0.4.1+1
+              sed -n 's/^JAVA_VERSION=//p')" = jdk-25.0.5+8
             test "$(docker image inspect "$CANDIDATE_IMAGE" --format '{{range .Config.Env}}{{println .}}{{end}}' |
               sed -n 's/^PASTURESTACK_JAVA_ARCHIVE_SHA256=//p')" = \
-              dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e
+              68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb
             docker run --rm --network none --entrypoint /bin/bash "$CANDIDATE_IMAGE" -ec '
               test "$(command -v java)" = /opt/java/openjdk/bin/java
               test "$(readlink -f /usr/bin/java)" = /opt/java/openjdk/bin/java
               test "$(readlink -f /usr/bin/javac)" = /opt/java/openjdk/bin/javac
               java -version 2>&1 | tee /tmp/java-version
-              grep -F "25.0.4.1+1" /tmp/java-version
+              grep -F "25.0.5+8" /tmp/java-version
               javac -version
               test -s /opt/java/openjdk/lib/security/cacerts
               test -s /opt/java/openjdk/legal/java.base/LICENSE
@@ -195,10 +195,10 @@ jobs:
                 deps=$(LD_LIBRARY_PATH=/opt/java/openjdk/lib:/opt/java/openjdk/lib/server ldd "/opt/java/openjdk/$lib")
                 if grep -F "not found" <<<"$deps"; then exit 1; fi
               done
-              java --list-modules | grep -E "^(java.naming|java.security.jgss|jdk.crypto.ec)@25.0.4.1"
+              java --list-modules | grep -E "^(java.naming|java.security.jgss|jdk.crypto.ec)@25.0.5"
             '
             RC16_JDK25_CHECK_IMAGE="$CANDIDATE_IMAGE" bash scripts/check-server-java-patches-jdk25.sh
-            printf 'SERVER_JAVA_SECURITY_RUNTIME_OK version=25.0.4.1+1 official_archive_sha256=dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e actual_candidate=1\n'
+            printf 'SERVER_JAVA_SECURITY_RUNTIME_OK version=25.0.5+8 official_archive_sha256=68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb actual_candidate=1\n'
           } |& tee "$RUNNER_TEMP/server-evidence/java-security-runtime.txt"
 
       - name: Start, restart, and export the candidate

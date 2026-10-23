@@ -33,14 +33,14 @@ LB_RUNTIME_MARKERS = [
 PUBLISHED_508 = 'Server `v1.6.508` 已正式發布，封裝 Web Console `1.6.171`。'
 STALE_508_CANDIDATE = 'Server `v1.6.508` candidate packages Web Console `1.6.171`'
 COMPATIBILITY_CODE = 'SERVER_CREATE_RESPONSE_ORDER_COMPATIBILITY_MISSING'
-WEB_SHA = '07dd68dddecec1d95c6932d4dd31084401ee67d517fb820ecbbe6afaa052a888'
-WEB_SOURCE = 'fa7fd399e3aef2a67282e8fbbe9f3fc83002710d'
+WEB_SHA = 'fe83f57dd1202766579b848f1bee75e7c05536db2fbb1f58de2bbb21829b1221'
+WEB_SOURCE = 'f47283ff6d18516040c0ee0782ac0a0314b67538'
 CATALOG_COMMIT = '71ec6b2c27355e709f5092c954db24efa800bc41'
 ENGINE_SHA = 'd0a353b40b8b9f739ddd30b9ccae6fbf3ca64d45547cd95e9194aad738538f40'
 ENGINE_SOURCE = 'e094944cd81da614187dbeba1f06354682af1d45'
 OLD_COORDINATES = {
     'v1.6.545': 'v1.6.521',
-    '1.6.193': '1.6.181',
+    '1.6.194': '1.6.181',
     WEB_SHA: '9199681f2c4311f3fbe8727fcf0f6fa136c9bafe9fbe9d13878c55df442a7a03',
     WEB_SOURCE: '7f2bdad0c90a3241693c2ddd4475202ababba550',
     CATALOG_COMMIT: '7670ffd81d5f0b5570197fb03c7e55b46da45bf3',
@@ -66,13 +66,13 @@ EXPECTED = {
     'SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING': (DOCKER, 'ARG SERVER_RELEASE_TAG=v1.6.545'),
     'SERVER_INCREMENTAL_RELEASE_VERSION_MISSING': (DOCKER, 'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"'),
     'SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING': (DOCKER, 'ENV CATTLE_RANCHER_SERVER_VERSION=${SERVER_RELEASE_TAG}'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RELEASE_TAG=1.6.193'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.193.tar.gz'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RELEASE_TAG=1.6.194'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.194.tar.gz'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT_SHA256=' + WEB_SHA),
     'SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_COMMIT=' + WEB_SOURCE),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING': (BUILD, 'web_console_commit=${WEB_CONSOLE_COMMIT:-' + WEB_SOURCE + '}'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING': (BUILD, 'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.193}'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING': (BUILD, 'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.193.tar.gz}'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING': (BUILD, 'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.194}'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING': (BUILD, 'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.194.tar.gz}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING': (BUILD, 'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-' + WEB_SHA + '}'),
     'SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING': (BUILD, 'image=${IMAGE:-pasturestack-validation/server:v1.6.545}'),
     'SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING': (BUILD, 'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.545}'),
@@ -122,18 +122,18 @@ INCREMENTAL_CONTRACTS = [
         "incremental_producer_marker",
         "server/Dockerfile.web-compose-release",
         [
-            "ARG HOST_PROVISIONER_VERSION=0.39.9",
-            "ARG HOST_PROVISIONER_COMMIT=732b2211979732d774e28d543da1e41ef0ba2fa1",
-            "ARG HOST_PROVISIONER_ARCHIVE_SHA256=25bbdb62d31b87097aee17c067ed6d6e524437cd420deeba12f33f2f6472d578",
-            "ARG HOST_PROVISIONER_BINARY_SHA256=b3fc8380be12669ce0ad8947e7a510cbf7cc84a9e5e28a3239596782a9e2b85d",
+            "ARG HOST_PROVISIONER_VERSION=0.39.10",
+            "ARG HOST_PROVISIONER_COMMIT=d5f6d5c9f4f0599f4bf1bdc9d5d0cca2e2e0c1ba",
+            "ARG HOST_PROVISIONER_ARCHIVE_SHA256=fd8a814c5810746091ba3192a9fd31699e6865a2598654b9bbb55eae90bef661",
+            "ARG HOST_PROVISIONER_BINARY_SHA256=92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff",
             "ARG SECRET_DELIVERY_API_VERSION=0.3.3",
             "ARG SECRET_DELIVERY_API_COMMIT=da196acba539fe7a0c04539f6f7537cdfb2d8d69",
             "ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=026ba87f4c8fb7bfbf991f63a496db9c4a0837913ab56dc505c187f9b9598699",
             "ARG SECRET_DELIVERY_API_BINARY_SHA256=e4928ca7359975ba4ad73456296baace8ef0b428c0901055a0317244a17e4665",
-            "ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.3",
-            "ARG USAGE_TELEMETRY_AGENT_COMMIT=b2b779deb13e307b2b2d2d620d99a7ab24ffb819",
-            "ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=7f3e2f8ab85fd89dca1c3e0e6e5951818c85ac2a3e670a745a224b786742c57b",
-            "ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=63e574d6aea42b548723457f4073ac3b8acd9ae3e8818cdce596512b346919e4",
+            "ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.4",
+            "ARG USAGE_TELEMETRY_AGENT_COMMIT=4ee641bc1273cf582a77609af71d00b72f17b628",
+            "ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866",
+            "ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be",
             "ARG COMPOSE_EXECUTOR_COMMIT=142bc116f7517b1c12458e02b2747381036973b4",
             "ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=1a38cfea389543381cffb0d678cb7beaafb5064c52739aa31fa4f8964005e3e0"
         ]
@@ -142,18 +142,18 @@ INCREMENTAL_CONTRACTS = [
         "incremental_producer_build_marker",
         "server/build-api-explorer-patch-image.sh",
         [
-            "host_provisioner_version=${HOST_PROVISIONER_VERSION:-0.39.9}",
-            "host_provisioner_commit=${HOST_PROVISIONER_COMMIT:-732b2211979732d774e28d543da1e41ef0ba2fa1}",
-            "host_provisioner_archive_sha256=${HOST_PROVISIONER_ARCHIVE_SHA256:-25bbdb62d31b87097aee17c067ed6d6e524437cd420deeba12f33f2f6472d578}",
-            "host_provisioner_binary_sha256=${HOST_PROVISIONER_BINARY_SHA256:-b3fc8380be12669ce0ad8947e7a510cbf7cc84a9e5e28a3239596782a9e2b85d}",
+            "host_provisioner_version=${HOST_PROVISIONER_VERSION:-0.39.10}",
+            "host_provisioner_commit=${HOST_PROVISIONER_COMMIT:-d5f6d5c9f4f0599f4bf1bdc9d5d0cca2e2e0c1ba}",
+            "host_provisioner_archive_sha256=${HOST_PROVISIONER_ARCHIVE_SHA256:-fd8a814c5810746091ba3192a9fd31699e6865a2598654b9bbb55eae90bef661}",
+            "host_provisioner_binary_sha256=${HOST_PROVISIONER_BINARY_SHA256:-92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff}",
             "secret_delivery_api_version=${SECRET_DELIVERY_API_VERSION:-0.3.3}",
             "secret_delivery_api_commit=${SECRET_DELIVERY_API_COMMIT:-da196acba539fe7a0c04539f6f7537cdfb2d8d69}",
             "secret_delivery_api_archive_sha256=${SECRET_DELIVERY_API_ARCHIVE_SHA256:-026ba87f4c8fb7bfbf991f63a496db9c4a0837913ab56dc505c187f9b9598699}",
             "secret_delivery_api_binary_sha256=${SECRET_DELIVERY_API_BINARY_SHA256:-e4928ca7359975ba4ad73456296baace8ef0b428c0901055a0317244a17e4665}",
-            "usage_telemetry_agent_version=${USAGE_TELEMETRY_AGENT_VERSION:-0.4.3}",
-            "usage_telemetry_agent_commit=${USAGE_TELEMETRY_AGENT_COMMIT:-b2b779deb13e307b2b2d2d620d99a7ab24ffb819}",
-            "usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-7f3e2f8ab85fd89dca1c3e0e6e5951818c85ac2a3e670a745a224b786742c57b}",
-            "usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-63e574d6aea42b548723457f4073ac3b8acd9ae3e8818cdce596512b346919e4}",
+            "usage_telemetry_agent_version=${USAGE_TELEMETRY_AGENT_VERSION:-0.4.4}",
+            "usage_telemetry_agent_commit=${USAGE_TELEMETRY_AGENT_COMMIT:-4ee641bc1273cf582a77609af71d00b72f17b628}",
+            "usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866}",
+            "usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be}",
             "compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.38}",
             "compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-142bc116f7517b1c12458e02b2747381036973b4}",
             "compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-1a38cfea389543381cffb0d678cb7beaafb5064c52739aa31fa4f8964005e3e0}",
@@ -243,19 +243,19 @@ INCREMENTAL_CONTRACTS = [
 ]
 INCREMENTAL_CONTRACTS += [
     ('api_explorer_release_marker', DOCKER, [
-        'ARG API_EXPLORER_RELEASE_TAG=v1.1.19',
-        'ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.19.tar.gz',
-        'ARG API_EXPLORER_ARTIFACT_SHA256=d1602ab6033512f0b86dc8ceafee2061364ce2fc5da2a9b7119f900d9e0f3c25',
-        'ARG API_EXPLORER_COMMIT=dda3fe8a806d9736de771d325e3ca98ab4067cd2',
+        'ARG API_EXPLORER_RELEASE_TAG=v1.1.20',
+        'ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.20.tar.gz',
+        'ARG API_EXPLORER_ARTIFACT_SHA256=c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb',
+        'ARG API_EXPLORER_COMMIT=a586f0dc0aa50df579049a8d4bf26f04400fdf75',
         'COPY --chmod=0755 artifacts/prepare-api-explorer.sh /usr/local/bin/prepare-api-explorer',
         'fetch-server-component "${COMPONENT_ARTIFACT_MODE}" "${API_EXPLORER_RELEASE_BASE_URL%/}/${API_EXPLORER_RELEASE_TAG}/${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT_SHA256}" /tmp/api-explorer.tar.gz;',
-        'prepare-api-explorer /tmp/api-explorer.tar.gz 1.1.19 "${API_EXPLORER_COMMIT}" /out/api-explorer;',
+        'prepare-api-explorer /tmp/api-explorer.tar.gz 1.1.20 "${API_EXPLORER_COMMIT}" /out/api-explorer;',
         'COPY --from=release_artifacts /out/api-explorer/ /tmp/pasturestack-api-ui/',
         'COPY --from=release_artifacts /out/api-explorer.sha256 /tmp/pasturestack-api-ui.sha256',
         'mv /tmp/pasturestack-api-ui api-ui;',
         '(cd api-ui && sha256sum -c /tmp/pasturestack-api-ui.sha256);',
-        'ENV CATTLE_API_UI_VERSION=1.1.19',
-        'ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.19',
+        'ENV CATTLE_API_UI_VERSION=1.1.20',
+        'ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.20',
         'ENV PASTURESTACK_API_EXPLORER_COMMIT=${API_EXPLORER_COMMIT}',
         'ENV PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256=${API_EXPLORER_ARTIFACT_SHA256}',
     ]),
@@ -575,7 +575,7 @@ def verify(files, gate=GATE):
         raise AssertionError('CURRENT_VEX_RELEASE_MISMATCH')
     if json.loads(files[VENDOR]).get('release') != 'v1.6.545':
         raise AssertionError('CURRENT_VENDOR_RELEASE_MISMATCH')
-    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.545 base=v1.6.460 engine=0.183.353 web_console=1.6.193 catalog_service=0.20.14 ' not in gate:
+    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.545 base=v1.6.460 engine=0.183.353 web_console=1.6.194 catalog_service=0.20.14 ' not in gate:
         raise AssertionError('CURRENT_SUMMARY_MISMATCH')
     verify_incremental_contract(files, gate)
     verify_load_balancer_contract(files, gate)
@@ -594,7 +594,7 @@ def previous_gate(gate=GATE):
             'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.521"',
         '"$vendor_pending_fixture" v1.6.545 >/dev/null':
             '"$vendor_pending_fixture" v1.6.521 >/dev/null',
-        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.545 base=v1.6.460 engine=0.183.353 web_console=1.6.193 catalog_service=0.20.14 ':
+        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.545 base=v1.6.460 engine=0.183.353 web_console=1.6.194 catalog_service=0.20.14 ':
             'SERVER_API_EXPLORER_PATCH_OK release=v1.6.521 base=v1.6.460 engine=0.183.340 web_console=1.6.181 catalog_service=0.20.12 ',
     })
     for marker, stale_marker in replacements.items():
@@ -634,22 +634,26 @@ class Tests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'CURRENT_LB_GATE_CONTRACT_MISMATCH'):
             verify_load_balancer_contract(FILES, GATE.replace('current_lb_default_marker', 'removed_lb_default_marker'))
 
-    def test_ca_bootstrap_keeps_verified_package_bytes_at_locked_snapshot(self):
-        url = ('https://snapshot.ubuntu.com/ubuntu/20260826T000000Z/pool/main/c/'
-               'ca-certificates/ca-certificates_20260601~26.04.1_all.deb')
-        digest = '6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90'
+    def test_ca_bootstrap_keeps_verified_official_security_package_bytes(self):
+        url = ('https://archive.ubuntu.com/ubuntu/pool/main/c/'
+               'ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb')
+        digest = '5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd'
         pattern = re.compile(r'^ADD --checksum=sha256:' + digest + r'\s+'
                              + re.escape(url) + r'\s+/tmp/ca-certificates\.deb\s*$', re.M)
         for path in (DOCKER, 'server/Dockerfile', 'server/Dockerfile.api-explorer-patch'):
             source = (REPO / path).read_text(encoding='utf-8').replace('\\\n', ' ')
             with self.subTest(path=path):
                 self.assertEqual(len(pattern.findall(source)), 1)
-                self.assertNotRegex(source, r'https://(?:archive|security)\.ubuntu\.com/ubuntu/pool/main/c/ca-certificates/')
+                self.assertNotIn('ca-certificates_20260601~26.04.1_all.deb', source)
                 self.assertIsNone(pattern.search(source.replace(digest, '0' * 64)))
-                self.assertIsNone(pattern.search(source.replace('20260826T000000Z', 'latest')))
+                self.assertIsNone(pattern.search(source.replace('20260816ubuntu0.26.04.1', 'latest')))
         self.assertIn("ca_bootstrap_url='" + url + "'", GATE)
         self.assertIn('SERVER_CA_CERTIFICATES_UNREVIEWED_BOOTSTRAP_SOURCE_BLOCKED', GATE)
         self.assertIn('SERVER_CA_CERTIFICATES_BOOTSTRAP_HASH_MISSING', GATE)
+        recipe = FILES[DOCKER]
+        self.assertEqual(recipe.count('ARG CA_CERTIFICATES_PACKAGE_VERSION=20260816ubuntu0.26.04.1'), 2)
+        self.assertIn('cp /tmp/ca-certificates.deb "/out/packages/ca-certificates_${CA_CERTIFICATES_PACKAGE_VERSION}_all.deb"', recipe)
+        self.assertIn('test "$(dpkg-query -W -f=\'${Version}\' ca-certificates)" = "${CA_CERTIFICATES_PACKAGE_VERSION}"', recipe)
 
     def test_official_curl_fixed_debs_are_pinned_outside_the_unchanged_snapshot(self):
         recipe, builder = FILES[DOCKER], FILES[BUILD]
@@ -759,10 +763,10 @@ class Tests(unittest.TestCase):
     [
         "AUTHENTICATION_SERVICE",
         "authentication_service",
-        "0.4.44",
-        "63e7941dd0c8c26fefaf1e252d67bccc34a9347f",
-        "3fab69156bcc07b96a4b404f24fe59c08958a4357113cecec440ea6d40c5c9a4",
-        "446c89fe2a5ce3d1ff677cf1fac26740cc38520b6977ff5d86a7d865e7dfc3ed"
+        "0.4.45",
+        "2f54018191ffd4ff008c5ad2bfb6d6ace7890b39",
+        "cd3d4a81ae694e53f38ab1be761bb0e8d266fd69cc1c19a5e5a9cdcfed04446b",
+        "2198ad367405c0f329e85ddb5a882b1568a40eaa002dafa71e772688feb8a25c"
     ],
     [
         "WEBSOCKET_PROXY",
@@ -890,9 +894,9 @@ class Tests(unittest.TestCase):
                     with self.assertRaisesRegex(AssertionError, 'CURRENT_(?:INCREMENTAL|RUNTIME)_.*(?:MISMATCH|BYPASS)'):
                         verify_incremental_contract(dict(FILES, **{DOCKER: FILES[DOCKER].replace(marker, replacement)}))
         for upper, version, digest, binary in (
-            ('HOST_PROVISIONER', '0.39.9', 'b3fc8380be12669ce0ad8947e7a510cbf7cc84a9e5e28a3239596782a9e2b85d', '/usr/bin/host-provisioner.real'),
+            ('HOST_PROVISIONER', '0.39.10', '92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff', '/usr/bin/host-provisioner.real'),
             ('SECRET_DELIVERY_API', '0.3.3', 'e4928ca7359975ba4ad73456296baace8ef0b428c0901055a0317244a17e4665', '/usr/bin/secret-delivery-api'),
-            ('USAGE_TELEMETRY_AGENT', '0.4.3', '63e574d6aea42b548723457f4073ac3b8acd9ae3e8818cdce596512b346919e4', '/usr/bin/usage-telemetry-agent'),
+            ('USAGE_TELEMETRY_AGENT', '0.4.4', '90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be', '/usr/bin/usage-telemetry-agent'),
         ):
             self.assertIn(digest + '  ' + binary, FILES[BUILD])
             self.assertIn('PASTURESTACK_' + upper + '_VERSION="' + '$' + '{' + upper.lower() + '_version}"', FILES[BUILD])

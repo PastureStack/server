@@ -85,18 +85,18 @@ publish_workflow = read_text(".github/workflows/publish-current-server.yml")
 # the from-scratch recipe does not replace that base's JDK at runtime.
 for marker in (
     'AS temurin_security_runtime',
-    'ADD --checksum=sha256:dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e',
-    'OpenJDK25U-jdk_x64_linux_hotspot_25.0.4.1_1.tar.gz',
+    'ADD --checksum=sha256:68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb',
+    'OpenJDK25U-jdk_x64_linux_hotspot_25.0.5_8.tar.gz',
     'RUN rm -rf /opt/java/openjdk',
     'COPY --from=temurin_security_runtime /out/java/ /opt/java/openjdk/',
-    'ENV JAVA_VERSION=jdk-25.0.4.1+1',
-    'PASTURESTACK_JAVA_ARCHIVE_SHA256=dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e',
+    'ENV JAVA_VERSION=jdk-25.0.5+8',
+    'PASTURESTACK_JAVA_ARCHIVE_SHA256=68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb',
 ):
     if marker not in release_dockerfile:
         fail('SERVER_CURRENT_JDK_SECURITY_PIN_MISSING', marker)
 for marker in (
     'RC16_JDK25_CHECK_IMAGE="$CANDIDATE_IMAGE" bash scripts/check-server-java-patches-jdk25.sh',
-    'SERVER_JAVA_SECURITY_RUNTIME_OK version=25.0.4.1+1',
+    'SERVER_JAVA_SECURITY_RUNTIME_OK version=25.0.5+8',
     'java-security-runtime.txt',
     'LD_LIBRARY_PATH=/opt/java/openjdk/lib:/opt/java/openjdk/lib/server ldd',
 ):
@@ -115,9 +115,9 @@ else:
 for marker, code in [
     ("FROM ubuntu:26.04", "SERVER_JDK25_SOURCE_POLICY_UBUNTU2604_BASE_OK"),
     ("apt-get update && apt-get upgrade -y", "SERVER_JDK25_SOURCE_POLICY_APT_SECURITY_UPGRADE_OK"),
-    ('ARG TEMURIN_JDK25_VERSION="25.0.4.1+1"', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_VERSION_OK"),
-    ('ARG TEMURIN_JDK25_URL="https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4.1%2B1/OpenJDK25U-jdk_x64_linux_hotspot_25.0.4.1_1.tar.gz"', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_URL_OK"),
-    ('ARG TEMURIN_JDK25_SHA256="dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e"', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_SHA256_OK"),
+    ('ARG TEMURIN_JDK25_VERSION="25.0.5+8"', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_VERSION_OK"),
+    ('ARG TEMURIN_JDK25_URL="https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jdk_x64_linux_hotspot_25.0.5_8.tar.gz"', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_URL_OK"),
+    ('ARG TEMURIN_JDK25_SHA256="68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb"', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_SHA256_OK"),
     ('echo "${TEMURIN_JDK25_SHA256}  /tmp/temurin-jdk25.tar.gz" | sha256sum -c -', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_CHECK_OK"),
     ("ENV JAVA_HOME=/opt/java/openjdk", "SERVER_JDK25_SOURCE_POLICY_JAVA_HOME_OK"),
     ("ENV PATH=${JAVA_HOME}/bin:${PATH}", "SERVER_JDK25_SOURCE_POLICY_JAVA_PATH_OK"),

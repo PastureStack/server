@@ -58,15 +58,15 @@ done
 case "$per_host_subnet_release_base_url" in https://*) ;; *) exit 1 ;; esac
 component_artifact_mode=remote
 api_explorer_release_base_url=${API_EXPLORER_RELEASE_BASE_URL:-https://github.com/PastureStack/api-explorer/releases/download}
-api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.19}
-api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.19.tar.gz}
-api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-d1602ab6033512f0b86dc8ceafee2061364ce2fc5da2a9b7119f900d9e0f3c25}
-api_explorer_commit=${API_EXPLORER_COMMIT:-dda3fe8a806d9736de771d325e3ca98ab4067cd2}
+api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.20}
+api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.20.tar.gz}
+api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb}
+api_explorer_commit=${API_EXPLORER_COMMIT:-a586f0dc0aa50df579049a8d4bf26f04400fdf75}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.193}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.193.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-07dd68dddecec1d95c6932d4dd31084401ee67d517fb820ecbbe6afaa052a888}
-web_console_commit=${WEB_CONSOLE_COMMIT:-fa7fd399e3aef2a67282e8fbbe9f3fc83002710d}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.194}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.194.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-fe83f57dd1202766579b848f1bee75e7c05536db2fbb1f58de2bbb21829b1221}
+web_console_commit=${WEB_CONSOLE_COMMIT:-f47283ff6d18516040c0ee0782ac0a0314b67538}
 catalog_service_release_base_url=${CATALOG_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/catalog-service/releases/download}
 catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.14}
 catalog_service_commit=${CATALOG_SERVICE_COMMIT:-9b0c0f40dc81eb83673df85f3de96f7e6f89b985}
@@ -75,10 +75,10 @@ catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-86f2bb33254161bb4
 catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-672ab1a50cb80077faacdb218f66fea2da233454d0110ef14bbf7b9c30d05da5}
 catalog_service_license_sha256=${CATALOG_SERVICE_LICENSE_SHA256:-0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594}
 authentication_service_release_base_url=${AUTHENTICATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/authentication-service/releases/download}
-authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.44}
-authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-63e7941dd0c8c26fefaf1e252d67bccc34a9347f}
-authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-3fab69156bcc07b96a4b404f24fe59c08958a4357113cecec440ea6d40c5c9a4}
-authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-446c89fe2a5ce3d1ff677cf1fac26740cc38520b6977ff5d86a7d865e7dfc3ed}
+authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.45}
+authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-2f54018191ffd4ff008c5ad2bfb6d6ace7890b39}
+authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-cd3d4a81ae694e53f38ab1be761bb0e8d266fd69cc1c19a5e5a9cdcfed04446b}
+authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-2198ad367405c0f329e85ddb5a882b1568a40eaa002dafa71e772688feb8a25c}
 websocket_proxy_release_base_url=${WEBSOCKET_PROXY_RELEASE_BASE_URL:-https://github.com/PastureStack/websocket-proxy/releases/download}
 websocket_proxy_version=${WEBSOCKET_PROXY_VERSION:-0.23.17}
 websocket_proxy_commit=${WEBSOCKET_PROXY_COMMIT:-6fc9f6a2ee3c010b5376887b387a32f243240026}
@@ -100,20 +100,20 @@ vsphere_cli_bundle_commit=${VSPHERE_CLI_BUNDLE_COMMIT:-35ca999b775a41e7fb34e9a6b
 vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-abec8c22504adde66e2ccd89b7b764c8a643c5e1e4425dafb2964abde75806a0}
 govc_binary_sha256=${GOVC_BINARY_SHA256:-8f43086cc85de88a93e510efe9375a1ff6e265ca12e764c1fc8ae4c35be69ded}
 host_provisioner_release_base_url=${HOST_PROVISIONER_RELEASE_BASE_URL:-https://github.com/PastureStack/host-provisioner/releases/download}
-host_provisioner_version=${HOST_PROVISIONER_VERSION:-0.39.9}
-host_provisioner_commit=${HOST_PROVISIONER_COMMIT:-732b2211979732d774e28d543da1e41ef0ba2fa1}
-host_provisioner_archive_sha256=${HOST_PROVISIONER_ARCHIVE_SHA256:-25bbdb62d31b87097aee17c067ed6d6e524437cd420deeba12f33f2f6472d578}
-host_provisioner_binary_sha256=${HOST_PROVISIONER_BINARY_SHA256:-b3fc8380be12669ce0ad8947e7a510cbf7cc84a9e5e28a3239596782a9e2b85d}
+host_provisioner_version=${HOST_PROVISIONER_VERSION:-0.39.10}
+host_provisioner_commit=${HOST_PROVISIONER_COMMIT:-d5f6d5c9f4f0599f4bf1bdc9d5d0cca2e2e0c1ba}
+host_provisioner_archive_sha256=${HOST_PROVISIONER_ARCHIVE_SHA256:-fd8a814c5810746091ba3192a9fd31699e6865a2598654b9bbb55eae90bef661}
+host_provisioner_binary_sha256=${HOST_PROVISIONER_BINARY_SHA256:-92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff}
 secret_delivery_api_release_base_url=${SECRET_DELIVERY_API_RELEASE_BASE_URL:-https://github.com/PastureStack/secret-delivery-api/releases/download}
 secret_delivery_api_version=${SECRET_DELIVERY_API_VERSION:-0.3.3}
 secret_delivery_api_commit=${SECRET_DELIVERY_API_COMMIT:-da196acba539fe7a0c04539f6f7537cdfb2d8d69}
 secret_delivery_api_archive_sha256=${SECRET_DELIVERY_API_ARCHIVE_SHA256:-026ba87f4c8fb7bfbf991f63a496db9c4a0837913ab56dc505c187f9b9598699}
 secret_delivery_api_binary_sha256=${SECRET_DELIVERY_API_BINARY_SHA256:-e4928ca7359975ba4ad73456296baace8ef0b428c0901055a0317244a17e4665}
 usage_telemetry_agent_release_base_url=${USAGE_TELEMETRY_AGENT_RELEASE_BASE_URL:-https://github.com/PastureStack/usage-telemetry-agent/releases/download}
-usage_telemetry_agent_version=${USAGE_TELEMETRY_AGENT_VERSION:-0.4.3}
-usage_telemetry_agent_commit=${USAGE_TELEMETRY_AGENT_COMMIT:-b2b779deb13e307b2b2d2d620d99a7ab24ffb819}
-usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-7f3e2f8ab85fd89dca1c3e0e6e5951818c85ac2a3e670a745a224b786742c57b}
-usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-63e574d6aea42b548723457f4073ac3b8acd9ae3e8818cdce596512b346919e4}
+usage_telemetry_agent_version=${USAGE_TELEMETRY_AGENT_VERSION:-0.4.4}
+usage_telemetry_agent_commit=${USAGE_TELEMETRY_AGENT_COMMIT:-4ee641bc1273cf582a77609af71d00b72f17b628}
+usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866}
+usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
 image=${IMAGE:-pasturestack-validation/server:v1.6.545}
@@ -369,7 +369,7 @@ for marker in \
     CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}" \
     CATTLE_RANCHER_CLI_VERSION=v0.6.19 \
     PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download \
-    CATTLE_API_UI_VERSION=1.1.19 \
+    CATTLE_API_UI_VERSION=1.1.20 \
     CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}" \
     DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.32 \
     DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.32 \
@@ -413,7 +413,7 @@ for marker in \
     PASTURESTACK_GPG_VERIFIER=removed \
     PASTURESTACK_CONTAINER_SOURCE_BUILD_MODE=removed \
     PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.3 \
-    PASTURESTACK_API_EXPLORER_PACKAGE=1.1.19 \
+    PASTURESTACK_API_EXPLORER_PACKAGE=1.1.20 \
     PASTURESTACK_API_EXPLORER_COMMIT="${api_explorer_commit}" \
     PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256="${api_explorer_artifact_sha256}" \
     PASTURESTACK_WEB_CONSOLE_PACKAGE="${web_console_release_tag}" \
@@ -771,7 +771,7 @@ docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_versi
     test -s "${api_dir}/licenses/handlebars-4.7.10/LICENSE"
     test ! -e "${api_dir}/js/bootstrap.js"
     test "$(find "${api_dir}" -type f -name "*.map" | wc -l)" -eq 0
-    grep -F '"'"'"version": "1.1.19"'"'"' "${api_dir}/version.json" >/dev/null
+    grep -F '"'"'"version": "1.1.20"'"'"' "${api_dir}/version.json" >/dev/null
     grep -F '"'"'"commit": "dda3fe8"'"'"' "${api_dir}/version.json" >/dev/null
     grep -aF "handlebars v4.7.10" "${api_dir}/ui.js" >/dev/null
     for marker in \
@@ -832,11 +832,11 @@ docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_versi
         sha256sum -c -
     rm -f /tmp/hazelcast.jar
     cat <<'"'"'EOF'"'"' | sha256sum -c -
-446c89fe2a5ce3d1ff677cf1fac26740cc38520b6977ff5d86a7d865e7dfc3ed  /usr/bin/authentication-service.real
+2198ad367405c0f329e85ddb5a882b1568a40eaa002dafa71e772688feb8a25c  /usr/bin/authentication-service.real
 2e5568465842ae0af9838adf9bfc91eee23f09ea08cde951081f12d0e5cbd073  /usr/bin/compose-executor.real
-b3fc8380be12669ce0ad8947e7a510cbf7cc84a9e5e28a3239596782a9e2b85d  /usr/bin/host-provisioner.real
+92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff  /usr/bin/host-provisioner.real
 e4928ca7359975ba4ad73456296baace8ef0b428c0901055a0317244a17e4665  /usr/bin/secret-delivery-api
-63e574d6aea42b548723457f4073ac3b8acd9ae3e8818cdce596512b346919e4  /usr/bin/usage-telemetry-agent
+90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be  /usr/bin/usage-telemetry-agent
 b98e55db2739ab45119eacc94c8f65cb44371480ebcebec95e5470fd67c72a4c  /usr/bin/webhook-automation-service
 EOF
     echo "${PASTURESTACK_GOVC_BINARY_SHA256}  /usr/bin/govc" | sha256sum -c -
@@ -859,7 +859,7 @@ EOF
     done
     test -x /usr/bin/pasturestack-console-broker
     grep -aF "go1.27.3" /usr/bin/pasturestack-console-broker >/dev/null
-    /usr/bin/authentication-service.real --version | grep -F "0.4.44" >/dev/null
+    /usr/bin/authentication-service.real --version | grep -F "0.4.45" >/dev/null
     for marker in \
         oidcAccessPolicyUpdate \
         LocalRecoveryRequired \
@@ -878,7 +878,7 @@ EOF
     grep -Fx "Release source commit: ${PASTURESTACK_CATALOG_SERVICE_COMMIT}" \
         /usr/share/licenses/pasturestack/catalog-service/SOURCES.txt >/dev/null
     /usr/bin/secret-delivery-api --version | grep -F "v0.3.3" >/dev/null
-    /usr/bin/usage-telemetry-agent --version | grep -F "0.4.3" >/dev/null
+    /usr/bin/usage-telemetry-agent --version | grep -F "0.4.4" >/dev/null
     /usr/bin/webhook-automation-service --version | grep -F "0.10.5" >/dev/null
     test "$(readlink -f /usr/bin/webhook-service)" = /usr/bin/webhook-automation-service
     grep -Fx "Release source commit: 4da77ccac464bc7f7cd2020e0659a666a5d1ff7e" \

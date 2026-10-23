@@ -585,16 +585,16 @@ require_marker "$publish_workflow" \
     'bash source/server/artifacts/verify-host-api-package.sh' \
     SERVER_HOST_API_PRODUCER_RELEASE_CHECK_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.193' \
+    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.194' \
     SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.193.tar.gz' \
+    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.194.tar.gz' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=07dd68dddecec1d95c6932d4dd31084401ee67d517fb820ecbbe6afaa052a888' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=fe83f57dd1202766579b848f1bee75e7c05536db2fbb1f58de2bbb21829b1221' \
     SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=fa7fd399e3aef2a67282e8fbbe9f3fc83002710d' \
+    'ARG WEB_CONSOLE_COMMIT=f47283ff6d18516040c0ee0782ac0a0314b67538' \
     SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING
 require_marker "$release_dockerfile" \
     "grep -aF 'hostsPage.permissionDenied'" \
@@ -603,16 +603,16 @@ require_marker "$release_dockerfile" \
     '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ZH_TW_PERMISSION_MESSAGE_MISSING
 require_marker "$build_script" \
-    'web_console_commit=${WEB_CONSOLE_COMMIT:-fa7fd399e3aef2a67282e8fbbe9f3fc83002710d}' \
+    'web_console_commit=${WEB_CONSOLE_COMMIT:-f47283ff6d18516040c0ee0782ac0a0314b67538}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING
 require_marker "$build_script" \
-    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.193}' \
+    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.194}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.193.tar.gz}' \
+    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.194.tar.gz}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING
 require_marker "$build_script" \
-    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-07dd68dddecec1d95c6932d4dd31084401ee67d517fb820ecbbe6afaa052a888}' \
+    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-fe83f57dd1202766579b848f1bee75e7c05536db2fbb1f58de2bbb21829b1221}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING
 require_marker "$release_dockerfile" \
     'ARG CATALOG_SERVICE_VERSION=0.20.14' \
@@ -682,36 +682,36 @@ done
 
 # Active incremental producer/toolchain contracts are distinct from the historical base patch below.
 for incremental_producer_marker in \
-    'ARG HOST_PROVISIONER_VERSION=0.39.9' \
-    'ARG HOST_PROVISIONER_COMMIT=732b2211979732d774e28d543da1e41ef0ba2fa1' \
-    'ARG HOST_PROVISIONER_ARCHIVE_SHA256=25bbdb62d31b87097aee17c067ed6d6e524437cd420deeba12f33f2f6472d578' \
-    'ARG HOST_PROVISIONER_BINARY_SHA256=b3fc8380be12669ce0ad8947e7a510cbf7cc84a9e5e28a3239596782a9e2b85d' \
+    'ARG HOST_PROVISIONER_VERSION=0.39.10' \
+    'ARG HOST_PROVISIONER_COMMIT=d5f6d5c9f4f0599f4bf1bdc9d5d0cca2e2e0c1ba' \
+    'ARG HOST_PROVISIONER_ARCHIVE_SHA256=fd8a814c5810746091ba3192a9fd31699e6865a2598654b9bbb55eae90bef661' \
+    'ARG HOST_PROVISIONER_BINARY_SHA256=92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff' \
     'ARG SECRET_DELIVERY_API_VERSION=0.3.3' \
     'ARG SECRET_DELIVERY_API_COMMIT=da196acba539fe7a0c04539f6f7537cdfb2d8d69' \
     'ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=026ba87f4c8fb7bfbf991f63a496db9c4a0837913ab56dc505c187f9b9598699' \
     'ARG SECRET_DELIVERY_API_BINARY_SHA256=e4928ca7359975ba4ad73456296baace8ef0b428c0901055a0317244a17e4665' \
-    'ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.3' \
-    'ARG USAGE_TELEMETRY_AGENT_COMMIT=b2b779deb13e307b2b2d2d620d99a7ab24ffb819' \
-    'ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=7f3e2f8ab85fd89dca1c3e0e6e5951818c85ac2a3e670a745a224b786742c57b' \
-    'ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=63e574d6aea42b548723457f4073ac3b8acd9ae3e8818cdce596512b346919e4' \
+    'ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.4' \
+    'ARG USAGE_TELEMETRY_AGENT_COMMIT=4ee641bc1273cf582a77609af71d00b72f17b628' \
+    'ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866' \
+    'ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be' \
     'ARG COMPOSE_EXECUTOR_COMMIT=142bc116f7517b1c12458e02b2747381036973b4' \
     'ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=1a38cfea389543381cffb0d678cb7beaafb5064c52739aa31fa4f8964005e3e0'; do
     require_marker "$release_dockerfile" "$incremental_producer_marker" \
         SERVER_INCREMENTAL_RUNTIME_PRODUCER_PIN_MISSING
 done
 for incremental_producer_build_marker in \
-    'host_provisioner_version=${HOST_PROVISIONER_VERSION:-0.39.9}' \
-    'host_provisioner_commit=${HOST_PROVISIONER_COMMIT:-732b2211979732d774e28d543da1e41ef0ba2fa1}' \
-    'host_provisioner_archive_sha256=${HOST_PROVISIONER_ARCHIVE_SHA256:-25bbdb62d31b87097aee17c067ed6d6e524437cd420deeba12f33f2f6472d578}' \
-    'host_provisioner_binary_sha256=${HOST_PROVISIONER_BINARY_SHA256:-b3fc8380be12669ce0ad8947e7a510cbf7cc84a9e5e28a3239596782a9e2b85d}' \
+    'host_provisioner_version=${HOST_PROVISIONER_VERSION:-0.39.10}' \
+    'host_provisioner_commit=${HOST_PROVISIONER_COMMIT:-d5f6d5c9f4f0599f4bf1bdc9d5d0cca2e2e0c1ba}' \
+    'host_provisioner_archive_sha256=${HOST_PROVISIONER_ARCHIVE_SHA256:-fd8a814c5810746091ba3192a9fd31699e6865a2598654b9bbb55eae90bef661}' \
+    'host_provisioner_binary_sha256=${HOST_PROVISIONER_BINARY_SHA256:-92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff}' \
     'secret_delivery_api_version=${SECRET_DELIVERY_API_VERSION:-0.3.3}' \
     'secret_delivery_api_commit=${SECRET_DELIVERY_API_COMMIT:-da196acba539fe7a0c04539f6f7537cdfb2d8d69}' \
     'secret_delivery_api_archive_sha256=${SECRET_DELIVERY_API_ARCHIVE_SHA256:-026ba87f4c8fb7bfbf991f63a496db9c4a0837913ab56dc505c187f9b9598699}' \
     'secret_delivery_api_binary_sha256=${SECRET_DELIVERY_API_BINARY_SHA256:-e4928ca7359975ba4ad73456296baace8ef0b428c0901055a0317244a17e4665}' \
-    'usage_telemetry_agent_version=${USAGE_TELEMETRY_AGENT_VERSION:-0.4.3}' \
-    'usage_telemetry_agent_commit=${USAGE_TELEMETRY_AGENT_COMMIT:-b2b779deb13e307b2b2d2d620d99a7ab24ffb819}' \
-    'usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-7f3e2f8ab85fd89dca1c3e0e6e5951818c85ac2a3e670a745a224b786742c57b}' \
-    'usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-63e574d6aea42b548723457f4073ac3b8acd9ae3e8818cdce596512b346919e4}' \
+    'usage_telemetry_agent_version=${USAGE_TELEMETRY_AGENT_VERSION:-0.4.4}' \
+    'usage_telemetry_agent_commit=${USAGE_TELEMETRY_AGENT_COMMIT:-4ee641bc1273cf582a77609af71d00b72f17b628}' \
+    'usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866}' \
+    'usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be}' \
     'compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.38}' \
     'compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-142bc116f7517b1c12458e02b2747381036973b4}' \
     'compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-1a38cfea389543381cffb0d678cb7beaafb5064c52739aa31fa4f8964005e3e0}' \
@@ -1141,10 +1141,10 @@ if grep -Eq '9ce9358d91ff002c0b64a8c1efd037b26f43ccbe11508a1446760f3baffcb564|60
 fi
 for release_auth_marker in \
     'ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download' \
-    'ARG AUTHENTICATION_SERVICE_VERSION=0.4.44' \
-    'ARG AUTHENTICATION_SERVICE_COMMIT=63e7941dd0c8c26fefaf1e252d67bccc34a9347f' \
-    'ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=3fab69156bcc07b96a4b404f24fe59c08958a4357113cecec440ea6d40c5c9a4' \
-    'ARG AUTHENTICATION_SERVICE_BINARY_SHA256=446c89fe2a5ce3d1ff677cf1fac26740cc38520b6977ff5d86a7d865e7dfc3ed' \
+    'ARG AUTHENTICATION_SERVICE_VERSION=0.4.45' \
+    'ARG AUTHENTICATION_SERVICE_COMMIT=2f54018191ffd4ff008c5ad2bfb6d6ace7890b39' \
+    'ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=cd3d4a81ae694e53f38ab1be761bb0e8d266fd69cc1c19a5e5a9cdcfed04446b' \
+    'ARG AUTHENTICATION_SERVICE_BINARY_SHA256=2198ad367405c0f329e85ddb5a882b1568a40eaa002dafa71e772688feb8a25c' \
     'Authentication Service archive may not contain links' \
     'install -m 0755 /out/authentication-service/authentication-service /out/runtime-bin/authentication-service.real;' \
     'ENV PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT=${AUTHENTICATION_SERVICE_COMMIT}' \
@@ -1153,14 +1153,14 @@ for release_auth_marker in \
         SERVER_INCREMENTAL_AUTHENTICATION_SERVICE_REPLACEMENT_MISSING
 done
 for release_auth_build_marker in \
-    'authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.44}' \
-    'authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-63e7941dd0c8c26fefaf1e252d67bccc34a9347f}' \
-    'authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-3fab69156bcc07b96a4b404f24fe59c08958a4357113cecec440ea6d40c5c9a4}' \
-    'authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-446c89fe2a5ce3d1ff677cf1fac26740cc38520b6977ff5d86a7d865e7dfc3ed}' \
+    'authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.45}' \
+    'authentication_service_commit=${AUTHENTICATION_SERVICE_COMMIT:-2f54018191ffd4ff008c5ad2bfb6d6ace7890b39}' \
+    'authentication_service_archive_sha256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256:-cd3d4a81ae694e53f38ab1be761bb0e8d266fd69cc1c19a5e5a9cdcfed04446b}' \
+    'authentication_service_binary_sha256=${AUTHENTICATION_SERVICE_BINARY_SHA256:-2198ad367405c0f329e85ddb5a882b1568a40eaa002dafa71e772688feb8a25c}' \
     '--build-arg "AUTHENTICATION_SERVICE_VERSION=${authentication_service_version}"' \
     'PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT="${authentication_service_commit}"' \
-    '446c89fe2a5ce3d1ff677cf1fac26740cc38520b6977ff5d86a7d865e7dfc3ed  /usr/bin/authentication-service.real' \
-    '/usr/bin/authentication-service.real --version | grep -F "0.4.44"'; do
+    '2198ad367405c0f329e85ddb5a882b1568a40eaa002dafa71e772688feb8a25c  /usr/bin/authentication-service.real' \
+    '/usr/bin/authentication-service.real --version | grep -F "0.4.45"'; do
     require_marker "$build_script" "$release_auth_build_marker" \
         SERVER_INCREMENTAL_AUTHENTICATION_SERVICE_BUILD_GATE_MISSING
 done
@@ -1239,13 +1239,13 @@ require_marker "$dockerfile" \
 # The moving archive removed this version. This signed snapshot serves the
 # identical package bytes; keep the exact path and checksum, not an arbitrary
 # snapshot or a replacement hash for an HTTP error page.
-ca_bootstrap_url='https://snapshot.ubuntu.com/ubuntu/20260826T000000Z/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb'
+ca_bootstrap_url='https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb'
 for bootstrap_dockerfile in "$dockerfile" "$core_dockerfile" "$release_dockerfile"; do
     require_marker "$bootstrap_dockerfile" \
         "$ca_bootstrap_url" \
         SERVER_CA_CERTIFICATES_OFFICIAL_BOOTSTRAP_SOURCE_MISSING
     require_marker "$bootstrap_dockerfile" \
-        'ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90' \
+        'ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd' \
         SERVER_CA_CERTIFICATES_BOOTSTRAP_HASH_MISSING
     if grep -F '/pool/main/c/ca-certificates/' "$bootstrap_dockerfile" | \
         grep -Fv "$ca_bootstrap_url" >/dev/null; then
@@ -1307,19 +1307,19 @@ if [ "$(grep -Fxc '  image: ghcr.io/pasturestack/load-balancer-service:v0.9.32' 
     exit 1
 fi
 for api_explorer_release_marker in \
-    'ARG API_EXPLORER_RELEASE_TAG=v1.1.19' \
-    'ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.19.tar.gz' \
-    'ARG API_EXPLORER_ARTIFACT_SHA256=d1602ab6033512f0b86dc8ceafee2061364ce2fc5da2a9b7119f900d9e0f3c25' \
-    'ARG API_EXPLORER_COMMIT=dda3fe8a806d9736de771d325e3ca98ab4067cd2' \
+    'ARG API_EXPLORER_RELEASE_TAG=v1.1.20' \
+    'ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.20.tar.gz' \
+    'ARG API_EXPLORER_ARTIFACT_SHA256=c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb' \
+    'ARG API_EXPLORER_COMMIT=a586f0dc0aa50df579049a8d4bf26f04400fdf75' \
     'COPY --chmod=0755 artifacts/prepare-api-explorer.sh /usr/local/bin/prepare-api-explorer' \
     'fetch-server-component "${COMPONENT_ARTIFACT_MODE}" "${API_EXPLORER_RELEASE_BASE_URL%/}/${API_EXPLORER_RELEASE_TAG}/${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT_SHA256}" /tmp/api-explorer.tar.gz;' \
-    'prepare-api-explorer /tmp/api-explorer.tar.gz 1.1.19 "${API_EXPLORER_COMMIT}" /out/api-explorer;' \
+    'prepare-api-explorer /tmp/api-explorer.tar.gz 1.1.20 "${API_EXPLORER_COMMIT}" /out/api-explorer;' \
     'COPY --from=release_artifacts /out/api-explorer/ /tmp/pasturestack-api-ui/' \
     'COPY --from=release_artifacts /out/api-explorer.sha256 /tmp/pasturestack-api-ui.sha256' \
     'mv /tmp/pasturestack-api-ui api-ui;' \
     '(cd api-ui && sha256sum -c /tmp/pasturestack-api-ui.sha256);' \
-    'ENV CATTLE_API_UI_VERSION=1.1.19' \
-    'ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.19' \
+    'ENV CATTLE_API_UI_VERSION=1.1.20' \
+    'ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.20' \
     'ENV PASTURESTACK_API_EXPLORER_COMMIT=${API_EXPLORER_COMMIT}' \
     'ENV PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256=${API_EXPLORER_ARTIFACT_SHA256}'; do
     require_marker "$release_dockerfile" "$api_explorer_release_marker" SERVER_CURRENT_API_EXPLORER_FLOW_MISSING
@@ -2350,4 +2350,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.545 base=v1.6.460 engine=0.183.353 web_console=1.6.193 catalog_service=0.20.14 webhook_automation_service=0.10.5 authentication_service=0.4.44 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.545 base=v1.6.460 engine=0.183.353 web_console=1.6.194 catalog_service=0.20.14 webhook_automation_service=0.10.5 authentication_service=0.4.45 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
