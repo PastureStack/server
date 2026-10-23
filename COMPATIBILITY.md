@@ -22,6 +22,12 @@ HIGH/CRITICAL, available fixes, unregistered findings and secrets remain
 release blockers. Existing operator environment variables and named volumes
 must be preserved. See [release details](docs/releases/server-1.6.546.md).
 
+The internal compose executor is updated to 0.14.39. That release does not
+publish three-platform legacy Compose CLI downloads. The optional
+`RC16_ARTIFACT_BASE_URL` compatibility URLs are therefore not changed to
+nonexistent 0.14.39 CLI archives; those URLs remain an operator-supplied
+integration, separate from the bundled executor and maintained PastureStack CLI.
+
 ## Server v1.6.545 published
 
 Official source `858ec54df70b8089ef900a16bed1287d94e7f692` passed
