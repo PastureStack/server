@@ -13,13 +13,14 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-Server [`v1.6.546`](https://github.com/PastureStack/server/releases/tag/v1.6.546) is published.
-It updates maintained security dependencies while preserving authentication,
-API Key authorization, host registration and service-upgrade behavior.
+Server [`v1.6.547`](https://github.com/PastureStack/server/releases/tag/v1.6.547) is published.
+It retains the security refresh and uses Catalog `v0.3.15` with Network Plugin
+Manager `v0.8.24` to preserve Server ownership of Metadata/DNS replacement.
+Authentication, API Key authorization and host registration contracts remain unchanged.
 Engine `v0.183.354`, Web Console `1.6.194`, Host API `0.38.8`,
 WebSocket Proxy `0.23.18`, and Temurin `25.0.5+8` are verified component inputs.
-See the [546 release note](docs/releases/server-1.6.546.md) and
-[compatibility contract](COMPATIBILITY.md#server-v16546-security-refresh)
+See the [547 release note](docs/releases/server-1.6.547.md) and
+[compatibility contract](COMPATIBILITY.md#server-v16547-network-lifecycle)
 for dependency identities and acceptance boundaries.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
@@ -47,14 +48,14 @@ Maintained CLI `0.6.20` propagates rejected requests as nonzero errors. Legacy `
 ## Quick start
 
 Public GHCR downloads do not require a registry login. Keep all three named volumes.
-The examples below use the published numeric `v1.6.546` tag.
+The examples below use the published numeric `v1.6.547` tag.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.546
+  ghcr.io/pasturestack/server:v1.6.547
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -62,7 +63,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.546
+    image: ghcr.io/pasturestack/server:v1.6.547
     restart: unless-stopped
     ports:
       - "8080:8080"

@@ -7,6 +7,9 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.547](releases/server-1.6.547.md) — published Catalog and Network
+  Plugin Manager lifecycle repair; exact image identity and publication
+  evidence are separate from real-host upgrade acceptance.
 - [Server v1.6.546](releases/server-1.6.546.md) — published security refresh;
   verified component inputs, one-layer immutable image, full artifact scanning
   and signed provenance. See the release note for scoped runtime evidence and

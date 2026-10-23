@@ -1,5 +1,36 @@
 # Compatibility Contract
 
+<a id="server-v16547-network-lifecycle"></a>
+
+## Server v1.6.547 published
+
+Official producer `eb018efeb3ff5740e63adf054ef19265868b3538` passed
+[publisher 40008002413](https://github.com/PastureStack/server/actions/runs/40008002413).
+All 26 immutable release assets passed anonymous checksum readback, and the
+image provenance and SBOM attestations were independently verified against
+the exact source, workflow and published image identity.
+
+The one-layer linux/amd64 published image is
+`ghcr.io/pasturestack/server:v1.6.547@sha256:09b14e3ad99d75223dca5251f6a27fa9dfec0cc55a3670b683ad406125f24de7`.
+Its distinct OCI config is
+`sha256:872a8760d53ea02a9d0b7e805d50314efbd06df0316100e9438e0910e1eb0852`.
+Installation examples use the numeric tag without a digest suffix.
+
+Catalog `v0.3.15` adds Network Services revision 12 with Network Plugin Manager
+`v0.8.24`; Metadata `v0.10.5`, Internal DNS `v0.17.13`, earlier revisions,
+questions, sidekicks, volumes and firewall-backend choices are retained.
+Metadata/DNS replacement belongs to the Server lifecycle. The manager no
+longer deletes overlapping dependency instances and waits for Metadata with
+bounded requests, backoff and cancellation. Other local orphan handling remains.
+
+The v1.6.546 security inputs and exact dispositions remain in force: 51 raw
+runtime findings become 29 tracked, officially unfixed LOW/MEDIUM occurrences
+across 18 CVEs after existing exact VEX dispositions. HIGH/CRITICAL,
+fixed-available, untracked findings and secrets are zero. Publication is not
+real-host upgrade or full functional acceptance; see the
+[release note](docs/releases/server-1.6.547.md) and
+[upgrade guidance](docs/upgrades/README.md).
+
 <a id="server-v16546-security-refresh"></a>
 
 ## Server v1.6.546 published

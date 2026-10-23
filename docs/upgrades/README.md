@@ -19,9 +19,16 @@ Do not remove retained containers manually or disable the confirmation step
 to make a status badge disappear. Catalog template versions and component
 image versions are separate; a template-only upgrade may keep the same image.
 
+Server `v1.6.547` pins Catalog `v0.3.15`, whose Network Services revision 12
+uses Network Plugin Manager `v0.8.24`. Earlier managers can delete legitimate
+overlapping Metadata/DNS instances during replacement. The new manager leaves
+dependency removal to the Server lifecycle; a successful Stack API response
+alone does not prove a healthy migration. Retain the rollback point and verify
+Metadata, DNS and the actual host-network path before finishing an upgrade.
+
 ## Persisted runtime coordinates
 
-Server `v1.6.546` provides Load Balancer Service `v0.9.33` as
+Server `v1.6.547` retains Load Balancer Service `v0.9.33` as
 the image default and in both HA Compose templates. Database settings and
 explicit operator overrides take precedence over the new image defaults.
 An existing persisted `v0.9.27` pair therefore stays on `v0.9.27`; an administrator
