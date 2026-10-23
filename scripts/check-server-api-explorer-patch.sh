@@ -1098,11 +1098,9 @@ for release_engine_marker in \
     'ARG ORCHESTRATION_ENGINE_COMMIT=dc5a8d7bc44131f609f72a6504483b692d47ce16' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
     'ARG ORCHESTRATION_ENGINE_VERSION=0.183.354' \
-    'grep -Fx "Implementation-Version: ${ORCHESTRATION_ENGINE_VERSION}"' \
+    'sh /usr/share/cattle/verify-engine-archive.sh "${archive}" "${ORCHESTRATION_ENGINE_VERSION}" "${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'cattle-app-config-${ORCHESTRATION_ENGINE_VERSION}.jar' \
-    'WEB-INF/lib/hazelcast-5\.7\.5\.jar' \
-    'freemarker-2\.3\.35\.jar' \
     'ENV CATTLE_CATTLE_VERSION=${ORCHESTRATION_ENGINE_RELEASE_TAG}' \
     'schema/token/token-auth.json' \
     '"token.clientSessionId": "cro"' \
@@ -1124,9 +1122,21 @@ for release_engine_build_marker in \
     'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-dc5a8d7bc44131f609f72a6504483b692d47ce16}' \
     'CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
-    'test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.5.jar"'; do
+    '< "${server_dir}/artifacts/verify-engine-archive.sh"'; do
     require_marker "$build_script" "$release_engine_build_marker" \
         SERVER_INCREMENTAL_ENGINE_BUILD_COORDINATE_MISSING
+done
+for engine_archive_marker in \
+    'grep -Fx "Implementation-Version: $expected_version"' \
+    'WEB-INF/lib/freemarker-2.3.35.jar' \
+    'WEB-INF/lib/hazelcast-5.7.6.jar' \
+    '825b5fc9526a10549bcb580f2d6c03bf1f5667625661722c0406ea6f796e83f2' \
+    'Rejected old Freemarker dependency' \
+    'Rejected old Hazelcast dependency' \
+    'Duplicate Orchestration Engine JAR path' \
+    'Unsafe Orchestration Engine JAR path'; do
+    require_marker server/artifacts/verify-engine-archive.sh "$engine_archive_marker" \
+        SERVER_INCREMENTAL_ENGINE_ARCHIVE_CONTRACT_MISSING
 done
 if grep -Fq 'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=8483db0b4f2fe71ce527ba97bfb3caea14096ec356124ecef9aa1e7853c8553e' "$release_dockerfile" \
     || grep -Fq 'ARG ORCHESTRATION_ENGINE_COMMIT=268469153c299987bd42e288dd68bb62af91002e' "$release_dockerfile" \
@@ -1357,8 +1367,8 @@ require_marker "$dockerfile" \
 require_marker "$dockerfile" \
     'WEB-INF/lib/hazelcast-5\.7\.4\.jar' \
     SERVER_DISTRIBUTED_CACHE_RUNTIME_GATE_MISSING
-require_marker "$build_script" \
-    '0f536a9c7bcd00f2369586fb6ca1606f7e45f3225e24795d10d38397051c8715  /tmp/hazelcast.jar' \
+require_marker server/artifacts/verify-engine-archive.sh \
+    "'825b5fc9526a10549bcb580f2d6c03bf1f5667625661722c0406ea6f796e83f2'" \
     SERVER_DISTRIBUTED_CACHE_RUNTIME_HASH_GATE_MISSING
 require_marker "$build_script" \
     'image_orchestration' \

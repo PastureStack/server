@@ -28,6 +28,7 @@ run_gate catalog_card_brand scripts/check-server-catalog-card-brand-patch.sh
 run_gate dockerfile_artifact_downloads scripts/check-server-dockerfile-artifact-downloads.sh
 run_gate production_build_context python3 scripts/test-server-build-context.py
 run_gate offline_ubuntu_security_updates python3 scripts/test-offline-ubuntu-security-updates.py
+run_gate engine_archive_contract python3 scripts/test-engine-archive-contract.py
 run_gate server_dev_dockerfile_downloads scripts/check-server-dev-dockerfile-downloads.sh
 run_gate install_cattle_binaries_downloads scripts/check-server-install-cattle-binaries-downloads.sh
 run_gate build_artifact_downloads scripts/check-server-build-artifact-downloads.sh

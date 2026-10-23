@@ -817,31 +817,15 @@ COPY patches/db/core-060.xml /tmp/pasturestack-server-overlays/db/core-060.xml
 COPY patches/db/core-124.xml /tmp/pasturestack-server-overlays/db/core-124.xml
 COPY patches/PatchV1GlobalSubscribe.java /tmp/pasturestack-server-overlays/PatchV1GlobalSubscribe.java
 COPY --chmod=0755 bin/entry /usr/bin/entry
-COPY --chmod=0755 artifacts/cattle.sh artifacts/mysql.sh artifacts/performance-env.sh /usr/share/cattle/
+COPY --chmod=0755 artifacts/cattle.sh artifacts/mysql.sh artifacts/performance-env.sh artifacts/verify-engine-archive.sh /usr/share/cattle/
 COPY artifacts/compose/ /usr/share/cattle/compose/
 
 RUN set -eux; \
     test -n "${SOURCE_DATE_EPOCH}"; \
     test -n "${PASTURESTACK_SERVER_REVISION}"; \
     archive=/tmp/orchestration-engine.jar; \
-    listing=/tmp/orchestration-engine-files.txt; \
-    echo "${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}  ${archive}" | sha256sum -c -; \
-    unzip -Z1 "${archive}" >"${listing}"; \
-    if grep -Eq '(^/|(^|/)\.\.(/|$))' "${listing}"; then \
-        echo 'Unsafe Orchestration Engine JAR path' >&2; \
-        exit 1; \
-    fi; \
-    sort "${listing}" | uniq -d > /tmp/pasturestack-archive-duplicates.txt; \
-    if test -s /tmp/pasturestack-archive-duplicates.txt; then \
-        echo 'Duplicate Orchestration Engine JAR path' >&2; \
-        exit 1; \
-    fi; \
-    unzip -p "${archive}" META-INF/MANIFEST.MF | tr -d '\r' | \
-        grep -Fx "Implementation-Version: ${ORCHESTRATION_ENGINE_VERSION}" >/dev/null; \
-    test "$(grep -Ec '^WEB-INF/lib/freemarker-2\.3\.35\.jar$' "${listing}")" -eq 1; \
-    ! grep -Eq '^WEB-INF/lib/freemarker-2\.3\.(3[0-4]|[0-2][0-9])\.jar$' "${listing}"; \
-    test "$(grep -Ec '^WEB-INF/lib/hazelcast-5\.7\.5\.jar$' "${listing}")" -eq 1; \
-    ! grep -Eq '^WEB-INF/lib/hazelcast-(5\.7\.[0-4]|5\.7\.3-pasturestack\.[0-9]+)([.-]|\.jar$)' "${listing}"; \
+    sh /usr/share/cattle/verify-engine-archive.sh "${archive}" "${ORCHESTRATION_ENGINE_VERSION}" "${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}"; \
+    rm -f /usr/share/cattle/verify-engine-archive.sh; \
     old_web_root="$(readlink -f /usr/share/cattle/war)"; \
     case "${old_web_root}" in \
         /usr/share/cattle/*) ;; \
@@ -949,7 +933,7 @@ RUN set -eux; \
         "${new_web_root}/api-ui" \
         /tmp; \
     rm -rf /tmp/pasturestack-server-overlays; \
-    rm -f "${archive}" "${listing}"
+    rm -f "${archive}"
 
 RUN set -eux; \
     test -n "${SOURCE_DATE_EPOCH}"; \
