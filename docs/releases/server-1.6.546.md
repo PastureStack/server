@@ -25,6 +25,10 @@ Prepared source only; no Server image or release has been published.
 - Machine-driver bundle 0.16.5 replaces the inherited 0.14.0 runtime binary.
   The original archive, both Go executables and legal metadata are verified;
   Packet stays retired for new hosts and explicit operator URLs are retained.
+- Catalog v0.3.14 source `28756cdf13f50380e907d37da501e33383a7c217`
+  selects the independently verified plugin releases; operator catalog overrides
+  are not replaced. Catalog publication and Server runtime verification remain
+  separate checks.
 - Temurin 25.0.5+8 and fixed Ubuntu 26.04 packages retain the existing ABI
   and installed-package set. APT security refresh uses private index/cache
   directories so it does not remove source indexes needed by other builds.

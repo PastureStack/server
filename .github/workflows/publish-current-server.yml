@@ -223,11 +223,12 @@ jobs:
             docker volume rm "$CATTLE_VOLUME" "$MYSQL_VOLUME" "$MYSQL_LOG_VOLUME" \
               >/dev/null 2>&1 || true
           }
-          trap cleanup_candidate EXIT
-
           for object in "$CANDIDATE_NAME" "$CATTLE_VOLUME" "$MYSQL_VOLUME" "$MYSQL_LOG_VOLUME"; do
             if docker inspect "$object" >/dev/null 2>&1; then echo 'Run-owned object already exists' >&2; exit 1; fi
           done
+          # Only arm cleanup after proving all names are available. A collision
+          # must never remove another run's container or persistent volumes.
+          trap cleanup_candidate EXIT
           docker run -d \
             --name "$CANDIDATE_NAME" \
             --restart no \

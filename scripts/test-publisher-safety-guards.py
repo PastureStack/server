@@ -2,6 +2,7 @@
 from pathlib import Path
 import subprocess
 import tempfile
+import textwrap
 import unittest
 
 WORKFLOW = Path(__file__).resolve().parents[1] / '.github/workflows/publish-current-server.yml'
@@ -40,6 +41,41 @@ class PublisherSafetyGuards(unittest.TestCase):
                 self.assertEqual('NEXT_COMMAND' in result.stdout, not failed)
                 if failed:
                     self.assertIn('Candidate database authentication failed', result.stderr)
+
+    def test_collision_never_arms_cleanup_or_removes_existing_objects(self):
+        source = WORKFLOW.read_text()
+        block = source.split('          capture_candidate_evidence() {', 1)[1]
+        block = '          capture_candidate_evidence() {' + block.split('          wait_for_pong() {', 1)[0]
+        block = textwrap.dedent(block)
+        for collision in ('candidate', 'cattle', 'mysql', 'mysqllog', ''):
+            with self.subTest(collision=collision), tempfile.TemporaryDirectory() as temporary:
+                script = '''set -Eeuo pipefail
+evidence="$1"
+collision="$2"
+CANDIDATE_NAME=candidate
+CANDIDATE_IMAGE=image
+CATTLE_VOLUME=cattle
+MYSQL_VOLUME=mysql
+MYSQL_LOG_VOLUME=mysqllog
+docker() {
+  if [[ "$1" == inspect ]]; then
+    if [[ "$2" == "$collision" ]]; then return 0; else return 1; fi
+  fi
+  printf '%s\\n' "$*" >>"$evidence/commands"
+}
+''' + block
+                result = subprocess.run(['bash', '-c', script, 'guard-test', temporary, collision],
+                                        capture_output=True, text=True)
+                commands = Path(temporary) / 'commands'
+                if collision:
+                    self.assertEqual(result.returncode, 1)
+                    self.assertIn('Run-owned object already exists', result.stderr)
+                    self.assertFalse(commands.exists(), 'Collision must not run or clean any object')
+                else:
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    calls = commands.read_text().splitlines()
+                    self.assertTrue(calls[0].startswith('run -d --name candidate '))
+                    self.assertEqual(calls[1:], ['rm -f candidate', 'volume rm cattle mysql mysqllog'])
 
 
 if __name__ == '__main__':

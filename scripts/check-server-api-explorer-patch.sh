@@ -1532,13 +1532,13 @@ require_marker "$build_script" \
     'grep -F "pasturestack-catalog-pinned-commit"' \
     SERVER_CATALOG_PINNED_COMMIT_IMAGE_GATE_MISSING
 require_marker "$release_dockerfile" \
-    'ENV PASTURESTACK_CATALOG_COMMIT=71ec6b2c27355e709f5092c954db24efa800bc41' \
+    'ENV PASTURESTACK_CATALOG_COMMIT=28756cdf13f50380e907d37da501e33383a7c217' \
     SERVER_CATALOG_VERSION_LABEL_COMMIT_MISSING
 require_marker "$release_dockerfile" \
-    '"pinnedCommit":"71ec6b2c27355e709f5092c954db24efa800bc41"' \
+    '"pinnedCommit":"28756cdf13f50380e907d37da501e33383a7c217"' \
     SERVER_CATALOG_VERSION_LABEL_URL_MISSING
 require_marker "$build_script" \
-    'PASTURESTACK_CATALOG_COMMIT=71ec6b2c27355e709f5092c954db24efa800bc41' \
+    'PASTURESTACK_CATALOG_COMMIT=28756cdf13f50380e907d37da501e33383a7c217' \
     SERVER_CATALOG_VERSION_LABEL_IMAGE_GATE_MISSING
 for previous_release_marker in \
     '# Server v1.6.462' \
