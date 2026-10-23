@@ -18,6 +18,9 @@ without bypassing required checks. The linux/amd64 image has one runtime layer,
 | Registry manifest | `sha256:e9015d5e6d6525a684feb0161918aa7d089ecaee136907119170a7b82cdda19d` |
 | Distinct OCI config | `sha256:7ca8a7082b15e8d03ea3cfdc19d61fe77b35c012c1e63daf9f4a96a31fe46eb8` |
 
+Immutable image coordinate:
+`ghcr.io/pasturestack/server:v1.6.544@sha256:e9015d5e6d6525a684feb0161918aa7d089ecaee136907119170a7b82cdda19d`.
+
 Use the published numeric `v1.6.544` tag in the
 [installation examples](../../README.md#quick-start).
 
