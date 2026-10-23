@@ -55,6 +55,10 @@ Raw scans and SBOMs remain separate from vulnerability dispositions. An
 officially unfixed LOW/MEDIUM finding is tracked against its exact artifact,
 package and version; that is not remediation. Available fixes, unregistered
 findings, HIGH/CRITICAL issues and secrets still block publication.
+The OpenPGP module advisory retains the independently reviewed component
+dispositions. Before applying them, the publisher verifies each affected
+executable path, module version and exact binary SHA256; a new or changed
+consumer cannot inherit the exception just by using the same module version.
 
 ## Upgrade and rollback
 

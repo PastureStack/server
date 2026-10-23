@@ -1,7 +1,12 @@
 import copy
+import hashlib
+from pathlib import Path
+import tempfile
 import unittest
+from unittest.mock import patch
 
-from check_scan_coverage import validate_coverage, ROOT_BINARIES, NESTED_BINARIES
+from check_scan_coverage import (validate_coverage, validate_vex_payloads,
+    ROOT_BINARIES, NESTED_BINARIES, OPENPGP_VEX_SCOPE)
 
 
 class CoverageTest(unittest.TestCase):
@@ -52,6 +57,59 @@ class CoverageTest(unittest.TestCase):
         original = copy.deepcopy(report)
         validate_coverage(report, ROOT_BINARIES)
         self.assertEqual(report, original)
+
+    def test_reviewed_openpgp_module_occurrences_are_allowed(self):
+        report = self.fixture(ROOT_BINARIES)
+        for target, purl in OPENPGP_VEX_SCOPE:
+            result = next(item for item in report['Results'] if item['Target'] == target)
+            result['Vulnerabilities'] = [{'VulnerabilityID': 'GO-2026-5932',
+                                         'PkgIdentifier': {'PURL': purl}}]
+        self.assertEqual(validate_coverage(report, ROOT_BINARIES), len(ROOT_BINARIES))
+
+    def test_unreviewed_openpgp_target_or_version_blocks_before_vex(self):
+        for target, purl in (
+                ('usr/bin/govc', 'pkg:golang/golang.org/x/crypto@v0.57.0'),
+                ('usr/bin/docker-machine', 'pkg:golang/golang.org/x/crypto@v0.58.0'),
+                ('tmp/docker-machine', 'pkg:golang/golang.org/x/crypto@v0.57.0'),
+                ('usr/bin/docker-machine', None)):
+            with self.subTest(target=target, purl=purl):
+                report = self.fixture(ROOT_BINARIES)
+                report['Results'].append({'Target': target, 'Type': 'gobinary',
+                    'Packages': [{'Name': 'golang.org/x/crypto', 'Version': 'v0.57.0'}],
+                    'Vulnerabilities': [{'VulnerabilityID': 'GO-2026-5932',
+                                        'PkgIdentifier': {'PURL': purl}}]})
+                with self.assertRaisesRegex(ValueError, 'Unreviewed OpenPGP'):
+                    validate_coverage(report, ROOT_BINARIES)
+
+    def test_vex_requires_reviewed_binary_bytes_and_path(self):
+        target = 'usr/bin/docker-machine'
+        report = {'Results': [{'Target': target, 'Vulnerabilities': [
+            {'VulnerabilityID': 'GO-2026-5932'}]}]}
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            payload = root / target
+            payload.parent.mkdir(parents=True)
+            payload.write_bytes(b'reviewed-fixture')
+            expected = hashlib.sha256(b'reviewed-fixture').hexdigest()
+            with patch.dict('check_scan_coverage.OPENPGP_VEX_BINARY_SHA256', {target: expected}):
+                self.assertEqual(validate_vex_payloads(report, root), 1)
+                payload.write_bytes(b'changed-fixture')
+                with self.assertRaisesRegex(ValueError, 'Changed OpenPGP'):
+                    validate_vex_payloads(report, root)
+                payload.unlink()
+                with self.assertRaisesRegex(ValueError, 'Unreviewed OpenPGP'):
+                    validate_vex_payloads(report, root)
+            report['Results'][0]['Target'] = '../unreviewed'
+            with self.assertRaisesRegex(ValueError, 'Unreviewed OpenPGP'):
+                validate_vex_payloads(report, root)
+
+    def test_clean_null_vulnerabilities_need_no_exception(self):
+        report = self.fixture(ROOT_BINARIES)
+        for result in report['Results']:
+            result['Vulnerabilities'] = None
+        self.assertEqual(validate_coverage(report, ROOT_BINARIES), len(ROOT_BINARIES))
+        with tempfile.TemporaryDirectory() as folder:
+            self.assertEqual(validate_vex_payloads(report, Path(folder)), 0)
 
 
 if __name__ == '__main__':
