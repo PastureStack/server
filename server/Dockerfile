@@ -10,7 +10,7 @@ ARG TEMURIN_JDK25_SHA256="dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261
 ARG UBUNTU_SNAPSHOT=20260826T000000Z
 
 ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90 \
-    https://security.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb \
+    https://snapshot.ubuntu.com/ubuntu/20260826T000000Z/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb \
     /tmp/ca-certificates.deb
 ARG SOURCE_DATE_EPOCH=1784851922
 ENV JAVA_HOME=/opt/java/openjdk

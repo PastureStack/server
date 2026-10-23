@@ -1,5 +1,19 @@
 # Compatibility Contract
 
+## Server v1.6.545 candidate
+
+Engine `0.183.353` compares complete public-endpoint identities, including the
+service, host and instance references. Web Console `1.6.193` sends the existing
+service upgrade action directly after validation/readiness instead of first
+PUTting a full service clone. Normal create/edit, shared saving/error lifecycle,
+authorization and `InvalidReference` validation remain unchanged.
+
+All other component pins, frozen authorization schemas and runtime settings are
+retained. This is a source candidate; component CI, Server publication and the
+real QA upgrade/refresh/restart results must be verified separately. See the
+[545 release note](docs/releases/server-1.6.545.md). Keep the previous image and
+database backup and all existing persistent volumes and operator overrides.
+
 ## Server v1.6.544 published
 
 Official source `d6e966329b588693a6b904989865e18f731ffbad` passed
