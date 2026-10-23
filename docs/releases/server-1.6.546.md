@@ -30,8 +30,11 @@ Prepared source only; no Server image or release has been published.
   are not replaced. Catalog publication and Server runtime verification remain
   separate checks.
 - Temurin 25.0.5+8 and fixed Ubuntu 26.04 packages retain the existing ABI
-  and installed-package set. APT security refresh uses private index/cache
-  directories so it does not remove source indexes needed by other builds.
+  and installed-package set. The build stage verifies the signed Ubuntu
+  snapshot and each package's SHA256. The minimal runtime installs only
+  already-present, older packages from that verified offline bundle; it does
+  not need network access or an APT signature executable. The package manifest
+  is retained under `/usr/share/pasturestack/security/` for inspection.
 
 ## Compatibility and evidence
 

@@ -528,6 +528,8 @@ ARG LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1
 ARG CA_CERTIFICATES_PACKAGE_VERSION=20260816ubuntu0.26.04.1
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /build
+COPY scripts/download-ubuntu-security-updates.sh /usr/local/libexec/pasturestack/download-ubuntu-security-updates.sh
+COPY security/ubuntu-security-packages.lock /build/ubuntu-security-packages.lock
 ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd \
     https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb \
     /tmp/ca-certificates.deb
@@ -633,6 +635,8 @@ RUN set -eux; \
     cp /usr/bin/tar /out/tar; \
     cd /out; \
     sha256sum packages/*.deb tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 freetype-runtime.sha256 libpng-runtime.sha256 > SHA256SUMS
+RUN sh /usr/local/libexec/pasturestack/download-ubuntu-security-updates.sh \
+      /build/ubuntu-security-packages.lock /etc/ssl/certs/ca-certificates.crt /out/security-updates
 
 FROM ${BASE_IMAGE}
 
@@ -733,7 +737,8 @@ RUN set -eux; \
     sha256sum -c SHA256SUMS; \
     dpkg -i packages/*.deb; \
     install -D -m 0644 /tmp/pasturestack-security-input/ubuntu-security-packages.lock /usr/share/pasturestack/security/ubuntu-security-packages.lock; \
-    sh /tmp/pasturestack-security-input/install-ubuntu-security-updates.sh /usr/share/pasturestack/security/ubuntu-security-packages.lock /etc/ssl/certs/ca-certificates.crt; \
+    sh /tmp/pasturestack-security-input/install-ubuntu-security-updates.sh /usr/share/pasturestack/security/ubuntu-security-packages.lock /tmp/pasturestack-runtime-security/security-updates; \
+    install -D -m 0644 security-updates/manifest.tsv /usr/share/pasturestack/security/ubuntu-security-updates-manifest.tsv; \
     rm -rf /tmp/pasturestack-security-input; \
     test "$(dpkg-query -W -f='${Version}' ca-certificates)" = "${CA_CERTIFICATES_PACKAGE_VERSION}"; \
     for package in curl libcurl3t64-gnutls libcurl4t64; do \
@@ -755,10 +760,14 @@ RUN set -eux; \
     test "$(wc -l < /usr/share/pasturestack/security/libpng-runtime.sha256)" -eq 1; \
     sha256sum -c /usr/share/pasturestack/security/libpng-runtime.sha256; \
     libpng_linkage="$(ldd -r /usr/lib/x86_64-linux-gnu/libpng16.so.16 2>&1)"; \
-    ! printf '%s\n' "${libpng_linkage}" | grep -E 'not found|undefined symbol'; \
+    if printf '%s\n' "${libpng_linkage}" | grep -E 'not found|undefined symbol'; then \
+        echo 'Unresolved libpng runtime linkage' >&2; exit 1; \
+    fi; \
     test "$(readlink -f /usr/lib/x86_64-linux-gnu/libfreetype.so.6)" = /usr/lib/x86_64-linux-gnu/libfreetype.so.6.20.5; \
     freetype_linkage="$(ldd -r /usr/lib/x86_64-linux-gnu/libfreetype.so.6 2>&1)"; \
-    ! printf '%s\n' "${freetype_linkage}" | grep -E 'not found|undefined symbol'; \
+    if printf '%s\n' "${freetype_linkage}" | grep -E 'not found|undefined symbol'; then \
+        echo 'Unresolved freetype runtime linkage' >&2; exit 1; \
+    fi; \
     test "$(wc -l < /usr/share/pasturestack/security/libdbi-perl-runtime.sha256)" -eq 2; \
     sha256sum -c /usr/share/pasturestack/security/libdbi-perl-runtime.sha256; \
     perl -MDBI -e 'die "Unexpected DBI runtime version\n" unless $DBI::VERSION eq "1.647"'; \

@@ -1866,6 +1866,8 @@ for release_freetype_security_marker in \
     'sha256sum -c /usr/share/pasturestack/security/freetype-runtime.sha256' \
     'test "$(readlink -f /usr/lib/x86_64-linux-gnu/libfreetype.so.6)" = /usr/lib/x86_64-linux-gnu/libfreetype.so.6.20.5' \
     'ldd -r /usr/lib/x86_64-linux-gnu/libfreetype.so.6 2>&1' \
+    'if printf '\''%s\n'\'' "${freetype_linkage}" | grep -E '\''not found|undefined symbol'\''; then' \
+    'Unresolved freetype runtime linkage' \
     'ENV PASTURESTACK_FREETYPE_PACKAGE_VERSION=${FREETYPE_PACKAGE_VERSION}'; do
     require_marker "$release_dockerfile" "$release_freetype_security_marker" \
         SERVER_FREETYPE_OFFICIAL_SECURITY_REFRESH_MISSING
@@ -1891,6 +1893,8 @@ for release_libpng_security_marker in \
     'sha256sum usr/lib/x86_64-linux-gnu/libpng16.so.16 > /out/libpng-runtime.sha256' \
     'sha256sum -c /usr/share/pasturestack/security/libpng-runtime.sha256' \
     'ldd -r /usr/lib/x86_64-linux-gnu/libpng16.so.16 2>&1' \
+    'if printf '\''%s\n'\'' "${libpng_linkage}" | grep -E '\''not found|undefined symbol'\''; then' \
+    'Unresolved libpng runtime linkage' \
     'ENV PASTURESTACK_LIBPNG_PACKAGE_VERSION=${LIBPNG_PACKAGE_VERSION}'; do
     require_marker "$release_dockerfile" "$release_libpng_security_marker" \
         SERVER_LIBPNG_OFFICIAL_SECURITY_REFRESH_MISSING
