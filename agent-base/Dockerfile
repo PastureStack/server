@@ -26,6 +26,7 @@ RUN set -eux; \
     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
         build-essential \
         ca-certificates \
+        git \
         libbz2-dev \
         libffi-dev \
         libgdbm-dev \
