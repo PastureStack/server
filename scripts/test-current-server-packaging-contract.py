@@ -10,12 +10,13 @@ REPO = pathlib.Path(__file__).resolve().parents[1]
 GATE = (REPO / 'scripts/check-server-api-explorer-patch.sh').read_text(encoding='utf-8')
 DOCKER = 'server/Dockerfile.web-compose-release'
 BUILD = 'server/build-api-explorer-patch-image.sh'
+ENGINE_ARCHIVE = 'server/artifacts/verify-engine-archive.sh'
 VEX = 'server/security/openvex.json'
 VENDOR = 'server/security/vendor-pending.json'
 COMPATIBILITY = 'COMPATIBILITY.md'
 COMPOSE = 'server/artifacts/compose/docker-compose.yml'
 IMAGE_REFERENCES = 'scripts/check-server-runtime-image-references.sh'
-FILES = {name: (REPO / name).read_text(encoding='utf-8') for name in (DOCKER, BUILD, VEX, VENDOR, COMPATIBILITY, COMPOSE, IMAGE_REFERENCES)}
+FILES = {name: (REPO / name).read_text(encoding='utf-8') for name in (DOCKER, BUILD, ENGINE_ARCHIVE, VEX, VENDOR, COMPATIBILITY, COMPOSE, IMAGE_REFERENCES)}
 LB_IMAGE = 'ghcr.io/pasturestack/load-balancer-service:v0.9.33'
 LB_DEFAULT_MARKERS = [
     'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=' + LB_IMAGE,
@@ -101,7 +102,7 @@ ENGINE_EXPECTED = {
         'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=' + ENGINE_SHA,
         'ARG ORCHESTRATION_ENGINE_COMMIT=' + ENGINE_SOURCE,
         'ARG ORCHESTRATION_ENGINE_VERSION=0.183.354',
-        'grep -Fx "Implementation-Version: ${ORCHESTRATION_ENGINE_VERSION}"',
+        'sh /usr/share/cattle/verify-engine-archive.sh "${archive}" "${ORCHESTRATION_ENGINE_VERSION}" "${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}"',
         'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar',
         'cattle-app-config-${ORCHESTRATION_ENGINE_VERSION}.jar',
         'ENV CATTLE_CATTLE_VERSION=${ORCHESTRATION_ENGINE_RELEASE_TAG}',
@@ -113,6 +114,17 @@ ENGINE_EXPECTED = {
         'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-' + ENGINE_SOURCE + '}',
         'CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}"',
         'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar',
+        '< "${server_dir}/artifacts/verify-engine-archive.sh"',
+    )),
+    'SERVER_INCREMENTAL_ENGINE_ARCHIVE_CONTRACT_MISSING': (ENGINE_ARCHIVE, 'engine_archive_marker', (
+        'grep -Fx "Implementation-Version: $expected_version"',
+        'WEB-INF/lib/freemarker-2.3.35.jar',
+        'WEB-INF/lib/hazelcast-5.7.6.jar',
+        '825b5fc9526a10549bcb580f2d6c03bf1f5667625661722c0406ea6f796e83f2',
+        'Rejected old Freemarker dependency',
+        'Rejected old Hazelcast dependency',
+        'Duplicate Orchestration Engine JAR path',
+        'Unsafe Orchestration Engine JAR path',
     )),
 }
 

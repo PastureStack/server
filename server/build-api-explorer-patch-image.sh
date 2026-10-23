@@ -780,6 +780,9 @@ docker run --rm --env "WEB_CONSOLE_RELEASE_TAG=${web_console_release_tag}" --ent
     grep -F "\"auditLogsPage.filterBuilder.timeDialog.calendar.today\":\"Today\"" "${web_root}/translations/en-us.json" >/dev/null
 '
 
+docker run --rm -i --entrypoint sh "$image" -s -- \
+    /usr/share/cattle/cattle.jar "${orchestration_engine_version}" "${orchestration_engine_artifact_sha256}" \
+    < "${server_dir}/artifacts/verify-engine-archive.sh"
 docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_version}" --entrypoint bash "$image" -lc '
     set -euo pipefail
     api_dir=/usr/share/cattle/war/api-ui
@@ -849,13 +852,6 @@ docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_versi
         unzip -p "${resources_jar}" schema/base/projectMember.json |
             grep -F "\"${oidc_type}\"" >/dev/null
     done
-    hazelcast_entry=$(unzip -Z1 /usr/share/cattle/cattle.jar |
-        grep -E "^WEB-INF/lib/hazelcast-[^/]+[.]jar$")
-    test "${hazelcast_entry}" = "WEB-INF/lib/hazelcast-5.7.5.jar"
-    unzip -p /usr/share/cattle/cattle.jar "${hazelcast_entry}" >/tmp/hazelcast.jar
-    echo "0f536a9c7bcd00f2369586fb6ca1606f7e45f3225e24795d10d38397051c8715  /tmp/hazelcast.jar" |
-        sha256sum -c -
-    rm -f /tmp/hazelcast.jar
     cat <<'"'"'EOF'"'"' | sha256sum -c -
 e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192  /usr/bin/authentication-service.real
 0f0c0ada23564572b569e1c73951ca363c0dc262fe7bba9c2474106650c4eac5  /usr/bin/compose-executor.real
