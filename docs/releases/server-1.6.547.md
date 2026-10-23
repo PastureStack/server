@@ -1,7 +1,21 @@
-# Server v1.6.547 candidate
+# Server v1.6.547
 
-Not published. This patch will retain the v1.6.546 security updates and consume
-the newly validated Catalog. Publication and deployment evidence are separate.
+Published from producer `eb018efeb3ff5740e63adf054ef19265868b3538` via
+[publisher 40008002413](https://github.com/PastureStack/server/actions/runs/40008002413).
+The 26 immutable release assets and their SHA-256 checksums passed anonymous
+readback. Image provenance and SBOM attestations were independently verified
+against the same source, workflow and published digest.
+
+Published image identity:
+`ghcr.io/pasturestack/server:v1.6.547@sha256:09b14e3ad99d75223dca5251f6a27fa9dfec0cc55a3670b683ad406125f24de7`.
+The distinct OCI config is
+`sha256:872a8760d53ea02a9d0b7e805d50314efbd06df0316100e9438e0910e1eb0852`.
+This linux/amd64 image has one runtime layer. Install with the numeric
+`ghcr.io/pasturestack/server:v1.6.547` tag; the full identity above is for
+verification and traceability, not an installation-command override.
+
+This patch retains the v1.6.546 security updates and consumes the newly
+published Catalog. Publication and real-host deployment acceptance are separate.
 
 ## Verified component inputs
 
@@ -43,6 +57,8 @@ network path before completing the upgrade. Existing installations require
 the validated migration sequence in the final deployment evidence.
 
 Officially unfixed LOW/MEDIUM CVEs remain tracked with their exact packages and
-review dates. HIGH/CRITICAL, available fixes, unregistered findings and secrets
-still block publication. This patch does not claim zero vulnerabilities or
-Windows-host acceptance.
+review dates. The complete runtime gate retains 51 raw findings; after exact
+existing VEX dispositions, 29 officially unfixed LOW/MEDIUM occurrences across
+18 CVEs remain. HIGH/CRITICAL, available fixes, unregistered findings and
+detected secrets are zero. This patch does not claim zero vulnerabilities,
+real-host acceptance or Windows-host acceptance.
