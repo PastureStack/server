@@ -1728,7 +1728,7 @@ require_marker "$dockerfile" \
 require_marker "$dockerfile" \
     'ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.0' \
     SERVER_RUNTIME_GO_VERSION_MISSING
-require_marker "$dockerfile" \
+require_marker "$release_dockerfile" \
     'ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-10-23' \
     SERVER_UBUNTU_SECURITY_REFRESH_MISSING
 require_marker "$dockerfile" \
