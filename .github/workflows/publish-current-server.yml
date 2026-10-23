@@ -69,6 +69,7 @@ jobs:
           test -z "$(git -C source status --short)"
           python3 source/server/security/test_scan_coverage.py
           python3 source/scripts/test-render-server-release-notes.py
+          python3 source/scripts/test-publisher-safety-guards.py
 
           declared_release="$(sed -n 's/^ARG SERVER_RELEASE_TAG=//p' \
             source/server/Dockerfile.web-compose-release | sort -u)"
@@ -225,7 +226,7 @@ jobs:
           trap cleanup_candidate EXIT
 
           for object in "$CANDIDATE_NAME" "$CATTLE_VOLUME" "$MYSQL_VOLUME" "$MYSQL_LOG_VOLUME"; do
-            ! docker inspect "$object" >/dev/null 2>&1
+            if docker inspect "$object" >/dev/null 2>&1; then echo 'Run-owned object already exists' >&2; exit 1; fi
           done
           docker run -d \
             --name "$CANDIDATE_NAME" \
@@ -348,8 +349,7 @@ jobs:
           done
           grep -Fq 'PastureStack Catalog bootstrap verified a non-empty collection.' \
             "$evidence/candidate.log"
-          ! grep -Fq "mysql_native_password': this user requires mysql native password authentication" \
-            "$evidence/candidate.log"
+          if grep -Fq "mysql_native_password': this user requires mysql native password authentication" "$evidence/candidate.log"; then echo 'Candidate database authentication failed' >&2; exit 1; fi
           docker inspect "$CANDIDATE_NAME" --format '{{range .Config.Env}}{{println .}}{{end}}' |
             grep -Fx "CATTLE_RANCHER_SERVER_VERSION=$RELEASE_TAG" >/dev/null
           docker inspect "$CANDIDATE_NAME" --format '{{range .Config.Env}}{{println .}}{{end}}' |
