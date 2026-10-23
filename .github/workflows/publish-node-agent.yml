@@ -50,6 +50,12 @@ jobs:
           EVIDENCE_DIR: ${{ runner.temp }}/node-agent-evidence
         run: bash scripts/build-agent-release.sh
 
+      - name: Authenticate registry attestation publication
+        if: inputs.publish
+        env:
+          REGISTRY_TOKEN: ${{ github.token }}
+        run: printf '%s' "$REGISTRY_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+
       - name: Attest published image provenance
         if: inputs.publish
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
@@ -66,6 +72,10 @@ jobs:
           subject-digest: ${{ steps.runtime.outputs.digest }}
           sbom-path: ${{ runner.temp }}/node-agent-evidence/image.cdx.json
           push-to-registry: true
+
+      - name: Clear registry credentials
+        if: always()
+        run: docker logout ghcr.io
 
       - name: Retain source, runtime, registry, and scan evidence
         if: always()
