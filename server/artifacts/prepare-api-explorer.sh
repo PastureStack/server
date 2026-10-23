@@ -5,7 +5,10 @@ export LC_ALL=C
 
 [[ $# == 4 ]] || { echo 'usage: prepare-api-explorer ARCHIVE VERSION COMMIT OUTPUT' >&2; exit 2; }
 archive=$1 version=$2 commit=$3 output=$4
-[[ "$version" == 1.1.19 && "$commit" =~ ^[0-9a-f]{40}$ ]]
+[[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ && "$commit" =~ ^[0-9a-f]{40}$ ]] || {
+    echo 'API Explorer requires a numeric version and exact source commit' >&2
+    exit 2
+}
 test ! -e "$output"
 test ! -L "$output"
 listing=$(mktemp)
