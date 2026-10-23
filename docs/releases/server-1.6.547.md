@@ -45,6 +45,17 @@ Catalog upgrade, data-preservation, refresh and Server-restart check.
 
 ## Upgrade and rollback
 
+### CNI handoff limitation found during QA
+
+The Network Services upgrade passed with v0.8.24, but the following IPsec
+upgrade exposed a separate provider lifecycle defect. A CNI wrapper can remain
+bound to a stopped driver even though Metadata and Docker both report its
+replacement as running. New workload creation can then time out waiting for an
+IP address. This release must not be treated as having passed that complete
+infrastructure-upgrade sequence. The permanent follow-up is tracked in the
+[v1.6.548 candidate](server-1.6.548.md); do not work around it by modifying host
+firewall rules or runtime binaries.
+
 Preserve the existing three named volumes, all operator environment variables,
 restart policy, AppArmor profile, HTTPS origin and authentication configuration.
 Retain the previously accepted Server image and database backup; never use
