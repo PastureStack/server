@@ -371,8 +371,8 @@ for marker in \
     PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download \
     CATTLE_API_UI_VERSION=1.1.20 \
     CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}" \
-    DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.32 \
-    DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.32 \
+    DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.33 \
+    DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.33 \
     RC16_GO_AGENT_VERSION="${node_agent_version}" \
     RC16_PER_HOST_SUBNET_VERSION="${per_host_subnet_version}" \
     PASTURESTACK_PER_HOST_SUBNET_PRODUCER_COMMIT="${per_host_subnet_producer_commit}" \
@@ -466,9 +466,9 @@ done
 docker run --rm --network none --entrypoint sh "$image" -eu -c '
     . /usr/share/cattle/env_vars
     test -z "${CATTLE_LB_INSTANCE_IMAGE:-}${CATTLE_LB_INSTANCE_IMAGE_UUID:-}${RC16_LB_INSTANCE_IMAGE:-}${RC16_LB_INSTANCE_IMAGE_UUID:-}"
-    test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE" = ghcr.io/pasturestack/load-balancer-service:v0.9.32
-    test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID" = docker:ghcr.io/pasturestack/load-balancer-service:v0.9.32
-    test "$(grep -Fxc "  image: ghcr.io/pasturestack/load-balancer-service:v0.9.32" /usr/share/cattle/compose/docker-compose.yml)" = 2
+    test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE" = ghcr.io/pasturestack/load-balancer-service:v0.9.33
+    test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID" = docker:ghcr.io/pasturestack/load-balancer-service:v0.9.33
+    test "$(grep -Fxc "  image: ghcr.io/pasturestack/load-balancer-service:v0.9.33" /usr/share/cattle/compose/docker-compose.yml)" = 2
 '
 
 docker run --rm --entrypoint bash "$image" -lc '

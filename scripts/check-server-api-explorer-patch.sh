@@ -1288,21 +1288,21 @@ require_marker "$dockerfile" \
 # These checks own the current assembly; the historical patch recipe above
 # remains pinned to the original 1.1.18 artifact.
 for current_lb_default_marker in \
-    'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.32' \
-    'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.32' \
+    'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.33' \
+    'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.33' \
     'COPY artifacts/compose/ /usr/share/cattle/compose/'; do
     require_marker "$release_dockerfile" "$current_lb_default_marker" SERVER_CURRENT_LB_DEFAULT_MISSING
 done
 for current_lb_runtime_marker in \
-    'DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.32' \
-    'DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.32' \
+    'DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.33' \
+    'DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.33' \
     'test -z "${CATTLE_LB_INSTANCE_IMAGE:-}${CATTLE_LB_INSTANCE_IMAGE_UUID:-}${RC16_LB_INSTANCE_IMAGE:-}${RC16_LB_INSTANCE_IMAGE_UUID:-}"' \
-    'test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE" = ghcr.io/pasturestack/load-balancer-service:v0.9.32' \
-    'test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID" = docker:ghcr.io/pasturestack/load-balancer-service:v0.9.32' \
-    'test "$(grep -Fxc "  image: ghcr.io/pasturestack/load-balancer-service:v0.9.32" /usr/share/cattle/compose/docker-compose.yml)" = 2'; do
+    'test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE" = ghcr.io/pasturestack/load-balancer-service:v0.9.33' \
+    'test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID" = docker:ghcr.io/pasturestack/load-balancer-service:v0.9.33' \
+    'test "$(grep -Fxc "  image: ghcr.io/pasturestack/load-balancer-service:v0.9.33" /usr/share/cattle/compose/docker-compose.yml)" = 2'; do
     require_marker "$build_script" "$current_lb_runtime_marker" SERVER_CURRENT_LB_RUNTIME_GATE_MISSING
 done
-if [ "$(grep -Fxc '  image: ghcr.io/pasturestack/load-balancer-service:v0.9.32' server/artifacts/compose/docker-compose.yml)" -ne 2 ]; then
+if [ "$(grep -Fxc '  image: ghcr.io/pasturestack/load-balancer-service:v0.9.33' server/artifacts/compose/docker-compose.yml)" -ne 2 ]; then
     echo SERVER_CURRENT_LB_COMPOSE_REFERENCE_MISMATCH >&2
     exit 1
 fi

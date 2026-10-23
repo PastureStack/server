@@ -16,7 +16,7 @@ COMPATIBILITY = 'COMPATIBILITY.md'
 COMPOSE = 'server/artifacts/compose/docker-compose.yml'
 IMAGE_REFERENCES = 'scripts/check-server-runtime-image-references.sh'
 FILES = {name: (REPO / name).read_text(encoding='utf-8') for name in (DOCKER, BUILD, VEX, VENDOR, COMPATIBILITY, COMPOSE, IMAGE_REFERENCES)}
-LB_IMAGE = 'ghcr.io/pasturestack/load-balancer-service:v0.9.32'
+LB_IMAGE = 'ghcr.io/pasturestack/load-balancer-service:v0.9.33'
 LB_DEFAULT_MARKERS = [
     'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=' + LB_IMAGE,
     'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:' + LB_IMAGE,
@@ -505,7 +505,7 @@ def verify_load_balancer_contract(files, gate=GATE):
             raise AssertionError('CURRENT_LB_READBACK_GUARD_BYPASS')
     references = files[IMAGE_REFERENCES]
     for marker in (
-        'approved_balancer="${approved_registry}/load-balancer-service:v0.9.32"',
+        'approved_balancer="${approved_registry}/load-balancer-service:v0.9.33"',
         'historical_balancer="${approved_registry}/load-balancer-service:v0.9.27"',
         '"ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=${approved_balancer}" \\\n    server/Dockerfile.web-compose-release',
         '"ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=${historical_balancer}" \\\n    server/Dockerfile',
@@ -615,10 +615,10 @@ class Tests(unittest.TestCase):
 
     def test_load_balancer_old_defaults_missing_copy_forced_override_and_disabled_readback_rejected(self):
         mutations = [
-            (DOCKER, FILES[DOCKER].replace(LB_DEFAULT_MARKERS[0], LB_DEFAULT_MARKERS[0].replace('v0.9.32', 'v0.9.27'))),
+            (DOCKER, FILES[DOCKER].replace(LB_DEFAULT_MARKERS[0], LB_DEFAULT_MARKERS[0].replace('v0.9.33', 'v0.9.27'))),
             (DOCKER, FILES[DOCKER].replace(LB_DEFAULT_MARKERS[2], '# ' + LB_DEFAULT_MARKERS[2])),
             (DOCKER, FILES[DOCKER] + '\nENV CATTLE_LB_INSTANCE_IMAGE=' + LB_IMAGE + '\n'),
-            (COMPOSE, FILES[COMPOSE].replace(LB_IMAGE, LB_IMAGE.replace('v0.9.32', 'v0.9.27'), 1)),
+            (COMPOSE, FILES[COMPOSE].replace(LB_IMAGE, LB_IMAGE.replace('v0.9.33', 'v0.9.27'), 1)),
             (BUILD, FILES[BUILD].replace(LB_RUNTIME_MARKERS[2], '# ' + LB_RUNTIME_MARKERS[2])),
             (BUILD, FILES[BUILD].replace(LB_RUNTIME_MARKERS[-1], LB_RUNTIME_MARKERS[-1] + ' || true')),
             (BUILD, FILES[BUILD].replace('. /usr/share/cattle/env_vars', '# no inherited environment readback')),
