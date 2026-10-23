@@ -726,7 +726,7 @@ ARG PACKET_DRIVER_BINARY_SHA256=b3e5c71928fcebe1bb648f79ebbf38af9ad32d6f6dbb8758
 
 COPY --from=runtime_security_packages /out/ /tmp/pasturestack-runtime-security/
 COPY --from=runtime_security_packages /out/tar /usr/bin/tar
-COPY server/scripts/install-ubuntu-security-updates.sh server/security/ubuntu-security-packages.lock /tmp/pasturestack-security-input/
+COPY scripts/install-ubuntu-security-updates.sh security/ubuntu-security-packages.lock /tmp/pasturestack-security-input/
 RUN set -eux; \
     printf '%s\n' "${WEB_CONSOLE_COMMIT}" | grep -Eq '^[0-9a-f]{40}$'; \
     cd /tmp/pasturestack-runtime-security; \
