@@ -44,7 +44,7 @@ Engine-verified project contexts; a caller-supplied project header is not a gran
 Delegated terminal/log access requires the verified Host API audit capability
 and a compatible Linux Node Agent lifecycle. Open a Key's audit from its action
 menu. See the [API Key guide](docs/api-keys.md) for policy and audit contracts.
-Maintained CLI `0.6.19` propagates rejected requests as nonzero errors. Legacy `0.6.14` can silently exit zero; see [client compatibility](COMPATIBILITY.md#maintained-cli-error-reporting) and check HTTP status explicitly for automation.
+Maintained CLI `0.6.20` propagates rejected requests as nonzero errors. Legacy `0.6.14` can silently exit zero; see [client compatibility](COMPATIBILITY.md#maintained-cli-error-reporting) and check HTTP status explicitly for automation.
 
 ## Quick start
 

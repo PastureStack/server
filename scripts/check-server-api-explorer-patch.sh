@@ -543,8 +543,8 @@ require_marker "$release_dockerfile" \
     SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING
 require_marker "$release_dockerfile" 'ENV PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download' SERVER_CLI_DOWNLOAD_DEFAULT_MISSING
 require_marker "$build_script" 'PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download' SERVER_CLI_DOWNLOAD_RUNTIME_READBACK_MISSING
-require_marker "$release_dockerfile" 'ENV CATTLE_RANCHER_CLI_VERSION=v0.6.19' SERVER_CLI_VERSION_DEFAULT_MISSING
-require_marker "$build_script" 'CATTLE_RANCHER_CLI_VERSION=v0.6.19' SERVER_CLI_VERSION_RUNTIME_READBACK_MISSING
+require_marker "$release_dockerfile" 'ENV CATTLE_RANCHER_CLI_VERSION=v0.6.20' SERVER_CLI_VERSION_DEFAULT_MISSING
+require_marker "$build_script" 'CATTLE_RANCHER_CLI_VERSION=v0.6.20' SERVER_CLI_VERSION_RUNTIME_READBACK_MISSING
 require_marker "$release_dockerfile" \
     'COPY --from=release_artifacts /out/host-api.tar.gz /usr/share/cattle/artifacts/host-api-${HOST_API_VERSION}.tar.gz' \
     SERVER_HOST_API_SHA256_PACKAGE_MISSING

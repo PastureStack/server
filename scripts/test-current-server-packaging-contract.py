@@ -606,6 +606,19 @@ def previous_gate(gate=GATE):
 
 
 class Tests(unittest.TestCase):
+    def test_current_agent_defaults_keep_explicit_operator_overrides(self):
+        image = 'ghcr.io/pasturestack/node-agent:v1.2.32'
+        final_stage = FILES[DOCKER].rsplit('\nFROM ', 1)[-1]
+        for name in ('DEFAULT_CATTLE_AGENT_IMAGE', 'DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE'):
+            self.assertEqual(final_stage.splitlines().count('ENV ' + name + '=' + image), 1)
+            self.assertIn(name + '=' + image, FILES[BUILD])
+        self.assertIsNone(re.search(
+            r'^ENV (CATTLE_AGENT_IMAGE|CATTLE_BOOTSTRAP_REQUIRED_IMAGE|RC16_AGENT_IMAGE)=',
+            final_stage, re.M))
+        startup = (REPO / 'server/artifacts/cattle.sh').read_text(encoding='utf-8')
+        self.assertIn('CATTLE_BOOTSTRAP_REQUIRED_IMAGE="${CATTLE_BOOTSTRAP_REQUIRED_IMAGE:-$RC16_AGENT_IMAGE}"', startup)
+        self.assertIn('SERVER_CURRENT_AGENT_OPERATOR_OVERRIDE_FORCED', FILES[IMAGE_REFERENCES])
+
     def test_load_balancer_source_defaults_compose_and_effective_readback(self):
         verify_load_balancer_contract(FILES)
         for path in ('server/Dockerfile', 'server/Dockerfile.runtime-hotfix', 'server/Dockerfile.api-explorer-patch'):

@@ -367,10 +367,12 @@ image_environment=$(docker image inspect "$image" \
     --format '{{range .Config.Env}}{{println .}}{{end}}')
 for marker in \
     CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}" \
-    CATTLE_RANCHER_CLI_VERSION=v0.6.19 \
+    CATTLE_RANCHER_CLI_VERSION=v0.6.20 \
     PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download \
     CATTLE_API_UI_VERSION=1.1.20 \
     CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}" \
+    DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.32 \
+    DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.32 \
     DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.33 \
     DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.33 \
     RC16_GO_AGENT_VERSION="${node_agent_version}" \
