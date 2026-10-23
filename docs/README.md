@@ -7,6 +7,13 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.546](releases/server-1.6.546.md) — published security refresh;
+  verified component inputs, one-layer immutable image, full artifact scanning
+  and signed provenance. See the release note for scoped runtime evidence and
+  the exact officially unfixed findings; tracking is not remediation.
+- [Server v1.6.545](releases/server-1.6.545.md) — published service-upgrade and
+  endpoint identity repair with retained-data, refresh and restart verification.
+
 - [Server v1.6.537](releases/server-1.6.537.md) — published Web Console `1.6.190`
   and Engine `v0.183.350` archive/restore; official source/build, fresh startup/restart,
   final-image security/SBOM and anonymous 24-asset/image readback passed.
