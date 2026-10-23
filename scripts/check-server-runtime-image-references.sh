@@ -6,9 +6,23 @@ cd "$repo_root"
 
 approved_registry=ghcr.io/pasturestack
 approved_agent="${approved_registry}/node-agent:v1.2.31"
-approved_balancer="${approved_registry}/load-balancer-service:v0.9.32"
+current_agent="${approved_registry}/node-agent:v1.2.32"
+approved_balancer="${approved_registry}/load-balancer-service:v0.9.33"
 # Historical recipes and opt-in migration tools keep their reviewed coordinates.
 historical_balancer="${approved_registry}/load-balancer-service:v0.9.27"
+
+for variable in DEFAULT_CATTLE_AGENT_IMAGE DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE; do
+    grep -Fxq "ENV ${variable}=${current_agent}" server/Dockerfile.web-compose-release || {
+        echo SERVER_CURRENT_AGENT_REFERENCE_MISMATCH >&2
+        exit 1
+    }
+done
+# Only defaults change; explicit operator choices must still take precedence.
+if grep -Eq '^ENV (CATTLE_AGENT_IMAGE|CATTLE_BOOTSTRAP_REQUIRED_IMAGE|RC16_AGENT_IMAGE)=' \
+    server/Dockerfile.web-compose-release; then
+    echo SERVER_CURRENT_AGENT_OPERATOR_OVERRIDE_FORCED >&2
+    exit 1
+fi
 
 grep -Fq 'IMAGE_PREFIX=${IMAGE_PREFIX:-ghcr.io/pasturestack}' scripts/build || {
     echo SERVER_BUILD_IMAGE_PREFIX_NOT_APPROVED >&2

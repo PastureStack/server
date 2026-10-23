@@ -27,7 +27,8 @@ HASHES = ("ORCHESTRATION_ENGINE_ARTIFACT_SHA256", "ENGINE_READONLY_SCHEMA_SHA256
           "PER_HOST_SUBNET_ARCHIVE_SHA256", "PER_HOST_SUBNET_BINARY_SHA256", "PER_HOST_SUBNET_STARTUP_SHA256", "PER_HOST_SUBNET_PROVENANCE_SHA256",
           "HOST_PROVISIONER_ARCHIVE_SHA256", "SECRET_DELIVERY_API_ARCHIVE_SHA256", "USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256",
           "CATALOG_SERVICE_ARCHIVE_SHA256", "CATALOG_SERVICE_LICENSE_SHA256", "AUTHENTICATION_SERVICE_ARCHIVE_SHA256",
-          "WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256", "COMPOSE_EXECUTOR_ARCHIVE_SHA256", "VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256")
+          "WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256", "COMPOSE_EXECUTOR_ARCHIVE_SHA256", "VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256",
+          "MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256")
 LOCAL_ASSETS = (("cattle.jar", "ORCHESTRATION_ENGINE_ARTIFACT_SHA256"),
                 ("api-explorer-1.1.19.tar.gz", "API_EXPLORER_ARTIFACT_SHA256"),
                 ("web-console-1.6.181.tar.gz", "WEB_CONSOLE_ARTIFACT_SHA256"),
@@ -44,13 +45,20 @@ LOCAL_ASSETS = (("cattle.jar", "ORCHESTRATION_ENGINE_ARTIFACT_SHA256"),
                 ("authentication-service-0.4.44-linux-amd64.tar.xz", "AUTHENTICATION_SERVICE_ARCHIVE_SHA256"),
                 ("webhook-automation-service-0.10.5-linux-amd64.tar.xz", "WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256"),
                 ("compose-executor-0.14.38-linux-amd64.gz", "COMPOSE_EXECUTOR_ARCHIVE_SHA256"),
-                ("vsphere-cli-bundle-0.55.4-linux-amd64.tar.xz", "VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256"))
+                ("vsphere-cli-bundle-0.55.4-linux-amd64.tar.xz", "VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256"),
+                ("machine-driver-bundle-0.16.5-linux-amd64.tar.xz", "MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256"))
 
 
 def fixture_environment():
     environment = {"PATH": os.environ["PATH"], "SOURCE_DATE_EPOCH": "1",
                    "SERVER_RELEASE_TAG": "v1.6.519", "ORCHESTRATION_ENGINE_RELEASE_TAG": "v0.183.334",
-                   "WEB_CONSOLE_RELEASE_TAG": "1.6.181"}
+                   "WEB_CONSOLE_RELEASE_TAG": "1.6.181", "API_EXPLORER_RELEASE_TAG": "v1.1.19",
+                   "API_EXPLORER_ARTIFACT": "api-explorer-1.1.19.tar.gz",
+                   "WEBSOCKET_PROXY_VERSION": "0.23.17", "HOST_API_VERSION": "0.38.7",
+                   "NODE_AGENT_VERSION": "0.13.31", "HOST_PROVISIONER_VERSION": "0.39.9",
+                   "USAGE_TELEMETRY_AGENT_VERSION": "0.4.3", "CATALOG_SERVICE_VERSION": "0.20.14",
+                   "AUTHENTICATION_SERVICE_VERSION": "0.4.44", "COMPOSE_EXECUTOR_VERSION": "0.14.38",
+                   "MACHINE_DRIVER_BUNDLE_VERSION": "0.16.5"}
     for name in COMMITS:
         environment[name] = hashlib.sha1(("unit-fixture-" + name).encode()).hexdigest()
     for name in HASHES:
@@ -103,11 +111,11 @@ class ComponentRecipeTest(unittest.TestCase):
                            FIXTURE_TRACE=str(path / "docker-arguments"))
         return environment, assets
 
-    def test_seventeen_local_assets_are_hashed_and_named_context_reaches_formal_recipe(self):
+    def test_all_eighteen_local_assets_are_hashed_and_named_context_reaches_formal_recipe(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary)
             environment, assets = self.local_fixture(path)
-            self.assertEqual(17, len(LOCAL_ASSETS))
+            self.assertEqual(18, len(LOCAL_ASSETS))
             self.assertEqual({name for name, _ in LOCAL_ASSETS}, {asset.name for asset in assets.iterdir()})
             result = self.run_entry(environment)
             self.assertEqual(88, result.returncode, result.stderr)

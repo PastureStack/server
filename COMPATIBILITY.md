@@ -1,5 +1,42 @@
 # Compatibility Contract
 
+<a id="server-v16546-security-refresh"></a>
+
+## Server v1.6.546 prepared, not published
+
+This source candidate consumes independently verified security releases.
+It keeps the existing authentication, authorization, registration, storage,
+service-upgrade and API contracts. Ubuntu packages stay on the installed
+26.04 series; host Docker daemons and firewall backends are not changed.
+Temurin changes to 25.0.5+8; embedded Go products use the reviewed fixed
+toolchains and same-major dependency updates.
+
+The Engine's build environment uses the official pip 26.2.2 source with a
+reproducible urllib3 2.8.0 vendoring rebuild, identified as
+26.2.2+pasturestack.1. This is a build dependency version, not a new project
+release-tag convention. Its stream-size and TLS regressions, ensurepip,
+venv and virtualenv paths are checked. No JWT, MFA or TLS verification is
+disabled.
+
+Raw findings, exact package versions and official unfixed status are retained.
+Tracking an unfixed LOW/MEDIUM finding does not mean it is fixed or risk-free.
+HIGH/CRITICAL, available fixes, unregistered findings and secrets remain
+release blockers. Existing operator environment variables and named volumes
+must be preserved. See [release details](docs/releases/server-1.6.546.md).
+
+The internal compose executor is updated to 0.14.39. That release does not
+publish three-platform legacy Compose CLI downloads. The optional
+`RC16_ARTIFACT_BASE_URL` compatibility URLs are therefore not changed to
+nonexistent 0.14.39 CLI archives; those URLs remain an operator-supplied
+integration, separate from the bundled executor and maintained PastureStack CLI.
+
+The immutable machine-driver bundle 0.16.5 replaces the inherited 0.14.0
+executable with Go 1.27.3 security updates. Both executable hashes, the archive,
+source metadata and legal files are verified. Existing provider configurations
+are preserved; the retired Packet provider is not enabled for new hosts.
+The bundled machine package becomes the default, without overriding an
+operator's explicit `CATTLE_SERVICE_PACKAGE_DOCKER_MACHINE_URL`.
+
 ## Server v1.6.545 published
 
 Official source `858ec54df70b8089ef900a16bed1287d94e7f692` passed

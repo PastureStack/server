@@ -4,14 +4,14 @@ ARG UBUNTU_SECURITY_IMAGE=ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1
 ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403
 
 FROM ${ARTIFACT_HELPER_IMAGE} AS temurin_security_runtime
-ADD --checksum=sha256:dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e \
-    https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4.1%2B1/OpenJDK25U-jdk_x64_linux_hotspot_25.0.4.1_1.tar.gz \
+ADD --checksum=sha256:68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb \
+    https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jdk_x64_linux_hotspot_25.0.5_8.tar.gz \
     /tmp/temurin-jdk25.tar.gz
 RUN set -eux; \
     mkdir -p /out/java; \
     tar -xzf /tmp/temurin-jdk25.tar.gz --strip-components=1 -C /out/java; \
-    /out/java/bin/java -version 2>&1 | grep -F '25.0.4.1'; \
-    /out/java/bin/javac -version 2>&1 | grep -F '25.0.4.1'; \
+    /out/java/bin/java -version 2>&1 | grep -F '25.0.5'; \
+    /out/java/bin/javac -version 2>&1 | grep -F '25.0.5'; \
     test -s /out/java/legal/java.base/LICENSE; \
     rm -f /tmp/temurin-jdk25.tar.gz
 
@@ -46,34 +46,35 @@ COPY --chmod=0755 artifacts/repair-host-api-sha256.sh /usr/local/bin/repair-host
 COPY --chmod=0755 artifacts/fetch-server-component.sh /usr/local/bin/fetch-server-component
 COPY --chmod=0755 artifacts/prepare-api-explorer.sh /usr/local/bin/prepare-api-explorer
 COPY --chmod=0755 artifacts/verify-runtime-producer.sh /usr/local/bin/verify-runtime-producer
+COPY --chmod=0755 artifacts/verify-machine-driver-bundle.sh /usr/local/bin/verify-machine-driver-bundle
 COPY --chmod=0755 artifacts/verify-host-api-package.sh /usr/local/bin/verify-host-api-package
 COPY --chmod=0755 artifacts/verify-agent-package.sh /usr/local/bin/verify-agent-package.sh
 COPY --from=component_input / /tmp/pasturestack-component-input/
 ARG COMPONENT_ARTIFACT_MODE=remote
 ARG PASTURESTACK_ALLOW_LOOPBACK_ARTIFACTS=0
 ARG API_EXPLORER_RELEASE_BASE_URL=https://github.com/PastureStack/api-explorer/releases/download
-ARG API_EXPLORER_RELEASE_TAG=v1.1.19
-ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.19.tar.gz
-ARG API_EXPLORER_ARTIFACT_SHA256=d1602ab6033512f0b86dc8ceafee2061364ce2fc5da2a9b7119f900d9e0f3c25
-ARG API_EXPLORER_COMMIT=dda3fe8a806d9736de771d325e3ca98ab4067cd2
-ARG HOST_API_VERSION=0.38.7
+ARG API_EXPLORER_RELEASE_TAG=v1.1.20
+ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.20.tar.gz
+ARG API_EXPLORER_ARTIFACT_SHA256=c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb
+ARG API_EXPLORER_COMMIT=a586f0dc0aa50df579049a8d4bf26f04400fdf75
+ARG HOST_API_VERSION=0.38.8
 ARG HOST_API_PACKAGE_MODE=producer
 ARG HOST_API_RELEASE_BASE_URL=https://github.com/PastureStack/host-api/releases/download
-ARG HOST_API_RELEASE_TAG=v0.38.7
-ARG HOST_API_ARCHIVE_SHA256=f0e0033da7661d1444b73e2dc43f8b5c5dad6c9169ff2d19c1dcb6aa1c4435d9
-ARG HOST_API_PACKAGE_ID=cd2a8d2b5e37f1b79a4b487760db5f3f
-ARG HOST_API_BINARY_SHA256=8dc40eb10807e56679c087a1a0b458a49acd545715c4f04e2bcb90a5d5538d5f
+ARG HOST_API_RELEASE_TAG=v0.38.8
+ARG HOST_API_ARCHIVE_SHA256=6903ffb6a618f5a9bc8c7c8997a1e0419c93a8bbdeaee6d288957366dccef444
+ARG HOST_API_PACKAGE_ID=4810ffbb4499c24d9f7066d64de3203f
+ARG HOST_API_BINARY_SHA256=85fceccc5e2724aa896560392123fc8927786915b03f6d42eb688e151a402b8a
 ARG HOST_API_APPLY_SHA256=8a21f63099832afb571755011bbcf8d97710994a50c419b20700cbc31efced0f
-ARG HOST_API_COMMIT=cd2a8d2b5e37f1b79a4b487760db5f3f7b3f818b
-ARG NODE_AGENT_VERSION=0.13.31
+ARG HOST_API_COMMIT=4810ffbb4499c24d9f7066d64de3203f9a6771e4
+ARG NODE_AGENT_VERSION=0.13.33
 ARG NODE_AGENT_RELEASE_BASE_URL=https://github.com/PastureStack/node-agent/releases/download
-ARG NODE_AGENT_COMMIT=68ae58d886621540208b98378ed517b3525244e0
-ARG NODE_AGENT_PACKAGE_ID=68ae58d886621540208b98378ed517b3
-ARG NODE_AGENT_ARCHIVE_SHA256=d12da35517448fd26467ee71249976b224da8d07c9dd9feec7c3e49d2977df62
-ARG NODE_AGENT_BINARY_SHA256=bec0d2e9e2bfdb6015cdcc2d65f692ce5b0dfcfdbf32f72032b67f2860e4ffaa
+ARG NODE_AGENT_COMMIT=0aadd6f79890c994da2c047214a2a224471f9191
+ARG NODE_AGENT_PACKAGE_ID=0aadd6f79890c994da2c047214a2a224
+ARG NODE_AGENT_ARCHIVE_SHA256=2b86ca04c1071ab9f01983f70c45dfcec39694c8fc245031e7c1e8335dbd063d
+ARG NODE_AGENT_BINARY_SHA256=4b59d7af2f81d2dfe21eb0af9f67aeb53eddd48e9696e236f0889fb74a053e17
 ARG NODE_AGENT_APPLY_SHA256=dd8cb342518a43e7468cc121db5c4e44b16731f2620b77ea0fd03c02c03766a9
-ARG NODE_AGENT_WINDOWS_ARCHIVE_SHA256=5b5e4610200139e89d962e2f10b6961d85ca2972a86cc4d4ddddbb8b600115ae
-ARG NODE_AGENT_WINDOWS_BINARY_SHA256=b5155ffb8919b68be6da206d0ccedef00917d15b19fb3da6e0381237b456ab3e
+ARG NODE_AGENT_WINDOWS_ARCHIVE_SHA256=ec33a1d234126872017c4e29ae5dbede199798f25e1134a14850ec9d4dfff10e
+ARG NODE_AGENT_WINDOWS_BINARY_SHA256=0ea4c2d9c00b0084d041822195aa264f8fea69d50099c9b327f5fdbb8dc7ea78
 ARG NODE_AGENT_WINDOWS_STARTUP_SHA256=e1e84e1c5125db2b8f0c1a83ada8294556cb2390de969398a2436d9481378fca
 
 # Official original-CI CNI025 bytes; no embedded VCS by the producer's buildvcs=false contract.
@@ -86,56 +87,62 @@ ARG PER_HOST_SUBNET_STARTUP_SHA256=f22b41f18d1733c037babed4d2e0474efeedc6017a968
 ARG PER_HOST_SUBNET_PROVENANCE_SHA256=afa2db0e0755c6bd3ee28e111937c521a6d84e6d71d563e99202cf4693000eaf
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.193
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.193.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=07dd68dddecec1d95c6932d4dd31084401ee67d517fb820ecbbe6afaa052a888
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.194
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.194.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=fe83f57dd1202766579b848f1bee75e7c05536db2fbb1f58de2bbb21829b1221
 ARG CATALOG_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/catalog-service/releases/download
-ARG CATALOG_SERVICE_VERSION=0.20.14
-ARG CATALOG_SERVICE_COMMIT=9b0c0f40dc81eb83673df85f3de96f7e6f89b985
-ARG CATALOG_SERVICE_ARCHIVE_SHA256=00380a63e1f95b3d9a1dfb8e2fb3f038d876d7decb0ae5c7798ea1b7d8dc54b6
-ARG CATALOG_SERVICE_BINARY_SHA256=86f2bb33254161bb49d6fb8208ea351ab1924922dabc8dfe8aa8c1b897d11282
-ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=672ab1a50cb80077faacdb218f66fea2da233454d0110ef14bbf7b9c30d05da5
+ARG CATALOG_SERVICE_VERSION=0.20.15
+ARG CATALOG_SERVICE_COMMIT=6ea547594065f7f95d5877b82f0c1bc553e72640
+ARG CATALOG_SERVICE_ARCHIVE_SHA256=7c059101265d897e4b176f503a9217b112946d37d91daa0c40f421fb16e4bb6b
+ARG CATALOG_SERVICE_BINARY_SHA256=948a528987113a2d37f5ee519c4f682e09af4aa10ff64d490d9851ba7b633364
+ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=b890cfc7941ad3ba1bde4038c0acde4098fa101512553159d4615e540f8bb659
 ARG CATALOG_SERVICE_LICENSE_SHA256=0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594
 ARG AUTHENTICATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/authentication-service/releases/download
-ARG AUTHENTICATION_SERVICE_VERSION=0.4.44
-ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=3fab69156bcc07b96a4b404f24fe59c08958a4357113cecec440ea6d40c5c9a4
-ARG AUTHENTICATION_SERVICE_BINARY_SHA256=446c89fe2a5ce3d1ff677cf1fac26740cc38520b6977ff5d86a7d865e7dfc3ed
+ARG AUTHENTICATION_SERVICE_VERSION=0.4.46
+ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=15950344ac9cc688610eae6d1c023ae6ba66182de675f04445f4c98ced2f19ec
+ARG AUTHENTICATION_SERVICE_BINARY_SHA256=e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192
 ARG WEBSOCKET_PROXY_RELEASE_BASE_URL=https://github.com/PastureStack/websocket-proxy/releases/download
-ARG WEBSOCKET_PROXY_VERSION=0.23.17
-ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=7c252aa0724b6b3d59aa77bc59bb9bb2516faecc67594a6ed0966e14547afd9a
-ARG WEBSOCKET_PROXY_BINARY_SHA256=68e1385ffed804382c74a49bb647306aab2f43060b7912ac437581c876926494
-ARG WEBSOCKET_PROXY_COMMIT=6fc9f6a2ee3c010b5376887b387a32f243240026
+ARG WEBSOCKET_PROXY_VERSION=0.23.18
+ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=9b1cbb2eac08eafadc4e69aca728ca33787b58923abbf3b585db2aa729f09434
+ARG WEBSOCKET_PROXY_BINARY_SHA256=72e67b9ff5ce6cf59a03860960ad59a06f6e6d7af9926f73c1f5dbec05dd97e7
+ARG WEBSOCKET_PROXY_COMMIT=d3f71afb5945b8dedc1b6b80892be6145238cad1
 ARG WEBHOOK_AUTOMATION_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/webhook-automation-service/releases/download
 ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.5
 ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=f2df8874d5a00a2d5713594609063256164ed624d29a733149d00cb271f0f66b
 ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=b98e55db2739ab45119eacc94c8f65cb44371480ebcebec95e5470fd67c72a4c
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
-ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.353
+ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.354
 ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=d0a353b40b8b9f739ddd30b9ccae6fbf3ca64d45547cd95e9194aad738538f40
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=f4889bfb8759a7664f07524bb129d0cda19f35604a06c877b6ca7033246df6fa
 ARG COMPOSE_EXECUTOR_RELEASE_BASE_URL=https://github.com/PastureStack/compose-cli/releases/download
-ARG COMPOSE_EXECUTOR_VERSION=0.14.38
-ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=1a38cfea389543381cffb0d678cb7beaafb5064c52739aa31fa4f8964005e3e0
-ARG COMPOSE_EXECUTOR_BINARY_SHA256=2e5568465842ae0af9838adf9bfc91eee23f09ea08cde951081f12d0e5cbd073
+ARG COMPOSE_EXECUTOR_VERSION=0.14.39
+ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=4ab4685af67a8b8b11f3dd4996de9e087c26391ec401cf02cdcafe4c93094bab
+ARG COMPOSE_EXECUTOR_BINARY_SHA256=0f0c0ada23564572b569e1c73951ca363c0dc262fe7bba9c2474106650c4eac5
 ARG VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL=https://github.com/PastureStack/vsphere-cli-bundle/releases/download
 ARG VSPHERE_CLI_BUNDLE_VERSION=0.55.4
 ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=abec8c22504adde66e2ccd89b7b764c8a643c5e1e4425dafb2964abde75806a0
 ARG GOVC_BINARY_SHA256=8f43086cc85de88a93e510efe9375a1ff6e265ca12e764c1fc8ae4c35be69ded
 ARG HOST_PROVISIONER_RELEASE_BASE_URL=https://github.com/PastureStack/host-provisioner/releases/download
-ARG HOST_PROVISIONER_VERSION=0.39.9
-ARG HOST_PROVISIONER_COMMIT=732b2211979732d774e28d543da1e41ef0ba2fa1
-ARG HOST_PROVISIONER_ARCHIVE_SHA256=25bbdb62d31b87097aee17c067ed6d6e524437cd420deeba12f33f2f6472d578
-ARG HOST_PROVISIONER_BINARY_SHA256=b3fc8380be12669ce0ad8947e7a510cbf7cc84a9e5e28a3239596782a9e2b85d
+ARG HOST_PROVISIONER_VERSION=0.39.10
+ARG HOST_PROVISIONER_COMMIT=d5f6d5c9f4f0599f4bf1bdc9d5d0cca2e2e0c1ba
+ARG HOST_PROVISIONER_ARCHIVE_SHA256=fd8a814c5810746091ba3192a9fd31699e6865a2598654b9bbb55eae90bef661
+ARG HOST_PROVISIONER_BINARY_SHA256=92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff
 ARG SECRET_DELIVERY_API_RELEASE_BASE_URL=https://github.com/PastureStack/secret-delivery-api/releases/download
 ARG SECRET_DELIVERY_API_VERSION=0.3.3
 ARG SECRET_DELIVERY_API_COMMIT=da196acba539fe7a0c04539f6f7537cdfb2d8d69
 ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=026ba87f4c8fb7bfbf991f63a496db9c4a0837913ab56dc505c187f9b9598699
 ARG SECRET_DELIVERY_API_BINARY_SHA256=e4928ca7359975ba4ad73456296baace8ef0b428c0901055a0317244a17e4665
 ARG USAGE_TELEMETRY_AGENT_RELEASE_BASE_URL=https://github.com/PastureStack/usage-telemetry-agent/releases/download
-ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.3
-ARG USAGE_TELEMETRY_AGENT_COMMIT=b2b779deb13e307b2b2d2d620d99a7ab24ffb819
-ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=7f3e2f8ab85fd89dca1c3e0e6e5951818c85ac2a3e670a745a224b786742c57b
-ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=63e574d6aea42b548723457f4073ac3b8acd9ae3e8818cdce596512b346919e4
+ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.4
+ARG USAGE_TELEMETRY_AGENT_COMMIT=4ee641bc1273cf582a77609af71d00b72f17b628
+ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866
+ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be
+ARG MACHINE_DRIVER_BUNDLE_RELEASE_BASE_URL=https://github.com/PastureStack/machine-driver-bundle/releases/download
+ARG MACHINE_DRIVER_BUNDLE_VERSION=0.16.5
+ARG MACHINE_DRIVER_BUNDLE_COMMIT=f8d9d86f896ca14a50f3788c2f6a200a1c3b6b21
+ARG MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256=d9f33bcb16f478ceab44da4b185fb1fbadcab4f0f441f259c96a9805a854a28b
+ARG MACHINE_DRIVER_BINARY_SHA256=9d379214de116542cb0e2b1a09c17409fd59fd2b0109428896d81de9cf9c0d31
+ARG PACKET_DRIVER_BINARY_SHA256=b3e5c71928fcebe1bb648f79ebbf38af9ad32d6f6dbb87587e1b92c6c331e100
 
 RUN set -eux; \
     for release_base_url in "${COMPOSE_EXECUTOR_RELEASE_BASE_URL}" "${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL}"; do \
@@ -423,9 +430,9 @@ RUN set -eux; \
         /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null
 
 RUN set -eux; \
-    test "${API_EXPLORER_RELEASE_TAG}" = v1.1.19; \
+    test "${API_EXPLORER_RELEASE_TAG}" = v1.1.20; \
     fetch-server-component "${COMPONENT_ARTIFACT_MODE}" "${API_EXPLORER_RELEASE_BASE_URL%/}/${API_EXPLORER_RELEASE_TAG}/${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT_SHA256}" /tmp/api-explorer.tar.gz; \
-    prepare-api-explorer /tmp/api-explorer.tar.gz 1.1.19 "${API_EXPLORER_COMMIT}" /out/api-explorer; \
+    prepare-api-explorer /tmp/api-explorer.tar.gz 1.1.20 "${API_EXPLORER_COMMIT}" /out/api-explorer; \
     cd /out/api-explorer; \
     find . -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum > /out/api-explorer.sha256; \
     rm -f /tmp/api-explorer.tar.gz
@@ -442,6 +449,11 @@ RUN set -eux; \
         verify-runtime-producer "$component" "$version" "$commit" "/tmp/${artifact}" "$binary_sha" "/out/$component"; \
     done
 
+RUN set -eux; \
+    artifact="machine-driver-bundle-${MACHINE_DRIVER_BUNDLE_VERSION}-linux-amd64.tar.xz"; \
+    fetch-server-component "${COMPONENT_ARTIFACT_MODE}" "${MACHINE_DRIVER_BUNDLE_RELEASE_BASE_URL%/}/v${MACHINE_DRIVER_BUNDLE_VERSION}/${artifact}" "${artifact}" "${MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256}" /out/machine-driver-bundle.tar.xz; \
+    verify-machine-driver-bundle "${MACHINE_DRIVER_BUNDLE_VERSION}" "${MACHINE_DRIVER_BUNDLE_COMMIT}" /out/machine-driver-bundle.tar.xz "${MACHINE_DRIVER_BINARY_SHA256}" "${PACKET_DRIVER_BINARY_SHA256}" /out/machine-driver-bundle
+
 # Assemble verified products in the build stage; retain component-specific legal
 # directories and .real targets so runtime wrappers remain unchanged. Two COPYs
 # replace per-component layers without flattening the multi-stage build.
@@ -457,6 +469,9 @@ RUN set -eux; \
     install -m 0755 /out/host-provisioner/host-provisioner /out/runtime-bin/host-provisioner.real; \
     install -m 0755 /out/secret-delivery-api/secret-delivery-api /out/runtime-bin/secret-delivery-api; \
     install -m 0755 /out/usage-telemetry-agent/usage-telemetry-agent /out/runtime-bin/usage-telemetry-agent; \
+    install -m 0755 /out/machine-driver-bundle/docker-machine /out/runtime-bin/docker-machine; \
+    install -m 0755 /out/machine-driver-bundle/docker-machine-driver-packet /out/runtime-bin/docker-machine-driver-packet; \
+    cp -a /out/machine-driver-bundle/licenses /out/runtime-licenses/machine-driver-bundle; \
     cp -a /out/catalog-service-licenses /out/runtime-licenses/catalog-service; \
     cp -a /out/host-provisioner-licenses /out/runtime-licenses/host-provisioner; \
     cp -a /out/secret-delivery-api-licenses /out/runtime-licenses/secret-delivery-api; \
@@ -471,8 +486,8 @@ RUN set -eux; \
         /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt \
         /out/vsphere-cli-bundle/vsphere-cli-bundle-THIRD-PARTY-NOTICES.txt \
         /out/runtime-licenses/vsphere-cli-bundle/; \
-    test "$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 10; \
-    test "$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 6; \
+    test "$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 12; \
+    test "$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 7; \
     test -z "$(find /out/runtime-bin /out/runtime-licenses -type l -print -quit)"
 
 RUN set -eux; \
@@ -510,10 +525,11 @@ ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7
 ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4
 ARG FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2
 ARG LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1
+ARG CA_CERTIFICATES_PACKAGE_VERSION=20260816ubuntu0.26.04.1
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /build
-ADD --checksum=sha256:6077d27c6b6f8b23590cb01ff877ed8c804a67a5442cc32b5a33da10d2bd0e90 \
-    https://snapshot.ubuntu.com/ubuntu/20260826T000000Z/pool/main/c/ca-certificates/ca-certificates_20260601~26.04.1_all.deb \
+ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd \
+    https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb \
     /tmp/ca-certificates.deb
 ADD --checksum=sha256:6d7d532b7d0c57639deb3b228f1f0d786cf5305d613ef7df9ba76c776a0f8373 \
     https://security.ubuntu.com/ubuntu/pool/main/f/freetype/libfreetype6_2.14.2+dfsg-1ubuntu0.2_amd64.deb \
@@ -539,7 +555,7 @@ RUN set -eux; \
     find /tmp/ca-bootstrap/usr/share/ca-certificates -type f -name '*.crt' | \
       LC_ALL=C sort | while IFS= read -r certificate; do sed -e '$a\' "${certificate}"; done \
       > /etc/ssl/certs/ca-certificates.crt; \
-    rm -rf /tmp/ca-bootstrap /tmp/ca-certificates.deb; \
+    rm -rf /tmp/ca-bootstrap; \
     rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; \
     printf 'Types: deb\nURIs: https://snapshot.ubuntu.com/ubuntu/%s\nSuites: resolute resolute-updates resolute-backports resolute-security\nComponents: main universe restricted multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nSnapshot: no\n' "${UBUNTU_RUNTIME_SECURITY_SNAPSHOT}" \
       > /etc/apt/sources.list.d/pasturestack-snapshot.sources; \
@@ -548,6 +564,9 @@ RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends ca-certificates tar; \
     mkdir -p /out/packages; \
+    test "$(dpkg-deb -f /tmp/ca-certificates.deb Package)" = ca-certificates; \
+    test "$(dpkg-deb -f /tmp/ca-certificates.deb Version)" = "${CA_CERTIFICATES_PACKAGE_VERSION}"; \
+    cp /tmp/ca-certificates.deb "/out/packages/ca-certificates_${CA_CERTIFICATES_PACKAGE_VERSION}_all.deb"; \
     test "$(dpkg-deb -f /tmp/libfreetype6.deb Package)" = libfreetype6; \
     test "$(dpkg-deb -f /tmp/libfreetype6.deb Version)" = "${FREETYPE_PACKAGE_VERSION}"; \
     test "$(dpkg-deb -f /tmp/libfreetype6.deb Architecture)" = amd64; \
@@ -619,12 +638,12 @@ FROM ${BASE_IMAGE}
 
 RUN rm -rf /opt/java/openjdk
 COPY --from=temurin_security_runtime /out/java/ /opt/java/openjdk/
-ENV JAVA_VERSION=jdk-25.0.4.1+1 \
-    PASTURESTACK_JAVA_ARCHIVE_SHA256=dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e
+ENV JAVA_VERSION=jdk-25.0.5+8 \
+    PASTURESTACK_JAVA_ARCHIVE_SHA256=68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb
 RUN set -eux; \
     test "$(readlink -f /usr/bin/java)" = /opt/java/openjdk/bin/java; \
-    /opt/java/openjdk/bin/java -version 2>&1 | grep -F '25.0.4.1'; \
-    /opt/java/openjdk/bin/javac -version 2>&1 | grep -F '25.0.4.1'
+    /opt/java/openjdk/bin/java -version 2>&1 | grep -F '25.0.5'; \
+    /opt/java/openjdk/bin/javac -version 2>&1 | grep -F '25.0.5'
 
 ARG SOURCE_DATE_EPOCH
 ARG PASTURESTACK_SERVER_REVISION
@@ -632,80 +651,91 @@ ARG PER_HOST_SUBNET_VERSION=0.2.5
 ARG PER_HOST_SUBNET_PRODUCER_COMMIT=e102e0bb38d84b0a9cbf87e5458cf1bc74d01904
 ARG PER_HOST_SUBNET_ARCHIVE_SHA256=7237e83e96a64e7f3de64eb86bff9721c4e879c35cda9e9de1e4cb1ba225f298
 ARG PER_HOST_SUBNET_PROVENANCE_SHA256=afa2db0e0755c6bd3ee28e111937c521a6d84e6d71d563e99202cf4693000eaf
-ARG SERVER_RELEASE_TAG=v1.6.545
-ARG API_EXPLORER_RELEASE_TAG=v1.1.19
-ARG API_EXPLORER_ARTIFACT_SHA256=d1602ab6033512f0b86dc8ceafee2061364ce2fc5da2a9b7119f900d9e0f3c25
-ARG API_EXPLORER_COMMIT=dda3fe8a806d9736de771d325e3ca98ab4067cd2
-ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.353
-ARG ORCHESTRATION_ENGINE_VERSION=0.183.353
+ARG SERVER_RELEASE_TAG=v1.6.546
+ARG API_EXPLORER_RELEASE_TAG=v1.1.20
+ARG API_EXPLORER_ARTIFACT_SHA256=c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb
+ARG API_EXPLORER_COMMIT=a586f0dc0aa50df579049a8d4bf26f04400fdf75
+ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.354
+ARG ORCHESTRATION_ENGINE_VERSION=0.183.354
 ARG ENGINE_READONLY_SCHEMA_SHA256=7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233
 ARG ENGINE_RESTRICTED_SCHEMA_SHA256=f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51
-ARG HOST_API_VERSION=0.38.7
-ARG HOST_API_PACKAGE_ID=cd2a8d2b5e37f1b79a4b487760db5f3f
-ARG HOST_API_COMMIT=cd2a8d2b5e37f1b79a4b487760db5f3f7b3f818b
-ARG HOST_API_ARCHIVE_SHA256=f0e0033da7661d1444b73e2dc43f8b5c5dad6c9169ff2d19c1dcb6aa1c4435d9
-ARG NODE_AGENT_VERSION=0.13.31
-ARG NODE_AGENT_COMMIT=68ae58d886621540208b98378ed517b3525244e0
-ARG NODE_AGENT_ARCHIVE_SHA256=d12da35517448fd26467ee71249976b224da8d07c9dd9feec7c3e49d2977df62
+ARG HOST_API_VERSION=0.38.8
+ARG HOST_API_PACKAGE_ID=4810ffbb4499c24d9f7066d64de3203f
+ARG HOST_API_COMMIT=4810ffbb4499c24d9f7066d64de3203f9a6771e4
+ARG HOST_API_ARCHIVE_SHA256=6903ffb6a618f5a9bc8c7c8997a1e0419c93a8bbdeaee6d288957366dccef444
+ARG NODE_AGENT_VERSION=0.13.33
+ARG NODE_AGENT_COMMIT=0aadd6f79890c994da2c047214a2a224471f9191
+ARG NODE_AGENT_ARCHIVE_SHA256=2b86ca04c1071ab9f01983f70c45dfcec39694c8fc245031e7c1e8335dbd063d
 ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20261002T000000Z
 ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.8
 ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7
 ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4
 ARG FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2
 ARG LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1
+ARG CA_CERTIFICATES_PACKAGE_VERSION=20260816ubuntu0.26.04.1
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.193
-ARG WEB_CONSOLE_ARTIFACT_SHA256=07dd68dddecec1d95c6932d4dd31084401ee67d517fb820ecbbe6afaa052a888
-ARG WEB_CONSOLE_COMMIT=fa7fd399e3aef2a67282e8fbbe9f3fc83002710d
-ARG CATALOG_SERVICE_VERSION=0.20.14
-ARG CATALOG_SERVICE_COMMIT=9b0c0f40dc81eb83673df85f3de96f7e6f89b985
-ARG CATALOG_SERVICE_ARCHIVE_SHA256=00380a63e1f95b3d9a1dfb8e2fb3f038d876d7decb0ae5c7798ea1b7d8dc54b6
-ARG CATALOG_SERVICE_BINARY_SHA256=86f2bb33254161bb49d6fb8208ea351ab1924922dabc8dfe8aa8c1b897d11282
-ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=672ab1a50cb80077faacdb218f66fea2da233454d0110ef14bbf7b9c30d05da5
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.194
+ARG WEB_CONSOLE_ARTIFACT_SHA256=fe83f57dd1202766579b848f1bee75e7c05536db2fbb1f58de2bbb21829b1221
+ARG WEB_CONSOLE_COMMIT=f47283ff6d18516040c0ee0782ac0a0314b67538
+ARG CATALOG_SERVICE_VERSION=0.20.15
+ARG CATALOG_SERVICE_COMMIT=6ea547594065f7f95d5877b82f0c1bc553e72640
+ARG CATALOG_SERVICE_ARCHIVE_SHA256=7c059101265d897e4b176f503a9217b112946d37d91daa0c40f421fb16e4bb6b
+ARG CATALOG_SERVICE_BINARY_SHA256=948a528987113a2d37f5ee519c4f682e09af4aa10ff64d490d9851ba7b633364
+ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=b890cfc7941ad3ba1bde4038c0acde4098fa101512553159d4615e540f8bb659
 ARG CATALOG_SERVICE_LICENSE_SHA256=0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594
-ARG AUTHENTICATION_SERVICE_VERSION=0.4.44
-ARG AUTHENTICATION_SERVICE_COMMIT=63e7941dd0c8c26fefaf1e252d67bccc34a9347f
-ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=3fab69156bcc07b96a4b404f24fe59c08958a4357113cecec440ea6d40c5c9a4
-ARG AUTHENTICATION_SERVICE_BINARY_SHA256=446c89fe2a5ce3d1ff677cf1fac26740cc38520b6977ff5d86a7d865e7dfc3ed
-ARG WEBSOCKET_PROXY_VERSION=0.23.17
-ARG WEBSOCKET_PROXY_COMMIT=6fc9f6a2ee3c010b5376887b387a32f243240026
-ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=7c252aa0724b6b3d59aa77bc59bb9bb2516faecc67594a6ed0966e14547afd9a
-ARG WEBSOCKET_PROXY_BINARY_SHA256=68e1385ffed804382c74a49bb647306aab2f43060b7912ac437581c876926494
+ARG AUTHENTICATION_SERVICE_VERSION=0.4.46
+ARG AUTHENTICATION_SERVICE_COMMIT=35333ee3e40d9de032c10307ee80113c980be00a
+ARG AUTHENTICATION_SERVICE_ARCHIVE_SHA256=15950344ac9cc688610eae6d1c023ae6ba66182de675f04445f4c98ced2f19ec
+ARG AUTHENTICATION_SERVICE_BINARY_SHA256=e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192
+ARG WEBSOCKET_PROXY_VERSION=0.23.18
+ARG WEBSOCKET_PROXY_COMMIT=d3f71afb5945b8dedc1b6b80892be6145238cad1
+ARG WEBSOCKET_PROXY_ARCHIVE_SHA256=9b1cbb2eac08eafadc4e69aca728ca33787b58923abbf3b585db2aa729f09434
+ARG WEBSOCKET_PROXY_BINARY_SHA256=72e67b9ff5ce6cf59a03860960ad59a06f6e6d7af9926f73c1f5dbec05dd97e7
 ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.5
 ARG WEBHOOK_AUTOMATION_SERVICE_COMMIT=4da77ccac464bc7f7cd2020e0659a666a5d1ff7e
 ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=f2df8874d5a00a2d5713594609063256164ed624d29a733149d00cb271f0f66b
 ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=b98e55db2739ab45119eacc94c8f65cb44371480ebcebec95e5470fd67c72a4c
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=d0a353b40b8b9f739ddd30b9ccae6fbf3ca64d45547cd95e9194aad738538f40
-ARG ORCHESTRATION_ENGINE_COMMIT=e094944cd81da614187dbeba1f06354682af1d45
-ARG HOST_PROVISIONER_VERSION=0.39.9
-ARG HOST_PROVISIONER_COMMIT=732b2211979732d774e28d543da1e41ef0ba2fa1
-ARG HOST_PROVISIONER_ARCHIVE_SHA256=25bbdb62d31b87097aee17c067ed6d6e524437cd420deeba12f33f2f6472d578
-ARG HOST_PROVISIONER_BINARY_SHA256=b3fc8380be12669ce0ad8947e7a510cbf7cc84a9e5e28a3239596782a9e2b85d
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=f4889bfb8759a7664f07524bb129d0cda19f35604a06c877b6ca7033246df6fa
+ARG ORCHESTRATION_ENGINE_COMMIT=dc5a8d7bc44131f609f72a6504483b692d47ce16
+ARG HOST_PROVISIONER_VERSION=0.39.10
+ARG HOST_PROVISIONER_COMMIT=d5f6d5c9f4f0599f4bf1bdc9d5d0cca2e2e0c1ba
+ARG HOST_PROVISIONER_ARCHIVE_SHA256=fd8a814c5810746091ba3192a9fd31699e6865a2598654b9bbb55eae90bef661
+ARG HOST_PROVISIONER_BINARY_SHA256=92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff
 ARG SECRET_DELIVERY_API_VERSION=0.3.3
 ARG SECRET_DELIVERY_API_COMMIT=da196acba539fe7a0c04539f6f7537cdfb2d8d69
 ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=026ba87f4c8fb7bfbf991f63a496db9c4a0837913ab56dc505c187f9b9598699
 ARG SECRET_DELIVERY_API_BINARY_SHA256=e4928ca7359975ba4ad73456296baace8ef0b428c0901055a0317244a17e4665
-ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.3
-ARG USAGE_TELEMETRY_AGENT_COMMIT=b2b779deb13e307b2b2d2d620d99a7ab24ffb819
-ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=7f3e2f8ab85fd89dca1c3e0e6e5951818c85ac2a3e670a745a224b786742c57b
-ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=63e574d6aea42b548723457f4073ac3b8acd9ae3e8818cdce596512b346919e4
-ARG COMPOSE_EXECUTOR_VERSION=0.14.38
-ARG COMPOSE_EXECUTOR_COMMIT=142bc116f7517b1c12458e02b2747381036973b4
-ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=1a38cfea389543381cffb0d678cb7beaafb5064c52739aa31fa4f8964005e3e0
-ARG COMPOSE_EXECUTOR_BINARY_SHA256=2e5568465842ae0af9838adf9bfc91eee23f09ea08cde951081f12d0e5cbd073
+ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.4
+ARG USAGE_TELEMETRY_AGENT_COMMIT=4ee641bc1273cf582a77609af71d00b72f17b628
+ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866
+ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be
+ARG COMPOSE_EXECUTOR_VERSION=0.14.39
+ARG COMPOSE_EXECUTOR_COMMIT=53a33bdc13ae99f4bc4a2dc5cc760b6b2d098388
+ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=4ab4685af67a8b8b11f3dd4996de9e087c26391ec401cf02cdcafe4c93094bab
+ARG COMPOSE_EXECUTOR_BINARY_SHA256=0f0c0ada23564572b569e1c73951ca363c0dc262fe7bba9c2474106650c4eac5
 ARG VSPHERE_CLI_BUNDLE_VERSION=0.55.4
 ARG VSPHERE_CLI_BUNDLE_COMMIT=35ca999b775a41e7fb34e9a6b6ceb4fa51f3f242
 ARG VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=abec8c22504adde66e2ccd89b7b764c8a643c5e1e4425dafb2964abde75806a0
 ARG GOVC_BINARY_SHA256=8f43086cc85de88a93e510efe9375a1ff6e265ca12e764c1fc8ae4c35be69ded
+ARG MACHINE_DRIVER_BUNDLE_VERSION=0.16.5
+ARG MACHINE_DRIVER_BUNDLE_COMMIT=f8d9d86f896ca14a50f3788c2f6a200a1c3b6b21
+ARG MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256=d9f33bcb16f478ceab44da4b185fb1fbadcab4f0f441f259c96a9805a854a28b
+ARG MACHINE_DRIVER_BINARY_SHA256=9d379214de116542cb0e2b1a09c17409fd59fd2b0109428896d81de9cf9c0d31
+ARG PACKET_DRIVER_BINARY_SHA256=b3e5c71928fcebe1bb648f79ebbf38af9ad32d6f6dbb87587e1b92c6c331e100
 
 COPY --from=runtime_security_packages /out/ /tmp/pasturestack-runtime-security/
 COPY --from=runtime_security_packages /out/tar /usr/bin/tar
+COPY server/scripts/install-ubuntu-security-updates.sh server/security/ubuntu-security-packages.lock /tmp/pasturestack-security-input/
 RUN set -eux; \
     printf '%s\n' "${WEB_CONSOLE_COMMIT}" | grep -Eq '^[0-9a-f]{40}$'; \
     cd /tmp/pasturestack-runtime-security; \
     sha256sum -c SHA256SUMS; \
     dpkg -i packages/*.deb; \
+    install -D -m 0644 /tmp/pasturestack-security-input/ubuntu-security-packages.lock /usr/share/pasturestack/security/ubuntu-security-packages.lock; \
+    sh /tmp/pasturestack-security-input/install-ubuntu-security-updates.sh /usr/share/pasturestack/security/ubuntu-security-packages.lock /etc/ssl/certs/ca-certificates.crt; \
+    rm -rf /tmp/pasturestack-security-input; \
+    test "$(dpkg-query -W -f='${Version}' ca-certificates)" = "${CA_CERTIFICATES_PACKAGE_VERSION}"; \
     for package in curl libcurl3t64-gnutls libcurl4t64; do \
         test "$(dpkg-query -W -f='${Version}' "${package}")" = "${CURL_PACKAGE_VERSION}"; \
     done; \
@@ -749,14 +779,15 @@ COPY --from=release_artifacts /out/host-api.tar.gz /usr/share/cattle/artifacts/h
 COPY --from=release_artifacts /out/node-agent.tar.gz /usr/share/cattle/artifacts/node-agent-${NODE_AGENT_VERSION}.tar.gz
 COPY --from=release_artifacts /out/node-agent-windows.zip /usr/share/cattle/artifacts/node-agent-${NODE_AGENT_VERSION}-windows-amd64.zip
 COPY --from=release_artifacts /out/per-host-subnet.zip /usr/share/cattle/artifacts/per-host-subnet-${PER_HOST_SUBNET_VERSION}-windows-amd64.zip
+COPY --from=release_artifacts /out/machine-driver-bundle.tar.xz /usr/share/cattle/artifacts/machine-driver-bundle-${MACHINE_DRIVER_BUNDLE_VERSION}-linux-amd64.tar.xz
 COPY --chmod=0755 artifacts/prune-superseded-agent-packages.sh /tmp/prune-superseded-agent-packages.sh
 RUN set -eux; \
     cd /usr/share/cattle/artifacts; \
     ln -sfn "host-api-${HOST_API_VERSION}.tar.gz" host-api.tar.gz; \
     sed -i '/^export \(DEFAULT_\)\?CATTLE_AGENT_PACKAGE_HOST_API_URL=/d' /usr/share/cattle/env_vars; \
     printf 'export DEFAULT_CATTLE_AGENT_PACKAGE_HOST_API_URL=/usr/share/cattle/artifacts/host-api-%s.tar.gz\nexport CATTLE_AGENT_PACKAGE_HOST_API_URL=/usr/share/cattle/artifacts/host-api-%s.tar.gz\n' \
-        "${HOST_API_VERSION}" "${HOST_API_VERSION}" >> /usr/share/cattle/env_vars
-RUN set -eux; \
+        "${HOST_API_VERSION}" "${HOST_API_VERSION}" >> /usr/share/cattle/env_vars; \
+    sed -i '/^export \(DEFAULT_\)\?CATTLE_SERVICE_PACKAGE_DOCKER_MACHINE_URL=/d' /usr/share/cattle/env_vars; \
     cd /usr/share/cattle/artifacts; \
     ln -sfn "node-agent-${NODE_AGENT_VERSION}.tar.gz" go-agent.tar.gz; \
     sed -i '/^export \(DEFAULT_\)\?CATTLE_AGENT_PACKAGE_PYTHON_AGENT_URL=/d' /usr/share/cattle/env_vars; \
@@ -894,7 +925,7 @@ RUN set -eux; \
     (cd api-ui && sha256sum -c /tmp/pasturestack-api-ui.sha256); \
     rm -f /tmp/pasturestack-api-ui.sha256; \
     sed -i '/^export \(DEFAULT_\)\?CATTLE_API_UI_VERSION=/d' /usr/share/cattle/env_vars; \
-    printf 'export DEFAULT_CATTLE_API_UI_VERSION=1.1.19\nexport CATTLE_API_UI_VERSION=1.1.19\n' >> /usr/share/cattle/env_vars; \
+    printf 'export DEFAULT_CATTLE_API_UI_VERSION=1.1.20\nexport CATTLE_API_UI_VERSION=1.1.20\n' >> /usr/share/cattle/env_vars; \
     test "$(readlink -f /usr/share/cattle/war)" = "${new_web_root}"; \
     unzip -p "${resources_jar}" db/core-124.xml | \
         grep -F 'pasturestack-catalog-pinned-commit' >/dev/null; \
@@ -1102,13 +1133,15 @@ LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.base.digest="sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403"
 
 ENV CATTLE_RANCHER_SERVER_VERSION=${SERVER_RELEASE_TAG}
-ENV CATTLE_RANCHER_CLI_VERSION=v0.6.19
+ENV CATTLE_RANCHER_CLI_VERSION=v0.6.20
 ENV PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download
 ENV CATTLE_CATTLE_VERSION=${ORCHESTRATION_ENGINE_RELEASE_TAG}
-ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.32
-ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.32
-ENV CATTLE_API_UI_VERSION=1.1.19
-ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.19
+ENV DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.32
+ENV DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.32
+ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.33
+ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.33
+ENV CATTLE_API_UI_VERSION=1.1.20
+ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.20
 ENV PASTURESTACK_API_EXPLORER_COMMIT=${API_EXPLORER_COMMIT}
 ENV PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256=${API_EXPLORER_ARTIFACT_SHA256}
 ENV RC16_HOST_API_VERSION=${HOST_API_VERSION}
@@ -1125,7 +1158,7 @@ ENV RC16_AGENT_PACKAGE_URL=/usr/share/cattle/artifacts/node-agent-${NODE_AGENT_V
 ENV PASTURESTACK_NODE_AGENT_VERSION=${NODE_AGENT_VERSION}
 ENV PASTURESTACK_NODE_AGENT_COMMIT=${NODE_AGENT_COMMIT}
 ENV PASTURESTACK_NODE_AGENT_ARCHIVE_SHA256=${NODE_AGENT_ARCHIVE_SHA256}
-ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-09-10
+ENV PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-10-23
 ENV PASTURESTACK_CURL_SECURITY_SNAPSHOT=${UBUNTU_RUNTIME_SECURITY_SNAPSHOT}
 ENV PASTURESTACK_CURL_PACKAGE_VERSION=${CURL_PACKAGE_VERSION}
 ENV PASTURESTACK_OPENSSL_VERSION=3.5.5
@@ -1152,6 +1185,13 @@ ENV PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT=${AUTHENTICATION_SERVICE_COMMIT}
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_ARCHIVE_SHA256=${AUTHENTICATION_SERVICE_ARCHIVE_SHA256}
 ENV PASTURESTACK_AUTHENTICATION_SERVICE_BINARY_SHA256=${AUTHENTICATION_SERVICE_BINARY_SHA256}
 ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.3
+ENV PASTURESTACK_MACHINE_DRIVER_BUNDLE_VERSION=${MACHINE_DRIVER_BUNDLE_VERSION}
+ENV PASTURESTACK_MACHINE_DRIVER_BUNDLE_COMMIT=${MACHINE_DRIVER_BUNDLE_COMMIT}
+ENV PASTURESTACK_MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256=${MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256}
+ENV PASTURESTACK_MACHINE_DRIVER_BINARY_SHA256=${MACHINE_DRIVER_BINARY_SHA256}
+ENV PASTURESTACK_PACKET_DRIVER_BINARY_SHA256=${PACKET_DRIVER_BINARY_SHA256}
+ENV DEFAULT_CATTLE_SERVICE_PACKAGE_DOCKER_MACHINE_URL=/usr/share/cattle/artifacts/machine-driver-bundle-${MACHINE_DRIVER_BUNDLE_VERSION}-linux-amd64.tar.xz,docker-machine
+ENV PASTURESTACK_SYSTEM_SECURITY_SNAPSHOT=20261023T000000Z
 ENV PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.3
 ENV PASTURESTACK_HOST_PROVISIONER_VERSION=${HOST_PROVISIONER_VERSION}
 ENV PASTURESTACK_HOST_PROVISIONER_COMMIT=${HOST_PROVISIONER_COMMIT}
@@ -1181,6 +1221,6 @@ ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=${VSPHERE_CLI_BUNDLE_VERSION}
 ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_COMMIT=${VSPHERE_CLI_BUNDLE_COMMIT}
 ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256}
 ENV PASTURESTACK_GOVC_BINARY_SHA256=${GOVC_BINARY_SHA256}
-ENV PASTURESTACK_CATALOG_COMMIT=71ec6b2c27355e709f5092c954db24efa800bc41
-ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"71ec6b2c27355e709f5092c954db24efa800bc41"}}}'
-ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"71ec6b2c27355e709f5092c954db24efa800bc41"}}}'
+ENV PASTURESTACK_CATALOG_COMMIT=28756cdf13f50380e907d37da501e33383a7c217
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"28756cdf13f50380e907d37da501e33383a7c217"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"28756cdf13f50380e907d37da501e33383a7c217"}}}'

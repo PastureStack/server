@@ -18,9 +18,9 @@ write_fixture_tree() {
   cat >"$root/server/Dockerfile" <<DOCKER
 # syntax=docker/dockerfile:1.7
 ${docker_base}
-ARG TEMURIN_JDK25_VERSION="25.0.4.1+1"
-ARG TEMURIN_JDK25_URL="https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4.1%2B1/OpenJDK25U-jdk_x64_linux_hotspot_25.0.4.1_1.tar.gz"
-ARG TEMURIN_JDK25_SHA256="dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e"
+ARG TEMURIN_JDK25_VERSION="25.0.5+8"
+ARG TEMURIN_JDK25_URL="https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jdk_x64_linux_hotspot_25.0.5_8.tar.gz"
+ARG TEMURIN_JDK25_SHA256="68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb"
 ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH=\${JAVA_HOME}/bin:\${PATH}
 RUN apt-get update && apt-get upgrade -y
@@ -34,16 +34,16 @@ DOCKER
 
   cat >"$root/server/Dockerfile.web-compose-release" <<'CURRENT'
 FROM helper AS temurin_security_runtime
-ADD --checksum=sha256:dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e https://example.test/OpenJDK25U-jdk_x64_linux_hotspot_25.0.4.1_1.tar.gz /tmp/jdk.tar.gz
+ADD --checksum=sha256:68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb https://example.test/OpenJDK25U-jdk_x64_linux_hotspot_25.0.5_8.tar.gz /tmp/jdk.tar.gz
 FROM base
 RUN rm -rf /opt/java/openjdk
 COPY --from=temurin_security_runtime /out/java/ /opt/java/openjdk/
-ENV JAVA_VERSION=jdk-25.0.4.1+1 \
-    PASTURESTACK_JAVA_ARCHIVE_SHA256=dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e
+ENV JAVA_VERSION=jdk-25.0.5+8 \
+    PASTURESTACK_JAVA_ARCHIVE_SHA256=68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb
 CURRENT
   cat >"$root/.github/workflows/publish-current-server.yml" <<'CURRENT'
 RC16_JDK25_CHECK_IMAGE="$CANDIDATE_IMAGE" bash scripts/check-server-java-patches-jdk25.sh
-SERVER_JAVA_SECURITY_RUNTIME_OK version=25.0.4.1+1
+SERVER_JAVA_SECURITY_RUNTIME_OK version=25.0.5+8
 java-security-runtime.txt
 LD_LIBRARY_PATH=/opt/java/openjdk/lib:/opt/java/openjdk/lib/server ldd
 CURRENT
