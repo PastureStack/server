@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "baselineBinary": {
+    "name": "libxrender1_0.9.12-1build1_amd64.deb",
+    "url": "https://archive.ubuntu.com/ubuntu/pool/main/libx/libxrender/libxrender1_0.9.12-1build1_amd64.deb",
+    "sha256": "60b2f01e8124318e2a11049b82c764fd4c05c21adba11312e93ab116d6594f1e",
+    "size": 19204,
+    "version": "1:0.9.12-1build1",
+    "indexURL": "https://archive.ubuntu.com/ubuntu/dists/resolute/main/binary-amd64/Packages.xz",
+    "indexSha256": "ed9ac41cb263efaecc5a06a0742dc56570e2fb5ff94c4f2e4b2fbdcddd73cf24",
+    "asOf": "2026-10-24T17:37:59.403844+00:00"
+  },
+  "sourcePackage": "libxrender",
+  "ubuntuSourceVersion": "1:0.9.12-1build1",
+  "customVersion": "1:0.9.12-1build1+pasturestack.1",
+  "distribution": "resolute",
+  "osVersion": "26.04",
+  "architecture": "amd64",
+  "sourceDateEpoch": 1792857600,
+  "identity": "First-party rebuild with unchanged Ubuntu packaging and exact upstream security commits; not issued by Canonical.",
+  "runtimePackages": [
+    "libxrender1"
+  ],
+  "sourceFiles": [
+    {
+      "name": "libxrender_0.9.12-1build1.dsc",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/libx/libxrender/libxrender_0.9.12-1build1.dsc",
+      "size": 2282,
+      "sha256": "84d74d1d04750e0742521f453635b0b092b5fb13cdf3aa00c1360c6db2d68e42"
+    },
+    {
+      "name": "libxrender_0.9.12-1build1.diff.gz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/libx/libxrender/libxrender_0.9.12-1build1.diff.gz",
+      "size": 21468,
+      "sha256": "473c174d5df6c9378e52d092909acf42bdbd453af419893df6414294619649ac"
+    },
+    {
+      "name": "libxrender_0.9.12.orig.tar.gz.asc",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/libx/libxrender/libxrender_0.9.12.orig.tar.gz.asc",
+      "size": 833,
+      "sha256": "0bbd310ac3974ef398cf4d8a4b362b0b4d60ceb43e6eba393c3cc740b03816fc"
+    },
+    {
+      "name": "libxrender_0.9.12.orig.tar.gz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/libx/libxrender/libxrender_0.9.12.orig.tar.gz",
+      "size": 450034,
+      "sha256": "0fff64125819c02d1102b6236f3d7d861a07b5216d8eea336c3811d31494ecf7"
+    }
+  ],
+  "patches": [
+    {
+      "name": "0564bce5446550c1b1681f3d8a933c20ea1455f7.patch",
+      "url": "https://gitlab.freedesktop.org/xorg/lib/libxrender/-/commit/0564bce5446550c1b1681f3d8a933c20ea1455f7.patch",
+      "size": 1300,
+      "sha256": "565e816e88ca223cebc6f833cfcfa63d20aaa22c8293d878bdd059910c4a66fc",
+      "commit": "0564bce5446550c1b1681f3d8a933c20ea1455f7",
+      "fixedCves": [
+        "CVE-2026-88807"
+      ],
+      "firstFixedVersion": "0.9.13"
+    }
+  ],
+  "baselineSha256": {
+    "src/Xrender.c": "dcaa126454543938604573f5cde44978dbdec7e63e944d1bbf9dcd0ccf249265"
+  },
+  "patchedSha256": {
+    "src/Xrender.c": "c5c93efd29a9e13cabe4f6fe99863c13a14d6c006e90267f747e9da9a8b800c8"
+  },
+  "ubuntuPackagingSha256": {
+    "debian/control": "a0e3839d87703b5529b33c1afb9b51b66f2e43d446b0ee32261e61a1894bd2b4",
+    "debian/copyright": "ed2a78123a5076b4f11da38cb1ffb85b5cb9fdc26b5746c517b1d7e7a9029704",
+    "debian/libxrender-dev.install": "89e5d7d592067025e7a01f3a021e706d5fbd38d36287688f4581165b0386fa3c",
+    "debian/libxrender1-udeb.install": "260da073f134f45afdbb30624dbdbc3cd073a6686ff320a389ebe04b17841c00",
+    "debian/libxrender1.install": "a64e0b5d374cfb996d816612d84d39eb9f30af7bee549edcc71cb016e9383442",
+    "debian/not-installed": "124eb62e79e117cb874319b2c6bbc43f564bdc69ca9a9965c8799d4c26654c93",
+    "debian/README.source": "465394b01938cfeb0907b774eebb8de260196ecbaded5197dfdf80efbe069cf3",
+    "debian/rules": "d42e7ede44c920737206230a9f18930204abaf6aa5af74e8880b2b744d332ba8",
+    "debian/watch": "73b20911768168b7a4959eafdd8b11729dc03bfedee9aa98ff80d373d63b8595",
+    "debian/upstream/signing-key.asc": "41bfb9ac51e4e61957b7f5659470fa211b907069cc613a1f6327e639baef7af7"
+  },
+  "buildContract": {
+    "nativeUbuntuAmd64": true,
+    "buildUser": "non-root",
+    "originalRulesAndDependenciesPreserved": true,
+    "addedSkips": 0,
+    "runtimeInstalled": false,
+    "requiredOwningSuite": "Original upstream defines zero tests; native make check must succeed, plus exact source negative-control and patched/packaged XRender reply-boundary fixtures.",
+    "requiredSoname": "libXrender.so.1",
+    "extraCiOnlyDependencies": [
+      "xvfb",
+      "xauth"
+    ]
+  },
+  "limitations": [
+    "Official patch ships no regression test; an additional bounded Xvfb reply-header fixture checks the actual function against original and patched source.",
+    "Source preparation passed; no native compilation, full suite or packaged binary verification has run locally.",
+    "Source archives/signatures are SHA256-pinned from official Ubuntu HTTPS; this does not claim verified uploader PGP signatures or Canonical-signed custom binaries."
+  ]
+}

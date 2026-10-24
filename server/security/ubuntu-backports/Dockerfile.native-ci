@@ -12,7 +12,7 @@ SHELL ["/bin/bash", "-e", "-o", "pipefail", "-c"]
 ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb /tmp/ca-certificates.deb
 RUN <<'SH'
 set -euo pipefail
-case "$MODULE" in glibc|rust-coreutils|jq) ;; *) exit 2 ;; esac
+case "$MODULE" in glibc|rust-coreutils|jq|p11-kit|libxrender|tar) ;; *) exit 2 ;; esac
 mkdir -p /tmp/ca-bootstrap /etc/ssl/certs
 dpkg-deb --extract /tmp/ca-certificates.deb /tmp/ca-bootstrap
 while IFS= read -r certificate; do
@@ -78,6 +78,11 @@ if [[ "$MODULE" == glibc ]]; then
     apt-get build-dep --no-install-recommends --arch-only --build-profiles=nobiarch,noudeb -y "glibc=$version"
 else
     apt-get build-dep --no-install-recommends --arch-only -y "$MODULE=$version"
+fi
+if [[ "$MODULE" == libxrender ]]; then
+    # CI-only private display for the actual QueryFormats regression. Never
+    # connect to a host display or add Xvfb to a product's runtime dependencies.
+    apt-get install --no-install-recommends -y xvfb xauth
 fi
 useradd --create-home --user-group --uid 10001 --shell /bin/bash builder
 if [[ "$MODULE" == rust-coreutils ]]; then

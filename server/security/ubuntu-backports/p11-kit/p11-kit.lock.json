@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "sourcePackage": "p11-kit",
+  "ubuntuSourceVersion": "0.26.2-2",
+  "customVersion": "0.26.2-2+pasturestack.1",
+  "distribution": "resolute",
+  "osVersion": "26.04",
+  "architecture": "amd64",
+  "sourceDateEpoch": 1792857600,
+  "identity": "First-party rebuild with unchanged Ubuntu packaging and exact upstream security commits; not issued by Canonical.",
+  "runtimePackages": [
+    "libp11-kit0",
+    "p11-kit",
+    "p11-kit-modules"
+  ],
+  "sourceFiles": [
+    {
+      "name": "p11-kit_0.26.2-2.debian.tar.xz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/p/p11-kit/p11-kit_0.26.2-2.debian.tar.xz",
+      "size": 24392,
+      "sha256": "1e0be1ac6c3f47a44305855b1c54e22064516a258eef911119c4944d5530b87f"
+    },
+    {
+      "name": "p11-kit_0.26.2.orig.tar.xz.asc",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/p/p11-kit/p11-kit_0.26.2.orig.tar.xz.asc",
+      "size": 228,
+      "sha256": "a2c205bbac7857adc91eb2670304c2ac6649aa9eaf4aab81bf0e46e124f13d8b"
+    },
+    {
+      "name": "p11-kit_0.26.2.orig.tar.xz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/p/p11-kit/p11-kit_0.26.2.orig.tar.xz",
+      "size": 1069216,
+      "sha256": "09fd9f44da4813a3141e73d5e7cf7008e5660d0405f13d56c15e1da9dcecf828"
+    },
+    {
+      "name": "p11-kit_0.26.2-2.dsc",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/p/p11-kit/p11-kit_0.26.2-2.dsc",
+      "size": 2541,
+      "sha256": "066316279c279ca964caa83d92b0f9263914fbbe3c329419e3eec9ffb30540fb"
+    }
+  ],
+  "patches": [
+    {
+      "name": "0eedd4ddd7c924f9cbb4ac496b3fda699435c3cf.patch",
+      "url": "https://github.com/p11-glue/p11-kit/commit/0eedd4ddd7c924f9cbb4ac496b3fda699435c3cf.patch",
+      "size": 11892,
+      "sha256": "24ad6541730f21f81b1afa203c6d85944975de3f3a0c96379d16e9b2a20b9039",
+      "commit": "0eedd4ddd7c924f9cbb4ac496b3fda699435c3cf",
+      "fixedCves": [
+        "CVE-2026-13757"
+      ],
+      "firstFixedVersion": "0.26.3"
+    },
+    {
+      "name": "3e64244e538550c6a7fcf826fa8c50a4604416dc.patch",
+      "url": "https://github.com/p11-glue/p11-kit/commit/3e64244e538550c6a7fcf826fa8c50a4604416dc.patch",
+      "size": 1735,
+      "sha256": "efabd4390f4072c815406a9ca4aea16b7d5c9d797dce23fd9c44d56032f449c2",
+      "commit": "3e64244e538550c6a7fcf826fa8c50a4604416dc",
+      "fixedCves": [
+        "CVE-2026-18938"
+      ],
+      "firstFixedVersion": "0.26.5"
+    }
+  ],
+  "baselineSha256": {
+    "p11-kit/rpc-message.c": "68e35b13c9f639b6440acca346581a802cf0439602124dcc6d52d87b9d92b787",
+    "p11-kit/rpc-message.h": "5df3c3b08b3cebf8b22df8f21d27bbb776fbd42b537c41a22366ea1cb970f1c1",
+    "p11-kit/rpc-server.c": "25948e84d3a56fbdf3692911fa712d699e6129929fe83e7cb23075de8d7117c1",
+    "p11-kit/test-rpc-message.c": "527a89df034cb54d28d726b803a14174bc509ee3be4d7e47c56ae21e4d029a84",
+    "p11-kit/test-rpc.c": "f083d2c89d8db998ecfbf66f9a8c5aba9ed231fa0e65118c0b1851067bb4c51d"
+  },
+  "patchedSha256": {
+    "p11-kit/rpc-message.c": "65d52baf8995f4b6b26fec92f0f432c0896703ab8735bf9c3dd19e0e50b18d56",
+    "p11-kit/rpc-message.h": "a9148098e2ebe719cad5c901556e1dfb81944f6176b2888cf688331e674b73f6",
+    "p11-kit/rpc-server.c": "091825adc750af3c393deb8e2d8e3597aefe1c4ec0904bd0beadf74c639d3659",
+    "p11-kit/test-rpc-message.c": "71196559d8e46c319b8637bb7a1382e3fa0abca0ef468e88876d4ed32cb27197",
+    "p11-kit/test-rpc.c": "9cbb1fbbfc2c16245c9cbdb66fc05e45e970b7e16a0233bf387e29f4843600c6"
+  },
+  "ubuntuPackagingSha256": {
+    "debian/control": "4d5caa78fda0bad43aa13790d7022ef7e0c26bc7dd70bec6499e4b6d4eee09c0",
+    "debian/copyright": "a5611fbad151d1fa0aa484f6c393a5166af33ce9a9783dfb2712d6b87b462b37",
+    "debian/copyright-scan-patterns.yml": "c4a91cd70f48d5b9e091280df864d1722d15f97fed48490f6aa0694d47356a11",
+    "debian/copyright.template": "200b26e9d07a1f125fe3a8e7472b0bd0f8e5ccf0ff558555bc505be355ad420b",
+    "debian/fill.copyright.blanks.yml": "80edcf06e05e215df17860d73c7d5b9438a45f8164a5e9c24acedb36ae5af18d",
+    "debian/fix.scanned.copyright": "4f869c45f5c9e9fe17ddacac5a17bdfb58b02ad52be385192eb25c22d9f3ac5d",
+    "debian/libp11-kit-dev.install": "66b135b1e5d6a739030a49dc83a68dbc392e78c9f4083798dbabd37272bb031f",
+    "debian/libp11-kit0-dbg.links": "5883982da291a9932e7cd4f3c6bb6baaf994dfc52dd52f65e37ad3f5f58ff2fb",
+    "debian/libp11-kit0.examples": "2de4d9b1abb40e5b063c787ca07416737f8b43d6544a8c401bee4475a17d2825",
+    "debian/libp11-kit0.install": "0ff7b540b3e53d1d4d90544bc953d733e180b55ff772fa85ec29e497196454ef",
+    "debian/libp11-kit0.symbols": "b07399e1b7f27673b14b8e81d9f9c304ab72f29e2bc606f6b70a46d8a4fc2173",
+    "debian/not-installed": "f57dab4f50ef9d0e25350c586d53a9314149dce453f85d12bc5c38ca77b9bf98",
+    "debian/p11-kit-doc.install": "aa7c03ac5a004c8ade863ec9c62d9a3d2fca043841bdcd43249571cc794bbebf",
+    "debian/p11-kit-modules.install": "9e4fbdfb8e45f59c015d3ce110997c96290c22c888bd64e5bd54013e2f2ce485",
+    "debian/p11-kit-modules.links": "5ca4efb4a132c5c298f8fbe8f5fa63e72a55f9639c4d909993d688aaec902ee3",
+    "debian/p11-kit.examples": "9a6157743d04919c4acba3d20b457491f55b3506dfd1da411df8db5b91769fe7",
+    "debian/p11-kit.install": "1235b6f608f831ef615b3a49c4bf3d6300a69613b14e920a3cd47faac1d17e3c",
+    "debian/p11-kit.manpages": "ef4eaa2d15ff2e15350f45059c008e7912065259004f63deaaf9c242adda6801",
+    "debian/rules": "7afbb1b146790964b3edc5aba50641d23767e486514a7d9a746f306f99b57fc7",
+    "debian/watch": "1ea494fa571d525f14b50fac95f658f26400b228dbb05421b8bd9366b6dc7506",
+    "debian/patches/36_enable_locale.diff": "bfc402c700dfde13f7d3be6d74274cf080b88c7b2331d704eaefc2c51dadd728",
+    "debian/patches/series": "54ae2d371d09a8575bf3f14264335d7a8cb0a7149255e7b4f73612091d2d057f",
+    "debian/source/format": "1be7080d72e6b566df3e236ce2c55efdfbbb8fa1c972d825e5b672ff8773be1a",
+    "debian/source/lintian-overrides": "1704a18abe610ec865c58a05b3d305753aab8815c3b1524ab4f763758c679e5b",
+    "debian/upstream/metadata": "d1472eae01af6de9d30e86a5e2930862f14ae7cc6d07d7c494b41309934bf6e3",
+    "debian/upstream/signing-key.asc": "c14380726711246f99ed0244a5a937246b80686bf591dbac71c5340734e4c052"
+  },
+  "buildContract": {
+    "nativeUbuntuAmd64": true,
+    "buildUser": "non-root",
+    "originalRulesAndDependenciesPreserved": true,
+    "addedSkips": 0,
+    "runtimeInstalled": false,
+    "requiredOwningSuite": "Every configured upstream Autotools test must PASS, including test-rpc and test-rpc-message.",
+    "requiredSoname": "libp11-kit.so.0",
+    "extraCiOnlyDependencies": []
+  },
+  "limitations": [
+    "CVE-2026-18938 is officially exploitable only on32-bit systems; native amd64 build does not establish 32-bit trigger validation. Its official guard is still included.",
+    "Source preparation passed; no native compilation, full suite or packaged binary verification has run locally.",
+    "Source archives/signatures are SHA256-pinned from official Ubuntu HTTPS; this does not claim verified uploader PGP signatures or Canonical-signed custom binaries."
+  ]
+}
