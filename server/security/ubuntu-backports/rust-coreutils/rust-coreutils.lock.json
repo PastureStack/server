@@ -1,0 +1,266 @@
+{
+  "schemaVersion": 1,
+  "sourcePackage": "rust-coreutils",
+  "ubuntuSourceVersion": "0.10.0-1ubuntu2~26.04.1",
+  "customVersion": "0.10.0-1ubuntu2~26.04.1+pasturestack.1",
+  "distribution": "resolute",
+  "osVersion": "26.04",
+  "architecture": "amd64",
+  "runtimePackages": [
+    "rust-coreutils"
+  ],
+  "sourceDateEpoch": 1792886400,
+  "sourcePublication": "https://api.launchpad.net/1.0/ubuntu/+archive/primary/+sourcepub/18747163",
+  "sourceFiles": [
+    {
+      "name": "rust-coreutils_0.10.0-1ubuntu2~26.04.1.dsc",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/r/rust-coreutils/rust-coreutils_0.10.0-1ubuntu2~26.04.1.dsc",
+      "sha256": "c7eb62e7d2a07ec84c18bb2a6694331bb32bd0bde316261cfbe2f90acb2b6d28",
+      "size": 8746
+    },
+    {
+      "name": "rust-coreutils_0.10.0.orig.tar.gz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/r/rust-coreutils/rust-coreutils_0.10.0.orig.tar.gz",
+      "sha256": "f8e68cd0e3629378f047544ead272161a83211c43f4985a9f52944e5db8f1a44",
+      "size": 2671039
+    },
+    {
+      "name": "rust-coreutils_0.10.0.orig-l10n.tar.gz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/r/rust-coreutils/rust-coreutils_0.10.0.orig-l10n.tar.gz",
+      "sha256": "3df90fabddfb28c7ae1d31237fc8abf70bb1f6c1937d818008943a11e31cfd5b",
+      "size": 780526
+    },
+    {
+      "name": "rust-coreutils_0.10.0-1ubuntu2~26.04.1.debian.tar.xz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/r/rust-coreutils/rust-coreutils_0.10.0-1ubuntu2~26.04.1.debian.tar.xz",
+      "sha256": "61eda389122a85e90e542bf6b12c840ab68ee3741958db539f24a3599f5d4bb2",
+      "size": 22541108
+    }
+  ],
+  "upstream": {
+    "repository": "https://github.com/uutils/coreutils",
+    "baseTag": "0.10.0",
+    "baseCommit": "28b6856d7b215bf844b4223589cb54ade84f5223",
+    "archiveUrl": "https://github.com/uutils/coreutils/archive/refs/tags/0.10.0.tar.gz",
+    "archiveSha256": "f8e68cd0e3629378f047544ead272161a83211c43f4985a9f52944e5db8f1a44",
+    "archiveEqualsUbuntuOrig": true,
+    "releaseUrl": "https://github.com/uutils/coreutils/releases/tag/0.10.0"
+  },
+  "alreadyPresentFixes": [
+    {
+      "id": "CVE-2026-35341",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.6.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/10376",
+      "commit": "00f77cc7081f8e6837271d21b4fe8ca6d2f047c3",
+      "sourcePath": "src/uu/mkfifo/src/mkfifo.rs"
+    },
+    {
+      "id": "CVE-2026-35344",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.10.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/12667",
+      "commit": "0f538b942a5cdaba6e0960f6952429a1baaedf93",
+      "sourcePath": "src/uu/dd/src/dd.rs"
+    },
+    {
+      "id": "CVE-2026-35345",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.10.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/12661",
+      "commit": "2c2f1b0c1f11f120fc8cbf8d518194f6532c0607",
+      "sourcePath": "src/uu/tail/src/tail.rs"
+    },
+    {
+      "id": "CVE-2026-35348",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.10.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/11593",
+      "commit": "bb8f7095fd63206ff54a4fb4256375e9e1ad88c9",
+      "sourcePath": "src/uu/sort/src/sort.rs",
+      "additionalCommits": [
+        "6e28633263ea84aad9ef7a30750232b73fb9133f"
+      ]
+    },
+    {
+      "id": "CVE-2026-35350",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.9.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/12135",
+      "commit": "bd170a5d4b19ed985417d322dffb8cade2cbbad5",
+      "sourcePath": "src/uu/cp/src/cp.rs"
+    },
+    {
+      "id": "CVE-2026-35351",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.9.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/11706",
+      "commit": "874efa7cc3361cb5af2a97db869147f910bcab44",
+      "sourcePath": "src/uu/mv/src/mv.rs"
+    },
+    {
+      "id": "CVE-2026-35352",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.10.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/12174",
+      "commit": "c004672c5eb2415b03f11f766583c4b967ba024f",
+      "sourcePath": "src/uu/mkfifo/src/mkfifo.rs"
+    },
+    {
+      "id": "CVE-2026-35354",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.9.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/12170",
+      "commit": "aa30c103004463ffe7b8a98ca0ce519d56bbbd41",
+      "sourcePath": "src/uu/mv/src/mv.rs"
+    },
+    {
+      "id": "CVE-2026-35357",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.9.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/12135",
+      "commit": "bd170a5d4b19ed985417d322dffb8cade2cbbad5",
+      "sourcePath": "src/uu/cp/src/cp.rs"
+    },
+    {
+      "id": "CVE-2026-35359",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.9.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/12135",
+      "commit": "bd170a5d4b19ed985417d322dffb8cade2cbbad5",
+      "sourcePath": "src/uu/cp/src/cp.rs"
+    },
+    {
+      "id": "CVE-2026-35360",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.10.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/12171",
+      "commit": "d296f8d39f3a71ef7c5bd3b949e65aa978f1436d",
+      "sourcePath": "src/uu/touch/src/touch.rs"
+    },
+    {
+      "id": "CVE-2026-35363",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.9.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/11005",
+      "commit": "6b16cc9688fe998f5dc2786f53f22ceea709e318",
+      "sourcePath": "src/uu/rm/src/rm.rs"
+    },
+    {
+      "id": "CVE-2026-35364",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.9.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/12170",
+      "commit": "aa30c103004463ffe7b8a98ca0ce519d56bbbd41",
+      "sourcePath": "src/uu/mv/src/mv.rs"
+    },
+    {
+      "id": "CVE-2026-35367",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.9.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/12339",
+      "commit": "acd51ef18d90e5c26f694df721f896fa1c4a9edc",
+      "sourcePath": "src/uu/nohup/src/nohup.rs"
+    },
+    {
+      "id": "CVE-2026-35368",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.9.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/11211",
+      "commit": "f33bfb9321e5ebef0ef703aa6bfc8ee95bd21e1f",
+      "sourcePath": "src/uu/chroot/src/chroot.rs"
+    },
+    {
+      "id": "CVE-2026-35373",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.10.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/11403",
+      "commit": "48d030dfb2ca7659ee2735f09cda706c8245a3fc",
+      "sourcePath": "src/uu/ln/src/ln.rs"
+    },
+    {
+      "id": "CVE-2026-35374",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.10.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/12565",
+      "commit": "58040feb5c66fce588a7ffac299b3a23bd55cd81",
+      "sourcePath": "src/uu/split/src/split.rs"
+    },
+    {
+      "id": "CVE-2026-35377",
+      "status": "already_in_original_ubuntu_source",
+      "firstFixedVersion": "0.10.0",
+      "upstreamPullRequest": "https://github.com/uutils/coreutils/pull/12657",
+      "commit": "b9d8ff64c224eb425702584b66ec0ac64a99592a",
+      "sourcePath": "src/uu/env/src/env.rs"
+    }
+  ],
+  "patches": [
+    {
+      "name": "ff382f527994b8a021ec0a086dec4c5cafa34f2a.patch",
+      "commit": "ff382f527994b8a021ec0a086dec4c5cafa34f2a",
+      "url": "https://github.com/uutils/coreutils/commit/ff382f527994b8a021ec0a086dec4c5cafa34f2a.patch",
+      "sha256": "32d843876e0814cb070104afc049c036391604ea517c6e837ffc9345fe1e2de2",
+      "size": 4082,
+      "firstFixedVersion": "0.11.0",
+      "fixedCves": [
+        "CVE-2026-35370",
+        "CVE-2026-35371"
+      ],
+      "pullRequest": "https://github.com/uutils/coreutils/pull/14103",
+      "paths": [
+        "src/uu/id/src/id.rs",
+        "tests/by-util/test_id.rs"
+      ]
+    }
+  ],
+  "baselineSha256": {
+    "src/uu/id/src/id.rs": "de9b78d3d511f5c5ac14f42338648f8755ac5b99cae2376cf2af18e9cce5c3f0",
+    "tests/by-util/test_id.rs": "d6948f672f30bf9205fa87526ce9efcdabc9950910269e5cdef458b914d65b4e",
+    "src/uu/mkfifo/src/mkfifo.rs": "6c7c49a911cff80e6ea0499044971bd232c37b298a5a0c83551b41d5a9f46dbe",
+    "src/uu/dd/src/dd.rs": "11052025db5fd3e1c5cac0b026c67b1d45c7cf601cff01329eba0f2408ad54b9",
+    "src/uu/tail/src/tail.rs": "8168856be7226284452e65604fa6da162a137050cd2c1822e8c3aac87b7904b0",
+    "src/uu/sort/src/sort.rs": "95820b55661c4281b3a51e54496fb9c0f5050ed202f1e8c68b87efb3e17de5dd",
+    "src/uu/cp/src/cp.rs": "7094892394071883367c3b0de3b1b7d0beee6a354d32931397808276547ae525",
+    "src/uu/mv/src/mv.rs": "852b6f61b68bc9b96ead38f1132ae23047a14e4229705a8f11f31f5ba1608734",
+    "src/uu/touch/src/touch.rs": "5a348cc8d276aa0613393ea0451fca703d5e614ae83e6cae6b25582cf0cbda27",
+    "src/uu/rm/src/rm.rs": "776b445347e3087e90d811b38b5b7604c8e362608c1772b762aa7aabe55671c4",
+    "src/uu/nohup/src/nohup.rs": "93a8ab0c82728d3856b0e181312bdb3f0418d86a33f70af00b61e915e2b3173c",
+    "src/uu/chroot/src/chroot.rs": "9282c030345eee3c85c029b0978f587452087c4c873d3ed2f527c4aa677b4e7c",
+    "src/uu/ln/src/ln.rs": "5c681cfa583a268bdce9a9b740f9dcd8b38c5ab53754883e5c20800259a4f1b3",
+    "src/uu/split/src/split.rs": "8ad1864e2abaac40dfc3523f29ea4013624e872dfd65e0c8c40e2bc1b38b4e75",
+    "src/uu/env/src/env.rs": "2cc9122003a63d95a439d39c0ab074409bca4098bc930a38c4e6cc5a625543e1",
+    "GNUmakefile": "eb532c745680e9c82a6836692b306e3a29b1fec5f1055e341aa3d41490acb459",
+    "debian/rules": "06c5fd183a4a1146748810e3cce859ba849643eeee244cc80cbb3315aeedb5e7",
+    "debian/copyright": "f1ea5d8870ff83301cc4c129ecd5e0e3c998bd566a9b0036df899e84d9336bd6"
+  },
+  "patchedSha256": {
+    "src/uu/id/src/id.rs": "5a8ec6db1ac0ac370c6557ef2fe4832d9b5f2942e6c9e60f086a1c08f90a7468",
+    "tests/by-util/test_id.rs": "75fac73627073f8a33f086058510db446efc5226d8b9d3c944ae1a2b8caf8689"
+  },
+  "buildContract": {
+    "nativeOnly": true,
+    "buildAndFullSuiteUser": "non-root",
+    "credentialFixturePrivilege": "sudo -n setpriv; bounded subprocess only",
+    "minRustVersion": "1.88.0",
+    "originalUbuntuPackaging": true,
+    "profile": "release",
+    "multicall": true,
+    "selinuxEnabled": true,
+    "lto": "thin",
+    "optLevel": "z",
+    "codegenUnits": 1,
+    "releaseDebug": true,
+    "network": "Cargo offline; vendored crates from the pinned Ubuntu Debian archive",
+    "strictTestTarget": "pasturestack-strict-test",
+    "newSkips": 0,
+    "installRuntime": false,
+    "alterAlternatives": false
+  },
+  "limitations": [
+    "This is a first-party rebuild candidate, not a Canonical-issued update.",
+    "The original Ubuntu test recipe has skips and ||true; package-build success alone is not sufficient. The helper additionally runs the complete owning suite without added skips and requires success.",
+    "Source SHA pins establish reviewed source identity. They do not claim verified PGP or upstream commit signatures.",
+    "Source preparation and zero-fuzz patch application are complete; native build, strict full tests and distinct-credential binary QA remain required before any remediation claim."
+  ]
+}

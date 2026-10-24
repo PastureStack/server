@@ -1,0 +1,260 @@
+{
+  "schemaVersion": 1,
+  "sourcePackage": "jq",
+  "ubuntuSourceVersion": "1.8.1-4ubuntu2",
+  "upstreamVersion": "1.8.2",
+  "customVersion": "1.8.2-0pasturestack1~26.04.1",
+  "distribution": "resolute",
+  "osVersion": "26.04",
+  "architecture": "amd64",
+  "runtimePackages": [
+    "jq",
+    "libjq1"
+  ],
+  "identity": "First-party rebuild of official stable jq1.8.2 with Ubuntu packaging; not issued by Canonical.",
+  "sourceDateEpoch": 1792886400,
+  "sourcePublication": "https://api.launchpad.net/1.0/ubuntu/+archive/primary/+sourcepub/18373622",
+  "sourceFiles": [
+    {
+      "name": "jq_1.8.1-4ubuntu2.dsc",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/j/jq/jq_1.8.1-4ubuntu2.dsc",
+      "sha256": "faffac21d3a1f6fc96815ee630b6e71903db2ca6c354afe87c68464d85a71e08",
+      "size": 1979
+    },
+    {
+      "name": "jq_1.8.1.orig.tar.gz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/j/jq/jq_1.8.1.orig.tar.gz",
+      "sha256": "51c4ec0913281d917f22a823d1ddcf17c9bc2be845fac987d5fe1d3ae78dd6a2",
+      "size": 1409730
+    },
+    {
+      "name": "jq_1.8.1-4ubuntu2.debian.tar.xz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/j/jq/jq_1.8.1-4ubuntu2.debian.tar.xz",
+      "sha256": "7261bb970ddb1a677988606144151a8dc54437066f12e3ebb1496062da50f2c7",
+      "size": 18368
+    }
+  ],
+  "upstream": {
+    "name": "jq-1.8.2.tar.gz",
+    "url": "https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-1.8.2.tar.gz",
+    "sha256": "71b8d6e8f5fe81f6c6d0d110e3892251f6ce76ed095abd315e26e6e1193af3af",
+    "size": 1959950,
+    "tag": "jq-1.8.2",
+    "commit": "34f7186b86743a083a589741b6cea95293524108",
+    "releaseURL": "https://github.com/jqlang/jq/releases/tag/jq-1.8.2",
+    "checksumFile": {
+      "name": "jq-1.8.2-sha256sum.txt",
+      "url": "https://github.com/jqlang/jq/releases/download/jq-1.8.2/sha256sum.txt",
+      "sha256": "dc86824a41c165ece971ff691aff6e08bbfe6e1d1f531688b47ee78c283a85cd",
+      "size": 2302
+    },
+    "releaseSecurityCves": [
+      "CVE-2026-32316",
+      "CVE-2026-33947",
+      "CVE-2026-33948",
+      "CVE-2026-39956",
+      "CVE-2026-39979",
+      "CVE-2026-40164",
+      "CVE-2026-40612",
+      "CVE-2026-41256",
+      "CVE-2026-41257",
+      "CVE-2026-43894",
+      "CVE-2026-43895",
+      "CVE-2026-43896",
+      "CVE-2026-44777",
+      "CVE-2026-47770",
+      "CVE-2026-49839",
+      "CVE-2026-54679"
+    ],
+    "additionalAdvisories": [
+      "GHSA-gf4g-95wj-4q4r",
+      "GHSA-hj52-j2c9-r8r4"
+    ]
+  },
+  "retainedUbuntuPatches": [
+    {
+      "name": "get-version.patch",
+      "sha256": "c0bd5f3dca373f87df3610e4510204cd8530dbdb155b0153b28457871b7950fe",
+      "paths": [
+        "scripts/version"
+      ]
+    },
+    {
+      "name": "dont-distribute-duplicate-docs.patch",
+      "sha256": "6386843af061c538768742207d9fc02603f56e678acd31196d438d3519a7eb6b",
+      "paths": [
+        "Makefile.am"
+      ]
+    },
+    {
+      "name": "0008-Do-not-use-venderized-oniguruma.patch",
+      "sha256": "56073768aadc6b776266e078ac53503b0cf710980c911090c4a92d8af68b3da5",
+      "paths": [
+        "Makefile.am"
+      ]
+    },
+    {
+      "name": "0006-Do-not-use-pipenv-to-build-docs.patch",
+      "sha256": "73500f946a485c28fa2f8f100d09cf46b25da9c59b77577b60cdf372b70a9153",
+      "paths": [
+        "Makefile.am",
+        "configure.ac"
+      ]
+    }
+  ],
+  "removedUbuntuPatches": [
+    {
+      "patch": "CVE-2026-32316.patch",
+      "originalPatchSha256": "6e0296c2cbee9607771448d017dd870a5b2f5dd286e14033fac60f5648311da7",
+      "officialFixCommit": "e47e56d226519635768e6aab2f38f0ab037c09e5",
+      "officialReleaseCommit": "34f7186b86743a083a589741b6cea95293524108",
+      "officialCompareURL": "https://api.github.com/repos/jqlang/jq/compare/e47e56d226519635768e6aab2f38f0ab037c09e5...34f7186b86743a083a589741b6cea95293524108?per_page=1",
+      "status": "ahead",
+      "mergeBase": "e47e56d226519635768e6aab2f38f0ab037c09e5",
+      "evidenceSha256": "129bd92e68e62a2ad8fadcce03f5676d5f997105d2d71c1f5ea40ca83984614e",
+      "reason": "Official security-fix commit is an ancestor of the pinned release; exact release source hashes are verified before packaging. Existing patch file is preserved; only its series entry is removed.",
+      "reverseCheck": "Context/later security-code differences; inclusion established by official ancestry and pinned release source."
+    },
+    {
+      "patch": "CVE-2026-33947.patch",
+      "originalPatchSha256": "5ac5af1290625a4e8c3ee609562c2d2569fcdf9f9cba39b0b130983cfb28b572",
+      "officialFixCommit": "fb59f1491058d58bdc3e8dd28f1773d1ac690a1f",
+      "officialReleaseCommit": "34f7186b86743a083a589741b6cea95293524108",
+      "officialCompareURL": "https://api.github.com/repos/jqlang/jq/compare/fb59f1491058d58bdc3e8dd28f1773d1ac690a1f...34f7186b86743a083a589741b6cea95293524108?per_page=1",
+      "status": "ahead",
+      "mergeBase": "fb59f1491058d58bdc3e8dd28f1773d1ac690a1f",
+      "evidenceSha256": "d4d669acc6b567e71809ef57390b8ae8c75478d1177cebafec5bd3e8381bd881",
+      "reason": "Official security-fix commit is an ancestor of the pinned release; exact release source hashes are verified before packaging. Existing patch file is preserved; only its series entry is removed.",
+      "reverseCheck": "Context/later security-code differences; inclusion established by official ancestry and pinned release source."
+    },
+    {
+      "patch": "CVE-2026-33948.patch",
+      "originalPatchSha256": "dfed461e2779f12c5feb80cbe39a96f937337a66416f9c1cfa7b271edafdce1f",
+      "officialFixCommit": "6374ae0bcdfe33a18eb0ae6db28493b1f34a0a5b",
+      "officialReleaseCommit": "34f7186b86743a083a589741b6cea95293524108",
+      "officialCompareURL": "https://api.github.com/repos/jqlang/jq/compare/6374ae0bcdfe33a18eb0ae6db28493b1f34a0a5b...34f7186b86743a083a589741b6cea95293524108?per_page=1",
+      "status": "ahead",
+      "mergeBase": "6374ae0bcdfe33a18eb0ae6db28493b1f34a0a5b",
+      "evidenceSha256": "2e81e6b8068d92bb7c6c46ff2dc7b26fff517df61fd9dd99fadd3ed31ddcb8a8",
+      "reason": "Official security-fix commit is an ancestor of the pinned release; exact release source hashes are verified before packaging. Existing patch file is preserved; only its series entry is removed.",
+      "reverseCheck": "Context/later security-code differences; inclusion established by official ancestry and pinned release source."
+    },
+    {
+      "patch": "CVE-2026-39956.patch",
+      "originalPatchSha256": "b3403757544145d2c13f59a517f7db7aa78948a492540e5fdf7e220fd4ed2d69",
+      "officialFixCommit": "fdf8ef0f0810e3d365cdd5160de43db46f57ed03",
+      "officialReleaseCommit": "34f7186b86743a083a589741b6cea95293524108",
+      "officialCompareURL": "https://api.github.com/repos/jqlang/jq/compare/fdf8ef0f0810e3d365cdd5160de43db46f57ed03...34f7186b86743a083a589741b6cea95293524108?per_page=1",
+      "status": "ahead",
+      "mergeBase": "fdf8ef0f0810e3d365cdd5160de43db46f57ed03",
+      "evidenceSha256": "ac96a4c2a113e691fb7356220f3c007517dd52a525c834cb8fe82fb893d39ca7",
+      "reason": "Official security-fix commit is an ancestor of the pinned release; exact release source hashes are verified before packaging. Existing patch file is preserved; only its series entry is removed.",
+      "reverseCheck": "PASS"
+    },
+    {
+      "patch": "CVE-2026-39979.patch",
+      "originalPatchSha256": "b97d5778c58cdd80673d2df1bf0b822e606c304d091e3433358b3a9d4ca34a86",
+      "officialFixCommit": "2f09060afab23fe9390cce7cb860b10416e1bf5f",
+      "officialReleaseCommit": "34f7186b86743a083a589741b6cea95293524108",
+      "officialCompareURL": "https://api.github.com/repos/jqlang/jq/compare/2f09060afab23fe9390cce7cb860b10416e1bf5f...34f7186b86743a083a589741b6cea95293524108?per_page=1",
+      "status": "ahead",
+      "mergeBase": "2f09060afab23fe9390cce7cb860b10416e1bf5f",
+      "evidenceSha256": "d233f73e23140b4c4195afbe6aa6e2a42deabf87fd5736769eda7599c10d67f0",
+      "reason": "Official security-fix commit is an ancestor of the pinned release; exact release source hashes are verified before packaging. Existing patch file is preserved; only its series entry is removed.",
+      "reverseCheck": "PASS"
+    },
+    {
+      "patch": "CVE-2026-40164.patch",
+      "originalPatchSha256": "91ff96bae1b5d8b83b76db5ff2d80ec1a7ad6245a5d1cae6487eaffafd0a1440",
+      "officialFixCommit": "0c7d133c3c7e37c00b6d46b658a02244fdd3c784",
+      "officialReleaseCommit": "34f7186b86743a083a589741b6cea95293524108",
+      "officialCompareURL": "https://api.github.com/repos/jqlang/jq/compare/0c7d133c3c7e37c00b6d46b658a02244fdd3c784...34f7186b86743a083a589741b6cea95293524108?per_page=1",
+      "status": "ahead",
+      "mergeBase": "0c7d133c3c7e37c00b6d46b658a02244fdd3c784",
+      "evidenceSha256": "e8eb1df9b9112de26ddf445110b2c3a1f686fa0cdcfeda94f2b2d5ed517ebc39",
+      "reason": "Official security-fix commit is an ancestor of the pinned release; exact release source hashes are verified before packaging. Existing patch file is preserved; only its series entry is removed.",
+      "reverseCheck": "PASS"
+    }
+  ],
+  "releaseSourceSha256": {
+    "src/jv.c": "a40433614bcf7e344a4256c4aaab7acd4ff3fd09b04e3caefd4e3eb102cbacc2",
+    "src/jv_aux.c": "fb7a4fff8f89ba06e8b9bab4c8047e5f118d971d790060388e028811f6d42cb2",
+    "src/util.c": "1f413a1ffeb9194f246f7d9079169d41126686ca212d7b262a1d7b8cf783be06",
+    "src/builtin.c": "0a29617dbf74a6fdabf644f5da82269113fef69bb46efaa3b232515d90305342",
+    "src/jv_parse.c": "3ba36daee76f99543761f1fe6a6f1d261e6ecfecb8578136cd32c76d093ff40b",
+    "configure.ac": "5bf3b41f9bee589f30db0f32203ada104fd62d278c2e95458fff7f9eb7322fa6",
+    "Makefile.am": "77edc24562d1fff62d87a701c2c287444faf327696a52ffc3bcdc9ea9f00ea0c",
+    "src/execute.c": "8069c06b05f5220a705977f612ae79557e272fba22bd4fc92e69e35a04ad5a16",
+    "src/exec_stack.h": "08092864ce27c09ceb3788813a3d9c056aa9130eb513558e30865356a8d7c9a8",
+    "src/linker.c": "07592a2aca011fa0ec6c0be9ea2cb280e74cc9db325c15a3688674828bc25c63"
+  },
+  "ubuntuPackagingSha256": {
+    "debian/rules": "7434f091fc61bc9c9dba647f92230606ba59330b5263a4059a4281f319e5f68b",
+    "debian/control": "8462edd4f555a10a6891924ca868a8571d7e3148411085ac4cd9622c0b9dfc29",
+    "debian/libjq1.symbols": "5c2db775e6fee872d846857bfbac4e0ed7a8ea90cb1ed05783004d02302053fd",
+    "debian/copyright": "92965c1a25cfced63db0fcc869d060d773d6105da9bd8d3da232ed1691cda778"
+  },
+  "postUbuntuPatchSha256": {
+    "Makefile.am": "08c90cb1bb74f2ea981dbe96bd061102bcaf739167e64805996aee6ecde160b3",
+    "configure.ac": "a818b6f5709a222be56a220c3be373866b1eafc08fb2cfc3cc1e1eb0c2e08a0c",
+    "scripts/version": "3f879889a892093320b25c0da50b37193fe98c3e9a9f312bea1fc51691b80548"
+  },
+  "owningTests": [
+    "mantest",
+    "jqtest",
+    "shtest",
+    "utf8test",
+    "base64test",
+    "uritest",
+    "optionaltest",
+    "onigtest",
+    "manonigtest"
+  ],
+  "sharedHelpers": {
+    "module": "../build-pcre2-backport.py",
+    "functions": [
+      "require",
+      "digest",
+      "download",
+      "run",
+      "capture",
+      "packaging_snapshot",
+      "require_separate_paths"
+    ]
+  },
+  "buildContract": {
+    "nativeOnly": true,
+    "buildUser": "non-root",
+    "originalConfigure": [
+      "--disable-static"
+    ],
+    "preserveOriginalHardening": "hardening=+all abi=+time64 from original debian/rules",
+    "soname": "libjq.so.1",
+    "onigurumaSoname": "libonig.so.5",
+    "newTestSkips": 0,
+    "installRuntime": false
+  },
+  "findingCounts": {
+    "originalPendingCves": [
+      "CVE-2026-41256",
+      "CVE-2026-41257",
+      "CVE-2026-43895",
+      "CVE-2026-43896",
+      "CVE-2026-44777"
+    ],
+    "newOfficialCvesAwaitingProductConfirmation": [
+      "CVE-2026-40612",
+      "CVE-2026-43894",
+      "CVE-2026-47770",
+      "CVE-2026-49839",
+      "CVE-2026-54679"
+    ],
+    "doNotChangeOriginal53Baseline": true
+  },
+  "limitations": [
+    "Official source bytes are SHA-256 pinned over HTTPS; the local preparation environment lacks the uploader PGP key, so it does not claim verified Ubuntu inline signatures or Canonical-issued custom outputs.",
+    "Source preparation passed; native package build, full owning tests, ABI/package and extracted-package smoke checks are required before a product remediation claim.",
+    "Three old Ubuntu patch reverse checks pass; the other three differ in context or later security implementations. All six official fix commits were independently confirmed as ancestors of the pinned release; source hashes are pinned rather than bypassing failed checks.",
+    "Additional official disclosures are recorded separately from the original53 findings; current artifact reachability has not been established for every disclosure."
+  ]
+}

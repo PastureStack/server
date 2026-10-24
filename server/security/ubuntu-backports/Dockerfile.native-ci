@@ -1,0 +1,192 @@
+# syntax=docker/dockerfile:1.7
+# This image is a disposable native build fixture. Only /out/artifacts is exported.
+FROM ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b AS native
+ARG MODULE=glibc
+ARG BUILD_JOBS=2
+ARG SOURCE_SHA
+ENV DEBIAN_FRONTEND=noninteractive PYTHONDONTWRITEBYTECODE=1
+SHELL ["/bin/bash", "-e", "-o", "pipefail", "-c"]
+
+# The original Ubuntu image has no CA bundle. Pin the bootstrap package before
+# using the signed, fixed-date Ubuntu archive; TLS verification remains enabled.
+ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb /tmp/ca-certificates.deb
+RUN <<'SH'
+set -euo pipefail
+case "$MODULE" in glibc|rust-coreutils|jq|p11-kit|libxrender) ;; *) exit 2 ;; esac
+mkdir -p /tmp/ca-bootstrap /etc/ssl/certs
+dpkg-deb --extract /tmp/ca-certificates.deb /tmp/ca-bootstrap
+while IFS= read -r certificate; do
+    cat "$certificate"
+    printf '\n'
+done < <(find /tmp/ca-bootstrap/usr/share/ca-certificates -type f -name '*.crt' | LC_ALL=C sort) >/etc/ssl/certs/ca-certificates.crt
+rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources
+cat >/etc/apt/sources.list.d/pasturestack-snapshot.sources <<'SOURCES'
+Types: deb deb-src
+URIs: https://snapshot.ubuntu.com/ubuntu/20261023T000000Z
+Suites: resolute resolute-updates resolute-security
+Components: main universe restricted multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+Snapshot: no
+Check-Valid-Until: no
+SOURCES
+cat >/etc/apt/apt.conf.d/80pasturestack <<'APT'
+Acquire::https::CaInfo "/etc/ssl/certs/ca-certificates.crt";
+Acquire::https::Verify-Peer "true";
+Acquire::https::Verify-Host "true";
+Acquire::Retries "3";
+APT
+apt-get update
+apt-get install --no-install-recommends -y \
+    build-essential debhelper dpkg-dev fakeroot patch quilt binutils python3 \
+    ca-certificates gzip sudo util-linux
+SH
+
+# The narrow context contains only these reviewed modules and their shared helper.
+COPY . /modules/
+RUN <<'SH'
+set -euo pipefail
+helper="build-$MODULE-backport.py"
+if [[ "$MODULE" == jq ]]; then helper=build-jq-release.py; fi
+python3 -B "/modules/$MODULE/$helper" --validate-lock
+apt-cache showsrc --only-source "$MODULE" >/tmp/native-source-index
+export MODULE
+python3 - <<'PY'
+import json, os, pathlib
+module = os.environ['MODULE']
+lock = json.loads(pathlib.Path(f'/modules/{module}/{module}.lock.json').read_text())
+records = []
+for paragraph in pathlib.Path('/tmp/native-source-index').read_text().split('\n\n'):
+    fields, key = {}, None
+    for line in paragraph.splitlines():
+        if line.startswith((' ', '\t')) and key:
+            fields[key] += '\n' + line.strip()
+        elif ':' in line:
+            key, value = line.split(':', 1)
+            fields[key] = value.strip()
+    if fields.get('Package') == module and fields.get('Version') == lock['ubuntuSourceVersion']:
+        records.append(fields)
+assert records, 'Pinned source version absent from the fixed snapshot'
+for fields in records:
+    checksums = {name: (sha, int(size)) for sha, size, name in
+                 (line.split() for line in fields['Checksums-Sha256'].splitlines() if line.strip())}
+    for item in lock['sourceFiles']:
+        assert checksums.get(item['name']) == (item['sha256'], item['size']), 'Snapshot/lock source mismatch'
+pathlib.Path('/tmp/native-source-version').write_text(lock['ubuntuSourceVersion'])
+PY
+version="$(cat /tmp/native-source-version)"
+if [[ "$MODULE" == glibc ]]; then
+    apt-get build-dep --no-install-recommends --arch-only --build-profiles=nobiarch,noudeb -y "glibc=$version"
+else
+    apt-get build-dep --no-install-recommends --arch-only -y "$MODULE=$version"
+fi
+if [[ "$MODULE" == libxrender ]]; then
+    # CI-only private display for the actual QueryFormats regression. Never
+    # connect to a host display or add Xvfb to a product's runtime dependencies.
+    apt-get install --no-install-recommends -y xvfb xauth
+fi
+if [[ "$MODULE" == p11-kit ]]; then
+    # The upstream RPC server suite uses p11tool; without it that test is
+    # skipped. This is a disposable CI dependency, never a runtime addition.
+    apt-get install --no-install-recommends -y gnutls-bin
+fi
+useradd --create-home --user-group --uid 10001 --shell /bin/bash builder
+if [[ "$MODULE" == rust-coreutils ]]; then
+    # Only the helper's bounded credential subprocess uses sudo. No host mount
+    # or persistent host user/group edit is available in this disposable build.
+    printf 'builder ALL=(root) NOPASSWD: /usr/bin/setpriv *\n' >/etc/sudoers.d/native-ci-setpriv
+    chmod 0440 /etc/sudoers.d/native-ci-setpriv
+    visudo --check --file=/etc/sudoers.d/native-ci-setpriv
+fi
+install -d -o builder -g builder -m 0755 /work /out /out/artifacts
+cp /tmp/native-source-index /out/artifacts/snapshot-source-index.txt
+cp /tmp/native-source-version /out/artifacts/snapshot-source-version.txt
+chown builder:builder /out/artifacts/snapshot-source-*.txt
+SH
+
+USER builder
+WORKDIR /work
+RUN <<'SH'
+set -euo pipefail
+[[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+[[ "$BUILD_JOBS" == 2 || "$BUILD_JOBS" == 4 ]]
+test "$(id -u)" != 0
+export MODULE SOURCE_SHA
+if [[ "$MODULE" == rust-coreutils ]]; then
+    # Truthful upstream CI semantics for this GitHub-hosted disposable build.
+    # Other modules and all runtime packages retain their original environment.
+    export CI=true
+fi
+df -Pk /work /out >/out/artifacts/container-disk-space.txt
+dpkg-query --show --showformat='${binary:Package}\t${Version}\n' | LC_ALL=C sort \
+    >/out/artifacts/builder-packages.tsv
+test_name="test_${MODULE//-/_}_backport.py"
+helper="build-$MODULE-backport.py"
+if [[ "$MODULE" == jq ]]; then test_name=test_jq_release.py; helper=build-jq-release.py; fi
+python3 -B "/modules/$MODULE/$test_name" -v
+
+# Defer the unchanged helper's exit solely to export its failure evidence.
+# result.json is enforced by the workflow's always-running gate; a failed helper
+# or failed log stream can never produce a passing native candidate job.
+set +e
+python3 -B "/modules/$MODULE/$helper" \
+    --output-dir /out/artifacts/package --work-dir /work/native --jobs "$BUILD_JOBS" \
+    2>&1 | tee /out/artifacts/native-console.log
+codes=("${PIPESTATUS[@]}")
+set -e
+export HELPER_EXIT_CODE="${codes[0]}" LOG_EXIT_CODE="${codes[1]}"
+python3 - <<'PY'
+import hashlib, json, os, pathlib
+module = os.environ['MODULE']
+helper, log = int(os.environ['HELPER_EXIT_CODE']), int(os.environ['LOG_EXIT_CODE'])
+lock = pathlib.Path(f'/modules/{module}/{module}.lock.json')
+result = {'schemaVersion': 1, 'module': module, 'sourceSha': os.environ['SOURCE_SHA'],
+          'helperExitCode': helper, 'logExitCode': log, 'exitCode': helper or log,
+          'status': 'passed' if helper == log == 0 else 'failed',
+          'sourceLockSha256': hashlib.sha256(lock.read_bytes()).hexdigest(),
+          'publicationPerformed': False, 'deploymentPerformed': False}
+pathlib.Path('/out/artifacts/result.json').write_text(json.dumps(result, indent=2) + '\n')
+PY
+
+# Retain only logs/configuration/results; never export source, Cargo target trees,
+# the container rootfs, cores, or the complete native build directory.
+mkdir /out/artifacts/diagnostics
+for name in build.log strict-tests.log; do
+    if [[ -f "/work/native/$name" ]]; then
+        gzip -c "/work/native/$name" >"/out/artifacts/diagnostics/$name.gz"
+    fi
+done
+if [[ "$MODULE" == glibc ]]; then
+    for name in tests.sum configparms config.make; do
+        path="/work/native/glibc-source/build-tree/amd64-libc/$name"
+        if [[ -f "$path" ]]; then
+            gzip -c "$path" >"/out/artifacts/diagnostics/$name.gz"
+        fi
+    done
+    # If a post-build evidence check fails, retain only the three bounded
+    # unqualified runtime packages, not the source tree or debug packages.
+    # result.json and the workflow gate remain failed; these are diagnostics,
+    # never a qualified package output or a publication input.
+    if [[ "$HELPER_EXIT_CODE" != 0 ]]; then
+        python3 - <<'PY'
+import hashlib, json, pathlib, shutil
+lock = json.loads(pathlib.Path('/modules/glibc/glibc.lock.json').read_text())
+source = pathlib.Path('/work/native')
+out = pathlib.Path('/out/artifacts/diagnostics/unqualified-packages')
+out.mkdir()
+files = []
+for name in ('libc6', 'libc-bin', 'libc-gconv-modules-extra'):
+    matches = list(source.glob(name + '_' + lock['customVersion'] + '_amd64.deb'))
+    if len(matches) == 1:
+        file = matches[0]
+        shutil.copyfile(file, out / file.name)
+        files.append({'name': file.name, 'sha256': hashlib.sha256(file.read_bytes()).hexdigest()})
+(out / 'UNQUALIFIED.json').write_text(json.dumps({'status': 'FAILED_NATIVE_DIAGNOSTICS_ONLY',
+    'publicationAllowed': False, 'files': files}, indent=2) + '\n')
+PY
+    fi
+fi
+gzip /out/artifacts/native-console.log
+SH
+
+FROM scratch AS artifacts
+COPY --from=native /out/artifacts/ /

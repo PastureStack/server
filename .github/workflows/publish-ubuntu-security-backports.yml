@@ -1,0 +1,218 @@
+name: Publish Ubuntu Security Backport Inputs
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/publish-ubuntu-security-backports.yml'
+      - 'server/security/ubuntu-backports/bundle/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ubuntu-security-backports-v0.1.0-${{ github.event_name }}
+  cancel-in-progress: false
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Check the source lock and qualifier boundaries
+        run: |
+          set -Eeuo pipefail
+          python3 -B server/security/ubuntu-backports/bundle/test_qualify_native_packages.py
+          python3 -B server/security/ubuntu-backports/bundle/test_verify_consumer_evidence.py
+          python3 -B server/security/ubuntu-backports/bundle/qualify-native-packages.py --check-lock
+
+  publish:
+    needs: checks
+    if: github.event_name == 'workflow_dispatch' && github.repository == 'PastureStack/server' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      actions: read
+      packages: write
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    env:
+      IMAGE: ghcr.io/pasturestack/ubuntu-security-backports
+      TAG: v0.1.0
+    steps:
+      - name: Check out the exact protected publisher source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          path: source
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Require all native package inputs before building
+        id: inputs
+        working-directory: source
+        run: |
+          set -Eeuo pipefail
+          qualifier=server/security/ubuntu-backports/bundle/qualify-native-packages.py
+          python3 -B "$qualifier" --require-ready
+          printf 'work=%s\n' "$(python3 -B "$qualifier" --print-work-root)" >>"$GITHUB_OUTPUT"
+          python3 - <<'PY' >>"$GITHUB_OUTPUT"
+          import json
+          from pathlib import Path
+          lock = json.loads(Path('server/security/ubuntu-backports/bundle/source-inputs.lock.json').read_text())
+          print('pcre2-source=' + lock['pcre2']['sourceCommit'])
+          PY
+
+      - name: Authenticate the existing Server owner package namespace
+        env:
+          REGISTRY_TOKEN: ${{ github.token }}
+        run: printf '%s' "$REGISTRY_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+
+      - name: Refuse an existing tag or an ambiguous registry response
+        env:
+          REGISTRY_TOKEN: ${{ github.token }}
+        working-directory: source
+        run: python3 -B server/security/ubuntu-backports/bundle/qualify-native-packages.py --check-new-tag
+
+      - name: Download and bind the reviewed native artifacts
+        working-directory: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 -B server/security/ubuntu-backports/bundle/qualify-native-packages.py --fetch
+
+      - name: Check out the released Server 551 PCRE2 producer
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ steps.inputs.outputs.pcre2-source }}
+          path: pcre2-source
+          persist-credentials: false
+
+      - name: Build only the released PCRE2 producer and static installer
+        working-directory: source
+        env:
+          WORK: ${{ steps.inputs.outputs.work }}
+        run: |
+          set -Eeuo pipefail
+          qualifier=server/security/ubuntu-backports/bundle/qualify-native-packages.py
+          python3 -B "$qualifier" --check-pcre2-source
+          mkdir "$WORK/publisher"
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          original = Path('../pcre2-source/server/Dockerfile.web-compose-release').read_bytes()
+          appended = b'\nFROM scratch AS pcre2_bundle_inputs\nCOPY --from=runtime_security_packages /out/pcre2/ /pcre2/\n'
+          Path(os.environ['WORK'], 'Dockerfile.pcre2').write_bytes(original + appended)
+          PY
+          docker buildx build --platform linux/amd64 --progress plain --no-cache \
+            --file "$WORK/Dockerfile.pcre2" --target pcre2_bundle_inputs \
+            --output "type=local,dest=$WORK/pcre2-export" ../pcre2-source/server \
+            2>&1 | tee "$WORK/publisher/pcre2-build.log"
+          docker buildx build --platform linux/amd64 --progress plain --no-cache \
+            --file server/security/ubuntu-backports/bundle/Dockerfile.bundle --target installer_export \
+            --output "type=local,dest=$WORK/installer-export" server/security/ubuntu-backports/bundle \
+            2>&1 | tee "$WORK/publisher/installer-build.log"
+
+      - name: Qualify package bytes, native receipts, payload metadata, SBOM and exact-package VEX
+        working-directory: source
+        env:
+          WORK: ${{ steps.inputs.outputs.work }}
+        run: |
+          set -Eeuo pipefail
+          python3 -B server/security/ubuntu-backports/bundle/qualify-native-packages.py --qualify \
+            2>&1 | tee "$WORK/publisher/qualification.log"
+
+      - name: Require real installation in both isolated Ubuntu provider fixtures
+        working-directory: source
+        env:
+          WORK: ${{ steps.inputs.outputs.work }}
+        run: |
+          set -Eeuo pipefail
+          for provider in gnu uutils; do
+            docker buildx build --platform linux/amd64 --progress plain --no-cache \
+              --file server/security/ubuntu-backports/bundle/installer/consumer-fixture.Dockerfile \
+              --target evidence --build-arg "PROVIDER=$provider" \
+              --build-context "qualified=$WORK/context" \
+              --output "type=local,dest=$WORK/consumer-$provider" server/security/ubuntu-backports/bundle/installer \
+              2>&1 | tee "$WORK/publisher/consumer-$provider.log"
+          done
+          python3 -B server/security/ubuntu-backports/bundle/qualify-native-packages.py --record-consumer-tests \
+            2>&1 | tee "$WORK/publisher/consumer-qualification.log"
+
+      - name: Publish the new build-only OCI data artifact
+        id: image
+        working-directory: source
+        env:
+          WORK: ${{ steps.inputs.outputs.work }}
+          SOURCE_SHA: ${{ github.sha }}
+          REGISTRY_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          python3 -B server/security/ubuntu-backports/bundle/qualify-native-packages.py --check-new-tag
+          docker buildx build --platform linux/amd64 --progress plain --provenance=false \
+            --file server/security/ubuntu-backports/bundle/Dockerfile.bundle --target bundle \
+            --build-arg "SOURCE_SHA=$SOURCE_SHA" --tag "$IMAGE:$TAG" \
+            --metadata-file "$WORK/publisher/image-metadata.json" --push "$WORK/context" \
+            2>&1 | tee "$WORK/publisher/publish.log"
+          digest="$(python3 -c 'import json,os; print(json.load(open(os.environ["WORK"] + "/publisher/image-metadata.json"))["containerimage.digest"])')"
+          [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+          printf 'digest=%s\n' "$digest" >>"$GITHUB_OUTPUT"
+          python3 -B server/security/ubuntu-backports/bundle/qualify-native-packages.py --verify-published-manifest
+
+      - name: Attest image provenance with the Server workflow identity
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-name: ghcr.io/pasturestack/ubuntu-security-backports
+          subject-digest: ${{ steps.image.outputs.digest }}
+          push-to-registry: true
+
+      - name: Attest payload SBOM
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-name: ghcr.io/pasturestack/ubuntu-security-backports
+          subject-digest: ${{ steps.image.outputs.digest }}
+          sbom-path: ${{ steps.inputs.outputs.work }}/context/out/sbom.cdx.json
+          push-to-registry: true
+
+      - name: Require public anonymous pull and exact OCI data readback
+        working-directory: source
+        env:
+          WORK: ${{ steps.inputs.outputs.work }}
+          IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
+        run: |
+          set -Eeuo pipefail
+          mkdir "$WORK/anonymous-docker" "$WORK/readback"
+          printf '{"auths":{}}\n' >"$WORK/anonymous-docker/config.json"
+          python3 -B server/security/ubuntu-backports/bundle/qualify-native-packages.py --verify-anonymous-manifest
+          docker --config "$WORK/anonymous-docker" pull "$IMAGE@$IMAGE_DIGEST"
+          container="$(docker create --entrypoint /unused "$IMAGE@$IMAGE_DIGEST")"
+          trap 'docker rm "$container" >/dev/null' EXIT
+          docker cp "$container:/out" "$WORK/readback/out"
+          docker cp "$container:/bundle/install-existing-backports" "$WORK/readback/bundle-installer"
+          python3 -B server/security/ubuntu-backports/bundle/qualify-native-packages.py --verify-readback \
+            2>&1 | tee "$WORK/publisher/anonymous-readback.log"
+          printf 'Package inputs published: %s@%s\nConsumer installation, rootfs scan and product acceptance remain required.\n' \
+            "$IMAGE" "$IMAGE_DIGEST" >>"$GITHUB_STEP_SUMMARY"
+
+      - name: Clear registry credentials
+        if: always()
+        run: docker logout ghcr.io
+
+      - name: Retain exact qualified package inputs and publication evidence
+        if: always() && steps.inputs.outputs.work != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ubuntu-security-backports-v0.1.0-${{ github.sha }}-${{ github.run_id }}
+          path: |
+            ${{ steps.inputs.outputs.work }}/context/out/
+            ${{ steps.inputs.outputs.work }}/publisher/
+            ${{ steps.inputs.outputs.work }}/consumer-gnu/
+            ${{ steps.inputs.outputs.work }}/consumer-uutils/
+            ${{ steps.inputs.outputs.work }}/inputs/*-api.json
+          if-no-files-found: warn
+          retention-days: 30

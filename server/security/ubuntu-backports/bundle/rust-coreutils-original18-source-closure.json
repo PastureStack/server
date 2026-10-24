@@ -1,0 +1,1874 @@
+{
+  "audit": {
+    "actionsNotPerformed": [
+      "\u672a\u4fee\u6539repo\uff0fsource tree\uff0flock",
+      "\u672a\u4fee\u6539canonical\uff0fSQLite\uff0fExcel",
+      "\u672a\u7de8\u8b6f\u6216\u57f7\u884c\u4efb\u4f55\u65b0\u6e2c\u8a66",
+      "\u672a\u8dd1\u6383\u63cf\u5668\u6216\u65b0\u589eagents",
+      "\u672a\u767c\u5e03\uff0f\u90e8\u7f72\uff0f\u64cd\u4f5cVM\u6216\u6b63\u5f0f\u7ad9"
+    ],
+    "asOfUtc": "2026-10-24 20:08:38 UTC",
+    "identity": {
+      "artifactId": 12571737310,
+      "ciJob": 120951205262,
+      "ciRun": 40120637646,
+      "dscSha256ManifestEntriesVerified": 3,
+      "firstPartyIdentity": "first-party rebuild; not issued by Canonical",
+      "lockSha256": "e52adb460ec7b01accc2f3f9cb3dccc8923e2619d5ced41aae1722494c81bd41",
+      "officialUpstreamArchive": {
+        "bytes": 2671039,
+        "freshlyReadEqualsUbuntuOrig": true,
+        "sha256": "f8e68cd0e3629378f047544ead272161a83211c43f4985a9f52944e5db8f1a44",
+        "url": "https://codeload.github.com/uutils/coreutils/tar.gz/refs/tags/0.10.0"
+      },
+      "originalZipSha256": "7f4b4780a492425bb9de239d67c6d594ccd3e8c0c85ac03eaa85035248ac5e2b",
+      "packageSha256": "f90cdece3ffa01acc9153e3741725febb696e02db8ccf6c0d0c4f98ff93ec609",
+      "producerCommit": "07e4a7afa827cb45514a72aba12f03b1d30d121d",
+      "producerTree": "9b96026ba0e17b2a12269705ab19ff5f95fe098d",
+      "provenanceSha256": "f06fd1b74848aeb0ef9d23f38c3e0700e167d935e7c7fcf7879c8e3561c23391",
+      "signatures": "SHA/source identity\u5df2\u6838\uff1b\u672a\u5ba3\u7a31PGP\uff0fGit commit/tag signature\u9a57\u8b49\u3002\u5b98\u65b90.10 annotated tag API\u6a19\u793aunsigned\u3002",
+      "sourceFiles": [
+        {
+          "name": "rust-coreutils_0.10.0-1ubuntu2~26.04.1.dsc",
+          "sha256": "c7eb62e7d2a07ec84c18bb2a6694331bb32bd0bde316261cfbe2f90acb2b6d28",
+          "size": 8746,
+          "url": "https://archive.ubuntu.com/ubuntu/pool/main/r/rust-coreutils/rust-coreutils_0.10.0-1ubuntu2~26.04.1.dsc",
+          "verified": true
+        },
+        {
+          "name": "rust-coreutils_0.10.0.orig.tar.gz",
+          "sha256": "f8e68cd0e3629378f047544ead272161a83211c43f4985a9f52944e5db8f1a44",
+          "size": 2671039,
+          "url": "https://archive.ubuntu.com/ubuntu/pool/main/r/rust-coreutils/rust-coreutils_0.10.0.orig.tar.gz",
+          "verified": true
+        },
+        {
+          "name": "rust-coreutils_0.10.0.orig-l10n.tar.gz",
+          "sha256": "3df90fabddfb28c7ae1d31237fc8abf70bb1f6c1937d818008943a11e31cfd5b",
+          "size": 780526,
+          "url": "https://archive.ubuntu.com/ubuntu/pool/main/r/rust-coreutils/rust-coreutils_0.10.0.orig-l10n.tar.gz",
+          "verified": true
+        },
+        {
+          "name": "rust-coreutils_0.10.0-1ubuntu2~26.04.1.debian.tar.xz",
+          "sha256": "61eda389122a85e90e542bf6b12c840ab68ee3741958db539f24a3599f5d4bb2",
+          "size": 22541108,
+          "url": "https://archive.ubuntu.com/ubuntu/pool/main/r/rust-coreutils/rust-coreutils_0.10.0-1ubuntu2~26.04.1.debian.tar.xz",
+          "verified": true
+        }
+      ],
+      "sourcePublication": "https://api.launchpad.net/1.0/ubuntu/+archive/primary/+sourcepub/18747163",
+      "ubuntuSourceVersion": "0.10.0-1ubuntu2~26.04.1",
+      "upstreamCommit": "28b6856d7b215bf844b4223589cb54ade84f5223",
+      "upstreamRepository": "https://github.com/uutils/coreutils",
+      "upstreamTag": "0.10.0",
+      "upstreamTagObject": "53e6f64b1519ebd0b18dfaf07e7006f233bbcc46",
+      "upstreamTree": "e9b7a01352471d10a542b30580fa2f98dda761ac"
+    },
+    "limitations": [
+      "\u7d50\u8ad6\u50c5\u9069\u7528package SHA f90cdece\u2026\u53ca\u6b64\u7cbe\u6e96source chain\uff1b\u672a\u5ba3\u7a31\u73fe\u5f7917\u500bconsumer\u6216\u516820\u9805\u7522\u54c1\u5df2\u4fee\u3002",
+      "fixed\u662fqualified-component source closure\uff0c\u4e0d\u662fCanonical\u5b98\u65b9security\u66f4\u65b0\u72c0\u614b\uff0c\u4e5f\u4e0d\u662fcanonical/VEX disposition mutation\u3002",
+      "\u7121effective revert\u662f\u5c0d\u76ee\u6a19orig+enabled quilt\u53ca\u76ee\u524d\u5b89\u5168\u63a7\u5236\u7684\u5224\u65b7\uff0c\u6c92\u6709\u5ba3\u7a31\u5b8c\u6574Git\u6b77\u53f2\u5f9e\u672a\u51fa\u73fe\u4efb\u4f55revert\u63d0\u4ea4\u3002",
+      "\u539fstrict suite\u670984 upstream ignored\u820717\u65e2\u6709filtered\uff1b\u4e0d\u662fall-functional coverage\uff0clogname\u771f\u5be6login fixture\u4e5f\u672a\u8b49\u660e\u3002",
+      "dd\u8207split\u7684source unit regression\u540d\u7a31\u672a\u5728\u539fstrict log\u89c0\u5bdf\u5230\uff1bsource\u63a7\u5236\u53ef\u8b49\uff0c\u8a72unit\u7684\u65b0\u589e\u57f7\u884c\u672a\u7372\u6388\u6b0a\u4e14\u672a\u9032\u884c\u3002",
+      "\u5169\u500bid\u65b0CVE35370/35371\u6cbf\u7528\u5df2\u7d66\u5b9anative\u5408\u683c\u8b49\u64da\uff0c\u672a\u65bc\u672c\u8f2a\u91cd\u65b0\u5224\u5b9a\u6216\u91cd\u8dd1\u3002"
+    ],
+    "method": [
+      "\u539fZIP\u3001export lock\u3001provenance\u3001\u5be6\u969bdeb bytes\u9010\u4e00SHA\u7d81\u5b9a\uff1bgit show CI exact07e producer\u7684lock bytes\u5b8c\u5168\u76f8\u540c\u3002",
+      "\u56db\u500bUbuntu\u539fsource\u6a94\u9010\u4e00size/SHA\u6838\u5c0d\uff1b\u5b98\u65b90.10 archive\u91cd\u65b0\u8b80\u53d6\u8207Ubuntu orig\u5b8c\u5168\u540cbytes\uff0ctag\u7269\u4ef6\u2192commit\u2192tree\u5df2\u6838\u3002",
+      "16\u500block\u5b98\u65b9completion/fix anchors\u4ee5\u5b98\u65b9compare API\u6838\u5be6\u70ba0.10 commit\u7956\u5148\uff1b\u4e0d\u628a\u7956\u5148\u6216\u7248\u672c\u95dc\u4fc2\u55ae\u7368\u7576\u7121revert\u8b49\u64da\u3002",
+      "\u539fUbuntu quilt\u5b8c\u6574series\u53ca14\u500benabled patch target\u5df2\u6838\uff1b\u91dd\u5c0d18\u9805\u76f8\u95dcsource\uff0c\u5728\u8a18\u61b6\u9ad4\u91cd\u5efa\u5b8c\u6574exact-context hunks\uff0c18\u500bnative baseline file pins\u5168\u76f8\u7b26\uff0c\u4e0d\u5bebsource\u3002",
+      "\u4f9dCVE\u539f\u5b89\u5168\u908a\u754c\u8ffd\u67e5\u76ee\u524d\u5be6\u969bcontrol\uff0c\u542btail/watch\u3001cp Linux platform\u3001safe_copy\u3001mv fd-xattr\u3001env/split_iterator\u7b49shared paths\uff1b\u4e0d\u53ea\u6aa2\u67e5lock\u7684sourcePath\u3002",
+      "\u5c0d\u539ffix\u5df2\u88ab\u5f8c\u7e8c\u91cd\u69cb\u53d6\u4ee3\u8005\uff0c\u6838\u5c0d\u7b49\u50f9\u76ee\u524d\u63a7\u5236\uff1b\u5c0dcompletion commit\u53ea\u6539\u6e2c\u8a66\u8005\uff0c\u88dc\u5176\u5df2merged\u5b98\u65b9PR\u7684\u5be6\u969bcode commit\u3002",
+      "\u50c5\u89e3\u6790\u539f\u6210\u529fstrict-tests.log\uff0c\u4fdd\u7559ignored\uff0ffiltered\u8207\u672a\u89c0\u5bdf\u5230\u7684\u5c08\u5c6cunit test\u7bc4\u570d\uff1b\u672a\u57f7\u884c\u65b0\u7684build/test/scan\u3002"
+    ],
+    "nativeEvidenceReused": {
+      "alternativesChanged": false,
+      "builtAt": "2026-10-24T18:49:35.830033+00:00",
+      "newIdCredentialCases": 3,
+      "newlyBackportedCves": [
+        "CVE-2026-35370",
+        "CVE-2026-35371"
+      ],
+      "runtimeInstalled": false,
+      "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11) (built from a source tarball)",
+      "status": "native_build_and_required_tests_passed",
+      "strictOwningSuite": {
+        "lognameCoverage": {
+          "ciMarkerForwarded": true,
+          "formalOutcome": "reported ok",
+          "genuineLoginFixtureValidated": false,
+          "limitation": "The upstream CI guard may return on no login name before login assertions; these outcomes do not establish successful login-name retrieval.",
+          "tests": [
+            "test_logname::test_normal",
+            "test_logname::test_output_format"
+          ]
+        },
+        "newExclusionPatterns": [],
+        "observedTotals": {
+          "failed": 0,
+          "filteredOut": 17,
+          "measured": 0,
+          "passed": 5438,
+          "upstreamIgnored": 84
+        },
+        "originalUbuntuRulesSha256": "06c5fd183a4a1146748810e3cce859ba849643eeee244cc80cbb3315aeedb5e7",
+        "scope": "Pinned Ubuntu owning-test contract; not all-functional coverage",
+        "status": "PASS",
+        "strictLogSha256": "b4eba1bcfa7299a6fb2cbf76e19424cb1f19555779b71f14823a29b8bc43a3a7"
+      }
+    },
+    "officialCommitPatchEvidence": [
+      {
+        "apiResponseSha256": "9aca4e70e563c36e8172a55d501395ccbd622835a9c681d2810397453febf8cc",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/00f77cc7081f8e6837271d21b4fe8ca6d2f047c3",
+        "commit": "00f77cc7081f8e6837271d21b4fe8ca6d2f047c3",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/00f77cc7081f8e6837271d21b4fe8ca6d2f047c3",
+        "officialPatchBytes": 2603,
+        "officialPatchSha256": "1ba9044bb81463f5686c2422a933649a185b7a66124cee46d4e04cd9003bf2a3",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/00f77cc7081f8e6837271d21b4fe8ca6d2f047c3.patch",
+        "paths": [
+          "src/uu/mkfifo/src/mkfifo.rs",
+          "tests/by-util/test_mkfifo.rs"
+        ],
+        "tree": "818e11303f42834e778e72f99fb32f1c60beae82"
+      },
+      {
+        "apiResponseSha256": "212cb06fca663ea30ce4baaf2945f5ae5079769c217ca82d05fe68f64649b1ed",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/0f538b942a5cdaba6e0960f6952429a1baaedf93",
+        "commit": "0f538b942a5cdaba6e0960f6952429a1baaedf93",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/0f538b942a5cdaba6e0960f6952429a1baaedf93",
+        "officialPatchBytes": 4353,
+        "officialPatchSha256": "0accf0902cc11a9cadccc2b27d96a4600b8e9fe16ac01683dfbdcab71519dc8a",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/0f538b942a5cdaba6e0960f6952429a1baaedf93.patch",
+        "paths": [
+          "src/uu/dd/src/dd.rs"
+        ],
+        "tree": "ef42d1c3e6d1596996bd48c68f06227b65a066b6"
+      },
+      {
+        "apiResponseSha256": "903733a437c3e6626accaa06dea4a2dfb7b1c800c8da0de5f7e57e48e6a724ff",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/2c2f1b0c1f11f120fc8cbf8d518194f6532c0607",
+        "commit": "2c2f1b0c1f11f120fc8cbf8d518194f6532c0607",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/2c2f1b0c1f11f120fc8cbf8d518194f6532c0607",
+        "officialPatchBytes": 6436,
+        "officialPatchSha256": "dad593df6f1585d8286f5818733e2d2571d8a3df37eb213256fbabf48a823cd4",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/2c2f1b0c1f11f120fc8cbf8d518194f6532c0607.patch",
+        "paths": [
+          "src/uu/tail/locales/en-US.ftl",
+          "src/uu/tail/locales/fr-FR.ftl",
+          "src/uu/tail/src/follow/watch.rs",
+          "tests/by-util/test_tail.rs"
+        ],
+        "tree": "d1057779ddfc91bc09cd1483e0885a7984faf556"
+      },
+      {
+        "apiResponseSha256": "ee78d245fb901681d1255aa6cb9f32ca2e6587310e4eeb18a678a79a6854218d",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/48d030dfb2ca7659ee2735f09cda706c8245a3fc",
+        "commit": "48d030dfb2ca7659ee2735f09cda706c8245a3fc",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/48d030dfb2ca7659ee2735f09cda706c8245a3fc",
+        "officialPatchBytes": 5122,
+        "officialPatchSha256": "6d8e21cf5b6c625ed62c844b058073a1d42102ee59d5567d415bdbc0e32c2961",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/48d030dfb2ca7659ee2735f09cda706c8245a3fc.patch",
+        "paths": [
+          "src/uu/ln/locales/en-US.ftl",
+          "src/uu/ln/locales/fr-FR.ftl",
+          "src/uu/ln/src/ln.rs",
+          "tests/by-util/test_ln.rs"
+        ],
+        "tree": "51de098847f7a7fde667dd1e4280c7eff29e9907"
+      },
+      {
+        "apiResponseSha256": "fc1b71fa201613ec608999d5e5a5a9bed6b8cafbdef400195ddb5566578b3d91",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/500dd65c539bff848c712bf7a8a111109a32eae9",
+        "commit": "500dd65c539bff848c712bf7a8a111109a32eae9",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/500dd65c539bff848c712bf7a8a111109a32eae9",
+        "officialPatchBytes": 13103,
+        "officialPatchSha256": "606ead540caf4391537ca39853f4c9564234770927f6bd91826eee415cc85a14",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/500dd65c539bff848c712bf7a8a111109a32eae9.patch",
+        "paths": [
+          "src/uu/mv/Cargo.toml",
+          "src/uu/mv/src/mv.rs",
+          "src/uucore/Cargo.toml",
+          "src/uucore/src/lib/features/fsxattr.rs",
+          "util/check-safe-traversal.sh"
+        ],
+        "tree": "02a401b66312490bfdf3d48f90f9943bb3a0ba28"
+      },
+      {
+        "apiResponseSha256": "1f200f3d20597bd861e3a8b592c5674abba1e1465186f037195f389b0539fdaa",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/55298ee943231c07e944bd6e1a9cf9e01236d324",
+        "commit": "55298ee943231c07e944bd6e1a9cf9e01236d324",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/55298ee943231c07e944bd6e1a9cf9e01236d324",
+        "officialPatchBytes": 6072,
+        "officialPatchSha256": "eaf3a2c8482ddd371748981034f7f3fccc36287a04b2b800d088591a94157aeb",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/55298ee943231c07e944bd6e1a9cf9e01236d324.patch",
+        "paths": [
+          "src/uu/env/src/split_iterator.rs",
+          "tests/by-util/test_env.rs"
+        ],
+        "tree": "d9994aa9dc07e97b3a0fe2d85546b07389a0da41"
+      },
+      {
+        "apiResponseSha256": "dddc4e509185b70a8b8e007d0e6d1f7d567791bca2f731e1379cad715323624d",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/58040feb5c66fce588a7ffac299b3a23bd55cd81",
+        "commit": "58040feb5c66fce588a7ffac299b3a23bd55cd81",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/58040feb5c66fce588a7ffac299b3a23bd55cd81",
+        "officialPatchBytes": 16038,
+        "officialPatchSha256": "22f595b78d7ce795f6a205f8721e00afeb4c43d5c7ad972875f96625de66a986",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/58040feb5c66fce588a7ffac299b3a23bd55cd81.patch",
+        "paths": [
+          ".github/workflows/CICD.yml",
+          "src/uu/split/src/platform/mod.rs",
+          "src/uu/split/src/platform/unix.rs",
+          "src/uu/split/src/platform/windows.rs",
+          "src/uu/split/src/split.rs",
+          "util/check-safe-traversal.sh"
+        ],
+        "tree": "7ea333e0b5a0502cad5aa3aa3378264310fe076b"
+      },
+      {
+        "apiResponseSha256": "e8f9ab30a8628b7034e26f82bde9b7124c03d4699c9003d025edf601fbba31fe",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/6b16cc9688fe998f5dc2786f53f22ceea709e318",
+        "commit": "6b16cc9688fe998f5dc2786f53f22ceea709e318",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/6b16cc9688fe998f5dc2786f53f22ceea709e318",
+        "officialPatchBytes": 11906,
+        "officialPatchSha256": "48bb8ee8838c75e61e9d60c90431a2364158095d421a440fa5f25c784bd830c5",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/6b16cc9688fe998f5dc2786f53f22ceea709e318.patch",
+        "paths": [
+          "src/uu/rm/src/rm.rs",
+          "tests/by-util/test_rm.rs"
+        ],
+        "tree": "d221c2e3ef578e6a2001f1e8ff3b6645122fe644"
+      },
+      {
+        "apiResponseSha256": "fc004d1ec90e653583711849b019d7f9cfa1233a9ec70a4002fbdb8e981e9486",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/6e28633263ea84aad9ef7a30750232b73fb9133f",
+        "commit": "6e28633263ea84aad9ef7a30750232b73fb9133f",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/6e28633263ea84aad9ef7a30750232b73fb9133f",
+        "officialPatchBytes": 3154,
+        "officialPatchSha256": "14b4ffee0cc8a6f4830ef2c648860a193a4673ceab0c1913c0dc78af12b2e998",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/6e28633263ea84aad9ef7a30750232b73fb9133f.patch",
+        "paths": [
+          "src/uu/sort/src/sort.rs",
+          "tests/by-util/test_sort.rs"
+        ],
+        "tree": "4c63f8f9f660fc383128d83a758120ffea164821"
+      },
+      {
+        "apiResponseSha256": "f46792547c1a00ab2de0804092a2907e233b98edb8963789ab0ef6d576337741",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/7c8563d88ffa8f0dba5745587baad0d0c58de62d",
+        "commit": "7c8563d88ffa8f0dba5745587baad0d0c58de62d",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/7c8563d88ffa8f0dba5745587baad0d0c58de62d",
+        "officialPatchBytes": 10828,
+        "officialPatchSha256": "bbb3dabe9a42fe2bcd7801840ae4674541a2fa8f9616257ba368541ff032b3b7",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/7c8563d88ffa8f0dba5745587baad0d0c58de62d.patch",
+        "paths": [
+          "src/uu/cp/Cargo.toml",
+          "src/uu/cp/src/platform/linux.rs",
+          "src/uu/cp/src/platform/other_unix.rs",
+          "tests/by-util/test_cp.rs",
+          "util/check-safe-traversal.sh"
+        ],
+        "tree": "9aa79b2c831f3480a708db475d206d9c84995784"
+      },
+      {
+        "apiResponseSha256": "8c388af1c83a16507c1bbcdb16537f28e503e44c64cb361276c4cbe04925e0a8",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/874efa7cc3361cb5af2a97db869147f910bcab44",
+        "commit": "874efa7cc3361cb5af2a97db869147f910bcab44",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/874efa7cc3361cb5af2a97db869147f910bcab44",
+        "officialPatchBytes": 4587,
+        "officialPatchSha256": "8ea4a6888fff67f800a9ae733601122011f716157bbefb9fe03c9c445eb656de",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/874efa7cc3361cb5af2a97db869147f910bcab44.patch",
+        "paths": [
+          "src/uu/mv/Cargo.toml",
+          "src/uu/mv/src/mv.rs"
+        ],
+        "tree": "91db949af1f279fdc35019e9a1bd1f9d50991bd3"
+      },
+      {
+        "apiResponseSha256": "2857a4ae71868269e1d9510fb3c9237ca83c6aa2559682f01a852ae3a9fe4b56",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/aa30c103004463ffe7b8a98ca0ce519d56bbbd41",
+        "commit": "aa30c103004463ffe7b8a98ca0ce519d56bbbd41",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/aa30c103004463ffe7b8a98ca0ce519d56bbbd41",
+        "officialPatchBytes": 6300,
+        "officialPatchSha256": "9094bf44214a41e9bcfa6ddcc75aefcfadcf41d3b858993b6179db2c7d0c4181",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/aa30c103004463ffe7b8a98ca0ce519d56bbbd41.patch",
+        "paths": [
+          "src/uu/mv/src/mv.rs",
+          "src/uucore/src/lib/features/fsxattr.rs"
+        ],
+        "tree": "12f7037791792052b2ffc3030d4cad46db7983c7"
+      },
+      {
+        "apiResponseSha256": "79d1cc4caf442ae86a2a02ce9339a936b5aa1fd55b3e406a5f57edddc2489636",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/acadaa0e51ab82309ec81e6021d630b875cd3e10",
+        "commit": "acadaa0e51ab82309ec81e6021d630b875cd3e10",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/acadaa0e51ab82309ec81e6021d630b875cd3e10",
+        "officialPatchBytes": 34413,
+        "officialPatchSha256": "eec9d78c60d868dfdd1c4e64bd0811ab0636eb5a18d69686f52810e1ad9fcf3f",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/acadaa0e51ab82309ec81e6021d630b875cd3e10.patch",
+        "paths": [
+          "src/uu/cp/src/cp.rs",
+          "src/uu/cp/src/platform/linux.rs",
+          "src/uu/cp/src/platform/macos.rs",
+          "src/uu/cp/src/platform/other_unix.rs",
+          "tests/by-util/test_cp.rs",
+          "util/check-safe-traversal.sh"
+        ],
+        "tree": "8f26179b4f7a8d1064bb3b177f9da384d978b073"
+      },
+      {
+        "apiResponseSha256": "4e576a1fe4632cca7650792464b7241c283894ff15d18b99fd5719cbd954c93d",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/acd51ef18d90e5c26f694df721f896fa1c4a9edc",
+        "commit": "acd51ef18d90e5c26f694df721f896fa1c4a9edc",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/acd51ef18d90e5c26f694df721f896fa1c4a9edc",
+        "officialPatchBytes": 1986,
+        "officialPatchSha256": "d383589178f9c5a9048204a1af3810f8bd55ff046003aa6968ab2f26c35b3ccf",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/acd51ef18d90e5c26f694df721f896fa1c4a9edc.patch",
+        "paths": [
+          "src/uu/nohup/src/nohup.rs"
+        ],
+        "tree": "d7d0432fd02e92030dc28309457af847678cda1d"
+      },
+      {
+        "apiResponseSha256": "8b90ed0577f665957d5af9db657d7a65d39cf8070ba14c0b8fb19ace67e54b97",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/b9d8ff64c224eb425702584b66ec0ac64a99592a",
+        "commit": "b9d8ff64c224eb425702584b66ec0ac64a99592a",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/b9d8ff64c224eb425702584b66ec0ac64a99592a",
+        "officialPatchBytes": 1387,
+        "officialPatchSha256": "c5d37a9cf4021220bb9b4b9e8740f08893bcd42e115cde98c792805a4a6b0b11",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/b9d8ff64c224eb425702584b66ec0ac64a99592a.patch",
+        "paths": [
+          "util/gnu-patches/tests_env_env-S.pl.patch"
+        ],
+        "tree": "4fc02226478b9ae2a054bcc2671c2e07fdb0b304"
+      },
+      {
+        "apiResponseSha256": "bd91796b5e652bd4769c3f802bd9fa2e25648e6d5b038d6efdeee230f81a24cf",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/bb8f7095fd63206ff54a4fb4256375e9e1ad88c9",
+        "commit": "bb8f7095fd63206ff54a4fb4256375e9e1ad88c9",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/bb8f7095fd63206ff54a4fb4256375e9e1ad88c9",
+        "officialPatchBytes": 3772,
+        "officialPatchSha256": "81fb9e76addd04941b02081facb696ee5606b2bf2efa74790addb4e34f258cc1",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/bb8f7095fd63206ff54a4fb4256375e9e1ad88c9.patch",
+        "paths": [
+          ".vscode/cspell.dictionaries/jargon.wordlist.txt",
+          "src/uu/sort/src/sort.rs",
+          "tests/by-util/test_sort.rs"
+        ],
+        "tree": "144815709dc138761d669d05f634ee3769aef249"
+      },
+      {
+        "apiResponseSha256": "a051a49b53e56a0e2ca585a9ac4dba07ea7d72c2cb48699944ca9918b24b17ca",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/bd170a5d4b19ed985417d322dffb8cade2cbbad5",
+        "commit": "bd170a5d4b19ed985417d322dffb8cade2cbbad5",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/bd170a5d4b19ed985417d322dffb8cade2cbbad5",
+        "officialPatchBytes": 5171,
+        "officialPatchSha256": "109abb9cfe09dbc5adc3846bd8aa659f218e11c6b0e6243ad0b5d76c29fa43eb",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/bd170a5d4b19ed985417d322dffb8cade2cbbad5.patch",
+        "paths": [
+          "src/uu/cp/src/cp.rs",
+          "tests/by-util/test_cp.rs"
+        ],
+        "tree": "c6657a107aaecca493fee4ffce97a2cac0b35bc4"
+      },
+      {
+        "apiResponseSha256": "0f267705f6fd6bf597535a2bfe4f41e508b2701cd2ee77ab56c4309c810cc9c3",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/c004672c5eb2415b03f11f766583c4b967ba024f",
+        "commit": "c004672c5eb2415b03f11f766583c4b967ba024f",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/c004672c5eb2415b03f11f766583c4b967ba024f",
+        "officialPatchBytes": 10481,
+        "officialPatchSha256": "7868720880cef10a4b5cab137f50569cb3fb033b3c43c189a8428d8263437064",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/c004672c5eb2415b03f11f766583c4b967ba024f.patch",
+        "paths": [
+          "Cargo.lock",
+          "src/uu/mkfifo/Cargo.toml",
+          "src/uu/mkfifo/src/mkfifo.rs",
+          "util/check-toctou.sh"
+        ],
+        "tree": "d2790ab701598a77ffb0946a6ee55635f2bb644b"
+      },
+      {
+        "apiResponseSha256": "f86fd88a0b34d37924bb9af619a3a117581a8feafb2f8040c719816bde22b1f3",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/d296f8d39f3a71ef7c5bd3b949e65aa978f1436d",
+        "commit": "d296f8d39f3a71ef7c5bd3b949e65aa978f1436d",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/d296f8d39f3a71ef7c5bd3b949e65aa978f1436d",
+        "officialPatchBytes": 7155,
+        "officialPatchSha256": "388b041099c7e9e9d32b912c1491c25162bf383403304bb9de5279543a08a64b",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/d296f8d39f3a71ef7c5bd3b949e65aa978f1436d.patch",
+        "paths": [
+          "src/uu/touch/src/touch.rs",
+          "tests/by-util/test_touch.rs",
+          "util/check-safe-traversal.sh"
+        ],
+        "tree": "99951d7cda510d447fbca502f9f8b93a12277617"
+      },
+      {
+        "apiResponseSha256": "741caa1a24d7ea486517c2ead36ee393dd41556820f25b74096198760a6e21ac",
+        "apiUrl": "https://api.github.com/repos/uutils/coreutils/commits/f33bfb9321e5ebef0ef703aa6bfc8ee95bd21e1f",
+        "commit": "f33bfb9321e5ebef0ef703aa6bfc8ee95bd21e1f",
+        "commitUrl": "https://github.com/uutils/coreutils/commit/f33bfb9321e5ebef0ef703aa6bfc8ee95bd21e1f",
+        "officialPatchBytes": 2585,
+        "officialPatchSha256": "8f9c740836c2ae97109f15ce7d979f4be7f1b62b42ce7bb191af2d57bc75eb7f",
+        "officialPatchUrl": "https://github.com/uutils/coreutils/commit/f33bfb9321e5ebef0ef703aa6bfc8ee95bd21e1f.patch",
+        "paths": [
+          "src/uu/chroot/src/chroot.rs"
+        ],
+        "tree": "8a808807b339478b65e49023ffd05115c2ab3d55"
+      }
+    ],
+    "results": [
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 2082,
+            "behind_by": 0,
+            "commit": "00f77cc7081f8e6837271d21b4fe8ca6d2f047c3",
+            "mergeBase": "00f77cc7081f8e6837271d21b4fe8ca6d2f047c3",
+            "status": "ahead",
+            "total_commits": 2082,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/00f77cc7081f8e6837271d21b4fe8ca6d2f047c3...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [
+            "test test_mkfifo::test_mkfifo_permission_unchanged_when_failed ... ok"
+          ],
+          "proofGap": null,
+          "reused": true
+        },
+        "id": "CVE-2026-35341",
+        "lockMergeOrCompletionAnchor": "00f77cc7081f8e6837271d21b4fe8ca6d2f047c3",
+        "officialAdvisory": {
+          "sha256": "779c435f1acb92ea0141ad218fa03ae8074ac9045b4041302a717c17a616b88f",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35341.json"
+        },
+        "officialCodeCommits": [
+          "00f77cc7081f8e6837271d21b4fe8ca6d2f047c3"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/10376",
+        "securityBoundary": {
+          "control": "\u76ee\u524d\u4ee5create_fifo\u539f\u5b50\u5efa\u7acb\u4e26\u5957\u6307\u5b9amode\uff0c\u5931\u6557\u53ea\u5831\u932f\uff1b\u5df2\u6c92\u6709\u5efa\u7acb\u5931\u6557\u5f8c\u4ecdchmod\u65e2\u6709\u6a94\u6848\u7684\u8def\u5f91\u3002\u539f00f77\u7684continue\u7531\u5f8c\u7e8cc004672c\u5b89\u5168\u5be6\u4f5c\u53d6\u4ee3\uff0c\u4e0d\u80fd\u4ee5continue\u6587\u5b57\u6d88\u5931\u5224\u5b9arevert\u3002",
+          "platform": "native Linux amd64",
+          "sink": "\u65e2\u6709\u6a94\u6848\u6b0a\u9650\u8b8a\u66f4",
+          "source": "\u5df2\u5b58\u5728\u7684FIFO\u76ee\u6a19\u6a94\u6848"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 78,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 72,
+            "path": "src/uu/mkfifo/src/mkfifo.rs",
+            "sha256": "6c7c49a911cff80e6ea0499044971bd232c37b298a5a0c83551b41d5a9f46dbe",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/mkfifo/src/mkfifo.rs"
+          },
+          {
+            "lineEnd": 81,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 75,
+            "path": "src/uu/mkfifo/src/mkfifo.rs",
+            "sha256": "6c7c49a911cff80e6ea0499044971bd232c37b298a5a0c83551b41d5a9f46dbe",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/mkfifo/src/mkfifo.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": "c004672c5eb2415b03f11f766583c4b967ba024f",
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 590,
+            "behind_by": 0,
+            "commit": "0f538b942a5cdaba6e0960f6952429a1baaedf93",
+            "mergeBase": "0f538b942a5cdaba6e0960f6952429a1baaedf93",
+            "status": "ahead",
+            "total_commits": 590,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/0f538b942a5cdaba6e0960f6952429a1baaedf93...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [],
+          "proofGap": "\u8a72source unit regression\u5b58\u5728\uff0c\u4f46\u672a\u5728\u65e2\u6709strict log\u89c0\u5bdf\u5230\u6b64test\u540d\uff1b\u672c\u8f2a\u4e0d\u91cd\u8dd1\uff0csource closure\u8207\u4e00\u822cnative PASS\u5206\u958b\u3002",
+          "reused": true
+        },
+        "id": "CVE-2026-35344",
+        "lockMergeOrCompletionAnchor": "0f538b942a5cdaba6e0960f6952429a1baaedf93",
+        "officialAdvisory": {
+          "sha256": "10fd01dbb0cbbd2c1b1a6e9c8e709441be6c89f3ff5727c26561cf1651626d13",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35344.json"
+        },
+        "officialCodeCommits": [
+          "0f538b942a5cdaba6e0960f6952429a1baaedf93"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/12667",
+        "securityBoundary": {
+          "control": "Dest::truncate\u5c0d\u4e00\u822c\u6a94\u7684set_len\u5931\u6557\u56de\u50b3Err\uff0cBlockWriter\u4fdd\u7559Result\u4e14finalize\u4ee5?\u50b3\u64ad\uff1b\u7279\u6b8a\u8f38\u51fa\u4ecd\u4fdd\u7559GNU\u76f8\u5bb9\u8655\u7406\u3002Ubuntu dd-ensure-full-writes\u672a\u64a4\u56de\u6b64\u63a7\u5236\u3002",
+          "platform": "native Linux amd64",
+          "sink": "\u5047\u6210\u529f\u53ca\u820a\u8cc7\u6599\u6b98\u7559",
+          "source": "\u4e00\u822c\u8f38\u51fa\u6a94\u6848\u7684truncate\u5931\u6557"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 672,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 667,
+            "path": "src/uu/dd/src/dd.rs",
+            "sha256": "11052025db5fd3e1c5cac0b026c67b1d45c7cf601cff01329eba0f2408ad54b9",
+            "ubuntuQuiltTouches": [
+              {
+                "name": "dd-ensure-full-writes.patch",
+                "sha256": "dd2c5a3cc8dfb89dea54e68db55903859f09ab6f0bb6ff3e7cbf7c7ecc7f80b1"
+              }
+            ],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/dd/src/dd.rs"
+          },
+          {
+            "lineEnd": 1285,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 1279,
+            "path": "src/uu/dd/src/dd.rs",
+            "sha256": "11052025db5fd3e1c5cac0b026c67b1d45c7cf601cff01329eba0f2408ad54b9",
+            "ubuntuQuiltTouches": [
+              {
+                "name": "dd-ensure-full-writes.patch",
+                "sha256": "dd2c5a3cc8dfb89dea54e68db55903859f09ab6f0bb6ff3e7cbf7c7ecc7f80b1"
+              }
+            ],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/dd/src/dd.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 394,
+            "behind_by": 0,
+            "commit": "2c2f1b0c1f11f120fc8cbf8d518194f6532c0607",
+            "mergeBase": "2c2f1b0c1f11f120fc8cbf8d518194f6532c0607",
+            "status": "ahead",
+            "total_commits": 394,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/2c2f1b0c1f11f120fc8cbf8d518194f6532c0607...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [
+            "test test_tail::test_follow_name_replaced_by_symlink_is_untailable ... ok"
+          ],
+          "proofGap": null,
+          "reused": true
+        },
+        "id": "CVE-2026-35345",
+        "lockMergeOrCompletionAnchor": "2c2f1b0c1f11f120fc8cbf8d518194f6532c0607",
+        "officialAdvisory": {
+          "sha256": "9b50fe889d672a5204d90d20f5329539c1687311420b52ef8b8f0e178699ec37",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35345.json"
+        },
+        "officialCodeCommits": [
+          "2c2f1b0c1f11f120fc8cbf8d518194f6532c0607"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/12661",
+        "securityBoundary": {
+          "control": "\u4ee5symlink_metadata\u8b58\u5225\u66ff\u63db\uff0c\u6a19\u70bauntailable\u4e26reset_reader\uff0c\u4e0d\u7e7c\u7e8c\u8b80\u53d6symlink\u76ee\u6a19\u3002\u5be6\u969b\u63a7\u5236\u4f4d\u65bcfollow/watch.rs\u800c\u975elock\u6240\u5217tail.rs\u3002",
+          "platform": "native Linux amd64",
+          "sink": "\u654f\u611f\u6a94\u6848\u5167\u5bb9\u8f38\u51fa",
+          "source": "--follow=name\u76e3\u770b\u6a94\u6848\u88ab\u63db\u6210symlink"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 328,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 322,
+            "path": "src/uu/tail/src/follow/watch.rs",
+            "sha256": "9c6a2bdbe2bd14bcc11efe3b56bdd606eb6bfa1074d6c9f2c577403f8c76b79f",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/tail/src/follow/watch.rs"
+          },
+          {
+            "lineEnd": 367,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 361,
+            "path": "src/uu/tail/src/follow/watch.rs",
+            "sha256": "9c6a2bdbe2bd14bcc11efe3b56bdd606eb6bfa1074d6c9f2c577403f8c76b79f",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/tail/src/follow/watch.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [
+          "6e28633263ea84aad9ef7a30750232b73fb9133f"
+        ],
+        "ancestry": [
+          {
+            "ahead_by": 250,
+            "behind_by": 0,
+            "commit": "6e28633263ea84aad9ef7a30750232b73fb9133f",
+            "mergeBase": "6e28633263ea84aad9ef7a30750232b73fb9133f",
+            "status": "ahead",
+            "total_commits": 250,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/6e28633263ea84aad9ef7a30750232b73fb9133f...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          },
+          {
+            "ahead_by": 425,
+            "behind_by": 0,
+            "commit": "bb8f7095fd63206ff54a4fb4256375e9e1ad88c9",
+            "mergeBase": "bb8f7095fd63206ff54a4fb4256375e9e1ad88c9",
+            "status": "ahead",
+            "total_commits": 425,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/bb8f7095fd63206ff54a4fb4256375e9e1ad88c9...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [
+            "test test_sort::test_files0_from_1 ... ok",
+            "test test_sort::test_files0_from_1a ... ok",
+            "test test_sort::test_files0_from_2 ... ok",
+            "test test_sort::test_files0_from_2a ... ok",
+            "test test_sort::test_files0_from_empty ... ok",
+            "test test_sort::test_files0_from_empty_non_regular ... ok",
+            "test test_sort::test_files0_from_extra_arg ... ok",
+            "test test_sort::test_files0_from_minus_in_stdin ... ok",
+            "test test_sort::test_files0_from_missing ... ok",
+            "test test_sort::test_files0_from_non_utf8 ... ok",
+            "test test_sort::test_files0_from_nul ... ok",
+            "test test_sort::test_files0_from_non_utf8_name ... ok",
+            "test test_sort::test_files0_from_nul2 ... ok",
+            "test test_sort::test_files0_from_zero_length ... ok",
+            "test test_sort::test_files0_read_error ... ok"
+          ],
+          "proofGap": null,
+          "reused": true
+        },
+        "id": "CVE-2026-35348",
+        "lockMergeOrCompletionAnchor": "bb8f7095fd63206ff54a4fb4256375e9e1ad88c9",
+        "officialAdvisory": {
+          "sha256": "649a788e0db24a89b2a8e26978948ed76971d4e7a7cecb7cc0bb2d7b751a47c5",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35348.json"
+        },
+        "officialCodeCommits": [
+          "bb8f7095fd63206ff54a4fb4256375e9e1ad88c9"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/11593",
+        "securityBoundary": {
+          "control": "NUL\u5206\u9694\u6a94\u540d\u4ea4\u7d66os_string_from_vec\uff1bLinux/Unix\u5206\u652f\u76f4\u63a5OsString::from_vec\uff0c\u4e0d\u4ee5UTF8 expect\u89f8\u767cpanic\u3002\u5f8c\u7e8c6e286332\u7684\u6e05\u55ae\u6a94\u540d\u4fee\u88dc\u4ea6\u662f0.10\u7956\u5148\uff1b\u76ee\u524d\u5be6\u4f5c\u70ba\u7b49\u50f9raw-byte helper\u3002",
+          "platform": "native Linux amd64",
+          "sink": "sort\u7a0b\u5e8fpanic\uff0f\u7ba1\u7dda\u4e2d\u65b7",
+          "source": "--files0-from\u7684\u975eUTF8\u6a94\u540d\u6216\u6e05\u55ae\u8def\u5f91"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 2036,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 2030,
+            "path": "src/uu/sort/src/sort.rs",
+            "sha256": "95820b55661c4281b3a51e54496fb9c0f5050ed202f1e8c68b87efb3e17de5dd",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/sort/src/sort.rs"
+          },
+          {
+            "lineEnd": 516,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 510,
+            "path": "src/uucore/src/lib/lib.rs",
+            "sha256": "81d80403e7e16eb030c209f79cb65c2c5ad03f65457f07822fab42e9882c3f84",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uucore/src/lib/lib.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 866,
+            "behind_by": 0,
+            "commit": "bd170a5d4b19ed985417d322dffb8cade2cbbad5",
+            "mergeBase": "bd170a5d4b19ed985417d322dffb8cade2cbbad5",
+            "status": "ahead",
+            "total_commits": 866,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/bd170a5d4b19ed985417d322dffb8cade2cbbad5...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [
+            "test test_cp::test_cp_preserve_setuid_when_chown_succeeds ... ok"
+          ],
+          "proofGap": null,
+          "reused": true
+        },
+        "id": "CVE-2026-35350",
+        "lockMergeOrCompletionAnchor": "bd170a5d4b19ed985417d322dffb8cade2cbbad5",
+        "officialAdvisory": {
+          "sha256": "a01cef4bc2418a58a044257522edf3d5e004155a78d96f9103a9047a3a5f9602",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35350.json"
+        },
+        "officialCodeCommits": [
+          "bd170a5d4b19ed985417d322dffb8cade2cbbad5"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/12135",
+        "securityBoundary": {
+          "control": "\u8a18\u9304ownership_preserved=false\uff0c\u4fdd\u7559mode\u524d\u6e05\u96640o6000\uff1bUbuntu cp quilt\u4fdd\u7559\u6b64\u5206\u652f\u3002",
+          "platform": "native Linux amd64",
+          "sink": "\u8907\u672c\u932f\u8aa4\u4fdd\u7559setuid/setgid",
+          "source": "cp -p\u7121\u6cd5\u4fdd\u7559\u539fowner"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 1853,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 1847,
+            "path": "src/uu/cp/src/cp.rs",
+            "sha256": "7094892394071883367c3b0de3b1b7d0beee6a354d32931397808276547ae525",
+            "ubuntuQuiltTouches": [
+              {
+                "name": "cp-fix-symlink-target-permissions.patch",
+                "sha256": "53cfbb7a0376da6710985496774f8981e71d207aa97d932f73d5978c978ea100"
+              }
+            ],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/cp/src/cp.rs"
+          },
+          {
+            "lineEnd": 1870,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 1864,
+            "path": "src/uu/cp/src/cp.rs",
+            "sha256": "7094892394071883367c3b0de3b1b7d0beee6a354d32931397808276547ae525",
+            "ubuntuQuiltTouches": [
+              {
+                "name": "cp-fix-symlink-target-permissions.patch",
+                "sha256": "53cfbb7a0376da6710985496774f8981e71d207aa97d932f73d5978c978ea100"
+              }
+            ],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/cp/src/cp.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 1078,
+            "behind_by": 0,
+            "commit": "874efa7cc3361cb5af2a97db869147f910bcab44",
+            "mergeBase": "874efa7cc3361cb5af2a97db869147f910bcab44",
+            "status": "ahead",
+            "total_commits": 1078,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/874efa7cc3361cb5af2a97db869147f910bcab44...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [
+            "test test_mv::test_mv_cross_device_preserves_ownership ... ok",
+            "test test_mv::test_mv_cross_device_preserves_ownership_recursive ... ok"
+          ],
+          "proofGap": null,
+          "reused": true
+        },
+        "id": "CVE-2026-35351",
+        "lockMergeOrCompletionAnchor": "874efa7cc3361cb5af2a97db869147f910bcab44",
+        "officialAdvisory": {
+          "sha256": "a63b5f1b5ad9b023c5fdc155effa5051639039be12ee201b7388de1a154ed096",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35351.json"
+        },
+        "officialCodeCommits": [
+          "874efa7cc3361cb5af2a97db869147f910bcab44"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/11706",
+        "securityBoundary": {
+          "control": "\u4e00\u822c\u6a94\u3001symlink\u8207\u76ee\u9304\u905e\u8ff4\u8def\u5f91\u5747\u547c\u53ebpreserve_ownership\uff0c\u5f9esource metadata\u53d6uid/gid\u4e26\u7528\u4e0dfollow symlink\u7684chown\uff1b\u4fdd\u7559\u5408\u6cd5\u975eroot best-effort\u8a9e\u610f\u3002",
+          "platform": "native Linux amd64",
+          "sink": "\u642c\u79fb\u5f8cowner\u932f\u7f6e",
+          "source": "mv\u8de8\u6a94\u6848\u7cfb\u7d71copy/delete fallback"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 1470,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 1464,
+            "path": "src/uu/mv/src/mv.rs",
+            "sha256": "852b6f61b68bc9b96ead38f1132ae23047a14e4229705a8f11f31f5ba1608734",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/mv/src/mv.rs"
+          },
+          {
+            "lineEnd": 1441,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 1435,
+            "path": "src/uu/mv/src/mv.rs",
+            "sha256": "852b6f61b68bc9b96ead38f1132ae23047a14e4229705a8f11f31f5ba1608734",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/mv/src/mv.rs"
+          },
+          {
+            "lineEnd": 1287,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 1281,
+            "path": "src/uu/mv/src/mv.rs",
+            "sha256": "852b6f61b68bc9b96ead38f1132ae23047a14e4229705a8f11f31f5ba1608734",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/mv/src/mv.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 649,
+            "behind_by": 0,
+            "commit": "c004672c5eb2415b03f11f766583c4b967ba024f",
+            "mergeBase": "c004672c5eb2415b03f11f766583c4b967ba024f",
+            "status": "ahead",
+            "total_commits": 649,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/c004672c5eb2415b03f11f766583c4b967ba024f...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [
+            "test test_mkfifo::test_mkfifo_permission_unchanged_when_failed ... ok"
+          ],
+          "proofGap": null,
+          "reused": true
+        },
+        "id": "CVE-2026-35352",
+        "lockMergeOrCompletionAnchor": "c004672c5eb2415b03f11f766583c4b967ba024f",
+        "officialAdvisory": {
+          "sha256": "57f20a07444990dbe8a5736abc10b0173f9aeaaf0bc6599ba69df5bdfade2ccd",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35352.json"
+        },
+        "officialCodeCommits": [
+          "c004672c5eb2415b03f11f766583c4b967ba024f"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/12174",
+        "securityBoundary": {
+          "control": "\u6307\u5b9amode\u96a8mkfifoat\u5efa\u7acb\u539f\u5b50\u5957\u7528\uff1b\u76ee\u524dutility\u7121\u5f8c\u7e8cpath-based set_permissions\u3002",
+          "platform": "native Linux amd64",
+          "sink": "\u5c0d\u975e\u9810\u671f\u76ee\u6a19chmod",
+          "source": "mkfifo\u5efa\u7acb\u8207\u5f8c\u7e8cpath chmod\u9593\u7684symlink\u7f6e\u63db"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 77,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 71,
+            "path": "src/uu/mkfifo/src/mkfifo.rs",
+            "sha256": "6c7c49a911cff80e6ea0499044971bd232c37b298a5a0c83551b41d5a9f46dbe",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/mkfifo/src/mkfifo.rs"
+          },
+          {
+            "lineEnd": 152,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 146,
+            "path": "src/uu/mkfifo/src/mkfifo.rs",
+            "sha256": "6c7c49a911cff80e6ea0499044971bd232c37b298a5a0c83551b41d5a9f46dbe",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/mkfifo/src/mkfifo.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 793,
+            "behind_by": 0,
+            "commit": "aa30c103004463ffe7b8a98ca0ce519d56bbbd41",
+            "mergeBase": "aa30c103004463ffe7b8a98ca0ce519d56bbbd41",
+            "status": "ahead",
+            "total_commits": 793,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/aa30c103004463ffe7b8a98ca0ce519d56bbbd41...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [],
+          "proofGap": "\u672c\u8f2a\u53ea\u4f5csource closure\uff1b\u4e0d\u5c07\u4e00\u822csuite PASS\u5192\u5145\u6b64CVE\u5c08\u5c6c\u52d5\u614b\u91cd\u73fe\u5168\u8986\u84cb\u3002",
+          "reused": true
+        },
+        "id": "CVE-2026-35354",
+        "lockMergeOrCompletionAnchor": "aa30c103004463ffe7b8a98ca0ce519d56bbbd41",
+        "officialAdvisory": {
+          "sha256": "f2499baee7cf751fab8bac7328bd54186608a4485452650d2ab0d7634e06eb15",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35354.json"
+        },
+        "officialCodeCommits": [
+          "500dd65c539bff848c712bf7a8a111109a32eae9"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/12170",
+        "securityBoundary": {
+          "control": "copy\u671f\u9593\u6301\u6709source/dest fd\uff0ccopy_xattrs_fd\u4ee5FileExt list/get/set\u64cd\u4f5c\u540cinode\uff1bignore-unsupported wrapper\u53ea\u6539ENOTSUP\u7b56\u7565\uff0c\u672a\u6539\u56depath-based xattr\u3002",
+          "platform": "native Linux amd64",
+          "sink": "\u76ee\u7684\u6a94\u5b89\u5168xattr\u6df7\u96dc",
+          "source": "mv\u8de8\u6a94\u6848\u7cfb\u7d71xattr\u8907\u88fd\u6642\u7684path\u7f6e\u63db"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 1431,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 1425,
+            "path": "src/uu/mv/src/mv.rs",
+            "sha256": "852b6f61b68bc9b96ead38f1132ae23047a14e4229705a8f11f31f5ba1608734",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/mv/src/mv.rs"
+          },
+          {
+            "lineEnd": 62,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 56,
+            "path": "src/uucore/src/lib/features/fsxattr.rs",
+            "sha256": "305e34986037e15dbbd05b2a2bc497527433af1f06f078f290642cee9c42eae6",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uucore/src/lib/features/fsxattr.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 866,
+            "behind_by": 0,
+            "commit": "bd170a5d4b19ed985417d322dffb8cade2cbbad5",
+            "mergeBase": "bd170a5d4b19ed985417d322dffb8cade2cbbad5",
+            "status": "ahead",
+            "total_commits": 866,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/bd170a5d4b19ed985417d322dffb8cade2cbbad5...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [
+            "test test_cp::test_cp_final_mode_unchanged_after_restrictive_create ... ok"
+          ],
+          "proofGap": null,
+          "reused": true
+        },
+        "id": "CVE-2026-35357",
+        "lockMergeOrCompletionAnchor": "bd170a5d4b19ed985417d322dffb8cade2cbbad5",
+        "officialAdvisory": {
+          "sha256": "38f682a70a2dbae9144fe748b26558e8928103d43b660021d5f2a4f37417afef",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35357.json"
+        },
+        "officialCodeCommits": [
+          "7c8563d88ffa8f0dba5745587baad0d0c58de62d"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/12135",
+        "securityBoundary": {
+          "control": "Linux\u5404copy/reflink/sparse/stream\u8def\u5f91\u4f7f\u7528create_dest_restrictive\uff1b\u5171\u7528helper\u65bcopen\u5efa\u7acb\u6642\u4ee50600\u5957\u7528\uff0c\u4e4b\u5f8c\u624d\u653e\u5bec\u81f3\u5408\u6cd5\u6700\u7d42mode\u3002",
+          "platform": "native Linux amd64",
+          "sink": "\u65b0\u6a94\u5167\u5bb9\u66ab\u6642\u6d29\u6f0f",
+          "source": "cp\u65b0\u76ee\u7684\u6a94\u5efa\u7acb\u5230\u6536\u7dcamode\u524d\u7684\u8b80\u53d6\u7af6\u614b"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 41,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 35,
+            "path": "src/uu/cp/src/platform/linux.rs",
+            "sha256": "c05c36f1f8cc3a904b4666b86d4719f42887354d6d7b67027b38f546c2dac86e",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/cp/src/platform/linux.rs"
+          },
+          {
+            "lineEnd": 79,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 73,
+            "path": "src/uucore/src/lib/features/safe_copy.rs",
+            "sha256": "638d5ca70fae2ac677fe154a6302f76a760bcaa370194e1b5123951d81ffa54e",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uucore/src/lib/features/safe_copy.rs"
+          },
+          {
+            "lineEnd": 84,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 78,
+            "path": "src/uucore/src/lib/features/safe_copy.rs",
+            "sha256": "638d5ca70fae2ac677fe154a6302f76a760bcaa370194e1b5123951d81ffa54e",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uucore/src/lib/features/safe_copy.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 866,
+            "behind_by": 0,
+            "commit": "bd170a5d4b19ed985417d322dffb8cade2cbbad5",
+            "mergeBase": "bd170a5d4b19ed985417d322dffb8cade2cbbad5",
+            "status": "ahead",
+            "total_commits": 866,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/bd170a5d4b19ed985417d322dffb8cade2cbbad5...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [],
+          "proofGap": "\u672c\u8f2a\u53ea\u4f5csource closure\uff1b\u4e0d\u5c07\u4e00\u822csuite PASS\u5192\u5145\u6b64CVE\u5c08\u5c6c\u52d5\u614b\u91cd\u73fe\u5168\u8986\u84cb\u3002",
+          "reused": true
+        },
+        "id": "CVE-2026-35359",
+        "lockMergeOrCompletionAnchor": "bd170a5d4b19ed985417d322dffb8cade2cbbad5",
+        "officialAdvisory": {
+          "sha256": "7ada9773bfc6935e73c9fe554c10c3ad6118cd202e9073039a357817cd45d7f5",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35359.json"
+        },
+        "officialCodeCommits": [
+          "acadaa0e51ab82309ec81e6021d630b875cd3e10"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/12135",
+        "securityBoundary": {
+          "control": "cp\u4f9ddereference policy\u7522\u751fnofollow\uff0cLinux\u666e\u901a/reflink/sparse/stream\u4f86\u6e90open\u90fd\u50b3\u905e\u6b64\u503c\uff1bsafe_copy::open_source\u8a2dO_NOFOLLOW\uff0c\u6b63\u5e38dereference\u4ecd\u4fdd\u7559GNU\u8a9e\u610f\u3002",
+          "platform": "native Linux amd64",
+          "sink": "\u610f\u5916\u8b80\u53d6\u4efb\u610f\u654f\u611fsymlink\u76ee\u6a19",
+          "source": "cp no-dereference\u4f86\u6e90\u5728lstat\u8207open\u9593\u88ab\u63db\u6210symlink"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 2870,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 2864,
+            "path": "src/uu/cp/src/cp.rs",
+            "sha256": "7094892394071883367c3b0de3b1b7d0beee6a354d32931397808276547ae525",
+            "ubuntuQuiltTouches": [
+              {
+                "name": "cp-fix-symlink-target-permissions.patch",
+                "sha256": "53cfbb7a0376da6710985496774f8981e71d207aa97d932f73d5978c978ea100"
+              }
+            ],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/cp/src/cp.rs"
+          },
+          {
+            "lineEnd": 39,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 33,
+            "path": "src/uu/cp/src/platform/linux.rs",
+            "sha256": "c05c36f1f8cc3a904b4666b86d4719f42887354d6d7b67027b38f546c2dac86e",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/cp/src/platform/linux.rs"
+          },
+          {
+            "lineEnd": 56,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 50,
+            "path": "src/uucore/src/lib/features/safe_copy.rs",
+            "sha256": "638d5ca70fae2ac677fe154a6302f76a760bcaa370194e1b5123951d81ffa54e",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uucore/src/lib/features/safe_copy.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 659,
+            "behind_by": 0,
+            "commit": "d296f8d39f3a71ef7c5bd3b949e65aa978f1436d",
+            "mergeBase": "d296f8d39f3a71ef7c5bd3b949e65aa978f1436d",
+            "status": "ahead",
+            "total_commits": 659,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/d296f8d39f3a71ef7c5bd3b949e65aa978f1436d...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [
+            "test test_touch::test_touch_does_not_truncate_symlink_target ... ok"
+          ],
+          "proofGap": null,
+          "reused": true
+        },
+        "id": "CVE-2026-35360",
+        "lockMergeOrCompletionAnchor": "d296f8d39f3a71ef7c5bd3b949e65aa978f1436d",
+        "officialAdvisory": {
+          "sha256": "66d7237bdb5f70d308eae0b07b3fbcee9dc565a2d992420d1495df61ff8507ef",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35360.json"
+        },
+        "officialCodeCommits": [
+          "d296f8d39f3a71ef7c5bd3b949e65aa978f1436d"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/12171",
+        "securityBoundary": {
+          "control": "\u7f3a\u6a94\u5efa\u7acb\u5206\u652f\u6539\u547c\u53ebcreate_without_truncate\uff0cOpenOptions\u7684truncate(false)\u907f\u514d\u6e05\u7a7a\u65e2\u6709\u76ee\u6a19\uff1b\u4fdd\u7559\u6b63\u5e38\u5efa\u7acb\u8207timestamp\u529f\u80fd\u3002",
+          "platform": "native Linux amd64",
+          "sink": "\u65e2\u6709\u6a94\u6848\u88ab\u622a\u65b7",
+          "source": "touch\u5224\u5b9a\u7f3a\u6a94\u5f8c\u7684path\uff0fsymlink\u7f6e\u63db"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 449,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 443,
+            "path": "src/uu/touch/src/touch.rs",
+            "sha256": "5a348cc8d276aa0613393ea0451fca703d5e614ae83e6cae6b25582cf0cbda27",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/touch/src/touch.rs"
+          },
+          {
+            "lineEnd": 507,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 501,
+            "path": "src/uu/touch/src/touch.rs",
+            "sha256": "5a348cc8d276aa0613393ea0451fca703d5e614ae83e6cae6b25582cf0cbda27",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/touch/src/touch.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 956,
+            "behind_by": 0,
+            "commit": "6b16cc9688fe998f5dc2786f53f22ceea709e318",
+            "mergeBase": "6b16cc9688fe998f5dc2786f53f22ceea709e318",
+            "status": "ahead",
+            "total_commits": 956,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/6b16cc9688fe998f5dc2786f53f22ceea709e318...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [
+            "test test_rm::test_dot_protection_multiple_slashes ... ok"
+          ],
+          "proofGap": null,
+          "reused": true
+        },
+        "id": "CVE-2026-35363",
+        "lockMergeOrCompletionAnchor": "6b16cc9688fe998f5dc2786f53f22ceea709e318",
+        "officialAdvisory": {
+          "sha256": "3ad4ea99fd41baf62cfe13313fab3a96611eadf1dec973cd7e162e52761454b2",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35363.json"
+        },
+        "officialCodeCommits": [
+          "6b16cc9688fe998f5dc2786f53f22ceea709e318"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/11005",
+        "securityBoundary": {
+          "control": "\u4fdd\u8b77\u6aa2\u67e5\u5148\u79fb\u9664\u6240\u6709\u5c3e\u7aefseparator\uff0c\u518d\u5224\u65b7\u6700\u5f8ccomponent\u662f\u5426.\u6216..\uff1b\u522a\u9664\u6d41\u7a0b\u5148\u547c\u53eb\u6b64guard\u3002",
+          "platform": "native Linux amd64",
+          "sink": "current/parent\u76ee\u9304\u5167\u5bb9\u88ab\u8aa4\u522a",
+          "source": "rm -rf\u7684./\u3001.///\u3001../\u7b49\u8def\u5f91"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 811,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 805,
+            "path": "src/uu/rm/src/rm.rs",
+            "sha256": "776b445347e3087e90d811b38b5b7604c8e362608c1772b762aa7aabe55671c4",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/rm/src/rm.rs"
+          },
+          {
+            "lineEnd": 974,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 968,
+            "path": "src/uu/rm/src/rm.rs",
+            "sha256": "776b445347e3087e90d811b38b5b7604c8e362608c1772b762aa7aabe55671c4",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/rm/src/rm.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 793,
+            "behind_by": 0,
+            "commit": "aa30c103004463ffe7b8a98ca0ce519d56bbbd41",
+            "mergeBase": "aa30c103004463ffe7b8a98ca0ce519d56bbbd41",
+            "status": "ahead",
+            "total_commits": 793,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/aa30c103004463ffe7b8a98ca0ce519d56bbbd41...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [
+            "test test_mv::test_mv_cross_device_refuses_planted_symlink_dest ... ok",
+            "test test_mv::test_mv_cross_device_dir_refuses_symlink_at_recreated_dest ... ok"
+          ],
+          "proofGap": null,
+          "reused": true
+        },
+        "id": "CVE-2026-35364",
+        "lockMergeOrCompletionAnchor": "aa30c103004463ffe7b8a98ca0ce519d56bbbd41",
+        "officialAdvisory": {
+          "sha256": "fe0f4e59872e1e27a8a00dd28b97574e7db1e3659abf6254649db5ca9ccc7921",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35364.json"
+        },
+        "officialCodeCommits": [
+          "500dd65c539bff848c712bf7a8a111109a32eae9"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/12170",
+        "securityBoundary": {
+          "control": "\u8de8device\u666e\u901a\u6a94fallback\u4ee5create_dest_restrictive(to,true)\u8a2dO_NOFOLLOW\uff1bfd\u4fdd\u7559\u5230copy\u8207metadata\u8655\u7406\uff0csource/dest\u4e0d\u56e0\u518dopen\u5c0e\u5411symlink\u76ee\u6a19\u3002",
+          "platform": "native Linux amd64",
+          "sink": "\u4efb\u610f\u76ee\u6a19\u88ab\u622a\u65b7\uff0f\u8986\u5beb",
+          "source": "mv\u79fb\u9664\u820a\u76ee\u7684\u6a94\u5f8c\u88ab\u690d\u5165symlink"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 1424,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 1418,
+            "path": "src/uu/mv/src/mv.rs",
+            "sha256": "852b6f61b68bc9b96ead38f1132ae23047a14e4229705a8f11f31f5ba1608734",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/mv/src/mv.rs"
+          },
+          {
+            "lineEnd": 79,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 73,
+            "path": "src/uucore/src/lib/features/safe_copy.rs",
+            "sha256": "638d5ca70fae2ac677fe154a6302f76a760bcaa370194e1b5123951d81ffa54e",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uucore/src/lib/features/safe_copy.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 763,
+            "behind_by": 0,
+            "commit": "acd51ef18d90e5c26f694df721f896fa1c4a9edc",
+            "mergeBase": "acd51ef18d90e5c26f694df721f896fa1c4a9edc",
+            "status": "ahead",
+            "total_commits": 763,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/acd51ef18d90e5c26f694df721f896fa1c4a9edc...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [],
+          "proofGap": "\u672c\u8f2a\u53ea\u4f5csource closure\uff1b\u4e0d\u5c07\u4e00\u822csuite PASS\u5192\u5145\u6b64CVE\u5c08\u5c6c\u52d5\u614b\u91cd\u73fe\u5168\u8986\u84cb\u3002",
+          "reused": true
+        },
+        "id": "CVE-2026-35367",
+        "lockMergeOrCompletionAnchor": "acd51ef18d90e5c26f694df721f896fa1c4a9edc",
+        "officialAdvisory": {
+          "sha256": "84d14cafbb0fb2c3e353af964db234cab2ec91bd836f357938718836d3fd77d5",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35367.json"
+        },
+        "officialCodeCommits": [
+          "acd51ef18d90e5c26f694df721f896fa1c4a9edc"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/12339",
+        "securityBoundary": {
+          "control": "OpenOptions\u65bc\u5efa\u7acb\u6642\u660e\u78bamode(0600)\uff0c\u65e2\u6709\u6a94mode\u4e0d\u88ab\u6539\u5beb\u3002",
+          "platform": "native Linux amd64",
+          "sink": "\u9810\u8a2dworld-readable\u8f38\u51fa",
+          "source": "nohup\u65b0\u5efanohup.out"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 166,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 160,
+            "path": "src/uu/nohup/src/nohup.rs",
+            "sha256": "93a8ab0c82728d3856b0e181312bdb3f0418d86a33f70af00b61e915e2b3173c",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/nohup/src/nohup.rs"
+          },
+          {
+            "lineEnd": 174,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 168,
+            "path": "src/uu/nohup/src/nohup.rs",
+            "sha256": "93a8ab0c82728d3856b0e181312bdb3f0418d86a33f70af00b61e915e2b3173c",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/nohup/src/nohup.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 765,
+            "behind_by": 0,
+            "commit": "f33bfb9321e5ebef0ef703aa6bfc8ee95bd21e1f",
+            "mergeBase": "f33bfb9321e5ebef0ef703aa6bfc8ee95bd21e1f",
+            "status": "ahead",
+            "total_commits": 765,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/f33bfb9321e5ebef0ef703aa6bfc8ee95bd21e1f...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [],
+          "proofGap": "\u672c\u8f2a\u53ea\u4f5csource closure\uff1b\u4e0d\u5c07\u4e00\u822csuite PASS\u5192\u5145\u6b64CVE\u5c08\u5c6c\u52d5\u614b\u91cd\u73fe\u5168\u8986\u84cb\u3002",
+          "reused": true
+        },
+        "id": "CVE-2026-35368",
+        "lockMergeOrCompletionAnchor": "f33bfb9321e5ebef0ef703aa6bfc8ee95bd21e1f",
+        "officialAdvisory": {
+          "sha256": "cf6665f83960cfa5fee8ef279acc8173d0686de8fde2b7aafc64a7577e23d90a",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35368.json"
+        },
+        "officialCodeCommits": [
+          "f33bfb9321e5ebef0ef703aa6bfc8ee95bd21e1f"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/11211",
+        "securityBoundary": {
+          "control": "\u5404userspec branch\u5728enter_chroot\u524d\u89e3\u6790name\u2192uid/gid\u4e26\u8655\u7406supplementary gids\uff0c\u4e4b\u5f8c\u624dchroot\u53cadrop uid/gid\uff0c\u4e0d\u5728\u4e0d\u53ef\u4fe1root\u5167\u4ee5root\u67e5NSS\u3002",
+          "platform": "native Linux amd64",
+          "sink": "\u4e0d\u53ef\u4fe1NEWROOT\u7684NSS\u6a21\u7d44\u5728root\u6b0a\u9650\u8f09\u5165",
+          "source": "chroot --userspec\u642d\u914d\u4e0d\u53ef\u4fe1NEWROOT"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 431,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 398,
+            "path": "src/uu/chroot/src/chroot.rs",
+            "sha256": "9282c030345eee3c85c029b0978f587452087c4c873d3ed2f527c4aa677b4e7c",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/chroot/src/chroot.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 636,
+            "behind_by": 0,
+            "commit": "48d030dfb2ca7659ee2735f09cda706c8245a3fc",
+            "mergeBase": "48d030dfb2ca7659ee2735f09cda706c8245a3fc",
+            "status": "ahead",
+            "total_commits": 636,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/48d030dfb2ca7659ee2735f09cda706c8245a3fc...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [
+            "test test_ln::test_symlink_target_dir_non_utf8_source_name ... ok"
+          ],
+          "proofGap": null,
+          "reused": true
+        },
+        "id": "CVE-2026-35373",
+        "lockMergeOrCompletionAnchor": "48d030dfb2ca7659ee2735f09cda706c8245a3fc",
+        "officialAdvisory": {
+          "sha256": "fdab95750b279926855844eea7863db1034ae790d9b0cb76c26f59067dd98b73",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35373.json"
+        },
+        "officialCodeCommits": [
+          "48d030dfb2ca7659ee2735f09cda706c8245a3fc"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/11403",
+        "securityBoundary": {
+          "control": "\u4f86\u6e90\u4fdd\u6301PathBuf\uff0fOsStr\uff0c\u4f7f\u7528srcpath.file_name()\u53cajoin(srcpath)\uff0c\u4e0d\u8981\u6c42to_str\u6210\u529f\uff1b\u5408\u6cd5Unix raw-byte\u6a94\u540d\u53ef\u901a\u904e\u3002",
+          "platform": "native Linux amd64",
+          "sink": "\u975e\u9810\u671f\u5931\u6557\uff0flocal DoS",
+          "source": "ln target-directory\u5f62\u5f0f\u7684\u975eUTF8\u4f86\u6e90\u6a94\u540d"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 352,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 346,
+            "path": "src/uu/ln/src/ln.rs",
+            "sha256": "5c681cfa583a268bdce9a9b740f9dcd8b38c5ab53754883e5c20800259a4f1b3",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/ln/src/ln.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 646,
+            "behind_by": 0,
+            "commit": "58040feb5c66fce588a7ffac299b3a23bd55cd81",
+            "mergeBase": "58040feb5c66fce588a7ffac299b3a23bd55cd81",
+            "status": "ahead",
+            "total_commits": 646,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/58040feb5c66fce588a7ffac299b3a23bd55cd81...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [],
+          "proofGap": "source unit regression\u5b58\u5728\uff0c\u4f46\u672a\u5728\u65e2\u6709strict log\u89c0\u5bdf\u5230\u6b64test\u540d\uff1b\u6b64\u6536\u64da\u4e0d\u65b0\u589e\u6e2c\u8a66\u6216\u5ba3\u7a31\u8a72unit\u5df2\u57f7\u884c\u3002",
+          "reused": true
+        },
+        "id": "CVE-2026-35374",
+        "lockMergeOrCompletionAnchor": "58040feb5c66fce588a7ffac299b3a23bd55cd81",
+        "officialAdvisory": {
+          "sha256": "6d611d8423834ed4e58c0a2dda5b8d4123f88d6059f4a511144a0163bbad3bd4",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35374.json"
+        },
+        "officialCodeCommits": [
+          "58040feb5c66fce588a7ffac299b3a23bd55cd81"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/12565",
+        "securityBoundary": {
+          "control": "\u65b0\u5efa\u5148create_new\uff1b\u65e2\u6709\uff0f\u91cd\u958boutput\u7528\u5df2open fd\u7684inode\u8207input\u4f5c\u8eab\u5206\u6bd4\u8f03\uff0c\u901a\u904e\u5f8c\u624dset_len(0)\u6216\u7e7c\u7e8c\u5beb\uff1b\u5f8c\u7e8c\u5408\u6cd5\u975eseekable\u8f38\u51fa\u76f8\u5bb9\u5206\u652f\u672a\u64a4\u56de\u8eab\u5206\u6aa2\u67e5\u3002",
+          "platform": "native Linux amd64",
+          "sink": "input\u88ab\u7af6\u614b\u622a\u65b7\uff0f\u8986\u5beb",
+          "source": "split output\u8def\u5f91\u5728\u9810\u6aa2\u5f8c\u7f6e\u63db\u70bainput alias"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 196,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 170,
+            "path": "src/uu/split/src/platform/unix.rs",
+            "sha256": "9c0a3fe7abdf46d00ef8468ce19495ed687689b7d4abc329a5f63d551b497021",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/split/src/platform/unix.rs"
+          },
+          {
+            "lineEnd": 159,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 153,
+            "path": "src/uu/split/src/platform/unix.rs",
+            "sha256": "9c0a3fe7abdf46d00ef8468ce19495ed687689b7d4abc329a5f63d551b497021",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/split/src/platform/unix.rs"
+          },
+          {
+            "lineEnd": 210,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 204,
+            "path": "src/uu/split/src/platform/unix.rs",
+            "sha256": "9c0a3fe7abdf46d00ef8468ce19495ed687689b7d4abc329a5f63d551b497021",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/split/src/platform/unix.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      },
+      {
+        "additionalLockCommits": [],
+        "ancestry": [
+          {
+            "ahead_by": 518,
+            "behind_by": 0,
+            "commit": "b9d8ff64c224eb425702584b66ec0ac64a99592a",
+            "mergeBase": "b9d8ff64c224eb425702584b66ec0ac64a99592a",
+            "status": "ahead",
+            "total_commits": 518,
+            "url": "https://api.github.com/repos/uutils/coreutils/compare/b9d8ff64c224eb425702584b66ec0ac64a99592a...28b6856d7b215bf844b4223589cb54ade84f5223?per_page=1"
+          }
+        ],
+        "confidence": "high",
+        "effectiveRevertFound": false,
+        "evidence": "\u5b98\u65b9\u4fee\u88dc\uff0f\u7b49\u50f9\u5f8c\u7e8c\u5b89\u5168\u63a7\u5236\u5b58\u5728\u65bcexact Ubuntu0.10 orig+quilt\uff1bnative custom patch\u53ea\u52d5id\uff0c\u4e0d\u5f71\u97ff\u672c18\u9805\u3002\u6b64fixed\u50c5\u8868\u793a\u672cqualified component source\uff0c\u672a\u4fee\u6539\u4efb\u4f55\u6210\u54c1VEX\u6216canonical\u3002",
+        "existingNativeLog": {
+          "completeCveSpecificDynamicCoverageClaimed": false,
+          "observedRelatedTests": [
+            "test test_env::test_split_string_single_quotes_keep_unknown_backslash_sequences_literal ... ok"
+          ],
+          "proofGap": null,
+          "reused": true
+        },
+        "id": "CVE-2026-35377",
+        "lockMergeOrCompletionAnchor": "b9d8ff64c224eb425702584b66ec0ac64a99592a",
+        "officialAdvisory": {
+          "sha256": "f47ecf4fa958906c580316e18badce6c90c1ba5fbaff01b7fbc71f0700c1ae1f",
+          "url": "https://ubuntu.com/security/cves/CVE-2026-35377.json"
+        },
+        "officialCodeCommits": [
+          "55298ee943231c07e944bd6e1a9cf9e01236d324"
+        ],
+        "officialPullRequest": "https://github.com/uutils/coreutils/pull/12657",
+        "securityBoundary": {
+          "control": "state_single_quoted\u7684escape\u5206\u652f\u5c0d\u672a\u77e5\u5b57\u5143\u4fdd\u7559literal BACKSLASH\u800c\u975e\u56de\u50b3invalid-sequence\u3002\u771f\u6b63code commit\u662fPR12657\u516755298ee9\uff0clock\u7684b9d8\u662f\u8a72\u5df2merged PR\u5b8c\u6210\u9328\u9ede\uff08\u672ccommit\u53ea\u6539GNU test patch\uff09\u3002",
+          "platform": "native Linux amd64",
+          "sink": "\u5408\u6cd5split-string\u4ee5125\u975e\u9810\u671f\u7d42\u6b62",
+          "source": "env -S\u55ae\u5f15\u865f\u5167\u672a\u77e5\u53cd\u659c\u7dda\u5e8f\u5217"
+        },
+        "sourceEvidence": [
+          {
+            "lineEnd": 288,
+            "lineMeaning": "1-based lines in exact Ubuntu orig + original enabled quilt, before the id-only custom patch",
+            "lineStart": 244,
+            "path": "src/uu/env/src/split_iterator.rs",
+            "sha256": "da0cc908efed1adbf9baace843cfa4de72317512ba4143141ddd0a031bae21a9",
+            "ubuntuQuiltTouches": [],
+            "upstreamOriginalFileUrl": "https://github.com/uutils/coreutils/blob/28b6856d7b215bf844b4223589cb54ade84f5223/src/uu/env/src/split_iterator.rs"
+          }
+        ],
+        "sourceFixPresent": true,
+        "status": "fixed",
+        "successorCommit": null,
+        "ubuntuQuiltConclusion": "\u539fseries\u6240\u6709patch target\u5747\u5df2\u6838\u5c0d\uff1b\u6d89\u53ca\u6b64\u63a7\u5236\u7684source hunks\u5df2\u5728\u8a18\u61b6\u9ad4\u4ee5\u5b8c\u6574exact context\u91cd\u5efa\u4e26\u9010\u6bb5\u6aa2\u67e5\uff0c\u672a\u64a4\u56de\u76ee\u524d\u5b89\u5168\u63a7\u5236\u3002",
+        "verdictScope": "qualified-component-source-closure-only"
+      }
+    ],
+    "schemaVersion": 1,
+    "scope": {
+      "canonicalOrProductDispositionsChanged": false,
+      "componentPackage": "rust-coreutils_0.10.0-1ubuntu2~26.04.1+pasturestack.1_amd64.deb",
+      "customVersion": "0.10.0-1ubuntu2~26.04.1+pasturestack.1",
+      "newIdCvesExcludedFromReassessment": [
+        "CVE-2026-35370",
+        "CVE-2026-35371"
+      ],
+      "originalPendingCves": 18,
+      "verdict": "18\u9805\u5728\u6307\u5b9a\u5408\u683ccandidate\u7684source\u4e2d\u6709\u5b98\u65b9\u4fee\u5fa9\uff0f\u7b49\u50f9\u5b89\u5168\u5f8c\u7e8c\u5be6\u4f5c\uff0c\u672a\u898b\u6709\u6548revert\uff1b\u4e0d\u662f20\u9805\u7522\u54c1\u5df2\u4fee\u5ba3\u544a\u3002"
+    },
+    "sourceBuildBoundary": {
+      "customPatch": {
+        "commit": "ff382f527994b8a021ec0a086dec4c5cafa34f2a",
+        "firstFixedVersion": "0.11.0",
+        "fixedCves": [
+          "CVE-2026-35370",
+          "CVE-2026-35371"
+        ],
+        "name": "ff382f527994b8a021ec0a086dec4c5cafa34f2a.patch",
+        "onlyTargetPaths": [
+          "src/uu/id/src/id.rs",
+          "tests/by-util/test_id.rs"
+        ],
+        "original18SourceUntouched": true,
+        "paths": [
+          "src/uu/id/src/id.rs",
+          "tests/by-util/test_id.rs"
+        ],
+        "pullRequest": "https://github.com/uutils/coreutils/pull/14103",
+        "sha256": "32d843876e0814cb070104afc049c036391604ea517c6e837ffc9345fe1e2de2",
+        "size": 4082,
+        "url": "https://github.com/uutils/coreutils/commit/ff382f527994b8a021ec0a086dec4c5cafa34f2a.patch"
+      },
+      "helperOnlyNonSecurityChanges": "\u539f\u5305\u88ddchangelog\u52a0first-party\u7248\u672c\uff0f\u4f86\u6e90\uff1bstrict target\u7531\u5916\u90e8native-tests.mk\u57f7\u884c\uff0c\u672a\u653918\u9805\u5b89\u5168source\u3002",
+      "nativeHelper": "server/security/ubuntu-backports/rust-coreutils/build-rust-coreutils-backport.py",
+      "preBuildSourcePins": {
+        "lines": [
+          343,
+          347
+        ],
+        "meaning": "\u5b98\u65b9dsc\u4f86\u6e90\u9a57\u8b49\u8207dpkg-source orig+quilt\u62bd\u53d6\u5f8cbaseline SHA\u6838\u5c0d"
+      },
+      "producerCommit": "07e4a7afa827cb45514a72aba12f03b1d30d121d"
+    },
+    "status": "PASS_ORIGINAL18_SOURCE_CLOSURE",
+    "summary": {
+      "consumerBuildsOrRuntimeTestsPerformed": 0,
+      "inconclusiveSourceClosure": 0,
+      "oneJsonReceiptOnly": true,
+      "productCvesClosed": 0,
+      "sourceClosed": 18,
+      "stillVulnerable": 0
+    },
+    "ubuntuQuilt": {
+      "enabledPatches": [
+        {
+          "allTargetPaths": [
+            "GNUmakefile"
+          ],
+          "patch": "fix-prefix.diff",
+          "reviewedPathsTouched": [
+            "GNUmakefile"
+          ],
+          "sha256": "b6257d84300a1013651f94646911433f6d1b606159511f76513b4e74834da064"
+        },
+        {
+          "allTargetPaths": [
+            "Cargo.toml"
+          ],
+          "patch": "workspace-exclude.patch",
+          "reviewedPathsTouched": [],
+          "sha256": "05ae74382b1217fe344f55ace401d2c742ece04b11a2c6e0b40de4ae628139c4"
+        },
+        {
+          "allTargetPaths": [
+            "GNUmakefile"
+          ],
+          "patch": "use-l10n-translations-in-makefile.patch",
+          "reviewedPathsTouched": [
+            "GNUmakefile"
+          ],
+          "sha256": "26cf17de79dbd5f6bd14ed1b5c9fcd84353e046a191197d2a140ed0d3f847ed5"
+        },
+        {
+          "allTargetPaths": [
+            "GNUmakefile",
+            "src/uucore/src/lib/mods/locale.rs"
+          ],
+          "patch": "fix-locale-path.patch",
+          "reviewedPathsTouched": [
+            "GNUmakefile"
+          ],
+          "sha256": "f24b39c73345332368f887ccdff4dfb16cebfaee87837488fb723e5b1cbb0631"
+        },
+        {
+          "allTargetPaths": [
+            "src/bin/uudoc.rs"
+          ],
+          "patch": "improve-man.diff",
+          "reviewedPathsTouched": [],
+          "sha256": "feafc91daa75d1895d85c46a4efc8ba6b1e4366f9fd0b05ecede9ede29b6fcb8"
+        },
+        {
+          "allTargetPaths": [
+            "src/bin/uudoc.rs"
+          ],
+          "patch": "reproducible-man-date.diff",
+          "reviewedPathsTouched": [],
+          "sha256": "5426f02e0117aa33d4a28768b040ccd94297211cd3cbaa374b57736d0ebd0b4a"
+        },
+        {
+          "allTargetPaths": [
+            "Cargo.toml"
+          ],
+          "patch": "remove-workspace-members.patch",
+          "reviewedPathsTouched": [],
+          "sha256": "3f60549df336e397f56dcdd8adf0c488ba13b40c6a6060ab19b32f13cfddfd5a"
+        },
+        {
+          "allTargetPaths": [
+            "Cargo.toml"
+          ],
+          "patch": "Tweak-release-build-profile.patch",
+          "reviewedPathsTouched": [],
+          "sha256": "0fbf669c40b7ec4880a9eea78dee14c041d1a07b0d39dde4bb69bf1ee852d085"
+        },
+        {
+          "allTargetPaths": [
+            "Cargo.toml"
+          ],
+          "patch": "build-stty.patch",
+          "reviewedPathsTouched": [],
+          "sha256": "d869d308d06cc9ccad6ab93f5e21297a8434711d286ec17a513ea76d38b5ac41"
+        },
+        {
+          "allTargetPaths": [
+            "src/bin/coreutils.rs",
+            "tests/by-util/test_env.rs",
+            "tests/test_util_name.rs"
+          ],
+          "patch": "require-utility-to-be-invoked-at-matching-path.patch",
+          "reviewedPathsTouched": [],
+          "sha256": "6761e8474f7244fa3e9e5d35038c0939aa8e34e32a2beb7254b90757a803640f"
+        },
+        {
+          "allTargetPaths": [
+            "src/uu/dd/src/dd.rs",
+            "tests/by-util/test_dd.rs"
+          ],
+          "patch": "dd-ensure-full-writes.patch",
+          "reviewedPathsTouched": [
+            "src/uu/dd/src/dd.rs"
+          ],
+          "sha256": "dd2c5a3cc8dfb89dea54e68db55903859f09ab6f0bb6ff3e7cbf7c7ecc7f80b1"
+        },
+        {
+          "allTargetPaths": [
+            "Cargo.toml"
+          ],
+          "patch": "rustix-use-libc-backend.patch",
+          "reviewedPathsTouched": [],
+          "sha256": "29e6bd79d75a68cd6263c0f00fed61ed32c9e3270b3d32b86abd9a8b0e0c0cc8"
+        },
+        {
+          "allTargetPaths": [
+            "src/uu/df/src/df.rs",
+            "src/uu/df/src/filesystem.rs"
+          ],
+          "patch": "df-statfs-fallback.patch",
+          "reviewedPathsTouched": [],
+          "sha256": "23ee682dcf37befeefd4b6f52fe56de4d6756cf831f728acc8003c0f871beb43"
+        },
+        {
+          "allTargetPaths": [
+            "src/uu/cp/src/cp.rs",
+            "tests/by-util/test_cp.rs"
+          ],
+          "patch": "cp-fix-symlink-target-permissions.patch",
+          "reviewedPathsTouched": [
+            "src/uu/cp/src/cp.rs",
+            "tests/by-util/test_cp.rs"
+          ],
+          "sha256": "53cfbb7a0376da6710985496774f8981e71d207aa97d932f73d5978c978ea100"
+        }
+      ],
+      "inMemoryReplayOnly": true,
+      "matchedNativeBaselineFilePins": 18,
+      "originalRulesAndPackagingPreserved": true,
+      "seriesSha256": "90890b8dda501e3212c826d070e42a9107e5a600cfe48fd3143b14e79f031a9b"
+    },
+    "validation": {
+      "nativeSourcePinsMatched": 18,
+      "newBuildTestScanExecuted": false,
+      "officialCommitPatchByteBindings": 20,
+      "originalCves": 18,
+      "originalUbuntuQuiltSourceControlsReviewed": true,
+      "producerLockBytesMatch": true,
+      "rawPackageShaMatched": true,
+      "sourceOrCanonicalModified": false,
+      "status": "PASS",
+      "ubuntuOrigEqualsFreshOfficialArchive": true,
+      "uniqueLockOfficialAnchors": 16
+    }
+  },
+  "originalReceiptSha256": "73189028622c0a0fc074067b4c5b8521094921531f95cf3e68073baaebd2fbbd",
+  "projection": {
+    "excludedFields": [
+      "identity.originalZip"
+    ],
+    "reason": "Omit the local evidence-store reference; preserve all source, native identity and limitation evidence."
+  },
+  "schemaVersion": 1
+}

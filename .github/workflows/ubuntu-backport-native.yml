@@ -1,0 +1,135 @@
+name: Ubuntu Backport Native Candidate
+
+on:
+  pull_request:
+    # Initial candidates get a native run; subsequent fixes select only affected
+    # modules through workflow_dispatch so unchanged native PASS is not rebuilt.
+    types: [opened, reopened]
+    paths:
+      - '.github/workflows/ubuntu-backport-native.yml'
+      - 'server/security/ubuntu-backports/Dockerfile.native-ci'
+      - 'server/security/ubuntu-backports/build-pcre2-backport.py'
+      - 'server/security/ubuntu-backports/glibc/**'
+      - 'server/security/ubuntu-backports/rust-coreutils/**'
+      - 'server/security/ubuntu-backports/jq/**'
+      - 'server/security/ubuntu-backports/p11-kit/**'
+      - 'server/security/ubuntu-backports/libxrender/**'
+      - 'server/security/ubuntu-backports/source_helpers.py'
+  workflow_dispatch:
+    inputs:
+      module:
+        description: Native candidate to build and fully test
+        required: true
+        type: choice
+        default: all
+        options: [all, glibc, rust-coreutils, jq, p11-kit, libxrender]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ubuntu-backport-native-${{ github.event.pull_request.number || github.ref }}-${{ inputs.module || 'all' }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    name: Native (${{ matrix.module }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        module: ${{ fromJSON(inputs.module && inputs.module != 'all' && format('["{0}"]', inputs.module) || '["glibc","rust-coreutils","jq","p11-kit","libxrender"]') }}
+    env:
+      MODULE: ${{ matrix.module }}
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BUILD_JOBS: ${{ matrix.module == 'glibc' && '4' || '2' }}
+      MIN_FREE_GIB: ${{ matrix.module == 'glibc' && '20' || matrix.module == 'rust-coreutils' && '24' || '8' }}
+
+    steps:
+      - name: Check out the exact candidate head
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Verify source identity and available disk
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          evidence="$RUNNER_TEMP/ubuntu-backport-$MODULE"
+          mkdir -p "$evidence"
+          printf '%s\n' "$SOURCE_SHA" >"$evidence/source-sha.txt"
+          git rev-parse 'HEAD^{tree}' >"$evidence/source-tree.txt"
+          docker_root="$(docker info --format '{{.DockerRootDir}}')"
+          df -Pk "$RUNNER_TEMP" "$docker_root" | tee "$evidence/disk-space.txt"
+          available_kib="$(df -Pk "$docker_root" | awk 'NR == 2 {print $4}')"
+          required_kib=$((MIN_FREE_GIB * 1024 * 1024))
+          if (( available_kib < required_kib )); then
+            printf 'Native %s requires at least %s GiB free Docker workspace; available=%s KiB\n' \
+              "$MODULE" "$MIN_FREE_GIB" "$available_kib" >&2
+            exit 1
+          fi
+
+      - name: Validate the module lock and focused tests
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          module_dir="server/security/ubuntu-backports/$MODULE"
+          test_name="test_${MODULE//-/_}_backport.py"
+          helper="build-$MODULE-backport.py"
+          if [[ "$MODULE" == jq ]]; then test_name=test_jq_release.py; helper=build-jq-release.py; fi
+          evidence="$RUNNER_TEMP/ubuntu-backport-$MODULE"
+          python3 -B "$module_dir/$test_name" -v 2>&1 | tee "$evidence/module-tests.log"
+          python3 -B "$module_dir/$helper" --validate-lock \
+            2>&1 | tee "$evidence/lock-validation.log"
+
+      - name: Build and export the isolated native evidence
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          evidence="$RUNNER_TEMP/ubuntu-backport-$MODULE"
+          docker buildx version
+          docker buildx build \
+            --platform linux/amd64 \
+            --file server/security/ubuntu-backports/Dockerfile.native-ci \
+            --build-arg "MODULE=$MODULE" \
+            --build-arg "BUILD_JOBS=$BUILD_JOBS" \
+            --build-arg "SOURCE_SHA=$SOURCE_SHA" \
+            --progress plain \
+            --provenance=false \
+            --metadata-file "$evidence/buildkit-metadata.json" \
+            --output "type=local,dest=$evidence/export" \
+            server/security/ubuntu-backports \
+            2>&1 | tee "$evidence/docker-build.log"
+
+      - name: Enforce the original native exit status
+        if: always()
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          evidence="$RUNNER_TEMP/ubuntu-backport-$MODULE"
+          python3 - "$evidence/export" <<'PY'
+          import json, os, pathlib
+          directory = pathlib.Path(__import__('sys').argv[1])
+          result = json.loads((directory / 'result.json').read_text())
+          assert result['module'] == os.environ['MODULE'], 'Wrong module receipt'
+          assert result['sourceSha'] == os.environ['SOURCE_SHA'], 'Wrong candidate head'
+          assert result['exitCode'] == result['helperExitCode'] == result['logExitCode'] == 0, result
+          assert result['status'] == 'passed', result
+          assert (directory / 'package/provenance.json').is_file(), 'Missing owning-test provenance'
+          print(json.dumps(result, indent=2))
+          PY
+
+      - name: Retain native candidate evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ubuntu-native-${{ matrix.module }}-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/ubuntu-backport-${{ matrix.module }}
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 9
