@@ -13,27 +13,20 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-Server [`v1.6.549`](https://github.com/PastureStack/server/releases/tag/v1.6.549) is published.
-It packages Web Console `1.6.195` with an independent browser runtime SBOM,
-exact artifact identity and component vulnerability lookup. All 34 immutable
-release assets, the image provenance and SBOM attestations were verified.
-The browser inventory retains incomplete coverage for six unsupported snapshots;
-zero reported browser findings is not a claim of zero risk.
+Server [`v1.6.550`](https://github.com/PastureStack/server/releases/tag/v1.6.550) is published.
+It fixes eight PCRE2 CVEs using the upstream-supported 10.46 backports and
+original Ubuntu packaging. The two rebuilt runtime packages retain ABI, JIT,
+POSIX interfaces and hardening; all other component versions are unchanged.
 
-Engine `v0.183.354`, Catalog `v0.3.16`, Host API `0.38.8`, Node Agent `0.13.33`
-and Temurin `25.0.5+8` retain their reviewed inputs. Authentication, API Key
-authorization, host registration and operator settings remain unchanged.
-The scoped 8080 upgrade, packaged SBOM readback, browser authentication,
-seven JSON APIs, session refresh and WebSocket smoke passed with the existing
-configuration and volumes preserved. This is not a full feature-matrix claim.
-See the [549 release note](docs/releases/server-1.6.549.md) and
-[compatibility contract](COMPATIBILITY.md#server-v16549-web-console-sbom)
-for exact identities, attachment recovery and acceptance boundaries.
+Web Console `1.6.195` and its original runtime SBOM, Engine `v0.183.354`,
+Host API `0.38.8` and Temurin `25.0.5+8` retain their verified inputs.
+The scoped 8080 upgrade and restart passed package/hash/linkage checks,
+regex controls in grep, Git and MariaDB, and three active Host/Agent states.
+Existing configuration, volumes, AppArmor and the previous rollback image remain.
 
-Source candidate `v1.6.550` adds the official PCRE2 10.46 security backports with
-original Ubuntu packaging, ABI checks and native regression tests. It is not yet
-published; installation examples continue to use the verified release above.
-See the [candidate note](docs/releases/server-1.6.550.md).
+See the [550 release note](docs/releases/server-1.6.550.md) and
+[compatibility contract](COMPATIBILITY.md#server-v16550-pcre2-backports)
+for the immutable identity, publication completion and remaining risks.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -60,14 +53,14 @@ Maintained CLI `0.6.20` propagates rejected requests as nonzero errors. Legacy `
 ## Quick start
 
 Public GHCR downloads do not require a registry login. Keep all three named volumes.
-The examples below use the published numeric `v1.6.549` tag.
+The examples below use the published numeric `v1.6.550` tag.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.549
+  ghcr.io/pasturestack/server:v1.6.550
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -75,7 +68,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.549
+    image: ghcr.io/pasturestack/server:v1.6.550
     restart: unless-stopped
     ports:
       - "8080:8080"
