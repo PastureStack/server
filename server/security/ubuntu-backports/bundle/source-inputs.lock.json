@@ -1,0 +1,698 @@
+{
+  "bundleVersion": "0.1.0",
+  "consumerFixture": {
+    "baselineMainIndexEvidence": {
+      "inReleaseSha256": "45f95ce276cdba3e41870516a130e03c58b8b7a79e9546b0efe9e526d255740c",
+      "index": {
+        "path": "main/binary-amd64/Packages.xz",
+        "sha256": "ed9ac41cb263efaecc5a06a0742dc56570e2fb5ff94c4f2e4b2fbdcddd73cf24",
+        "size": 1480032
+      },
+      "packages": [
+        {
+          "Filename": "pool/main/c/coreutils-from/coreutils-from-gnu_0.0.0~ubuntu25_all.deb",
+          "Package": "coreutils-from-gnu",
+          "SHA256": "862be75c7dd5d92815f2b80149bbcf819d11d21b1dba734f62b545bc5acb0eb7",
+          "Size": "6902",
+          "Version": "0.0.0~ubuntu25"
+        },
+        {
+          "Filename": "pool/main/c/coreutils-from/coreutils-from-uutils_0.0.0~ubuntu25_all.deb",
+          "Package": "coreutils-from-uutils",
+          "SHA256": "fd89943a93fdb3e2746faff8fe1bb23106dbdd6c891df0f50fe2f8b42d6f089d",
+          "Size": "7124",
+          "Version": "0.0.0~ubuntu25"
+        },
+        {
+          "Filename": "pool/main/c/coreutils/gnu-coreutils_9.7-3ubuntu2_amd64.deb",
+          "Package": "gnu-coreutils",
+          "SHA256": "6b5b60a5c372b6e9d1dcfa1507317aae59bf809d4f4d6d363d3ef0a58a189137",
+          "Size": "1339676",
+          "Version": "9.7-3ubuntu2"
+        }
+      ],
+      "snapshot": "20261023T000000Z",
+      "suite": "resolute"
+    },
+    "signatureVerification": "The fixture apt-get update requires the original Ubuntu archive keyring and verifies signed InRelease; local review matched the downloaded Packages.xz SHA/size to that InRelease.",
+    "snapshotURL": "https://snapshot.ubuntu.com/ubuntu/20261023T000000Z",
+    "ubuntuImage": "ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b"
+  },
+  "image": "ghcr.io/pasturestack/ubuntu-security-backports:v0.1.0",
+  "nativeInputs": {
+    "glibc": {
+      "artifactId": 12573643405,
+      "artifactName": "ubuntu-native-glibc-507cadcb3eaafcd6a85c453f2f180a8aef415d88-40122645083",
+      "ciClosure": {
+        ".github/workflows/ubuntu-backport-native.yml": {
+          "currentSha256": "329ad26ee9f4b22f6fae37b8d680c9bcf6e9dc65e22a016d4225b1dcba606b79",
+          "nativeSha256": "329ad26ee9f4b22f6fae37b8d680c9bcf6e9dc65e22a016d4225b1dcba606b79",
+          "reviewedDifference": "Native source and effective CI recipe are identical to the approved current files."
+        },
+        "server/security/ubuntu-backports/Dockerfile.native-ci": {
+          "currentSha256": "ba6f233913a679b53f0234423a7c281e31c36b8305fde354b4ab177e05890f0b",
+          "nativeSha256": "ba6f233913a679b53f0234423a7c281e31c36b8305fde354b4ab177e05890f0b",
+          "reviewedDifference": "Native source and effective CI recipe are identical to the approved current files."
+        }
+      },
+      "copyright": {
+        "file": "COPYRIGHT",
+        "sha256": "c31d10900fdb95d1889005145a2205bb75e3bc018d3ec8265b81364901748e09"
+      },
+      "copyrightEvidence": {
+        "path": "debian/copyright",
+        "source": {
+          "name": "glibc_2.43-2ubuntu2.4.debian.tar.xz",
+          "sha256": "28103a7cf808c29901c6053d89a4e8299880abfbb850c0d97a09c8df8533e306",
+          "size": 530764,
+          "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/glibc_2.43-2ubuntu2.4.debian.tar.xz"
+        }
+      },
+      "evidence": {
+        "COPYRIGHT": "c31d10900fdb95d1889005145a2205bb75e3bc018d3ec8265b81364901748e09",
+        "builder-packages.tsv": "fa9d46ddbb27235e5b3f6f29fbbc63e0a5a5bfeb681ed57302b14938640dc385",
+        "generated-debian-control": "a1cca0ba6356e1318f218b05dec1213bae7d43dce2bd79055119d75070a9b85e",
+        "glibc.lock.json": "5b4ead11dcace84b99874d298eec4d6939203040aecd5cfc3f4452a83eb0bf12",
+        "glibc_2.43-2ubuntu2.4+pasturestack.1.dsc": "4a7bd217e000e44933db0b5d48d04e94936ea188dd7a42c4cc8ce6eca8f209b5",
+        "glibc_2.43-2ubuntu2.4+pasturestack.1_amd64.buildinfo": "ddc397c4caf06be75cc7c4be8394212f1ddfb242c115136f22868b1f3a5198b7",
+        "glibc_2.43-2ubuntu2.4+pasturestack.1_amd64.changes": "9bcf4cb463052e74fd08e649998397d9bc60220dd3c32ed16cccc20f560e0997",
+        "manifest.tsv": "a3ca5de5aec3bcb88c2499486ff14d9f976ce58a81a2a6d3daa7c76e099c0869",
+        "native-config.make": "4d7257d3ab6788b9a28cc7948e9025470996dd751eac2c91e37ec3e13977c0b9",
+        "native-configparms": "4b09bdaed30ef3d58e957d4599420019f2ca31c6dba952ae7e62084b89557b09",
+        "provenance.json": "cc77cdde3f1b6b5459b45282bbbdcccbe42c3d3fd5d7a41f4623a92509a2263a",
+        "tests.sum": "4d9b149fd0711f4a4cf67c15fae7f5be23edabf3f40f0c542125eda0c804e19f",
+        "tst-fopen-ccs-empty.out": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tst-fopen-ccs-empty.test-result": "818ea455ca8c5e31c156a6b7046bf1a552bbcb9432d147c6a87c9a64669e57e4",
+        "tst-fopenloc.out": "89a245c0599fd89e6a9b8536c79ea7aefe16203cb4332cb8a841cdff4a5818d6",
+        "tst-fopenloc.test-result": "5234ae2c930bcfcbd094eab622797a4f869bbe261c9326e6a6f380656676c45f",
+        "tst-fopenloc2.out": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tst-fopenloc2.test-result": "80339c05fd3053b631971af004613f6da2be7a4ca39454d1d173d35a7693b13a"
+      },
+      "fixedVulnerabilities": [
+        "CVE-2026-18374"
+      ],
+      "jobId": 120957337330,
+      "lockSha256": "5b4ead11dcace84b99874d298eec4d6939203040aecd5cfc3f4452a83eb0bf12",
+      "packages": [
+        {
+          "file": "libc6_2.43-2ubuntu2.4+pasturestack.1_amd64.deb",
+          "name": "libc6",
+          "sha256": "4119ebc8610d17694db4100e6838a693f8927189523f4b4be32be5aa4a82f497",
+          "source": "glibc",
+          "version": "2.43-2ubuntu2.4+pasturestack.1"
+        },
+        {
+          "file": "libc-bin_2.43-2ubuntu2.4+pasturestack.1_amd64.deb",
+          "name": "libc-bin",
+          "sha256": "6e8ea949edd167a48e4f2ded82f4117e4dca89fc7c8060062b614bbb682b9417",
+          "source": "glibc",
+          "version": "2.43-2ubuntu2.4+pasturestack.1"
+        },
+        {
+          "file": "libc-gconv-modules-extra_2.43-2ubuntu2.4+pasturestack.1_amd64.deb",
+          "name": "libc-gconv-modules-extra",
+          "sha256": "22cb6a83267d6e873538983d1eafda6cac9240c5c18ff61e2652fd6ae982e374",
+          "source": "glibc",
+          "version": "2.43-2ubuntu2.4+pasturestack.1"
+        }
+      ],
+      "runConclusion": "success",
+      "runId": 40122645083,
+      "runtimePackages": [
+        "libc6",
+        "libc-bin",
+        "libc-gconv-modules-extra"
+      ],
+      "sourceCommit": "507cadcb3eaafcd6a85c453f2f180a8aef415d88",
+      "sourceFiles": {
+        "server/security/ubuntu-backports/build-pcre2-backport.py": "79ff6faf3ca5b8e6dfdfc38a78ba56238c749aeabfab59fd05ce2130537458b2",
+        "server/security/ubuntu-backports/glibc/build-glibc-backport.py": "a086f51359bab0d0994070d4cdf0e4fcc1f19bc4acf8dbd71d189707c72ef3e6",
+        "server/security/ubuntu-backports/glibc/glibc.lock.json": "5b4ead11dcace84b99874d298eec4d6939203040aecd5cfc3f4452a83eb0bf12",
+        "server/security/ubuntu-backports/glibc/test_glibc_backport.py": "d08cb0b93d6c49c0124eb69cedd55af3949b41c48a09c57d52d49e304641a583"
+      },
+      "status": "qualified",
+      "vexScope": "Exact official glibc 2.43 fix and regression backports; native amd64 full upstream summary retains actual XFAIL/UNSUPPORTED/XPASS states. Original Ubuntu packaging templates generate first-party control metadata; these packages are not issued by Canonical.",
+      "zipSha256": "ed6714b9b4a884a0c0462b84b01f5d7f9e08b4cc1bbf849b521ac43fa4ef36c4"
+    },
+    "jq": {
+      "artifactId": 12570170631,
+      "artifactName": "ubuntu-native-jq-bc129a88a5ec8c4e64b3ed89bfd97c7e82362d7c-40116776455",
+      "ciClosure": {
+        ".github/workflows/ubuntu-backport-native.yml": {
+          "currentSha256": "329ad26ee9f4b22f6fae37b8d680c9bcf6e9dc65e22a016d4225b1dcba606b79",
+          "nativeSha256": "e2b32c1f0ccafc21503a4cd4b3eb5fb10a82aec82b7eb81c74dc634e7afa4c05",
+          "reviewedDifference": "Reviewed exact diff: workflow adds other module selection/initial-PR scheduling; recipe adds p11-kit/libxrender-only tools, Rust-only CI marker, builder inventory and failed-glibc diagnostics. jq effective source/build dependencies and owning commands are unchanged."
+        },
+        "server/security/ubuntu-backports/Dockerfile.native-ci": {
+          "currentSha256": "ba6f233913a679b53f0234423a7c281e31c36b8305fde354b4ab177e05890f0b",
+          "nativeSha256": "b3dd3e1f7bbad9ace7c35e32f061d307862cad31b60c4818a0a666ed4b25e0fb",
+          "reviewedDifference": "Reviewed exact diff: workflow adds other module selection/initial-PR scheduling; recipe adds p11-kit/libxrender-only tools, Rust-only CI marker, builder inventory and failed-glibc diagnostics. jq effective source/build dependencies and owning commands are unchanged."
+        }
+      },
+      "copyright": {
+        "file": "COPYRIGHT",
+        "sha256": "92965c1a25cfced63db0fcc869d060d773d6105da9bd8d3da232ed1691cda778"
+      },
+      "evidence": {
+        "COPYRIGHT": "92965c1a25cfced63db0fcc869d060d773d6105da9bd8d3da232ed1691cda778",
+        "base64test.log": "0ec2e6651d00c82646424e5512bba5f4ec8376f5aab2306133f5a906009a97d9",
+        "base64test.trs": "7f175f2f5d04511903d382671ba96ca623e127f57730d53966587cf2c2689229",
+        "builder-packages.tsv": "379d4a07715d6a587d9ce25105bc216dca2dd08ec8faa61f3ce0d7470b21d225",
+        "jq.lock.json": "3a000a74debdf3d04d0e475f7413f82e2aa422cb95d888c4fe1ee3949536c229",
+        "jq_1.8.2-0pasturestack1~26.04.1_amd64.buildinfo": "9a601a1e4fb6e0730b0d9bf740604b0e077d952b023f245d128a6a6429e9ccb4",
+        "jq_1.8.2-0pasturestack1~26.04.1_amd64.changes": "af908c5e73271510dc042a61c6e5917d91ab59dc976a8362c19aca10359967d2",
+        "jqtest.log": "5ab9b68330470807e9ce0587d7b89e7f0aba17d54a3c767cdf074093fdc77874",
+        "jqtest.trs": "7f175f2f5d04511903d382671ba96ca623e127f57730d53966587cf2c2689229",
+        "manifest.tsv": "2a3b62801f5f94ad88fa97c2372bd5831d5286c49d5b0f66c4a80cbc5c329ce1",
+        "manonigtest.log": "ae377728ce527be518b204e01ca59b897a86e37f339f4b896f1f477e1f98da24",
+        "manonigtest.trs": "7f175f2f5d04511903d382671ba96ca623e127f57730d53966587cf2c2689229",
+        "mantest.log": "3e9312bd0c98b88e2abe7c3d9225db33b6d89ba40b8ed906e1f2a845fe9528df",
+        "mantest.trs": "7f175f2f5d04511903d382671ba96ca623e127f57730d53966587cf2c2689229",
+        "onigtest.log": "26f99a726b6a9999f034abd0428a658db1c3dc5f4afe422eb8ae33f739d0d05e",
+        "onigtest.trs": "7f175f2f5d04511903d382671ba96ca623e127f57730d53966587cf2c2689229",
+        "optionaltest.log": "f87d529edd1dd85b887b3556f46ea034a6973468ce4fd30b4702ffe3792b7ff0",
+        "optionaltest.trs": "7f175f2f5d04511903d382671ba96ca623e127f57730d53966587cf2c2689229",
+        "provenance.json": "673cf3ebcb16ddd769f31b14960b4d7cfb091ae6f28e810d60050d4eb56c3c1d",
+        "shtest.log": "43247569114fac8222645dcd376fa4d8c146ce30bc9547e9eb4893fd5050406d",
+        "shtest.trs": "7f175f2f5d04511903d382671ba96ca623e127f57730d53966587cf2c2689229",
+        "uritest.log": "676ab96470f36d878725abb2f7d820c7098b26130409b8e964586b699816500a",
+        "uritest.trs": "7f175f2f5d04511903d382671ba96ca623e127f57730d53966587cf2c2689229",
+        "utf8test.log": "4a603cd14e39c981b121c56d1436279deca1493b2c36d9731391708d8b32b098",
+        "utf8test.trs": "7f175f2f5d04511903d382671ba96ca623e127f57730d53966587cf2c2689229"
+      },
+      "fixedVulnerabilities": [
+        "CVE-2026-32316",
+        "CVE-2026-33947",
+        "CVE-2026-33948",
+        "CVE-2026-39956",
+        "CVE-2026-39979",
+        "CVE-2026-40164",
+        "CVE-2026-40612",
+        "CVE-2026-41256",
+        "CVE-2026-41257",
+        "CVE-2026-43894",
+        "CVE-2026-43895",
+        "CVE-2026-43896",
+        "CVE-2026-44777",
+        "CVE-2026-47770",
+        "CVE-2026-49839",
+        "CVE-2026-54679",
+        "GHSA-gf4g-95wj-4q4r",
+        "GHSA-hj52-j2c9-r8r4"
+      ],
+      "jobId": 120939862251,
+      "lockSha256": "3a000a74debdf3d04d0e475f7413f82e2aa422cb95d888c4fe1ee3949536c229",
+      "packages": [
+        {
+          "file": "jq_1.8.2-0pasturestack1~26.04.1_amd64.deb",
+          "name": "jq",
+          "sha256": "88dce8936c13daa0195783836e5b8658d25545068b59a8e8232ae8db442dcea9",
+          "source": "jq",
+          "version": "1.8.2-0pasturestack1~26.04.1"
+        },
+        {
+          "file": "libjq1_1.8.2-0pasturestack1~26.04.1_amd64.deb",
+          "name": "libjq1",
+          "sha256": "e1b61456c00ae0508406163000d1a816de0c64e4db9f268a9667f31c4315f1df",
+          "source": "jq",
+          "version": "1.8.2-0pasturestack1~26.04.1"
+        }
+      ],
+      "runConclusion": "failure",
+      "runId": 40116776455,
+      "runtimePackages": [
+        "jq",
+        "libjq1"
+      ],
+      "sourceCommit": "bc129a88a5ec8c4e64b3ed89bfd97c7e82362d7c",
+      "sourceFiles": {
+        "server/security/ubuntu-backports/build-pcre2-backport.py": "79ff6faf3ca5b8e6dfdfc38a78ba56238c749aeabfab59fd05ce2130537458b2",
+        "server/security/ubuntu-backports/jq/build-jq-release.py": "c71512fbb65df44c75d75cb47d31fa338acaca7b14699b9fcb419ea64180694b",
+        "server/security/ubuntu-backports/jq/jq.lock.json": "3a000a74debdf3d04d0e475f7413f82e2aa422cb95d888c4fe1ee3949536c229",
+        "server/security/ubuntu-backports/jq/test_jq_release.py": "8c78f324d76956b892e9b4f8cf19d17c5462df413a20826de39e80ded52018a5"
+      },
+      "status": "qualified",
+      "vexScope": "Pinned official jq 1.8.2 release source with original Ubuntu packaging and system libonig.so.5; exact qualified package bytes only. This statement does not cover the separate libonig package.",
+      "zipSha256": "5536c059d0db1fd9587650634a9f1ec9800b804768c8ae4f83cbab19effcaef1"
+    },
+    "libxrender": {
+      "artifactId": 12571296848,
+      "artifactName": "ubuntu-native-libxrender-07e4a7afa827cb45514a72aba12f03b1d30d121d-40120642373",
+      "ciClosure": {
+        ".github/workflows/ubuntu-backport-native.yml": {
+          "currentSha256": "329ad26ee9f4b22f6fae37b8d680c9bcf6e9dc65e22a016d4225b1dcba606b79",
+          "nativeSha256": "f06a225d71f28b31f1592025ed272055aa54266c1c112bc08c70e55529d885f4",
+          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged."
+        },
+        "server/security/ubuntu-backports/Dockerfile.native-ci": {
+          "currentSha256": "ba6f233913a679b53f0234423a7c281e31c36b8305fde354b4ab177e05890f0b",
+          "nativeSha256": "bca055ed1bd8fd213a906eceb23c5ff3f9449d06acb51e249c976c3174d406bb",
+          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged."
+        }
+      },
+      "copyright": {
+        "file": "COPYRIGHT",
+        "sha256": "ed2a78123a5076b4f11da38cb1ffb85b5cb9fdc26b5746c517b1d7e7a9029704"
+      },
+      "evidence": {
+        "COPYRIGHT": "ed2a78123a5076b4f11da38cb1ffb85b5cb9fdc26b5746c517b1d7e7a9029704",
+        "builder-packages.tsv": "5d5f3d65439a54d9680fb20acc2bcb06a7efadbd9187fbce5a7d43ed716803c2",
+        "libxrender.lock.json": "6ca89ea2cca1c36a7db42adf24c8ae8fff5fa69ef853da3508c74a38151fa720",
+        "libxrender_0.9.12-1build1+pasturestack.1_amd64.buildinfo": "a80211c4a875b07c67cc61fb4d341ee928063f73e416cab17031594354f0c647",
+        "libxrender_0.9.12-1build1+pasturestack.1_amd64.changes": "29847cb93b70b3e9bc69561f6dd2fec3803c59e8df3d1fd87f3780b68e363b3c",
+        "manifest.tsv": "d9a1e6c23df97346a4c3d69cf37559906699978e9b04d08cbb224ee06aae21ea",
+        "owning-check.log": "b5eb8d8721131e3f5ab58b6132a53f7690331cf26f9779772df64c8738ca9e28",
+        "provenance.json": "bf9592ac26e82fffc2c896e06cbb04b53a1f8970c7b96bd0f79d2b62a6db2e52",
+        "reply-boundary.json": "c50ae165a3fbfaf03eaa96daf64e3943e85cf19b7a51bb2c97365a87b709624f"
+      },
+      "fixedVulnerabilities": [
+        "CVE-2026-88807"
+      ],
+      "jobId": 120951219154,
+      "lockSha256": "6ca89ea2cca1c36a7db42adf24c8ae8fff5fa69ef853da3508c74a38151fa720",
+      "packages": [
+        {
+          "file": "libxrender1_0.9.12-1build1+pasturestack.1_amd64.deb",
+          "name": "libxrender1",
+          "sha256": "49fa0140dcc46481271fb203c2b4bf7a4c9b588bd849f498856c75a4926c212c",
+          "source": "libxrender",
+          "version": "1:0.9.12-1build1+pasturestack.1"
+        }
+      ],
+      "runConclusion": "success",
+      "runId": 40120642373,
+      "runtimePackages": [
+        "libxrender1"
+      ],
+      "sourceCommit": "07e4a7afa827cb45514a72aba12f03b1d30d121d",
+      "sourceFiles": {
+        "server/security/ubuntu-backports/build-pcre2-backport.py": "79ff6faf3ca5b8e6dfdfc38a78ba56238c749aeabfab59fd05ce2130537458b2",
+        "server/security/ubuntu-backports/libxrender/build-libxrender-backport.py": "343166b9a540fe9e134f5b22c02bd6faf776359267c76885957814fd53f66c8d",
+        "server/security/ubuntu-backports/libxrender/libxrender.lock.json": "6ca89ea2cca1c36a7db42adf24c8ae8fff5fa69ef853da3508c74a38151fa720",
+        "server/security/ubuntu-backports/libxrender/reply-boundary.c": "486cf9c93b149623be3470a52158d407acfccf07b42f398740d60a955c90885f",
+        "server/security/ubuntu-backports/libxrender/test_libxrender_backport.py": "76cb352603055d61574997d5c526604a37a864ee78775fd9d5087ddec8254986",
+        "server/security/ubuntu-backports/source_helpers.py": "d2b3f310f8ed99a50a696fe14094b7117ec5d7ed576e6080d5540c0e82891486"
+      },
+      "status": "qualified",
+      "vexScope": "Exact official QueryFormats reply-boundary patch; original-source negative control and patched/packaged controls passed. Upstream make check defines zero testcases; the separate native fixture supplies this evidence.",
+      "zipSha256": "5d58962ad638f0562d72584a263f7fa3e4bafb34473fedd19e892b07eba5896b"
+    },
+    "p11-kit": {
+      "artifactId": 12570718592,
+      "artifactName": "ubuntu-native-p11-kit-2a47f3cd99b6afc47b54ee6d8837b834e95c50f2-40121338859",
+      "ciClosure": {
+        ".github/workflows/ubuntu-backport-native.yml": {
+          "currentSha256": "329ad26ee9f4b22f6fae37b8d680c9bcf6e9dc65e22a016d4225b1dcba606b79",
+          "nativeSha256": "f06a225d71f28b31f1592025ed272055aa54266c1c112bc08c70e55529d885f4",
+          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged."
+        },
+        "server/security/ubuntu-backports/Dockerfile.native-ci": {
+          "currentSha256": "ba6f233913a679b53f0234423a7c281e31c36b8305fde354b4ab177e05890f0b",
+          "nativeSha256": "bca055ed1bd8fd213a906eceb23c5ff3f9449d06acb51e249c976c3174d406bb",
+          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged."
+        }
+      },
+      "copyright": {
+        "file": "COPYRIGHT",
+        "sha256": "a5611fbad151d1fa0aa484f6c393a5166af33ce9a9783dfb2712d6b87b462b37"
+      },
+      "evidence": {
+        "COPYRIGHT": "a5611fbad151d1fa0aa484f6c393a5166af33ce9a9783dfb2712d6b87b462b37",
+        "builder-packages.tsv": "33900d45599ada520e85af10a65664c16011240e8e72c23280d7e0a5168a66fa",
+        "manifest.tsv": "3395b9f859643f84a4dfb656ec60c66199cbb75ed8eaad45468f72147eb9bd73",
+        "p11-kit.lock.json": "636bfbe8d9730e1838207edd9e3a6108f373d601c5b13591888913c8a042d046",
+        "p11-kit_0.26.2-2+pasturestack.1_amd64.buildinfo": "7c109845d877822003710a8332fae788305f2f1dff05bc43060b254b7b99f2bf",
+        "p11-kit_0.26.2-2+pasturestack.1_amd64.changes": "b92d9b76536cb7e1c77ae5e6289dd65ddf8a0fe2b388fc53cf851794858cd7ac",
+        "p11-kit__test-export-public.sh.log": "ac7f88758b57f814b8520981e87e452918c9bf12cb896a4fe9097ab96d963efa",
+        "p11-kit__test-export-public.sh.trs": "09416818c720b3bad5e7e2667490ad2e6075f8846f2346a7822a300f4a7bb6a2",
+        "p11-kit__test-generate-keypair.sh.log": "3a887affe49f6fcec98c79393db9773a69b1590aba750f03d75dcb8ff37b356c",
+        "p11-kit__test-generate-keypair.sh.trs": "5dddb0d74ac9fd4ce3f50299d3ec68dce52ca4ce8332d2e59c5355b5da536bab",
+        "p11-kit__test-import-public.sh.log": "ae529f425541c579763902a30bc575f634706260860d5226512099a68e498bd7",
+        "p11-kit__test-import-public.sh.trs": "09416818c720b3bad5e7e2667490ad2e6075f8846f2346a7822a300f4a7bb6a2",
+        "p11-kit__test-list-mechanisms.sh.log": "a257e893105e69a857e1e29d65e3d474a1dff3715305f3965ce28c5b76169159",
+        "p11-kit__test-list-mechanisms.sh.trs": "09416818c720b3bad5e7e2667490ad2e6075f8846f2346a7822a300f4a7bb6a2",
+        "p11-kit__test-list-tokens.sh.log": "72a907acf2f3c9af79a84b2c262c00532ad31897c860ea0fce3bd73b0ef317dc",
+        "p11-kit__test-list-tokens.sh.trs": "5dddb0d74ac9fd4ce3f50299d3ec68dce52ca4ce8332d2e59c5355b5da536bab",
+        "p11-kit__test-lists.sh.log": "2a04a7e73255bda2fa884b9910adeab7176e50362e216b28f4f62a96398820a1",
+        "p11-kit__test-lists.sh.trs": "6b72d26b78d92ec48ec59376b0dd9497ce01545f4ce9d56a41b64a3a91740153",
+        "p11-kit__test-messages.sh.log": "c1caa148cdf02cd146d6708a861b8ed27d023aae164f53f417f07cd97ddebeb6",
+        "p11-kit__test-messages.sh.trs": "6b72d26b78d92ec48ec59376b0dd9497ce01545f4ce9d56a41b64a3a91740153",
+        "p11-kit__test-objects.sh.log": "836efa2f43826a25b650c8bdab7cb261da852cae11c89bd056dfcdb016a814fd",
+        "p11-kit__test-objects.sh.trs": "9cdbbc7152714b8ec44ad6627c09d2670e17b4393c1424c33387dd355aa1f425",
+        "p11-kit__test-profiles.sh.log": "9e5e71a99f71c28797288b40ae24b99a43f27787a4a8223472921508efcac0e9",
+        "p11-kit__test-profiles.sh.trs": "eaad2ad90ee6daadee5c9bb5486426cac231c29639133c5f18db189f97657c36",
+        "p11-kit__test-server.sh.log": "a87077f31cc42ff50842f9f51b5eb6faf8cb71ba3663334440cbd79f9563d405",
+        "p11-kit__test-server.sh.trs": "6b72d26b78d92ec48ec59376b0dd9497ce01545f4ce9d56a41b64a3a91740153",
+        "provenance.json": "b5294407c8361f8cfee55c1a460e51d4b0b2db24c0584b68f114fcd49842ac9e",
+        "test-argv.log": "ba614cff4234d49a95c48953449cfe688cda19017947d57199b8d836bdeea248",
+        "test-argv.trs": "09416818c720b3bad5e7e2667490ad2e6075f8846f2346a7822a300f4a7bb6a2",
+        "test-array.log": "8178fe96de4acab0277208e9f21cbeeb7c8ccd8a1abfd6039a6373cbb020c058",
+        "test-array.trs": "c5bc74eab7054de88905f106fe54ce55fdae1c98f39b6eef9ee569891892f671",
+        "test-asn1.log": "42653f6c15cc9bcf969fa566a261679c6b67f8d899d2105ac414f16097ce88c7",
+        "test-asn1.trs": "09416818c720b3bad5e7e2667490ad2e6075f8846f2346a7822a300f4a7bb6a2",
+        "test-attrs.log": "d4c7736ff7e80df07beb32a9a1907ba666f84b1f40983164c9e031ff67a741e5",
+        "test-attrs.trs": "a74ca7b7925c8181aeb6bb89ba3d8d315e820e1f5791e4f8c8d1008223aa4ce3",
+        "test-base64.log": "fd3ff98b7f186230e7b384649b804a7985e362ced5d455f44889c8d0a2ba1443",
+        "test-base64.trs": "976ed8fdf324eb7f8f7501ea3ce1abeaa3000b30c96b3a7291b0d421a10200b4",
+        "test-buffer.log": "4a36bf5a0b8f1f37d61666e14c5c6374d28c7b45ee6be6e3cf58da41ed6bf288",
+        "test-buffer.trs": "9fcb93a25d29bf85271d24531b3740047d85d130da7ca1229752b86f6e3d9bc6",
+        "test-builder.log": "23619c173eab7be3b84b449ee863b05ce770750740ee4811cf603d32727402e8",
+        "test-builder.trs": "db443166649c920d8ef64482844285d53b504c0fdaf17ce13e1a6d7e9c13f502",
+        "test-bundle.log": "fe6906b28fd8c411a451c7532153780307f2403b9232ab062dcb2d098388f73c",
+        "test-bundle.trs": "9fcb93a25d29bf85271d24531b3740047d85d130da7ca1229752b86f6e3d9bc6",
+        "test-cer.log": "4d345ec15a728c4018015a16c8f528031f4d88214c4f43e3f39cef8524ed2ed6",
+        "test-cer.trs": "7b0d14d75180a40ebe2164a52b0e32f921fcbb447789f3aeb74f14c44263d50b",
+        "test-compat.log": "d042e1aefc0bb3a77397633ae44155065e91f9a844b25c6851a8bc426f71aa58",
+        "test-compat.trs": "5dddb0d74ac9fd4ce3f50299d3ec68dce52ca4ce8332d2e59c5355b5da536bab",
+        "test-conf.log": "e0f377dff98faa96c4534684e032c4dc3da098e78c1141057750ff6d9ae1ee31",
+        "test-conf.trs": "e3b1a457cf69962eaaa6b89eebf9bbf2fb24d90e62ca50668aa87ed4f2861653",
+        "test-constants.log": "6b2329e8888f7c20a77749f928689f00546483238d5846efdcb02777baba0c86",
+        "test-constants.trs": "f81624a4f492eb26078518866962fe6dd9a2c0c34529f97a9a54c075fd3622fc",
+        "test-deprecated.log": "97bfa253e8a3f6c9d402ff556166ae37d0c7520bf09b7212a466ff8f67dce4d3",
+        "test-deprecated.trs": "0cf6c4dbcae9310529416ae5d56fbafcf873d48959e154c2af8c46307a9712af",
+        "test-dict.log": "7ae1c4db184023e036c19c1359b1e4879f49c1e5a7d567509f27b28addc58f7f",
+        "test-dict.trs": "c63c2276cf4ec02bcf4b9e1c7fa282491c6e7c07c0e51ab278f84c07bf4b802f",
+        "test-digest.log": "b1d91d3ac7e899314f2cd674458d1e52c158611605f5586fafbde4ec6220f322",
+        "test-digest.trs": "09416818c720b3bad5e7e2667490ad2e6075f8846f2346a7822a300f4a7bb6a2",
+        "test-edk2.log": "37a926fff731f901cc421710120a149a113874899a5baba0daeda6323feac951",
+        "test-edk2.trs": "6b72d26b78d92ec48ec59376b0dd9497ce01545f4ce9d56a41b64a3a91740153",
+        "test-enumerate.log": "30006e3235ba30c08ce8e664913d7293842fb051b75c123c13e28147d87d7989",
+        "test-enumerate.trs": "035c9327d0173a24a63239d44c9fe044d246e9d67e77d66ecbf2ab2ae8d7d69b",
+        "test-filter.log": "f9e9b1ca738fad000134d1e233c05db25b41aeafe7323056cb806efdb8fbaff5",
+        "test-filter.trs": "09416818c720b3bad5e7e2667490ad2e6075f8846f2346a7822a300f4a7bb6a2",
+        "test-hash.log": "b6b90fbfeee8f21e96c8e6e58e958daef4bf9f99c8518f2ca5deabe11826b372",
+        "test-hash.trs": "976ed8fdf324eb7f8f7501ea3ce1abeaa3000b30c96b3a7291b0d421a10200b4",
+        "test-hex.log": "232d52eeae73f85471bec913f17981d1a5ff8e887d37378223065fb99435a5a2",
+        "test-hex.trs": "976ed8fdf324eb7f8f7501ea3ce1abeaa3000b30c96b3a7291b0d421a10200b4",
+        "test-index.log": "828dce6d499442cbd50c56ce38da1817b4594901a8a93c316d1ea8d3ea82d374",
+        "test-index.trs": "e72c652859efdf9c3717475dd7e90d06bfa3d2d4293a194dc1f0a3137a37d619",
+        "test-init.log": "7f16b3676c995cd0f005689cfe557a22a4aa88fc85041f1a313bd92b4b577fc0",
+        "test-init.trs": "7b247c4c3ece016e82481ce77af6db795cae3cab861dc4fc86c788efdda8a3a1",
+        "test-iter.log": "65603e0db48b3346f723380be8d90c84747ddac71c3153e08062210cced300a5",
+        "test-iter.trs": "a4d55c0b1ad9d0455d354c02016ebf5a9e9a6fd8d907bc7f499c6e799bb7b405",
+        "test-jks.log": "65fa6d45a00e4358c10d7ff82aaad2a03216a82cd7eee6661fcc25d99458e5ae",
+        "test-jks.trs": "976ed8fdf324eb7f8f7501ea3ce1abeaa3000b30c96b3a7291b0d421a10200b4",
+        "test-lexer.log": "400aadffd290caf89782d61a4025e205c184cfdabe2375094d5b59b15ca032a2",
+        "test-lexer.trs": "9fcb93a25d29bf85271d24531b3740047d85d130da7ca1229752b86f6e3d9bc6",
+        "test-log.log": "29c42e483a30644759bd7646d3fa888500b740fff4517229ab3fb328e5087187",
+        "test-log.trs": "0dc694b2fb33f367e8543148ffb838de67c98057b7fde9b51aac989bf50b06db",
+        "test-log3.log": "c159f5901e08d1e14ce1493cafbe5cacd5bf01bb259cefae61e3ed1ef01fbcc2",
+        "test-log3.trs": "566219f61afb12349258aecfd7e9dab8cf2cf610a0ef8f49c50ff097d51ebb0b",
+        "test-managed.log": "fdf3efebb5684841e4d22b1afd73ecdcc705f49ed7bdbf5c13844a4418f7e57f",
+        "test-managed.trs": "566219f61afb12349258aecfd7e9dab8cf2cf610a0ef8f49c50ff097d51ebb0b",
+        "test-message.log": "c40622436bdf1f03e155fc7e3cdaa02647497510d8510ec7aa6381b174a092df",
+        "test-message.trs": "6b72d26b78d92ec48ec59376b0dd9497ce01545f4ce9d56a41b64a3a91740153",
+        "test-module.log": "6f85ff1ff45dedce717977381fd320524347abed77f77d13cb76d0c98899e73e",
+        "test-module.trs": "7c2ec063bdfd3b3d491c85d4f0526d0eea0c03a7b6691bf4dd0a4a977ea43253",
+        "test-modules.log": "fb13d8f465cdb4ebbe88052d38c33f86ba3eafad80031200483b50a62619e887",
+        "test-modules.trs": "02d3912701f201986b92e087ce92a7114eaf6ff8266e84cc663047dc02250acd",
+        "test-oid.log": "f489119f8cecbadd3b9def6c586154253c7d7cdc1306f3f35de22b4e1f7d2921",
+        "test-oid.trs": "976ed8fdf324eb7f8f7501ea3ce1abeaa3000b30c96b3a7291b0d421a10200b4",
+        "test-openssl.log": "4cf9743a9591af378e33c3c6247eeb1f06c2b7db1a01ec2690daa9b7c0d01966",
+        "test-openssl.trs": "f81624a4f492eb26078518866962fe6dd9a2c0c34529f97a9a54c075fd3622fc",
+        "test-parser.log": "ab4f96f220acc874a8dc166e7a4b645feb83b36edd25c0fedb3f0be19f985e09",
+        "test-parser.trs": "9cdbbc7152714b8ec44ad6627c09d2670e17b4393c1424c33387dd355aa1f425",
+        "test-path.log": "0d2103ab73dbb624f66a4076476e9e2d870f9ab671040fe80d44d2cdeaaeec37",
+        "test-path.trs": "0cf6c4dbcae9310529416ae5d56fbafcf873d48959e154c2af8c46307a9712af",
+        "test-pem.log": "d3306c15ab4c133b74ff1b1abba7db04dd84ac28216ca8c83977cf0c3c66613b",
+        "test-pem.trs": "09416818c720b3bad5e7e2667490ad2e6075f8846f2346a7822a300f4a7bb6a2",
+        "test-persist.log": "39a9f4dfdb8021f1407c1d2ea6f1d1b9d1e1965a9b2ba2a3dbfda40f32ef0441",
+        "test-persist.trs": "d2e39ee331ca5994ec02ee5a7c6fd81ce13e9b5e7a47c3a068c93accee2d60a1",
+        "test-pin.log": "7721b10dd207f90b9be2bb1432028fa8657dbf73ca0ccfc765c805115c88a1c9",
+        "test-pin.trs": "c5bc74eab7054de88905f106fe54ce55fdae1c98f39b6eef9ee569891892f671",
+        "test-progname.log": "8f516cac7e35bd11066dd25b713c771f6a6935179e00e30de1625a180c9b653e",
+        "test-progname.trs": "976ed8fdf324eb7f8f7501ea3ce1abeaa3000b30c96b3a7291b0d421a10200b4",
+        "test-proxy.log": "314c4051f95a3b7825c74a1fa5167bc71622ffa1768e9325157d78a5fc863c2e",
+        "test-proxy.trs": "a4f4e1d89f20ce646a51f23ac3f879513dafaf8c15a918d773253333b0378cd7",
+        "test-proxy3.log": "86e2b6637ff95d769cff86c71fa846c3f6cb80d3d7ae69c6ec45f63315c3635e",
+        "test-proxy3.trs": "a4f4e1d89f20ce646a51f23ac3f879513dafaf8c15a918d773253333b0378cd7",
+        "test-rpc-message.log": "cd162cb2a5edfbe4e805310e82f5c81a0bc0ddd419a099138578975b4a345397",
+        "test-rpc-message.trs": "5c1774bdb1c10f6d4e1acd63c903490e414770d83508a8b4abbc692174a7d125",
+        "test-rpc.log": "1389c4801d837c836bef39fb5b1028d61ce1cb2f080cb297513aa8b6179fe95b",
+        "test-rpc.trs": "f8e5da746cd392aeb0bc57ed56e234c30c4edffd80462b2f651b2f5a9e412580",
+        "test-runtime.log": "6d33d72e781c0d6ce763a3469aa7d7a909717b26846ab8313b6651985ac4d8dd",
+        "test-runtime.trs": "09416818c720b3bad5e7e2667490ad2e6075f8846f2346a7822a300f4a7bb6a2",
+        "test-save.log": "52ce41229d526dca5d8d65bbefdea70bb51bb051c285a0515603800e1ee6b7ab",
+        "test-save.trs": "ab29310fbe2d1eb904fa3fd371782c5f77c1b3dec1a1c73fb7914fe1228095ce",
+        "test-server.log": "722074c08613ba082a76a6c7f3f8822d87033d2c21ef791d920ce0e131f4759f",
+        "test-server.trs": "c5bc74eab7054de88905f106fe54ce55fdae1c98f39b6eef9ee569891892f671",
+        "test-suite.log": "15414b28374f07200d23e21f3dc48fe0a22eed760c2b02878190ce6e8d8adff9",
+        "test-tests.log": "7f1cd1e5e1082751f51eaef70ec836f7a91ceccd69dcdb0eb383e32c26102eb3",
+        "test-tests.trs": "6b72d26b78d92ec48ec59376b0dd9497ce01545f4ce9d56a41b64a3a91740153",
+        "test-token.log": "1aaea97a0bab0c17d71b1b5f66aaba39987cebe2ba6f48e071654aef419eb243",
+        "test-token.trs": "d2e39ee331ca5994ec02ee5a7c6fd81ce13e9b5e7a47c3a068c93accee2d60a1",
+        "test-transport.log": "569fe841c68fb26c7506ce385c513f0fe2ea87cd06bb2e1be324e44e644b80bd",
+        "test-transport.trs": "566219f61afb12349258aecfd7e9dab8cf2cf610a0ef8f49c50ff097d51ebb0b",
+        "test-transport3.log": "58c296b59b01a7e3aff8b17b5052d9ca746c59e4f291e74ea48124c210fd9052",
+        "test-transport3.trs": "3844f258e6e12ee69624cc3b922166335b113800b783f01e43d38cd698b16424",
+        "test-uri.log": "53efc49e9d232706628f29f62ebc8fea5db59d20243f4a0eb3207f13650379ef",
+        "test-uri.trs": "74be51fa3d5f510d2083c7f0b824c5863b539d5f0ab7a18782a790c938c9f74f",
+        "test-url.log": "4a7443d85db41082d80767e49f2f510452f890ae26f6b9ecf63b27c6d4f0a9c2",
+        "test-url.trs": "9fcb93a25d29bf85271d24531b3740047d85d130da7ca1229752b86f6e3d9bc6",
+        "test-utf8.log": "07e208f404e4c9f57909f11acabedf21498f8ec8ba0ee7d290cfb6bc20dc2d7f",
+        "test-utf8.trs": "9fcb93a25d29bf85271d24531b3740047d85d130da7ca1229752b86f6e3d9bc6",
+        "test-util.log": "c85bea9491f2f213490ca365446cb71f91cb6a79e02cf48cec8978199bb0ece9",
+        "test-util.trs": "6b72d26b78d92ec48ec59376b0dd9497ce01545f4ce9d56a41b64a3a91740153",
+        "test-version.log": "54a1a2ded34663e602d3f65fbf886b01a00c2baf7e181373263d31fd82899484",
+        "test-version.trs": "976ed8fdf324eb7f8f7501ea3ce1abeaa3000b30c96b3a7291b0d421a10200b4",
+        "test-virtual.log": "525f71d96b36b464a02f6d4687ce4298625815f17675c6b2ad4ba46bfaacb49f",
+        "test-virtual.trs": "5dddb0d74ac9fd4ce3f50299d3ec68dce52ca4ce8332d2e59c5355b5da536bab",
+        "test-x509.log": "cfff462f44fc206e184027488801d0ae8a6a677ed0a710826efeefe86b8c4ad5",
+        "test-x509.trs": "7b247c4c3ece016e82481ce77af6db795cae3cab861dc4fc86c788efdda8a3a1"
+      },
+      "fixedVulnerabilities": [
+        "CVE-2026-13757",
+        "CVE-2026-18938"
+      ],
+      "jobId": 120953326544,
+      "lockSha256": "636bfbe8d9730e1838207edd9e3a6108f373d601c5b13591888913c8a042d046",
+      "packages": [
+        {
+          "file": "libp11-kit0_0.26.2-2+pasturestack.1_amd64.deb",
+          "name": "libp11-kit0",
+          "sha256": "b4d244aed0607da60c6c2da716fae1d66edc4a59449d5b598df613b84069702d",
+          "source": "p11-kit",
+          "version": "0.26.2-2+pasturestack.1"
+        },
+        {
+          "file": "p11-kit_0.26.2-2+pasturestack.1_amd64.deb",
+          "name": "p11-kit",
+          "sha256": "d816fde1ff781f00facca43d37684085c7286d7056ad990e40d3d162e6f511d6",
+          "source": "p11-kit",
+          "version": "0.26.2-2+pasturestack.1"
+        },
+        {
+          "file": "p11-kit-modules_0.26.2-2+pasturestack.1_amd64.deb",
+          "name": "p11-kit-modules",
+          "sha256": "1429e81a3a7ba4b148e0966af4abc441dcfd2179e41efd8fb1c8ad7016e94f4f",
+          "source": "p11-kit",
+          "version": "0.26.2-2+pasturestack.1"
+        }
+      ],
+      "runConclusion": "success",
+      "runId": 40121338859,
+      "runtimePackages": [
+        "libp11-kit0",
+        "p11-kit",
+        "p11-kit-modules"
+      ],
+      "sourceCommit": "2a47f3cd99b6afc47b54ee6d8837b834e95c50f2",
+      "sourceFiles": {
+        "server/security/ubuntu-backports/build-pcre2-backport.py": "79ff6faf3ca5b8e6dfdfc38a78ba56238c749aeabfab59fd05ce2130537458b2",
+        "server/security/ubuntu-backports/p11-kit/build-p11-kit-backport.py": "2c4e2e7357ebebc12c2698a4b626393cecd9b46ba84b3698934a4a912e75a96e",
+        "server/security/ubuntu-backports/p11-kit/p11-kit.lock.json": "636bfbe8d9730e1838207edd9e3a6108f373d601c5b13591888913c8a042d046",
+        "server/security/ubuntu-backports/p11-kit/test_p11_kit_backport.py": "16505ce478e2134dafc78e722ee40786d5390a99f60945abb684b2a9010deb86",
+        "server/security/ubuntu-backports/source_helpers.py": "d2b3f310f8ed99a50a696fe14094b7117ec5d7ed576e6080d5540c0e82891486"
+      },
+      "status": "qualified",
+      "vexScope": "Exact official recursion-limit security patches in qualified amd64 packages. CVE-2026-18938 is officially a 32-bit-only trigger; amd64 owning-suite PASS is not 32-bit execution coverage.",
+      "zipSha256": "2fab74734ae7e24d76b57a11d783fb0136399c05e9651f86019c68b8fa633f21"
+    },
+    "rust-coreutils": {
+      "artifactId": 12571737310,
+      "artifactName": "ubuntu-native-rust-coreutils-07e4a7afa827cb45514a72aba12f03b1d30d121d-40120637646",
+      "ciClosure": {
+        ".github/workflows/ubuntu-backport-native.yml": {
+          "currentSha256": "329ad26ee9f4b22f6fae37b8d680c9bcf6e9dc65e22a016d4225b1dcba606b79",
+          "nativeSha256": "f06a225d71f28b31f1592025ed272055aa54266c1c112bc08c70e55529d885f4",
+          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged."
+        },
+        "server/security/ubuntu-backports/Dockerfile.native-ci": {
+          "currentSha256": "ba6f233913a679b53f0234423a7c281e31c36b8305fde354b4ab177e05890f0b",
+          "nativeSha256": "bca055ed1bd8fd213a906eceb23c5ff3f9449d06acb51e249c976c3174d406bb",
+          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged."
+        }
+      },
+      "copyright": {
+        "file": "copyright",
+        "sha256": "f1ea5d8870ff83301cc4c129ecd5e0e3c998bd566a9b0036df899e84d9336bd6"
+      },
+      "evidence": {
+        "builder-packages.tsv": "6cdb72f354d275dcb8e34274fd324329a6734320c01b519c8c6898c62e27825d",
+        "copyright": "f1ea5d8870ff83301cc4c129ecd5e0e3c998bd566a9b0036df899e84d9336bd6",
+        "provenance.json": "f06fd1b74848aeb0ef9d23f38c3e0700e167d935e7c7fcf7879c8e3561c23391",
+        "rust-coreutils.lock.json": "e52adb460ec7b01accc2f3f9cb3dccc8923e2619d5ced41aae1722494c81bd41",
+        "rust-coreutils_0.10.0-1ubuntu2~26.04.1+pasturestack.1_amd64.buildinfo": "d87448f36eeb16399c10b4c16e0e46cb75bb6fa26274ff6c5e957da5c88e29bd",
+        "rust-coreutils_0.10.0-1ubuntu2~26.04.1+pasturestack.1_amd64.changes": "4fcc000e8f8629209b6e1e925548a6448dd9c2a836eb03590067116edc4f860e",
+        "strict-tests.log": "b4eba1bcfa7299a6fb2cbf76e19424cb1f19555779b71f14823a29b8bc43a3a7"
+      },
+      "fixedVulnerabilities": [
+        "CVE-2026-35370",
+        "CVE-2026-35371",
+        "CVE-2026-35341",
+        "CVE-2026-35344",
+        "CVE-2026-35345",
+        "CVE-2026-35348",
+        "CVE-2026-35350",
+        "CVE-2026-35351",
+        "CVE-2026-35352",
+        "CVE-2026-35354",
+        "CVE-2026-35357",
+        "CVE-2026-35359",
+        "CVE-2026-35360",
+        "CVE-2026-35363",
+        "CVE-2026-35364",
+        "CVE-2026-35367",
+        "CVE-2026-35368",
+        "CVE-2026-35373",
+        "CVE-2026-35374",
+        "CVE-2026-35377"
+      ],
+      "jobId": 120951205262,
+      "lockSha256": "e52adb460ec7b01accc2f3f9cb3dccc8923e2619d5ced41aae1722494c81bd41",
+      "packages": [
+        {
+          "file": "rust-coreutils_0.10.0-1ubuntu2~26.04.1+pasturestack.1_amd64.deb",
+          "name": "rust-coreutils",
+          "sha256": "f90cdece3ffa01acc9153e3741725febb696e02db8ccf6c0d0c4f98ff93ec609",
+          "source": "rust-coreutils",
+          "version": "0.10.0-1ubuntu2~26.04.1+pasturestack.1"
+        }
+      ],
+      "runConclusion": "success",
+      "runId": 40120637646,
+      "runtimePackages": [
+        "rust-coreutils"
+      ],
+      "sourceAudit": {
+        "originalReceiptSha256": "73189028622c0a0fc074067b4c5b8521094921531f95cf3e68073baaebd2fbbd",
+        "path": "rust-coreutils-original18-source-closure.json",
+        "sha256": "6057ffc353b5cdd86ba887354d2f1ee1f01afd11a4ba3bbca3f16b2b4600b3a5"
+      },
+      "sourceCommit": "07e4a7afa827cb45514a72aba12f03b1d30d121d",
+      "sourceFiles": {
+        "server/security/ubuntu-backports/rust-coreutils/build-rust-coreutils-backport.py": "c94021aa839dfe37ad69978cc8d9d4e27308453c83a318d07ada3d4b1f42a6f0",
+        "server/security/ubuntu-backports/rust-coreutils/native-tests.mk": "8474160f550e8475fe743ce2fe737bdb60d097aaabfb7859fd4a2144c216215d",
+        "server/security/ubuntu-backports/rust-coreutils/rust-coreutils.lock.json": "e52adb460ec7b01accc2f3f9cb3dccc8923e2619d5ced41aae1722494c81bd41",
+        "server/security/ubuntu-backports/rust-coreutils/test_rust_coreutils_backport.py": "7ab36b954fcb2248489d69ad1ec08ba7aa578027bba3ccb8b4cb40dae6e65702"
+      },
+      "status": "qualified",
+      "vexScope": "Exact qualified rust-coreutils package bytes: the new id CVEs use the official ff382 backport and packaged GID checks; the other 18 have an independently reviewed exact Ubuntu orig + enabled quilt source/control audit, bound to this native lock, provenance and package SHA. Source closure does not claim new CVE-specific dynamic execution: retain 84 upstream ignored, 17 original filtered tests, missing dd/split unit execution and the logname real-login limitation. Consumer images still require native Trivy --vex, installation and product acceptance.",
+      "zipSha256": "7f4b4780a492425bb9de239d67c6d594ccd3e8c0c85ac03eaa85035248ac5e2b"
+    }
+  },
+  "pcre2": {
+    "copyrightEvidence": {
+      "creationHunkLines": 122,
+      "path": "debian/copyright",
+      "source": {
+        "name": "pcre2_10.46-1build1.diff.gz",
+        "sha256": "3534c69dec410207e74bf9fd6ed334ad5827fb6de1d0715175b7a14257c5bc72",
+        "size": 8804,
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/p/pcre2/pcre2_10.46-1build1.diff.gz"
+      }
+    },
+    "copyrightSha256": "e915cde4251f96ec6af107ecd2e194440a4e69440893b0c982802f8a1e4ae40a",
+    "fixedVulnerabilities": [
+      "CVE-2026-103111",
+      "CVE-2026-86145",
+      "CVE-2026-89156",
+      "CVE-2026-89157",
+      "CVE-2026-89158",
+      "CVE-2026-89160",
+      "CVE-2026-89161",
+      "CVE-2026-89162"
+    ],
+    "kind": "fresh-production-target",
+    "lockSha256": "c9bddd7006761549e30843a83c097fa4019b1a58262755a1c2dc23e10ba0aeb5",
+    "runtimePackages": [
+      "libpcre2-8-0",
+      "libpcre2-posix3"
+    ],
+    "sourceCommit": "9abef4712901981e5917c41356bb261974fdba47",
+    "sourceFiles": {
+      "server/Dockerfile.web-compose-release": "17de14127a2414ecc8b410f483b46582aa252964bcc849a83678665cdefda1bb",
+      "server/scripts/download-ubuntu-security-updates.sh": "4284321d2b73802046d706f5fbd683b88ffc351187be8bc93d20bd3cf97b7216",
+      "server/security/ubuntu-backports/build-pcre2-backport.py": "79ff6faf3ca5b8e6dfdfc38a78ba56238c749aeabfab59fd05ce2130537458b2",
+      "server/security/ubuntu-backports/pcre2.lock.json": "c9bddd7006761549e30843a83c097fa4019b1a58262755a1c2dc23e10ba0aeb5",
+      "server/security/ubuntu-security-packages.lock": "8e43275a0b7b13a2a5d825eea2b15c68ec75a27f50dd6c0f497aadba164c6704"
+    },
+    "sourceTag": "v1.6.551",
+    "target": "runtime_security_packages",
+    "version": "10.46-1build1+pasturestack.1",
+    "vexScope": "Fresh build of the exact released Server v1.6.551 runtime_security_packages producer and its pinned official release/pcre2-10.46 backports. All three original owning suites must PASS; exact generated runtime package hashes are in the bundle manifest."
+  },
+  "platform": {
+    "architecture": "amd64",
+    "distribution": "ubuntu",
+    "release": "26.04"
+  },
+  "repository": "PastureStack/server",
+  "schemaVersion": 1,
+  "trackedScopes": {
+    "consumerStatus": "NOT_PRODUCT_REMEDIATION_PROOF",
+    "schemaVersion": 1,
+    "statements": [
+      {
+        "reason": "All 18 exact Ubuntu orig + enabled quilt security controls were reviewed with no effective revert, and are bound to the qualified native artifact, source lock, provenance and package SHA. This is component-source evidence; consumer/product remediation remains a separate gate.",
+        "scope": "rust-coreutils prior fixes",
+        "sourceAudit": {
+          "originalReceiptSha256": "73189028622c0a0fc074067b4c5b8521094921531f95cf3e68073baaebd2fbbd",
+          "path": "rust-coreutils-original18-source-closure.json",
+          "sha256": "6057ffc353b5cdd86ba887354d2f1ee1f01afd11a4ba3bbca3f16b2b4600b3a5"
+        },
+        "status": "qualified_component_source_closed",
+        "vulnerabilities": [
+          "CVE-2026-35341",
+          "CVE-2026-35344",
+          "CVE-2026-35345",
+          "CVE-2026-35348",
+          "CVE-2026-35350",
+          "CVE-2026-35351",
+          "CVE-2026-35352",
+          "CVE-2026-35354",
+          "CVE-2026-35357",
+          "CVE-2026-35359",
+          "CVE-2026-35360",
+          "CVE-2026-35363",
+          "CVE-2026-35364",
+          "CVE-2026-35367",
+          "CVE-2026-35368",
+          "CVE-2026-35373",
+          "CVE-2026-35374",
+          "CVE-2026-35377"
+        ]
+      },
+      {
+        "reason": "No qualified tar package is part of this 12-runtime-package bundle; CVE-2026-18508 requires a separate structural API assessment.",
+        "scope": "tar",
+        "status": "not_in_bundle",
+        "vulnerabilities": [
+          "CVE-2026-18477",
+          "CVE-2026-18508"
+        ]
+      },
+      {
+        "reason": "jq uses system Oniguruma. No claim about Ruby/Onigmo, other runtime dependency packages or build-host scanners is made.",
+        "scope": "Ruby/Onigmo build-host dependency gap",
+        "status": "tracked_separately"
+      },
+      {
+        "reason": "A scratch bundle scan with zero OS findings does not establish that these deb payloads or eventual consumer root filesystems are free of vulnerabilities.",
+        "scope": "consumer images",
+        "status": "pending_install_rootfs_scan_and_product_acceptance"
+      }
+    ]
+  },
+  "vexTimestamp": "2026-10-25T00:00:00Z"
+}

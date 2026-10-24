@@ -63,6 +63,14 @@ jobs:
         shell: bash
         run: python3 scripts/test-published-install-gate.py
 
+      - name: Test the qualified backport bundle contracts
+        if: matrix.language == 'python'
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 -B server/security/ubuntu-backports/bundle/test_qualify_native_packages.py
+          python3 -B server/security/ubuntu-backports/bundle/test_verify_consumer_evidence.py
+
       - name: Set up the production Go compiler
         if: matrix.language == 'go'
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
@@ -122,6 +130,23 @@ jobs:
             -buildvcs=false \
             -ldflags='-s -w -buildid=' \
             -o "$RUNNER_TEMP/codeql-go-build/pasturestack-console-broker" .
+
+      - name: Build and test the static image-build backport installer
+        if: matrix.language == 'go'
+        working-directory: server/security/ubuntu-backports/bundle/installer
+        shell: bash
+        env:
+          CGO_ENABLED: '0'
+          GOOS: linux
+          GOARCH: amd64
+          GOTOOLCHAIN: local
+          GOPROXY: 'off'
+        run: |
+          set -Eeuo pipefail
+          test "$(go env GOVERSION)" = 'go1.27.3'
+          go test -mod=readonly ./...
+          go build -mod=readonly -trimpath -buildvcs=false -ldflags='-s -w -buildid=' \
+            -o "$RUNNER_TEMP/codeql-go-build/pasturestack-install-ubuntu-backports" .
 
       - name: Compile Java sources with the production Engine libraries
         if: matrix.language == 'java-kotlin'

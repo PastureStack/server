@@ -1,0 +1,25 @@
+# syntax=docker/dockerfile:1.7
+# This is a build-only data artifact. It has no runtime entrypoint.
+FROM golang:1.27.3-bookworm@sha256:972b4110ba0f47539a975c31e52c64765e1ff19f2d74469ae4a595c6676e80a5 AS installer_build
+WORKDIR /src
+COPY installer/ ./
+RUN set -eux; \
+    test "$(go env GOVERSION)" = go1.27.3; \
+    export CGO_ENABLED=0 GOTOOLCHAIN=local GOOS=linux GOARCH=amd64 GOPROXY=off GOSUMDB=off; \
+    test -z "$(gofmt -l .)"; \
+    go test -mod=readonly ./...; \
+    go build -mod=readonly -trimpath -buildvcs=false -ldflags='-s -w -buildid=' \
+      -o /out/install-existing-backports .
+
+FROM scratch AS installer_export
+COPY --from=installer_build /out/install-existing-backports /install-existing-backports
+
+FROM scratch AS bundle
+ARG SOURCE_SHA
+LABEL org.opencontainers.image.title="Ubuntu security backport package inputs" \
+      org.opencontainers.image.version="0.1.0" \
+      org.opencontainers.image.source="https://github.com/PastureStack/server" \
+      org.opencontainers.image.revision="${SOURCE_SHA}" \
+      org.opencontainers.image.description="First-party qualified amd64 Ubuntu 26.04 deb inputs; consumer rootfs validation is separate."
+COPY out/ /out/
+COPY out/install-existing-backports /bundle/install-existing-backports
