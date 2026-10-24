@@ -752,7 +752,7 @@ def record_consumer_tests():
     manifest_sha = file_sha(output / 'manifest.json')
     records = []
     checks = ['batch-install', 'verify-installed', 'package-set', 'provider', 'docs-restored',
-              'glibc-loader', 'jq', 'id', 'p11-kit', 'grep', 'getent']
+              'glibc-loader', 'jq', 'libjq-RTLD_NOW-TLS-threads', 'id', 'p11-kit', 'grep', 'getent']
     for provider in ['gnu', 'uutils']:
         source = WORK / ('consumer-' + provider)
         result = json.loads((source / 'result.json').read_text())

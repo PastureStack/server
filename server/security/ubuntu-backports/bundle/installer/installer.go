@@ -107,7 +107,7 @@ func parseControl(b []byte) (map[string]string, error) {
 	}
 	return result, nil
 }
-func (i Installer) archive(p Package, payload Payload) error {
+func (i Installer) archive(p Package, payload Payload, qualified map[string][]byte) error {
 	archive := filepath.Join(i.bundle, filepath.FromSlash(p.Archive.Path))
 	b, err := i.run.Run("/usr/bin/dpkg-deb", "--field", archive)
 	if err != nil {
@@ -128,7 +128,17 @@ func (i Installer) archive(p Package, payload Payload) error {
 	if err != nil {
 		return err
 	}
-	return validateArchive(b, payload)
+	images, err := verifiedArchiveELFs(b, payload)
+	if err != nil {
+		return err
+	}
+	for name, content := range images {
+		if previous, exists := qualified[name]; exists && digest(previous) != digest(content) {
+			return fmt.Errorf("conflicting qualified ELF path: %s", name)
+		}
+		qualified[name] = content
+	}
+	return nil
 }
 
 var exactDependency = regexp.MustCompile(`(?:^|[,|])\s*([a-z0-9][a-z0-9+.-]*)(?::[a-z0-9-]+)?\s*\(=\s*([^()]+)\)`)
@@ -376,6 +386,7 @@ func (i Installer) Execute(install bool) (Receipt, error) {
 		return r, err
 	}
 	selected := []Package{}
+	qualified := map[string][]byte{}
 	for _, p := range m.Packages {
 		old, exists := installed[p.Name]
 		if !exists {
@@ -390,7 +401,7 @@ func (i Installer) Execute(install bool) (Receipt, error) {
 		if _, err = i.run.Run("/usr/bin/dpkg", "--compare-versions", old.Version, "le", p.Version); err != nil {
 			return r, fmt.Errorf("refuse downgrade: %s", p.Name)
 		}
-		if err = i.archive(p, payloads[p.Name]); err != nil {
+		if err = i.archive(p, payloads[p.Name], qualified); err != nil {
 			return r, err
 		}
 		selected = append(selected, p)
@@ -438,7 +449,7 @@ func (i Installer) Execute(install bool) (Receipt, error) {
 				includes = append(includes, "/"+f.Path)
 			}
 		}
-		if err = checkABI(i.root, payloads[p.Name]); err != nil {
+		if err = checkABI(i.root, payloads[p.Name], qualified); err != nil {
 			return r, err
 		}
 	}

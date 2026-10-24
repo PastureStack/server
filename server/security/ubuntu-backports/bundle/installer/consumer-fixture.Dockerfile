@@ -1,5 +1,19 @@
 # syntax=docker/dockerfile:1.7
 # Disposable prepublication consumer acceptance; never used as a product image.
+FROM golang:1.27.3-bookworm@sha256:972b4110ba0f47539a975c31e52c64765e1ff19f2d74469ae4a595c6676e80a5 AS embedding_probe
+# The public API headers come from the same immutable official release as the
+# qualified package. The probe dynamically loads libjq in the Ubuntu consumer;
+# neither libjq nor libm is linked into the executable at build time.
+ADD --checksum=sha256:71b8d6e8f5fe81f6c6d0d110e3892251f6ce76ed095abd315e26e6e1193af3af https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-1.8.2.tar.gz /tmp/jq.tar.gz
+COPY testdata/consumer-libjq-probe.c /src/consumer-libjq-probe.c
+RUN set -eux; \
+    mkdir /tmp/headers; \
+    tar --extract --gzip --file /tmp/jq.tar.gz --directory /tmp/headers --strip-components=2 jq-1.8.2/src/jq.h jq-1.8.2/src/jv.h; \
+    cc -std=gnu11 -Wall -Wextra -Werror -O2 -pthread -isystem /tmp/headers \
+      /src/consumer-libjq-probe.c -ldl -o /consumer-libjq-probe; \
+    readelf --dynamic /consumer-libjq-probe >/tmp/probe-dynamic.txt; \
+    if grep -E 'NEEDED.*\[(libjq|libm)\.' /tmp/probe-dynamic.txt; then exit 1; fi
+
 FROM ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b AS consumer
 ARG PROVIDER=gnu
 ENV DEBIAN_FRONTEND=noninteractive
@@ -57,6 +71,7 @@ apt-get install --no-install-recommends --reinstall -y "$@"
 rm -rf /var/lib/apt/lists/* /tmp/ca-bootstrap /tmp/ca-certificates.deb
 SH
 COPY consumer-smoke.sh /consumer-smoke.sh
+COPY --from=embedding_probe /consumer-libjq-probe /consumer-libjq-probe
 RUN --mount=from=qualified,source=/out,target=/opt/pasturestack/ubuntu-security-backports,ro \
     /bin/bash /consumer-smoke.sh "$PROVIDER"
 

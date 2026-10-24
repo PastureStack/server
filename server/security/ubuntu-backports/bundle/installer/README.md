@@ -18,8 +18,14 @@ libc-gconv-modules-extra; rust-coreutils; jq and libjq1; p11-kit,
 p11-kit-modules and libp11-kit0; and libxrender1. Archives, complete non-directory
 payload receipts, source provenance and qualification are SHA256-bound. The
 installer independently reads each selected archive's control and tar stream,
-checks every file/link and ELF identity, and preserves existing SONAME, NEEDED
-and exported symbols before installation. The publisher qualifies native owning
+checks every file/link and ELF identity, and preserves existing SONAME, library
+dependencies and exported symbols before installation. The sole additive
+dependency accepted is the amd64 system loader for a verified
+`__tls_get_addr@GLIBC_2.3` import: every original dependency must remain, no other
+loader import may be added, and the installed loader must provide that exact
+symbol version. Unknown dependencies or missing provider symbols fail before
+installation. This platform TLS rule does not special-case a product or package.
+The publisher qualifies native owning
 test evidence; consumer installation and product acceptance remain separate.
 
 Only packages already installed in the consumer are selected. The package set
@@ -54,6 +60,10 @@ packages and no Rust; the uutils fixture has all twelve. Both consume the same
 read-only qualified bundle bytes, restore deliberately path-excluded docs,
 perform actual install/verify, preserve package set and provider, and exercise
 the installed glibc loader/cache, jq, id, p11-kit, PCRE grep and NSS getent.
+A separate test-only C probe uses the official jq release headers and
+`dlopen(..., RTLD_NOW)` without linking libjq or libm into the executable. Four
+threads each execute 128 runtime sorts using independent jq states, starting at
+a barrier. The compiler, headers and probe remain outside product images.
 `result.json` and the console/install/verify receipts are exported. These are
 isolated consumer fixtures. GNU baseline construction follows Ubuntu's documented
 provider transition, including its required `--allow-remove-essential` option;

@@ -87,6 +87,7 @@ getconf GNU_LIBC_VERSION | tee "$evidence/glibc-version.txt" | grep -Fx 'glibc 2
 ldd /usr/lib/x86_64-linux-gnu/libXrender.so.1 >"$evidence/libxrender-loader.txt"
 if grep -F 'not found' "$evidence/libxrender-loader.txt"; then exit 1; fi
 printf '%s\n' '{"numbers":[1,2,3]}' | jq -e '.numbers | add == 6'
+timeout 30 /consumer-libjq-probe | tee "$evidence/libjq-embedding.txt"
 test "$(id -u)" = 0
 test "$(id -g)" = 0
 id -G >"$evidence/id-groups.txt"
@@ -96,5 +97,5 @@ getent passwd root | tee "$evidence/getent-root.txt" | grep -E '^root:[^:]*:0:0:
 test "$input_manifest_sha" = "$(sha256sum "$data/manifest.json" | awk '{print $1}')"
 jq -n --arg provider "$provider" --arg manifest "$input_manifest_sha" \
     --slurpfile receipt "$evidence/install.json" \
-    '{schemaVersion:1,provider:$provider,status:"PASS",inputManifestSha256:$manifest,selectedPackages:$receipt[0].packages,checks:["batch-install","verify-installed","package-set","provider","docs-restored","glibc-loader","jq","id","p11-kit","grep","getent"]}' >"$evidence/result.json"
+    '{schemaVersion:1,provider:$provider,status:"PASS",inputManifestSha256:$manifest,selectedPackages:$receipt[0].packages,checks:["batch-install","verify-installed","package-set","provider","docs-restored","glibc-loader","jq","libjq-RTLD_NOW-TLS-threads","id","p11-kit","grep","getent"]}' >"$evidence/result.json"
 cat "$evidence/result.json"
