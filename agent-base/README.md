@@ -1,10 +1,18 @@
 # Node agent image builds
 
-The compatibility base targets `ghcr.io/pasturestack/node-agent-base:v0.3.6`.
+The compatibility base targets `ghcr.io/pasturestack/node-agent-base:v0.3.7`.
 It builds Python 3.14.9 from the official SHA-256-verified archive, retains
 Docker CLI 29.9.2 (official Go 1.26.10 build), and uses the fixed Ubuntu 26.04 snapshot
 `20261023T000000Z`. Builder and runtime package inventories are compared;
-the runtime verifies the patched OpenSSL, curl, libc and CA package versions.
+only exact qualified security-backport versions may differ in the final runtime.
+The Python compiler stage keeps its original libc. The runtime verifies the
+patched OpenSSL, curl, libc and CA package versions.
+
+The digest-pinned, build-only Ubuntu backport bundle updates only already
+installed packages, preserving the existing coreutils provider and package set.
+Its source/native-test qualification, package manifest and installation receipt
+are retained under `/usr/share/pasturestack/security/ubuntu-backports/`.
+The bundle and installer are read-only build mounts, not runtime dependencies.
 
 The shared `tools/pip-security-overlay` helper builds the clearly identified
 downstream wheel `pip 26.2.2+pasturestack.1` from pinned official inputs using
