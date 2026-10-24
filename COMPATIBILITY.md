@@ -1,8 +1,36 @@
 # Compatibility Contract
 
+<a id="server-v16551-release-assets"></a>
+
+## Server v1.6.551 published
+
+The immutable linux/amd64 image is
+`ghcr.io/pasturestack/server:v1.6.551@sha256:150c3eaa2d84df6236e7634843e506a79df71d9e434ad2038427108c14ac358e`,
+produced from `9abef4712901981e5917c41356bb261974fdba47` in successful
+[run 40120970328](https://github.com/PastureStack/server/actions/runs/40120970328).
+All 33 assets passed anonymous byte/checksum readback. The Host API archive also
+matches its original producer SHA-256, retains its internal checksums and binary,
+and both image attestations bind the exact producer and digest.
+
+The 550 PCRE2 fixes, Web Console 1.6.195, Engine v0.183.354 and other component
+inputs are unchanged. The 8080 cutover, one restart, package integrity/linkage,
+MariaDB regex controls and three active Host/Agent states passed. Configuration,
+three existing data volumes, socket bind, AppArmor and the 550 rollback were
+preserved. No production site, HAProxy or firewall was changed.
+
+The scan retains 13 pending LOW/MEDIUM occurrences across 10 CVEs. Unrelated
+native candidates and build-host coverage are separate; none is presented as a
+remediated consumer. See the [release note](docs/releases/server-1.6.551.md).
+
 <a id="server-v16550-pcre2-backports"></a>
 
 ## Server v1.6.550 published
+
+The Server image is valid, but its standalone Host API Release attachment was
+mistakenly replaced with an empty gzip during manual publication completion.
+Use 551 or the original Host API producer release for that download. The immutable
+bad attachment is retained as failure evidence; checksum self-consistency alone
+did not establish producer identity. See the [correction](docs/releases/server-1.6.550.md).
 
 The immutable one-layer linux/amd64 identity is
 `ghcr.io/pasturestack/server:v1.6.550@sha256:03542028c3ce4be11d7ff87f96beddf5179c67caf9f0d28ad57043acf3cf52c5`,
@@ -10,8 +38,9 @@ produced from `54deb98ee33ffab78437070d61179b602844182e` in
 [run 40116218929](https://github.com/PastureStack/server/actions/runs/40116218929).
 All 34 assets passed anonymous checksum readback; both image provenance and SBOM
 attestations bind the same digest and producer. The original job remains failed
-at its final release-note heading check. The exact signed image and original CI
-bytes completed publication without a rebuild or tag overwrite; see the immutable
+at its final release-note heading check. The exact signed image completed
+publication without a rebuild or tag overwrite; the attachment correction above
+supersedes the broader asset claim in the original immutable
 [completion receipt](https://github.com/PastureStack/server/releases/download/v1.6.550/publication-recovery.json).
 The permanent note preflight now validates the actual candidate document.
 
