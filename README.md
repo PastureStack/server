@@ -11,37 +11,24 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current source candidate
+## Current release
 
-Server `v1.6.549` is a prepared source candidate, not a published image.
-It consumes the verified Web Console `1.6.195` producer and preserves its independent browser runtime
-SBOM alongside the exact static archive, source commit and lock identity.
-The SBOM retains its explicit incomplete coverage and known opaque inputs;
-build dependencies and GitHub runner Ruby inventories remain separate.
-Web producer [40086505425](https://github.com/PastureStack/web-console/actions/runs/40086505425)
-passed its container Ruby-absence checks before and after the build.
-This candidate is not yet available from GHCR. The numeric examples below are
-prepared for `ghcr.io/pasturestack/server:v1.6.549`; run them only after its official release
-and image have been published and read back.
-See the [549 candidate note](docs/releases/server-1.6.549.md) and
-[compatibility contract](COMPATIBILITY.md#server-v16549-web-console-sbom).
-The latest published Server is [`v1.6.548`](https://github.com/PastureStack/server/releases/tag/v1.6.548);
-its [release note](docs/releases/server-1.6.548.md) retains the verified image identity.
+Server [`v1.6.549`](https://github.com/PastureStack/server/releases/tag/v1.6.549) is published.
+It packages Web Console `1.6.195` with an independent browser runtime SBOM,
+exact artifact identity and component vulnerability lookup. All 34 immutable
+release assets, the image provenance and SBOM attestations were verified.
+The browser inventory retains incomplete coverage for six unsupported snapshots;
+zero reported browser findings is not a claim of zero risk.
 
-## Previous published release
-
-Server [`v1.6.548`](https://github.com/PastureStack/server/releases/tag/v1.6.548) is published.
-It retains the security refresh and uses Catalog `v0.3.16` with Network Plugin
-Manager `v0.8.25` and Metadata Service `v0.10.6` for CNI provider handoff and
-opaque metadata change-token preservation during infrastructure upgrades.
-Authentication, API Key authorization and host registration contracts remain unchanged.
-Engine `v0.183.354`, Web Console `1.6.194`, Host API `0.38.8`,
-WebSocket Proxy `0.23.18`, and Temurin `25.0.5+8` are verified component inputs.
-See the [548 release note](docs/releases/server-1.6.548.md) and
-[compatibility contract](COMPATIBILITY.md#server-v16548-provider-watch)
-for dependency identities and acceptance boundaries.
-Scoped infrastructure upgrades, browser checks and controlled Server restarts
-passed; this is not a complete feature-matrix claim.
+Engine `v0.183.354`, Catalog `v0.3.16`, Host API `0.38.8`, Node Agent `0.13.33`
+and Temurin `25.0.5+8` retain their reviewed inputs. Authentication, API Key
+authorization, host registration and operator settings remain unchanged.
+The scoped 8080 upgrade, packaged SBOM readback, browser authentication,
+seven JSON APIs, session refresh and WebSocket smoke passed with the existing
+configuration and volumes preserved. This is not a full feature-matrix claim.
+See the [549 release note](docs/releases/server-1.6.549.md) and
+[compatibility contract](COMPATIBILITY.md#server-v16549-web-console-sbom)
+for exact identities, attachment recovery and acceptance boundaries.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -68,8 +55,7 @@ Maintained CLI `0.6.20` propagates rejected requests as nonzero errors. Legacy `
 ## Quick start
 
 Public GHCR downloads do not require a registry login. Keep all three named volumes.
-The examples below use the prepared numeric `v1.6.549` tag; run them only after its official release.
-This candidate is not yet available from GHCR.
+The examples below use the published numeric `v1.6.549` tag.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \

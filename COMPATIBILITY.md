@@ -2,36 +2,55 @@
 
 <a id="server-v16549-web-console-sbom"></a>
 
-## Server v1.6.549 prepared, not published
+## Server v1.6.549 published
 
-This source candidate consumes Web Console `1.6.195` from verified producer
-`f905bc12daae18d98a6ac65942625562fff2a424`,
-[run 40086505425](https://github.com/PastureStack/web-console/actions/runs/40086505425).
-Its archive and independent
-browser runtime CycloneDX SBOM must match the declared release version, source
-commit, archive SHA-256, lock SHA-256 and SBOM SHA-256 before packaging.
-The original SBOM bytes are retained at
-`/usr/share/licenses/pasturestack/web-console/runtime.cdx.json` and are copied
-from the actual candidate rootfs into the Server release evidence with their
-own checksum and identity receipt. The browser inventory remains separate
-from the OS SBOM and preserves its `coverage=incomplete` limitations.
-Its independent fresh-DB component scan must identify every npm PURL and pass
-the unchanged exact finding gate; unsupported snapshots are itemized as unknown,
-without applying OS VEX or treating zero scanner findings as full coverage.
-The exact archive/SBOM/lock identities are recorded in the
-[candidate note](docs/releases/server-1.6.549.md); their verification does not
-establish publication or deployment acceptance for Server v1.6.549.
+Producer `ed3f334f2c371a3038ca5fe3e63c6581c8c1aabf` completed the source,
+build, security, startup/restart, image publication and both attestation steps in
+[run 40096562378](https://github.com/PastureStack/server/actions/runs/40096562378).
+The original job remains failed because GitHub rejected its zero-byte browser
+findings attachment. The same verified CI reports were recovered as 34 immutable
+release assets, with the empty TSV losslessly encoded as deterministic gzip.
+The published [recovery receipt](https://github.com/PastureStack/server/releases/download/v1.6.549/publication-recovery.json)
+records this transport-only completion; no image was rebuilt or tag overwritten.
+All assets passed anonymous checksum readback, and both image attestations were
+independently verified against the exact producer and image.
 
-GitHub runner Ruby/toolcache presence is build-host evidence, not a shipped
-browser dependency or an established reachable product vulnerability. The
-Ubuntu Ruby backport status and unobserved SDK activation remain tracked as
-unknowns; an absent scanner CVE is not evidence of remediation.
+The one-layer linux/amd64 image identity is
+`ghcr.io/pasturestack/server:v1.6.549@sha256:dae1c8e490e012a030855d73d7af0bfcd85f4c9d9bf94148664d492c35e5684c`.
+Its distinct OCI config is
+`sha256:ba535844f1b3e37ad3be74c7037ef7be90cd186f7058dad9a421de4d95f09a24`.
+Installation examples retain only the numeric tag.
 
-The existing six-stage build, final one-layer publication process, component
-pins other than Web Console, runtime security thresholds, named volumes and
-operator settings are retained. Publication and scoped deployment acceptance
-have not been established for this candidate. See the
-[candidate note](docs/releases/server-1.6.549.md).
+Web Console `1.6.195` retains producer
+`f905bc12daae18d98a6ac65942625562fff2a424` and its original browser runtime SBOM
+at `/usr/share/licenses/pasturestack/web-console/runtime.cdx.json`. Its archive,
+source, version, lock and SBOM hashes passed identity checks. The independent
+fresh-DB scan recognized all 87 npm PURLs, reported zero browser findings and
+explicitly retained six unsupported source snapshots as unknown. The SBOM and
+coverage report remain `incomplete`; no OS VEX or not-affected disposition is
+applied to these snapshots.
+
+The complete runtime gate retains 51 raw findings and 29 exact, officially
+unfixed LOW/MEDIUM occurrences across 18 CVEs after existing VEX dispositions.
+HIGH/CRITICAL, available fixes, unregistered findings and secrets are zero.
+Tracking is not remediation or zero risk. Build-host Ruby inventories and
+unmeasured Server intermediate-stage packages remain separate from runtime
+coverage. The Web195 Node build container passed Ruby-absence gates before and
+after building; this does not establish Ruby absence on the enclosing runner.
+
+The same digest passed the scoped 8080 cutover with environment, HostConfig,
+all three data volumes, the existing Docker socket bind and AppArmor preserved.
+Actual-container readback verified
+Server 549, Web195 and the producer's original runtime SBOM hash. Chrome155
+passed OIDC with IdP and platform TOTP, seven JSON API reads, three active
+Hosts/Agents, session refresh and a received WebSocket frame. The successful
+pass had no browser/HTTP/request errors or passive DELETE requests.
+
+The six-stage build, final one-layer publication process, other component pins,
+named volumes and operator settings are retained. This scope did not rerun the
+full permission matrix or add a manual Server restart. See the
+[release note](docs/releases/server-1.6.549.md) for retained fixture failures,
+the consistent backup, acceptance boundaries and rollback guidance.
 
 <a id="server-v16548-provider-watch"></a>
 

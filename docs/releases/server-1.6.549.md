@@ -1,9 +1,35 @@
-# Server v1.6.549 candidate
+# Server v1.6.549
 
-Prepared source only; no Server image or release has been published.
-The Web Console 1.6.195 producer, archive, runtime SBOM and lock pins are bound
-to its successful official producer evidence. Server publication and deployment
-acceptance remain separate and have not been established.
+Published from producer `ed3f334f2c371a3038ca5fe3e63c6581c8c1aabf` using the
+image and evidence produced by
+[run 40096562378](https://github.com/PastureStack/server/actions/runs/40096562378).
+All 34 immutable release assets passed anonymous SHA-256 readback. Image
+provenance and SBOM attestations were independently verified against the exact
+source, workflow and image identity.
+
+Published image identity:
+`ghcr.io/pasturestack/server:v1.6.549@sha256:dae1c8e490e012a030855d73d7af0bfcd85f4c9d9bf94148664d492c35e5684c`.
+The distinct OCI config is
+`sha256:ba535844f1b3e37ad3be74c7037ef7be90cd186f7058dad9a421de4d95f09a24`.
+The linux/amd64 image has one runtime layer. Installation examples use only
+the numeric `ghcr.io/pasturestack/server:v1.6.549` tag.
+
+## Attachment recovery
+
+The original workflow conclusion remains `failure`. Its source, build,
+rootfs-equivalence, security, startup/restart, image push and two attestation
+steps passed; the final release upload failed with HTTP 400 `Bad Content-Length`
+when sending the valid zero-byte browser findings TSV.
+
+The preserved official CI artifact and its checksums were verified before
+completing the release. Its empty TSV was losslessly encoded as deterministic
+gzip, the checksum manifest was regenerated for that transport filename, and
+`publication-recovery.json` was included as the 34th public asset. The
+[recovery receipt](https://github.com/PastureStack/server/releases/download/v1.6.549/publication-recovery.json)
+records the original job, artifact hash, successful steps, exact image digest
+and byte-identical decompression. The image was not rebuilt, its tag was not
+overwritten, and no security gate was bypassed. The permanent upload fix is
+[PR353](https://github.com/PastureStack/server/pull/353).
 
 ## Verified component inputs
 
@@ -29,8 +55,8 @@ acceptance remain separate and have not been established.
 
 The original browser runtime SBOM is stored at
 `/usr/share/licenses/pasturestack/web-console/runtime.cdx.json`. The publisher
-reads that same file from the actual candidate rootfs, verifies its pinned
-identity, and retains `web-console-runtime.cdx.json`, its SHA-256 sidecar and
+read that same file from the actual image rootfs, verified its pinned
+identity, and retained `web-console-runtime.cdx.json`, its SHA-256 sidecar and
 `web-console-sbom-identity.txt` as separate Server release assets.
 No normalization or merge into the OS SBOM changes the producer's bytes.
 
@@ -42,6 +68,19 @@ exact-set release gate: HIGH/CRITICAL, available fixes and every unregistered
 finding block publication. The existing Ubuntu no-fix ledger is not expanded.
 The raw/effective scan reports, coverage report and browser findings table are
 included in the release checksum manifest.
+
+The published scan recognized all 87 npm PURLs and reported zero browser
+findings. Six source snapshots remain unsupported by ecosystem lookup:
+Bootstrap 3 presentation compatibility, Bootswatch Cosmo, PastureStack icons,
+Lato webfonts, the frozen noVNC bundle and jQuery.PositionCalculator. Their
+references and source hashes remain itemized in the published
+[coverage report](https://github.com/PastureStack/server/releases/download/v1.6.549/web-console-runtime-scan-coverage.json).
+Raw and effective report SHA-256 are both
+`8f35d4bd158998acc75d48ebb9c4c32e6fcc3b9e657b590ff177931022767b76`.
+The scan used Trivy `0.74.0`; its DB was fresh at scan time with SHA-256
+`9f227eaae45c4fa4d8b3e4baea563e4aca69de04c7fef933e469cfb66b8ccfa0`.
+The published findings report is `web-console-runtime-vulnerabilities.tsv.gz`;
+decompression yields the original zero-row TSV.
 
 The coverage report binds recognized npm PURLs to scanner package inventory,
 records the scanner and exact DB identity, and lists unsupported snapshots with
@@ -74,16 +113,55 @@ and absence gates found no Ruby interpreter, libruby, RubyGems or Onigmo in that
 container. This result does not describe the enclosing GitHub runner or every
 Server intermediate stage.
 
-## Security, publication and acceptance boundaries
+## Security and acceptance boundaries
 
-The existing Server runtime CVE/VEX dispositions and scanner thresholds are
-retained with the v1.6.549 release binding. Fresh source, image, security,
-startup/restart, rootfs equivalence and release readback checks remain required;
-the earlier v1.6.548 results are not a v1.6.549 release or deployment PASS.
-The six-stage build and final one-layer publication process are preserved.
+The complete runtime gate retains 51 raw findings and, after exact existing
+VEX dispositions, 29 officially unfixed LOW/MEDIUM occurrences across 18 CVEs.
+HIGH/CRITICAL, fixed-available, unregistered findings and detected secrets are
+zero. These dispositions do not claim zero vulnerabilities or complete browser
+coverage. The six-stage build and final one-layer publication process are
+preserved.
+
+The official image passed startup and restart checks with HTTP 200/pong and
+the public/private API contract before publication. These CI checks are
+separate from the scoped deployment acceptance below.
+
+## Scoped 8080 acceptance and rollback
+
+The exact published digest passed the 8080 cutover. Environment variables,
+HostConfig, all three data volumes, the existing Docker socket bind and AppArmor
+were preserved. Before the upgrade,
+all 104 InnoDB tables were backed up in one transaction; the backup SHA-256
+and gzip integrity were verified. The v1.6.548 rollback container and matching
+backup remain available.
+
+Readback from the actual running container verified Server `v1.6.549`,
+Web Console `1.6.195`, its exact producer/archive/lock identity and the original
+runtime SBOM SHA-256 `ca31669f58aa342cd346e1d33ec7061d65f9b84d6a3afcbd132e09361425a88a`.
+Its phase remained `runtime` and coverage remained `incomplete`.
+
+Chrome `155.0.8059.41` passed OIDC login with IdP and platform TOTP, seven
+authenticated JSON API reads returning HTTP200, three active Hosts and Agents,
+session-preserving refresh and one received WebSocket frame. The audit read
+returned ten retained records using a legitimate 24-hour window. The successful
+pass recorded zero browser errors, HTTP errors, request failures and passive
+DELETE requests.
+
+Two earlier attempts remain in the evidence and are not product failures or
+acceptance PASS: the wrapper initially omitted an existing fixture secret,
+and a one-hour audit query had no new write records during the read-only smoke.
+The final query read retained 24-hour history; it did not manufacture a new
+audit event or change a product contract.
+
+No additional manual Server restart was performed for this SBOM/build scope;
+the publisher's fresh-candidate startup/restart checks remain the restart
+evidence. The full permission matrix, unchanged VM configurations and unrelated
+functional areas were not rerun. This is scoped acceptance, not a complete
+feature matrix or a production deployment.
 
 This change does not alter authentication, authorization, Catalog behavior,
 database schema, host registration, named volumes or operator configuration.
-No production deployment or new VM acceptance is claimed. Preserve the
-verified v1.6.548 image and matching database/volume backup for rollback, and
-follow the [upgrade guidance](../upgrades/README.md) for any later deployment.
+Preserve the verified v1.6.548 image and matching database/volume backup for
+rollback, and follow the [upgrade guidance](../upgrades/README.md) for later
+deployments. After a database migration, selecting an older image alone may
+not be a safe rollback.
