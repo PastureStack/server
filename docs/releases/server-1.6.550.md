@@ -2,7 +2,7 @@
 
 Prepared source only; no Server image or release has been published.
 
-## Change
+## Verified component inputs
 
 Backport the twelve official PCRE2 `release/pcre2-10.46` commits through
 `947809f11e9c9744aa0974b4b630a1ae461733dd` onto the original Ubuntu 26.04
