@@ -1,5 +1,16 @@
 # Compatibility Contract
 
+## Server v1.6.550 prepared, not published
+
+The source candidate preserves all component versions and operator settings from
+549 while rebuilding the two PCRE2 runtime packages with the upstream's official
+10.46 backports. Original Ubuntu packaging, SONAMEs, JIT and POSIX interfaces are
+retained. First-party package version `10.46-1build1+pasturestack.1` distinguishes
+this rebuild from Canonical binaries. Native upstream tests, exact package
+integrity, ELF hashes and actual consumers are mandatory gates. The published
+installation remains 549 until a new immutable image passes publication.
+See [the candidate note](docs/releases/server-1.6.550.md).
+
 <a id="server-v16549-web-console-sbom"></a>
 
 ## Server v1.6.549 published

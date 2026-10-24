@@ -30,6 +30,11 @@ See the [549 release note](docs/releases/server-1.6.549.md) and
 [compatibility contract](COMPATIBILITY.md#server-v16549-web-console-sbom)
 for exact identities, attachment recovery and acceptance boundaries.
 
+Source candidate `v1.6.550` adds the official PCRE2 10.46 security backports with
+original Ubuntu packaging, ABI checks and native regression tests. It is not yet
+published; installation examples continue to use the verified release above.
+See the [candidate note](docs/releases/server-1.6.550.md).
+
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
 ## API Keys

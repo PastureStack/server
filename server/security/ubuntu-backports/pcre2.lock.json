@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "sourcePackage": "pcre2",
+  "ubuntuSourceVersion": "10.46-1build1",
+  "customVersion": "10.46-1build1+pasturestack.1",
+  "distribution": "resolute",
+  "osVersion": "26.04",
+  "architecture": "amd64",
+  "sourceDateEpoch": 1792857600,
+  "sourcePublication": "https://api.launchpad.net/1.0/ubuntu/+archive/primary/+sourcepub/18107131",
+  "sourceFiles": [
+    {
+      "name": "pcre2_10.46-1build1.dsc",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/p/pcre2/pcre2_10.46-1build1.dsc",
+      "sha256": "0e10c366d10e72b6940fcf37b61c2309d0136e05edff7adb1843030c0765f155",
+      "size": 2221
+    },
+    {
+      "name": "pcre2_10.46.orig.tar.gz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/p/pcre2/pcre2_10.46.orig.tar.gz",
+      "sha256": "8d28d7f2c3b970c3a4bf3776bcbb5adfc923183ce74bc8df1ebaad8c1985bd07",
+      "size": 2718545
+    },
+    {
+      "name": "pcre2_10.46-1build1.diff.gz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/p/pcre2/pcre2_10.46-1build1.diff.gz",
+      "sha256": "3534c69dec410207e74bf9fd6ed334ad5827fb6de1d0715175b7a14257c5bc72",
+      "size": 8804
+    }
+  ],
+  "upstream": {
+    "repository": "https://github.com/PCRE2Project/pcre2",
+    "baseTag": "pcre2-10.46",
+    "baseCommit": "b2bd4254b379b9d7dc9a3dda060a7e27009ccdff",
+    "backportBranch": "release/pcre2-10.46",
+    "backportCommit": "947809f11e9c9744aa0974b4b630a1ae461733dd",
+    "lifecycleUrl": "https://raw.githubusercontent.com/PCRE2Project/pcre2/pcre2-10.49/SUPPORT-LIFECYCLE.md",
+    "lifecycleSha256": "64a3e10be90d7b3c218d05f21c53aa2511b9100e01f98c77c199c473b33f1856"
+  },
+  "patches": [
+    {
+      "name": "pcre2-10.47-Fix-for-callback.patch",
+      "commit": "16c1b6fb2a45c8bebcc46aa22e7c0b26759b77a0",
+      "url": "https://github.com/PCRE2Project/pcre2/commit/16c1b6fb2a45c8bebcc46aa22e7c0b26759b77a0.patch",
+      "sha256": "a7893d9a54fccd89c9eb2da0aead0cfae11bd3e95565f490dd57eba75c03f408",
+      "size": 6067
+    },
+    {
+      "name": "pcre2-10.48-Write-serialization-padding.patch",
+      "commit": "efeabb2dc9adfb91abf8feecd8daccb2a38ea94f",
+      "url": "https://github.com/PCRE2Project/pcre2/commit/efeabb2dc9adfb91abf8feecd8daccb2a38ea94f.patch",
+      "sha256": "ccb97e38f86bddc4944d091a4db18fe3dd8585421bd58fef92ab48b957a3facf",
+      "size": 3159
+    },
+    {
+      "name": "pcre2-10.48-Fix-character-list-generator.patch",
+      "commit": "a4318173dab0c332ab7d859f37ac71099326a0f2",
+      "url": "https://github.com/PCRE2Project/pcre2/commit/a4318173dab0c332ab7d859f37ac71099326a0f2.patch",
+      "sha256": "605e1c8e0a1baf7542d4d4833afe6721c80ab0b6a199b92d10748f04c3338a92",
+      "size": 5462
+    },
+    {
+      "name": "pcre2-10.48-Fix-scan-prefix-repeat-reset.patch",
+      "commit": "f945e356e0ba203a974717af2cff0baee01f1db4",
+      "url": "https://github.com/PCRE2Project/pcre2/commit/f945e356e0ba203a974717af2cff0baee01f1db4.patch",
+      "sha256": "e71e2b92a1cf76e42c08134055826911f7d5cd3398242dffee5b04cd57a49f78",
+      "size": 1436
+    },
+    {
+      "name": "pcre2-10.48-Fix-JIT-STR_END.patch",
+      "commit": "0aa5bbca3ac70e6c22562488ead6cb2032447fc5",
+      "url": "https://github.com/PCRE2Project/pcre2/commit/0aa5bbca3ac70e6c22562488ead6cb2032447fc5.patch",
+      "sha256": "d835898636b4063101d1cb546e6e044f888cb82d1e2f564bdd8230fd767528fa",
+      "size": 1573
+    },
+    {
+      "name": "pcre2-10.48-Fix-JIT-match-context-reuse.patch",
+      "commit": "e5b9232fc4cd6a0df312ae25568e72cd337cafa2",
+      "url": "https://github.com/PCRE2Project/pcre2/commit/e5b9232fc4cd6a0df312ae25568e72cd337cafa2.patch",
+      "sha256": "708a2cfe0a786411952a5de364a054f4a3ab1027aa9a8b1fc4a87d8adf780df7",
+      "size": 6423
+    },
+    {
+      "name": "pcre2-10.48-Check-JIT-mode-before-validation.patch",
+      "commit": "ab7097fbde778e0e4d17752ba2a14a7430d35385",
+      "url": "https://github.com/PCRE2Project/pcre2/commit/ab7097fbde778e0e4d17752ba2a14a7430d35385.patch",
+      "sha256": "76e4fdd573ecc3ee51dc822c33808bb8a74ce77884f29fbfc181b634662d7f56",
+      "size": 9222
+    },
+    {
+      "name": "pcre2-10.48-Fix-allocation-byte-sizing.patch",
+      "commit": "31ec59526d641b85108c726fe201effc5dca8627",
+      "url": "https://github.com/PCRE2Project/pcre2/commit/31ec59526d641b85108c726fe201effc5dca8627.patch",
+      "sha256": "437013bddd46cc860784b9261dbc94b024c6c4ea22d3f235aadd33f22e591167",
+      "size": 2799
+    },
+    {
+      "name": "pcre2-10.48-Fix-invalid-UTF-backwards-scans.patch",
+      "commit": "e1fd2e68fe364d14a01ec42bf07201d9820eee8e",
+      "url": "https://github.com/PCRE2Project/pcre2/commit/e1fd2e68fe364d14a01ec42bf07201d9820eee8e.patch",
+      "sha256": "72d1621c28afa0265e7bb01f6876eea43eb5d968b3ce8fe5b4f3fe78c5e5a893",
+      "size": 6835
+    },
+    {
+      "name": "pcre2-10.48-Fix-compiler-integer-overflows.patch",
+      "commit": "983158a222ec27a93ce678778f9343f7dfa35845",
+      "url": "https://github.com/PCRE2Project/pcre2/commit/983158a222ec27a93ce678778f9343f7dfa35845.patch",
+      "sha256": "1968d664b3a2f02d6256886d2049ba802c07cc797877765d1c2daac678c1363b",
+      "size": 6693
+    },
+    {
+      "name": "pcre2-10.48-Fix-DFA-workspace-overflows.patch",
+      "commit": "bcaf1ba40748a27e1e666491a0e9887f0f5f2965",
+      "url": "https://github.com/PCRE2Project/pcre2/commit/bcaf1ba40748a27e1e666491a0e9887f0f5f2965.patch",
+      "sha256": "1e906da52268ecdd03459d1086922af24ac010f8672a26d6638fc22e395bd6bb",
+      "size": 5636
+    },
+    {
+      "name": "pcre2-10.49-Fix-large-stack-allocation.patch",
+      "commit": "947809f11e9c9744aa0974b4b630a1ae461733dd",
+      "url": "https://github.com/PCRE2Project/pcre2/commit/947809f11e9c9744aa0974b4b630a1ae461733dd.patch",
+      "sha256": "cdd5e0241e5dd3a7a3e3f773c10f20c8f353063fcc8f737f6a391503cb6bd037",
+      "size": 4535
+    }
+  ],
+  "runtimePackages": [
+    "libpcre2-8-0",
+    "libpcre2-posix3"
+  ],
+  "fixedCves": [
+    "CVE-2026-103111",
+    "CVE-2026-86145",
+    "CVE-2026-89156",
+    "CVE-2026-89157",
+    "CVE-2026-89158",
+    "CVE-2026-89160",
+    "CVE-2026-89161",
+    "CVE-2026-89162"
+  ],
+  "identity": "First-party PastureStack rebuild of official Ubuntu source with approved upstream backports; not a Canonical-issued package."
+}
