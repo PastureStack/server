@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourcePackage": "glibc",
+  "ubuntuSourceVersion": "2.43-2ubuntu2.4",
+  "customVersion": "2.43-2ubuntu2.4+pasturestack.1",
+  "distribution": "resolute",
+  "osVersion": "26.04",
+  "architecture": "amd64",
+  "sourceDateEpoch": 1792857600,
+  "sourcePublication": "https://api.launchpad.net/1.0/ubuntu/+archive/primary/+sourcepub/18721986",
+  "sourceFiles": [
+    {
+      "sha256": "da10d551ca51076bf7bf663de38369d04e267386b8211c283c2814e68e482ed3",
+      "size": 9078,
+      "name": "glibc_2.43-2ubuntu2.4.dsc",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/glibc_2.43-2ubuntu2.4.dsc"
+    },
+    {
+      "sha256": "d9c86c6b5dbddb43a3e08270c5844fc5177d19442cf5b8df4be7c07cd5fa3831",
+      "size": 20297012,
+      "name": "glibc_2.43.orig.tar.xz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/glibc_2.43.orig.tar.xz"
+    },
+    {
+      "sha256": "0a725eb20ceb526abf52d3129f03e0399afa0d97ffa1dd779bed42958ab23326",
+      "size": 1018,
+      "name": "glibc_2.43.orig.tar.xz.asc",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/glibc_2.43.orig.tar.xz.asc"
+    },
+    {
+      "sha256": "28103a7cf808c29901c6053d89a4e8299880abfbb850c0d97a09c8df8533e306",
+      "size": 530764,
+      "name": "glibc_2.43-2ubuntu2.4.debian.tar.xz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/glibc_2.43-2ubuntu2.4.debian.tar.xz"
+    }
+  ],
+  "upstream": {
+    "fixCommit": "72351055c6a1328c1ce2c06b72b8a4e3ebe0ef08",
+    "repository": "https://sourceware.org/git/glibc.git",
+    "advisory": "https://sourceware.org/git/?p=glibc.git;a=blob;f=advisories/GLIBC-SA-2026-0015",
+    "backportBranch": "release/2.43/master",
+    "regressionCommit": "20b3e8717652bdc2f89c99c4cc6e38d56a754866",
+    "ubuntuCve": "https://ubuntu.com/security/CVE-2026-18374"
+  },
+  "patches": [
+    {
+      "sha256": "73ca6cb57d78c89785cd2bdd5c15cf7e5fdee873599bb8f1623035a2692915f1",
+      "size": 2175,
+      "name": "72351055c6a1328c1ce2c06b72b8a4e3ebe0ef08.sourceware.patch",
+      "commit": "72351055c6a1328c1ce2c06b72b8a4e3ebe0ef08",
+      "url": "https://sourceware.org/git/?p=glibc.git;a=patch;h=72351055c6a1328c1ce2c06b72b8a4e3ebe0ef08"
+    },
+    {
+      "sha256": "bf4de5ac1937b76fd21ce003c77f5681b899edb8a42326ff3a13bf1ba4ab4ba1",
+      "size": 3183,
+      "name": "20b3e8717652bdc2f89c99c4cc6e38d56a754866.sourceware.patch",
+      "commit": "20b3e8717652bdc2f89c99c4cc6e38d56a754866",
+      "url": "https://sourceware.org/git/?p=glibc.git;a=patch;h=20b3e8717652bdc2f89c99c4cc6e38d56a754866"
+    }
+  ],
+  "buildProfiles": [
+    "nobiarch",
+    "noudeb"
+  ],
+  "runtimePackages": [
+    "libc6",
+    "libc-bin",
+    "libc-gconv-modules-extra"
+  ],
+  "optionalDevPackages": [
+    "libc6-dev",
+    "libc-dev-bin"
+  ],
+  "fixedCves": [
+    "CVE-2026-18374"
+  ],
+  "identity": "First-party PastureStack rebuild of official Ubuntu source with the official glibc 2.43 fix and regression backport; not issued by Canonical."
+}
