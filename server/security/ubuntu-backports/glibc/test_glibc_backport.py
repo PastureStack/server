@@ -147,7 +147,7 @@ class GlibcBackport(unittest.TestCase):
         directory = self.root / 'build-tree/amd64-libc'; directory.mkdir(parents=True)
         (self.root / 'stamp-dir').mkdir()
         (self.root / 'stamp-dir/check_libc_passed').touch()
-        text = ''.join('PASS: ' + name + '\n' for name in MODULE.CONTROLS) + ''.join(
+        text = '\t\t=== glibc tests ===\n\nRunning . ...\n\n' + ''.join('PASS: ' + name + '\n' for name in MODULE.CONTROLS) + ''.join(
             'PASS: ' + component + '/ordinary-control\n' for component in
             ['stdio-common', 'iconv', 'wcsmbs', 'malloc', 'elf', 'nptl', 'nss'])
         text += 'XFAIL: elf/known-failure\nUNSUPPORTED: nss/unsupported-environment\nXPASS: elf/known-xpass\n'
@@ -158,6 +158,78 @@ class GlibcBackport(unittest.TestCase):
         self.native_fixture()
         result = MODULE.test_receipt(self.root)
         self.assertEqual({'PASS': 10, 'XFAIL': 1, 'UNSUPPORTED': 1, 'XPASS': 1}, result['counts'])
+
+    def test_native_summary_requires_canonical_framing_and_rejects_unknown_lines(self):
+        good = '\t\t=== glibc tests ===\n\nRunning libio ...\nPASS: libio/control\n'
+        self.assertEqual([('PASS', 'libio/control')], MODULE.parse_test_summary(good))
+        for bad in [good.replace('=== glibc tests ===', '=== another suite ==='),
+                    good.replace('Running libio ...', 'Running libio unexpectedly'),
+                    good + 'unexpected diagnostic\n', good + 'Running libio ...\n',
+                    good + 'SKIP: libio/unknown-state\n', 'PASS: libio/control\n']:
+            with self.subTest(summary=bad), self.assertRaises(ValueError): MODULE.parse_test_summary(bad)
+
+    def packaging_fixture(self):
+        debian = self.root / 'debian'
+        (debian / 'control.in').mkdir(parents=True)
+        (debian / 'rules.d').mkdir()
+        for name, text in [('control', 'Maintainer: Ubuntu Developers\n'),
+                           ('control.in/main', 'Maintainer: GNU Libc Maintainers\n'),
+                           ('rules', 'original rules\n'), ('rules.d/control.mk', 'original control generator\n')]:
+            (debian / name).write_text(text, encoding='utf-8')
+        return debian
+
+    def test_original_control_metadata_remains_bound_to_the_packaging_snapshot(self):
+        debian = self.packaging_fixture()
+        approved = MODULE.COMMON.packaging_snapshot(self.root)
+        MODULE.verify_packaging_inputs(self.root, approved)
+        (debian / 'control').write_bytes((debian / 'control.in/main').read_bytes())
+        with self.assertRaisesRegex(ValueError, 'debian/control'):
+            MODULE.verify_packaging_inputs(self.root, approved)
+
+    def test_generated_control_only_accepts_the_approved_original_template_bytes(self):
+        debian = self.packaging_fixture()
+        original = MODULE.digest(debian / 'control')
+        generated = MODULE.digest(debian / 'control.in/main')
+        def generate(*_):
+            (debian / 'control').write_bytes((debian / 'control.in/main').read_bytes())
+        with mock.patch.object(MODULE, 'CONTROL_ORIGINAL_SHA256', original), \
+                mock.patch.object(MODULE, 'CONTROL_GENERATED_SHA256', generated), \
+                mock.patch.object(MODULE, 'run', side_effect=generate):
+            receipt = MODULE.prepare_generated_control(self.root, {}, self.root / 'build.log')
+            self.assertEqual(original, receipt['originalSha256'])
+            self.assertEqual(generated, receipt['generatedSha256'])
+            self.assertIn('debian/control.in/main', receipt['inputSha256'])
+            approved = MODULE.COMMON.packaging_snapshot(self.root)
+            MODULE.verify_packaging_inputs(self.root, approved)
+            with self.assertRaisesRegex(ValueError, 'Fresh original'):
+                MODULE.prepare_generated_control(self.root, {}, self.root / 'build.log')
+
+    def test_control_generation_rejects_extra_field_or_packaging_changes(self):
+        debian = self.packaging_fixture()
+        original_bytes = (debian / 'control').read_bytes()
+        original, generated = MODULE.digest(debian / 'control'), MODULE.digest(debian / 'control.in/main')
+        for change_other in [False, True]:
+            (debian / 'control').write_bytes(original_bytes)
+            def generate(*_):
+                (debian / 'control').write_bytes((debian / 'control.in/main').read_bytes())
+                if change_other:
+                    (debian / 'rules').write_text('changed rules\n', encoding='utf-8')
+                else:
+                    with (debian / 'control').open('a', encoding='utf-8') as stream:
+                        stream.write('Depends: unapproved\n')
+            with mock.patch.object(MODULE, 'CONTROL_ORIGINAL_SHA256', original), \
+                    mock.patch.object(MODULE, 'CONTROL_GENERATED_SHA256', generated), \
+                    mock.patch.object(MODULE, 'run', side_effect=generate), \
+                    self.assertRaisesRegex(ValueError, 'debian/rules|approved original-template'):
+                MODULE.prepare_generated_control(self.root, {}, self.root / 'build.log')
+
+    def test_generated_control_policy_cannot_be_widened(self):
+        for field, value in [('originalControlSha256', '0' * 64),
+                             ('generatedControlSha256', '0' * 64),
+                             ('approvedChangedFields', ['Maintainer', 'Depends'])]:
+            lock = copy.deepcopy(self.lock)
+            lock['packagingMetadataPolicy'][field] = value
+            with self.subTest(field=field), self.assertRaises(ValueError): self.load(lock)
 
     def test_native_failure_skipped_cve_component_or_extra_abi_fails(self):
         file, text = self.native_fixture()

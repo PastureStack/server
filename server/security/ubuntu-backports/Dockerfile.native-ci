@@ -12,7 +12,7 @@ SHELL ["/bin/bash", "-e", "-o", "pipefail", "-c"]
 ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb /tmp/ca-certificates.deb
 RUN <<'SH'
 set -euo pipefail
-case "$MODULE" in glibc|rust-coreutils|jq|p11-kit|libxrender|tar) ;; *) exit 2 ;; esac
+case "$MODULE" in glibc|rust-coreutils|jq|p11-kit|libxrender) ;; *) exit 2 ;; esac
 mkdir -p /tmp/ca-bootstrap /etc/ssl/certs
 dpkg-deb --extract /tmp/ca-certificates.deb /tmp/ca-bootstrap
 while IFS= read -r certificate; do
@@ -117,6 +117,8 @@ if [[ "$MODULE" == rust-coreutils ]]; then
     export CI=true
 fi
 df -Pk /work /out >/out/artifacts/container-disk-space.txt
+dpkg-query --show --showformat='${binary:Package}\t${Version}\n' | LC_ALL=C sort \
+    >/out/artifacts/builder-packages.tsv
 test_name="test_${MODULE//-/_}_backport.py"
 helper="build-$MODULE-backport.py"
 if [[ "$MODULE" == jq ]]; then test_name=test_jq_release.py; helper=build-jq-release.py; fi
@@ -160,6 +162,28 @@ if [[ "$MODULE" == glibc ]]; then
             gzip -c "$path" >"/out/artifacts/diagnostics/$name.gz"
         fi
     done
+    # If a post-build evidence check fails, retain only the three bounded
+    # unqualified runtime packages, not the source tree or debug packages.
+    # result.json and the workflow gate remain failed; these are diagnostics,
+    # never a qualified package output or a publication input.
+    if [[ "$HELPER_EXIT_CODE" != 0 ]]; then
+        python3 - <<'PY'
+import hashlib, json, pathlib, shutil
+lock = json.loads(pathlib.Path('/modules/glibc/glibc.lock.json').read_text())
+source = pathlib.Path('/work/native')
+out = pathlib.Path('/out/artifacts/diagnostics/unqualified-packages')
+out.mkdir()
+files = []
+for name in ('libc6', 'libc-bin', 'libc-gconv-modules-extra'):
+    matches = list(source.glob(name + '_' + lock['customVersion'] + '_amd64.deb'))
+    if len(matches) == 1:
+        file = matches[0]
+        shutil.copyfile(file, out / file.name)
+        files.append({'name': file.name, 'sha256': hashlib.sha256(file.read_bytes()).hexdigest()})
+(out / 'UNQUALIFIED.json').write_text(json.dumps({'status': 'FAILED_NATIVE_DIAGNOSTICS_ONLY',
+    'publicationAllowed': False, 'files': files}, indent=2) + '\n')
+PY
+    fi
 fi
 gzip /out/artifacts/native-console.log
 SH
