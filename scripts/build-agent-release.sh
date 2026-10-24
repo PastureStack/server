@@ -14,7 +14,7 @@ python3 scripts/test-agent-package-consistency.py
 
 case "${COMPONENT:-}" in
   base) repository=ghcr.io/pasturestack/node-agent-base; version=v0.3.7 ;;
-  agent) repository=ghcr.io/pasturestack/node-agent; version=v1.2.32 ;;
+  agent) repository=ghcr.io/pasturestack/node-agent; version=v1.2.33 ;;
   *) echo 'Unsupported agent component' >&2; exit 1 ;;
 esac
 [[ "${PUBLISH:-false}" = true || "${PUBLISH:-false}" = false ]]
@@ -80,8 +80,8 @@ if [[ "$COMPONENT" = base ]]; then
   SHARE_MNT_BIN="$scratch/share-mnt" R_BIN="$scratch/r" IMAGE="$candidate" \
     bash agent-base/build-image.sh |& tee "$evidence/build.log"
 else
-  grep -Eq '^FROM ghcr.io/pasturestack/node-agent-base:v0\.3\.6@sha256:[0-9a-f]{64}$' agent/Dockerfile
-  grep -Fq 'org.opencontainers.image.version="v1.2.32"' agent/Dockerfile
+  grep -Eq '^FROM ghcr.io/pasturestack/node-agent-base:v0\.3\.7@sha256:[0-9a-f]{64}$' agent/Dockerfile
+  grep -Fq 'org.opencontainers.image.version="v1.2.33"' agent/Dockerfile
   IMAGE="$candidate" bash agent/build-image.sh |& tee "$evidence/build.log"
 fi
 
@@ -93,32 +93,23 @@ docker run --rm --network none --entrypoint cat "$candidate" \
   /usr/share/pasturestack/python-builder-packages.tsv >"$evidence/builder-packages.tsv"
 docker run --rm --network none --entrypoint dpkg-query "$candidate" \
   -W -f='${binary:Package}\t${Version}\n' >"$evidence/runtime-packages.tsv"
-if [[ "$COMPONENT" = base ]]; then
-  for name in manifest qualification install; do
-    docker run --rm --network none --entrypoint cat "$candidate" \
-      "/usr/share/pasturestack/security/ubuntu-backports/${name}.json" >"$evidence/backports-${name}.json"
-  done
-  jq -n --rawfile builder "$evidence/builder-packages.tsv" \
-    --rawfile runtime "$evidence/runtime-packages.tsv" \
-    --rawfile manifest "$evidence/backports-manifest.json" \
-    --rawfile qualification "$evidence/backports-qualification.json" \
-    --rawfile installation "$evidence/backports-install.json" \
-    '{"builder-packages.tsv":$builder,"runtime-packages.tsv":$runtime,
-      "backports-manifest.json":$manifest,"backports-qualification.json":$qualification,
-      "backports-install.json":$installation}' \
-    | python3 scripts/check-agent-package-consistency.py >"$evidence/package-comparison.json"
-  backports_container=$(docker create "$candidate")
-  docker cp "$backports_container:/usr/share/pasturestack/security/ubuntu-backports" "$evidence/ubuntu-backports"
-  docker rm -v "$backports_container" >/dev/null
-  backports_container=
-else
-  # The wrapper remains pinned to the published 0.3.6 base until 0.3.7 passes
-  # publication. Its existing strict checks must continue to work meanwhile.
-  jq -n --rawfile builder "$evidence/builder-packages.tsv" \
-    --rawfile runtime "$evidence/runtime-packages.tsv" \
-    '{"builder-packages.tsv":$builder,"runtime-packages.tsv":$runtime}' \
-    | python3 scripts/check-agent-package-consistency.py --legacy-wrapper >"$evidence/package-comparison.json"
-fi
+for name in manifest qualification install; do
+  docker run --rm --network none --entrypoint cat "$candidate" \
+    "/usr/share/pasturestack/security/ubuntu-backports/${name}.json" >"$evidence/backports-${name}.json"
+done
+jq -n --rawfile builder "$evidence/builder-packages.tsv" \
+  --rawfile runtime "$evidence/runtime-packages.tsv" \
+  --rawfile manifest "$evidence/backports-manifest.json" \
+  --rawfile qualification "$evidence/backports-qualification.json" \
+  --rawfile installation "$evidence/backports-install.json" \
+  '{"builder-packages.tsv":$builder,"runtime-packages.tsv":$runtime,
+    "backports-manifest.json":$manifest,"backports-qualification.json":$qualification,
+    "backports-install.json":$installation}' \
+  | python3 scripts/check-agent-package-consistency.py >"$evidence/package-comparison.json"
+backports_container=$(docker create "$candidate")
+docker cp "$backports_container:/usr/share/pasturestack/security/ubuntu-backports" "$evidence/ubuntu-backports"
+docker rm -v "$backports_container" >/dev/null
+backports_container=
 docker run --rm --network none --entrypoint /bin/bash "$candidate" -ec \
   'ldd "$(python3 -c "import _ssl; print(_ssl.__file__)")"; curl --version' \
   >"$evidence/python-ssl-linkage.txt"
@@ -154,8 +145,6 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
   -v "$scratch/trivy-cache:/root/.cache/trivy" -v "$evidence:/evidence" "$trivy" image --scanners vuln,secret --list-all-pkgs --format json \
   --output /evidence/image-security.json "$candidate"
-pip_scan_input="$evidence/image-security.json"
-if [[ "$COMPONENT" = base ]]; then
 backports_image=$(sed -n 's/^FROM \(ghcr.io\/pasturestack\/ubuntu-security-backports:v0\.1\.0@sha256:[0-9a-f]\{64\}\) AS ubuntu_security_backports$/\1/p' agent-base/Dockerfile)
 [[ "$backports_image" =~ ^ghcr.io/pasturestack/ubuntu-security-backports:v0\.1\.0@sha256:[0-9a-f]{64}$ ]]
 docker pull --platform linux/amd64 "$backports_image"
@@ -176,7 +165,6 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
   --vex /evidence/ubuntu-backports/openvex.json --format json \
   --output /evidence/image-security-os-effective.json "$candidate"
 pip_scan_input="$evidence/image-security-os-effective.json"
-fi
 python3 tools/pip-security-overlay/filter-pip-vendor-findings.py \
   --raw "$pip_scan_input" --proof "$evidence/pip-vendor-slice.json" \
   --sbom "$evidence/image.cdx.json" \
