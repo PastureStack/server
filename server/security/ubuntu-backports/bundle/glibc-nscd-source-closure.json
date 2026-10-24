@@ -1,0 +1,520 @@
+{
+  "audit": {
+    "buildObjectClosure": {
+      "allNativeLinkCommandsMentioningTheseObjectsTargetOnlyNscd": true,
+      "buildNscd": "yes",
+      "installTemplate": "debian/debhelper.in/nscd.install",
+      "libcClientRoutinesAreTheVulnerableDaemonModules": false,
+      "libcClientRoutinesRemain": [
+        "nscd_getpw_r",
+        "nscd_getgr_r",
+        "nscd_gethst_r",
+        "nscd_getai",
+        "nscd_initgroups",
+        "nscd_getserv_r",
+        "nscd_netgroup",
+        "nscd_helper"
+      ],
+      "nativePackagingTrace": [
+        {
+          "line": 131850,
+          "text": "dh_install -pnscd"
+        },
+        {
+          "line": 131930,
+          "text": "dpkg-deb: building package 'nscd' in '../nscd_2.43-2ubuntu2.4+pasturestack.1_amd64.deb'."
+        }
+      ],
+      "nscdInstallTarget": "usr/sbin/nscd",
+      "objectToExecutable": [
+        {
+          "line": 21574,
+          "text": "x86_64-linux-gnu-gcc -Wl,--hash-style=both -U_FILE_OFFSET_BITS -U_TIME_BITS -Wl,-rpath-link=/work/native/glibc-source/build-tree/amd64-libc:/work/native/glibc-source/build-tree/amd64-libc/math:/work/native/glibc-source/build-tree/amd64-libc/elf:/work/native/glibc-source/build-tree/amd64-libc/dlfcn:/work/native/glibc-source/build-tree/amd64-libc/nss:/work/native/glibc-source/build-tree/amd64-libc/nis:/work/native/glibc-source/build-tree/amd64-libc/rt:/work/native/glibc-source/build-tree/amd64-libc/resolv:/work/native/glibc-source/build-tree/amd64-libc/mathvec:/work/native/glibc-source/build-tree/amd64-libc/support:/work/native/glibc-source/build-tree/amd64-libc/misc:/work/native/glibc-source/build-tree/amd64-libc/debug:/work/native/glibc-source/build-tree/amd64-libc/nptl:/usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/ -o /work/native/glibc-source/build-tree/amd64-libc/nscd/nscd -pie -Wl,-z,pack-relative-relocs -Wl,-O1 -nostdlib -nostartfiles -Wl,-z,mark-plt  -Wl,-z,now -Wl,-z,relro  /work/native/glibc-source/build-tree/amd64-libc/csu/Scrt1.o /work/native/glibc-source/build-tree/amd64-libc/csu/crti.o `x86_64-linux-gnu-gcc -Wl,--hash-style=both -U_FILE_OFFSET_BITS -U_TIME_BITS -Wl,-z,mark-plt --print-file-name=crtbeginS.o` /work/native/glibc-source/build-tree/amd64-libc/nscd/nscd.o /work/native/glibc-source/build-tree/amd64-libc/nscd/connections.o /work/native/glibc-source/build-tree/amd64-libc/nscd/pwdcache.o /work/native/glibc-source/build-tree/amd64-libc/nscd/getpwnam_r.o /work/native/glibc-source/build-tree/amd64-libc/nscd/getpwuid_r.o /work/native/glibc-source/build-tree/amd64-libc/nscd/grpcache.o /work/native/glibc-source/build-tree/amd64-libc/nscd/getgrnam_r.o /work/native/glibc-source/build-tree/amd64-libc/nscd/getgrgid_r.o /work/native/glibc-source/build-tree/amd64-libc/nscd/hstcache.o /work/native/glibc-source/build-tree/amd64-libc/nscd/gethstbyad_r.o /work/native/glibc-source/build-tree/amd64-libc/nscd/gethstbynm3_r.o /work/native/glibc-source/build-tree/amd64-libc/nscd/getsrvbynm_r.o /work/native/glibc-source/build-tree/amd64-libc/nscd/getsrvbypt_r.o /work/native/glibc-source/build-tree/amd64-libc/nscd/servicescache.o /work/native/glibc-source/build-tree/amd64-libc/nscd/dbg_log.o /work/native/glibc-source/build-tree/amd64-libc/nscd/nscd_conf.o /work/native/glibc-source/build-tree/amd64-libc/nscd/nscd_stat.o /work/native/glibc-source/build-tree/amd64-libc/nscd/cache.o /work/native/glibc-source/build-tree/amd64-libc/nscd/mem.o /work/native/glibc-source/build-tree/amd64-libc/nscd/nscd_setup_thread.o /work/native/glibc-source/build-tree/amd64-libc/nscd/xmalloc.o /work/native/glibc-source/build-tree/amd64-libc/nscd/xstrdup.o /work/native/glibc-source/build-tree/amd64-libc/nscd/aicache.o /work/native/glibc-source/build-tree/amd64-libc/nscd/initgrcache.o /work/native/glibc-source/build-tree/amd64-libc/nscd/res_hconf.o /work/native/glibc-source/build-tree/amd64-libc/nscd/netgroupcache.o /work/native/glibc-source/build-tree/amd64-libc/nscd/cachedumper.o /work/native/glibc-source/build-tree/amd64-libc/nscd/selinux.o -lselinux -laudit -lcap -Wl,-dynamic-linker=/lib64/ld-linux-x86-64.so.2 -Wl,-z,now /work/native/glibc-source/build-tree/amd64-libc/libc.so.6 /work/native/glibc-source/build-tree/amd64-libc/libc_nonshared.a -Wl,--as-needed /work/native/glibc-source/build-tree/amd64-libc/elf/ld.so -Wl,--no-as-needed -lgcc  `x86_64-linux-gnu-gcc -Wl,--hash-style=both -U_FILE_OFFSET_BITS -U_TIME_BITS -Wl,-z,mark-plt --print-file-name=crtendS.o` /work/native/glibc-source/build-tree/amd64-libc/csu/crtn.o"
+        },
+        {
+          "line": 131046,
+          "text": "x86_64-linux-gnu-gcc -Wl,--hash-style=both -U_FILE_OFFSET_BITS -U_TIME_BITS -Wl,-rpath-link=/work/native/glibc-source/build-tree/amd64-C.utf8:/work/native/glibc-source/build-tree/amd64-C.utf8/math:/work/native/glibc-source/build-tree/amd64-C.utf8/elf:/work/native/glibc-source/build-tree/amd64-C.utf8/dlfcn:/work/native/glibc-source/build-tree/amd64-C.utf8/nss:/work/native/glibc-source/build-tree/amd64-C.utf8/nis:/work/native/glibc-source/build-tree/amd64-C.utf8/rt:/work/native/glibc-source/build-tree/amd64-C.utf8/resolv:/work/native/glibc-source/build-tree/amd64-C.utf8/mathvec:/work/native/glibc-source/build-tree/amd64-C.utf8/support:/work/native/glibc-source/build-tree/amd64-C.utf8/misc:/work/native/glibc-source/build-tree/amd64-C.utf8/debug:/work/native/glibc-source/build-tree/amd64-C.utf8/nptl:/usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/ -o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/nscd -pie -Wl,-z,pack-relative-relocs -Wl,-O1 -nostdlib -nostartfiles -Wl,-z,mark-plt  -Wl,-z,now -Wl,-z,relro  /work/native/glibc-source/build-tree/amd64-C.utf8/csu/Scrt1.o /work/native/glibc-source/build-tree/amd64-C.utf8/csu/crti.o `x86_64-linux-gnu-gcc -Wl,--hash-style=both -U_FILE_OFFSET_BITS -U_TIME_BITS -Wl,-z,mark-plt --print-file-name=crtbeginS.o` /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/nscd.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/connections.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/pwdcache.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/getpwnam_r.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/getpwuid_r.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/grpcache.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/getgrnam_r.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/getgrgid_r.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/hstcache.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/gethstbyad_r.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/gethstbynm3_r.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/getsrvbynm_r.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/getsrvbypt_r.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/servicescache.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/dbg_log.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/nscd_conf.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/nscd_stat.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/cache.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/mem.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/nscd_setup_thread.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/xmalloc.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/xstrdup.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/aicache.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/initgrcache.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/res_hconf.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/netgroupcache.o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/cachedumper.o  -Wl,-dynamic-linker=/lib/ld-linux-x86-64.so.2 -Wl,-z,now /work/native/glibc-source/build-tree/amd64-C.utf8/libc.so.6 /work/native/glibc-source/build-tree/amd64-C.utf8/libc_nonshared.a -Wl,--as-needed /work/native/glibc-source/build-tree/amd64-C.utf8/elf/ld.so -Wl,--no-as-needed -lgcc  `x86_64-linux-gnu-gcc -Wl,--hash-style=both -U_FILE_OFFSET_BITS -U_TIME_BITS -Wl,-z,mark-plt --print-file-name=crtendS.o` /work/native/glibc-source/build-tree/amd64-C.utf8/csu/crtn.o"
+        }
+      ],
+      "sourceToObject": [
+        {
+          "line": 21554,
+          "text": "x86_64-linux-gnu-gcc -Wl,--hash-style=both -U_FILE_OFFSET_BITS -U_TIME_BITS hstcache.c -c -std=gnu11 -fgnu89-inline  -pipe -O2 -g -fdebug-prefix-map=/work/native/glibc-source=. -O3 -Wall -Wwrite-strings -Wundef -Wimplicit-fallthrough -Werror -fmerge-all-constants -frounding-math -ftrapping-math -fstack-protector-strong -fno-common -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -Wstrict-prototypes -Wold-style-definition -Wfree-labels -Wmissing-parameter-name -fmath-errno -D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64 -DHAVE_EPOLL -DHAVE_INOTIFY -DHAVE_NETLINK -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -fPIE   -fcf-protection    -fPIE  -isystem /work/native/glibc-source/debian/include  -I../include -I/work/native/glibc-source/build-tree/amd64-libc/nscd  -I/work/native/glibc-source/build-tree/amd64-libc  -I../sysdeps/unix/sysv/linux/x86_64/64  -I../sysdeps/x86_64/64/nptl  -I../sysdeps/unix/sysv/linux/x86_64/include -I../sysdeps/unix/sysv/linux/x86_64  -I../sysdeps/unix/sysv/linux/x86/include -I../sysdeps/unix/sysv/linux/x86  -I../sysdeps/x86/nptl  -I../sysdeps/unix/sysv/linux/wordsize-64  -I../sysdeps/x86_64/nptl  -I../sysdeps/unix/sysv/linux/include -I../sysdeps/unix/sysv/linux  -I../sysdeps/nptl  -I../sysdeps/pthread  -I../sysdeps/gnu  -I../sysdeps/unix/inet  -I../sysdeps/unix/sysv  -I../sysdeps/unix/x86_64  -I../sysdeps/unix  -I../sysdeps/posix  -I../sysdeps/x86_64/64  -I../sysdeps/x86_64/fpu/multiarch  -I../sysdeps/x86_64/fpu  -I../sysdeps/x86/fpu  -I../sysdeps/x86_64/multiarch  -I../sysdeps/x86_64  -I../sysdeps/x86/include -I../sysdeps/x86  -I../sysdeps/ieee754/float128  -I../sysdeps/ieee754/ldbl-96/include -I../sysdeps/ieee754/ldbl-96  -I../sysdeps/ieee754/dbl-64  -I../sysdeps/ieee754/flt-32  -I../sysdeps/wordsize-64  -I../sysdeps/ieee754  -I../sysdeps/generic  -I.. -I../libio -I. -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/15/include -isystem /work/native/glibc-source/debian/include -D_LIBC_REENTRANT -include /work/native/glibc-source/build-tree/amd64-libc/libc-modules.h -DMODULE_NAME=nscd -include ../include/libc-symbols.h  -DPIC     -DTOP_NAMESPACE=glibc -o /work/native/glibc-source/build-tree/amd64-libc/nscd/hstcache.o -MD -MP -MF /work/native/glibc-source/build-tree/amd64-libc/nscd/hstcache.o.dt -MT /work/native/glibc-source/build-tree/amd64-libc/nscd/hstcache.o"
+        },
+        {
+          "line": 21568,
+          "text": "x86_64-linux-gnu-gcc -Wl,--hash-style=both -U_FILE_OFFSET_BITS -U_TIME_BITS aicache.c -c -std=gnu11 -fgnu89-inline  -pipe -O2 -g -fdebug-prefix-map=/work/native/glibc-source=. -O3 -Wall -Wwrite-strings -Wundef -Wimplicit-fallthrough -Werror -fmerge-all-constants -frounding-math -ftrapping-math -fstack-protector-strong -fno-common -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -Wstrict-prototypes -Wold-style-definition -Wfree-labels -Wmissing-parameter-name -fmath-errno -D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64 -DHAVE_EPOLL -DHAVE_INOTIFY -DHAVE_NETLINK -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -fPIE   -fcf-protection    -fPIE  -isystem /work/native/glibc-source/debian/include  -I../include -I/work/native/glibc-source/build-tree/amd64-libc/nscd  -I/work/native/glibc-source/build-tree/amd64-libc  -I../sysdeps/unix/sysv/linux/x86_64/64  -I../sysdeps/x86_64/64/nptl  -I../sysdeps/unix/sysv/linux/x86_64/include -I../sysdeps/unix/sysv/linux/x86_64  -I../sysdeps/unix/sysv/linux/x86/include -I../sysdeps/unix/sysv/linux/x86  -I../sysdeps/x86/nptl  -I../sysdeps/unix/sysv/linux/wordsize-64  -I../sysdeps/x86_64/nptl  -I../sysdeps/unix/sysv/linux/include -I../sysdeps/unix/sysv/linux  -I../sysdeps/nptl  -I../sysdeps/pthread  -I../sysdeps/gnu  -I../sysdeps/unix/inet  -I../sysdeps/unix/sysv  -I../sysdeps/unix/x86_64  -I../sysdeps/unix  -I../sysdeps/posix  -I../sysdeps/x86_64/64  -I../sysdeps/x86_64/fpu/multiarch  -I../sysdeps/x86_64/fpu  -I../sysdeps/x86/fpu  -I../sysdeps/x86_64/multiarch  -I../sysdeps/x86_64  -I../sysdeps/x86/include -I../sysdeps/x86  -I../sysdeps/ieee754/float128  -I../sysdeps/ieee754/ldbl-96/include -I../sysdeps/ieee754/ldbl-96  -I../sysdeps/ieee754/dbl-64  -I../sysdeps/ieee754/flt-32  -I../sysdeps/wordsize-64  -I../sysdeps/ieee754  -I../sysdeps/generic  -I.. -I../libio -I. -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/15/include -isystem /work/native/glibc-source/debian/include -D_LIBC_REENTRANT -include /work/native/glibc-source/build-tree/amd64-libc/libc-modules.h -DMODULE_NAME=nscd -include ../include/libc-symbols.h  -DPIC     -DTOP_NAMESPACE=glibc -o /work/native/glibc-source/build-tree/amd64-libc/nscd/aicache.o -MD -MP -MF /work/native/glibc-source/build-tree/amd64-libc/nscd/aicache.o.dt -MT /work/native/glibc-source/build-tree/amd64-libc/nscd/aicache.o"
+        },
+        {
+          "line": 131027,
+          "text": "x86_64-linux-gnu-gcc -Wl,--hash-style=both -U_FILE_OFFSET_BITS -U_TIME_BITS hstcache.c -c -std=gnu11 -fgnu89-inline  -pipe -O2 -g -fdebug-prefix-map=/work/native/glibc-source=. -Wall -Wwrite-strings -Wundef -Wimplicit-fallthrough -Werror -fmerge-all-constants -frounding-math -ftrapping-math -fstack-protector-strong -fno-common -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -Wstrict-prototypes -Wold-style-definition -Wfree-labels -Wmissing-parameter-name -fmath-errno -D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64 -DHAVE_EPOLL -DHAVE_INOTIFY -DHAVE_NETLINK  -fPIE   -fcf-protection    -fPIE  -isystem /work/native/glibc-source/debian/include  -I../include -I/work/native/glibc-source/build-tree/amd64-C.utf8/nscd  -I/work/native/glibc-source/build-tree/amd64-C.utf8  -I../sysdeps/unix/sysv/linux/x86_64/64  -I../sysdeps/x86_64/64/nptl  -I../sysdeps/unix/sysv/linux/x86_64/include -I../sysdeps/unix/sysv/linux/x86_64  -I../sysdeps/unix/sysv/linux/x86/include -I../sysdeps/unix/sysv/linux/x86  -I../sysdeps/x86/nptl  -I../sysdeps/unix/sysv/linux/wordsize-64  -I../sysdeps/x86_64/nptl  -I../sysdeps/unix/sysv/linux/include -I../sysdeps/unix/sysv/linux  -I../sysdeps/nptl  -I../sysdeps/pthread  -I../sysdeps/gnu  -I../sysdeps/unix/inet  -I../sysdeps/unix/sysv  -I../sysdeps/unix/x86_64  -I../sysdeps/unix  -I../sysdeps/posix  -I../sysdeps/x86_64/64  -I../sysdeps/x86_64/fpu/multiarch  -I../sysdeps/x86_64/fpu  -I../sysdeps/x86/fpu  -I../sysdeps/x86_64/multiarch  -I../sysdeps/x86_64  -I../sysdeps/x86/include -I../sysdeps/x86  -I../sysdeps/ieee754/float128  -I../sysdeps/ieee754/ldbl-96/include -I../sysdeps/ieee754/ldbl-96  -I../sysdeps/ieee754/dbl-64  -I../sysdeps/ieee754/flt-32  -I../sysdeps/wordsize-64  -I../sysdeps/ieee754  -I../sysdeps/generic  -I.. -I../libio -I. -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/15/include -isystem /work/native/glibc-source/debian/include -D_LIBC_REENTRANT -include /work/native/glibc-source/build-tree/amd64-C.utf8/libc-modules.h -DMODULE_NAME=nscd -include ../include/libc-symbols.h  -DPIC     -DTOP_NAMESPACE=glibc -o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/hstcache.o -MD -MP -MF /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/hstcache.o.dt -MT /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/hstcache.o"
+        },
+        {
+          "line": 131041,
+          "text": "x86_64-linux-gnu-gcc -Wl,--hash-style=both -U_FILE_OFFSET_BITS -U_TIME_BITS aicache.c -c -std=gnu11 -fgnu89-inline  -pipe -O2 -g -fdebug-prefix-map=/work/native/glibc-source=. -Wall -Wwrite-strings -Wundef -Wimplicit-fallthrough -Werror -fmerge-all-constants -frounding-math -ftrapping-math -fstack-protector-strong -fno-common -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -Wstrict-prototypes -Wold-style-definition -Wfree-labels -Wmissing-parameter-name -fmath-errno -D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64 -DHAVE_EPOLL -DHAVE_INOTIFY -DHAVE_NETLINK  -fPIE   -fcf-protection    -fPIE  -isystem /work/native/glibc-source/debian/include  -I../include -I/work/native/glibc-source/build-tree/amd64-C.utf8/nscd  -I/work/native/glibc-source/build-tree/amd64-C.utf8  -I../sysdeps/unix/sysv/linux/x86_64/64  -I../sysdeps/x86_64/64/nptl  -I../sysdeps/unix/sysv/linux/x86_64/include -I../sysdeps/unix/sysv/linux/x86_64  -I../sysdeps/unix/sysv/linux/x86/include -I../sysdeps/unix/sysv/linux/x86  -I../sysdeps/x86/nptl  -I../sysdeps/unix/sysv/linux/wordsize-64  -I../sysdeps/x86_64/nptl  -I../sysdeps/unix/sysv/linux/include -I../sysdeps/unix/sysv/linux  -I../sysdeps/nptl  -I../sysdeps/pthread  -I../sysdeps/gnu  -I../sysdeps/unix/inet  -I../sysdeps/unix/sysv  -I../sysdeps/unix/x86_64  -I../sysdeps/unix  -I../sysdeps/posix  -I../sysdeps/x86_64/64  -I../sysdeps/x86_64/fpu/multiarch  -I../sysdeps/x86_64/fpu  -I../sysdeps/x86/fpu  -I../sysdeps/x86_64/multiarch  -I../sysdeps/x86_64  -I../sysdeps/x86/include -I../sysdeps/x86  -I../sysdeps/ieee754/float128  -I../sysdeps/ieee754/ldbl-96/include -I../sysdeps/ieee754/ldbl-96  -I../sysdeps/ieee754/dbl-64  -I../sysdeps/ieee754/flt-32  -I../sysdeps/wordsize-64  -I../sysdeps/ieee754  -I../sysdeps/generic  -I.. -I../libio -I. -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/15/include -isystem /work/native/glibc-source/debian/include -D_LIBC_REENTRANT -include /work/native/glibc-source/build-tree/amd64-C.utf8/libc-modules.h -DMODULE_NAME=nscd -include ../include/libc-symbols.h  -DPIC     -DTOP_NAMESPACE=glibc -o /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/aicache.o -MD -MP -MF /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/aicache.o.dt -MT /work/native/glibc-source/build-tree/amd64-C.utf8/nscd/aicache.o"
+        }
+      ],
+      "useNscd": "yes"
+    },
+    "cve": "CVE-2026-89092",
+    "effectiveSourceClosure": {
+      "allActivePatchesOldAndNewTargetsParsed": true,
+      "firstPartyPatchTargetClosure": [
+        {
+          "commit": "72351055c6a1328c1ce2c06b72b8a4e3ebe0ef08",
+          "selectedTargetHits": [],
+          "sha256": "73ca6cb57d78c89785cd2bdd5c15cf7e5fdee873599bb8f1623035a2692915f1",
+          "targets": [
+            "libio/fileops.c"
+          ]
+        },
+        {
+          "commit": "20b3e8717652bdc2f89c99c4cc6e38d56a754866",
+          "selectedTargetHits": [],
+          "sha256": "bf4de5ac1937b76fd21ce003c77f5681b899edb8a42326ff3a13bf1ba4ab4ba1",
+          "targets": [
+            "libio/Makefile",
+            "libio/tst-fopen-ccs-empty.c"
+          ]
+        }
+      ],
+      "official243Patch": {
+        "bodySha256": "cf5e2f6281a5b8668edd8cdf8dc9779614d487beab762077098afe4ecb0c1ba3",
+        "changedPaths": [
+          "nscd/aicache.c",
+          "nscd/hstcache.c"
+        ],
+        "commit": "e51efbc44f228425a405b805637d80ef81dc2345",
+        "htmlSha256": "9e0aafecad887ba3b7c29c5d2e6ff31b0787729ce841a719aa5760e2fa120a72",
+        "messageId": "<20260929091145.B8AE54BB24CC@sourceware.org>",
+        "title": "[glibc/release/2.43/master] CVE-2026-89092: nscd: replace alloca with malloc in aicache, hstcache",
+        "transport": "Direct official Sourceware glibc-cvs archive",
+        "url": "https://sourceware.org/pipermail/glibc-cvs/2026q3/091543.html"
+      },
+      "originalUbuntuActivePatchCount": 103,
+      "packagingRoles": [
+        {
+          "path": "debian/debhelper.in/nscd.install",
+          "sameOriginalAndNativeApprovedPackaging": true,
+          "sha256": "b5d96bfde599ef00c7a1340619d1ac3fb6cbe2b21c180ae7f964435aa7076d70"
+        },
+        {
+          "path": "debian/debhelper.in/libc.install",
+          "sameOriginalAndNativeApprovedPackaging": true,
+          "sha256": "6ec02d6eb79827861c632d5e93052fa3a5e3e936e65fd05b3ac40516104df773"
+        },
+        {
+          "path": "debian/debhelper.in/libc-bin.install",
+          "sameOriginalAndNativeApprovedPackaging": true,
+          "sha256": "8550a9785a6622b366405424ebd9a104e96e9ee55f693d2298a72e6ae6afe3d6"
+        },
+        {
+          "path": "debian/rules.d/build.mk",
+          "sameOriginalAndNativeApprovedPackaging": true,
+          "sha256": "26c43dbea2c6297b1db868a10b982091df054545c7e1f8765a8d622c78668b2f"
+        },
+        {
+          "path": "debian/rules.d/debhelper.mk",
+          "sameOriginalAndNativeApprovedPackaging": true,
+          "sha256": "a361f9db42b6881b62b557ecb00dd55b12d53598511dbb502035a4d7329ba3a4"
+        }
+      ],
+      "patchParserSemantics": "Parse both old/new unified/deletion headers with horizontal whitespace only; ignore mail separators/diffstat; all 103 active original patches use default -p1, every patch has recognized file targets.",
+      "selectedEffectiveSource": [
+        {
+          "derivation": "No active original quilt old/new target and no approved first-party patch targets this file; effective bytes exactly equal pinned orig source without applying unrelated patches.",
+          "effectiveNativeSourceSha256": "d4c483f617e10e191857345fa6dfc2a37726261eaf0fd5d01ff59d7057e829cf",
+          "firstPartyPatchHits": [],
+          "originalSha256": "d4c483f617e10e191857345fa6dfc2a37726261eaf0fd5d01ff59d7057e829cf",
+          "originalUbuntuPatchHits": [],
+          "path": "nscd/Makefile"
+        },
+        {
+          "derivation": "No active original quilt old/new target and no approved first-party patch targets this file; effective bytes exactly equal pinned orig source without applying unrelated patches.",
+          "effectiveNativeSourceSha256": "36666de22337bd4434c2fb7140d4ea77880afef2fdd5cbd06dc36b7463a579d7",
+          "firstPartyPatchHits": [],
+          "originalSha256": "36666de22337bd4434c2fb7140d4ea77880afef2fdd5cbd06dc36b7463a579d7",
+          "originalUbuntuPatchHits": [],
+          "path": "nscd/aicache.c"
+        },
+        {
+          "derivation": "No active original quilt old/new target and no approved first-party patch targets this file; effective bytes exactly equal pinned orig source without applying unrelated patches.",
+          "effectiveNativeSourceSha256": "93a2f56daeca0887ba1ceef35bc722cedfd7a025c85a1eed54e7da4cd0111f23",
+          "firstPartyPatchHits": [],
+          "originalSha256": "93a2f56daeca0887ba1ceef35bc722cedfd7a025c85a1eed54e7da4cd0111f23",
+          "originalUbuntuPatchHits": [],
+          "path": "nscd/hstcache.c"
+        }
+      ],
+      "status": "validated"
+    },
+    "excludedNscdPackage": {
+      "archiveIndependentlyReviewed": false,
+      "assessment": "Outside this code-absence conclusion. The independent nscd daemon retains vulnerable code and needs its own finding/fix if installed.",
+      "builtAccordingToNativeChanges": true,
+      "changesDeclaredBytes": 97950,
+      "changesDeclaredFile": "nscd_2.43-2ubuntu2.4+pasturestack.1_amd64.deb",
+      "changesDeclaredSha256": "8597c0678d7dd5a15e1b6263c6e469aa6d2768c2dbb99a5b084a0def587c6052",
+      "name": "nscd",
+      "qualifiedExport": false,
+      "version": "2.43-2ubuntu2.4+pasturestack.1"
+    },
+    "limitations": [
+      "The source adds only CVE-2026-18374 fix/test backports; it does not fix CVE-2026-89092 in nscd.",
+      "libc6 retains nscd IPC client helpers. Only aicache/hstcache daemon modules are absent from these three runtime packages.",
+      "A separate nscd package or unmanaged nscd binary must not inherit these exact-PURL statements.",
+      "The selected18 existing SBOM package checks supplement source/object/archive closure; they are not new rootfs scans or whole-consumer not-affected proof.",
+      "No native compilation, upstream suite, runtime test, ledger edit or VEX publication was performed for this source-absence audit."
+    ],
+    "nativeArtifact": {
+      "provenanceMember": "export/package/provenance.json",
+      "scope": "Existing native artifact identity; no claim of a new bundle publication.",
+      "url": "https://github.com/PastureStack/server/actions/runs/40122645083/artifacts/12573643405",
+      "zipSha256": "ed6714b9b4a884a0c0462b84b01f5d7f9e08b4cc1bbf849b521ac43fa4ef36c4"
+    },
+    "nativeIdentity": {
+      "apiReceiptSha256": "5ebd5e8502de1b4caee1df8e3af6249a5e234b0ecf54a1012d091f777ca3e126",
+      "artifactId": 12573643405,
+      "artifactName": "ubuntu-native-glibc-507cadcb3eaafcd6a85c453f2f180a8aef415d88-40122645083",
+      "artifactZipSha256": "ed6714b9b4a884a0c0462b84b01f5d7f9e08b4cc1bbf849b521ac43fa4ef36c4",
+      "buildCommand": [
+        "dpkg-buildpackage",
+        "-G",
+        "-us",
+        "-uc",
+        "-Pnobiarch,noudeb",
+        "-j4"
+      ],
+      "buildLogBytes": 86607135,
+      "buildLogSha256": "a6f1ec5c9f303a4bea24b22d5d7ce14fe68a739b3ab0cc77bad075c88d5d8f78",
+      "jobId": 120957337330,
+      "provenanceSha256": "cc77cdde3f1b6b5459b45282bbbdcccbe42c3d3fd5d7a41f4623a92509a2263a",
+      "runId": 40122645083,
+      "sourceCommit": "507cadcb3eaafcd6a85c453f2f180a8aef415d88",
+      "sourceLockSha256": "5b4ead11dcace84b99874d298eec4d6939203040aecd5cfc3f4452a83eb0bf12",
+      "sourceRecipeFiles": {
+        "server/security/ubuntu-backports/build-pcre2-backport.py": "79ff6faf3ca5b8e6dfdfc38a78ba56238c749aeabfab59fd05ce2130537458b2",
+        "server/security/ubuntu-backports/glibc/build-glibc-backport.py": "a086f51359bab0d0994070d4cdf0e4fcc1f19bc4acf8dbd71d189707c72ef3e6",
+        "server/security/ubuntu-backports/glibc/glibc.lock.json": "5b4ead11dcace84b99874d298eec4d6939203040aecd5cfc3f4452a83eb0bf12",
+        "server/security/ubuntu-backports/glibc/test_glibc_backport.py": "d08cb0b93d6c49c0124eb69cedd55af3949b41c48a09c57d52d49e304641a583"
+      }
+    },
+    "packages": [
+      {
+        "architecture": "amd64",
+        "archive": {
+          "bytes": 2104192,
+          "file": "libc6_2.43-2ubuntu2.4+pasturestack.1_amd64.deb",
+          "sha256": "4119ebc8610d17694db4100e6838a693f8927189523f4b4be32be5aa4a82f497"
+        },
+        "assessment": {
+          "justification": "vulnerable_code_not_present",
+          "scope": "Only the two CVE-2026-89092 daemon implementations; not all nscd code or the whole consumer.",
+          "status": "not_affected"
+        },
+        "codeAbsenceScope": [
+          "nscd/aicache.c",
+          "nscd/hstcache.c"
+        ],
+        "control": {
+          "metadata": {
+            "Architecture": "amd64",
+            "Package": "libc6",
+            "Source": "glibc",
+            "Version": "2.43-2ubuntu2.4+pasturestack.1"
+          },
+          "sha256": "fe0d96aa87e1043f2c0346cd7aebe6664c389ff430cce8532ffbd1b9e3bea802"
+        },
+        "dataArchive": {
+          "bytes": 2045238,
+          "hashMeaning": "Exact compressed ar member bytes; not uncompressed tar bytes",
+          "member": "data.tar.zst",
+          "sha256": "04e312bab6e6838012c05b0c01f8e2998acff37e8600727bdb78dcd8283dc756"
+        },
+        "dataArchiveListing": {
+          "matchesQualifierPayloadInventory": true,
+          "nonDirectoryFileCount": 40,
+          "nscdDaemonPathMatches": [],
+          "sha256": "2fcadc9a09df10dc1453ff54e64b20f048a672df3b849c2bae3a657dc7fdf903"
+        },
+        "name": "libc6",
+        "purl": "pkg:deb/ubuntu/libc6@2.43-2ubuntu2.4%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "qualifierPayload": {
+          "elfCount": 28,
+          "fileCount": 40,
+          "hashMeaning": "Original qualified payload JSON bytes, distinct from data archive/listing hashes",
+          "path": "payload/libc6.json",
+          "sha256": "3468d23e1ec411706726c09fea81158c36be984cbc7b90c7a95950ca76e32c27"
+        },
+        "source": "glibc",
+        "version": "2.43-2ubuntu2.4+pasturestack.1"
+      },
+      {
+        "architecture": "amd64",
+        "archive": {
+          "bytes": 724758,
+          "file": "libc-bin_2.43-2ubuntu2.4+pasturestack.1_amd64.deb",
+          "sha256": "6e8ea949edd167a48e4f2ded82f4117e4dca89fc7c8060062b614bbb682b9417"
+        },
+        "assessment": {
+          "justification": "vulnerable_code_not_present",
+          "scope": "Only the two CVE-2026-89092 daemon implementations; not all nscd code or the whole consumer.",
+          "status": "not_affected"
+        },
+        "codeAbsenceScope": [
+          "nscd/aicache.c",
+          "nscd/hstcache.c"
+        ],
+        "control": {
+          "metadata": {
+            "Architecture": "amd64",
+            "Package": "libc-bin",
+            "Source": "glibc",
+            "Version": "2.43-2ubuntu2.4+pasturestack.1"
+          },
+          "sha256": "310444de66f2bdf6c9eedb1c7db87ca15ada0cbbc7c2084e31048f6574cebaf1"
+        },
+        "dataArchive": {
+          "bytes": 722278,
+          "hashMeaning": "Exact compressed ar member bytes; not uncompressed tar bytes",
+          "member": "data.tar.zst",
+          "sha256": "f944912c88cc7d7241d4f76f82250d57f1e6f9eac8b9e95551deedd8b1d42987"
+        },
+        "dataArchiveListing": {
+          "matchesQualifierPayloadInventory": true,
+          "nonDirectoryFileCount": 36,
+          "nscdDaemonPathMatches": [],
+          "sha256": "c31a54190fa2f60a1f9d5e631d26f198707b881d8267d0772d0bbe6b21ecace6"
+        },
+        "name": "libc-bin",
+        "purl": "pkg:deb/ubuntu/libc-bin@2.43-2ubuntu2.4%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "qualifierPayload": {
+          "elfCount": 10,
+          "fileCount": 36,
+          "hashMeaning": "Original qualified payload JSON bytes, distinct from data archive/listing hashes",
+          "path": "payload/libc-bin.json",
+          "sha256": "a09513fcff9ba63ef0c8914fc195c375b2073433e870cc45d732d0fe9ac6ca91"
+        },
+        "source": "glibc",
+        "version": "2.43-2ubuntu2.4+pasturestack.1"
+      },
+      {
+        "architecture": "amd64",
+        "archive": {
+          "bytes": 1362648,
+          "file": "libc-gconv-modules-extra_2.43-2ubuntu2.4+pasturestack.1_amd64.deb",
+          "sha256": "22cb6a83267d6e873538983d1eafda6cac9240c5c18ff61e2652fd6ae982e374"
+        },
+        "assessment": {
+          "justification": "vulnerable_code_not_present",
+          "scope": "Only the two CVE-2026-89092 daemon implementations; not all nscd code or the whole consumer.",
+          "status": "not_affected"
+        },
+        "codeAbsenceScope": [
+          "nscd/aicache.c",
+          "nscd/hstcache.c"
+        ],
+        "control": {
+          "metadata": {
+            "Architecture": "amd64",
+            "Package": "libc-gconv-modules-extra",
+            "Source": "glibc",
+            "Version": "2.43-2ubuntu2.4+pasturestack.1"
+          },
+          "sha256": "e238b331655c3038764e7c8a8b41e47dab9354feaa6cd9e2a2edab85c8a26871"
+        },
+        "dataArchive": {
+          "bytes": 1356221,
+          "hashMeaning": "Exact compressed ar member bytes; not uncompressed tar bytes",
+          "member": "data.tar.zst",
+          "sha256": "3a134f4e87d50a22d9152ffba4fe370f10dcebfdfb19ac630b1972e43d37e1ec"
+        },
+        "dataArchiveListing": {
+          "matchesQualifierPayloadInventory": true,
+          "nonDirectoryFileCount": 250,
+          "nscdDaemonPathMatches": [],
+          "sha256": "8127c706ee3f1ab80692978775b5c9ed3561615f7f6be3f3090db90cf0971fdc"
+        },
+        "name": "libc-gconv-modules-extra",
+        "purl": "pkg:deb/ubuntu/libc-gconv-modules-extra@2.43-2ubuntu2.4%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "qualifierPayload": {
+          "elfCount": 245,
+          "fileCount": 250,
+          "hashMeaning": "Original qualified payload JSON bytes, distinct from data archive/listing hashes",
+          "path": "payload/libc-gconv-modules-extra.json",
+          "sha256": "5f6a90c7c87bc723bf8009b9699b8dd0df1aad31f0f19b5d735595874e1e00b4"
+        },
+        "source": "glibc",
+        "version": "2.43-2ubuntu2.4+pasturestack.1"
+      }
+    ],
+    "schemaVersion": 1,
+    "sourceIdentity": {
+      "customVersion": "2.43-2ubuntu2.4+pasturestack.1",
+      "firstPartyFixes": [
+        "CVE-2026-18374"
+      ],
+      "sourceFiles": [
+        {
+          "name": "glibc_2.43-2ubuntu2.4.dsc",
+          "sha256": "da10d551ca51076bf7bf663de38369d04e267386b8211c283c2814e68e482ed3",
+          "size": 9078,
+          "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/glibc_2.43-2ubuntu2.4.dsc"
+        },
+        {
+          "name": "glibc_2.43.orig.tar.xz",
+          "sha256": "d9c86c6b5dbddb43a3e08270c5844fc5177d19442cf5b8df4be7c07cd5fa3831",
+          "size": 20297012,
+          "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/glibc_2.43.orig.tar.xz"
+        },
+        {
+          "name": "glibc_2.43.orig.tar.xz.asc",
+          "sha256": "0a725eb20ceb526abf52d3129f03e0399afa0d97ffa1dd779bed42958ab23326",
+          "size": 1018,
+          "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/glibc_2.43.orig.tar.xz.asc"
+        },
+        {
+          "name": "glibc_2.43-2ubuntu2.4.debian.tar.xz",
+          "sha256": "28103a7cf808c29901c6053d89a4e8299880abfbb850c0d97a09c8df8533e306",
+          "size": 530764,
+          "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/glibc_2.43-2ubuntu2.4.debian.tar.xz"
+        }
+      ],
+      "sourceLockSha256": "5b4ead11dcace84b99874d298eec4d6939203040aecd5cfc3f4452a83eb0bf12",
+      "sourcePackage": "glibc",
+      "sourcePublication": "https://api.launchpad.net/1.0/ubuntu/+archive/primary/+sourcepub/18721986",
+      "ubuntuSourceVersion": "2.43-2ubuntu2.4"
+    },
+    "status": "qualified",
+    "upstreamProof": {
+      "advisory": {
+        "sha256": "e5cb1a5e3a1281e0f5e91d7cee9248d4545c5a0594b78b566bcce845531adf11",
+        "url": "https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=advisories/GLIBC-SA-2026-0016"
+      },
+      "mirrorTransportUsedAsAuthority": false,
+      "official243Mail": {
+        "bodySha256": "cf5e2f6281a5b8668edd8cdf8dc9779614d487beab762077098afe4ecb0c1ba3",
+        "changedPaths": [
+          "nscd/aicache.c",
+          "nscd/hstcache.c"
+        ],
+        "commit": "e51efbc44f228425a405b805637d80ef81dc2345",
+        "htmlSha256": "9e0aafecad887ba3b7c29c5d2e6ff31b0787729ce841a719aa5760e2fa120a72",
+        "messageId": "<20260929091145.B8AE54BB24CC@sourceware.org>",
+        "title": "[glibc/release/2.43/master] CVE-2026-89092: nscd: replace alloca with malloc in aicache, hstcache",
+        "transport": "Direct official Sourceware glibc-cvs archive",
+        "url": "https://sourceware.org/pipermail/glibc-cvs/2026q3/091543.html"
+      },
+      "vulnerableModules": [
+        "nscd/aicache.c",
+        "nscd/hstcache.c"
+      ]
+    }
+  },
+  "auditProjectionSha256": "3676a3e8c6f9ea3385608dc81e27280749fbdbc1f874d9ca9a994979cb98ae9b",
+  "cve": "CVE-2026-89092",
+  "debs": {
+    "libc-bin": {
+      "file": "libc-bin_2.43-2ubuntu2.4+pasturestack.1_amd64.deb",
+      "sha256": "6e8ea949edd167a48e4f2ded82f4117e4dca89fc7c8060062b614bbb682b9417"
+    },
+    "libc-gconv-modules-extra": {
+      "file": "libc-gconv-modules-extra_2.43-2ubuntu2.4+pasturestack.1_amd64.deb",
+      "sha256": "22cb6a83267d6e873538983d1eafda6cac9240c5c18ff61e2652fd6ae982e374"
+    },
+    "libc6": {
+      "file": "libc6_2.43-2ubuntu2.4+pasturestack.1_amd64.deb",
+      "sha256": "4119ebc8610d17694db4100e6838a693f8927189523f4b4be32be5aa4a82f497"
+    }
+  },
+  "detachedAuditId": "glibc-CVE-2026-89092-runtime-code-absence-amd64",
+  "nativeIdentity": {
+    "artifactId": 12573643405,
+    "jobId": 120957337330,
+    "lockSha256": "5b4ead11dcace84b99874d298eec4d6939203040aecd5cfc3f4452a83eb0bf12",
+    "provenanceSha256": "cc77cdde3f1b6b5459b45282bbbdcccbe42c3d3fd5d7a41f4623a92509a2263a",
+    "runId": 40122645083,
+    "sourceCommit": "507cadcb3eaafcd6a85c453f2f180a8aef415d88",
+    "zipSha256": "ed6714b9b4a884a0c0462b84b01f5d7f9e08b4cc1bbf849b521ac43fa4ef36c4"
+  },
+  "originalReceiptSha256": "d6fe389d88eb9d32dca81c8408b53647dae52a6f2d3f9669dac1b74271bd9f46",
+  "platform": {
+    "architecture": "amd64",
+    "distribution": "ubuntu",
+    "release": "26.04"
+  },
+  "projection": {
+    "detachedAuditReference": "The original audit hash/id is detached provenance, not a downloadable file reference.",
+    "excludedFields": [
+      "productInventoryCrosscheck",
+      "qualifiedFamilyCrosscheck",
+      "evidence",
+      "complete-native-build-log",
+      "native-archives-and-full-inventories"
+    ],
+    "scope": "Only source/object/exact-three-runtime-package evidence is delivered here."
+  },
+  "schemaVersion": 1,
+  "scope": {
+    "customVersion": "2.43-2ubuntu2.4+pasturestack.1",
+    "libcNscdIpcClientsMayBePresent": true,
+    "runtimePackages": [
+      "libc-bin",
+      "libc-gconv-modules-extra",
+      "libc6"
+    ],
+    "standaloneDaemonPackage": "nscd",
+    "verdict": "component-code-absence-only",
+    "vulnerableSources": [
+      "nscd/aicache.c",
+      "nscd/hstcache.c"
+    ],
+    "wholeImageUnaffectedClaimed": false
+  },
+  "sourceIdentity": {
+    "patches": [
+      {
+        "commit": "72351055c6a1328c1ce2c06b72b8a4e3ebe0ef08",
+        "name": "72351055c6a1328c1ce2c06b72b8a4e3ebe0ef08.sourceware.patch",
+        "sha256": "73ca6cb57d78c89785cd2bdd5c15cf7e5fdee873599bb8f1623035a2692915f1",
+        "size": 2175,
+        "url": "https://sourceware.org/git/?p=glibc.git;a=patch;h=72351055c6a1328c1ce2c06b72b8a4e3ebe0ef08"
+      },
+      {
+        "commit": "20b3e8717652bdc2f89c99c4cc6e38d56a754866",
+        "name": "20b3e8717652bdc2f89c99c4cc6e38d56a754866.sourceware.patch",
+        "sha256": "bf4de5ac1937b76fd21ce003c77f5681b899edb8a42326ff3a13bf1ba4ab4ba1",
+        "size": 3183,
+        "url": "https://sourceware.org/git/?p=glibc.git;a=patch;h=20b3e8717652bdc2f89c99c4cc6e38d56a754866"
+      }
+    ],
+    "sourceFiles": [
+      {
+        "name": "glibc_2.43-2ubuntu2.4.dsc",
+        "sha256": "da10d551ca51076bf7bf663de38369d04e267386b8211c283c2814e68e482ed3",
+        "size": 9078,
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/glibc_2.43-2ubuntu2.4.dsc"
+      },
+      {
+        "name": "glibc_2.43.orig.tar.xz",
+        "sha256": "d9c86c6b5dbddb43a3e08270c5844fc5177d19442cf5b8df4be7c07cd5fa3831",
+        "size": 20297012,
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/glibc_2.43.orig.tar.xz"
+      },
+      {
+        "name": "glibc_2.43.orig.tar.xz.asc",
+        "sha256": "0a725eb20ceb526abf52d3129f03e0399afa0d97ffa1dd779bed42958ab23326",
+        "size": 1018,
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/glibc_2.43.orig.tar.xz.asc"
+      },
+      {
+        "name": "glibc_2.43-2ubuntu2.4.debian.tar.xz",
+        "sha256": "28103a7cf808c29901c6053d89a4e8299880abfbb850c0d97a09c8df8533e306",
+        "size": 530764,
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/g/glibc/glibc_2.43-2ubuntu2.4.debian.tar.xz"
+      }
+    ],
+    "ubuntuSourceVersion": "2.43-2ubuntu2.4"
+  },
+  "status": "validated"
+}

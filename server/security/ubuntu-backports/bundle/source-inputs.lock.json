@@ -62,6 +62,10 @@
           "reviewedDifference": "Native source and effective CI recipe are identical to the approved current files."
         }
       },
+      "codeAbsenceProof": {
+        "path": "glibc-nscd-source-closure.json",
+        "sha256": "dcc574c006f401e1169e5a73c01ed32598f13fa917c448e215fc0fb76aad2657"
+      },
       "copyright": {
         "file": "COPYRIGHT",
         "sha256": "c31d10900fdb95d1889005145a2205bb75e3bc018d3ec8265b81364901748e09"

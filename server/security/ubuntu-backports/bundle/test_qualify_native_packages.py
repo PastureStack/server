@@ -287,6 +287,67 @@ class Boundaries(unittest.TestCase):
         self.assertEqual(len(tracked['vulnerabilities']), 18)
         self.assertEqual(tracked['status'], 'qualified_component_source_closed')
 
+    def test_glibc_requires_complete_detached_audit_and_exact_native_debs(self):
+        item = self.lock['nativeInputs']['glibc']
+        proof = Q.load_glibc_nscd_source_audit(item, ready=True)
+        self.assertEqual(proof['status'], 'validated')
+        self.assertFalse(proof['scope']['wholeImageUnaffectedClaimed'])
+        self.assertTrue(proof['scope']['libcNscdIpcClientsMayBePresent'])
+        self.assertEqual(proof['scope']['standaloneDaemonPackage'], 'nscd')
+        self.assertNotIn('productInventoryCrosscheck', proof['audit'])
+        self.assertNotIn('qualifiedFamilyCrosscheck', proof['audit'])
+        self.assertNotIn(Q.GUARD.GLIBC_NSCD_CVE, item['fixedVulnerabilities'])
+        self.assertEqual(Q.load_lock(ready=True)['nativeInputs']['glibc']['codeAbsenceProof']['sha256'],
+                         Q.GUARD.GLIBC_NSCD_PROOF_SHA256)
+
+    def test_glibc_pending_progress_cannot_authorize_publication(self):
+        pending = {'schemaVersion': 1, 'status': 'pending-source-closure',
+                   'cve': Q.GUARD.GLIBC_NSCD_CVE, 'platform': Q.PLATFORM}
+        file = self.root / Q.GLIBC_AUDIT_FILE.name; Q.write_json(file, pending)
+        item = copy.deepcopy(self.lock['nativeInputs']['glibc'])
+        item['codeAbsenceProof']['sha256'] = Q.file_sha(file)
+        with patch.object(Q, 'GLIBC_AUDIT_FILE', file), patch.object(Q.GUARD, 'GLIBC_NSCD_PROOF_SHA256', None):
+            self.assertEqual(Q.load_glibc_nscd_source_audit(item)['status'], 'pending-source-closure')
+            with self.assertRaisesRegex(ValueError, 'pending'):
+                Q.load_glibc_nscd_source_audit(item, ready=True)
+
+    def test_glibc_self_rehashed_or_rebound_source_proof_is_rejected(self):
+        original = json.loads(Q.GLIBC_AUDIT_FILE.read_text(encoding='utf-8'))
+        for number, mutate in enumerate([
+                lambda p: p.update(status='pending-source-closure'),
+                lambda p: p['scope'].update(wholeImageUnaffectedClaimed=True),
+                lambda p: p['nativeIdentity'].update(zipSha256='0' * 64),
+                lambda p: p['debs']['libc6'].update(sha256='0' * 64),
+                lambda p: p['audit']['effectiveSourceClosure'].update(status='pending')]):
+            public = copy.deepcopy(original); mutate(public)
+            file = self.root / Q.GLIBC_AUDIT_FILE.name; Q.write_json(file, public)
+            item = copy.deepcopy(self.lock['nativeInputs']['glibc']); item['codeAbsenceProof']['sha256'] = Q.file_sha(file)
+            with self.subTest(number=number), patch.object(Q, 'GLIBC_AUDIT_FILE', file), self.assertRaises(ValueError):
+                Q.load_glibc_nscd_source_audit(item, ready=True)
+        item = copy.deepcopy(self.lock['nativeInputs']['glibc']); item['fixedVulnerabilities'].append(Q.GUARD.GLIBC_NSCD_CVE)
+        with self.assertRaises(ValueError): Q.load_glibc_nscd_source_audit(item, ready=True)
+
+    def test_glibc_actual_payload_binding_does_not_accept_a_daemon(self):
+        item = self.lock['nativeInputs']['glibc']
+        for daemon in [False, True]:
+            payloads = {p['name']: {'schemaVersion': 1, 'package': p['name'], 'version': p['version'],
+                'source': 'glibc', 'architecture': 'amd64', 'elf': [],
+                'files': [{'path': 'usr/sbin/nscd' if daemon and p['name'] == 'libc6' else 'usr/lib/' + p['name']}]}
+                for p in item['packages']}
+            packages = [{'name': p['name'], 'family': 'glibc', 'version': p['version'],
+                'archive': {'sha256': p['sha256']}, 'payload': {'sha256': Q.sha(Q.GUARD.canonical_json(payloads[p['name']]))}}
+                for p in item['packages']]
+            # Mock only the already-reviewed upstream audit dependency. The
+            # production loader still requires its hard-pinned real proof.
+            public = {'audit': {'packages': [{'name': p['name'], 'qualifierPayload': {'sha256': p['payload']['sha256']}}
+                                              for p in packages]}}
+            with patch.object(Q, 'load_glibc_nscd_source_audit', return_value=public):
+                if daemon:
+                    with self.assertRaises(ValueError): Q.glibc_nscd_qualification(item, packages, payloads)
+                else:
+                    result = Q.glibc_nscd_qualification(item, packages, payloads)
+                    self.assertEqual(set(result['packages']), set(Q.FAMILIES['glibc']))
+
     def test_exported_guard_is_exact_source_bytes_and_sha(self):
         proof = Q.export_metadata_guard(self.root)
         original = (HERE / 'verify-consumer-evidence.py').read_bytes()
@@ -327,6 +388,22 @@ class Boundaries(unittest.TestCase):
         output = work / 'context/out'; output.mkdir(parents=True)
         Q.write_json(output / 'qualification.json', {'status': 'qualified'})
         Q.write_json(output / 'manifest.json', {'qualification': {'sha256': Q.file_sha(output / 'qualification.json')}})
+        Q.write_json(output / 'openvex.json', {'statements': []})
+        (output / 'source-inputs.lock.json').write_bytes(Q.LOCK_FILE.read_bytes())
+        Q.write_json(work / 'glibc-vex-semantic/result.json', {
+            'schemaVersion': 1, 'status': 'PASS', 'vulnerability': Q.GUARD.GLIBC_NSCD_CVE,
+            'nativeTrivyVersion': '0.74.0', 'inputOpenVexSha256': Q.file_sha(output / 'openvex.json'),
+            'inputKind': 'qualified-bundle', 'inputSourceLockSha256': Q.file_sha(output / 'source-inputs.lock.json'),
+            'sourceClosureSha256': Q.GUARD.GLIBC_NSCD_PROOF_SHA256,
+            'rawRetainedUnchanged': True, 'findingsFilteredByThisHelper': False,
+            'removedPairs': [{'cve': Q.GUARD.GLIBC_NSCD_CVE,
+                'purl': Q.purl({'name': n, 'version': Q.GUARD.GLIBC_NSCD_VERSION})}
+                for n in sorted(Q.FAMILIES['glibc'])],
+            'retainedNegativeControlPURLs': sorted([
+                Q.purl({'name': 'nscd', 'version': Q.GUARD.GLIBC_NSCD_VERSION}),
+                Q.purl({'name': 'libc6', 'version': '2.43-2ubuntu2.4'})]),
+            'rawFindings': 6, 'effectiveFindings': 3,
+            **{k: 'a' * 64 for k in ('rawSha256', 'effectiveSha256', 'fixtureSbomSha256', 'scopedOpenVexSha256')}})
         digest = Q.file_sha(output / 'manifest.json')
         for provider in ['gnu', 'uutils']:
             selected = sorted(n for names in Q.FAMILIES.values() for n in names
@@ -349,6 +426,7 @@ class Boundaries(unittest.TestCase):
         qualification = json.loads((output / 'qualification.json').read_text())
         manifest = json.loads((output / 'manifest.json').read_text())
         self.assertEqual(len(qualification['consumerFixtures']), 2)
+        self.assertEqual(qualification['glibcNscdVexSemanticTest']['status'], 'PASS')
         self.assertEqual(manifest['qualification']['sha256'], Q.file_sha(output / 'qualification.json'))
         self.assertTrue((output / 'provenance/consumer/gnu/install.json').is_file())
 
@@ -358,6 +436,18 @@ class Boundaries(unittest.TestCase):
                                            lambda r: r['checks'].remove('docs-restored')]):
             work = self.root / str(number); self.consumer_fixture(work, mutation)
             with patch.object(Q, 'WORK', work), self.assertRaisesRegex(ValueError, 'receipt failed'):
+                Q.record_consumer_tests()
+
+    def test_native_vex_semantic_receipt_is_required_before_final_qualification(self):
+        for number, mutation in enumerate([lambda r: r.update(inputOpenVexSha256='0' * 64),
+                lambda r: r.update(rawRetainedUnchanged=False), lambda r: r['removedPairs'].pop(),
+                lambda r: r['retainedNegativeControlPURLs'].pop(), lambda r: r.update(status='pending'),
+                lambda r: r.update(inputKind='source-lock-public-proof'),
+                lambda r: r.update(inputSourceLockSha256='0' * 64)]):
+            work = self.root / ('semantic-' + str(number)); self.consumer_fixture(work)
+            p = work / 'glibc-vex-semantic/result.json'; result = json.loads(p.read_text()); mutation(result)
+            Q.write_json(p, result)
+            with self.subTest(number=number), patch.object(Q, 'WORK', work), self.assertRaises(ValueError):
                 Q.record_consumer_tests()
 
 

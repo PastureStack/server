@@ -26,6 +26,16 @@ PRODUCER_FILES = ('manifest.json', 'qualification.json', 'openvex.json', 'source
 SHA256 = re.compile(r'[0-9a-f]{64}')
 DIGEST = re.compile(r'sha256:[0-9a-f]{64}')
 VULNERABILITY = re.compile(r'(?:CVE-[0-9]{4}-[0-9]+|GHSA-[23456789cfghjmpqrvwx]{4}(?:-[23456789cfghjmpqrvwx]{4}){2})')
+GLIBC_NSCD_CVE = 'CVE-2026-89092'
+GLIBC_NSCD_VERSION = '2.43-2ubuntu2.4+pasturestack.1'
+GLIBC_NSCD_PROOF_FILE = 'glibc-nscd-source-closure.json'
+# Set only after review of the complete public source/object/package audit.
+# Pending progress evidence cannot authorize a not_affected statement.
+GLIBC_NSCD_PROOF_SHA256 = 'dcc574c006f401e1169e5a73c01ed32598f13fa917c448e215fc0fb76aad2657'
+GLIBC_NSCD_SOURCES = ['nscd/aicache.c', 'nscd/hstcache.c']
+GLIBC_NSCD_IMPACT = ('The two vulnerable nscd daemon modules are absent from these exact runtime packages. '
+    'libc nscd IPC client helpers may be present. This statement does not cover the separate nscd daemon/package '
+    'or claim that a whole consumer image is not affected.')
 
 
 def require(ok, message):
@@ -53,6 +63,109 @@ def unique_names(values, label):
             label + ' must be a nonempty package-name list')
     require(len(set(values)) == len(values), label + ' has duplicates')
     return set(values)
+
+
+def canonical_json(value):
+    return (json.dumps(value, indent=2, sort_keys=True) + '\n').encode()
+
+
+def glibc_nscd_statement(exact_purls):
+    expected = sorted(package_purl({'name': n, 'version': GLIBC_NSCD_VERSION}) for n in FAMILIES['glibc'])
+    require(exact_purls == expected, 'glibc absence statement requires exactly three approved PURLs')
+    return {'vulnerability': {'@id': 'https://www.cve.org/CVERecord?id=' + GLIBC_NSCD_CVE, 'name': GLIBC_NSCD_CVE},
+            'products': [{'@id': p} for p in expected], 'status': 'not_affected',
+            'justification': 'vulnerable_code_not_present', 'impact_statement': GLIBC_NSCD_IMPACT}
+
+
+def native_glibc_identity(item):
+    return {key: item[key] for key in ('sourceCommit', 'runId', 'jobId', 'artifactId', 'zipSha256', 'lockSha256')} | {
+        'provenanceSha256': item['evidence']['provenance.json']}
+
+
+def validate_glibc_nscd_source(proof, item):
+    """One reviewed proof, one CVE, three exact binary packages; no generic waiver."""
+    ref = item.get('codeAbsenceProof', {})
+    require(GLIBC_NSCD_PROOF_SHA256 is not None
+            and ref == {'path': GLIBC_NSCD_PROOF_FILE, 'sha256': GLIBC_NSCD_PROOF_SHA256}
+            and sha(canonical_json(proof)) == GLIBC_NSCD_PROOF_SHA256,
+            'glibc nscd complete reviewed source proof is absent or changed')
+    require(proof['schemaVersion'] == 1 and proof['status'] == 'validated'
+            and proof['cve'] == GLIBC_NSCD_CVE and proof['platform'] == PLATFORM
+            and proof['nativeIdentity'] == native_glibc_identity(item)
+            and item['status'] == 'qualified' and GLIBC_NSCD_CVE not in item['fixedVulnerabilities'],
+            'glibc nscd audit does not bind this exact qualified native input')
+    require(proof['scope'] == {'verdict': 'component-code-absence-only',
+                'customVersion': GLIBC_NSCD_VERSION, 'runtimePackages': sorted(FAMILIES['glibc']),
+                'vulnerableSources': GLIBC_NSCD_SOURCES, 'standaloneDaemonPackage': 'nscd',
+                'libcNscdIpcClientsMayBePresent': True, 'wholeImageUnaffectedClaimed': False}
+            and SHA256.fullmatch(proof['originalReceiptSha256'])
+            and sha(canonical_json(proof['audit'])) == proof['auditProjectionSha256']
+            and proof['audit']['status'] == 'qualified' and proof['audit']['cve'] == GLIBC_NSCD_CVE,
+            'glibc nscd source audit scope/authority is not complete')
+    audit = proof['audit']; native = audit['nativeIdentity']
+    require(all(native[k] == item[k] for k in ('sourceCommit', 'runId', 'jobId', 'artifactId'))
+            and native['artifactZipSha256'] == item['zipSha256']
+            and native['sourceLockSha256'] == item['lockSha256']
+            and native['provenanceSha256'] == item['evidence']['provenance.json']
+            and native['sourceRecipeFiles'] == item['sourceFiles']
+            and audit['sourceIdentity']['sourceFiles'] == proof['sourceIdentity']['sourceFiles']
+            and audit['sourceIdentity']['sourceLockSha256'] == item['lockSha256']
+            and audit['effectiveSourceClosure']['status'] == 'validated'
+            and audit['buildObjectClosure']['allNativeLinkCommandsMentioningTheseObjectsTargetOnlyNscd'] is True
+            and audit['buildObjectClosure']['libcClientRoutinesAreTheVulnerableDaemonModules'] is False
+            and audit['excludedNscdPackage']['name'] == 'nscd'
+            and audit['excludedNscdPackage']['qualifiedExport'] is False,
+            'glibc source/object/package audit does not close the selected native boundary')
+    require(len(item['packages']) == 3 and {p['name'] for p in item['packages']} == FAMILIES['glibc']
+            and all(p['version'] == GLIBC_NSCD_VERSION and p['source'] == 'glibc' for p in item['packages'])
+            and proof['debs'] == {p['name']: {'file': p['file'], 'sha256': p['sha256']} for p in item['packages']},
+            'glibc nscd source audit does not cover the exact three deb archives')
+
+
+def validate_glibc_nscd_qualification(qualified, packages, lock):
+    family = qualified['glibc']; item = family['nativeInput']
+    require(item == lock.get('nativeInputs', {}).get('glibc'), 'glibc absence proof differs from immutable source lock')
+    absence = family.get('codeAbsence', {})
+    validate_glibc_nscd_source(absence.get('sourceClosure', {}), item)
+    require(absence.get('sourceClosureSha256') == GLIBC_NSCD_PROOF_SHA256,
+            'glibc source-closure hash mismatch')
+    expected = {name: {'purl': package_purl(packages[name]),
+                      'archiveSha256': packages[name]['archive']['sha256'],
+                      'payloadSha256': packages[name]['payload']['sha256'], 'nscdDaemonPaths': []}
+                for name in sorted(FAMILIES['glibc'])}
+    audited = {p['name']: p for p in absence['sourceClosure']['audit']['packages']}
+    require(absence.get('packages') == expected
+            and all(packages[n]['version'] == GLIBC_NSCD_VERSION
+                    and packages[n]['archive']['sha256'] == absence['sourceClosure']['debs'][n]['sha256']
+                    and packages[n]['payload']['sha256'] == audited[n]['qualifierPayload']['sha256']
+                    for n in FAMILIES['glibc']), 'glibc absence package/payload binding mismatch')
+    return sorted(row['purl'] for row in expected.values())
+
+
+def validate_glibc_vex_semantics(receipt, vex_sha, source_lock_sha):
+    require(isinstance(receipt, dict) and {'schemaVersion', 'status', 'vulnerability', 'nativeTrivyVersion',
+            'inputOpenVexSha256', 'rawRetainedUnchanged', 'findingsFilteredByThisHelper', 'removedPairs',
+            'retainedNegativeControlPURLs', 'rawFindings', 'effectiveFindings', 'rawSha256',
+            'effectiveSha256', 'fixtureSbomSha256', 'scopedOpenVexSha256', 'inputKind',
+            'inputSourceLockSha256', 'sourceClosureSha256'} <= receipt.keys(),
+            'Native Trivy glibc/nscd semantic receipt is absent')
+    expected = sorted(package_purl({'name': n, 'version': GLIBC_NSCD_VERSION}) for n in FAMILIES['glibc'])
+    require(receipt['schemaVersion'] == 1 and receipt['status'] == 'PASS'
+            and receipt['vulnerability'] == GLIBC_NSCD_CVE and receipt['nativeTrivyVersion'] == '0.74.0'
+            and receipt['inputKind'] == 'qualified-bundle'
+            and receipt['inputSourceLockSha256'] == source_lock_sha
+            and receipt['sourceClosureSha256'] == GLIBC_NSCD_PROOF_SHA256
+            and receipt['inputOpenVexSha256'] == vex_sha and receipt['rawRetainedUnchanged'] is True
+            and receipt['findingsFilteredByThisHelper'] is False
+            and receipt['removedPairs'] == [{'cve': GLIBC_NSCD_CVE, 'purl': p} for p in expected]
+            and receipt['retainedNegativeControlPURLs'] == sorted([
+                package_purl({'name': 'nscd', 'version': GLIBC_NSCD_VERSION}),
+                package_purl({'name': 'libc6', 'version': '2.43-2ubuntu2.4'})])
+            and type(receipt['rawFindings']) is int and type(receipt['effectiveFindings']) is int
+            and receipt['rawFindings'] - receipt['effectiveFindings'] == 3 and receipt['effectiveFindings'] >= 3
+            and all(SHA256.fullmatch(receipt[k]) for k in
+                ('rawSha256', 'effectiveSha256', 'fixtureSbomSha256', 'scopedOpenVexSha256')),
+            'Native Trivy exact glibc/nscd VEX semantic qualification is missing or changed')
 
 
 def verify(files, checksums, sbom, expected_digest, bundle_checksums):
@@ -138,25 +251,39 @@ def verify(files, checksums, sbom, expected_digest, bundle_checksums):
     require(vex.get('@context') == 'https://openvex.dev/ns/v0.2.0'
             and isinstance(vex.get('statements'), list) and vex['statements'], 'Invalid OpenVEX document')
     pairs = set()
+    absence_statements = 0
     for statement in vex['statements']:
         identifier = statement['vulnerability']['name']
-        require(VULNERABILITY.fullmatch(identifier) and statement['status'] == 'fixed'
-                and statement.get('action_statement') and statement['products'],
-                'Only explicit qualified fixed statements are accepted')
+        if identifier == GLIBC_NSCD_CVE:
+            expected = validate_glibc_nscd_qualification(qualified, packages, docs['source-inputs.lock.json'])
+            require(statement == glibc_nscd_statement(expected),
+                    'Only the exact qualified glibc component-code-absence statement is accepted')
+            validate_glibc_vex_semantics(qualification.get('glibcNscdVexSemanticTest', {}), sha(files['openvex.json']),
+                                         sha(files['source-inputs.lock.json']))
+            absence_statements += 1
+            require(absence_statements == 1, 'Duplicate glibc code-absence statement')
+        else:
+            require(VULNERABILITY.fullmatch(identifier) and statement['status'] == 'fixed'
+                    and statement.get('action_statement') and statement['products'],
+                    'Only explicit qualified fixed statements are accepted')
         for product in statement['products']:
             require(set(product) == {'@id'} and product['@id'] in purls,
                     'OpenVEX product is not a complete qualified exact-version PURL')
             package = purls[product['@id']]
-            require(identifier in qualified[package['family']]['nativeInput']['fixedVulnerabilities'],
-                    'OpenVEX CVE is outside the native qualified fix set')
+            if identifier != GLIBC_NSCD_CVE:
+                require(identifier in qualified[package['family']]['nativeInput']['fixedVulnerabilities'],
+                        'OpenVEX CVE is outside the native qualified fix set')
             pair = (identifier, product['@id'])
             require(pair not in pairs, 'Duplicate OpenVEX vulnerability/package statement')
             pairs.add(pair)
+    require('codeAbsenceProof' not in qualified['glibc']['nativeInput'] or absence_statements == 1,
+            'Qualified glibc code-absence statement is missing')
     return {'schemaVersion': 1, 'status': 'PASS', 'bundleDigest': expected_digest,
             'manifestSha256': sha(files['manifest.json']), 'openvexSha256': sha(files['openvex.json']),
             'bundleChecksumsSha256': sha(bundle_checksums), 'producerMetadataSha256': producer,
             'selectedPackages': sorted(selected), 'selectedPURLs': sorted(actual.values()),
-            'qualifiedVexPairs': len(pairs), 'findingsFilteredByThisTool': False}
+            'qualifiedVexPairs': len(pairs), 'qualifiedCodeAbsentVexPairs': 3 * absence_statements,
+            'qualifiedFixedVexPairs': len(pairs) - 3 * absence_statements, 'findingsFilteredByThisTool': False}
 
 
 def bounded_read(path):

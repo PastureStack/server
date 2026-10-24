@@ -30,6 +30,43 @@ jobs:
           python3 -B server/security/ubuntu-backports/bundle/test_verify_consumer_evidence.py
           python3 -B server/security/ubuntu-backports/bundle/qualify-native-packages.py --check-lock
 
+      - name: Check native glibc OpenVEX semantics without package downloads
+        id: vex_semantics
+        env:
+          TRIVY_IMAGE: ghcr.io/aquasecurity/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
+        run: |
+          set -Eeuo pipefail
+          helper=server/security/ubuntu-backports/bundle/test-trivy-glibc-vex.py
+          work="$(python3 -B server/security/ubuntu-backports/bundle/qualify-native-packages.py --print-work-root)"
+          fixture="$work/glibc-vex-semantic"
+          printf 'fixture=%s\n' "$fixture" >>"$GITHUB_OUTPUT"
+          python3 -B "$helper" --prepare-source
+          docker run --rm --platform linux/amd64 -v "$fixture:/work" "$TRIVY_IMAGE" --version >"$fixture/trivy-version.txt"
+          docker run --rm --platform linux/amd64 -v "$fixture:/work" "$TRIVY_IMAGE" \
+            image --cache-dir /work/cache --download-db-only 2>&1 | tee "$fixture/database.log"
+          for mode in raw effective; do
+            vex=()
+            if [[ "$mode" == effective ]]; then vex=(--vex /work/scoped.openvex.json); fi
+            docker run --rm --platform linux/amd64 -v "$fixture:/work" "$TRIVY_IMAGE" \
+              sbom --cache-dir /work/cache --skip-db-update --scanners vuln --format json \
+              --output "/work/$mode.json" "${vex[@]}" /work/fixture.cdx.json \
+              2>&1 | tee "$fixture/$mode.log"
+            if [[ "$mode" == raw ]]; then python3 -B "$helper" --record-raw; fi
+          done
+          python3 -B "$helper" --verify
+
+      - name: Retain native VEX matcher controls including failures
+        if: always() && steps.vex_semantics.outputs.fixture != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: glibc-nscd-native-vex-${{ github.sha }}-${{ github.run_id }}
+          path: |
+            ${{ steps.vex_semantics.outputs.fixture }}/*.json
+            ${{ steps.vex_semantics.outputs.fixture }}/*.txt
+            ${{ steps.vex_semantics.outputs.fixture }}/*.log
+          if-no-files-found: warn
+          retention-days: 30
+
   publish:
     needs: checks
     if: github.event_name == 'workflow_dispatch' && github.repository == 'PastureStack/server' && github.ref == 'refs/heads/main'
@@ -116,6 +153,30 @@ jobs:
           python3 -B server/security/ubuntu-backports/bundle/qualify-native-packages.py --qualify \
             2>&1 | tee "$WORK/publisher/qualification.log"
 
+      - name: Require native exact-package glibc OpenVEX semantics
+        working-directory: source
+        env:
+          WORK: ${{ steps.inputs.outputs.work }}
+          TRIVY_IMAGE: ghcr.io/aquasecurity/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
+        run: |
+          set -Eeuo pipefail
+          helper=server/security/ubuntu-backports/bundle/test-trivy-glibc-vex.py
+          fixture="$WORK/glibc-vex-semantic"
+          python3 -B "$helper" --prepare
+          docker run --rm --platform linux/amd64 -v "$fixture:/work" "$TRIVY_IMAGE" --version >"$fixture/trivy-version.txt"
+          docker run --rm --platform linux/amd64 -v "$fixture:/work" "$TRIVY_IMAGE" \
+            image --cache-dir /work/cache --download-db-only 2>&1 | tee "$fixture/database.log"
+          for mode in raw effective; do
+            vex=()
+            if [[ "$mode" == effective ]]; then vex=(--vex /work/scoped.openvex.json); fi
+            docker run --rm --platform linux/amd64 -v "$fixture:/work" "$TRIVY_IMAGE" \
+              sbom --cache-dir /work/cache --skip-db-update --scanners vuln --format json \
+              --output "/work/$mode.json" "${vex[@]}" /work/fixture.cdx.json \
+              2>&1 | tee "$fixture/$mode.log"
+            if [[ "$mode" == raw ]]; then python3 -B "$helper" --record-raw; fi
+          done
+          python3 -B "$helper" --verify
+
       - name: Require real installation in both isolated Ubuntu provider fixtures
         working-directory: source
         env:
@@ -177,7 +238,19 @@ jobs:
           set -Eeuo pipefail
           mkdir "$WORK/anonymous-docker" "$WORK/readback"
           printf '{"auths":{}}\n' >"$WORK/anonymous-docker/config.json"
-          python3 -B server/security/ubuntu-backports/bundle/qualify-native-packages.py --verify-anonymous-manifest
+          public_ready=0
+          for attempt in {1..20}; do
+            if python3 -B server/security/ubuntu-backports/bundle/qualify-native-packages.py --verify-anonymous-manifest; then
+              public_ready=1
+              break
+            fi
+            printf 'Anonymous exact manifest not ready (attempt %s/20).\n' "$attempt"
+            if [[ "$attempt" -lt 20 ]]; then sleep 10; fi
+          done
+          if [[ "$public_ready" != 1 ]]; then
+            printf 'Anonymous exact manifest did not become available within the bounded readiness window.\n' >&2
+            exit 1
+          fi
           docker --config "$WORK/anonymous-docker" pull "$IMAGE@$IMAGE_DIGEST"
           container="$(docker create --entrypoint /unused "$IMAGE@$IMAGE_DIGEST")"
           trap 'docker rm "$container" >/dev/null' EXIT
@@ -202,6 +275,9 @@ jobs:
             ${{ steps.inputs.outputs.work }}/publisher/
             ${{ steps.inputs.outputs.work }}/consumer-gnu/
             ${{ steps.inputs.outputs.work }}/consumer-uutils/
+            ${{ steps.inputs.outputs.work }}/glibc-vex-semantic/*.json
+            ${{ steps.inputs.outputs.work }}/glibc-vex-semantic/*.txt
+            ${{ steps.inputs.outputs.work }}/glibc-vex-semantic/*.log
             ${{ steps.inputs.outputs.work }}/inputs/*-api.json
           if-no-files-found: warn
           retention-days: 30
