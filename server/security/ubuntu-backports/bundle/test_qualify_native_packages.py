@@ -31,6 +31,18 @@ def fixture_api(item, family='jq'):
                          'workflow_run': {'id': item['runId'], 'head_sha': item['sourceCommit']}}}
 
 
+def pcre2_api(stage):
+    return {'run': {'id': stage['runId'], 'head_sha': stage['publisherCommit'], 'status': 'completed',
+                    'conclusion': 'failure', 'event': 'workflow_dispatch',
+                    'path': '.github/workflows/publish-ubuntu-security-backports.yml'},
+            'job': {'id': stage['jobId'], 'run_id': stage['runId'], 'name': 'publish', 'head_sha': stage['publisherCommit'],
+                    'status': 'completed', 'conclusion': 'failure',
+                    'steps': [dict(row, status='completed') for row in Q.PCRE2_STAGE_STEPS]},
+            'artifact': {'id': stage['artifactId'], 'name': stage['artifactName'], 'expired': False,
+                         'digest': 'sha256:' + stage['zipSha256'],
+                         'workflow_run': {'id': stage['runId'], 'head_sha': stage['publisherCommit']}}}
+
+
 class Boundaries(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='bundle-unit-')
@@ -58,7 +70,8 @@ class Boundaries(unittest.TestCase):
                 Q.load_lock(ready=True)
 
     def test_missing_native_producer_is_fetched_by_exact_sha_without_changing_head(self):
-        commits = sorted({item['sourceCommit'] for item in self.lock['nativeInputs'].values()})
+        commits = sorted({item['sourceCommit'] for item in self.lock['nativeInputs'].values()} |
+                         {self.lock['pcre2']['stageInput']['publisherCommit']})
         with patch.object(Q.subprocess, 'run', return_value=SimpleNamespace(returncode=0)) as run:
             Q.ensure_native_sources(self.lock)
             self.assertEqual(len(run.call_args_list), len(commits))
@@ -69,6 +82,34 @@ class Boundaries(unittest.TestCase):
             Q.ensure_native_sources(self.lock)
             fetches = [call.args[0] for call in run.call_args_list if call.args[0][1] != 'cat-file']
             self.assertEqual(fetches, [['git', 'fetch', '--no-tags', 'origin', commits[0]]])
+
+    def test_pcre2_input_keeps_failed_job_and_requires_exact_completed_stage_outcomes(self):
+        stage = self.lock['pcre2']['stageInput']; api = pcre2_api(stage)
+        Q.verify_pcre2_api(stage, **api)
+        for mutate in [lambda a: a['run'].update(conclusion='success'),
+                       lambda a: a['job'].update(conclusion='success'),
+                       lambda a: a['job']['steps'][0].update(conclusion='failure'),
+                       lambda a: a['job']['steps'][1].update(conclusion='failure'),
+                       lambda a: a['job']['steps'][2].update(conclusion='success'),
+                       lambda a: a['job']['steps'][3].update(conclusion='success'),
+                       lambda a: a['job']['steps'].pop(),
+                       lambda a: a['artifact']['workflow_run'].update(head_sha='0' * 40)]:
+            altered = copy.deepcopy(api); mutate(altered)
+            with self.assertRaises(ValueError): Q.verify_pcre2_api(stage, **altered)
+
+    def test_pcre2_input_has_no_fresh_build_fallback_or_recipe_waiver(self):
+        for mutate in [lambda x: x['pcre2'].update(kind='fresh-production-target'),
+                       lambda x: x['pcre2']['stageInput']['sourceFiles'].pop('.github/workflows/publish-ubuntu-security-backports.yml'),
+                       lambda x: x['pcre2']['stageInput']['stepOutcomes'][1].update(conclusion='failure')]:
+            lock = copy.deepcopy(self.lock); mutate(lock)
+            file = self.root / 'lock.json'; Q.write_json(file, lock)
+            with patch.object(Q, 'LOCK_FILE', file), self.assertRaises(ValueError): Q.load_lock()
+        workflow = (Q.ROOT / '.github/workflows/publish-ubuntu-security-backports.yml').read_text(encoding='utf-8')
+        self.assertNotIn('pcre2_bundle_inputs', workflow)
+        self.assertNotIn('pcre2-build.log', workflow)
+        self.assertIn('--check-pcre2-source', workflow)
+        self.assertIn('--target installer_export', workflow)
+        self.assertIn('go test -mod=readonly ./...', (HERE / 'Dockerfile.bundle').read_text(encoding='utf-8'))
 
     def test_no_extra_runtime_family_or_deb(self):
         for mutate in [lambda x: x['nativeInputs'].update(tar={}),

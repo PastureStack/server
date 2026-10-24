@@ -93,7 +93,7 @@ jobs:
           path: pcre2-source
           persist-credentials: false
 
-      - name: Build only the released PCRE2 producer and static installer
+      - name: Verify released PCRE2 source and build the current static installer
         working-directory: source
         env:
           WORK: ${{ steps.inputs.outputs.work }}
@@ -102,17 +102,6 @@ jobs:
           qualifier=server/security/ubuntu-backports/bundle/qualify-native-packages.py
           python3 -B "$qualifier" --check-pcre2-source
           mkdir "$WORK/publisher"
-          python3 - <<'PY'
-          import os
-          from pathlib import Path
-          original = Path('../pcre2-source/server/Dockerfile.web-compose-release').read_bytes()
-          appended = b'\nFROM scratch AS pcre2_bundle_inputs\nCOPY --from=runtime_security_packages /out/pcre2/ /pcre2/\n'
-          Path(os.environ['WORK'], 'Dockerfile.pcre2').write_bytes(original + appended)
-          PY
-          docker buildx build --platform linux/amd64 --progress plain --no-cache \
-            --file "$WORK/Dockerfile.pcre2" --target pcre2_bundle_inputs \
-            --output "type=local,dest=$WORK/pcre2-export" ../pcre2-source/server \
-            2>&1 | tee "$WORK/publisher/pcre2-build.log"
           docker buildx build --platform linux/amd64 --progress plain --no-cache \
             --file server/security/ubuntu-backports/bundle/Dockerfile.bundle --target installer_export \
             --output "type=local,dest=$WORK/installer-export" server/security/ubuntu-backports/bundle \

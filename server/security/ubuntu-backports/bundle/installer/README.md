@@ -55,5 +55,8 @@ read-only qualified bundle bytes, restore deliberately path-excluded docs,
 perform actual install/verify, preserve package set and provider, and exercise
 the installed glibc loader/cache, jq, id, p11-kit, PCRE grep and NSS getent.
 `result.json` and the console/install/verify receipts are exported. These are
-isolated consumer fixtures, with normal official package/provider setup and no
-force flags. They do not replace acceptance in each actual product rootfs.
+isolated consumer fixtures. GNU baseline construction follows Ubuntu's documented
+provider transition, including its required `--allow-remove-essential` option;
+this is confined to test setup, before the backport installer runs. The installer
+does not invoke apt or switch providers. These fixtures do not replace acceptance
+in each actual product rootfs.
