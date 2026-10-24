@@ -29,6 +29,9 @@ class PublisherSafetyGuards(unittest.TestCase):
                 evidence = Path(temporary)
                 internal = evidence / 'web-console-runtime-vulnerabilities.tsv'
                 internal.write_bytes(report)
+                archive = evidence / 'host-api-0.38.8.tar.gz'
+                producer_bytes = gzip.compress(b'unchanged producer package', mtime=0)
+                archive.write_bytes(producer_bytes)
                 result = subprocess.run(['bash', '-c', 'set -euo pipefail; evidence="$1"; ' + command,
                                          'upload-fixture', temporary], capture_output=True, text=True)
                 self.assertEqual(result.returncode, 0, result.stderr)
@@ -37,6 +40,29 @@ class PublisherSafetyGuards(unittest.TestCase):
                 self.assertEqual(gzip.decompress(public.read_bytes()), report)
                 self.assertEqual(gzip.decompress(gzip.compress(report, mtime=0)), report)
                 self.assertEqual(internal.read_bytes(), report)
+                self.assertEqual(archive.read_bytes(), producer_bytes)
+
+    def test_empty_gzip_cannot_replace_the_producer_host_package(self):
+        source = WORKFLOW.read_text()
+        release = source.split('      - name: Create immutable GitHub Release', 1)[1]
+        start = release.index('          host_archive_sha=')
+        end = release.index('\n          (', start)
+        guard = textwrap.dedent(release[start:end])
+        self.assertLess(start, release.index('          gh release create'))
+        import hashlib
+        for replace in (False, True):
+            with self.subTest(empty_gzip=replace), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                (root / 'source/server').mkdir(parents=True)
+                original = gzip.compress(b'unchanged producer package', mtime=0)
+                (root / 'source/server/Dockerfile.web-compose-release').write_text(
+                    'ARG HOST_API_ARCHIVE_SHA256=' + hashlib.sha256(original).hexdigest() + '\n')
+                archive = root / 'host-api-0.38.8.tar.gz'
+                archive.write_bytes(gzip.compress(b'', mtime=0) if replace else original)
+                result = subprocess.run(['bash', '-c',
+                    'set -euo pipefail; evidence="$1"; HOST_API_VERSION=0.38.8; ' + guard,
+                    'asset-fixture', temporary], cwd=temporary, capture_output=True, text=True)
+                self.assertEqual(result.returncode, int(replace), result.stderr)
 
     def guard(self, prefix):
         lines = [line.strip() for line in WORKFLOW.read_text().splitlines()
