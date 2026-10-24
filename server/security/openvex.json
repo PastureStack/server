@@ -1,6 +1,6 @@
 {
   "@context": "https://openvex.dev/ns/v0.2.0",
-  "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.550",
+  "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.551",
   "author": "PastureStack Security",
   "timestamp": "2026-10-25T00:00:00Z",
   "version": 63,
