@@ -577,7 +577,7 @@
       "sourceAudit": {
         "originalReceiptSha256": "73189028622c0a0fc074067b4c5b8521094921531f95cf3e68073baaebd2fbbd",
         "path": "rust-coreutils-original18-source-closure.json",
-        "sha256": "6057ffc353b5cdd86ba887354d2f1ee1f01afd11a4ba3bbca3f16b2b4600b3a5"
+        "sha256": "27bc317cfac11edd24b2c8beebf5094d84c8e312d4bf0cf4e61f05a300daacc8"
       },
       "sourceCommit": "07e4a7afa827cb45514a72aba12f03b1d30d121d",
       "sourceFiles": {
