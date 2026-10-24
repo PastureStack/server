@@ -1,5 +1,13 @@
 # Server v1.6.550
 
+**Standalone attachment correction:** The manual completion script mistakenly
+replaced `host-api-0.38.8.tar.gz` with an empty gzip stream. Do not use that
+attachment. The Server image contains the correct archive, and the
+[original Host API producer release](https://github.com/PastureStack/host-api/releases/tag/v0.38.8)
+is unchanged. Matching upload checksums did not detect the substitution. The
+original immutable bytes remain available as failure evidence; 551 adds a
+producer-identity recheck after report conversion and publishes a fresh release.
+
 Published image:
 `ghcr.io/pasturestack/server:v1.6.550@sha256:03542028c3ce4be11d7ff87f96beddf5179c67caf9f0d28ad57043acf3cf52c5`.
 Producer: `54deb98ee33ffab78437070d61179b602844182e`.
@@ -49,8 +57,9 @@ were not changed.
 [Run 40116218929](https://github.com/PastureStack/server/actions/runs/40116218929)
 remains failed because the final renderer required a missing candidate-note
 heading. Its tested, signed image was not rebuilt or overwritten. Original CI
-bytes completed publication, all 34 immutable assets passed anonymous SHA-256
-readback, and both attestations were verified. The
+bytes completed image publication and both attestations were verified. The
+34 assets passed upload-to-download checksum readback, which did not establish
+that the Host API attachment still matched its producer; see the correction above. The
 [completion receipt](https://github.com/PastureStack/server/releases/download/v1.6.550/publication-recovery.json)
 records the original archive and note-only correction. A permanent pre-build
 test now validates the actual current note as well as fixtures.
