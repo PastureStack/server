@@ -68,8 +68,10 @@ jobs:
           test "$(git -C source rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git -C source status --short)"
           python3 source/server/security/test_scan_coverage.py
+          python3 source/server/security/test_web_console_sbom_scan.py
           python3 source/scripts/test-render-server-release-notes.py
           python3 source/scripts/test-publisher-safety-guards.py
+          python3 source/scripts/test-web-console-sbom.py
 
           declared_release="$(sed -n 's/^ARG SERVER_RELEASE_TAG=//p' \
             source/server/Dockerfile.web-compose-release | sort -u)"
@@ -78,6 +80,15 @@ jobs:
             source/server/Dockerfile.web-compose-release | sort -u)"
           [[ "$host_api_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
           printf 'HOST_API_VERSION=%s\n' "$host_api_version" >>"$GITHUB_ENV"
+          for web_pin in WEB_CONSOLE_RELEASE_TAG WEB_CONSOLE_ARTIFACT \
+            WEB_CONSOLE_ARTIFACT_SHA256 WEB_CONSOLE_COMMIT WEB_CONSOLE_LOCK_SHA256 \
+            WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT WEB_CONSOLE_RUNTIME_SBOM_SHA256; do
+            value="$(sed -n "s/^ARG ${web_pin}=//p" \
+              source/server/Dockerfile.web-compose-release | sort -u)"
+            test -n "$value"
+            [[ "$value" != *$'\n'* ]]
+            printf '%s=%s\n' "$web_pin" "$value" >>"$GITHUB_ENV"
+          done
           release_notes="source/docs/releases/server-${RELEASE_TAG#v}.md"
           test -f "$release_notes"
           test -s "$release_notes"
@@ -415,6 +426,28 @@ jobs:
           cleanup_candidate
           trap - EXIT
 
+      - name: Retain the independent browser runtime SBOM from the actual candidate
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          evidence="$RUNNER_TEMP/server-evidence"
+          image_sbom="$RUNNER_TEMP/server-rootfs/usr/share/licenses/pasturestack/web-console/runtime.cdx.json"
+          test -f "$image_sbom"
+          test ! -L "$image_sbom"
+          cp "$image_sbom" "$evidence/web-console-runtime.cdx.json"
+          cmp "$image_sbom" "$evidence/web-console-runtime.cdx.json"
+          python3 source/server/artifacts/verify-web-console-sbom.py \
+            --sbom "$evidence/web-console-runtime.cdx.json" \
+            --sbom-sha256 "$WEB_CONSOLE_RUNTIME_SBOM_SHA256" \
+            --version "$WEB_CONSOLE_RELEASE_TAG" --source-commit "$WEB_CONSOLE_COMMIT" \
+            --archive-name "$WEB_CONSOLE_ARTIFACT" --archive-sha256 "$WEB_CONSOLE_ARTIFACT_SHA256" \
+            --lock-sha256 "$WEB_CONSOLE_LOCK_SHA256" |
+            tee "$evidence/web-console-sbom-identity.txt"
+          (
+            cd "$evidence"
+            sha256sum web-console-runtime.cdx.json >web-console-runtime.cdx.json.sha256
+          )
+
       - name: Scan the final merged runtime and create SBOM
         shell: bash
         run: |
@@ -430,6 +463,28 @@ jobs:
             jq -e --arg expected \
               'ghcr.io/aquasecurity/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969' \
               'index($expected) != null' >/dev/null
+          docker run --rm \
+            -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
+            "$TRIVY_IMAGE" image --download-db-only
+          # Browser component lookup is independent of the OS/rootfs reports.
+          # No OS VEX, ignorefile, build BOM or hosted SDK inventory is applied.
+          docker run --rm \
+            -v "$evidence:/evidence" \
+            -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
+            "$TRIVY_IMAGE" --config /dev/null sbom \
+            --scanners vuln --skip-db-update --skip-vex-repo-update \
+            --ignorefile /dev/null --list-all-pkgs --format json \
+            --output /evidence/web-console-runtime-scan-raw.json \
+            /evidence/web-console-runtime.cdx.json
+          python3 source/server/security/check_web_console_sbom_scan.py \
+            --sbom "$evidence/web-console-runtime.cdx.json" \
+            --scan "$evidence/web-console-runtime-scan-raw.json" \
+            --effective "$evidence/web-console-runtime-scan-effective.json" \
+            --coverage "$evidence/web-console-runtime-scan-coverage.json" \
+            --findings "$evidence/web-console-runtime-vulnerabilities.tsv" \
+            --db-metadata "$RUNNER_TEMP/trivy-cache/db/metadata.json" \
+            --db-file "$RUNNER_TEMP/trivy-cache/db/trivy.db" \
+            --scanner-image "$TRIVY_IMAGE"
           cp source/server/security/openvex.json "$evidence/server.openvex.json"
           cp source/server/security/vendor-pending.json \
             "$evidence/server.vendor-pending.json"
@@ -487,6 +542,8 @@ jobs:
                (.FixedVersion // ""), ("active-payload/" + $target)] | @tsv
           ' "$evidence/server-nested-payloads.json" | LC_ALL=C sort -u \
             >>"$evidence/server-vulnerabilities-raw.tsv"
+          cat "$evidence/web-console-runtime-vulnerabilities.tsv" \
+            >>"$evidence/server-vulnerabilities-raw.tsv"
           jq -r '
             .Results[]? | .Target as $target | .Secrets[]?
             | [.RuleID, .Category, .Severity, (.Title // ""), ($target // "")]
@@ -524,6 +581,8 @@ jobs:
                (.FixedVersion // ""), ("active-payload/" + $target)] | @tsv
           ' "$evidence/server-nested-payloads.json" | LC_ALL=C sort -u \
             >>"$evidence/server-vulnerabilities-unresolved.tsv"
+          cat "$evidence/web-console-runtime-vulnerabilities.tsv" \
+            >>"$evidence/server-vulnerabilities-unresolved.tsv"
           bash source/scripts/validate-vendor-pending-findings.sh \
             "$evidence/server.vendor-pending.json" \
             "$evidence/server-vulnerabilities-unresolved.tsv" \
@@ -544,8 +603,9 @@ jobs:
           ' "$evidence/server.cdx.json" >/dev/null
           raw_count="$(wc -l <"$evidence/server-vulnerabilities-raw.tsv")"
           vendor_pending_count="$(wc -l <"$evidence/server-vulnerabilities-unresolved.tsv" | tr -d ' ')"
-          printf 'SERVER_SECURITY_GATE_OK untracked=0 vendor_pending=%s critical_high=0 fixed_available=0 secrets=0 raw_findings=%s vex=openvex-0.2.0 scan_target=merged-rootfs-and-active-payloads trivy=0.74.0\n' \
-            "$vendor_pending_count" "$raw_count" |
+          browser_scan_coverage="$(jq -r '.coverage' "$evidence/web-console-runtime-scan-coverage.json")"
+          printf 'SERVER_SECURITY_GATE_OK untracked=0 vendor_pending=%s critical_high=0 fixed_available=0 secrets=0 raw_findings=%s vex=openvex-0.2.0 scan_target=merged-rootfs-and-active-payloads-and-browser-runtime-sbom trivy=0.74.0 browser_scan_coverage=%s\n' \
+            "$vendor_pending_count" "$raw_count" "$browser_scan_coverage" |
             tee "$evidence/security-summary.txt"
 
       - name: Publish semantic image
@@ -693,6 +753,13 @@ jobs:
               server-vulnerabilities-unresolved.tsv \
               server.cdx.json \
               vendor-pending-summary.txt \
+              web-console-runtime.cdx.json \
+              web-console-runtime.cdx.json.sha256 \
+              web-console-sbom-identity.txt \
+              web-console-runtime-scan-raw.json \
+              web-console-runtime-scan-effective.json \
+              web-console-runtime-scan-coverage.json \
+              web-console-runtime-vulnerabilities.tsv \
               >SHA256SUMS
           )
           gh release create "$RELEASE_TAG" \
@@ -725,7 +792,14 @@ jobs:
             "$evidence/server-vulnerabilities-raw.tsv" \
             "$evidence/server-vulnerabilities-unresolved.tsv" \
             "$evidence/server.cdx.json" \
-            "$evidence/vendor-pending-summary.txt"
+            "$evidence/vendor-pending-summary.txt" \
+            "$evidence/web-console-runtime.cdx.json" \
+            "$evidence/web-console-runtime.cdx.json.sha256" \
+            "$evidence/web-console-sbom-identity.txt" \
+            "$evidence/web-console-runtime-scan-raw.json" \
+            "$evidence/web-console-runtime-scan-effective.json" \
+            "$evidence/web-console-runtime-scan-coverage.json" \
+            "$evidence/web-console-runtime-vulnerabilities.tsv"
 
           {
             printf 'SHA256SUMS\tsha256:%s\n' \

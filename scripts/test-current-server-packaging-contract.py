@@ -34,14 +34,16 @@ LB_RUNTIME_MARKERS = [
 PUBLISHED_508 = 'Server `v1.6.508` 已正式發布，封裝 Web Console `1.6.171`。'
 STALE_508_CANDIDATE = 'Server `v1.6.508` candidate packages Web Console `1.6.171`'
 COMPATIBILITY_CODE = 'SERVER_CREATE_RESPONSE_ORDER_COMPATIBILITY_MISSING'
-WEB_SHA = 'fe83f57dd1202766579b848f1bee75e7c05536db2fbb1f58de2bbb21829b1221'
-WEB_SOURCE = 'f47283ff6d18516040c0ee0782ac0a0314b67538'
+WEB_SHA = '26cbe1f3c057722c6682c43316021687508b7d9dd58c28c32713512d75238bb3'
+WEB_SOURCE = 'f905bc12daae18d98a6ac65942625562fff2a424'
+WEB_SBOM_SHA = 'ca31669f58aa342cd346e1d33ec7061d65f9b84d6a3afcbd132e09361425a88a'
+WEB_LOCK_SHA = 'ae862be4519751895f74e552f036906d64be8371fdbbc6379c16e52518f9ee22'
 CATALOG_COMMIT = '070e08d8f85ffc2779a0f97eb4e356c857812d34'
 ENGINE_SHA = 'f4889bfb8759a7664f07524bb129d0cda19f35604a06c877b6ca7033246df6fa'
 ENGINE_SOURCE = 'dc5a8d7bc44131f609f72a6504483b692d47ce16'
 OLD_COORDINATES = {
-    'v1.6.548': 'v1.6.521',
-    '1.6.194': '1.6.181',
+    'v1.6.549': 'v1.6.521',
+    '1.6.195': '1.6.181',
     WEB_SHA: '9199681f2c4311f3fbe8727fcf0f6fa136c9bafe9fbe9d13878c55df442a7a03',
     WEB_SOURCE: '7f2bdad0c90a3241693c2ddd4475202ababba550',
     CATALOG_COMMIT: '7670ffd81d5f0b5570197fb03c7e55b46da45bf3',
@@ -64,19 +66,23 @@ LEGACY_ENGINE_COORDINATES = {
 }
 EXPECTED = {
     COMPATIBILITY_CODE: (COMPATIBILITY, PUBLISHED_508),
-    'SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING': (DOCKER, 'ARG SERVER_RELEASE_TAG=v1.6.548'),
+    'SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING': (DOCKER, 'ARG SERVER_RELEASE_TAG=v1.6.549'),
     'SERVER_INCREMENTAL_RELEASE_VERSION_MISSING': (DOCKER, 'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"'),
     'SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING': (DOCKER, 'ENV CATTLE_RANCHER_SERVER_VERSION=${SERVER_RELEASE_TAG}'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RELEASE_TAG=1.6.194'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.194.tar.gz'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RELEASE_TAG=1.6.195'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.195.tar.gz'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT_SHA256=' + WEB_SHA),
     'SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_COMMIT=' + WEB_SOURCE),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_LOCK_HASH_MISSING': (DOCKER, 'ARG WEB_CONSOLE_LOCK_SHA256=' + WEB_LOCK_SHA),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_SBOM_HASH_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RUNTIME_SBOM_SHA256=' + WEB_SBOM_SHA),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING': (BUILD, 'web_console_commit=${WEB_CONSOLE_COMMIT:-' + WEB_SOURCE + '}'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING': (BUILD, 'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.194}'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING': (BUILD, 'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.194.tar.gz}'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING': (BUILD, 'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.195}'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING': (BUILD, 'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.195.tar.gz}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING': (BUILD, 'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-' + WEB_SHA + '}'),
-    'SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING': (BUILD, 'image=${IMAGE:-pasturestack-validation/server:v1.6.548}'),
-    'SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING': (BUILD, 'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.548}'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_LOCK_HASH_MISSING': (BUILD, 'web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-' + WEB_LOCK_SHA + '}'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_SBOM_HASH_MISSING': (BUILD, 'web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-' + WEB_SBOM_SHA + '}'),
+    'SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING': (BUILD, 'image=${IMAGE:-pasturestack-validation/server:v1.6.549}'),
+    'SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING': (BUILD, 'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.549}'),
     'SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING': (BUILD, 'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"'),
     'SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING': (BUILD, 'test "$(cat "${web_root}/VERSION.txt")" = "${WEB_CONSOLE_RELEASE_TAG}"'),
     'SERVER_VOLUME_NATIVE_READ_ONLY_BUILD_GATE_MISSING': (DOCKER, 'grep -F \'"volume.isNative" : "r"\' >/dev/null'),
@@ -235,6 +241,7 @@ INCREMENTAL_CONTRACTS = [
         [
             "\"$orchestration_engine_artifact|$orchestration_engine_artifact_sha256\"",
             "\"$web_console_artifact|$web_console_artifact_sha256\"",
+            "\"$web_console_runtime_sbom_artifact|$web_console_runtime_sbom_sha256\"",
             "\"websocket-proxy-${websocket_proxy_version}-linux-amd64.tar.xz|$websocket_proxy_archive_sha256\"",
             "\"host-api-${host_api_version}.tar.gz|$host_api_archive_sha256\"",
             "\"node-agent-${node_agent_version}.tar.gz|$node_agent_archive_sha256\"",
@@ -276,6 +283,7 @@ EXACT_COMPONENT_INPUTS = [
     "\"$orchestration_engine_artifact|$orchestration_engine_artifact_sha256\"",
     "\"$api_explorer_artifact|$api_explorer_artifact_sha256\"",
     "\"$web_console_artifact|$web_console_artifact_sha256\"",
+    "\"$web_console_runtime_sbom_artifact|$web_console_runtime_sbom_sha256\"",
     "\"websocket-proxy-${websocket_proxy_version}-linux-amd64.tar.xz|$websocket_proxy_archive_sha256\"",
     "\"host-api-${host_api_version}.tar.gz|$host_api_archive_sha256\"",
     "\"node-agent-${node_agent_version}.tar.gz|$node_agent_archive_sha256\"",
@@ -406,7 +414,7 @@ RUNTIME_LAYOUT_MARKERS = [
     "COPY --from=release_artifacts --chmod=0755 /out/runtime-bin/ /usr/bin/",
     "COPY --from=release_artifacts /out/runtime-licenses/ /usr/share/licenses/pasturestack/",
     "test \"$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)\" -eq 12;",
-    "test \"$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)\" -eq 7;",
+    "test \"$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)\" -eq 8;",
     "test -z \"$(find /out/runtime-bin /out/runtime-licenses -type l -print -quit)\""
 ]
 
@@ -592,15 +600,15 @@ def verify(files, gate=GATE):
                 pipeline = r'(?:^|[;\n])\s*' + re.escape(marker) + r'(?=\s*(?:;|\n|$))'
                 if len(re.findall(pipeline, source)) != 1:
                     raise AssertionError('CURRENT_CATALOG_HASH_BYPASS')
-    if 'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.548"' not in gate:
+    if 'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.549"' not in gate:
         raise AssertionError('CURRENT_VEX_GATE_PIN_MISMATCH')
-    if '"$vendor_pending_fixture" v1.6.548 >/dev/null' not in gate:
+    if '"$vendor_pending_fixture" v1.6.549 >/dev/null' not in gate:
         raise AssertionError('CURRENT_VENDOR_GATE_PIN_MISMATCH')
-    if json.loads(files[VEX]).get('@id') != 'https://github.com/PastureStack/server/security/openvex/v1.6.548':
+    if json.loads(files[VEX]).get('@id') != 'https://github.com/PastureStack/server/security/openvex/v1.6.549':
         raise AssertionError('CURRENT_VEX_RELEASE_MISMATCH')
-    if json.loads(files[VENDOR]).get('release') != 'v1.6.548':
+    if json.loads(files[VENDOR]).get('release') != 'v1.6.549':
         raise AssertionError('CURRENT_VENDOR_RELEASE_MISMATCH')
-    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.548 base=v1.6.460 engine=0.183.354 web_console=1.6.194 catalog_service=0.20.15 ' not in gate:
+    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.549 base=v1.6.460 engine=0.183.354 web_console=1.6.195 catalog_service=0.20.15 ' not in gate:
         raise AssertionError('CURRENT_SUMMARY_MISMATCH')
     verify_incremental_contract(files, gate)
     verify_load_balancer_contract(files, gate)
@@ -615,11 +623,11 @@ def previous_gate(gate=GATE):
         if stale(marker) != marker:
             replacements["'" + marker + "' "] = "'" + stale(marker) + "' "
     replacements.update({
-        'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.548"':
+        'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.549"':
             'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.521"',
-        '"$vendor_pending_fixture" v1.6.548 >/dev/null':
+        '"$vendor_pending_fixture" v1.6.549 >/dev/null':
             '"$vendor_pending_fixture" v1.6.521 >/dev/null',
-        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.548 base=v1.6.460 engine=0.183.354 web_console=1.6.194 catalog_service=0.20.15 ':
+        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.549 base=v1.6.460 engine=0.183.354 web_console=1.6.195 catalog_service=0.20.15 ':
             'SERVER_API_EXPLORER_PATCH_OK release=v1.6.521 base=v1.6.460 engine=0.183.340 web_console=1.6.181 catalog_service=0.20.12 ',
     })
     for marker, stale_marker in replacements.items():
@@ -761,7 +769,7 @@ class Tests(unittest.TestCase):
                        'sha256sum -c /usr/share/pasturestack/security/libdbi-perl-runtime.sha256', 'Unexpected DBI runtime version'):
             self.assertIn(marker, recipe)
 
-    def test_runtime_aggregate_keeps_exact_twelve_binaries_seven_legal_dirs_and_two_copies(self):
+    def test_runtime_aggregate_keeps_twelve_binaries_seven_legal_inputs_plus_browser_sbom_and_two_copies(self):
         verify_runtime_layout(FILES)
         self.assertEqual(len(RUNTIME_BINARIES), 12)
         self.assertEqual(len(RUNTIME_LEGAL), 7)
@@ -785,10 +793,10 @@ class Tests(unittest.TestCase):
             'COPY --from=release_artifacts --chmod=0755 /out/runtime-bin/ /usr/bin/',
             'COPY --from=release_artifacts /out/runtime-licenses/ /usr/share/licenses/pasturestack/',
             'test "$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 12;',
-            'test "$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 7;',
+            'test "$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 8;',
             'test -z "$(find /out/runtime-bin /out/runtime-licenses -type l -print -quit)"',
         ):
-            for replacement in ('# ' + marker, marker.replace('0755', '0644').replace('-eq 12', '-eq 11').replace('-eq 7', '-eq 6'),
+            for replacement in ('# ' + marker, marker.replace('0755', '0644').replace('-eq 12', '-eq 11').replace('-eq 8', '-eq 7'),
                                 marker.rstrip(';') + ' || true;'):
                 if replacement == marker:
                     continue
@@ -1030,17 +1038,17 @@ class Tests(unittest.TestCase):
                 with self.subTest(coordinate=name, path=path), self.assertRaises(ValueError):
                     verify(broken)
 
-    def test_eighteen_component_inputs_keep_exact_sha_fetch_and_separate_jdk_stage(self):
+    def test_nineteen_component_inputs_keep_exact_sha_fetch_and_separate_jdk_stage(self):
         verify_incremental_contract(FILES)
         block = FILES[BUILD].split('    component_assets=(\n', 1)[1].split('    )', 1)[0]
         self.assertEqual([line.strip() for line in block.splitlines()], EXACT_COMPONENT_INPUTS)
-        self.assertEqual(len(EXACT_COMPONENT_INPUTS), 18)
+        self.assertEqual(len(EXACT_COMPONENT_INPUTS), 19)
         self.assertEqual(len(re.findall(r'^FROM ', FILES[DOCKER], re.M)), 6)
         self.assertIn('FROM scratch AS component_input', FILES[DOCKER])
         final = FILES[DOCKER].rsplit('FROM ${BASE_IMAGE}', 1)[1]
         # The already-flattened base contributes one real layer too.
         self.assertLessEqual(1 + len(re.findall(r'^(RUN|COPY|ADD)\b', final, re.M)), 32)
-        self.assertEqual(len(re.findall(r'^\s+fetch-server-component ', FILES[DOCKER], re.M)), 16)
+        self.assertEqual(len(re.findall(r'^\s+fetch-server-component ', FILES[DOCKER], re.M)), 17)
         self.assertIn('"${release_url%/}/v${version}/${artifact}" "${artifact}" "${archive_sha}"', FILES[DOCKER])
         release_stage = FILES[DOCKER].split('FROM ${ARTIFACT_HELPER_IMAGE} AS release_artifacts', 1)[1].split('FROM ${UBUNTU_SECURITY_IMAGE}', 1)[0]
         self.assertNotIn('curl -fsSL', release_stage)
@@ -1145,7 +1153,7 @@ class Tests(unittest.TestCase):
         prefix = "if ! grep -Eq '^ARG WEB_CONSOLE_ARTIFACT_SHA256="
         actual = prefix + GATE.split(prefix, 1)[1].split('; then', 1)[0]
         gates = re.findall(r"grep -Eq '([^']+)' \"\$(release_dockerfile|build_script)\"", actual)
-        self.assertEqual(len(gates), 4)
+        self.assertEqual(len(gates), 8)
         paths = dict(release_dockerfile=DOCKER, build_script=BUILD)
         self.assertEqual(all(re.search(pattern, FILES[paths[variable]], re.M) for pattern, variable in gates), resolved)
         for name, old in ((DOCKER, WEB_SHA), (DOCKER, WEB_SOURCE), (BUILD, WEB_SHA), (BUILD, WEB_SOURCE)):
@@ -1163,6 +1171,27 @@ class Tests(unittest.TestCase):
         artifact_guard = "printf '%s\\n' \"${WEB_CONSOLE_ARTIFACT_SHA256}\" | grep -Eq '^[0-9a-f]{64}$';"
         self.assertLess(FILES[DOCKER].index(artifact_guard), FILES[DOCKER].index('fetch-server-component "${COMPONENT_ARTIFACT_MODE}"'))
         self.assertIn('"${WEB_CONSOLE_ARTIFACT}" "${WEB_CONSOLE_ARTIFACT_SHA256}" "${web_archive}";', FILES[DOCKER])
+
+    def test_web195_archive_sbom_lock_and_source_are_bound_in_both_stages(self):
+        fields = {
+            'COMMIT': WEB_SOURCE, 'ARTIFACT_SHA256': WEB_SHA,
+            'RUNTIME_SBOM_SHA256': WEB_SBOM_SHA, 'LOCK_SHA256': WEB_LOCK_SHA,
+        }
+        for suffix, value in fields.items():
+            with self.subTest(field=suffix):
+                marker = 'ARG WEB_CONSOLE_' + suffix + '=' + value
+                self.assertEqual(FILES[DOCKER].splitlines().count(marker), 2)
+                variable = 'web_console_' + suffix.lower()
+                self.assertIn(variable + '=${WEB_CONSOLE_' + suffix + ':-' + value + '}', FILES[BUILD])
+                self.assertIn('--build-arg "WEB_CONSOLE_' + suffix + '=${' + variable + '}"', FILES[BUILD])
+        for marker in (
+            '--lock-sha256 "${WEB_CONSOLE_LOCK_SHA256}" --archive "${web_archive}";',
+            'install -m 0644 "${web_sbom}" /out/runtime-licenses/web-console/runtime.cdx.json;',
+            'echo "${WEB_CONSOLE_RUNTIME_SBOM_SHA256}  /usr/share/licenses/pasturestack/web-console/runtime.cdx.json" | sha256sum -c -;',
+        ):
+            self.assertIn(marker, FILES[DOCKER])
+            self.assertIn(marker, GATE)
+        self.assertIn('"$web_console_runtime_sbom_artifact|$web_console_runtime_sbom_sha256"', FILES[BUILD])
 
     def test_catalog_both_stages_build_defaults_and_pending_reject(self):
         verify(FILES)
@@ -1282,7 +1311,7 @@ class Tests(unittest.TestCase):
 
     def test_engine352_actual_war_producer_and_previous351_350_boundary(self):
         candidate = (REPO / 'server/build-component-candidate.sh').read_text(encoding='utf-8')
-        self.assertIn('export SERVER_RELEASE_TAG=${SERVER_RELEASE_TAG:-v1.6.548}', candidate)
+        self.assertIn('export SERVER_RELEASE_TAG=${SERVER_RELEASE_TAG:-v1.6.549}', candidate)
         self.assertIn('export ORCHESTRATION_ENGINE_RELEASE_TAG=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.354}', candidate)
         for old in (
             {'0.183.354': '0.183.351',
@@ -1590,7 +1619,7 @@ class Tests(unittest.TestCase):
     def test_current_readme_status_specific_prose_does_not_block_publication_transition(self):
         common = GATE.split('for current_readme_marker in ', 1)[1].split('; do', 1)[0]
         self.assertNotIn('candidate', common)
-        self.assertNotIn('v1.6.548', common)
+        self.assertNotIn('v1.6.549', common)
         self.assertIn("grep -Fqi 'keep all three named volumes' README.md", GATE)
         status = GATE.split("if grep -Fxq '## Current source candidate' README.md; then", 1)[1]
         candidate, published = status.split("elif grep -Fxq '## Current release' README.md; then", 1)
@@ -1599,7 +1628,7 @@ class Tests(unittest.TestCase):
         self.assertIn('This candidate is not yet available', candidate)
         self.assertIn('SERVER_CURRENT_PUBLISHED_README_MISSING', published)
         self.assertNotIn('candidate', published)
-        self.assertNotIn('v1.6.548', published)
+        self.assertNotIn('v1.6.549', published)
 
 
 if __name__ == '__main__':

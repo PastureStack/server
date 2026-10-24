@@ -14,7 +14,7 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.548}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.549}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
@@ -63,10 +63,13 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.20.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb}
 api_explorer_commit=${API_EXPLORER_COMMIT:-a586f0dc0aa50df579049a8d4bf26f04400fdf75}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.194}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.194.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-fe83f57dd1202766579b848f1bee75e7c05536db2fbb1f58de2bbb21829b1221}
-web_console_commit=${WEB_CONSOLE_COMMIT:-f47283ff6d18516040c0ee0782ac0a0314b67538}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.195}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.195.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-26cbe1f3c057722c6682c43316021687508b7d9dd58c28c32713512d75238bb3}
+web_console_commit=${WEB_CONSOLE_COMMIT:-f905bc12daae18d98a6ac65942625562fff2a424}
+web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-ae862be4519751895f74e552f036906d64be8371fdbbc6379c16e52518f9ee22}
+web_console_runtime_sbom_artifact=${WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT:-web-console-${web_console_release_tag}-runtime.cdx.json}
+web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-ca31669f58aa342cd346e1d33ec7061d65f9b84d6a3afcbd132e09361425a88a}
 catalog_service_release_base_url=${CATALOG_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/catalog-service/releases/download}
 catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.15}
 catalog_service_commit=${CATALOG_SERVICE_COMMIT:-6ea547594065f7f95d5877b82f0c1bc553e72640}
@@ -127,7 +130,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-6d4
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.548}
+image=${IMAGE:-pasturestack-validation/server:v1.6.549}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -159,6 +162,9 @@ fi
 [[ "$web_console_artifact_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$web_console_release_tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
 [[ "$web_console_artifact" =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]]
+[[ "$web_console_lock_sha256" =~ ^[0-9a-f]{64}$ ]]
+[[ "$web_console_runtime_sbom_sha256" =~ ^[0-9a-f]{64}$ ]]
+[[ "$web_console_runtime_sbom_artifact" == "web-console-${web_console_release_tag}-runtime.cdx.json" ]]
 [[ "$catalog_service_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
 [[ "$catalog_service_commit" =~ ^[0-9a-f]{40}$ ]]
 [[ "$catalog_service_archive_sha256" =~ ^[0-9a-f]{64}$ ]]
@@ -227,6 +233,7 @@ if [[ -n ${PASTURESTACK_COMPONENT_ARTIFACT_DIR:-} ]]; then
         "$orchestration_engine_artifact|$orchestration_engine_artifact_sha256"
         "$api_explorer_artifact|$api_explorer_artifact_sha256"
         "$web_console_artifact|$web_console_artifact_sha256"
+        "$web_console_runtime_sbom_artifact|$web_console_runtime_sbom_sha256"
         "websocket-proxy-${websocket_proxy_version}-linux-amd64.tar.xz|$websocket_proxy_archive_sha256"
         "host-api-${host_api_version}.tar.gz|$host_api_archive_sha256"
         "node-agent-${node_agent_version}.tar.gz|$node_agent_archive_sha256"
@@ -309,6 +316,9 @@ docker buildx build \
     --build-arg "WEB_CONSOLE_ARTIFACT=${web_console_artifact}" \
     --build-arg "WEB_CONSOLE_ARTIFACT_SHA256=${web_console_artifact_sha256}" \
     --build-arg "WEB_CONSOLE_COMMIT=${web_console_commit}" \
+    --build-arg "WEB_CONSOLE_LOCK_SHA256=${web_console_lock_sha256}" \
+    --build-arg "WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT=${web_console_runtime_sbom_artifact}" \
+    --build-arg "WEB_CONSOLE_RUNTIME_SBOM_SHA256=${web_console_runtime_sbom_sha256}" \
     --build-arg "CATALOG_SERVICE_RELEASE_BASE_URL=${catalog_service_release_base_url}" \
     --build-arg "CATALOG_SERVICE_VERSION=${catalog_service_version}" \
     --build-arg "CATALOG_SERVICE_COMMIT=${catalog_service_commit}" \
@@ -440,6 +450,8 @@ for marker in \
     PASTURESTACK_WEB_CONSOLE_PACKAGE="${web_console_release_tag}" \
     PASTURESTACK_WEB_CONSOLE_COMMIT="${web_console_commit}" \
     PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256="${web_console_artifact_sha256}" \
+    PASTURESTACK_WEB_CONSOLE_LOCK_SHA256="${web_console_lock_sha256}" \
+    PASTURESTACK_WEB_CONSOLE_RUNTIME_SBOM_SHA256="${web_console_runtime_sbom_sha256}" \
     PASTURESTACK_AUTHENTICATION_SERVICE_VERSION="${authentication_service_version}" \
     PASTURESTACK_AUTHENTICATION_SERVICE_COMMIT="${authentication_service_commit}" \
     PASTURESTACK_AUTHENTICATION_SERVICE_ARCHIVE_SHA256="${authentication_service_archive_sha256}" \
@@ -636,6 +648,7 @@ docker run --rm --env "WEB_CONSOLE_RELEASE_TAG=${web_console_release_tag}" --ent
     set -euo pipefail
     web_root=$(readlink -f /usr/share/cattle/war)
     test "$(cat "${web_root}/VERSION.txt")" = "${WEB_CONSOLE_RELEASE_TAG}"
+    echo "${PASTURESTACK_WEB_CONSOLE_RUNTIME_SBOM_SHA256}  /usr/share/licenses/pasturestack/web-console/runtime.cdx.json" | sha256sum -c -
     test "$(find "${web_root}/translations" -maxdepth 1 -type f -name "*.json" | wc -l)" -eq 13
     test ! -e "${web_root}/translations/none.json"
     test -z "$(find "${web_root}" -type f -name "*.map" -print -quit)"

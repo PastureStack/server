@@ -11,7 +11,24 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current release
+## Current source candidate
+
+Server `v1.6.549` is a prepared source candidate, not a published image.
+It consumes the verified Web Console `1.6.195` producer and preserves its independent browser runtime
+SBOM alongside the exact static archive, source commit and lock identity.
+The SBOM retains its explicit incomplete coverage and known opaque inputs;
+build dependencies and GitHub runner Ruby inventories remain separate.
+Web producer [40086505425](https://github.com/PastureStack/web-console/actions/runs/40086505425)
+passed its container Ruby-absence checks before and after the build.
+This candidate is not yet available from GHCR. The numeric examples below are
+prepared for `ghcr.io/pasturestack/server:v1.6.549`; run them only after its official release
+and image have been published and read back.
+See the [549 candidate note](docs/releases/server-1.6.549.md) and
+[compatibility contract](COMPATIBILITY.md#server-v16549-web-console-sbom).
+The latest published Server is [`v1.6.548`](https://github.com/PastureStack/server/releases/tag/v1.6.548);
+its [release note](docs/releases/server-1.6.548.md) retains the verified image identity.
+
+## Previous published release
 
 Server [`v1.6.548`](https://github.com/PastureStack/server/releases/tag/v1.6.548) is published.
 It retains the security refresh and uses Catalog `v0.3.16` with Network Plugin
@@ -51,14 +68,15 @@ Maintained CLI `0.6.20` propagates rejected requests as nonzero errors. Legacy `
 ## Quick start
 
 Public GHCR downloads do not require a registry login. Keep all three named volumes.
-The examples below use the published numeric `v1.6.548` tag.
+The examples below use the prepared numeric `v1.6.549` tag; run them only after its official release.
+This candidate is not yet available from GHCR.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.548
+  ghcr.io/pasturestack/server:v1.6.549
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -66,7 +84,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.548
+    image: ghcr.io/pasturestack/server:v1.6.549
     restart: unless-stopped
     ports:
       - "8080:8080"

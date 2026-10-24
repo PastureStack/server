@@ -49,6 +49,7 @@ COPY --chmod=0755 artifacts/verify-runtime-producer.sh /usr/local/bin/verify-run
 COPY --chmod=0755 artifacts/verify-machine-driver-bundle.sh /usr/local/bin/verify-machine-driver-bundle
 COPY --chmod=0755 artifacts/verify-host-api-package.sh /usr/local/bin/verify-host-api-package
 COPY --chmod=0755 artifacts/verify-agent-package.sh /usr/local/bin/verify-agent-package.sh
+COPY --chmod=0755 artifacts/verify-web-console-sbom.py /usr/local/bin/verify-web-console-sbom
 COPY --from=component_input / /tmp/pasturestack-component-input/
 ARG COMPONENT_ARTIFACT_MODE=remote
 ARG PASTURESTACK_ALLOW_LOOPBACK_ARTIFACTS=0
@@ -87,9 +88,13 @@ ARG PER_HOST_SUBNET_STARTUP_SHA256=f22b41f18d1733c037babed4d2e0474efeedc6017a968
 ARG PER_HOST_SUBNET_PROVENANCE_SHA256=afa2db0e0755c6bd3ee28e111937c521a6d84e6d71d563e99202cf4693000eaf
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.194
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.194.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=fe83f57dd1202766579b848f1bee75e7c05536db2fbb1f58de2bbb21829b1221
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.195
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.195.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=26cbe1f3c057722c6682c43316021687508b7d9dd58c28c32713512d75238bb3
+ARG WEB_CONSOLE_COMMIT=f905bc12daae18d98a6ac65942625562fff2a424
+ARG WEB_CONSOLE_LOCK_SHA256=ae862be4519751895f74e552f036906d64be8371fdbbc6379c16e52518f9ee22
+ARG WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT=web-console-1.6.195-runtime.cdx.json
+ARG WEB_CONSOLE_RUNTIME_SBOM_SHA256=ca31669f58aa342cd346e1d33ec7061d65f9b84d6a3afcbd132e09361425a88a
 ARG CATALOG_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/catalog-service/releases/download
 ARG CATALOG_SERVICE_VERSION=0.20.15
 ARG CATALOG_SERVICE_COMMIT=6ea547594065f7f95d5877b82f0c1bc553e72640
@@ -154,7 +159,7 @@ RUN set -eux; \
     done; \
     printf '%s\n' "${WEB_CONSOLE_ARTIFACT_SHA256}" | grep -Eq '^[0-9a-f]{64}$'; \
     apt-get update; \
-    apt-get install -y --no-install-recommends xz-utils; \
+    apt-get install -y --no-install-recommends xz-utils python3-minimal; \
     rm -rf /var/lib/apt/lists/*; \
     command -v curl; \
     command -v gzip; \
@@ -167,6 +172,17 @@ RUN set -eux; \
         "${WEB_CONSOLE_RELEASE_BASE_URL%/}/${WEB_CONSOLE_RELEASE_TAG}/${WEB_CONSOLE_ARTIFACT}" \
         "${WEB_CONSOLE_ARTIFACT}" "${WEB_CONSOLE_ARTIFACT_SHA256}" "${web_archive}"; \
     echo "${WEB_CONSOLE_ARTIFACT_SHA256}  ${web_archive}" | sha256sum -c -; \
+    web_sbom=/tmp/web-console-runtime.cdx.json; \
+    fetch-server-component "${COMPONENT_ARTIFACT_MODE}" \
+        "${WEB_CONSOLE_RELEASE_BASE_URL%/}/${WEB_CONSOLE_RELEASE_TAG}/${WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT}" \
+        "${WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT}" "${WEB_CONSOLE_RUNTIME_SBOM_SHA256}" "${web_sbom}"; \
+    python3 /usr/local/bin/verify-web-console-sbom \
+        --sbom "${web_sbom}" --sbom-sha256 "${WEB_CONSOLE_RUNTIME_SBOM_SHA256}" \
+        --version "${WEB_CONSOLE_RELEASE_TAG}" --source-commit "${WEB_CONSOLE_COMMIT}" \
+        --archive-name "${WEB_CONSOLE_ARTIFACT}" --archive-sha256 "${WEB_CONSOLE_ARTIFACT_SHA256}" \
+        --lock-sha256 "${WEB_CONSOLE_LOCK_SHA256}" --archive "${web_archive}"; \
+    mkdir -p /out/runtime-licenses/web-console; \
+    install -m 0644 "${web_sbom}" /out/runtime-licenses/web-console/runtime.cdx.json; \
     tar -tzf "${web_archive}" >"${web_listing}"; \
     if grep -Eq '(^/|(^|/)\.\.(/|$))' "${web_listing}"; then \
         echo 'Unsafe Web Console archive path' >&2; \
@@ -487,7 +503,7 @@ RUN set -eux; \
         /out/vsphere-cli-bundle/vsphere-cli-bundle-THIRD-PARTY-NOTICES.txt \
         /out/runtime-licenses/vsphere-cli-bundle/; \
     test "$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 12; \
-    test "$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 7; \
+    test "$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 8; \
     test -z "$(find /out/runtime-bin /out/runtime-licenses -type l -print -quit)"
 
 RUN set -eux; \
@@ -655,7 +671,7 @@ ARG PER_HOST_SUBNET_VERSION=0.2.5
 ARG PER_HOST_SUBNET_PRODUCER_COMMIT=e102e0bb38d84b0a9cbf87e5458cf1bc74d01904
 ARG PER_HOST_SUBNET_ARCHIVE_SHA256=7237e83e96a64e7f3de64eb86bff9721c4e879c35cda9e9de1e4cb1ba225f298
 ARG PER_HOST_SUBNET_PROVENANCE_SHA256=afa2db0e0755c6bd3ee28e111937c521a6d84e6d71d563e99202cf4693000eaf
-ARG SERVER_RELEASE_TAG=v1.6.548
+ARG SERVER_RELEASE_TAG=v1.6.549
 ARG API_EXPLORER_RELEASE_TAG=v1.1.20
 ARG API_EXPLORER_ARTIFACT_SHA256=c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb
 ARG API_EXPLORER_COMMIT=a586f0dc0aa50df579049a8d4bf26f04400fdf75
@@ -679,9 +695,11 @@ ARG LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1
 ARG CA_CERTIFICATES_PACKAGE_VERSION=20260816ubuntu0.26.04.1
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.194
-ARG WEB_CONSOLE_ARTIFACT_SHA256=fe83f57dd1202766579b848f1bee75e7c05536db2fbb1f58de2bbb21829b1221
-ARG WEB_CONSOLE_COMMIT=f47283ff6d18516040c0ee0782ac0a0314b67538
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.195
+ARG WEB_CONSOLE_ARTIFACT_SHA256=26cbe1f3c057722c6682c43316021687508b7d9dd58c28c32713512d75238bb3
+ARG WEB_CONSOLE_COMMIT=f905bc12daae18d98a6ac65942625562fff2a424
+ARG WEB_CONSOLE_LOCK_SHA256=ae862be4519751895f74e552f036906d64be8371fdbbc6379c16e52518f9ee22
+ARG WEB_CONSOLE_RUNTIME_SBOM_SHA256=ca31669f58aa342cd346e1d33ec7061d65f9b84d6a3afcbd132e09361425a88a
 ARG CATALOG_SERVICE_VERSION=0.20.15
 ARG CATALOG_SERVICE_COMMIT=6ea547594065f7f95d5877b82f0c1bc553e72640
 ARG CATALOG_SERVICE_ARCHIVE_SHA256=7c059101265d897e4b176f503a9217b112946d37d91daa0c40f421fb16e4bb6b
@@ -950,6 +968,7 @@ RUN set -eux; \
 RUN set -eux; \
     test -n "${SOURCE_DATE_EPOCH}"; \
     test -n "${PASTURESTACK_SERVER_REVISION}"; \
+    echo "${WEB_CONSOLE_RUNTIME_SBOM_SHA256}  /usr/share/licenses/pasturestack/web-console/runtime.cdx.json" | sha256sum -c -; \
     web_root="$(readlink -f /usr/share/cattle/war)"; \
     case "${web_root}" in \
         /usr/share/cattle/*) ;; \
@@ -1182,6 +1201,8 @@ ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ART
 ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}
 ENV PASTURESTACK_WEB_CONSOLE_COMMIT=${WEB_CONSOLE_COMMIT}
 ENV PASTURESTACK_WEB_CONSOLE_ARTIFACT_SHA256=${WEB_CONSOLE_ARTIFACT_SHA256}
+ENV PASTURESTACK_WEB_CONSOLE_LOCK_SHA256=${WEB_CONSOLE_LOCK_SHA256}
+ENV PASTURESTACK_WEB_CONSOLE_RUNTIME_SBOM_SHA256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256}
 ENV PASTURESTACK_CATALOG_SERVICE_VERSION=${CATALOG_SERVICE_VERSION}
 ENV PASTURESTACK_CATALOG_SERVICE_COMMIT=${CATALOG_SERVICE_COMMIT}
 ENV PASTURESTACK_CATALOG_SERVICE_ARCHIVE_SHA256=${CATALOG_SERVICE_ARCHIVE_SHA256}
