@@ -22,6 +22,7 @@ FAMILIES = {
 }
 FILES = ('manifest.json', 'qualification.json', 'openvex.json',
          'source-inputs.lock.json', 'install.json', 'verify.json', 'bundle-image.txt')
+PRODUCER_FILES = ('manifest.json', 'qualification.json', 'openvex.json', 'source-inputs.lock.json')
 SHA256 = re.compile(r'[0-9a-f]{64}')
 DIGEST = re.compile(r'sha256:[0-9a-f]{64}')
 VULNERABILITY = re.compile(r'(?:CVE-[0-9]{4}-[0-9]+|GHSA-[23456789cfghjmpqrvwx]{4}(?:-[23456789cfghjmpqrvwx]{4}){2})')
@@ -54,7 +55,7 @@ def unique_names(values, label):
     return set(values)
 
 
-def verify(files, checksums, sbom, expected_digest):
+def verify(files, checksums, sbom, expected_digest, bundle_checksums):
     require(DIGEST.fullmatch(expected_digest) is not None, 'Expected bundle digest is not immutable')
     expected_image = 'ghcr.io/pasturestack/ubuntu-security-backports:v0.1.0@' + expected_digest
     require(files['bundle-image.txt'].decode().strip() == expected_image, 'Consumer bundle identity mismatch')
@@ -66,6 +67,16 @@ def verify(files, checksums, sbom, expected_digest):
         pins[name] = digest
     require(set(pins) == set(FILES) and all(sha(files[n]) == pins[n] for n in FILES),
             'Retained consumer evidence checksum mismatch')
+    producer = {}
+    for line in bundle_checksums.decode().splitlines():
+        digest, separator, name = line.partition('  ')
+        require(separator and name and SHA256.fullmatch(digest), 'Malformed immutable OCI producer checksum entry')
+        if name in PRODUCER_FILES:
+            require(name not in producer, 'Duplicate immutable OCI producer metadata checksum')
+            producer[name] = digest
+    require(set(producer) == set(PRODUCER_FILES), 'Immutable OCI producer metadata checksums are incomplete')
+    for name in PRODUCER_FILES:
+        require(sha(files[name]) == producer[name], 'Consumer metadata differs from immutable OCI producer: ' + name)
     docs = {name: json.loads(files[name]) for name in FILES if name.endswith('.json')}
     manifest, qualification = docs['manifest.json'], docs['qualification.json']
     for name in ('manifest.json', 'qualification.json', 'source-inputs.lock.json'):
@@ -143,6 +154,7 @@ def verify(files, checksums, sbom, expected_digest):
             pairs.add(pair)
     return {'schemaVersion': 1, 'status': 'PASS', 'bundleDigest': expected_digest,
             'manifestSha256': sha(files['manifest.json']), 'openvexSha256': sha(files['openvex.json']),
+            'bundleChecksumsSha256': sha(bundle_checksums), 'producerMetadataSha256': producer,
             'selectedPackages': sorted(selected), 'selectedPURLs': sorted(actual.values()),
             'qualifiedVexPairs': len(pairs), 'findingsFilteredByThisTool': False}
 
@@ -157,11 +169,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--evidence-dir', type=Path, required=True)
     parser.add_argument('--sbom', type=Path, required=True)
+    parser.add_argument('--bundle-checksums', type=Path, required=True,
+                        help='SHA256SUMS extracted from the pinned immutable OCI /out, independently of the candidate')
     parser.add_argument('--expected-bundle-digest', required=True)
     args = parser.parse_args()
     files = {name: bounded_read(args.evidence_dir / name) for name in FILES}
     result = verify(files, bounded_read(args.evidence_dir / 'SHA256SUMS'),
-                    json.loads(bounded_read(args.sbom)), args.expected_bundle_digest)
+                    json.loads(bounded_read(args.sbom)), args.expected_bundle_digest,
+                    bounded_read(args.bundle_checksums))
     print(json.dumps(result, indent=2, sort_keys=True))
 
 

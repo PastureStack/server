@@ -85,16 +85,53 @@ func safeRelative(p string) bool {
 		!strings.HasPrefix(p, "/") && path.Clean(p) == p && p != ".." && !strings.HasPrefix(p, "../")
 }
 
+// The Root capability prevents escape while resolving path components. Keep
+// final-link rejection and identity checks around the confined read-only open.
+func openRegularInRoot(directory *os.Root, name string) (*os.File, error) {
+	before, err := directory.Lstat(name)
+	if err != nil {
+		return nil, err
+	}
+	if !before.Mode().IsRegular() {
+		return nil, fmt.Errorf("not a regular confined file: %s", name)
+	}
+	f, err := directory.Open(name)
+	if err != nil {
+		return nil, err
+	}
+	opened, err := f.Stat()
+	if err != nil {
+		f.Close()
+		return nil, err
+	}
+	after, err := directory.Lstat(name)
+	if err != nil {
+		f.Close()
+		return nil, err
+	}
+	if !after.Mode().IsRegular() || !os.SameFile(before, opened) || !os.SameFile(after, opened) {
+		f.Close()
+		return nil, fmt.Errorf("confined file changed while opening: %s", name)
+	}
+	return f, nil
+}
+
 // Every component is checked without following links, even for SHA-bound files.
 func regularRead(root, name string, limit int64) ([]byte, error) {
 	if !safeRelative(name) {
 		return nil, fmt.Errorf("unsafe bundle path %q", name)
 	}
-	p := root
+	directory, err := os.OpenRoot(root)
+	if err != nil {
+		return nil, err
+	}
+	defer directory.Close()
+	p := ""
+	var checked os.FileInfo
 	parts := strings.Split(name, "/")
 	for n, part := range parts {
 		p = filepath.Join(p, part)
-		info, err := os.Lstat(p)
+		info, err := directory.Lstat(p)
 		if err != nil {
 			return nil, err
 		}
@@ -104,12 +141,20 @@ func regularRead(root, name string, limit int64) ([]byte, error) {
 		if n == len(parts)-1 && (!info.Mode().IsRegular() || info.Size() > limit) {
 			return nil, fmt.Errorf("not a bounded regular file: %s", p)
 		}
+		checked = info
 	}
-	f, err := os.Open(p)
+	f, err := openRegularInRoot(directory, p)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
+	opened, err := f.Stat()
+	if err != nil {
+		return nil, err
+	}
+	if !opened.Mode().IsRegular() || opened.Size() > limit || !os.SameFile(checked, opened) {
+		return nil, fmt.Errorf("bundle file changed during confined open: %s", p)
+	}
 	b, err := io.ReadAll(io.LimitReader(f, limit+1))
 	if err != nil {
 		return nil, err

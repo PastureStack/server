@@ -8,7 +8,6 @@ import (
 	"io"
 	"os"
 	"path"
-	"path/filepath"
 	"reflect"
 	"sort"
 	"strings"
@@ -180,28 +179,17 @@ func validateArchive(content []byte, p Payload) error {
 	}
 	return nil
 }
-func rootPath(root, name string) (string, error) {
-	if !safeRelative(name) {
-		return "", fmt.Errorf("unsafe rootfs path %q", name)
-	}
-	p := filepath.Join(root, filepath.FromSlash(name))
-	parent, err := filepath.EvalSymlinks(filepath.Dir(p))
-	if err != nil {
-		return "", err
-	}
-	rel, err := filepath.Rel(root, parent)
-	if err != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
-		return "", fmt.Errorf("rootfs symlink escapes root")
-	}
-	return filepath.Join(parent, filepath.Base(p)), nil
-}
 func installedFile(root string, expected File) (File, []byte, error) {
 	f := File{Path: expected.Path}
-	p, err := rootPath(root, expected.Path)
+	if !safeRelative(expected.Path) {
+		return f, nil, fmt.Errorf("unsafe rootfs path %q", expected.Path)
+	}
+	directory, err := os.OpenRoot(root)
 	if err != nil {
 		return f, nil, err
 	}
-	info, err := os.Lstat(p)
+	defer directory.Close()
+	info, err := directory.Lstat(expected.Path)
 	if err != nil {
 		return f, nil, err
 	}
@@ -211,16 +199,31 @@ func installedFile(root string, expected File) (File, []byte, error) {
 	}
 	if info.Mode()&os.ModeSymlink != 0 {
 		f.Type = "symlink"
-		f.Target, err = os.Readlink(p)
+		f.Target, err = directory.Readlink(expected.Path)
 		return f, nil, err
 	}
 	if !info.Mode().IsRegular() || info.Size() > 256<<20 {
-		return f, nil, fmt.Errorf("special/unbounded installed file: %s", p)
+		return f, nil, fmt.Errorf("special/unbounded installed file: %s", expected.Path)
 	}
 	f.Type = "file"
-	b, err := os.ReadFile(p)
+	opened, err := openRegularInRoot(directory, expected.Path)
 	if err != nil {
 		return f, nil, err
+	}
+	defer opened.Close()
+	current, err := opened.Stat()
+	if err != nil {
+		return f, nil, err
+	}
+	if !current.Mode().IsRegular() || current.Size() > 256<<20 || !os.SameFile(info, current) {
+		return f, nil, fmt.Errorf("installed file changed during confined open: %s", expected.Path)
+	}
+	b, err := io.ReadAll(io.LimitReader(opened, (256<<20)+1))
+	if err != nil {
+		return f, nil, err
+	}
+	if len(b) > 256<<20 {
+		return f, nil, fmt.Errorf("installed file grew beyond size bound: %s", expected.Path)
 	}
 	f.SHA256 = digest(b)
 	return f, b, nil

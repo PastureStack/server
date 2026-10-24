@@ -49,6 +49,10 @@ def checksums(files):
     return ''.join(guard.sha(files[name]) + '  ' + name + '\n' for name in guard.FILES).encode()
 
 
+def producer_checksums(files):
+    return ''.join(guard.sha(files[name]) + '  ' + name + '\n' for name in guard.PRODUCER_FILES).encode()
+
+
 def change(files, name, mutation):
     doc = json.loads(files[name]); mutation(doc); files[name] = encoded(doc)
 
@@ -63,7 +67,7 @@ class ConsumerEvidenceTests(unittest.TestCase):
 
     def test_valid_partial_package_set_does_not_claim_absent_packages(self):
         files, sbom = fixture(); original = copy.deepcopy((files, sbom))
-        result = guard.verify(files, checksums(files), sbom, DIGEST)
+        result = guard.verify(files, checksums(files), sbom, DIGEST, producer_checksums(files))
         self.assertEqual(result['selectedPackages'], sorted(c['name'] for c in sbom['components']))
         self.assertNotIn('jq', result['selectedPackages'])
         self.assertFalse(result['findingsFilteredByThisTool'])
@@ -73,9 +77,9 @@ class ConsumerEvidenceTests(unittest.TestCase):
         files, sbom = fixture()
         for pin in ['__BUNDLE_DIGEST_PENDING__', 'sha256:' + 'b' * 64]:
             with self.subTest(pin=pin), self.assertRaises(ValueError):
-                guard.verify(files, checksums(files), sbom, pin)
+                guard.verify(files, checksums(files), sbom, pin, producer_checksums(files))
         sums = checksums(files); files['install.json'] += b' '
-        with self.assertRaises(ValueError): guard.verify(files, sums, sbom, DIGEST)
+        with self.assertRaises(ValueError): guard.verify(files, sums, sbom, DIGEST, producer_checksums(files))
 
     def test_receipt_sbom_versions_and_exact_selection_are_required(self):
         for kind in ['old-version', 'wrong-purl', 'missing', 'extra', 'duplicate', 'receipt']:
@@ -89,7 +93,7 @@ class ConsumerEvidenceTests(unittest.TestCase):
                     sbom['components'].append({'name': 'jq', 'version': p['version'], 'purl': guard.package_purl(p)})
                 if kind == 'duplicate': sbom['components'].append(sbom['components'][0])
                 if kind == 'receipt': change(files, 'verify.json', lambda d: d['packages'].pop())
-                with self.assertRaises(ValueError): guard.verify(files, checksums(files), sbom, DIGEST)
+                with self.assertRaises(ValueError): guard.verify(files, checksums(files), sbom, DIGEST, producer_checksums(files))
 
     def test_blanket_or_unqualified_vex_is_rejected(self):
         for kind in ['no-version', 'wildcard', 'oci', 'subcomponent', 'unqualified-id', 'not-affected', 'duplicate']:
@@ -104,11 +108,28 @@ class ConsumerEvidenceTests(unittest.TestCase):
                 if kind == 'not-affected': row['status'] = 'not_affected'
                 if kind == 'duplicate': row['products'].append(row['products'][0])
                 files['openvex.json'] = encoded(vex)
-                with self.assertRaises(ValueError): guard.verify(files, checksums(files), sbom, DIGEST)
+                with self.assertRaises(ValueError): guard.verify(files, checksums(files), sbom, DIGEST, producer_checksums(files))
 
     def test_manifest_qualification_binding_is_required(self):
         files, sbom = fixture(); change(files, 'qualification.json', lambda d: d.update(status='pending'))
-        with self.assertRaises(ValueError): guard.verify(files, checksums(files), sbom, DIGEST)
+        with self.assertRaises(ValueError): guard.verify(files, checksums(files), sbom, DIGEST, producer_checksums(files))
+
+    def test_self_rehashed_candidate_metadata_cannot_replace_immutable_producer_bytes(self):
+        for name in guard.PRODUCER_FILES:
+            with self.subTest(name=name):
+                files, sbom = fixture(); producer = producer_checksums(files)
+                image = files['bundle-image.txt']
+                files[name] += b' '
+                if name == 'source-inputs.lock.json':
+                    change(files, 'qualification.json', lambda q: q.update(sourceLockSha256=guard.sha(files[name])))
+                if name in ('source-inputs.lock.json', 'qualification.json'):
+                    change(files, 'manifest.json', lambda m: m['qualification'].update(sha256=guard.sha(files['qualification.json'])))
+                # This candidate remains internally consistent, including its
+                # rewritten checksums and unchanged bundle-image identity text.
+                guard.verify(files, checksums(files), sbom, DIGEST, producer_checksums(files))
+                self.assertEqual(files['bundle-image.txt'], image)
+                with self.assertRaisesRegex(ValueError, 'differs from immutable OCI producer'):
+                    guard.verify(files, checksums(files), sbom, DIGEST, producer)
 
 
 if __name__ == '__main__':

@@ -5,6 +5,8 @@
 Dockerfile* text eol=lf
 **/Dockerfile* text eol=lf
 server/security/ubuntu-backports/bundle/*.json text eol=lf
+server/security/ubuntu-backports/bundle/installer/*.go text eol=lf
+server/security/ubuntu-backports/bundle/installer/go.mod text eol=lf
 scripts/** text eol=lf
 server/bin/** text eol=lf
 server/service/** text eol=lf
