@@ -1,6 +1,13 @@
 {
   "bundleVersion": "0.1.0",
   "consumerFixture": {
+    "gnuBaselineProviderSetup": {
+      "scope": "Disposable GNU fixture construction only; the backport installer must preserve the selected provider.",
+      "method": "Ubuntu documented coreutils-from-gnu transition, with explicit coreutils-from-uutils and rust-coreutils removal and the required --allow-remove-essential option.",
+      "officialDocumentation": "https://ubuntu.com/server/docs/reference/other-tools/sudo-rs/",
+      "gnuCoreutilsVersion": "9.7-3ubuntu2.1",
+      "versionSource": "server/security/ubuntu-security-packages.lock"
+    },
     "baselineMainIndexEvidence": {
       "inReleaseSha256": "45f95ce276cdba3e41870516a130e03c58b8b7a79e9546b0efe9e526d255740c",
       "index": {
@@ -613,7 +620,7 @@
       "CVE-2026-89161",
       "CVE-2026-89162"
     ],
-    "kind": "fresh-production-target",
+    "kind": "qualified-production-stage",
     "lockSha256": "c9bddd7006761549e30843a83c097fa4019b1a58262755a1c2dc23e10ba0aeb5",
     "runtimePackages": [
       "libpcre2-8-0",
@@ -628,9 +635,86 @@
       "server/security/ubuntu-security-packages.lock": "8e43275a0b7b13a2a5d825eea2b15c68ec75a27f50dd6c0f497aadba164c6704"
     },
     "sourceTag": "v1.6.551",
+    "stageInput": {
+      "artifactId": 12574478015,
+      "artifactName": "ubuntu-security-backports-v0.1.0-321d2d9e326eafcbcc5b550f453c80aaa029dc3d-40130336365",
+      "buildLogSha256": "55ec792cc3ba93aa22e659ad35a19626c56c2d97c6029c8a1a3a5840addeba54",
+      "evidence": {
+        "COPYRIGHT": "e915cde4251f96ec6af107ecd2e194440a4e69440893b0c982802f8a1e4ae40a",
+        "RunGrepTest.log": "dc97e8c6438464025fffc1d844e3ab25f23a12d3e8aef667cd7f7f8a3ab0a719",
+        "RunGrepTest.trs": "7f175f2f5d04511903d382671ba96ca623e127f57730d53966587cf2c2689229",
+        "RunTest.log": "857c6b1d1eafd0c813e9550048119123241e026132b7a03818859123ba16e3d7",
+        "RunTest.trs": "7f175f2f5d04511903d382671ba96ca623e127f57730d53966587cf2c2689229",
+        "builder-packages.tsv": "f1225c1a65e414d42b170d3e86caf865f73c8357b7b9c31ac634ebd14ca469ac",
+        "manifest.tsv": "50dd0216082b4140d1a3352ec419fed9d2405849365dc4bdee2b336a54c01ca2",
+        "pcre2-10.49-SUPPORT-LIFECYCLE.md": "64a3e10be90d7b3c218d05f21c53aa2511b9100e01f98c77c199c473b33f1856",
+        "pcre2.lock.json": "c9bddd7006761549e30843a83c097fa4019b1a58262755a1c2dc23e10ba0aeb5",
+        "pcre2_10.46-1build1+pasturestack.1_amd64.buildinfo": "fffade5dd49f9570f15c36da86081645cb7d9eb9d45db9b3bad78a303634b998",
+        "pcre2_10.46-1build1+pasturestack.1_amd64.changes": "a5d2219f582c285489d6294e1723b228e4131322c063562a692706b73e9563d0",
+        "pcre2_jit_test.log": "6d6278bdb724b2b3c62415ee4c3ede9ddd7823522c477e9bb68c8ed396144341",
+        "pcre2_jit_test.trs": "7f175f2f5d04511903d382671ba96ca623e127f57730d53966587cf2c2689229",
+        "provenance.json": "44a8d639712557438bfb51c26822c91772d74463ad558e06147fbf06f2706c21"
+      },
+      "jobConclusion": "failure",
+      "jobId": 120980581742,
+      "metadataSha256": {
+        "manifest.json": "8103b82ac0d712e631d8199cb69caf652dcb4739da954eaac86df5d7af3d2ef4",
+        "qualification.json": "0eba611048025af32a8832b7d073a5aa7367b8ec8109682641e4219931f78d70",
+        "source-inputs.lock.json": "db1ec64f796c7014b8e367f1f7fa11a80bed0c3aa77ea415a4701bb1f9d6921b"
+      },
+      "packages": [
+        {
+          "file": "libpcre2-8-0_10.46-1build1+pasturestack.1_amd64.deb",
+          "name": "libpcre2-8-0",
+          "sha256": "b15853575ae72e0cfe19358a5642d1fa54a52bad7c725253c229ed85211b6a1f",
+          "source": "pcre2",
+          "version": "10.46-1build1+pasturestack.1"
+        },
+        {
+          "file": "libpcre2-posix3_10.46-1build1+pasturestack.1_amd64.deb",
+          "name": "libpcre2-posix3",
+          "sha256": "f90ae28d8b8fb3defc8636cb9de7770de75735c0d73241dc81e705fc8f73a7cb",
+          "source": "pcre2",
+          "version": "10.46-1build1+pasturestack.1"
+        }
+      ],
+      "publisherCommit": "321d2d9e326eafcbcc5b550f453c80aaa029dc3d",
+      "runConclusion": "failure",
+      "runId": 40130336365,
+      "scope": "Only the original released551 PCRE package bytes, native owning receipts and completed qualification stage are reused. The whole publisher job and consumer fixture failed; no image was published. Installer/consumer tests must run again.",
+      "sourceFiles": {
+        ".github/workflows/publish-ubuntu-security-backports.yml": "783d24812c2d9e30f9d34c23758404796be3093c8ce0b6a0f1e997705e1bb624",
+        "server/security/ubuntu-backports/bundle/qualify-native-packages.py": "8796eb0243fad227882c30a34b3eba6926eafe08d3984f8ead70b3e0135ccf29",
+        "server/security/ubuntu-backports/bundle/source-inputs.lock.json": "db1ec64f796c7014b8e367f1f7fa11a80bed0c3aa77ea415a4701bb1f9d6921b"
+      },
+      "status": "pcre2-qualified-before-consumer-failure",
+      "stepOutcomes": [
+        {
+          "conclusion": "success",
+          "name": "Build only the released PCRE2 producer and static installer",
+          "number": 8
+        },
+        {
+          "conclusion": "success",
+          "name": "Qualify package bytes, native receipts, payload metadata, SBOM and exact-package VEX",
+          "number": 9
+        },
+        {
+          "conclusion": "failure",
+          "name": "Require real installation in both isolated Ubuntu provider fixtures",
+          "number": 10
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Publish the new build-only OCI data artifact",
+          "number": 11
+        }
+      ],
+      "zipSha256": "8db99edc031b7476a954d4f5a57cd975015d6a5675ce691fda37c1c2d7825244"
+    },
     "target": "runtime_security_packages",
     "version": "10.46-1build1+pasturestack.1",
-    "vexScope": "Fresh build of the exact released Server v1.6.551 runtime_security_packages producer and its pinned official release/pcre2-10.46 backports. All three original owning suites must PASS; exact generated runtime package hashes are in the bundle manifest."
+    "vexScope": "Exact PCRE package bytes and three original native owning suites from the released Server v1.6.551 runtime_security_packages producer, qualified in publisher run40130336365 before its consumer fixture failed. The failed whole run/job is preserved, not treated as consumer or publication PASS. Only pinned PCRE bytes/receipts are reused; current installer and real consumer gates remain mandatory."
   },
   "platform": {
     "architecture": "amd64",

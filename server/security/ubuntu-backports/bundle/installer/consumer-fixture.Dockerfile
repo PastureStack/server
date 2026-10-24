@@ -34,22 +34,26 @@ APT
 # files. The installer must enumerate missing docs and restore exact paths.
 printf 'path-exclude=/usr/share/doc/*\n' >/etc/dpkg/dpkg.cfg.d/01fixture-doc-exclusions
 apt-get update
+# Construct the explicitly selected GNU fixture using Ubuntu's documented
+# provider transition. This is baseline setup, before the backport installer;
+# the installer itself must preserve whichever provider was selected here.
+# https://ubuntu.com/server/docs/reference/other-tools/sudo-rs/
+if [[ "$PROVIDER" == gnu ]]; then
+    apt-get install -y --no-install-recommends --allow-remove-essential \
+        coreutils-from-gnu=0.0.0~ubuntu25 coreutils-from-uutils- rust-coreutils-
+fi
 set -- \
     libpcre2-8-0=10.46-1build1 libpcre2-posix3=10.46-1build1 \
     libc6=2.43-2ubuntu2.4 libc-bin=2.43-2ubuntu2.4 libc-gconv-modules-extra=2.43-2ubuntu2.4 \
     jq=1.8.1-4ubuntu2 libjq1=1.8.1-4ubuntu2 \
     p11-kit=0.26.2-2 p11-kit-modules=0.26.2-2 libp11-kit0=0.26.2-2 \
-    'libxrender1=1:0.9.12-1build1' gnu-coreutils=9.7-3ubuntu2 ca-certificates grep
+    'libxrender1=1:0.9.12-1build1' gnu-coreutils=9.7-3ubuntu2.1 ca-certificates grep
 case "$PROVIDER" in
     gnu) set -- "$@" 'coreutils-from-gnu=0.0.0~ubuntu25' ;;
     uutils) set -- "$@" 'coreutils-from-uutils=0.0.0~ubuntu25' 'rust-coreutils=0.10.0-1ubuntu2~26.04.1' ;;
 esac
-# Baseline construction uses the official provider transition without force or
-# protected-package overrides. A refused transition fails the fixture.
+# All baseline runtime versions are explicit; no dependency force is used.
 apt-get install --no-install-recommends --reinstall -y "$@"
-if [[ "$PROVIDER" == gnu ]]; then
-    apt-get remove -y rust-coreutils
-fi
 rm -rf /var/lib/apt/lists/* /tmp/ca-bootstrap /tmp/ca-certificates.deb
 SH
 COPY consumer-smoke.sh /consumer-smoke.sh

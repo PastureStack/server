@@ -41,6 +41,14 @@ FAMILIES = {
     'p11-kit': ['libp11-kit0', 'p11-kit', 'p11-kit-modules'], 'libxrender': ['libxrender1'],
 }
 BASE = 'server/security/ubuntu-backports/'
+PCRE2_STAGE_STEPS = [
+    {'number': 8, 'name': 'Build only the released PCRE2 producer and static installer', 'conclusion': 'success'},
+    {'number': 9, 'name': 'Qualify package bytes, native receipts, payload metadata, SBOM and exact-package VEX', 'conclusion': 'success'},
+    {'number': 10, 'name': 'Require real installation in both isolated Ubuntu provider fixtures', 'conclusion': 'failure'},
+    {'number': 11, 'name': 'Publish the new build-only OCI data artifact', 'conclusion': 'skipped'},
+]
+PCRE2_STAGE_RECEIPTS = {name: 'context/out/' + name for name in
+                       ['manifest.json', 'qualification.json', 'source-inputs.lock.json']}
 
 
 def require(ok, message):
@@ -118,13 +126,32 @@ def load_lock(ready=False):
             require(re.fullmatch('[0-9a-f]{64}', package['sha256']) and
                     safe_name(package['file']).name == package['file'] and package['source'] == family
                     and package['version'] == item['packages'][0]['version'], 'Unpinned/unsafe deb')
-    require(lock['pcre2']['kind'] == 'fresh-production-target'
+    require(lock['pcre2']['kind'] == 'qualified-production-stage'
             and lock['pcre2']['runtimePackages'] == FAMILIES['pcre2']
             and lock['pcre2']['target'] == 'runtime_security_packages'
             and lock['pcre2']['sourceTag'] == 'v1.6.551'
             and re.fullmatch('[0-9a-f]{40}', lock['pcre2']['sourceCommit'])
             and re.fullmatch('[0-9a-f]{64}', lock['pcre2']['lockSha256'])
             and re.fullmatch('[0-9a-f]{64}', lock['pcre2']['copyrightSha256']), 'Wrong PCRE2 build contract')
+    stage = lock['pcre2']['stageInput']
+    require(stage['status'] == 'pcre2-qualified-before-consumer-failure'
+            and re.fullmatch('[0-9a-f]{40}', stage['publisherCommit'])
+            and all(type(stage[key]) is int for key in ['runId', 'jobId', 'artifactId'])
+            and re.fullmatch('[0-9a-f]{64}', stage['zipSha256'])
+            and stage['runConclusion'] == stage['jobConclusion'] == 'failure'
+            and stage['stepOutcomes'] == PCRE2_STAGE_STEPS
+            and set(stage['metadataSha256']) == set(PCRE2_STAGE_RECEIPTS)
+            and set(stage['sourceFiles']) == {'.github/workflows/publish-ubuntu-security-backports.yml',
+                    BASE + 'bundle/qualify-native-packages.py', BASE + 'bundle/source-inputs.lock.json'}
+            and stage['metadataSha256']['source-inputs.lock.json'] == stage['sourceFiles'][BASE + 'bundle/source-inputs.lock.json']
+            and [p['name'] for p in stage['packages']] == FAMILIES['pcre2'], 'PCRE2 stage evidence is not precisely pinned')
+    require(all(re.fullmatch('[0-9a-f]{64}', digest) for digest in
+                [*stage['metadataSha256'].values(), *stage['sourceFiles'].values(), *stage['evidence'].values(), stage['buildLogSha256']]),
+            'PCRE2 stage source/evidence SHA pin is malformed')
+    for p in stage['packages']:
+        require(p['source'] == 'pcre2' and p['version'] == lock['pcre2']['version']
+                and safe_name(p['file']).name == p['file'] and re.fullmatch('[0-9a-f]{64}', p['sha256']),
+                'Unexpected pinned PCRE2 package')
     load_rust_source_audit(lock['nativeInputs']['rust-coreutils'])
     return lock
 
@@ -227,10 +254,17 @@ def check_current_source(lock):
             check_source_files(ROOT, {name: proof['currentSha256']})
             original = subprocess.check_output(['git', 'show', item['sourceCommit'] + ':' + name], cwd=ROOT)
             require(sha(original) == proof['nativeSha256'], 'Native CI source pin changed')
+    stage = lock['pcre2']['stageInput']
+    for name, digest in stage['sourceFiles'].items():
+        safe_name(name)
+        require(sha(command(['git', 'show', stage['publisherCommit'] + ':' + name])) == digest,
+                'Original PCRE2 build/qualification recipe changed: ' + name)
 
 
 def ensure_native_sources(lock):
-    for commit in sorted({item['sourceCommit'] for item in lock['nativeInputs'].values()}):
+    commits = {item['sourceCommit'] for item in lock['nativeInputs'].values()}
+    commits.add(lock['pcre2']['stageInput']['publisherCommit'])
+    for commit in sorted(commits):
         require(re.fullmatch('[0-9a-f]{40}', commit), 'Native producer must be an exact commit SHA')
         probe = ['git', 'cat-file', '-e', commit + '^{commit}']
         if subprocess.run(probe, cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
@@ -267,14 +301,34 @@ def verify_api(family, item, run, job, artifact):
             and artifact['workflow_run']['head_sha'] == item['sourceCommit'], 'Artifact API ownership mismatch')
 
 
+def verify_pcre2_api(stage, run, job, artifact):
+    require(run['id'] == stage['runId'] and run['status'] == 'completed' and run['conclusion'] == 'failure'
+            and run['head_sha'] == stage['publisherCommit'] and run['event'] == 'workflow_dispatch'
+            and run['path'] == '.github/workflows/publish-ubuntu-security-backports.yml', 'PCRE2 publisher run mismatch')
+    require(job['id'] == stage['jobId'] and job['run_id'] == stage['runId'] and job['name'] == 'publish'
+            and job['status'] == 'completed' and job['conclusion'] == 'failure'
+            and job['head_sha'] == stage['publisherCommit'], 'Original publisher job failure must be retained')
+    for expected in PCRE2_STAGE_STEPS:
+        matches = [s for s in job['steps'] if s['name'] == expected['name']]
+        require(len(matches) == 1 and matches[0]['number'] == expected['number']
+                and matches[0]['status'] == 'completed' and matches[0]['conclusion'] == expected['conclusion'],
+                'PCRE2/qualification/consumer/publication step outcome mismatch: ' + expected['name'])
+    require(artifact['id'] == stage['artifactId'] and not artifact['expired']
+            and artifact['name'] == stage['artifactName'] and artifact['digest'] == 'sha256:' + stage['zipSha256']
+            and artifact['workflow_run']['id'] == stage['runId']
+            and artifact['workflow_run']['head_sha'] == stage['publisherCommit'], 'PCRE2 stage artifact ownership mismatch')
+
+
 def fetch_native(lock):
     require(not WORK.exists(), 'Bundle staging directory must be new')
     (WORK / 'inputs').mkdir(parents=True)
-    for family, item in lock['nativeInputs'].items():
+    inputs = list(lock['nativeInputs'].items()) + [('pcre2', lock['pcre2']['stageInput'])]
+    for family, item in inputs:
         run = gh_json('actions/runs/' + str(item['runId']))
         job = gh_json('actions/jobs/' + str(item['jobId']))
         artifact = gh_json('actions/artifacts/' + str(item['artifactId']))
-        verify_api(family, item, run, job, artifact)
+        if family == 'pcre2': verify_pcre2_api(item, run, job, artifact)
+        else: verify_api(family, item, run, job, artifact)
         write_json(WORK / 'inputs' / (family + '-api.json'), {'run': run, 'job': job, 'artifact': artifact})
         with (WORK / 'inputs' / (family + '.zip')).open('xb') as stream:
             subprocess.run(['gh', 'api', 'repos/' + REPO + '/actions/artifacts/' +
@@ -452,6 +506,67 @@ def command(args):
     return subprocess.check_output(args, cwd=ROOT, stderr=subprocess.PIPE)
 
 
+def pcre2_evidence(stage):
+    return dict(stage['evidence'], **{'production-stage-' + name: digest
+                for name, digest in stage['metadataSha256'].items()}, **{'production-stage-build.log': stage['buildLogSha256']})
+
+
+def validate_pcre2(item, archive, api, test_directory):
+    stage = item['stageInput']; verify_pcre2_api(stage, api['run'], api['job'], api['artifact'])
+    contents = read_zip(archive, stage['zipSha256'])
+    documents = {}
+    for name, path in PCRE2_STAGE_RECEIPTS.items():
+        require(sha(contents[path]) == stage['metadataSha256'][name], 'Original PCRE2 qualification metadata changed')
+        documents[name] = json.loads(contents[path])
+    original = documents['source-inputs.lock.json']['pcre2']
+    require(original['kind'] == 'fresh-production-target' and all(original[key] == item[key] for key in
+            ['sourceCommit', 'sourceTag', 'target', 'version', 'sourceFiles', 'lockSha256', 'copyrightSha256',
+             'runtimePackages', 'fixedVulnerabilities']), 'Original PCRE2 released551 source/recipe closure mismatch')
+    manifest, qualification = documents['manifest.json'], documents['qualification.json']
+    require(manifest['schemaVersion'] == qualification['schemaVersion'] == 1
+            and manifest['platform'] == qualification['platform'] == PLATFORM
+            and manifest['qualification'] == {'path': 'qualification.json', 'sha256': stage['metadataSha256']['qualification.json']}
+            and qualification['status'] == 'qualified' and 'consumerFixtures' not in qualification
+            and qualification['sourceLockSha256'] == stage['metadataSha256']['source-inputs.lock.json'],
+            'PCRE2 stage was not qualified before the failed consumer fixture')
+    families = [f for f in qualification['families'] if f['name'] == 'pcre2']
+    require(len(families) == 1 and families[0]['status'] == 'qualified' and families[0]['nativeInput'] == original
+            and families[0]['provenanceSha256'] == stage['evidence']['provenance.json'], 'Original PCRE2 family qualification mismatch')
+    prefix = 'context/out/provenance/pcre2/'
+    files = {name.removeprefix(prefix): data for name, data in contents.items() if name.startswith(prefix)}
+    require(set(files) == set(stage['evidence']) and all(sha(files[n]) == h for n, h in stage['evidence'].items()),
+            'PCRE2 native evidence differs from pinned stage bytes')
+    require(sha(files['pcre2.lock.json']) == item['lockSha256'] and sha(files['COPYRIGHT']) == item['copyrightSha256'],
+            'PCRE2 production source lock/COPYRIGHT mismatch')
+    provenance = json.loads(files['provenance.json']); source_lock = json.loads(files['pcre2.lock.json'])
+    require(provenance['sourceLockSha256'] == item['lockSha256'] and provenance['sourceFiles'] == source_lock['sourceFiles']
+            and provenance['patches'] == source_lock['patches'] and provenance['fixedCves'] == item['fixedVulnerabilities']
+            and provenance['debianPackagingInputSha256']['debian/copyright'] == item['copyrightSha256'],
+            'PCRE2 native source/packaging proof changed')
+    records = provenance['runtimePackages']; selected = stage['packages']
+    require([r['package'] for r in records] == item['runtimePackages'], 'Unexpected original PCRE2 runtime catalog')
+    actual = [p for p in manifest['packages'] if p['family'] == 'pcre2']
+    require([p['name'] for p in actual] == item['runtimePackages'], 'Original manifest PCRE2 catalog mismatch')
+    for p, record, entry in zip(selected, records, actual):
+        require(record['package'] == entry['name'] == p['name'] and record['version'] == entry['version'] == p['version']
+                and record['architecture'] == entry['architecture'] == 'amd64' and entry['source'] == 'pcre2'
+                and record['file'] == p['file'] and entry['archive'] == {'path': 'debs/' + p['file'], 'sha256': p['sha256']}
+                and record['sha256'] == p['sha256'], 'PCRE2 archive/provenance/original manifest mismatch')
+        files[p['file']] = contents['context/out/debs/' + p['file']]
+        require(sha(files[p['file']]) == p['sha256'], 'PCRE2 deb differs from the reviewed stage pin')
+    tests = check_owning_tests('pcre2', files, provenance, test_directory)
+    require(families[0]['owningChecks'] == tests, 'Original PCRE2 owning receipt was not qualified')
+    for name, path in PCRE2_STAGE_RECEIPTS.items(): files['production-stage-' + name] = contents[path]
+    files['production-stage-build.log'] = contents['publisher/pcre2-build.log']
+    require(sha(files['production-stage-build.log']) == stage['buildLogSha256']
+            and ('PCRE2_BACKPORT_BUILT packages=2 tests=3 lock=' + item['lockSha256']).encode()
+                in files['production-stage-build.log'], 'Original native PCRE2 build completion receipt is missing')
+    tests['originalPublisherScope'] = {'runConclusion': 'failure', 'jobConclusion': 'failure',
+                                      'consumerConclusion': 'failure', 'publicationConclusion': 'skipped',
+                                      'scope': 'PCRE2 source/package/owning-test qualification only'}
+    return files, provenance, tests
+
+
 def package_payload(archive, expected, directory):
     fields = {key: command(['dpkg-deb', '--field', str(archive), key]).decode().strip()
               for key in ['Package', 'Version', 'Architecture', 'Source']}
@@ -559,30 +674,11 @@ def qualify(lock):
     families, packages, qualifications = [], [], []
     for family in FAMILIES:
         if family == 'pcre2':
-            item = lock['pcre2']; directory = WORK / 'pcre2-export' / 'pcre2'
-            require(directory.is_dir(), 'Fresh production PCRE2 native output is missing')
-            files = {file.name: file.read_bytes() for file in directory.iterdir() if file.is_file()}
-            require(sha(files['pcre2.lock.json']) == item['lockSha256']
-                    and sha(files['COPYRIGHT']) == item['copyrightSha256'], 'PCRE2 production input/COPYRIGHT mismatch')
-            provenance = json.loads(files['provenance.json'])
-            require(provenance['sourceLockSha256'] == item['lockSha256'], 'PCRE2 native lock mismatch')
-            tests = check_owning_tests(family, files, provenance, WORK / 'owning-replay' / family)
-            selected = [dict(name=r['package'], version=r['version'], source='pcre2', file=r['file'], sha256=r['sha256'])
-                        for r in provenance['runtimePackages']]
-            require([p['name'] for p in selected] == FAMILIES[family], 'Unexpected fresh PCRE2 runtime catalog')
-            require(all(p['version'] == item['version'] and re.fullmatch('[0-9a-f]{64}', p['sha256'])
-                        for p in selected) and {name for name in files if name.endswith('.deb')} ==
-                    {p['file'] for p in selected}, 'Unexpected fresh PCRE2 version/package bytes')
-            source_lock = json.loads(files['pcre2.lock.json'])
-            require(provenance['sourceFiles'] == source_lock['sourceFiles']
-                    and provenance['patches'] == source_lock['patches']
-                    and provenance['fixedCves'] == item['fixedVulnerabilities']
-                    and provenance['debianPackagingInputSha256']['debian/copyright'] == item['copyrightSha256'],
-                    'Fresh PCRE2 source/packaging proof differs from approved producer')
-            evidence = {name: sha(data) for name, data in files.items()
-                        if name.endswith(('.json', '.trs', '.log', '.buildinfo', '.changes', '.tsv', '.md'))
-                        and name != 'build.log'}
-            evidence['COPYRIGHT'] = item['copyrightSha256']
+            item = lock['pcre2']
+            api = json.loads((WORK / 'inputs' / 'pcre2-api.json').read_text())
+            files, provenance, tests = validate_pcre2(item, WORK / 'inputs' / 'pcre2.zip', api,
+                                                     WORK / 'owning-replay' / family)
+            selected, evidence = item['stageInput']['packages'], pcre2_evidence(item['stageInput'])
         else:
             item = lock['nativeInputs'][family]
             api = json.loads((WORK / 'inputs' / (family + '-api.json')).read_text())
@@ -593,8 +689,8 @@ def qualify(lock):
         for name, digest in evidence.items():
             require(safe_name(name).name == name and sha(files[name]) == digest, 'Unsafe/mutated output evidence')
             (destination / name).write_bytes(files[name])
+        write_json(destination / 'artifact-api.json', api)
         if family != 'pcre2':
-            write_json(destination / 'artifact-api.json', api)
             raw = read_zip(WORK / 'inputs' / (family + '.zip'), item['zipSha256'])
             (destination / 'native-result.json').write_bytes(raw['export/result.json'])
         if family == 'rust-coreutils':
