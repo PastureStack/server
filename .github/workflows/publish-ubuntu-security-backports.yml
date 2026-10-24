@@ -226,7 +226,8 @@ jobs:
         with:
           subject-name: ghcr.io/pasturestack/ubuntu-security-backports
           subject-digest: ${{ steps.image.outputs.digest }}
-          sbom-path: ${{ steps.inputs.outputs.work }}/context/out/sbom.cdx.json
+          predicate-type: https://cyclonedx.org/bom
+          predicate-path: ${{ steps.inputs.outputs.work }}/context/out/sbom.cdx.json
           push-to-registry: true
 
       - name: Require public anonymous pull and exact OCI data readback
