@@ -1,15 +1,63 @@
 # Compatibility Contract
 
-## Server v1.6.550 prepared, not published
+<a id="server-v16551-release-assets"></a>
 
-The source candidate preserves all component versions and operator settings from
-549 while rebuilding the two PCRE2 runtime packages with the upstream's official
-10.46 backports. Original Ubuntu packaging, SONAMEs, JIT and POSIX interfaces are
-retained. First-party package version `10.46-1build1+pasturestack.1` distinguishes
-this rebuild from Canonical binaries. Native upstream tests, exact package
-integrity, ELF hashes and actual consumers are mandatory gates. The published
-installation remains 549 until a new immutable image passes publication.
-See [the candidate note](docs/releases/server-1.6.550.md).
+## Server v1.6.551 published
+
+The immutable linux/amd64 image is
+`ghcr.io/pasturestack/server:v1.6.551@sha256:150c3eaa2d84df6236e7634843e506a79df71d9e434ad2038427108c14ac358e`,
+produced from `9abef4712901981e5917c41356bb261974fdba47` in successful
+[run 40120970328](https://github.com/PastureStack/server/actions/runs/40120970328).
+All 33 assets passed anonymous byte/checksum readback. The Host API archive also
+matches its original producer SHA-256, retains its internal checksums and binary,
+and both image attestations bind the exact producer and digest.
+
+The 550 PCRE2 fixes, Web Console 1.6.195, Engine v0.183.354 and other component
+inputs are unchanged. The 8080 cutover, one restart, package integrity/linkage,
+MariaDB regex controls and three active Host/Agent states passed. Configuration,
+three existing data volumes, socket bind, AppArmor and the 550 rollback were
+preserved. No production site, HAProxy or firewall was changed.
+
+The scan retains 13 pending LOW/MEDIUM occurrences across 10 CVEs. Unrelated
+native candidates and build-host coverage are separate; none is presented as a
+remediated consumer. See the [release note](docs/releases/server-1.6.551.md).
+
+<a id="server-v16550-pcre2-backports"></a>
+
+## Server v1.6.550 published
+
+The Server image is valid, but its standalone Host API Release attachment was
+mistakenly replaced with an empty gzip during manual publication completion.
+Use 551 or the original Host API producer release for that download. The immutable
+bad attachment is retained as failure evidence; checksum self-consistency alone
+did not establish producer identity. See the [correction](docs/releases/server-1.6.550.md).
+
+The immutable one-layer linux/amd64 identity is
+`ghcr.io/pasturestack/server:v1.6.550@sha256:03542028c3ce4be11d7ff87f96beddf5179c67caf9f0d28ad57043acf3cf52c5`,
+produced from `54deb98ee33ffab78437070d61179b602844182e` in
+[run 40116218929](https://github.com/PastureStack/server/actions/runs/40116218929).
+All 34 assets passed anonymous checksum readback; both image provenance and SBOM
+attestations bind the same digest and producer. The original job remains failed
+at its final release-note heading check. The exact signed image completed
+publication without a rebuild or tag overwrite; the attachment correction above
+supersedes the broader asset claim in the original immutable
+[completion receipt](https://github.com/PastureStack/server/releases/download/v1.6.550/publication-recovery.json).
+The permanent note preflight now validates the actual candidate document.
+
+The two PCRE2 packages use first-party `10.46-1build1+pasturestack.1`, built from
+original Ubuntu source/packaging with the complete supported upstream backport
+series. They are not issued by Canonical. Original native tests, package-owned
+bytes, SONAMEs, hardening, both library hashes and five actual consumers passed.
+The deployed image also passed MariaDB regex controls and one controlled restart,
+with the existing HostConfig, environment, three data volumes, socket bind,
+AppArmor and the 549 rollback container retained. Three Host/Agent states remain
+active. No production site, proxy or firewall was changed.
+
+The fresh runtime scan retains 51 raw occurrences, 38 exact VEX dispositions and
+13 pending LOW/MEDIUM occurrences across 10 CVEs. Eight PCRE2 CVEs are fixed;
+other artifacts and build-host SDKs are tracked separately. Browser component
+pins and its incomplete coverage are unchanged. This is scoped acceptance, not
+an all-feature or all-project zero-risk claim. See [the release note](docs/releases/server-1.6.550.md).
 
 <a id="server-v16549-web-console-sbom"></a>
 

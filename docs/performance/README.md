@@ -20,7 +20,7 @@ evidence is not a performance benchmark; measure the actual workload.
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.549
+    image: ghcr.io/pasturestack/server:v1.6.551
     restart: unless-stopped
     ports:
       - "8080:8080"

@@ -731,6 +731,14 @@ jobs:
           gzip -n -c "$evidence/web-console-runtime-vulnerabilities.tsv" \
             >"$evidence/web-console-runtime-vulnerabilities.tsv.gz"
           test -s "$evidence/web-console-runtime-vulnerabilities.tsv.gz"
+          # Recheck immutable producer bytes after report conversion. A valid
+          # gzip stream is not proof of a valid host package (an empty gzip is
+          # valid too). Never transform or re-compress this producer archive.
+          host_archive_sha="$(sed -n 's/^ARG HOST_API_ARCHIVE_SHA256=//p' \
+            source/server/Dockerfile.web-compose-release | sort -u)"
+          [[ "$host_archive_sha" =~ ^[0-9a-f]{64}$ ]]
+          printf '%s  %s\n' "$host_archive_sha" \
+            "$evidence/host-api-${HOST_API_VERSION}.tar.gz" | sha256sum -c -
           (
             cd "$evidence"
             sha256sum \
