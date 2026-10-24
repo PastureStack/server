@@ -26,7 +26,16 @@ def require_tap_ok(text, case):
               'Official regression case lacks a single unqualified TAP ok: ' + case)
 
 
-def full_suite(source):
+def configured_test_logs(source, env):
+    # Query the original generated Makefile without running a test target.
+    # TEST_LOGS intentionally retains any duplicate entries used by Automake's
+    # summary; p11-kit 0.26.2 lists test-oid through two source fragments.
+    return H.capture(['make', '--no-print-directory', '--eval',
+                      "pasturestack-print-test-logs:;@printf '%s\\n' $(TEST_LOGS)",
+                      'pasturestack-print-test-logs'], source, env).splitlines()
+
+
+def full_suite(source, test_logs):
     logs = list(source.rglob('test-suite.log'))
     H.require(len(logs) == 1, 'Missing/ambiguous full owning test-suite log')
     summary = logs[0].read_text(encoding='utf-8', errors='replace')
@@ -36,10 +45,16 @@ def full_suite(source):
     H.require(len(pairs) == 7 and {key for key, _ in pairs} == {'TOTAL', *states},
               'Missing or ambiguous owning-suite summary counts')
     counts = {key: int(value) for key, value in pairs}
-    reports = list(source.rglob('*.trs'))
+    H.require(test_logs and all(not Path(name).is_absolute() and '..' not in Path(name).parts
+                              and Path(name).suffix == '.log' for name in test_logs),
+              'Missing or unsafe configured TEST_LOGS manifest')
+    occurrences = Counter(source / Path(name).with_suffix('.trs') for name in test_logs)
+    reports = list(occurrences)
+    H.require(set(reports) == set(source.rglob('*.trs')),
+              'Configured TEST_LOGS and native TRS files differ')
     H.require(reports and counts['TOTAL'] > 0, 'Complete owning suite has no testcase results')
     receipts, evidence = [], [(logs[0], 'test-suite.log')]
-    names, observed = set(), Counter()
+    names, observed, unique = set(), Counter(), Counter()
     for report in reports:
         text = report.read_text(encoding='utf-8')
         # tap-driver writes one result per TAP testcase, not one per .trs file.
@@ -50,11 +65,13 @@ def full_suite(source):
         H.require(re.findall(r'^:global-test-result: (\S+)$', text, re.M) == ['PASS'],
                   'Owning TRS global result did not PASS: ' + str(report))
         case_counts = Counter(match[1] for match in matches)
-        observed.update(case_counts)
+        unique.update(case_counts)
+        observed.update({state: count * occurrences[report] for state, count in case_counts.items()})
         relative = report.relative_to(source).as_posix()
         names.add(report.stem)
         receipts.append({'path': relative, 'status': 'PASS', 'sha256': H.digest(report),
-                         'caseCounts': {state: case_counts[state] for state in states}})
+                         'caseCounts': {state: case_counts[state] for state in states},
+                         'summaryOccurrences': occurrences[report]})
         for suffix in ['.trs', '.log']:
             file = report.with_suffix(suffix)
             H.require(file.is_file(), 'Owning test output missing')
@@ -71,11 +88,13 @@ def full_suite(source):
     require_tap_ok(rpc, '/rpc3/recursion-limit')
     require_tap_ok(message, '/rpc-message/attribute-recursion-limit')
     return {'status': 'PASS', 'counts': counts, 'receipts': receipts,
+            'configuredTestLogs': test_logs, 'uniqueCaseTotal': sum(unique.values()),
+            'uniqueCaseCounts': {state: unique[state] for state in states},
             'officialRpcRecursionCases': 'PASS', 'addedSkips': 0}, evidence
 
 
 def verify(lock, source, extracted, work, env, log):
-    tests, evidence = full_suite(source)
+    tests, evidence = full_suite(source, configured_test_logs(source, env))
     library = extracted / 'usr/lib/x86_64-linux-gnu/libp11-kit.so.0'
     abi = H.verify_abi(library, 'libp11-kit.so.0', source / 'debian/libp11-kit0.symbols', work, env)
     for name in ['usr/bin/p11-kit', 'usr/libexec/p11-kit/p11-kit-remote',

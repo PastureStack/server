@@ -5,7 +5,6 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 import tempfile
-from types import SimpleNamespace
 import unittest
 from unittest import mock
 import sys
@@ -97,6 +96,7 @@ class Backport(unittest.TestCase):
 
     def suite(self):
         tests = {'test-rpc': 3, 'test-rpc-message': 2, 'test-control': 1}
+        self.test_logs = [name + '.log' for name in tests]
         for name, cases in tests.items():
             (self.root / (name + '.trs')).write_text(':global-test-result: PASS\n' +
                 ':test-result: PASS\n' * cases, encoding='utf-8')
@@ -113,7 +113,7 @@ class Backport(unittest.TestCase):
 
     def test_multi_case_trs_totals_match_full_summary(self):
         self.suite()
-        result = M.full_suite(self.root)[0]
+        result = M.full_suite(self.root, self.test_logs)[0]
         self.assertEqual('PASS', result['status'])
         self.assertEqual(6, result['counts']['TOTAL'])
         self.assertEqual(3, len(result['receipts']))
@@ -123,10 +123,10 @@ class Backport(unittest.TestCase):
         self.suite()
         summary = self.root / 'test-suite.log'
         summary.write_text(summary.read_text().replace('# PASS: 6', '# PASS: 5').replace('# SKIP: 0', '# SKIP: 1'))
-        with self.assertRaises(ValueError): M.full_suite(self.root)
+        with self.assertRaises(ValueError): M.full_suite(self.root, self.test_logs)
         self.suite()
         (self.root / 'test-control.trs').unlink()
-        with self.assertRaises(ValueError): M.full_suite(self.root)
+        with self.assertRaises(ValueError): M.full_suite(self.root, self.test_logs)
 
     def test_case_total_and_each_summary_state_must_match(self):
         for old, new in [('# TOTAL: 6', '# TOTAL: 7'), ('# PASS: 6', '# PASS: 5')] + [
@@ -136,7 +136,7 @@ class Backport(unittest.TestCase):
                 self.suite()
                 summary = self.root / 'test-suite.log'
                 summary.write_text(summary.read_text().replace(old, new), encoding='utf-8')
-                with self.assertRaises(ValueError): M.full_suite(self.root)
+                with self.assertRaises(ValueError): M.full_suite(self.root, self.test_logs)
 
     def test_nonpass_trs_case_cannot_hide_among_other_pass_cases(self):
         for state in ['SKIP', 'XFAIL', 'FAIL', 'XPASS', 'ERROR', 'UNKNOWN']:
@@ -149,7 +149,7 @@ class Backport(unittest.TestCase):
                     summary = self.root / 'test-suite.log'
                     summary.write_text(summary.read_text().replace('# PASS: 6', '# PASS: 5').replace(
                         '# ' + state + ': 0', '# ' + state + ': 1'), encoding='utf-8')
-                with self.assertRaises(ValueError): M.full_suite(self.root)
+                with self.assertRaises(ValueError): M.full_suite(self.root, self.test_logs)
 
     def test_required_case_needs_single_unqualified_tap_ok(self):
         for file, case in [('test-rpc.log', '/rpc3/recursion-limit'),
@@ -161,7 +161,38 @@ class Backport(unittest.TestCase):
                 with self.subTest(file=file, log=text):
                     self.suite()
                     (self.root / file).write_text(text + '\n', encoding='utf-8')
-                    with self.assertRaises(ValueError): M.full_suite(self.root)
+                    with self.assertRaises(ValueError): M.full_suite(self.root, self.test_logs)
+
+    def test_configured_duplicate_logs_preserve_summary_and_unique_case_counts(self):
+        self.suite()
+        # Automake counts a configured TEST_LOGS entry twice, while the file and
+        # actual testcase execution exist only once. No skip or failure is hidden.
+        manifest = self.test_logs + ['test-rpc-message.log']
+        summary = self.root / 'test-suite.log'
+        summary.write_text(summary.read_text().replace('# TOTAL: 6', '# TOTAL: 8').replace(
+            '# PASS: 6', '# PASS: 8'), encoding='utf-8')
+        result = M.full_suite(self.root, manifest)[0]
+        self.assertEqual(8, result['counts']['TOTAL'])
+        self.assertEqual(6, result['uniqueCaseTotal'])
+        self.assertEqual(2, next(r for r in result['receipts']
+                                if r['path'] == 'test-rpc-message.trs')['summaryOccurrences'])
+        with self.assertRaises(ValueError): M.full_suite(self.root, self.test_logs)
+
+    def test_configured_manifest_cannot_omit_or_add_native_trs_files(self):
+        self.suite()
+        for manifest in [self.test_logs[:-1], self.test_logs + ['missing.log'],
+                         self.test_logs + ['../outside.log'], []]:
+            with self.subTest(manifest=manifest), self.assertRaises(ValueError):
+                M.full_suite(self.root, manifest)
+
+    def test_test_log_query_preserves_configured_order_and_duplicates(self):
+        with mock.patch.object(H, 'capture', return_value='test-rpc.log\ntest-oid.log\ntest-oid.log') as query:
+            self.assertEqual(['test-rpc.log', 'test-oid.log', 'test-oid.log'],
+                             M.configured_test_logs(self.root, {}))
+        command = query.call_args[0][0]
+        self.assertEqual('make', command[0])
+        self.assertIn('$(TEST_LOGS)', command[3])
+        self.assertEqual('pasturestack-print-test-logs', command[-1])
 
     def test_cve18938_retains_32bit_qualification(self):
         self.assertTrue(any('32-bit' in value for value in self.lock['limitations']))
