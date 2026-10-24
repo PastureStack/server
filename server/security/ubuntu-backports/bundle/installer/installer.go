@@ -24,6 +24,7 @@ type Receipt struct {
 	Status                     string   `json:"status"`
 	Packages                   []string `json:"packages"`
 	BeforeMissingDocumentation []string `json:"beforeMissingDocumentation"`
+	BeforeMissingTranslations  []string `json:"beforeMissingTranslations"`
 	ExactPathIncludes          []string `json:"exactPathIncludes"`
 	ProviderPreserved          bool     `json:"providerPreserved,omitempty"`
 	ConfigurationPreserved     bool     `json:"configurationPreserved,omitempty"`
@@ -233,12 +234,32 @@ func documentation(name, pkg string) bool {
 	return name == "usr/share/doc/"+pkg || strings.HasPrefix(name, "usr/share/doc/"+pkg+"/") || strings.HasPrefix(name, "usr/share/man/") || strings.HasPrefix(name, "usr/share/info/")
 }
 
+var translationPath = regexp.MustCompile(`^usr/share/locale/[A-Za-z][A-Za-z0-9_.@-]*/LC_MESSAGES/[^/]+\.mo$`)
+
+// Minimal Ubuntu images exclude message catalogs as well as documentation.
+// Restore only exact SHA-bound, non-executable catalog files from a selected
+// package. Program/library exclusions remain errors; no dpkg rule is changed.
+func restorablePackageData(file File, pkg string, elfs []ELF) bool {
+	if documentation(file.Path, pkg) {
+		return true
+	}
+	if file.Type != "file" || file.Mode&0111 != 0 || !translationPath.MatchString(file.Path) {
+		return false
+	}
+	for _, image := range elfs {
+		if image.Path == file.Path {
+			return false
+		}
+	}
+	return true
+}
+
 var missingLine = regexp.MustCompile(`^missing\s+(/\S+)$`)
 
 func beforeVerify(output []byte, p Package, payload Payload, rules []pathRule) ([]string, error) {
 	allowed := map[string]bool{}
 	for _, f := range payload.Files {
-		if documentation(f.Path, p.Name) && excluded(f.Path, rules) {
+		if restorablePackageData(f, p.Name, payload.ELF) && excluded(f.Path, rules) {
 			allowed["/"+f.Path] = true
 		}
 	}
@@ -370,7 +391,7 @@ func unchangedInventory(before, after map[string]Installed, selected []Package) 
 	return nil
 }
 func (i Installer) Execute(install bool) (Receipt, error) {
-	r := Receipt{SchemaVersion: 1, BundleVersion: "0.1.0", Packages: []string{}, BeforeMissingDocumentation: []string{}, ExactPathIncludes: []string{}}
+	r := Receipt{SchemaVersion: 1, BundleVersion: "0.1.0", Packages: []string{}, BeforeMissingDocumentation: []string{}, BeforeMissingTranslations: []string{}, ExactPathIncludes: []string{}}
 	if err := i.platform(); err != nil {
 		return r, err
 	}
@@ -440,10 +461,16 @@ func (i Installer) Execute(install bool) (Receipt, error) {
 		if err != nil {
 			return r, err
 		}
-		r.BeforeMissingDocumentation = append(r.BeforeMissingDocumentation, missing...)
+		for _, name := range missing {
+			if documentation(strings.TrimPrefix(name, "/"), p.Name) {
+				r.BeforeMissingDocumentation = append(r.BeforeMissingDocumentation, name)
+			} else {
+				r.BeforeMissingTranslations = append(r.BeforeMissingTranslations, name)
+			}
+		}
 		for _, f := range payloads[p.Name].Files {
 			if excluded(f.Path, rules) {
-				if !documentation(f.Path, p.Name) {
+				if !restorablePackageData(f, p.Name, payloads[p.Name].ELF) {
 					return r, fmt.Errorf("dpkg excludes a runtime payload path: %s", f.Path)
 				}
 				includes = append(includes, "/"+f.Path)
@@ -454,6 +481,7 @@ func (i Installer) Execute(install bool) (Receipt, error) {
 		}
 	}
 	r.BeforeMissingDocumentation = unique(r.BeforeMissingDocumentation)
+	r.BeforeMissingTranslations = unique(r.BeforeMissingTranslations)
 	r.ExactPathIncludes = unique(includes)
 	before, err := i.snapshot(installed)
 	if err != nil {

@@ -13,7 +13,8 @@ struct jq_api {
   jv (*next)(jq_state *);
   jv (*parse)(const char *);
   jv_kind (*kind)(jv);
-  double (*number)(jv);
+  jv (*copy_value)(jv);
+  int (*invalid_has_message)(jv);
   void (*free_value)(jv);
 };
 
@@ -28,7 +29,7 @@ static void *evaluate(void *argument) {
   struct worker *worker = argument;
   const struct jq_api *api = worker->api;
   jq_state *state = api->init();
-  if (!state || !api->compile(state, "sort_by(.k) | map(.k) | add")) {
+  if (!state || !api->compile(state, "sort_by(.k) | map(.k) == [1,2,3]")) {
     worker->failed = 1;
   }
   /* All independent jq states reach the runtime sort together, without sleeps. */
@@ -40,12 +41,12 @@ static void *evaluate(void *argument) {
     jv input = api->parse("[{\"k\":3},{\"k\":1},{\"k\":2}]");
     api->start(state, input, 0);
     jv result = api->next(state);
-    if (api->kind(result) != JV_KIND_NUMBER || api->number(result) != 6) {
+    if (api->kind(result) != JV_KIND_TRUE) {
       worker->failed = 1;
     }
     api->free_value(result);
     jv end = api->next(state);
-    if (api->kind(end) != JV_KIND_INVALID) {
+    if (api->kind(end) != JV_KIND_INVALID || api->invalid_has_message(api->copy_value(end))) {
       worker->failed = 1;
     }
     api->free_value(end);
@@ -79,7 +80,8 @@ int main(void) {
   RESOLVE(next, "jq_next");
   RESOLVE(parse, "jv_parse");
   RESOLVE(kind, "jv_get_kind");
-  RESOLVE(number, "jv_number_value");
+  RESOLVE(copy_value, "jv_copy");
+  RESOLVE(invalid_has_message, "jv_invalid_has_msg");
   RESOLVE(free_value, "jv_free");
 #undef RESOLVE
   pthread_barrier_t barrier;

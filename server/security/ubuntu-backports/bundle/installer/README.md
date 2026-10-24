@@ -39,11 +39,12 @@ host configuration are compared before/after. Only the generated ld.so.cache
 is excluded from the host-configuration snapshot.
 
 Before installation, dpkg checksum differences or missing runtime files fail.
-The sole permitted pre-existing difference is a missing selected-package
-documentation file proven excluded by the consumer's current dpkg path rules.
-Every such path is enumerated in the JSON receipt. Exact one-shot
-`--path-include=/full/path` options restore selected documentation without
-editing dpkg configuration. Other excluded runtime payload paths fail. After
+The sole permitted pre-existing difference is missing selected-package
+documentation or a non-executable `usr/share/locale/<language>/LC_MESSAGES/*.mo`
+message catalog proven excluded by the consumer's current dpkg path rules.
+Every such path is enumerated separately in the JSON receipt. Exact one-shot
+`--path-include=/full/path` options restore these SHA-bound package data files
+without editing dpkg configuration. Other excluded runtime payload paths fail. After
 installation, every payload file's SHA256/type/mode/uid/gid or literal symlink
 target, every ELF receipt, package metadata, dpkg audit and full `dpkg --verify`
 must match. No post-install difference is ignored.
