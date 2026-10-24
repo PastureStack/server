@@ -1,5 +1,6 @@
 """Exercise release guards themselves, not only the eventual command exit code."""
 from pathlib import Path
+import gzip
 import subprocess
 import tempfile
 import textwrap
@@ -9,6 +10,34 @@ WORKFLOW = Path(__file__).resolve().parents[1] / '.github/workflows/publish-curr
 
 
 class PublisherSafetyGuards(unittest.TestCase):
+    def test_browser_report_upload_is_nonempty_lossless_and_keeps_internal_gate_bytes(self):
+        source = WORKFLOW.read_text()
+        release = source.split('      - name: Create immutable GitHub Release', 1)[1]
+        command = ('gzip -n -c "$evidence/web-console-runtime-vulnerabilities.tsv" \\\n'
+                   '            >"$evidence/web-console-runtime-vulnerabilities.tsv.gz"')
+        self.assertEqual(source.count(command), 1)
+        self.assertLess(release.index(command), release.index('            sha256sum \\\n'))
+        checksum = release.split('            sha256sum \\\n', 1)[1].split('              >SHA256SUMS', 1)[0]
+        upload = release.split('          gh release create "$RELEASE_TAG"', 1)[1].split('\n\n', 1)[0]
+        self.assertIn('              web-console-runtime-vulnerabilities.tsv.gz \\\n', checksum)
+        self.assertNotIn('              web-console-runtime-vulnerabilities.tsv \\\n', checksum)
+        self.assertIn('"$evidence/web-console-runtime-vulnerabilities.tsv.gz"', upload)
+        self.assertNotIn('"$evidence/web-console-runtime-vulnerabilities.tsv"', upload)
+        self.assertEqual(source.count('cat "$evidence/web-console-runtime-vulnerabilities.tsv"'), 2)
+        for report in (b'', b'LOW\tCVE-2026-99999\tfixture\t1.0.0\t\tbrowser-runtime-sbom/node-pkg/Node.js\n'):
+            with self.subTest(empty=not report), tempfile.TemporaryDirectory() as temporary:
+                evidence = Path(temporary)
+                internal = evidence / 'web-console-runtime-vulnerabilities.tsv'
+                internal.write_bytes(report)
+                result = subprocess.run(['bash', '-c', 'set -euo pipefail; evidence="$1"; ' + command,
+                                         'upload-fixture', temporary], capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                public = evidence / 'web-console-runtime-vulnerabilities.tsv.gz'
+                self.assertGreater(public.stat().st_size, 0)
+                self.assertEqual(gzip.decompress(public.read_bytes()), report)
+                self.assertEqual(gzip.decompress(gzip.compress(report, mtime=0)), report)
+                self.assertEqual(internal.read_bytes(), report)
+
     def guard(self, prefix):
         lines = [line.strip() for line in WORKFLOW.read_text().splitlines()
                  if line.strip().startswith(prefix)]
