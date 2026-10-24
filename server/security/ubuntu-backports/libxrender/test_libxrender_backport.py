@@ -79,6 +79,18 @@ class Backport(unittest.TestCase):
         baseline['version'] = 'other'
         with self.assertRaises(ValueError): self.altered('baselineBinary', baseline)
 
+    def test_actual_ubuntu_relro_baseline_does_not_require_new_bind_now_flags(self):
+        dynamic = '0x000000000000000e (SONAME) Library soname: [libXrender.so.1]'
+        self.assertEqual({'RELRO': True, 'BIND_NOW': False, 'originalBIND_NOW': False},
+                         M.verify_hardening(dynamic, 'GNU_RELRO', dynamic))
+
+    def test_existing_relro_and_bind_now_cannot_regress(self):
+        for original in ['BIND_NOW', 'FLAGS_1 Flags: NOW']:
+            with self.subTest(original=original):
+                with self.assertRaises(ValueError): M.verify_hardening('', 'GNU_RELRO', original)
+                self.assertTrue(M.verify_hardening(original, 'GNU_RELRO', original)['BIND_NOW'])
+        with self.assertRaises(ValueError): M.verify_hardening('', '', '')
+
 
 if __name__ == '__main__':
     unittest.main()

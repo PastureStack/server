@@ -15,6 +15,7 @@ H = importlib.util.module_from_spec(SPEC)
 sys.dont_write_bytecode = True
 SPEC.loader.exec_module(H)
 COMMITS = ['0eedd4ddd7c924f9cbb4ac496b3fda699435c3cf', '3e64244e538550c6a7fcf826fa8c50a4604416dc']
+EXTRA_TOOLS = ['p11tool']
 
 
 def require_tap_ok(text, case):
@@ -99,7 +100,7 @@ def verify(lock, source, extracted, work, env, log):
 
 if __name__ == '__main__':
     try:
-        H.entry(HERE, 'p11-kit', '0.26.2-2', COMMITS, verify, [])
+        H.entry(HERE, 'p11-kit', '0.26.2-2', COMMITS, verify, EXTRA_TOOLS)
     except (OSError, ValueError, KeyError, subprocess.SubprocessError) as error:
         print('P11_KIT_BACKPORT_FAILED: ' + str(error), file=sys.stderr)
         sys.exit(1)

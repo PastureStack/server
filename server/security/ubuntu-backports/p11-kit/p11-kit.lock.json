@@ -113,7 +113,9 @@
     "runtimeInstalled": false,
     "requiredOwningSuite": "Every configured upstream Autotools test must PASS, including test-rpc and test-rpc-message.",
     "requiredSoname": "libp11-kit.so.0",
-    "extraCiOnlyDependencies": []
+    "extraCiOnlyDependencies": [
+      "gnutls-bin"
+    ]
   },
   "limitations": [
     "CVE-2026-18938 is officially exploitable only on32-bit systems; native amd64 build does not establish 32-bit trigger validation. Its official guard is still included.",

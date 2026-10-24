@@ -84,6 +84,11 @@ if [[ "$MODULE" == libxrender ]]; then
     # connect to a host display or add Xvfb to a product's runtime dependencies.
     apt-get install --no-install-recommends -y xvfb xauth
 fi
+if [[ "$MODULE" == p11-kit ]]; then
+    # The upstream RPC server suite uses p11tool; without it that test is
+    # skipped. This is a disposable CI dependency, never a runtime addition.
+    apt-get install --no-install-recommends -y gnutls-bin
+fi
 useradd --create-home --user-group --uid 10001 --shell /bin/bash builder
 if [[ "$MODULE" == rust-coreutils ]]; then
     # Only the helper's bounded credential subprocess uses sudo. No host mount
@@ -106,6 +111,11 @@ set -euo pipefail
 [[ "$BUILD_JOBS" == 2 || "$BUILD_JOBS" == 4 ]]
 test "$(id -u)" != 0
 export MODULE SOURCE_SHA
+if [[ "$MODULE" == rust-coreutils ]]; then
+    # Truthful upstream CI semantics for this GitHub-hosted disposable build.
+    # Other modules and all runtime packages retain their original environment.
+    export CI=true
+fi
 df -Pk /work /out >/out/artifacts/container-disk-space.txt
 test_name="test_${MODULE//-/_}_backport.py"
 helper="build-$MODULE-backport.py"

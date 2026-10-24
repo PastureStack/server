@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 import sys
@@ -65,6 +66,18 @@ class Backport(unittest.TestCase):
                 mock.patch.object(H.os, 'geteuid', create=True, return_value=0):
             with self.assertRaisesRegex(ValueError, 'non-root'):
                 H.build(None, self.lock, HERE, M.verify, [])
+
+    def test_server_access_prerequisite_is_required_before_compilation(self):
+        self.assertIn('gnutls-bin', self.lock['buildContract']['extraCiOnlyDependencies'])
+        args = SimpleNamespace(output_dir=self.root / 'out', work_dir=self.root / 'work',
+                               cache_dir=None, jobs=2)
+        with mock.patch.object(Path, 'read_text', return_value='ID=ubuntu\nVERSION_ID="26.04"\n'), \
+                mock.patch.object(H.os, 'geteuid', create=True, return_value=10001), \
+                mock.patch.object(H.shutil, 'which', side_effect=lambda tool, **_: None if tool == 'p11tool' else '/usr/bin/' + tool), \
+                mock.patch.object(H, 'run') as native:
+            with self.assertRaisesRegex(ValueError, 'prerequisite missing: p11tool'):
+                H.build(args, self.lock, HERE, M.verify, M.EXTRA_TOOLS)
+            native.assert_not_called()
 
     def test_build_reaches_first_download_after_native_preflight(self):
         args = SimpleNamespace(output_dir=self.root / 'output', work_dir=self.root / 'work',

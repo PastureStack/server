@@ -30,6 +30,18 @@ def check_result(code, output, negative):
         H.require(code == 0 and 'PASS' in output, 'Patched/packaged reply-boundary fixture failed')
 
 
+def verify_hardening(dynamic, headers, original_dynamic):
+    def bind_now(text):
+        return 'BIND_NOW' in text or bool(re.search(r'FLAGS_1.*NOW', text))
+
+    # The pinned Ubuntu library has RELRO but no BIND_NOW. Preserve its actual
+    # baseline; do not add build flags or weaken a baseline that does use NOW.
+    H.require('GNU_RELRO' in headers and (not bind_now(original_dynamic) or bind_now(dynamic)),
+              'Original Ubuntu hardening regressed')
+    return {'RELRO': True, 'BIND_NOW': bind_now(dynamic),
+            'originalBIND_NOW': bind_now(original_dynamic)}
+
+
 def regression(source, extracted, work, env, log):
     archive = source / 'build/src/.libs/libXrender.a'
     H.require(archive.is_file(), 'Original configured static test archive missing')
@@ -89,11 +101,11 @@ def verify(lock, source, extracted, work, env, log):
     # The original source has no Debian symbols file; compare the exact original
     # Ubuntu binary exports and NEEDED entries instead.
     headers = H.capture(['readelf', '--program-headers', str(library)], work, env)
-    H.require('GNU_RELRO' in headers and ('BIND_NOW' in dynamic or re.search(r'FLAGS_1.*NOW', dynamic)),
-              'Original Ubuntu hardening is missing')
+    hardening = verify_hardening(dynamic, headers, old_dynamic)
     cases, evidence = regression(source, extracted, work, env, log)
     return {'owningCheck': 'PASS', 'upstreamDefinedTestCases': 0,
             'originalUbuntuAbiAndNeeded': 'PASS', 'originalBinarySha256': lock['baselineBinary']['sha256'],
+            'hardening': hardening,
             'replyBoundaryCases': cases, 'runtimeInstalled': False}, \
            [(check_log, check_log.name)] + evidence
 

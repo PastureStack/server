@@ -3,6 +3,7 @@ import copy
 import importlib.util
 import json
 import os
+import shlex
 from pathlib import Path
 import sys
 import tempfile
@@ -70,12 +71,18 @@ class RustBackport(unittest.TestCase):
 
     def test_build_environment_discards_test_and_compiler_overrides(self):
         with mock.patch.dict(os.environ, {'DEB_BUILD_OPTIONS': 'nocheck', 'CARGOFLAGS': '--test id',
-                                         'RUSTFLAGS': '-C opt-level=0', 'TESTS': 'id'}):
+                                         'RUSTFLAGS': '-C opt-level=0', 'TESTS': 'id', 'CI': 'true',
+                                         'TEST_NO_FAIL_FAST': 'stdout', '_PS_TEST_ARGS': '--ignored'}):
             env = M.build_environment(self.lock, 2, self.root)
         self.assertEqual('parallel=2', env['DEB_BUILD_OPTIONS'])
         self.assertEqual('', env['DEB_BUILD_MAINT_OPTIONS'])
         self.assertEqual('true', env['CARGO_NET_OFFLINE'])
-        self.assertTrue(all(x not in env for x in ['CARGOFLAGS', 'RUSTFLAGS', 'TESTS', 'SKIP_UTILS']))
+        self.assertEqual('true', env['CI'])
+        self.assertTrue(all(x not in env for x in ['CARGOFLAGS', 'RUSTFLAGS', 'TESTS', 'SKIP_UTILS',
+                                                   'TEST_NO_FAIL_FAST', '_PS_TEST_ARGS']))
+        for marker in ['', 'false', '1']:
+            with mock.patch.dict(os.environ, {'CI': marker}):
+                self.assertNotIn('CI', M.build_environment(self.lock, 2, self.root))
 
     def test_root_cannot_accidentally_run_the_build_or_full_suite(self):
         with mock.patch.object(Path, 'read_text', return_value='ID=ubuntu\nVERSION_ID="26.04"\n'), \
@@ -83,16 +90,90 @@ class RustBackport(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'must run as non-root'):
                 M.build(None, self.lock)
 
-    def test_strict_receipt_requires_real_suite_and_official_regression(self):
+    def contract_fixture(self):
+        patterns = list(M.UBUNTU_EXCLUSIONS)
+        patterns[11] += ' stdout'
+        args = '-- --skip ' + ' \\\n--skip '.join(patterns)
+        return 'override_dh_auto_test:\n TEST_NO_FAIL_FAST="' + args + '"\n test||true\n' + \
+               'override_dh_auto_install:\n'
+
+    def contract(self):
+        rules = self.root / 'rules'
+        rules.write_text(self.contract_fixture(), encoding='utf-8')
+        with mock.patch.object(M, 'digest', return_value=M.RULES_SHA256):
+            return M.ubuntu_test_contract(rules)
+
+    def test_original_contract_requires_pinned_rules_and_exact17_patterns(self):
+        rules = self.root / 'rules'
+        rules.write_text(self.contract_fixture(), encoding='utf-8')
+        with self.assertRaises(ValueError): M.ubuntu_test_contract(rules)
+        contract = self.contract()
+        self.assertEqual(17, len(contract['excludedPatterns']))
+        self.assertEqual(['stdout'], contract['removedLegacyPositionalFilters'])
+        self.assertTrue(contract['removedFailureSwallowing'])
+        self.assertFalse(any(pattern in name for pattern in contract['excludedPatterns']
+                             for name in M.ID_TESTS))
+
+    def test_contract_rejects_new_missing_reordered_id_or_extra_filters(self):
+        original = self.contract_fixture()
+        first, second = M.UBUNTU_EXCLUSIONS[:2]
+        for bad in [original.replace(first, 'test_id::'), original.replace('--skip ' + first, ''),
+                    original.replace(first, 'marker').replace(second, first).replace('marker', second),
+                    original.replace(' stdout', ''), original.replace(' stdout', ' stdout --ignored'),
+                    original.replace('test||true', 'test')]:
+            rules = self.root / 'rules'
+            rules.write_text(bad, encoding='utf-8')
+            with mock.patch.object(M, 'digest', return_value=M.RULES_SHA256):
+                with self.assertRaises(ValueError): M.ubuntu_test_contract(rules)
+
+    def test_command_contains_only_owner_exclusions_without_positional_filter_or_swallow(self):
+        contract = self.contract()
+        tokens = shlex.split(M.ubuntu_test_arguments(contract))
+        self.assertEqual(['--no-fail-fast', '--'], tokens[:2])
+        self.assertEqual(17, tokens.count('--skip'))
+        self.assertEqual(M.UBUNTU_EXCLUSIONS, tokens[3::2])
+        self.assertNotIn('stdout', tokens)
+        self.assertNotIn('||true', tokens)
+        altered = copy.deepcopy(contract)
+        altered['excludedPatterns'].append('test_id')
+        with self.assertRaises(ValueError): M.ubuntu_test_arguments(altered)
+
+    def owner_log(self, main_ignored=83):
+        targets = ['Running unittests src/lib.rs', 'Running unittests src/bin/coreutils.rs',
+                   'Running tests/test_localization_and_colors.rs', 'Running tests/test_util_name.rs',
+                   'Running tests/test_uudoc.rs', 'Running tests/tests.rs', 'Doc-tests coreutils']
+        ignored = [0, 0, 0, 2, 0, main_ignored, 0]
+        lines = [line for target, count in zip(targets, ignored) for line in
+                 [target, f'test result: ok. 30 passed; 0 failed; {count} ignored; 0 measured; 0 filtered out;']]
+        lines += ['test ' + name + ' ... ok' for name in M.ID_TESTS]
+        lines += ['test test_logname::test_normal ... ok', 'test test_logname::test_output_format ... ok']
+        return '\n'.join(lines) + '\n'
+
+    def test_strict_receipt_requires_all_targets_and_all19_id_cases(self):
         file = self.root / 'strict.log'
-        good = ('test test_id::test_id_groups_ordering ... ok\n'
-                'test result: ok. 12 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out;\n')
+        contract = self.contract()
+        good = self.owner_log()
         file.write_text(good, encoding='utf-8')
-        self.assertEqual('PASS', M.strict_test_receipt(file)['status'])
+        self.assertEqual('PASS', M.strict_test_receipt(file, contract, 'true')['status'])
         for bad in [good.replace('groups_ordering', 'unrelated'),
+                    good.replace('test_id::test_id_real ... ok', 'test_id::test_id_real ... ignored'),
+                    good.replace('Running tests/test_util_name.rs', 'unrelated target'),
                     good.replace('0 failed', '1 failed'), good + 'test result: FAILED\n', '']:
             file.write_text(bad, encoding='utf-8')
-            with self.assertRaises(ValueError): M.strict_test_receipt(file)
+            with self.assertRaises(ValueError): M.strict_test_receipt(file, contract, 'true')
+
+    def test_metadata_preserves_old_fail_85ignored_and_owner_ci_coverage_limits(self):
+        file = self.root / 'strict.log'
+        file.write_text(self.owner_log(main_ignored=80), encoding='utf-8')
+        receipt = M.strict_test_receipt(file, self.contract(), 'true')
+        self.assertEqual(17, len(receipt['owningTestContract']['excludedPatterns']))
+        self.assertEqual(82, receipt['observedTotals']['upstreamIgnored'])
+        self.assertEqual(85, receipt['historicalUnfilteredAttempt']['upstreamIgnoredActual'])
+        self.assertEqual('FAIL', receipt['historicalUnfilteredAttempt']['status'])
+        self.assertEqual(5, receipt['historicalUnfilteredAttempt']['failed'])
+        self.assertEqual(19, len(receipt['idCasesReportedOk']))
+        self.assertTrue(receipt['lognameCoverage']['ciMarkerForwarded'])
+        self.assertFalse(receipt['lognameCoverage']['genuineLoginFixtureValidated'])
 
     def test_native_command_failure_cannot_be_swallowed(self):
         with self.assertRaises(ValueError):

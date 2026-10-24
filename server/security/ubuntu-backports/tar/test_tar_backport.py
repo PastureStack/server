@@ -140,10 +140,19 @@ class TarBackport(unittest.TestCase):
             with self.assertRaises(ValueError): MODULE.test_receipt(self.root)
 
     def test_source_prerequisite_hash_mismatch_and_missing_smoke_binary_fail(self):
-        file = self.root / 'input'; file.write_bytes(b'original')
+        file = self.root / 'input'; file.write_bytes(b'original\nsource\n')
         expected = {'input': MODULE.digest(file)}; MODULE.verify_sources(self.root, expected)
+        # Source hashes bind exact archive/patch bytes. A Windows preparation
+        # must not pin CRLF copies or normalize a runtime mismatch away.
+        file.write_bytes(b'original\r\nsource\r\n')
+        with self.assertRaisesRegex(ValueError, 'SHA-256 mismatch: input'):
+            MODULE.verify_sources(self.root, expected)
         file.write_bytes(b'tamper')
-        with self.assertRaises(ValueError): MODULE.verify_sources(self.root, expected)
+        with self.assertRaisesRegex(ValueError, 'SHA-256 mismatch: input'):
+            MODULE.verify_sources(self.root, expected)
+        file.unlink()
+        with self.assertRaisesRegex(ValueError, 'Missing source/prerequisite file: input'):
+            MODULE.verify_sources(self.root, expected)
         with self.assertRaises(ValueError): MODULE.tar_smoke(self.root / 'missing', self.root, {}, self.root / 'log')
 
     def test_output_must_not_overlap_build_or_download_cache(self):

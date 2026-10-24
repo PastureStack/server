@@ -75,21 +75,21 @@
   "baselineSha256": {
     "gnu/tempname.c": "8701d79ced94ba0bff60607d36583d23140cdf1e18e9f8d883a23508275f471c",
     "gnu/tempname.h": "45167ab628da8c3f21050680d5f09fc3fcd7acffff7487a031cfe0fb36f4d870",
-    "gnu/Makefile.am": "804b9f9c7c37cd8788dde59d0ec1156d7700094d7a72415e28e8da43dc6634bd",
-    "src/common.h": "061713d04658467c595b41e4b81b277ad067ab352528a4e7832c1f1af8eaa143",
+    "gnu/Makefile.am": "1833f9bcec8bc9652c8de73a526c9a327170976f6132f7e236860e1599a6a3dd",
+    "src/common.h": "69f61666b788e52981ccc1e9428c2c95b0cb4f2c6335a687bc1312cd5e783012",
     "lib/Makefile.am": "4bed9bf65e2eb453cdc0dade993b9e630f71f2015240d9074742f1f60db11aef",
-    "src/incremen.c": "c49c6d8a6fbe0e4554c10601041b7c21a2493ba43d99a2332bb00f2c5d240b92"
+    "src/incremen.c": "7c7ad665e4a2bcf40c93c57721d9ddecb48d881060d51dc35174fa46d79c6a68"
   },
   "patchedSha256": {
-    "THANKS": "e8afcec1d516a7207e6f9c9ade75fba8f38643d9e712ec809dbddf31a15782bd",
-    "lib/Makefile.am": "271a1ed923f3d1c87ba6f98dd7004e3f0dc3dc51b7101806e781de7febbd48fd",
-    "lib/mkdtempat.c": "fa4427fb6720e0191041d839f692e4c61f9227f03be398d63971f7cc1d873d1e",
-    "lib/mkdtempat.h": "df1e68ae16ae567bcf123545d6f2c9744f426207c0e65525031efb8f63ecb1a5",
-    "src/incremen.c": "6b1e53b66c6edaaeec05b5cdb15531902d762431926caae9aff8bf4c54e23be9",
-    "tests/Makefile.am": "3353193af4de5e968938d1087cd607c36282697e4ae1aa2d937d71806e65e647",
-    "tests/rename08.at": "3c311ce3ff783d4f49fd1b4e91b2d2e8fcc9018f38e7fe2e7f691be802e8ae1b",
-    "tests/rename09.at": "c4774038a66286db7f7d6ff39b41113d388efeecbb4c05ae2b4ab75ee48a5dde",
-    "tests/testsuite.at": "bc298c2f1339e7a5eb262e1a163279e9a0b79243a1685bc5f716ec4c26da49e8"
+    "THANKS": "9b195c212a0940e19dbb2adb0d9bdff5df0e91a5c740d06f64dd139de753ee4d",
+    "lib/Makefile.am": "0e652fa024b047f6281aac30602d710e55951e643de3fef34c6af5ce650b75ff",
+    "lib/mkdtempat.c": "d55595c1c5d64f1f4820efd46bdc0813927833b27581ee8ece98af1703d17973",
+    "lib/mkdtempat.h": "e660013c2fc5d483f637d33fdfb60c7c10c52fd6407623daf56a00d5deacf4e3",
+    "src/incremen.c": "03984c0d771b5b145a2e1515ef063ef2666f5a19050ed9af8e76954d8670b324",
+    "tests/Makefile.am": "e88d326b839d64b54a99e913a3ef73cc45d32202b87e3e0efc9776d6e06ee849",
+    "tests/rename08.at": "da3b6e0ed0ea29d1e58017df21393de2b443908b510725afe20ffbaaef0980b3",
+    "tests/rename09.at": "a3924a039f6f158a1b7075bcc78dea25eede1e03483ef9af0601926abdba28e0",
+    "tests/testsuite.at": "36e033c4bc75260f790c3bcaa717d8a6aa422e7d875bff1f41786b325f493d99"
   },
   "runtimePackages": [
     "tar"

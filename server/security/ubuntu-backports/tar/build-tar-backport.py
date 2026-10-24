@@ -114,8 +114,12 @@ def validate_inputs(lock, directory):
 
 
 def verify_sources(source, expected):
-    require(all((source / n).is_file() and digest(source / n) == sha for n, sha in expected.items()),
-            'Source/prerequisite closure does not match the reviewed Ubuntu backport')
+    for name, sha in expected.items():
+        file = source / name
+        require(file.is_file(), 'Missing source/prerequisite file: ' + name)
+        actual = digest(file)
+        require(actual == sha, 'Source/prerequisite SHA-256 mismatch: ' + name
+                + ' (expected=' + sha + ', actual=' + actual + ')')
 
 
 def verify_series(original, updated):

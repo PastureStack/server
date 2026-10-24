@@ -3,8 +3,8 @@
 
 Uses the unchanged Ubuntu 0.10 packaging and vendored crates; backports only the
 official id fix. No runtime package installation or alternatives changes occur.
-The original non-gating test recipe is supplemented by a strict, unfiltered
-owning-suite run and real/effective-GID tests of the extracted package.
+The original Ubuntu exclusions remain; its accidental positional filter and
+failure swallowing are removed. Extracted-package GID tests remain mandatory.
 """
 import argparse
 import datetime
@@ -14,6 +14,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -25,6 +26,9 @@ LOCK_FILE = HERE / 'rust-coreutils.lock.json'
 VERSION = '0.10.0-1ubuntu2~26.04.1'
 COMMIT = 'ff382f527994b8a021ec0a086dec4c5cafa34f2a'
 PATHS = ['src/uu/id/src/id.rs', 'tests/by-util/test_id.rs']
+RULES_SHA256 = '06c5fd183a4a1146748810e3cce859ba849643eeee244cc80cbb3315aeedb5e7'
+UBUNTU_EXCLUSIONS = ["test_dd::test_stdin_stdout_skip_w_multiplier","test_env::test_env_arg_ignore_signal_valid_signals","test_env::test_env_french","test_env::test_simulation_of_terminal_for_stdin_only","test_env::test_simulation_of_terminal_for_stdout_only","test_env::test_simulation_of_terminal_size_information","test_env::test_simulation_of_terminal_true","test_chmod::test_chmod_colored_output","test_nohup::test_nohup_stderr_to_stdout","test_nohup::test_nohup_with_pseudo_terminal_emulation_on_stdin_stdout_stderr_get_replaced","test_tail::test_following_with_pid","test_tail::test_follow_when_files_are_pointing_to_same_relative_file_and_file_stays_same_size","test_touch::test_touch_changes_time_of_file_in_stdout","test_error_messages_french_translation","test_french_colored_error_messages","test_help_messages_french_translation","util_invalid_name_invalid_command"]
+ID_TESTS = ["test_id::test_id_default_format","test_id::test_id_digital_username","test_id::test_id_groups_ordering","test_id::test_id_ignore","test_id::test_id_multiple_users","test_id::test_id_multiple_users_non_existing","test_id::test_id_name","test_id::test_id_name_or_real_with_default_format","test_id::test_id_no_specified_user","test_id::test_id_no_specified_user_posixly","test_id::test_id_pretty_print_password_record","test_id::test_id_pretty_print_suid_binary","test_id::test_id_real","test_id::test_id_single_user","test_id::test_id_single_user_non_existing","test_id::test_id_zero","test_id::test_id_zero_with_default_format","test_id::test_id_zero_with_name_or_real","test_id::test_invalid_arg"]
 
 
 def require(condition, message):
@@ -144,15 +148,55 @@ def verify_sources(source, expected):
                 for name, sha in expected.items()), 'Unexpected source/packaging bytes')
 
 
+def ubuntu_test_contract(rules):
+    require(digest(rules) == RULES_SHA256, 'Ubuntu owning-test rules digest changed')
+    text = rules.read_text(encoding='utf-8')
+    block = re.search(r'(?ms)^override_dh_auto_test:\n(.*?)^override_dh_auto_install:', text)
+    require(block and 'test||true' in block[1], 'Original Ubuntu test recipe boundary changed')
+    value = re.findall(r'TEST_NO_FAIL_FAST="([^"]+)"', block[1])
+    require(len(value) == 1, 'Ambiguous Ubuntu test arguments')
+    tokens = shlex.split(value[0].replace('\\\n', ''))
+    require(tokens and tokens.pop(0) == '--', 'Unexpected original Cargo test separator')
+    exclusions, positional = [], []
+    while tokens:
+        token = tokens.pop(0)
+        if token == '--skip':
+            require(tokens, 'Missing Ubuntu exclusion pattern')
+            exclusions.append(tokens.pop(0))
+        else:
+            positional.append(token)
+    require(exclusions == UBUNTU_EXCLUSIONS and positional == ['stdout'],
+            'Original Ubuntu 17 exclusions/legacy positional filter changed')
+    require(not any(pattern in name for pattern in exclusions for name in ID_TESTS),
+            'Owning test configuration must not exclude an id case')
+    return {'rulesSha256': RULES_SHA256, 'excludedPatterns': exclusions,
+            'removedLegacyPositionalFilters': positional, 'removedFailureSwallowing': True,
+            'newExclusionPatterns': []}
+
+
+def ubuntu_test_arguments(contract):
+    require(contract['rulesSha256'] == RULES_SHA256
+            and contract['excludedPatterns'] == UBUNTU_EXCLUSIONS,
+            'Unapproved owning-test contract')
+    # Build from the approved constants after comparing the parsed pinned recipe.
+    return shlex.join(['--no-fail-fast', '--'] +
+                      [value for pattern in UBUNTU_EXCLUSIONS for value in ['--skip', pattern]])
+
+
 def build_environment(lock, jobs, home):
     # Do not inherit test suppressors, Cargo profiles, compiler flags or registries.
-    return {'PATH': '/usr/sbin:/usr/bin:/sbin:/bin', 'HOME': str(home),
+    environment = {'PATH': '/usr/sbin:/usr/bin:/sbin:/bin', 'HOME': str(home),
             'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC', 'TERM': 'dumb',
             'SOURCE_DATE_EPOCH': str(lock['sourceDateEpoch']),
             'DEB_BUILD_OPTIONS': 'parallel=' + str(jobs), 'DEB_BUILD_PROFILES': '',
             'DEB_BUILD_MAINT_OPTIONS': '', 'DPKG_COLORS': 'never',
             'CARGO_NET_OFFLINE': 'true', 'CARGO_TERM_COLOR': 'never',
             'CARGO_BUILD_JOBS': str(jobs)}
+    # Only the real disposable GitHub builder's explicit CI marker is forwarded.
+    # Test filters, compiler overrides and arbitrary CI values are not inherited.
+    if os.environ.get('CI') == 'true':
+        environment['CI'] = 'true'
+    return environment
 
 
 def capture(command, work, env):
@@ -178,17 +222,47 @@ def packaging_snapshot(source):
             and 'rust-vendor' not in p.relative_to(source / 'debian').parts}
 
 
-def strict_test_receipt(log):
+def strict_test_receipt(log, contract, ci_marker):
+    require(contract['rulesSha256'] == RULES_SHA256
+            and contract['excludedPatterns'] == UBUNTU_EXCLUSIONS, 'Unapproved test contract')
     text = log.read_text(encoding='utf-8', errors='replace')
-    results = re.findall(r'test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored;', text)
-    require(results and all(int(failed) == 0 for _, failed, _ in results)
-            and sum(int(passed) for passed, _, _ in results) > 0
-            and re.search(r'test (?:test_id::)?test_id_groups_ordering \.\.\. ok', text),
-            'Missing strict owning-suite/id regression PASS receipt')
-    require('test result: FAILED' not in text, 'Owning test failure in log')
-    return {'status': 'PASS', 'addedSkips': 0, 'cargoResults': [
-        {'passed': int(p), 'failed': int(f), 'upstreamIgnored': int(i)} for p, f, i in results],
-        'officialIdRegression': 'PASS', 'sha256': digest(log)}
+    targets = ['Running unittests src/lib.rs', 'Running unittests src/bin/coreutils.rs',
+               'Running tests/test_localization_and_colors.rs', 'Running tests/test_util_name.rs',
+               'Running tests/test_uudoc.rs', 'Running tests/tests.rs', 'Doc-tests coreutils']
+    require(all(target in text for target in targets), 'An owning Cargo target is missing')
+    results = re.findall(r'^test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored; '
+                         r'(\d+) measured; (\d+) filtered out;', text, re.M)
+    require(len(results) == len(targets) and all(status == 'ok' and int(failed) == 0
+            for status, _, failed, _, _, _ in results) and 'test result: FAILED' not in text,
+            'Owning-suite failure or incomplete target receipts')
+    ids = re.findall(r'^test (test_id::\S+) \.\.\. (ok|FAILED|ignored)(?:[^\n]*)$', text, re.M)
+    require(len(ids) == len(ID_TESTS) and sorted(name for name, _ in ids) == ID_TESTS
+            and all(status == 'ok' for _, status in ids), 'All19 id cases must report ok')
+    logname = ['test_logname::test_normal', 'test_logname::test_output_format']
+    require(all(re.search(r'^test ' + re.escape(name) + r' \.\.\. ok$', text, re.M)
+                for name in logname), 'Logname owner-CI outcomes are missing')
+    parsed = [{'passed': int(p), 'failed': int(f), 'upstreamIgnored': int(i),
+               'measured': int(m), 'filteredOut': int(sk)}
+              for _, p, f, i, m, sk in results]
+    return {'status': 'PASS', 'scope': 'Pinned Ubuntu owning-test contract; not all-functional coverage',
+            'owningTestContract': contract, 'cargoResults': parsed,
+            'observedTotals': {key: sum(row[key] for row in parsed) for key in parsed[0]},
+            'idCasesReportedOk': [name for name, _ in ids], 'officialIdRegression': 'PASS',
+            'lognameCoverage': {'tests': logname, 'ciMarkerForwarded': ci_marker == 'true',
+                'formalOutcome': 'reported ok', 'genuineLoginFixtureValidated': False,
+                'limitation': 'The upstream CI guard may return on no login name before login assertions; '
+                              'these outcomes do not establish successful login-name retrieval.'},
+            'historicalUnfilteredAttempt': {
+                'sourceSha': 'bc129a88a5ec8c4e64b3ed89bfd97c7e82362d7c',
+                'runId': 40116776455, 'jobId': 120939862366, 'status': 'FAIL',
+                'failed': 5, 'idCasesReportedOk': 19, 'upstreamIgnoredActual': 85,
+                'artifactId': 12570471831,
+                'artifactSha256': 'd219e2d964ba324bc7a6e27a3b0dd900d566a8b0e428f3ad87ec0855e0936238',
+                'strictLogSha256': '653a3768ee166f1c221b97886392a7c02178bd2c9e983228de7d4a35ee70925b',
+                'failedTests': ['test_help_messages_french_translation',
+                    'test_error_messages_french_translation', 'test_french_colored_error_messages',
+                    'test_logname::test_normal', 'test_logname::test_output_format']},
+            'sha256': digest(log)}
 
 
 def credential_prefix(env, work):
@@ -271,6 +345,7 @@ def build(args, lock):
     run(['dpkg-source', '--extract', str(inputs / ('rust-coreutils_' + VERSION + '.dsc')),
          str(source)], work, env, log)
     verify_sources(source, lock['baselineSha256'])
+    test_contract = ubuntu_test_contract(source / 'debian/rules')
     packaging = packaging_snapshot(source)
     item = lock['patches'][0]
     patch = inputs / item['name']
@@ -292,7 +367,7 @@ def build(args, lock):
     strict_log = work / 'strict-tests.log'
     run(['make', '-f', str(HERE / 'native-tests.mk'), 'pasturestack-strict-test'],
         source, env, strict_log)
-    tests = strict_test_receipt(strict_log)
+    tests = strict_test_receipt(strict_log, test_contract, env.get('CI'))
     verify_sources(source, packaging)
     verify_sources(source, lock['patchedSha256'])
     debs = list(work.glob('rust-coreutils_' + lock['customVersion'] + '_amd64.deb'))
@@ -343,7 +418,9 @@ def build(args, lock):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--validate-lock', action='store_true')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--validate-lock', action='store_true')
+    mode.add_argument('--print-ubuntu-test-arguments', action='store_true')
     parser.add_argument('--output-dir', type=Path)
     parser.add_argument('--work-dir', type=Path)
     parser.add_argument('--cache-dir', type=Path)
@@ -352,6 +429,9 @@ def main():
     try:
         lock = load_lock(LOCK_FILE)
         require(1 <= args.jobs <= 64, 'Invalid job count')
+        if args.print_ubuntu_test_arguments:
+            print(ubuntu_test_arguments(ubuntu_test_contract(Path.cwd() / 'debian/rules')))
+            return
         if args.validate_lock:
             print('Rust-coreutils source/patch lock: PASS')
             return
