@@ -1,0 +1,359 @@
+{
+  "artifact": {
+    "bytes": 12539172,
+    "name": "ubuntu-security-backports-v0.1.0-59f4ec1f31e510361c4635023c08fcf2a2b2133c-40138193717"
+  },
+  "identity": {
+    "artifactId": 12577573510,
+    "artifactZipSha256": "635c5cddec48776278061c47084062518cd6f1c173f862f9b9b49dbe29441f72",
+    "digest": "sha256:2742a3d429e4e14bc587f6dedc51ded4246cf90bbaedcd86c67d0885e32a6f2a",
+    "image": "ghcr.io/pasturestack/ubuntu-security-backports",
+    "producerCommit": "59f4ec1f31e510361c4635023c08fcf2a2b2133c",
+    "runId": 40138193717,
+    "sbomSha256": "6ae4fb736a8df63dc3db6dd74b753cf9008379f8414f05c7bd30ae7b2cafd470"
+  },
+  "officialSchemas": [
+    {
+      "name": "bom-1.6.schema.json",
+      "sha256": "3e92dddbc30cf7f6a02b80f0942b1a4cfd4fb1c26f1dfc4310afa9d613cafb93",
+      "url": "https://raw.githubusercontent.com/CycloneDX/specification/1.6/schema/bom-1.6.schema.json"
+    },
+    {
+      "name": "jsf-0.82.schema.json",
+      "sha256": "8bae002c25e723db7ee1f26afde680ae1a2b1a8f6b4b4b0fd65dc3becb090aae",
+      "url": "https://raw.githubusercontent.com/CycloneDX/specification/1.6/schema/jsf-0.82.schema.json"
+    },
+    {
+      "name": "spdx.schema.json",
+      "sha256": "baa9d3bd1ed57b6751b0887edead6b5063ff53ff7429cf85d476c6c94af0166e",
+      "url": "https://raw.githubusercontent.com/CycloneDX/specification/1.6/schema/spdx.schema.json"
+    }
+  ],
+  "outMetadataSha256": {
+    "SHA256SUMS": "cc79a4b326ce57d2885cb2df99a17374359b3c6f1f2fd8830c7a9a26c9215b97",
+    "manifest.json": "f48ab8ad0ad2a79cae5049a7225a221b4a350f3aaea9f3602184babf5ed74c2e",
+    "openvex.json": "111f1e0f3c42649144c121b4544d49d2ee1399666eb7c31e0393440d6e387799",
+    "qualification.json": "07747eca9f3b7c42fed92d854e427ace81305c90b5ceb37318f07e1e577b6cf9",
+    "source-inputs.lock.json": "9ce2862b2dbe9ea9bd806f561a66df276816e9a4d26233aa46de4f03e1509cd2"
+  },
+  "producer": {
+    "checksJobId": 121004122243,
+    "publishJobId": 121004225140,
+    "steps": [
+      {
+        "conclusion": "success",
+        "name": "Set up job",
+        "number": 1,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Check out the exact protected publisher source",
+        "number": 2,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Require all native package inputs before building",
+        "number": 3,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Authenticate the existing Server owner package namespace",
+        "number": 4,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Refuse an existing tag or an ambiguous registry response",
+        "number": 5,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Download and bind the reviewed native artifacts",
+        "number": 6,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Check out the released Server 551 PCRE2 producer",
+        "number": 7,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Verify released PCRE2 source and build the current static installer",
+        "number": 8,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Qualify package bytes, native receipts, payload metadata, SBOM and exact-package VEX",
+        "number": 9,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Require native exact-package glibc OpenVEX semantics",
+        "number": 10,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Require real installation in both isolated Ubuntu provider fixtures",
+        "number": 11,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Publish the new build-only OCI data artifact",
+        "number": 12,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Attest image provenance with the Server workflow identity",
+        "number": 13,
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "name": "Attest payload SBOM",
+        "number": 14,
+        "status": "completed"
+      },
+      {
+        "conclusion": "skipped",
+        "name": "Require public anonymous pull and exact OCI data readback",
+        "number": 15,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Clear registry credentials",
+        "number": 16,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Retain exact qualified package inputs and publication evidence",
+        "number": 17,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Post Check out the released Server 551 PCRE2 producer",
+        "number": 33,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Post Check out the exact protected publisher source",
+        "number": 34,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Complete job",
+        "number": 35,
+        "status": "completed"
+      }
+    ],
+    "workflow": ".github/workflows/publish-ubuntu-security-backports.yml"
+  },
+  "publicationState": "OCI pushed and provenance attested; original run failed only at SBOM attestation; completion/readback not yet accepted.",
+  "repository": "PastureStack/server",
+  "sbomDocument": {
+    "bomFormat": "CycloneDX",
+    "components": [
+      {
+        "bom-ref": "pkg:deb/ubuntu/libpcre2-8-0@10.46-1build1%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "b15853575ae72e0cfe19358a5642d1fa54a52bad7c725253c229ed85211b6a1f"
+          }
+        ],
+        "name": "libpcre2-8-0",
+        "purl": "pkg:deb/ubuntu/libpcre2-8-0@10.46-1build1%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "type": "library",
+        "version": "10.46-1build1+pasturestack.1"
+      },
+      {
+        "bom-ref": "pkg:deb/ubuntu/libpcre2-posix3@10.46-1build1%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "f90ae28d8b8fb3defc8636cb9de7770de75735c0d73241dc81e705fc8f73a7cb"
+          }
+        ],
+        "name": "libpcre2-posix3",
+        "purl": "pkg:deb/ubuntu/libpcre2-posix3@10.46-1build1%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "type": "library",
+        "version": "10.46-1build1+pasturestack.1"
+      },
+      {
+        "bom-ref": "pkg:deb/ubuntu/libc6@2.43-2ubuntu2.4%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "4119ebc8610d17694db4100e6838a693f8927189523f4b4be32be5aa4a82f497"
+          }
+        ],
+        "name": "libc6",
+        "purl": "pkg:deb/ubuntu/libc6@2.43-2ubuntu2.4%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "type": "library",
+        "version": "2.43-2ubuntu2.4+pasturestack.1"
+      },
+      {
+        "bom-ref": "pkg:deb/ubuntu/libc-bin@2.43-2ubuntu2.4%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "6e8ea949edd167a48e4f2ded82f4117e4dca89fc7c8060062b614bbb682b9417"
+          }
+        ],
+        "name": "libc-bin",
+        "purl": "pkg:deb/ubuntu/libc-bin@2.43-2ubuntu2.4%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "type": "library",
+        "version": "2.43-2ubuntu2.4+pasturestack.1"
+      },
+      {
+        "bom-ref": "pkg:deb/ubuntu/libc-gconv-modules-extra@2.43-2ubuntu2.4%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "22cb6a83267d6e873538983d1eafda6cac9240c5c18ff61e2652fd6ae982e374"
+          }
+        ],
+        "name": "libc-gconv-modules-extra",
+        "purl": "pkg:deb/ubuntu/libc-gconv-modules-extra@2.43-2ubuntu2.4%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "type": "library",
+        "version": "2.43-2ubuntu2.4+pasturestack.1"
+      },
+      {
+        "bom-ref": "pkg:deb/ubuntu/rust-coreutils@0.10.0-1ubuntu2~26.04.1%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "f90cdece3ffa01acc9153e3741725febb696e02db8ccf6c0d0c4f98ff93ec609"
+          }
+        ],
+        "name": "rust-coreutils",
+        "purl": "pkg:deb/ubuntu/rust-coreutils@0.10.0-1ubuntu2~26.04.1%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "type": "library",
+        "version": "0.10.0-1ubuntu2~26.04.1+pasturestack.1"
+      },
+      {
+        "bom-ref": "pkg:deb/ubuntu/jq@1.8.2-0pasturestack1~26.04.1?arch=amd64&distro=ubuntu-26.04",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "88dce8936c13daa0195783836e5b8658d25545068b59a8e8232ae8db442dcea9"
+          }
+        ],
+        "name": "jq",
+        "purl": "pkg:deb/ubuntu/jq@1.8.2-0pasturestack1~26.04.1?arch=amd64&distro=ubuntu-26.04",
+        "type": "library",
+        "version": "1.8.2-0pasturestack1~26.04.1"
+      },
+      {
+        "bom-ref": "pkg:deb/ubuntu/libjq1@1.8.2-0pasturestack1~26.04.1?arch=amd64&distro=ubuntu-26.04",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "e1b61456c00ae0508406163000d1a816de0c64e4db9f268a9667f31c4315f1df"
+          }
+        ],
+        "name": "libjq1",
+        "purl": "pkg:deb/ubuntu/libjq1@1.8.2-0pasturestack1~26.04.1?arch=amd64&distro=ubuntu-26.04",
+        "type": "library",
+        "version": "1.8.2-0pasturestack1~26.04.1"
+      },
+      {
+        "bom-ref": "pkg:deb/ubuntu/libp11-kit0@0.26.2-2%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "b4d244aed0607da60c6c2da716fae1d66edc4a59449d5b598df613b84069702d"
+          }
+        ],
+        "name": "libp11-kit0",
+        "purl": "pkg:deb/ubuntu/libp11-kit0@0.26.2-2%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "type": "library",
+        "version": "0.26.2-2+pasturestack.1"
+      },
+      {
+        "bom-ref": "pkg:deb/ubuntu/p11-kit@0.26.2-2%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "d816fde1ff781f00facca43d37684085c7286d7056ad990e40d3d162e6f511d6"
+          }
+        ],
+        "name": "p11-kit",
+        "purl": "pkg:deb/ubuntu/p11-kit@0.26.2-2%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "type": "library",
+        "version": "0.26.2-2+pasturestack.1"
+      },
+      {
+        "bom-ref": "pkg:deb/ubuntu/p11-kit-modules@0.26.2-2%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "1429e81a3a7ba4b148e0966af4abc441dcfd2179e41efd8fb1c8ad7016e94f4f"
+          }
+        ],
+        "name": "p11-kit-modules",
+        "purl": "pkg:deb/ubuntu/p11-kit-modules@0.26.2-2%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04",
+        "type": "library",
+        "version": "0.26.2-2+pasturestack.1"
+      },
+      {
+        "bom-ref": "pkg:deb/ubuntu/libxrender1@0.9.12-1build1%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04&epoch=1",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "49fa0140dcc46481271fb203c2b4bf7a4c9b588bd849f498856c75a4926c212c"
+          }
+        ],
+        "name": "libxrender1",
+        "purl": "pkg:deb/ubuntu/libxrender1@0.9.12-1build1%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04&epoch=1",
+        "type": "library",
+        "version": "1:0.9.12-1build1+pasturestack.1"
+      },
+      {
+        "bom-ref": "pkg:generic/pasturestack/backport-installer@0.1.0",
+        "hashes": [
+          {
+            "alg": "SHA-256",
+            "content": "ca5202850ec65c6bd58b9fd307405c611bcccb7808f931324e70c9adbe350fe9"
+          }
+        ],
+        "name": "install-existing-backports",
+        "properties": [
+          {
+            "name": "pasturestack:go-toolchain",
+            "value": "go1.27.3"
+          }
+        ],
+        "purl": "pkg:generic/pasturestack/backport-installer@0.1.0",
+        "type": "application",
+        "version": "0.1.0"
+      }
+    ],
+    "metadata": {
+      "component": {
+        "name": "ubuntu-security-backports",
+        "type": "data",
+        "version": "0.1.0"
+      }
+    },
+    "specVersion": "1.6",
+    "version": 1
+  },
+  "schemaVersion": 1,
+  "scope": "completion-only-existing-v0.1.0"
+}

@@ -1,0 +1,134 @@
+name: Complete Existing Ubuntu Backports v0.1.0 Attestation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/complete-ubuntu-security-backports-v0.1.0.yml'
+      - '.github/workflows/publish-ubuntu-security-backports.yml'
+      - 'server/security/ubuntu-backports/bundle/complete-published-v0.1.0.py'
+      - 'server/security/ubuntu-backports/bundle/published-v0.1.0-candidate.lock.json'
+      - 'server/security/ubuntu-backports/bundle/test_complete_published_v010.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ubuntu-security-backports-v0.1.0-completion
+  cancel-in-progress: false
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check the single-candidate completion boundaries
+        run: python3 -B server/security/ubuntu-backports/bundle/test_complete_published_v010.py
+
+  complete:
+    needs: checks
+    if: github.event_name == 'workflow_dispatch' && github.repository == 'PastureStack/server' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+      packages: write
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    env:
+      IMAGE: ghcr.io/pasturestack/ubuntu-security-backports
+      DIGEST: sha256:2742a3d429e4e14bc587f6dedc51ded4246cf90bbaedcd86c67d0885e32a6f2a
+      PRODUCER: 59f4ec1f31e510361c4635023c08fcf2a2b2133c
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Bind original failed run and exact immutable producer artifact
+        id: original
+        run: |
+          set -Eeuo pipefail
+          helper=server/security/ubuntu-backports/bundle/complete-published-v0.1.0.py
+          work="$(python3 -B "$helper" --print-work-root)"
+          printf 'work=%s\n' "$work" >>"$GITHUB_OUTPUT"
+          python3 -B "$helper" --prepare
+
+      - name: Authenticate only for attestation and original provenance verification
+        run: printf '%s' "$GH_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+
+      - name: Verify existing OCI provenance from the original protected producer
+        env:
+          WORK: ${{ steps.original.outputs.work }}
+        run: |
+          set -Eeuo pipefail
+          gh attestation verify "oci://$IMAGE@$DIGEST" --repo PastureStack/server \
+            --signer-workflow PastureStack/server/.github/workflows/publish-ubuntu-security-backports.yml \
+            --source-ref refs/heads/main --source-digest "$PRODUCER" --signer-digest "$PRODUCER" \
+            --predicate-type https://slsa.dev/provenance/v1 --format json >"$WORK/publisher/original-provenance-verified.json"
+          python3 -B server/security/ubuntu-backports/bundle/complete-published-v0.1.0.py --check-provenance
+
+      - name: Pull exact digest anonymously and retain original output bytes
+        env:
+          WORK: ${{ steps.original.outputs.work }}
+        run: |
+          set -Eeuo pipefail
+          mkdir "$WORK/anonymous-docker" "$WORK/readback"
+          printf '{"auths":{}}\n' >"$WORK/anonymous-docker/config.json"
+          docker --config "$WORK/anonymous-docker" pull "$IMAGE@$DIGEST"
+          container="$(docker create --entrypoint /unused "$IMAGE@$DIGEST")"
+          trap 'docker rm "$container" >/dev/null' EXIT
+          docker cp "$container:/out" "$WORK/readback/out"
+          docker cp "$container:/bundle/install-existing-backports" "$WORK/readback/bundle-installer"
+
+      - name: Validate unchanged original SBOM using pinned official CycloneDX schemas
+        env:
+          WORK: ${{ steps.original.outputs.work }}
+        run: |
+          set -Eeuo pipefail
+          python3 -m venv "$WORK/schema-venv"
+          "$WORK/schema-venv/bin/python" -m pip install --disable-pip-version-check --only-binary=:all: \
+            jsonschema==4.25.1 attrs==25.3.0 jsonschema-specifications==2025.4.1 \
+            referencing==0.36.2 rpds-py==0.27.1 typing-extensions==4.15.0
+          "$WORK/schema-venv/bin/python" -B server/security/ubuntu-backports/bundle/complete-published-v0.1.0.py --check-sbom
+
+      - name: Attest the original SBOM with explicit supported predicate mode
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-name: ghcr.io/pasturestack/ubuntu-security-backports
+          subject-digest: sha256:2742a3d429e4e14bc587f6dedc51ded4246cf90bbaedcd86c67d0885e32a6f2a
+          predicate-type: https://cyclonedx.org/bom
+          predicate-path: ${{ steps.original.outputs.work }}/readback/out/sbom.cdx.json
+          push-to-registry: true
+
+      - name: Verify exact new predicate and complete all original anonymous output checks
+        env:
+          WORK: ${{ steps.original.outputs.work }}
+        run: |
+          set -Eeuo pipefail
+          gh attestation verify "oci://$IMAGE@$DIGEST" --repo PastureStack/server \
+            --signer-workflow PastureStack/server/.github/workflows/complete-ubuntu-security-backports-v0.1.0.yml \
+            --source-ref refs/heads/main --source-digest "$GITHUB_SHA" --signer-digest "$GITHUB_SHA" \
+            --predicate-type https://cyclonedx.org/bom --format json >"$WORK/publisher/sbom-verified.json"
+          python3 -B server/security/ubuntu-backports/bundle/complete-published-v0.1.0.py --finish
+
+      - name: Clear registry credentials
+        if: always()
+        run: docker logout ghcr.io
+
+      - name: Retain completion evidence and original failure identity
+        if: always() && steps.original.outputs.work != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ubuntu-security-backports-v0.1.0-completion-${{ github.sha }}-${{ github.run_id }}
+          path: |
+            ${{ steps.original.outputs.work }}/publisher/*.json
+            ${{ steps.original.outputs.work }}/readback/out/sbom.cdx.json
+          if-no-files-found: warn
+          retention-days: 30
