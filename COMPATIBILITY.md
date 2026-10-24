@@ -1,15 +1,34 @@
 # Compatibility Contract
 
-## Server v1.6.550 prepared, not published
+<a id="server-v16550-pcre2-backports"></a>
 
-The source candidate preserves all component versions and operator settings from
-549 while rebuilding the two PCRE2 runtime packages with the upstream's official
-10.46 backports. Original Ubuntu packaging, SONAMEs, JIT and POSIX interfaces are
-retained. First-party package version `10.46-1build1+pasturestack.1` distinguishes
-this rebuild from Canonical binaries. Native upstream tests, exact package
-integrity, ELF hashes and actual consumers are mandatory gates. The published
-installation remains 549 until a new immutable image passes publication.
-See [the candidate note](docs/releases/server-1.6.550.md).
+## Server v1.6.550 published
+
+The immutable one-layer linux/amd64 identity is
+`ghcr.io/pasturestack/server:v1.6.550@sha256:03542028c3ce4be11d7ff87f96beddf5179c67caf9f0d28ad57043acf3cf52c5`,
+produced from `54deb98ee33ffab78437070d61179b602844182e` in
+[run 40116218929](https://github.com/PastureStack/server/actions/runs/40116218929).
+All 34 assets passed anonymous checksum readback; both image provenance and SBOM
+attestations bind the same digest and producer. The original job remains failed
+at its final release-note heading check. The exact signed image and original CI
+bytes completed publication without a rebuild or tag overwrite; see the immutable
+[completion receipt](https://github.com/PastureStack/server/releases/download/v1.6.550/publication-recovery.json).
+The permanent note preflight now validates the actual candidate document.
+
+The two PCRE2 packages use first-party `10.46-1build1+pasturestack.1`, built from
+original Ubuntu source/packaging with the complete supported upstream backport
+series. They are not issued by Canonical. Original native tests, package-owned
+bytes, SONAMEs, hardening, both library hashes and five actual consumers passed.
+The deployed image also passed MariaDB regex controls and one controlled restart,
+with the existing HostConfig, environment, three data volumes, socket bind,
+AppArmor and the 549 rollback container retained. Three Host/Agent states remain
+active. No production site, proxy or firewall was changed.
+
+The fresh runtime scan retains 51 raw occurrences, 38 exact VEX dispositions and
+13 pending LOW/MEDIUM occurrences across 10 CVEs. Eight PCRE2 CVEs are fixed;
+other artifacts and build-host SDKs are tracked separately. Browser component
+pins and its incomplete coverage are unchanged. This is scoped acceptance, not
+an all-feature or all-project zero-risk claim. See [the release note](docs/releases/server-1.6.550.md).
 
 <a id="server-v16549-web-console-sbom"></a>
 
