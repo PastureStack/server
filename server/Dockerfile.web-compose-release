@@ -536,6 +536,7 @@ RUN set -eux; \
 FROM ${UBUNTU_SECURITY_IMAGE} AS runtime_security_packages
 
 ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20261002T000000Z
+ARG PCRE2_PACKAGE_VERSION=10.46-1build1+pasturestack.1
 ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.8
 ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7
 ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4
@@ -546,6 +547,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /build
 COPY scripts/download-ubuntu-security-updates.sh /usr/local/libexec/pasturestack/download-ubuntu-security-updates.sh
 COPY security/ubuntu-security-packages.lock /build/ubuntu-security-packages.lock
+COPY security/ubuntu-backports/build-pcre2-backport.py security/ubuntu-backports/pcre2.lock.json /build/ubuntu-backports/
 ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd \
     https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb \
     /tmp/ca-certificates.deb
@@ -654,6 +656,24 @@ RUN set -eux; \
 RUN sh /usr/local/libexec/pasturestack/download-ubuntu-security-updates.sh \
       /build/ubuntu-security-packages.lock /etc/ssl/certs/ca-certificates.crt /out/security-updates
 
+# Keep Canonical binaries and first-party source rebuilds separate. The latter
+# retains Ubuntu's packaging/ABI and applies only upstream's approved backports.
+RUN set -eux; \
+    apt-get install -y --no-install-recommends build-essential debhelper dpkg-dev dh-autoreconf fakeroot patch binutils python3; \
+    python3 /build/ubuntu-backports/build-pcre2-backport.py \
+      --output-dir /out/pcre2 --work-dir /build/pcre2-backport-work --jobs 2; \
+    mkdir -p /tmp/pcre2-runtime; \
+    for package in libpcre2-8-0 libpcre2-posix3; do \
+      archive="/out/pcre2/${package}_${PCRE2_PACKAGE_VERSION}_amd64.deb"; \
+      test "$(dpkg-deb -f "${archive}" Package)" = "${package}"; \
+      test "$(dpkg-deb -f "${archive}" Version)" = "${PCRE2_PACKAGE_VERSION}"; \
+      dpkg-deb --extract "${archive}" /tmp/pcre2-runtime; \
+    done; \
+    cd /tmp/pcre2-runtime; \
+    sha256sum usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 usr/lib/x86_64-linux-gnu/libpcre2-posix.so.3 > /out/pcre2-runtime.sha256; \
+    cd /out; \
+    sha256sum pcre2/*.deb pcre2/provenance.json pcre2/pcre2.lock.json pcre2-runtime.sha256 >> SHA256SUMS
+
 FROM ${BASE_IMAGE}
 
 RUN rm -rf /opt/java/openjdk
@@ -671,7 +691,7 @@ ARG PER_HOST_SUBNET_VERSION=0.2.5
 ARG PER_HOST_SUBNET_PRODUCER_COMMIT=e102e0bb38d84b0a9cbf87e5458cf1bc74d01904
 ARG PER_HOST_SUBNET_ARCHIVE_SHA256=7237e83e96a64e7f3de64eb86bff9721c4e879c35cda9e9de1e4cb1ba225f298
 ARG PER_HOST_SUBNET_PROVENANCE_SHA256=afa2db0e0755c6bd3ee28e111937c521a6d84e6d71d563e99202cf4693000eaf
-ARG SERVER_RELEASE_TAG=v1.6.549
+ARG SERVER_RELEASE_TAG=v1.6.550
 ARG API_EXPLORER_RELEASE_TAG=v1.1.20
 ARG API_EXPLORER_ARTIFACT_SHA256=c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb
 ARG API_EXPLORER_COMMIT=a586f0dc0aa50df579049a8d4bf26f04400fdf75
@@ -695,6 +715,7 @@ ARG LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1
 ARG CA_CERTIFICATES_PACKAGE_VERSION=20260816ubuntu0.26.04.1
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
+ARG PCRE2_PACKAGE_VERSION=10.46-1build1+pasturestack.1
 ARG WEB_CONSOLE_RELEASE_TAG=1.6.195
 ARG WEB_CONSOLE_ARTIFACT_SHA256=26cbe1f3c057722c6682c43316021687508b7d9dd58c28c32713512d75238bb3
 ARG WEB_CONSOLE_COMMIT=f905bc12daae18d98a6ac65942625562fff2a424
@@ -747,20 +768,30 @@ ARG MACHINE_DRIVER_BINARY_SHA256=9d379214de116542cb0e2b1a09c17409fd59fd2b0109428
 ARG PACKET_DRIVER_BINARY_SHA256=b3e5c71928fcebe1bb648f79ebbf38af9ad32d6f6dbb87587e1b92c6c331e100
 
 COPY --from=runtime_security_packages /out/ /tmp/pasturestack-runtime-security/
-COPY scripts/install-ubuntu-security-updates.sh security/ubuntu-security-packages.lock /tmp/pasturestack-security-input/
+COPY scripts/install-ubuntu-security-updates.sh security/ubuntu-security-packages.lock artifacts/verify-pcre2-runtime.sh /tmp/pasturestack-security-input/
 # Keep the official zlib backport active: ldconfig otherwise prefers the old
 # upstream 1.3.2 library, which is affected by USN-8954-1 / CVE-2026-85091.
 # Retain the base image's removed, unused Git DAV/Expat surface after updating.
 RUN set -eux; \
     printf '%s\n' "${WEB_CONSOLE_COMMIT}" | grep -Eq '^[0-9a-f]{40}$'; \
     cd /tmp/pasturestack-runtime-security; \
+    install -D -m 0755 /tmp/pasturestack-security-input/verify-pcre2-runtime.sh /usr/local/libexec/pasturestack/verify-pcre2-runtime.sh; \
     sha256sum -c SHA256SUMS; \
     install -m 0755 tar /usr/bin/tar; \
     dpkg -i packages/*.deb; \
     install -D -m 0644 /tmp/pasturestack-security-input/ubuntu-security-packages.lock /usr/share/pasturestack/security/ubuntu-security-packages.lock; \
     sh /tmp/pasturestack-security-input/install-ubuntu-security-updates.sh /usr/share/pasturestack/security/ubuntu-security-packages.lock /tmp/pasturestack-runtime-security/security-updates; \
+    dpkg --path-include=/usr/share/doc/libpcre2-8-0/README.Debian -i pcre2/*.deb; \
+    for package in libpcre2-8-0 libpcre2-posix3; do \
+      test "$(dpkg-query -W -f='${Version}' "${package}")" = "${PCRE2_PACKAGE_VERSION}"; \
+      test -z "$(dpkg --verify "${package}")"; \
+    done; \
+    install -D -m 0644 pcre2/provenance.json /usr/share/pasturestack/security/pcre2-backport-provenance.json; \
+    install -D -m 0644 pcre2/pcre2.lock.json /usr/share/pasturestack/security/pcre2-backport.lock.json; \
+    install -D -m 0644 pcre2-runtime.sha256 /usr/share/pasturestack/security/pcre2-runtime.sha256; \
     rm -f /usr/lib/x86_64-linux-gnu/libz.so.1.3.2; \
     ldconfig; \
+    sh /usr/local/libexec/pasturestack/verify-pcre2-runtime.sh; \
     test "$(readlink -f /usr/lib/x86_64-linux-gnu/libz.so.1)" = /usr/lib/x86_64-linux-gnu/libz.so.1.3.1; \
     zlib_integrity="$(dpkg --verify zlib1g)"; \
     test -z "${zlib_integrity}"; \
