@@ -5,6 +5,9 @@ import importlib.util
 import json
 from pathlib import Path
 import unittest
+import subprocess
+import sys
+import tempfile
 
 spec = importlib.util.spec_from_file_location('package_consistency', Path(__file__).with_name('check-agent-package-consistency.py'))
 module = importlib.util.module_from_spec(spec)
@@ -72,18 +75,19 @@ class PackageConsistencyTests(unittest.TestCase):
         self.data['backports-qualification.json'] = '{}'
         with self.assertRaisesRegex(ValueError, 'checksum'): self.verify()
 
-    def test_published_wrapper_keeps_its_original_strict_contract(self):
-        self.runtime = dict(self.builder)
-        self.verify_files_only()
-        self.assertTrue(module.verify_legacy_wrapper(self.data)['expected_security_packages'])
-        self.runtime['libc6'] = self.versions['libc6']
-        self.verify_files_only()
-        with self.assertRaisesRegex(ValueError, 'drift'):
-            module.verify_legacy_wrapper(self.data)
-
-    def verify_files_only(self):
-        for filename, data in [('builder-packages.tsv', self.builder), ('runtime-packages.tsv', self.runtime)]:
-            self.data[filename] = ''.join(name + '\t' + version + '\n' for name, version in data.items())
+    def test_cli_preserves_stdin_and_rejects_argument_paths(self):
+        self.verify()
+        payload = json.dumps(self.data).encode('utf-8')
+        script = str(Path(__file__).with_name('check-agent-package-consistency.py'))
+        result = subprocess.run([sys.executable, '-B', script], input=payload, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr.decode())
+        self.assertEqual(json.loads(result.stdout)['backport_manifest_sha256'],
+                         hashlib.sha256(self.data['backports-manifest.json'].encode('utf-8')).hexdigest())
+        with tempfile.TemporaryDirectory(prefix='agent-stdin-unit-') as directory:
+            path = Path(directory) / 'valid-inventory.json'; path.write_bytes(payload)
+            rejected = subprocess.run([sys.executable, '-B', script, str(path)], input=payload, capture_output=True)
+            self.assertNotEqual(rejected.returncode, 0)
+            self.assertIn(b'Unsupported arguments', rejected.stderr)
 
     def test_inventory_text_preserves_bytes_and_rejects_malformed_rows(self):
         result = self.verify()

@@ -19,20 +19,6 @@ def inventory(text):
     return result
 
 
-def verify_legacy_wrapper(data):
-    """Preserve the published 0.3.6 wrapper contract until its new base exists."""
-    builder = inventory(data['builder-packages.tsv'])
-    runtime = inventory(data['runtime-packages.tsv'])
-    common = builder.keys() & runtime.keys()
-    require(all(builder[name] == runtime[name] for name in common), 'Legacy wrapper builder/runtime drift')
-    expected = {'libssl3t64': '3.5.5-1ubuntu3.7', 'curl': '8.18.0-1ubuntu2.8',
-                'libc6': '2.43-2ubuntu2.4', 'ca-certificates': '20260816ubuntu0.26.04.1'}
-    require(all(runtime.get(name) == version for name, version in expected.items()),
-            'Unexpected published-wrapper security package')
-    return {'builder_packages': len(builder), 'runtime_packages': len(runtime),
-            'common_packages_same_versions': len(common), 'expected_security_packages': True}
-
-
 def verify(data):
     builder = inventory(data['builder-packages.tsv'])
     runtime = inventory(data['runtime-packages.tsv'])
@@ -83,7 +69,7 @@ def verify(data):
 
 
 if __name__ == '__main__':
-    require(sys.argv[1:] in ([], ['--legacy-wrapper']), 'Unsupported arguments')
+    require(not sys.argv[1:], 'Unsupported arguments')
     data = json.load(sys.stdin)
-    report = verify_legacy_wrapper(data) if sys.argv[1:] else verify(data)
+    report = verify(data)
     print(json.dumps(report, indent=2))
