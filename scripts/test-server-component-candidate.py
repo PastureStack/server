@@ -20,7 +20,8 @@ BUILD = ROOT / "server/build-api-explorer-patch-image.sh"
 VERIFY = ROOT / "server/artifacts/verify-host-api-package.sh"
 COMMITS = ("ORCHESTRATION_ENGINE_COMMIT", "WEB_CONSOLE_COMMIT", "WEBSOCKET_PROXY_COMMIT", "HOST_API_COMMIT", "NODE_AGENT_COMMIT", "PER_HOST_SUBNET_PRODUCER_COMMIT")
 HASHES = ("ORCHESTRATION_ENGINE_ARTIFACT_SHA256", "ENGINE_READONLY_SCHEMA_SHA256", "ENGINE_RESTRICTED_SCHEMA_SHA256", "API_EXPLORER_ARTIFACT_SHA256",
-          "WEB_CONSOLE_ARTIFACT_SHA256", "WEBSOCKET_PROXY_ARCHIVE_SHA256", "WEBSOCKET_PROXY_BINARY_SHA256",
+          "WEB_CONSOLE_ARTIFACT_SHA256", "WEB_CONSOLE_RUNTIME_SBOM_SHA256", "WEB_CONSOLE_LOCK_SHA256",
+          "WEBSOCKET_PROXY_ARCHIVE_SHA256", "WEBSOCKET_PROXY_BINARY_SHA256",
           "HOST_API_ARCHIVE_SHA256", "HOST_API_BINARY_SHA256", "HOST_API_APPLY_SHA256",
           "NODE_AGENT_ARCHIVE_SHA256", "NODE_AGENT_BINARY_SHA256", "NODE_AGENT_APPLY_SHA256",
           "NODE_AGENT_WINDOWS_ARCHIVE_SHA256", "NODE_AGENT_WINDOWS_BINARY_SHA256", "NODE_AGENT_WINDOWS_STARTUP_SHA256",
@@ -32,6 +33,7 @@ HASHES = ("ORCHESTRATION_ENGINE_ARTIFACT_SHA256", "ENGINE_READONLY_SCHEMA_SHA256
 LOCAL_ASSETS = (("cattle.jar", "ORCHESTRATION_ENGINE_ARTIFACT_SHA256"),
                 ("api-explorer-1.1.19.tar.gz", "API_EXPLORER_ARTIFACT_SHA256"),
                 ("web-console-1.6.181.tar.gz", "WEB_CONSOLE_ARTIFACT_SHA256"),
+                ("web-console-1.6.181-runtime.cdx.json", "WEB_CONSOLE_RUNTIME_SBOM_SHA256"),
                 ("websocket-proxy-0.23.17-linux-amd64.tar.xz", "WEBSOCKET_PROXY_ARCHIVE_SHA256"),
                 ("host-api-0.38.7.tar.gz", "HOST_API_ARCHIVE_SHA256"),
                 ("node-agent-0.13.31.tar.gz", "NODE_AGENT_ARCHIVE_SHA256"),
@@ -111,11 +113,11 @@ class ComponentRecipeTest(unittest.TestCase):
                            FIXTURE_TRACE=str(path / "docker-arguments"))
         return environment, assets
 
-    def test_all_eighteen_local_assets_are_hashed_and_named_context_reaches_formal_recipe(self):
+    def test_all_nineteen_local_assets_are_hashed_and_named_context_reaches_formal_recipe(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary)
             environment, assets = self.local_fixture(path)
-            self.assertEqual(18, len(LOCAL_ASSETS))
+            self.assertEqual(19, len(LOCAL_ASSETS))
             self.assertEqual({name for name, _ in LOCAL_ASSETS}, {asset.name for asset in assets.iterdir()})
             result = self.run_entry(environment)
             self.assertEqual(88, result.returncode, result.stderr)

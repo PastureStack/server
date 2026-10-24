@@ -1,5 +1,38 @@
 # Compatibility Contract
 
+<a id="server-v16549-web-console-sbom"></a>
+
+## Server v1.6.549 prepared, not published
+
+This source candidate consumes Web Console `1.6.195` from verified producer
+`f905bc12daae18d98a6ac65942625562fff2a424`,
+[run 40086505425](https://github.com/PastureStack/web-console/actions/runs/40086505425).
+Its archive and independent
+browser runtime CycloneDX SBOM must match the declared release version, source
+commit, archive SHA-256, lock SHA-256 and SBOM SHA-256 before packaging.
+The original SBOM bytes are retained at
+`/usr/share/licenses/pasturestack/web-console/runtime.cdx.json` and are copied
+from the actual candidate rootfs into the Server release evidence with their
+own checksum and identity receipt. The browser inventory remains separate
+from the OS SBOM and preserves its `coverage=incomplete` limitations.
+Its independent fresh-DB component scan must identify every npm PURL and pass
+the unchanged exact finding gate; unsupported snapshots are itemized as unknown,
+without applying OS VEX or treating zero scanner findings as full coverage.
+The exact archive/SBOM/lock identities are recorded in the
+[candidate note](docs/releases/server-1.6.549.md); their verification does not
+establish publication or deployment acceptance for Server v1.6.549.
+
+GitHub runner Ruby/toolcache presence is build-host evidence, not a shipped
+browser dependency or an established reachable product vulnerability. The
+Ubuntu Ruby backport status and unobserved SDK activation remain tracked as
+unknowns; an absent scanner CVE is not evidence of remediation.
+
+The existing six-stage build, final one-layer publication process, component
+pins other than Web Console, runtime security thresholds, named volumes and
+operator settings are retained. Publication and scoped deployment acceptance
+have not been established for this candidate. See the
+[candidate note](docs/releases/server-1.6.549.md).
+
 <a id="server-v16548-provider-watch"></a>
 
 ## Server v1.6.548 published
