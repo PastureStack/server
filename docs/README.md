@@ -7,6 +7,10 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.549](releases/server-1.6.549.md) — published Web Console 1.6.195
+  with an independent browser runtime SBOM, exact artifact identity and separate
+  fresh-DB component lookup. The release note records incomplete coverage,
+  same-image attachment recovery and scoped 8080/browser/SBOM-readback acceptance.
 - [Server v1.6.548](releases/server-1.6.548.md) — published Catalog revision 13
   with CNI provider lifecycle and opaque Metadata version-watch repairs;
   scoped eight-stack upgrades, browser authentication/session recovery and
