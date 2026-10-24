@@ -317,9 +317,7 @@ def build(args, lock):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    mode = parser.add_mutually_exclusive_group()
-    mode.add_argument('--validate-lock', action='store_true')
-    mode.add_argument('--validate-inputs', action='store_true')
+    parser.add_argument('--validate-lock', action='store_true')
     parser.add_argument('--output-dir', type=Path)
     parser.add_argument('--work-dir', type=Path)
     parser.add_argument('--cache-dir', type=Path)
@@ -331,10 +329,6 @@ def main():
     lock = load_lock(LOCK_FILE)
     if args.validate_lock:
         print('GLIBC_BACKPORT_LOCK_OK sha256=' + digest(LOCK_FILE))
-    elif args.validate_inputs:
-        require(args.cache_dir is not None, '--validate-inputs requires --cache-dir')
-        validate_inputs(lock, args.cache_dir)
-        print('GLIBC_BACKPORT_INPUTS_OK sha256=' + digest(LOCK_FILE))
     else:
         require(args.output_dir is not None, '--output-dir is required for a native build')
         build(args, lock)

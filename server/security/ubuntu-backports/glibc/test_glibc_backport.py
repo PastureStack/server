@@ -196,10 +196,11 @@ class GlibcBackport(unittest.TestCase):
         self.assertIn('GLIBC_BACKPORT_LOCK_OK', result.stdout)
         self.assertNotIn('GLIBC_BACKPORT_BUILT', result.stdout)
 
-    def test_cli_rejects_duplicate_foreign_dev_export_invalid_jobs_and_missing_cache(self):
+    def test_cli_rejects_duplicate_foreign_dev_export_invalid_jobs_and_external_input_mode(self):
         for args in [('--validate-lock', '--jobs', '0'), ('--validate-lock', '--jobs', '33'),
                      ('--validate-lock', '--export-dev-package', 'libc6-dev', '--export-dev-package', 'libc6-dev'),
-                     ('--validate-lock', '--export-dev-package', 'gcc'), ('--validate-inputs',)]:
+                     ('--validate-lock', '--export-dev-package', 'gcc'), ('--validate-inputs',),
+                     ('--validate-lock', '--lock', 'untrusted.json')]:
             with self.subTest(args=args): self.assertNotEqual(0, self.cli(*args).returncode)
 
 
