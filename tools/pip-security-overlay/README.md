@@ -64,12 +64,17 @@ bash verify-pip-runtime.sh --virtualenv /usr/share/python-wheels
 - setuptools 70.3.0 僅保留 `pkg_resources`；CVE-2025-47273 所需的
   `setuptools/package_index.py` 與 CVE-2026-59890 所需的
   `setuptools/command/egg_info.py` 均不存在。
+- [GHSA-xmj3-9gf7-h52w](https://github.com/pypa/setuptools/security/advisories/GHSA-xmj3-9gf7-h52w)
+  的 `setuptools/wheel.py`／`Wheel.install_as_egg` 同樣未包含於此 slice。
+  此 ID 額外要求實際 299 檔路徑與 SHA-256 inventory、明確的 wheel/live 模組缺席證據，
+  以及同次原生 CycloneDX 中的完整 setuptools PURL；VEX 保留 inventory 與原 SBOM 的 SHA-256。
 
 `check-pip-vendor-slice.py` 會比對實際載入的全部 299 個 vendor 檔案與
 固定 wheel，拒絕額外檔案、其他同版本完整 distribution。只有取得此證據後，
-`filter-pip-vendor-findings.py` 才可對上述三個 CVE（含 msgpack GHSA 別名）
+`filter-pip-vendor-findings.py` 才可對上述已登記 ID（含 msgpack GHSA 別名）
 產生綁定該映像的 OpenVEX 與有效掃描檔。原始掃描必須另行保存；未知 CVE、
 其他版本、非 SBOM 套件來源與 urllib3 finding 全部保留，不做泛用版本排除。
-執行 `python3 test-pip-vex.py` 可驗證以上六組正反控制。
+執行 `python3 test-pip-vex.py` 可驗證以上八組正反控制，包含真正 wheel/live
+`setuptools/wheel.py` 出現時拒絕，以及缺少 inventory／原生 SBOM 時保留 finding。
 
 官方政策：https://pip.pypa.io/en/stable/development/vendoring-policy/

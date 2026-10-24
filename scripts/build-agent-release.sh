@@ -23,13 +23,25 @@ candidate="local/pasturestack-node-agent-${COMPONENT}:${GITHUB_RUN_ID}"
 helper_container="pasturestack-agent-helper-${GITHUB_RUN_ID}"
 backports_container=
 bundle_container=
-scratch=$(mktemp -d)
+[[ "${GITHUB_RUN_ID:-}" =~ ^[0-9]+$ ]]
+[[ "${RUNNER_TEMP:-/tmp}" = /* ]]
+scratch_root=$(realpath -- "${RUNNER_TEMP:-/tmp}")
+test "$scratch_root" != /
+scratch=$(mktemp -d "$scratch_root/pasturestack-agent-${GITHUB_RUN_ID}.XXXXXX")
 cleanup() {
+  [[ "$(realpath -e -- "$scratch")" = "$scratch" &&
+     "$scratch" = "$scratch_root"/pasturestack-agent-"$GITHUB_RUN_ID".* ]] || return 1
   if [[ -n "$backports_container" ]]; then docker rm -v "$backports_container" >/dev/null 2>&1 || true; fi
   if [[ -n "$bundle_container" ]]; then docker rm -v "$bundle_container" >/dev/null 2>&1 || true; fi
   docker rm -v "$helper_container" >/dev/null 2>&1 || true
   docker logout ghcr.io >/dev/null 2>&1 || true
-  rm -rf "$scratch"
+  if [[ -d "$scratch/trivy-cache" ]]; then
+    [[ -n "${trivy:-}" && "$(realpath -e -- "$scratch/trivy-cache")" = "$scratch/trivy-cache" ]] || return 1
+    docker run --rm --network none --user 0:0 \
+      --mount "type=bind,source=$scratch/trivy-cache,target=/cache" \
+      --entrypoint chown "$trivy" -R "$(id -u):$(id -g)" /cache
+  fi
+  rm -rf -- "$scratch"
 }
 trap cleanup EXIT
 
@@ -167,6 +179,7 @@ pip_scan_input="$evidence/image-security-os-effective.json"
 fi
 python3 tools/pip-security-overlay/filter-pip-vendor-findings.py \
   --raw "$pip_scan_input" --proof "$evidence/pip-vendor-slice.json" \
+  --sbom "$evidence/image.cdx.json" \
   --output "$evidence/image-security-effective.json" --vex "$evidence/image.vex.json" \
   --subject "urn:sha256:${local_id#sha256:}"
 python3 - "$evidence" <<'PY'
@@ -203,6 +216,7 @@ if [[ "$PUBLISH" = true ]]; then
   test "$(docker image inspect "$repository@$digest" --format '{{.Id}}')" = "$local_id"
   python3 tools/pip-security-overlay/filter-pip-vendor-findings.py \
     --raw "$pip_scan_input" --proof "$evidence/pip-vendor-slice.json" \
+    --sbom "$evidence/image.cdx.json" \
     --output "$evidence/image-security-effective.json" --vex "$evidence/image.vex.json" \
     --subject "https://ghcr.io/v2/${repository#ghcr.io/}/manifests/$digest"
   printf 'repository=%s\nversion=%s\nsource=%s\ndigest=%s\nimage_id=%s\n' \
