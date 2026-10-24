@@ -10,9 +10,10 @@ test "$source_sha" = "$GITHUB_SHA"
 evidence=${EVIDENCE_DIR:?EVIDENCE_DIR is required}
 mkdir -p "$evidence"
 printf '%s\n' "$source_sha" >"$evidence/source-revision.txt"
+python3 scripts/test-agent-package-consistency.py
 
 case "${COMPONENT:-}" in
-  base) repository=ghcr.io/pasturestack/node-agent-base; version=v0.3.6 ;;
+  base) repository=ghcr.io/pasturestack/node-agent-base; version=v0.3.7 ;;
   agent) repository=ghcr.io/pasturestack/node-agent; version=v1.2.32 ;;
   *) echo 'Unsupported agent component' >&2; exit 1 ;;
 esac
@@ -20,8 +21,12 @@ esac
 target="$repository:$version"
 candidate="local/pasturestack-node-agent-${COMPONENT}:${GITHUB_RUN_ID}"
 helper_container="pasturestack-agent-helper-${GITHUB_RUN_ID}"
+backports_container=
+bundle_container=
 scratch=$(mktemp -d)
 cleanup() {
+  if [[ -n "$backports_container" ]]; then docker rm -v "$backports_container" >/dev/null 2>&1 || true; fi
+  if [[ -n "$bundle_container" ]]; then docker rm -v "$bundle_container" >/dev/null 2>&1 || true; fi
   docker rm -v "$helper_container" >/dev/null 2>&1 || true
   docker logout ghcr.io >/dev/null 2>&1 || true
   rm -rf "$scratch"
@@ -76,23 +81,21 @@ docker run --rm --network none --entrypoint cat "$candidate" \
   /usr/share/pasturestack/python-builder-packages.tsv >"$evidence/builder-packages.tsv"
 docker run --rm --network none --entrypoint dpkg-query "$candidate" \
   -W -f='${binary:Package}\t${Version}\n' >"$evidence/runtime-packages.tsv"
-python3 - "$evidence" <<'PY'
-from pathlib import Path
-import json, sys
-root = Path(sys.argv[1])
-def packages(name):
-    return dict(line.split('\t', 1) for line in (root / name).read_text().splitlines())
-builder, runtime = packages('builder-packages.tsv'), packages('runtime-packages.tsv')
-common = builder.keys() & runtime.keys()
-assert all(builder[name] == runtime[name] for name in common), 'builder/runtime package drift'
-for package, version in {'libssl3t64:amd64': '3.5.5-1ubuntu3.7', 'curl': '8.18.0-1ubuntu2.8',
-                         'libc6:amd64': '2.43-2ubuntu2.4', 'ca-certificates': '20260816ubuntu0.26.04.1'}.items():
-    assert runtime.get(package) == version, (package, runtime.get(package), version)
-report = {'builder_packages': len(builder), 'runtime_packages': len(runtime),
-          'common_packages_same_versions': len(common), 'expected_security_packages': True}
-(root / 'package-comparison.json').write_text(json.dumps(report, indent=2) + '\n')
-print(json.dumps(report))
-PY
+if [[ "$COMPONENT" = base ]]; then
+  for name in manifest qualification install; do
+    docker run --rm --network none --entrypoint cat "$candidate" \
+      "/usr/share/pasturestack/security/ubuntu-backports/${name}.json" >"$evidence/backports-${name}.json"
+  done
+  python3 scripts/check-agent-package-consistency.py "$evidence"
+  backports_container=$(docker create "$candidate")
+  docker cp "$backports_container:/usr/share/pasturestack/security/ubuntu-backports" "$evidence/ubuntu-backports"
+  docker rm -v "$backports_container" >/dev/null
+  backports_container=
+else
+  # The wrapper remains pinned to the published 0.3.6 base until 0.3.7 passes
+  # publication. Its existing strict checks must continue to work meanwhile.
+  python3 scripts/check-agent-package-consistency.py "$evidence" --legacy-wrapper
+fi
 docker run --rm --network none --entrypoint /bin/bash "$candidate" -ec \
   'ldd "$(python3 -c "import _ssl; print(_ssl.__file__)")"; curl --version' \
   >"$evidence/python-ssl-linkage.txt"
@@ -121,14 +124,38 @@ docker run --rm --entrypoint python3 "$candidate" -c \
 
 trivy=ghcr.io/aquasecurity/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
 docker pull "$trivy"
+mkdir -p "$scratch/trivy-cache"
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-  -v "$evidence:/evidence" "$trivy" image --format cyclonedx \
+  -v "$scratch/trivy-cache:/root/.cache/trivy" -v "$evidence:/evidence" "$trivy" image --format cyclonedx \
   --output /evidence/image.cdx.json "$candidate"
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-  -v "$evidence:/evidence" "$trivy" image --scanners vuln,secret --list-all-pkgs --format json \
+  -v "$scratch/trivy-cache:/root/.cache/trivy" -v "$evidence:/evidence" "$trivy" image --scanners vuln,secret --list-all-pkgs --format json \
   --output /evidence/image-security.json "$candidate"
+pip_scan_input="$evidence/image-security.json"
+if [[ "$COMPONENT" = base ]]; then
+backports_image=$(sed -n 's/^FROM \(ghcr.io\/pasturestack\/ubuntu-security-backports:v0\.1\.0@sha256:[0-9a-f]\{64\}\) AS ubuntu_security_backports$/\1/p' agent-base/Dockerfile)
+[[ "$backports_image" =~ ^ghcr.io/pasturestack/ubuntu-security-backports:v0\.1\.0@sha256:[0-9a-f]{64}$ ]]
+docker pull --platform linux/amd64 "$backports_image"
+bundle_container=$(docker create --entrypoint /unused "$backports_image")
+docker cp "$bundle_container:/out/verify-consumer-evidence.py" "$scratch/verify-consumer-evidence.py"
+docker cp "$bundle_container:/out/SHA256SUMS" "$scratch/backports-SHA256SUMS"
+docker rm "$bundle_container" >/dev/null
+bundle_container=
+python3 "$scratch/verify-consumer-evidence.py" --evidence-dir "$evidence/ubuntu-backports" \
+  --sbom "$evidence/image.cdx.json" --expected-bundle-digest "${backports_image##*@}" \
+  --bundle-checksums "$scratch/backports-SHA256SUMS" \
+  >"$evidence/ubuntu-backports-consumer-proof.json"
+# Preserve the original full scan. Native Trivy applies only the qualified,
+# exact-package OpenVEX, followed by the existing pip-vendor interpretation.
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+  -v "$scratch/trivy-cache:/root/.cache/trivy" -v "$evidence:/evidence" "$trivy" image \
+  --scanners vuln,secret --list-all-pkgs --skip-db-update --skip-vex-repo-update \
+  --vex /evidence/ubuntu-backports/openvex.json --format json \
+  --output /evidence/image-security-os-effective.json "$candidate"
+pip_scan_input="$evidence/image-security-os-effective.json"
+fi
 python3 tools/pip-security-overlay/filter-pip-vendor-findings.py \
-  --raw "$evidence/image-security.json" --proof "$evidence/pip-vendor-slice.json" \
+  --raw "$pip_scan_input" --proof "$evidence/pip-vendor-slice.json" \
   --output "$evidence/image-security-effective.json" --vex "$evidence/image.vex.json" \
   --subject "urn:sha256:${local_id#sha256:}"
 python3 - "$evidence" <<'PY'
@@ -164,7 +191,7 @@ if [[ "$PUBLISH" = true ]]; then
   docker pull "$repository@$digest"
   test "$(docker image inspect "$repository@$digest" --format '{{.Id}}')" = "$local_id"
   python3 tools/pip-security-overlay/filter-pip-vendor-findings.py \
-    --raw "$evidence/image-security.json" --proof "$evidence/pip-vendor-slice.json" \
+    --raw "$pip_scan_input" --proof "$evidence/pip-vendor-slice.json" \
     --output "$evidence/image-security-effective.json" --vex "$evidence/image.vex.json" \
     --subject "https://ghcr.io/v2/${repository#ghcr.io/}/manifests/$digest"
   printf 'repository=%s\nversion=%s\nsource=%s\ndigest=%s\nimage_id=%s\n' \

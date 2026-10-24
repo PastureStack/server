@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1.7
+FROM ghcr.io/pasturestack/ubuntu-security-backports:v0.1.0@sha256:2742a3d429e4e14bc587f6dedc51ded4246cf90bbaedcd86c67d0885e32a6f2a AS ubuntu_security_backports
 FROM ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b AS python-builder
 
 RUN rm -f /usr/bin/pebble
@@ -69,7 +70,7 @@ ARG VCS_REF
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack node-agent compatibility base image." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v0.3.6" \
+      org.opencontainers.image.version="v0.3.7" \
       org.opencontainers.image.revision="$VCS_REF"
 
 RUN rm -f /usr/bin/pebble
@@ -146,5 +147,21 @@ RUN rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.
     chmod +x /usr/bin/docker && \
     rm /var/run && \
     mkdir /var/run
+
+# Only the final runtime consumes these qualified packages. Keep the Python
+# compiler stage and the existing coreutils provider unchanged.
+RUN --mount=from=ubuntu_security_backports,source=/out,target=/opt/pasturestack/ubuntu-security-backports,ro \
+    set -eux; \
+    data=/opt/pasturestack/ubuntu-security-backports; \
+    evidence=/usr/share/pasturestack/security/ubuntu-backports; \
+    mkdir -p "$evidence"; \
+    "$data/install-existing-backports" --install-in-docker-build > "$evidence/install.json"; \
+    "$data/install-existing-backports" --verify-installed > "$evidence/verify.json"; \
+    for name in manifest.json qualification.json source-inputs.lock.json openvex.json; do \
+        install -m 0644 "$data/$name" "$evidence/$name"; \
+    done; \
+    printf '%s\n' 'ghcr.io/pasturestack/ubuntu-security-backports:v0.1.0@sha256:2742a3d429e4e14bc587f6dedc51ded4246cf90bbaedcd86c67d0885e32a6f2a' > "$evidence/bundle-image.txt"; \
+    cd "$evidence"; \
+    sha256sum manifest.json qualification.json openvex.json source-inputs.lock.json install.json verify.json bundle-image.txt > SHA256SUMS
 
 ENTRYPOINT ["/pasturestack-entrypoint.sh"]
