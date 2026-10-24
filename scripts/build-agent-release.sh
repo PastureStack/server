@@ -86,7 +86,15 @@ if [[ "$COMPONENT" = base ]]; then
     docker run --rm --network none --entrypoint cat "$candidate" \
       "/usr/share/pasturestack/security/ubuntu-backports/${name}.json" >"$evidence/backports-${name}.json"
   done
-  python3 scripts/check-agent-package-consistency.py "$evidence"
+  jq -n --rawfile builder "$evidence/builder-packages.tsv" \
+    --rawfile runtime "$evidence/runtime-packages.tsv" \
+    --rawfile manifest "$evidence/backports-manifest.json" \
+    --rawfile qualification "$evidence/backports-qualification.json" \
+    --rawfile installation "$evidence/backports-install.json" \
+    '{"builder-packages.tsv":$builder,"runtime-packages.tsv":$runtime,
+      "backports-manifest.json":$manifest,"backports-qualification.json":$qualification,
+      "backports-install.json":$installation}' \
+    | python3 scripts/check-agent-package-consistency.py >"$evidence/package-comparison.json"
   backports_container=$(docker create "$candidate")
   docker cp "$backports_container:/usr/share/pasturestack/security/ubuntu-backports" "$evidence/ubuntu-backports"
   docker rm -v "$backports_container" >/dev/null
@@ -94,7 +102,10 @@ if [[ "$COMPONENT" = base ]]; then
 else
   # The wrapper remains pinned to the published 0.3.6 base until 0.3.7 passes
   # publication. Its existing strict checks must continue to work meanwhile.
-  python3 scripts/check-agent-package-consistency.py "$evidence" --legacy-wrapper
+  jq -n --rawfile builder "$evidence/builder-packages.tsv" \
+    --rawfile runtime "$evidence/runtime-packages.tsv" \
+    '{"builder-packages.tsv":$builder,"runtime-packages.tsv":$runtime}' \
+    | python3 scripts/check-agent-package-consistency.py --legacy-wrapper >"$evidence/package-comparison.json"
 fi
 docker run --rm --network none --entrypoint /bin/bash "$candidate" -ec \
   'ldd "$(python3 -c "import _ssl; print(_ssl.__file__)")"; curl --version' \

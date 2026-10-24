@@ -2,7 +2,6 @@
 """Compare the real Python builder/runtime inventories and qualified deltas."""
 import hashlib
 import json
-from pathlib import Path
 import sys
 
 
@@ -11,18 +10,19 @@ def require(value, message):
         raise ValueError(message)
 
 
-def inventory(path):
-    rows = [line.split('\t') for line in path.read_text(encoding='utf-8').splitlines()]
+def inventory(text):
+    require(isinstance(text, str), 'Package inventory must be text')
+    rows = [line.split('\t') for line in text.splitlines()]
     require(all(len(row) == 2 for row in rows), 'Malformed package inventory')
     result = {name.split(':', 1)[0]: version for name, version in rows}
     require(len(result) == len(rows), 'Duplicate/multiarch package inventory')
     return result
 
 
-def verify_legacy_wrapper(root):
+def verify_legacy_wrapper(data):
     """Preserve the published 0.3.6 wrapper contract until its new base exists."""
-    builder = inventory(root / 'builder-packages.tsv')
-    runtime = inventory(root / 'runtime-packages.tsv')
+    builder = inventory(data['builder-packages.tsv'])
+    runtime = inventory(data['runtime-packages.tsv'])
     common = builder.keys() & runtime.keys()
     require(all(builder[name] == runtime[name] for name in common), 'Legacy wrapper builder/runtime drift')
     expected = {'libssl3t64': '3.5.5-1ubuntu3.7', 'curl': '8.18.0-1ubuntu2.8',
@@ -33,13 +33,14 @@ def verify_legacy_wrapper(root):
             'common_packages_same_versions': len(common), 'expected_security_packages': True}
 
 
-def verify(root):
-    builder = inventory(root / 'builder-packages.tsv')
-    runtime = inventory(root / 'runtime-packages.tsv')
-    manifest = json.loads((root / 'backports-manifest.json').read_text(encoding='utf-8'))
-    qualification_bytes = (root / 'backports-qualification.json').read_bytes()
+def verify(data):
+    builder = inventory(data['builder-packages.tsv'])
+    runtime = inventory(data['runtime-packages.tsv'])
+    manifest_bytes = data['backports-manifest.json'].encode('utf-8')
+    manifest = json.loads(manifest_bytes)
+    qualification_bytes = data['backports-qualification.json'].encode('utf-8')
     qualification = json.loads(qualification_bytes)
-    receipt = json.loads((root / 'backports-install.json').read_text(encoding='utf-8'))
+    receipt = json.loads(data['backports-install.json'])
     require(manifest['schemaVersion'] == 1 and manifest['bundleVersion'] == '0.1.0'
             and manifest['platform'] == {'distribution': 'ubuntu', 'release': '26.04', 'architecture': 'amd64'},
             'Unexpected backport manifest identity')
@@ -78,11 +79,11 @@ def verify(root):
     return {'builder_packages': len(builder), 'runtime_packages': len(runtime),
             'common_packages_same_versions': len(common - changed),
             'qualified_runtime_deltas': sorted(changed), 'expected_security_packages': True,
-            'backport_manifest_sha256': hashlib.sha256((root / 'backports-manifest.json').read_bytes()).hexdigest()}
+            'backport_manifest_sha256': hashlib.sha256(manifest_bytes).hexdigest()}
 
 
 if __name__ == '__main__':
-    root = Path(sys.argv[1])
-    report = verify_legacy_wrapper(root) if sys.argv[2:] == ['--legacy-wrapper'] else verify(root)
-    (root / 'package-comparison.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
-    print(json.dumps(report))
+    require(sys.argv[1:] in ([], ['--legacy-wrapper']), 'Unsupported arguments')
+    data = json.load(sys.stdin)
+    report = verify_legacy_wrapper(data) if sys.argv[1:] else verify(data)
+    print(json.dumps(report, indent=2))

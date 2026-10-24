@@ -4,7 +4,6 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
-import tempfile
 import unittest
 
 spec = importlib.util.spec_from_file_location('package_consistency', Path(__file__).with_name('check-agent-package-consistency.py'))
@@ -14,9 +13,7 @@ spec.loader.exec_module(module)
 
 class PackageConsistencyTests(unittest.TestCase):
     def setUp(self):
-        self.temporary = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name)
+        self.data = {}
         self.versions = {'libc6': '2.43-2ubuntu2.4+pasturestack.1', 'libc-bin': '2.43-2ubuntu2.4+pasturestack.1',
                          'libc-gconv-modules-extra': '2.43-2ubuntu2.4+pasturestack.1',
                          'libpcre2-8-0': '10.46-1build1+pasturestack.1', 'libpcre2-posix3': '10.46-1build1+pasturestack.1',
@@ -35,7 +32,7 @@ class PackageConsistencyTests(unittest.TestCase):
         qualification = {'status': 'qualified', 'consumerFixtures': [
             {'provider': 'gnu', 'status': 'PASS'}, {'provider': 'uutils', 'status': 'PASS'}]}
         content = (json.dumps(qualification) + '\n').encode()
-        (self.root / 'backports-qualification.json').write_bytes(content)
+        self.data['backports-qualification.json'] = content.decode('utf-8')
         self.manifest = {'schemaVersion': 1, 'bundleVersion': '0.1.0',
                          'platform': {'distribution': 'ubuntu', 'release': '26.04', 'architecture': 'amd64'},
                          'qualification': {'sha256': hashlib.sha256(content).hexdigest()},
@@ -43,10 +40,10 @@ class PackageConsistencyTests(unittest.TestCase):
 
     def verify(self):
         for filename, data in [('backports-manifest.json', self.manifest), ('backports-install.json', self.receipt)]:
-            (self.root / filename).write_text(json.dumps(data), encoding='utf-8')
+            self.data[filename] = json.dumps(data)
         for filename, data in [('builder-packages.tsv', self.builder), ('runtime-packages.tsv', self.runtime)]:
-            (self.root / filename).write_text(''.join(name + '\t' + version + '\n' for name, version in data.items()), encoding='utf-8')
-        return module.verify(self.root)
+            self.data[filename] = ''.join(name + '\t' + version + '\n' for name, version in data.items())
+        return module.verify(self.data)
 
     def test_only_qualified_final_runtime_differences_pass(self):
         self.assertEqual(self.verify()['qualified_runtime_deltas'], ['libc6', 'libpcre2-8-0'])
@@ -72,21 +69,30 @@ class PackageConsistencyTests(unittest.TestCase):
             with self.assertRaises(ValueError): self.verify()
 
     def test_changed_qualification_is_rejected(self):
-        (self.root / 'backports-qualification.json').write_text('{}', encoding='utf-8')
+        self.data['backports-qualification.json'] = '{}'
         with self.assertRaisesRegex(ValueError, 'checksum'): self.verify()
 
     def test_published_wrapper_keeps_its_original_strict_contract(self):
         self.runtime = dict(self.builder)
         self.verify_files_only()
-        self.assertTrue(module.verify_legacy_wrapper(self.root)['expected_security_packages'])
+        self.assertTrue(module.verify_legacy_wrapper(self.data)['expected_security_packages'])
         self.runtime['libc6'] = self.versions['libc6']
         self.verify_files_only()
         with self.assertRaisesRegex(ValueError, 'drift'):
-            module.verify_legacy_wrapper(self.root)
+            module.verify_legacy_wrapper(self.data)
 
     def verify_files_only(self):
         for filename, data in [('builder-packages.tsv', self.builder), ('runtime-packages.tsv', self.runtime)]:
-            (self.root / filename).write_text(''.join(name + '\t' + version + '\n' for name, version in data.items()), encoding='utf-8')
+            self.data[filename] = ''.join(name + '\t' + version + '\n' for name, version in data.items())
+
+    def test_inventory_text_preserves_bytes_and_rejects_malformed_rows(self):
+        result = self.verify()
+        self.assertEqual(result['backport_manifest_sha256'], hashlib.sha256(
+            self.data['backports-manifest.json'].encode('utf-8')).hexdigest())
+        with self.assertRaisesRegex(ValueError, 'Malformed'):
+            module.inventory('libc6\tversion\textra\n')
+        with self.assertRaisesRegex(ValueError, 'Duplicate'):
+            module.inventory('libc6\tversion\nlibc6:amd64\tversion\n')
 
 
 if __name__ == '__main__':
