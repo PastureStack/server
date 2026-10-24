@@ -4,6 +4,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import subprocess
 from pathlib import Path
 import sys
 import tempfile
@@ -19,6 +20,18 @@ SPEC.loader.exec_module(MODULE)
 
 
 class Pcre2Backport(unittest.TestCase):
+    def test_job_flags_are_literal_and_untrusted_lock_override_is_rejected(self):
+        self.assertEqual('-j2', MODULE.job_option(2))
+        self.assertEqual('-j4', MODULE.job_option(4))
+        for value in [0, 1, 32, '2', '-j2;false']:
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                MODULE.job_option(value)
+        result = subprocess.run([sys.executable, str(HERE / 'build-pcre2-backport.py'),
+                                 '--validate-lock', '--lock', str(HERE / 'pcre2.lock.json')],
+                                capture_output=True, text=True)
+        self.assertEqual(2, result.returncode)
+        self.assertIn('unrecognized arguments: --lock', result.stderr)
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix='pcre2-backport-contract-')
         self.addCleanup(self.temporary.cleanup)

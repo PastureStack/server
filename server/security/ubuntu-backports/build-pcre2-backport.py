@@ -21,6 +21,7 @@ import tempfile
 import urllib.request
 
 HERE = Path(__file__).resolve().parent
+LOCK_FILE = HERE / 'pcre2.lock.json'
 PACKAGES = ['libpcre2-8-0', 'libpcre2-posix3']
 SOURCE_FILES = {'pcre2_10.46-1build1.dsc', 'pcre2_10.46.orig.tar.gz',
                 'pcre2_10.46-1build1.diff.gz'}
@@ -36,6 +37,15 @@ def require(condition, message):
 
 def digest(file):
     return hashlib.sha256(file.read_bytes()).hexdigest()
+
+
+def job_option(jobs):
+    # Select a literal argv token; never synthesize commands from CLI input.
+    if jobs == 2:
+        return '-j2'
+    if jobs == 4:
+        return '-j4'
+    raise ValueError('Build jobs must be 2 or 4')
 
 
 def load_lock(file):
@@ -308,7 +318,7 @@ def build(args, lock):
              ' -- PastureStack maintainers <pasturestack@users.noreply.github.com>  ' + date + '\n\n')
     changelog.write_text(entry + changelog.read_text(encoding='utf-8'), encoding='utf-8')
     run(['dpkg-checkbuilddeps'], source, environment, log)
-    run(['dpkg-buildpackage', '-b', '-us', '-uc', '-j' + str(args.jobs)], source, environment, log)
+    run(['dpkg-buildpackage', '-b', '-us', '-uc', job_option(args.jobs)], source, environment, log)
     require({name: digest(source / name) for name in packaging} == packaging,
             'Build changed Debian packaging inputs')
     tests = test_receipt(source)
@@ -317,7 +327,7 @@ def build(args, lock):
     for item in selected:
         shutil.copyfile(work / item['file'], output / item['file'])
     shutil.copyfile(log, output / 'build.log')
-    shutil.copyfile(args.lock, output / 'pcre2.lock.json')
+    shutil.copyfile(LOCK_FILE, output / 'pcre2.lock.json')
     shutil.copyfile(lifecycle_file, output / lifecycle['name'])
     shutil.copyfile(source / 'debian/copyright', output / 'COPYRIGHT')
     for result in tests:
@@ -333,36 +343,34 @@ def build(args, lock):
     (output / 'builder-packages.tsv').write_text(capture(
         ['dpkg-query', '--show', '--showformat=${binary:Package}\t${Version}\n'],
         work, environment) + '\n', encoding='utf-8')
-    provenance = {'schemaVersion': 1, 'identity': lock['identity'], 'sourceLockSha256': digest(args.lock),
+    provenance = {'schemaVersion': 1, 'identity': lock['identity'], 'sourceLockSha256': digest(LOCK_FILE),
                   'sourceDateEpoch': lock['sourceDateEpoch'], 'sourceFiles': lock['sourceFiles'],
                   'upstream': lock['upstream'], 'patches': lock['patches'], 'fixedCves': lock['fixedCves'],
                   'debianPackagingInputSha256': packaging, 'buildEnvironment': environment,
-                  'buildCommand': ['dpkg-buildpackage', '-b', '-us', '-uc', '-j' + str(args.jobs)],
+                  'buildCommand': ['dpkg-buildpackage', '-b', '-us', '-uc', job_option(args.jobs)],
                   'tests': tests, 'runtimePackages': selected,
                   'scope': 'Ubuntu packaging built all configured widths/JIT; only two runtime .debs exported',
                   'signaturePolicy': 'Source bytes are SHA-256 pinned from official Ubuntu HTTPS; no Canonical signing claim for custom outputs.'}
     (output / 'provenance.json').write_text(json.dumps(provenance, indent=2) + '\n', encoding='utf-8')
-    (output / 'manifest.tsv').write_text('lock-sha256\t' + digest(args.lock) + '\n' + ''.join(
+    (output / 'manifest.tsv').write_text('lock-sha256\t' + digest(LOCK_FILE) + '\n' + ''.join(
         '\t'.join([item['package'], item['version'], item['architecture'], item['sha256'], item['file']]) + '\n'
         for item in selected), encoding='utf-8')
     (output / 'SHA256SUMS').write_text(''.join(digest(file) + '  ' + file.name + '\n'
         for file in sorted(output.iterdir()) if file.is_file()), encoding='utf-8')
-    print('PCRE2_BACKPORT_BUILT packages=2 tests=3 lock=' + digest(args.lock), flush=True)
+    print('PCRE2_BACKPORT_BUILT packages=2 tests=3 lock=' + digest(LOCK_FILE), flush=True)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--lock', type=Path, default=HERE / 'pcre2.lock.json')
     parser.add_argument('--validate-lock', action='store_true')
     parser.add_argument('--output-dir', type=Path)
     parser.add_argument('--work-dir', type=Path)
     parser.add_argument('--cache-dir', type=Path)
-    parser.add_argument('--jobs', type=int, default=2)
+    parser.add_argument('--jobs', type=int, choices=(2, 4), default=2)
     args = parser.parse_args()
-    require(1 <= args.jobs <= 32, 'Build jobs must be between 1 and 32')
-    lock = load_lock(args.lock)
+    lock = load_lock(LOCK_FILE)
     if args.validate_lock:
-        print('PCRE2_BACKPORT_LOCK_OK sha256=' + digest(args.lock))
+        print('PCRE2_BACKPORT_LOCK_OK sha256=' + digest(LOCK_FILE))
         return
     require(args.output_dir is not None, '--output-dir is required for a native build')
     build(args, lock)
