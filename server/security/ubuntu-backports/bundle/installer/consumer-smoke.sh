@@ -55,6 +55,8 @@ sha256sum /etc/ld.so.cache >"$evidence/ld-so-cache-before.sha256"
 "$data/install-existing-backports" --verify-installed >"$evidence/verify.json"
 cat "$evidence/install.json" "$evidence/verify.json"
 jq -e --argjson expected "$expected" '.status == "installed-and-verified" and .providerPreserved and .configurationPreserved and (.packages | length) == $expected and (.beforeMissingDocumentation | length) > 0 and (.exactPathIncludes | length) > 0' "$evidence/install.json" >/dev/null
+jq -e '.beforeMissingTranslations | type == "array"' "$evidence/install.json" >/dev/null
+jq -e '.exactPathIncludes | any(startswith("/usr/share/locale/") and endswith(".mo"))' "$evidence/install.json" >/dev/null
 jq -e '.status == "verified"' "$evidence/verify.json" >/dev/null
 cmp <(jq -c '.packages|sort' "$evidence/install.json") <(jq -c '.packages|sort' "$evidence/verify.json")
 if [[ "$provider" == gnu ]]; then
@@ -69,7 +71,7 @@ provider_state >"$evidence/provider-after.tsv"
 cmp "$evidence/packages-before.tsv" "$evidence/packages-after.tsv"
 cmp "$evidence/provider-before.tsv" "$evidence/provider-after.tsv"
 while IFS= read -r path; do
-    case "$path" in /usr/share/doc/*|/usr/share/man/*|/usr/share/info/*) ;; *) exit 1 ;; esac
+    case "$path" in /usr/share/doc/*|/usr/share/man/*|/usr/share/info/*|/usr/share/locale/*/LC_MESSAGES/*.mo) ;; *) exit 1 ;; esac
     test -e "$path" || test -L "$path"
 done < <(jq -r '.exactPathIncludes[]' "$evidence/install.json")
 test -z "$(dpkg --audit)"
@@ -87,6 +89,7 @@ getconf GNU_LIBC_VERSION | tee "$evidence/glibc-version.txt" | grep -Fx 'glibc 2
 ldd /usr/lib/x86_64-linux-gnu/libXrender.so.1 >"$evidence/libxrender-loader.txt"
 if grep -F 'not found' "$evidence/libxrender-loader.txt"; then exit 1; fi
 printf '%s\n' '{"numbers":[1,2,3]}' | jq -e '.numbers | add == 6'
+timeout 30 /consumer-libjq-probe | tee "$evidence/libjq-embedding.txt"
 test "$(id -u)" = 0
 test "$(id -g)" = 0
 id -G >"$evidence/id-groups.txt"
@@ -96,5 +99,5 @@ getent passwd root | tee "$evidence/getent-root.txt" | grep -E '^root:[^:]*:0:0:
 test "$input_manifest_sha" = "$(sha256sum "$data/manifest.json" | awk '{print $1}')"
 jq -n --arg provider "$provider" --arg manifest "$input_manifest_sha" \
     --slurpfile receipt "$evidence/install.json" \
-    '{schemaVersion:1,provider:$provider,status:"PASS",inputManifestSha256:$manifest,selectedPackages:$receipt[0].packages,checks:["batch-install","verify-installed","package-set","provider","docs-restored","glibc-loader","jq","id","p11-kit","grep","getent"]}' >"$evidence/result.json"
+    '{schemaVersion:1,provider:$provider,status:"PASS",inputManifestSha256:$manifest,selectedPackages:$receipt[0].packages,checks:["batch-install","verify-installed","package-set","provider","docs-restored","glibc-loader","jq","libjq-RTLD_NOW-TLS-threads","id","p11-kit","grep","getent"]}' >"$evidence/result.json"
 cat "$evidence/result.json"

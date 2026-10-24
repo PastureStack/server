@@ -333,7 +333,8 @@ class Boundaries(unittest.TestCase):
                               if provider == 'uutils' or n != 'rust-coreutils')
             result = {'schemaVersion': 1, 'provider': provider, 'status': 'PASS', 'inputManifestSha256': digest,
                       'selectedPackages': selected, 'checks': ['batch-install', 'verify-installed', 'package-set',
-                        'provider', 'docs-restored', 'glibc-loader', 'jq', 'id', 'p11-kit', 'grep', 'getent']}
+                        'provider', 'docs-restored', 'glibc-loader', 'jq', 'libjq-RTLD_NOW-TLS-threads',
+                        'id', 'p11-kit', 'grep', 'getent']}
             if wrong and provider == 'gnu': wrong(result)
             source = work / ('consumer-' + provider); source.mkdir()
             Q.write_json(source / 'result.json', result)

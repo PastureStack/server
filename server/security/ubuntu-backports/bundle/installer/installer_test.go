@@ -411,10 +411,11 @@ func TestNativeELFABIRejectsDroppedSymbols(t *testing.T) {
 	if e.SONAME == nil || len(e.DefinedSymbols) == 0 {
 		t.Fatal("native amd64 libc fixture lacks SONAME/exports")
 	}
-	p := Payload{ELF: []ELF{e}}
-	must(t, checkABI("/", p))
-	p.ELF[0].DefinedSymbols = []string{}
-	if err := checkABI("/", p); err == nil || !strings.Contains(err.Error(), "dropped exported symbol") {
+	original, err := inspectABI(library, b)
+	must(t, err)
+	changed := original
+	changed.Exports = []abiSymbol{}
+	if err := compatibleLibrary(original, changed, nil); err == nil || !strings.Contains(err.Error(), "dropped exported symbol") {
 		t.Fatalf("ABI loss was not rejected: %v", err)
 	}
 }

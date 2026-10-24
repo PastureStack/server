@@ -253,31 +253,3 @@ func verifyPayload(root string, p Payload) error {
 	}
 	return nil
 }
-func checkABI(root string, p Payload) error {
-	for _, candidate := range p.ELF {
-		if candidate.SONAME == nil {
-			continue
-		}
-		_, b, err := installedFile(root, File{Path: candidate.Path})
-		if err != nil {
-			return err
-		}
-		old, err := inspectELF(candidate.Path, b)
-		if err != nil {
-			return err
-		}
-		if !reflect.DeepEqual(old.SONAME, candidate.SONAME) || !reflect.DeepEqual(old.Needed, candidate.Needed) {
-			return fmt.Errorf("library SONAME/NEEDED changed: %s", candidate.Path)
-		}
-		available := map[string]bool{}
-		for _, symbol := range candidate.DefinedSymbols {
-			available[symbol] = true
-		}
-		for _, symbol := range old.DefinedSymbols {
-			if !available[symbol] {
-				return fmt.Errorf("library dropped exported symbol %s: %s", symbol, candidate.Path)
-			}
-		}
-	}
-	return nil
-}

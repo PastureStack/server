@@ -24,6 +24,7 @@ type Receipt struct {
 	Status                     string   `json:"status"`
 	Packages                   []string `json:"packages"`
 	BeforeMissingDocumentation []string `json:"beforeMissingDocumentation"`
+	BeforeMissingTranslations  []string `json:"beforeMissingTranslations"`
 	ExactPathIncludes          []string `json:"exactPathIncludes"`
 	ProviderPreserved          bool     `json:"providerPreserved,omitempty"`
 	ConfigurationPreserved     bool     `json:"configurationPreserved,omitempty"`
@@ -107,7 +108,7 @@ func parseControl(b []byte) (map[string]string, error) {
 	}
 	return result, nil
 }
-func (i Installer) archive(p Package, payload Payload) error {
+func (i Installer) archive(p Package, payload Payload, qualified map[string][]byte) error {
 	archive := filepath.Join(i.bundle, filepath.FromSlash(p.Archive.Path))
 	b, err := i.run.Run("/usr/bin/dpkg-deb", "--field", archive)
 	if err != nil {
@@ -128,7 +129,17 @@ func (i Installer) archive(p Package, payload Payload) error {
 	if err != nil {
 		return err
 	}
-	return validateArchive(b, payload)
+	images, err := verifiedArchiveELFs(b, payload)
+	if err != nil {
+		return err
+	}
+	for name, content := range images {
+		if previous, exists := qualified[name]; exists && digest(previous) != digest(content) {
+			return fmt.Errorf("conflicting qualified ELF path: %s", name)
+		}
+		qualified[name] = content
+	}
+	return nil
 }
 
 var exactDependency = regexp.MustCompile(`(?:^|[,|])\s*([a-z0-9][a-z0-9+.-]*)(?::[a-z0-9-]+)?\s*\(=\s*([^()]+)\)`)
@@ -223,12 +234,32 @@ func documentation(name, pkg string) bool {
 	return name == "usr/share/doc/"+pkg || strings.HasPrefix(name, "usr/share/doc/"+pkg+"/") || strings.HasPrefix(name, "usr/share/man/") || strings.HasPrefix(name, "usr/share/info/")
 }
 
+var translationPath = regexp.MustCompile(`^usr/share/locale/[A-Za-z][A-Za-z0-9_.@-]*/LC_MESSAGES/[^/]+\.mo$`)
+
+// Minimal Ubuntu images exclude message catalogs as well as documentation.
+// Restore only exact SHA-bound, non-executable catalog files from a selected
+// package. Program/library exclusions remain errors; no dpkg rule is changed.
+func restorablePackageData(file File, pkg string, elfs []ELF) bool {
+	if documentation(file.Path, pkg) {
+		return true
+	}
+	if file.Type != "file" || file.Mode&0111 != 0 || !translationPath.MatchString(file.Path) {
+		return false
+	}
+	for _, image := range elfs {
+		if image.Path == file.Path {
+			return false
+		}
+	}
+	return true
+}
+
 var missingLine = regexp.MustCompile(`^missing\s+(/\S+)$`)
 
 func beforeVerify(output []byte, p Package, payload Payload, rules []pathRule) ([]string, error) {
 	allowed := map[string]bool{}
 	for _, f := range payload.Files {
-		if documentation(f.Path, p.Name) && excluded(f.Path, rules) {
+		if restorablePackageData(f, p.Name, payload.ELF) && excluded(f.Path, rules) {
 			allowed["/"+f.Path] = true
 		}
 	}
@@ -360,7 +391,7 @@ func unchangedInventory(before, after map[string]Installed, selected []Package) 
 	return nil
 }
 func (i Installer) Execute(install bool) (Receipt, error) {
-	r := Receipt{SchemaVersion: 1, BundleVersion: "0.1.0", Packages: []string{}, BeforeMissingDocumentation: []string{}, ExactPathIncludes: []string{}}
+	r := Receipt{SchemaVersion: 1, BundleVersion: "0.1.0", Packages: []string{}, BeforeMissingDocumentation: []string{}, BeforeMissingTranslations: []string{}, ExactPathIncludes: []string{}}
 	if err := i.platform(); err != nil {
 		return r, err
 	}
@@ -376,6 +407,7 @@ func (i Installer) Execute(install bool) (Receipt, error) {
 		return r, err
 	}
 	selected := []Package{}
+	qualified := map[string][]byte{}
 	for _, p := range m.Packages {
 		old, exists := installed[p.Name]
 		if !exists {
@@ -390,7 +422,7 @@ func (i Installer) Execute(install bool) (Receipt, error) {
 		if _, err = i.run.Run("/usr/bin/dpkg", "--compare-versions", old.Version, "le", p.Version); err != nil {
 			return r, fmt.Errorf("refuse downgrade: %s", p.Name)
 		}
-		if err = i.archive(p, payloads[p.Name]); err != nil {
+		if err = i.archive(p, payloads[p.Name], qualified); err != nil {
 			return r, err
 		}
 		selected = append(selected, p)
@@ -429,20 +461,27 @@ func (i Installer) Execute(install bool) (Receipt, error) {
 		if err != nil {
 			return r, err
 		}
-		r.BeforeMissingDocumentation = append(r.BeforeMissingDocumentation, missing...)
+		for _, name := range missing {
+			if documentation(strings.TrimPrefix(name, "/"), p.Name) {
+				r.BeforeMissingDocumentation = append(r.BeforeMissingDocumentation, name)
+			} else {
+				r.BeforeMissingTranslations = append(r.BeforeMissingTranslations, name)
+			}
+		}
 		for _, f := range payloads[p.Name].Files {
 			if excluded(f.Path, rules) {
-				if !documentation(f.Path, p.Name) {
+				if !restorablePackageData(f, p.Name, payloads[p.Name].ELF) {
 					return r, fmt.Errorf("dpkg excludes a runtime payload path: %s", f.Path)
 				}
 				includes = append(includes, "/"+f.Path)
 			}
 		}
-		if err = checkABI(i.root, payloads[p.Name]); err != nil {
+		if err = checkABI(i.root, payloads[p.Name], qualified); err != nil {
 			return r, err
 		}
 	}
 	r.BeforeMissingDocumentation = unique(r.BeforeMissingDocumentation)
+	r.BeforeMissingTranslations = unique(r.BeforeMissingTranslations)
 	r.ExactPathIncludes = unique(includes)
 	before, err := i.snapshot(installed)
 	if err != nil {
