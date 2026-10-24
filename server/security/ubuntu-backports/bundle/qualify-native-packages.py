@@ -31,6 +31,10 @@ ROOT = HERE.parents[3]
 LOCK_FILE = HERE / 'source-inputs.lock.json'
 RUST_AUDIT_FILE = HERE / 'rust-coreutils-original18-source-closure.json'
 RUST_AUDIT_RECEIPT_SHA = '73189028622c0a0fc074067b4c5b8521094921531f95cf3e68073baaebd2fbbd'
+GLIBC_AUDIT_FILE = HERE / 'glibc-nscd-source-closure.json'
+GUARD_SPEC = importlib.util.spec_from_file_location('backport_metadata_guard', HERE / 'verify-consumer-evidence.py')
+GUARD = importlib.util.module_from_spec(GUARD_SPEC)
+GUARD_SPEC.loader.exec_module(GUARD)
 WORK = Path(tempfile.gettempdir()) / 'pasturestack-ubuntu-security-backports-v0.1.0'
 REPO = 'PastureStack/server'
 PLATFORM = {'distribution': 'ubuntu', 'release': '26.04', 'architecture': 'amd64'}
@@ -153,7 +157,50 @@ def load_lock(ready=False):
                 and safe_name(p['file']).name == p['file'] and re.fullmatch('[0-9a-f]{64}', p['sha256']),
                 'Unexpected pinned PCRE2 package')
     load_rust_source_audit(lock['nativeInputs']['rust-coreutils'])
+    require(all(GUARD.GLIBC_NSCD_CVE not in item['fixedVulnerabilities']
+                for item in [lock['pcre2'], *lock['nativeInputs'].values()]),
+            'nscd code absence must never be recorded as a fixed vulnerability')
+    if lock['nativeInputs']['glibc']['status'] != 'pending':
+        load_glibc_nscd_source_audit(lock['nativeInputs']['glibc'], ready=ready)
     return lock
+
+
+def load_glibc_nscd_source_audit(item, ready=False):
+    ref = item.get('codeAbsenceProof', {})
+    require(ref.get('path') == GLIBC_AUDIT_FILE.name and file_sha(GLIBC_AUDIT_FILE) == ref.get('sha256'),
+            'glibc nscd public source proof is missing or changed')
+    public = json.loads(GLIBC_AUDIT_FILE.read_text(encoding='utf-8'))
+    if public.get('status') == 'pending-source-closure':
+        require(GUARD.GLIBC_NSCD_PROOF_SHA256 is None and public['cve'] == GUARD.GLIBC_NSCD_CVE
+                and public['platform'] == PLATFORM and 'audit' not in public,
+                'Pending glibc proof must not claim a completed source audit')
+        require(not ready, 'glibc nscd complete source audit is pending; publication is blocked')
+        return public
+    GUARD.validate_glibc_nscd_source(public, item)
+    native = json.loads((HERE.parent / 'glibc/glibc.lock.json').read_text(encoding='utf-8'))
+    require(public['sourceIdentity'] == {key: native[key] for key in ('ubuntuSourceVersion', 'sourceFiles', 'patches')},
+            'glibc nscd audit differs from the exact Ubuntu/custom patch source inputs')
+    return public
+
+
+def glibc_nscd_qualification(item, packages, payloads):
+    public = load_glibc_nscd_source_audit(item, ready=True)
+    selected = {p['name']: p for p in packages if p['family'] == 'glibc'}
+    audited = {p['name']: p for p in public['audit']['packages']}
+    require(set(selected) == set(FAMILIES['glibc']), 'Wrong glibc absence payload catalog')
+    for name, payload in payloads.items():
+        require(name in selected and payload['package'] == name
+                and payload['version'] == GUARD.GLIBC_NSCD_VERSION
+                and payload['source'] == 'glibc' and payload['architecture'] == 'amd64'
+                and sha(GUARD.canonical_json(payload)) == selected[name]['payload']['sha256']
+                and selected[name]['payload']['sha256'] == audited[name]['qualifierPayload']['sha256']
+                and not any(PurePosixPath(row['path']).name == 'nscd' for row in payload['files']),
+                'A selected glibc payload contains or cannot exclude the standalone nscd daemon')
+    require(set(payloads) == set(selected), 'Actual glibc payload evidence is incomplete')
+    return {'sourceClosure': public, 'sourceClosureSha256': file_sha(GLIBC_AUDIT_FILE),
+            'packages': {name: {'purl': purl(p), 'archiveSha256': p['archive']['sha256'],
+                         'payloadSha256': p['payload']['sha256'], 'nscdDaemonPaths': []}
+                         for name, p in sorted(selected.items())}}
 
 
 def load_rust_source_audit(item, provenance=None):
@@ -671,7 +718,7 @@ def qualify(lock):
                        'sourceFiles': {file.relative_to(ROOT).as_posix(): file_sha(file)
                           for file in sorted((HERE / 'installer').rglob('*')) if file.is_file()}}
     guard_proof = export_metadata_guard(output)
-    families, packages, qualifications = [], [], []
+    families, packages, qualifications, glibc_payloads = [], [], [], {}
     for family in FAMILIES:
         if family == 'pcre2':
             item = lock['pcre2']
@@ -706,11 +753,16 @@ def qualify(lock):
             archive = output / 'debs' / package['file']; archive.parent.mkdir(exist_ok=True)
             archive.write_bytes(files[package['file']])
             payload = package_payload(archive, package, WORK / 'elf-probes')
+            if family == 'glibc': glibc_payloads[package['name']] = payload
             payload_path = output / 'payload' / (package['name'] + '.json'); write_json(payload_path, payload)
             packages.append({'name': package['name'], 'family': family, 'version': package['version'],
                              'architecture': 'amd64', 'source': family,
                              'archive': {'path': 'debs/' + package['file'], 'sha256': package['sha256']},
                              'payload': {'path': 'payload/' + package['name'] + '.json', 'sha256': file_sha(payload_path)}})
+    glibc = next(q for q in qualifications if q['name'] == 'glibc')
+    glibc['codeAbsence'] = glibc_nscd_qualification(lock['nativeInputs']['glibc'], packages, glibc_payloads)
+    absence_purls = GUARD.validate_glibc_nscd_qualification({q['name']: q for q in qualifications},
+                                                         {p['name']: p for p in packages}, lock)
     write_json(output / 'qualification.json', {'schemaVersion': 1, 'bundleVersion': '0.1.0', 'platform': PLATFORM,
                'status': 'qualified', 'families': qualifications, 'sourceLockSha256': file_sha(LOCK_FILE),
                'installer': installer_proof,
@@ -738,6 +790,7 @@ def qualify(lock):
                                 else 'https://www.cve.org/CVERecord?id=') + vulnerability, 'name': vulnerability},
                                'products': [{'@id': purl(p)} for p in packages if p['family'] == family],
                                'status': 'fixed', 'action_statement': item['vexScope']})
+    statements.append(GUARD.glibc_nscd_statement(absence_purls))
     write_json(output / 'openvex.json', {'@context': 'https://openvex.dev/ns/v0.2.0',
                '@id': 'https://github.com/PastureStack/server/ubuntu-security-backports/0.1.0',
                'author': 'PastureStack', 'timestamp': lock['vexTimestamp'], 'version': 1, 'statements': statements})
@@ -749,6 +802,8 @@ def record_consumer_tests():
     output = WORK / 'context' / 'out'
     qualification = json.loads((output / 'qualification.json').read_text())
     require('consumerFixtures' not in qualification, 'Consumer qualification cannot be overwritten')
+    semantics = json.loads((WORK / 'glibc-vex-semantic/result.json').read_text())
+    GUARD.validate_glibc_vex_semantics(semantics, file_sha(output / 'openvex.json'), file_sha(output / 'source-inputs.lock.json'))
     manifest_sha = file_sha(output / 'manifest.json')
     records = []
     checks = ['batch-install', 'verify-installed', 'package-set', 'provider', 'docs-restored',
@@ -773,6 +828,7 @@ def record_consumer_tests():
         records.append({'provider': provider, 'status': 'PASS', 'inputManifestSha256': manifest_sha,
                         'selectedPackages': selected, 'checks': checks, 'evidence': evidence})
     qualification['consumerFixtures'] = records
+    qualification['glibcNscdVexSemanticTest'] = semantics
     qualification['consumerStatus'] = ('Both isolated provider fixtures passed actual installation and verification; '
                                        'real consumer image rootfs scanning and product acceptance remain required.')
     write_json(output / 'qualification.json', qualification)
