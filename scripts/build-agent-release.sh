@@ -14,7 +14,7 @@ python3 scripts/test-agent-package-consistency.py
 
 case "${COMPONENT:-}" in
   base) repository=ghcr.io/pasturestack/node-agent-base; version=v0.3.8 ;;
-  agent) repository=ghcr.io/pasturestack/node-agent; version=v1.2.33 ;;
+  agent) repository=ghcr.io/pasturestack/node-agent; version=v1.2.34 ;;
   *) echo 'Unsupported agent component' >&2; exit 1 ;;
 esac
 [[ "${PUBLISH:-false}" = true || "${PUBLISH:-false}" = false ]]
@@ -80,8 +80,8 @@ if [[ "$COMPONENT" = base ]]; then
   SHARE_MNT_BIN="$scratch/share-mnt" R_BIN="$scratch/r" IMAGE="$candidate" \
     bash agent-base/build-image.sh |& tee "$evidence/build.log"
 else
-  grep -Eq '^FROM ghcr.io/pasturestack/node-agent-base:v0\.3\.7@sha256:[0-9a-f]{64}$' agent/Dockerfile
-  grep -Fq 'org.opencontainers.image.version="v1.2.33"' agent/Dockerfile
+  grep -Eq '^FROM ghcr.io/pasturestack/node-agent-base:v0\.3\.8@sha256:[0-9a-f]{64}$' agent/Dockerfile
+  grep -Fq 'org.opencontainers.image.version="v1.2.34"' agent/Dockerfile
   IMAGE="$candidate" bash agent/build-image.sh |& tee "$evidence/build.log"
 fi
 
