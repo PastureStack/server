@@ -14,7 +14,7 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.552}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.553}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
@@ -130,7 +130,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-6d4
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.552}
+image=${IMAGE:-pasturestack-validation/server:v1.6.553}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -399,8 +399,8 @@ for marker in \
     PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download \
     CATTLE_API_UI_VERSION=1.1.20 \
     CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}" \
-    DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.33 \
-    DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.33 \
+    DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.34 \
+    DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.34 \
     DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.33 \
     DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.33 \
     RC16_GO_AGENT_VERSION="${node_agent_version}" \
@@ -496,9 +496,9 @@ for marker in \
     PASTURESTACK_MACHINE_DRIVER_BINARY_SHA256="${machine_driver_binary_sha256}" \
     PASTURESTACK_PACKET_DRIVER_BINARY_SHA256="${packet_driver_binary_sha256}" \
     PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-08-28 \
-    PASTURESTACK_CATALOG_COMMIT=72b0d9767306baf7091fca021d0a2b6bdbca5d51 \
-    'DEFAULT_CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"72b0d9767306baf7091fca021d0a2b6bdbca5d51"}}}' \
-    'CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"72b0d9767306baf7091fca021d0a2b6bdbca5d51"}}}'; do
+    PASTURESTACK_CATALOG_COMMIT=00eec89e5fdeb9728c1c41babccad8b7dfc8b297 \
+    'DEFAULT_CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"00eec89e5fdeb9728c1c41babccad8b7dfc8b297"}}}' \
+    'CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"00eec89e5fdeb9728c1c41babccad8b7dfc8b297"}}}'; do
     test "$(grep -Fxc "$marker" <<<"$image_environment")" = 1
 done
 
@@ -963,6 +963,13 @@ EOF
             return 1
         fi
     }
+    test "$(dpkg-query -W -f='"'"'${Version}'"'"' libbrotli1)" = 1.2.0-3build1+pasturestack.1
+    brotli_integrity="$(dpkg --verify libbrotli1)"
+    test -z "$brotli_integrity"
+    for brotli_library in libbrotlicommon.so.1 libbrotlidec.so.1 libbrotlienc.so.1; do
+        brotli_linkage="$(ldd -r "/usr/lib/x86_64-linux-gnu/${brotli_library}" 2>&1)"
+        require_resolved_linkage "$brotli_linkage"
+    done
     for curl_package in curl libcurl3t64-gnutls libcurl4t64; do
         test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${curl_package}")" = \
             "8.18.0-1ubuntu2.8"

@@ -3,7 +3,7 @@ ARG ARTIFACT_HELPER_IMAGE=golang:1.27.3-bookworm@sha256:972b4110ba0f47539a975c31
 ARG UBUNTU_SECURITY_IMAGE=ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b
 ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403
 
-FROM ghcr.io/pasturestack/ubuntu-security-backports:v0.1.0@sha256:2742a3d429e4e14bc587f6dedc51ded4246cf90bbaedcd86c67d0885e32a6f2a AS ubuntu_security_backports
+FROM ghcr.io/pasturestack/ubuntu-security-backports:v0.1.1@sha256:45d6b507b63a18459ae5cf76afd4d9731f8ef43b9c40e4c3dbb01899e1752b19 AS ubuntu_security_backports
 
 FROM ${ARTIFACT_HELPER_IMAGE} AS temurin_security_runtime
 ADD --checksum=sha256:68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb \
@@ -695,7 +695,7 @@ ARG PER_HOST_SUBNET_VERSION=0.2.5
 ARG PER_HOST_SUBNET_PRODUCER_COMMIT=e102e0bb38d84b0a9cbf87e5458cf1bc74d01904
 ARG PER_HOST_SUBNET_ARCHIVE_SHA256=7237e83e96a64e7f3de64eb86bff9721c4e879c35cda9e9de1e4cb1ba225f298
 ARG PER_HOST_SUBNET_PROVENANCE_SHA256=afa2db0e0755c6bd3ee28e111937c521a6d84e6d71d563e99202cf4693000eaf
-ARG SERVER_RELEASE_TAG=v1.6.552
+ARG SERVER_RELEASE_TAG=v1.6.553
 ARG API_EXPLORER_RELEASE_TAG=v1.1.20
 ARG API_EXPLORER_ARTIFACT_SHA256=c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb
 ARG API_EXPLORER_COMMIT=a586f0dc0aa50df579049a8d4bf26f04400fdf75
@@ -804,10 +804,17 @@ RUN --mount=from=ubuntu_security_backports,source=/out,target=/opt/pasturestack/
     done; \
     "${data}/install-existing-backports" --install-in-docker-build > "${evidence}/install.json"; \
     "${data}/install-existing-backports" --verify-installed > "${evidence}/verify.json"; \
+    test "$(dpkg-query -W -f='${Version}' libbrotli1)" = 1.2.0-3build1+pasturestack.1; \
+    brotli_integrity="$(dpkg --verify libbrotli1)"; \
+    test -z "$brotli_integrity"; \
+    for library in libbrotlicommon.so.1 libbrotlidec.so.1 libbrotlienc.so.1; do \
+      linkage="$(ldd -r "/usr/lib/x86_64-linux-gnu/${library}" 2>&1)"; \
+      if printf '%s\n' "${linkage}" | grep -E 'not found|undefined symbol'; then exit 1; fi; \
+    done; \
     for document in manifest.json qualification.json openvex.json source-inputs.lock.json; do \
       install -m 0644 "${data}/${document}" "${evidence}/${document}"; \
     done; \
-    printf '%s\n' 'ghcr.io/pasturestack/ubuntu-security-backports:v0.1.0@sha256:2742a3d429e4e14bc587f6dedc51ded4246cf90bbaedcd86c67d0885e32a6f2a' > "${evidence}/bundle-image.txt"; \
+    printf '%s\n' 'ghcr.io/pasturestack/ubuntu-security-backports:v0.1.1@sha256:45d6b507b63a18459ae5cf76afd4d9731f8ef43b9c40e4c3dbb01899e1752b19' > "${evidence}/bundle-image.txt"; \
     (cd "${evidence}" && sha256sum manifest.json qualification.json openvex.json source-inputs.lock.json install.json verify.json bundle-image.txt > SHA256SUMS); \
     for package in libc6 libc-bin libc-gconv-modules-extra; do \
       test "$(dpkg-query -W -f='${Version}' "${package}")" = "${GLIBC_RUNTIME_PACKAGE_VERSION}"; \
@@ -1211,8 +1218,8 @@ ENV CATTLE_RANCHER_SERVER_VERSION=${SERVER_RELEASE_TAG}
 ENV CATTLE_RANCHER_CLI_VERSION=v0.6.20
 ENV PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download
 ENV CATTLE_CATTLE_VERSION=${ORCHESTRATION_ENGINE_RELEASE_TAG}
-ENV DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.33
-ENV DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.33
+ENV DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.34
+ENV DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.34
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.33
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.33
 ENV CATTLE_API_UI_VERSION=1.1.20
@@ -1301,6 +1308,6 @@ ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=${VSPHERE_CLI_BUNDLE_VERSION}
 ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_COMMIT=${VSPHERE_CLI_BUNDLE_COMMIT}
 ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256}
 ENV PASTURESTACK_GOVC_BINARY_SHA256=${GOVC_BINARY_SHA256}
-ENV PASTURESTACK_CATALOG_COMMIT=72b0d9767306baf7091fca021d0a2b6bdbca5d51
-ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"72b0d9767306baf7091fca021d0a2b6bdbca5d51"}}}'
-ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"72b0d9767306baf7091fca021d0a2b6bdbca5d51"}}}'
+ENV PASTURESTACK_CATALOG_COMMIT=00eec89e5fdeb9728c1c41babccad8b7dfc8b297
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"00eec89e5fdeb9728c1c41babccad8b7dfc8b297"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"00eec89e5fdeb9728c1c41babccad8b7dfc8b297"}}}'

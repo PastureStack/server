@@ -17,7 +17,7 @@ def require(value, message):
 
 def verify(files):
     docker, build, publisher = (files[name] for name in (DOCKER, BUILD, PUBLISH))
-    image = re.findall(r'^FROM (ghcr.io/pasturestack/ubuntu-security-backports:v0\.1\.0@sha256:'
+    image = re.findall(r'^FROM (ghcr.io/pasturestack/ubuntu-security-backports:v0\.1\.1@sha256:'
                        r'[0-9a-f]{64}) AS ubuntu_security_backports$', docker, re.M)
     require(len(image) == 1 and docker.count("'" + image[0] + "'") == 1, 'Bundle image/retained identity mismatch')
     native = docker.split('AS runtime_security_packages', 1)[1].split('FROM ${BASE_IMAGE}', 1)[0]
@@ -56,6 +56,19 @@ def verify(files):
             'Server absent-package boundary is missing')
     require('install -m 0644 pcre2-backport-provenance.json pcre2-backport.lock.json pcre2-runtime.sha256 /usr/share/pasturestack/security/' in runtime,
             'Legacy verifier metadata is not installed')
+    for marker in ["libbrotli1)\" = 1.2.0-3build1+pasturestack.1", 'dpkg --verify libbrotli1',
+                   'libbrotlicommon.so.1 libbrotlidec.so.1 libbrotlienc.so.1']:
+        require(marker in runtime and marker in build, 'Missing final-rootfs Brotli version/integrity/linkage: ' + marker)
+    require('brotli_linkage="$(ldd -r ' in build and 'require_resolved_linkage "$brotli_linkage"' in build,
+            'Brotli ldd failure must propagate before the linkage text check')
+    require(all('brotli_integrity="$(dpkg --verify libbrotli1)"' in source
+                and 'test -z "$brotli_integrity"' in source for source in (runtime, build)),
+            'Brotli dpkg verification failure must propagate before its empty-output check')
+    for marker in ['consumer-brotli-probe.c', '--entrypoint /tmp/brotli-runtime-probe "$CANDIDATE_IMAGE"',
+                   'PASS: three installed Brotli SONAMEs RTLD_NOW, ordinary compression/decompression']:
+        require(marker in publisher, 'Missing actual final-image ordinary Brotli probe: ' + marker)
+    require('              brotli-runtime.txt' in publisher and '"$evidence/brotli-runtime.txt"' in publisher,
+            'Brotli runtime readback must be checksummed and published')
     require('sha256sum manifest.json qualification.json openvex.json source-inputs.lock.json install.json verify.json bundle-image.txt > SHA256SUMS' in runtime,
             'Seven retained consumer evidence files are not bound')
     require('/opt/java/openjdk/bin/java -version 2>&1 | grep -F' in runtime, 'Final Java/libc readback is missing')
@@ -111,10 +124,21 @@ class ServerBackportContract(unittest.TestCase):
                 verify(dict(FILES, **{PUBLISH: FILES[PUBLISH].replace(old, new)}))
 
     def test_unresolved_bundle_identity_is_rejected(self):
-        broken = re.sub(r'(ubuntu-security-backports:v0\.1\.0@sha256:)[0-9a-f]{64}',
+        broken = re.sub(r'(ubuntu-security-backports:v0\.1\.1@sha256:)[0-9a-f]{64}',
                         r'\1__BUNDLE_DIGEST_PENDING__', FILES[DOCKER])
         with self.assertRaises(AssertionError):
             verify(dict(FILES, **{DOCKER: broken}))
+
+    def test_missing_brotli_runtime_or_published_proof_is_rejected(self):
+        for name, marker in [(DOCKER, 'dpkg --verify libbrotli1'),
+                             (BUILD, 'libbrotlicommon.so.1 libbrotlidec.so.1 libbrotlienc.so.1'),
+                             (BUILD, 'brotli_linkage="$(ldd -r '),
+                             (DOCKER, 'test -z "$brotli_integrity"'),
+                             (BUILD, 'test -z "$brotli_integrity"'),
+                             (PUBLISH, '--entrypoint /tmp/brotli-runtime-probe "$CANDIDATE_IMAGE"'),
+                             (PUBLISH, '              brotli-runtime.txt')]:
+            with self.subTest(name=name), self.assertRaises(AssertionError):
+                verify(dict(FILES, **{name: FILES[name].replace(marker, 'MISSING_BROTLI_CONTROL')}))
 
 
 if __name__ == '__main__':
