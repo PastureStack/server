@@ -44,6 +44,13 @@ def pcre2_api(stage):
 
 
 class Boundaries(unittest.TestCase):
+    def test_semantic_fixture_uses_same_bundle_work_root(self):
+        spec = importlib.util.spec_from_file_location('semantic_paths', HERE / 'test-trivy-glibc-vex.py')
+        semantic = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(semantic)
+        self.assertEqual(semantic.WORK, Q.WORK)
+        self.assertEqual(semantic.FIXTURE, Q.WORK / 'glibc-vex-semantic')
+
     def test_brotli_qualification_replays_owning_receipts_and_three_library_contract(self):
         xml = '<testsuites><testsuite>' + '<testcase status="run"/>' * 12 + '</testsuite></testsuites>'
         python = 'Ran 135 tests in 0.1s\n\nOK\n'

@@ -18,7 +18,7 @@ HERE = Path(__file__).resolve().parent
 GUARD_SPEC = importlib.util.spec_from_file_location('semantic_metadata_guard', HERE / 'verify-consumer-evidence.py')
 GUARD = importlib.util.module_from_spec(GUARD_SPEC)
 GUARD_SPEC.loader.exec_module(GUARD)
-WORK = Path(tempfile.gettempdir()) / 'pasturestack-ubuntu-security-backports-v0.1.0'
+WORK = Path(tempfile.gettempdir()) / 'pasturestack-ubuntu-security-backports-v0.1.1'
 FIXTURE = WORK / 'glibc-vex-semantic'
 CVE = GUARD.GLIBC_NSCD_CVE
 VERSION = GUARD.GLIBC_NSCD_VERSION
