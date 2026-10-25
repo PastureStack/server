@@ -35,7 +35,7 @@ if ! bash -n agent-base/build-image.sh; then
   fail "AGENT_BASE_BUILD_SCRIPT_SYNTAX_INVALID"
 fi
 
-require_marker agent-base/Dockerfile 'org.opencontainers.image.version="v0.3.6"' AGENT_BASE_VERSION_NOT_ROLLED_FORWARD
+require_marker agent-base/Dockerfile 'org.opencontainers.image.version="v0.3.7"' AGENT_BASE_VERSION_NOT_ROLLED_FORWARD
 require_marker agent-base/Dockerfile 'COPY ./share-mnt /usr/bin/share-mnt' AGENT_BASE_SHARE_MNT_NOT_CONTEXT_BACKED
 require_marker agent-base/Dockerfile 'COPY ./r /usr/bin/r' AGENT_BASE_NETWORK_HELPER_NOT_CONTEXT_BACKED
 require_marker agent-base/Dockerfile 'COPY ./update-platform-ssl /usr/bin/update-platform-ssl' AGENT_BASE_SSL_SCRIPT_NOT_CONTEXT_BACKED
@@ -52,7 +52,7 @@ require_marker agent-base/Dockerfile 'echo "${DOCKER_SHA256}  $docker_tgz" | sha
 require_marker agent-base/Dockerfile 'tar xzf "$docker_tgz" -C /usr/bin --strip-components=1 docker/docker' AGENT_BASE_DOCKER_EXTRACT_NOT_FILE_BACKED
 require_marker agent-base/Dockerfile 'echo "${DOCKER_BINARY_SHA256}  /usr/bin/docker" | sha256sum -c -' AGENT_BASE_DOCKER_BINARY_SHA_NOT_CHECKED
 require_marker agent-base/Dockerfile 'rm -f "$docker_tgz"' AGENT_BASE_DOCKER_TMP_NOT_REMOVED
-require_marker agent-base/build-image.sh 'IMAGE=${IMAGE:-ghcr.io/pasturestack/node-agent-base:v0.3.6}' AGENT_BASE_BUILD_DEFAULT_IMAGE_NOT_UPDATED
+require_marker agent-base/build-image.sh 'IMAGE=${IMAGE:-ghcr.io/pasturestack/node-agent-base:v0.3.7}' AGENT_BASE_BUILD_DEFAULT_IMAGE_NOT_UPDATED
 require_marker agent-base/build-image.sh 'SHARE_MNT_BIN="${SHARE_MNT_BIN:-}"' AGENT_BASE_BUILD_SHARE_MNT_INPUT_MISSING
 require_marker agent-base/build-image.sh 'Set SHARE_MNT_BIN to the reviewed mount-propagation binary path before building $IMAGE' AGENT_BASE_BUILD_SHARE_MNT_FAIL_CLOSED_MISSING
 require_marker agent-base/build-image.sh 'cp "$SHARE_MNT_BIN" "$tmpdir/share-mnt"' AGENT_BASE_BUILD_SHARE_MNT_CONTEXT_COPY_MISSING
@@ -60,9 +60,9 @@ require_marker agent-base/build-image.sh 'R_BIN="${R_BIN:-}"' AGENT_BASE_BUILD_N
 require_marker agent-base/build-image.sh 'cp "$R_BIN" "$tmpdir/r"' AGENT_BASE_BUILD_NETWORK_HELPER_CONTEXT_COPY_MISSING
 require_marker agent-base/build-image.sh 'cp ../server/bin/update-platform-ssl "$tmpdir/update-platform-ssl"' AGENT_BASE_BUILD_SSL_SCRIPT_CONTEXT_COPY_MISSING
 
-require_marker agent/Dockerfile 'FROM ghcr.io/pasturestack/node-agent-base:v0.3.6@sha256:1179c549a501551941c3435969ecbd5d6bacc1d9e327895c3f75b9019b461ec9' AGENT_DOCKERFILE_BASE_NOT_UPDATED
-require_marker agent/Dockerfile 'org.opencontainers.image.version="v1.2.32"' AGENT_DOCKERFILE_VERSION_NOT_ROLLED_FORWARD
-require_marker agent/Dockerfile 'ENV RANCHER_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.32' AGENT_DOCKERFILE_SELF_IMAGE_NOT_ROLLED_FORWARD
+require_marker agent/Dockerfile 'FROM ghcr.io/pasturestack/node-agent-base:v0.3.7@sha256:b21453fae656ba81cb427e5f165fd07aff8daee2459d9c4902e200652e9c9632' AGENT_DOCKERFILE_BASE_NOT_UPDATED
+require_marker agent/Dockerfile 'org.opencontainers.image.version="v1.2.33"' AGENT_DOCKERFILE_VERSION_NOT_ROLLED_FORWARD
+require_marker agent/Dockerfile 'ENV RANCHER_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.33' AGENT_DOCKERFILE_SELF_IMAGE_NOT_ROLLED_FORWARD
 require_marker agent/Dockerfile 'io.pasturestack.container.system="node-agent"' AGENT_DOCKERFILE_PASTURESTACK_SYSTEM_LABEL_MISSING
 require_marker agent/Dockerfile 'COPY loglevel /usr/bin/loglevel' AGENT_DOCKERFILE_LOGLEVEL_NOT_CONTEXT_BACKED
 require_marker agent/Dockerfile 'RUN test -s /usr/bin/share-mnt && \' AGENT_DOCKERFILE_BASE_SHARE_MNT_NONEMPTY_CHECK_MISSING
@@ -95,4 +95,4 @@ if [ "$failure_count" -ne 0 ]; then
   exit 1
 fi
 
-printf 'AGENT_BASE_DOWNLOADS_OK base=v0.3.6 agent=v1.2.32 base_share_mnt_nonempty=1 tracked_loglevel=1 docker_cli=29.9.2 python_sha=1 docker_sha=1 remote_legacy_helpers=0\n'
+printf 'AGENT_BASE_DOWNLOADS_OK base=v0.3.7 agent=v1.2.33 base_share_mnt_nonempty=1 tracked_loglevel=1 docker_cli=29.9.2 python_sha=1 docker_sha=1 remote_legacy_helpers=0\n'
