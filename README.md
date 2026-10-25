@@ -11,10 +11,10 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current release
+## Current source candidate
 
-Server [`v1.6.552`](https://github.com/PastureStack/server/releases/tag/v1.6.552)
-includes Ubuntu security backports from verified upstream releases and accepted
+Server `v1.6.552` is a prepared source candidate, not a published image.
+It includes Ubuntu security backports from verified upstream releases and accepted
 fixes. Each image updates only packages already installed, preserving its package
 set, coreutils provider, configuration and library interfaces. The compiler stages
 remain separate from the final runtime.
@@ -24,8 +24,9 @@ Host API `0.38.8` and Temurin `25.0.5+8` retain their verified inputs.
 Node Agent `v1.2.33` uses compatibility base `v0.3.7`; Catalog `v0.3.17`
 references the corresponding verified component images.
 
-See the [release note](docs/releases/server-1.6.552.md),
-[release assets](https://github.com/PastureStack/server/releases/tag/v1.6.552) and
+The published release is [Server v1.6.551](https://github.com/PastureStack/server/releases/tag/v1.6.551),
+with its [publication note](docs/releases/server-1.6.551.md).
+See the [candidate note](docs/releases/server-1.6.552.md) and
 [compatibility contract](COMPATIBILITY.md#server-v16552-runtime-backports)
 for producer identities, immutable image digests, SBOMs and remaining findings.
 
@@ -54,7 +55,8 @@ Maintained CLI `0.6.20` propagates rejected requests as nonzero errors. Legacy `
 ## Quick start
 
 Public GHCR downloads do not require a registry login. Keep all three named volumes.
-The examples below use the numeric `v1.6.552` tag.
+The examples below use the numeric `v1.6.552` tag; run them only after its official release.
+This candidate is not yet available from GHCR.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \

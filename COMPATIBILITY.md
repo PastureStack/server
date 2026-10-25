@@ -2,11 +2,12 @@
 
 <a id="server-v16552-runtime-backports"></a>
 
-## Server v1.6.552 runtime backports
+## Server v1.6.552 prepared, not published
 
-Use the numeric `ghcr.io/pasturestack/server:v1.6.552` image tag. Its exact
-producer, immutable OCI digest, SBOM, original vulnerability report and interpreted
-report are published in the [release assets](https://github.com/PastureStack/server/releases/tag/v1.6.552).
+This source candidate prepares the numeric `ghcr.io/pasturestack/server:v1.6.552`
+image tag. It has not been published. The normal publisher must retain the exact
+producer, OCI digest, SBOM, original vulnerability report and interpreted report
+before the candidate can be used.
 
 The digest-pinned, build-only Ubuntu backport bundle installs only existing
 packages. It retains the original package set, selected coreutils provider and

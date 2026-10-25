@@ -1,4 +1,8 @@
-# Server v1.6.552
+# Server v1.6.552 candidate
+
+Prepared source only; no Server image or release has been published.
+
+## Verified component inputs
 
 This release consumes the qualified Ubuntu security backports in Server and its
 component images. It updates only already-installed packages, preserves the
