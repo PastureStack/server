@@ -56,8 +56,8 @@
     "c/include/brotli/decode.h": "027b91e62e85de6955e6334628b2ba0c77901a449e169fd9f95d6ea1cc91f980"
   },
   "patchedSha256": {
-    "c/dec/decode.c": "6eaa6b923ab4dfa6c1ef4d517f19d4382c646c905d273baa1077b3fb4b27d586",
-    "c/include/brotli/decode.h": "5ef8d5603c9a7fce382cb2e8d0cf0c3bc2e8274f7601957ab671ba3b372937e7"
+    "c/dec/decode.c": "8d7beeafed5ff9f3f00f6e528e92ad6a36059b3549356bed5a9ca3ee16938438",
+    "c/include/brotli/decode.h": "e2f5fdc3ae41e6b7e8986538e421ae79c095541bacf32f2bbfccf8e056405444"
   },
   "ubuntuPackagingSha256": {
     "debian/brotli.install": "c0f06a1e597977eefcd8b2a5eb99e678659de7a3adc59a74365f34ea29af793a",
