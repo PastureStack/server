@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "v1.6.551",
+  "release": "v1.6.552",
   "generatedAt": "2026-10-25T00:00:00Z",
   "policy": {
     "allowedSeverities": [
@@ -110,29 +110,6 @@
       "verifiedAt": "2026-10-23T03:05:10Z",
       "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-88648.json",
       "notes": "Canonical lists Ubuntu 26.04 gnutls28 as vulnerable with its fix deferred. The official OSV range has no fixed event and the current runtime scan has an empty FixedVersion. Retain the raw finding; do not claim remediation or not_affected."
-    },
-    {
-      "vulnerabilityId": "CVE-2026-89092",
-      "severity": "MEDIUM",
-      "vendorStatus": "needs-evaluation",
-      "source": "https://ubuntu.com/security/CVE-2026-89092",
-      "reviewAfter": "2026-10-27",
-      "packages": [
-        {
-          "name": "libc-bin",
-          "installedVersion": "2.43-2ubuntu2.4"
-        },
-        {
-          "name": "libc-gconv-modules-extra",
-          "installedVersion": "2.43-2ubuntu2.4"
-        },
-        {
-          "name": "libc6",
-          "installedVersion": "2.43-2ubuntu2.4"
-        }
-      ],
-      "verifiedAt": "2026-10-20T01:35:18Z",
-      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-89092.json"
     },
     {
       "vulnerabilityId": "CVE-2026-95184",

@@ -13,21 +13,21 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-Server [`v1.6.551`](https://github.com/PastureStack/server/releases/tag/v1.6.551) is published.
-It retains the eight PCRE2 CVE fixes using the upstream-supported 10.46 backports and
-original Ubuntu packaging. The two rebuilt runtime packages retain ABI, JIT,
-POSIX interfaces and hardening. Its standalone Host API archive matches the
-original producer; the incorrect 550 attachment is superseded.
+Server [`v1.6.552`](https://github.com/PastureStack/server/releases/tag/v1.6.552)
+includes Ubuntu security backports from verified upstream releases and accepted
+fixes. Each image updates only packages already installed, preserving its package
+set, coreutils provider, configuration and library interfaces. The compiler stages
+remain separate from the final runtime.
 
 Web Console `1.6.195` and its original runtime SBOM, Engine `v0.183.354`,
 Host API `0.38.8` and Temurin `25.0.5+8` retain their verified inputs.
-The scoped 8080 upgrade and restart passed package/hash/linkage checks,
-regex controls in grep, Git and MariaDB, and three active Host/Agent states.
-Existing configuration, volumes, AppArmor and the previous rollback image remain.
+Node Agent `v1.2.33` uses compatibility base `v0.3.7`; Catalog `v0.3.17`
+references the corresponding verified component images.
 
-See the [551 release note](docs/releases/server-1.6.551.md) and
-[compatibility contract](COMPATIBILITY.md#server-v16551-release-assets)
-for the immutable identity, verified assets and remaining risks.
+See the [release note](docs/releases/server-1.6.552.md),
+[release assets](https://github.com/PastureStack/server/releases/tag/v1.6.552) and
+[compatibility contract](COMPATIBILITY.md#server-v16552-runtime-backports)
+for producer identities, immutable image digests, SBOMs and remaining findings.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -54,14 +54,14 @@ Maintained CLI `0.6.20` propagates rejected requests as nonzero errors. Legacy `
 ## Quick start
 
 Public GHCR downloads do not require a registry login. Keep all three named volumes.
-The examples below use the published numeric `v1.6.551` tag.
+The examples below use the numeric `v1.6.552` tag.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.551
+  ghcr.io/pasturestack/server:v1.6.552
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -69,7 +69,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.551
+    image: ghcr.io/pasturestack/server:v1.6.552
     restart: unless-stopped
     ports:
       - "8080:8080"

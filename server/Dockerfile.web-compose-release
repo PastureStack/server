@@ -3,6 +3,8 @@ ARG ARTIFACT_HELPER_IMAGE=golang:1.27.3-bookworm@sha256:972b4110ba0f47539a975c31
 ARG UBUNTU_SECURITY_IMAGE=ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b
 ARG BASE_IMAGE=ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403
 
+FROM ghcr.io/pasturestack/ubuntu-security-backports:v0.1.0@sha256:2742a3d429e4e14bc587f6dedc51ded4246cf90bbaedcd86c67d0885e32a6f2a AS ubuntu_security_backports
+
 FROM ${ARTIFACT_HELPER_IMAGE} AS temurin_security_runtime
 ADD --checksum=sha256:68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb \
     https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jdk_x64_linux_hotspot_25.0.5_8.tar.gz \
@@ -547,7 +549,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /build
 COPY scripts/download-ubuntu-security-updates.sh /usr/local/libexec/pasturestack/download-ubuntu-security-updates.sh
 COPY security/ubuntu-security-packages.lock /build/ubuntu-security-packages.lock
-COPY security/ubuntu-backports/build-pcre2-backport.py security/ubuntu-backports/pcre2.lock.json /build/ubuntu-backports/
 ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd \
     https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb \
     /tmp/ca-certificates.deb
@@ -656,23 +657,26 @@ RUN set -eux; \
 RUN sh /usr/local/libexec/pasturestack/download-ubuntu-security-updates.sh \
       /build/ubuntu-security-packages.lock /etc/ssl/certs/ca-certificates.crt /out/security-updates
 
-# Keep Canonical binaries and first-party source rebuilds separate. The latter
-# retains Ubuntu's packaging/ABI and applies only upstream's approved backports.
-RUN set -eux; \
-    apt-get install -y --no-install-recommends build-essential debhelper dpkg-dev dh-autoreconf fakeroot patch binutils python3; \
-    python3 /build/ubuntu-backports/build-pcre2-backport.py \
-      --output-dir /out/pcre2 --work-dir /build/pcre2-backport-work --jobs 2; \
-    mkdir -p /tmp/pcre2-runtime; \
+# The immutable bundle was qualified by the released Server551 producer. This
+# builder only derives the legacy PCRE runtime receipt from those exact deb bytes.
+RUN --mount=from=ubuntu_security_backports,source=/out,target=/bundle,ro \
+    set -eux; \
+    cd /bundle; \
+    sha256sum --check --status SHA256SUMS; \
+    mkdir -p /out /tmp/pcre2-runtime; \
     for package in libpcre2-8-0 libpcre2-posix3; do \
-      archive="/out/pcre2/${package}_${PCRE2_PACKAGE_VERSION}_amd64.deb"; \
+      archive="/bundle/debs/${package}_${PCRE2_PACKAGE_VERSION}_amd64.deb"; \
       test "$(dpkg-deb -f "${archive}" Package)" = "${package}"; \
       test "$(dpkg-deb -f "${archive}" Version)" = "${PCRE2_PACKAGE_VERSION}"; \
+      test "$(dpkg-deb -f "${archive}" Architecture)" = amd64; \
       dpkg-deb --extract "${archive}" /tmp/pcre2-runtime; \
     done; \
     cd /tmp/pcre2-runtime; \
     sha256sum usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 usr/lib/x86_64-linux-gnu/libpcre2-posix.so.3 > /out/pcre2-runtime.sha256; \
+    cp /bundle/provenance/pcre2/provenance.json /out/pcre2-backport-provenance.json; \
+    cp /bundle/provenance/pcre2/pcre2.lock.json /out/pcre2-backport.lock.json; \
     cd /out; \
-    sha256sum pcre2/*.deb pcre2/provenance.json pcre2/pcre2.lock.json pcre2-runtime.sha256 >> SHA256SUMS
+    sha256sum pcre2-backport-provenance.json pcre2-backport.lock.json pcre2-runtime.sha256 >> SHA256SUMS
 
 FROM ${BASE_IMAGE}
 
@@ -691,7 +695,7 @@ ARG PER_HOST_SUBNET_VERSION=0.2.5
 ARG PER_HOST_SUBNET_PRODUCER_COMMIT=e102e0bb38d84b0a9cbf87e5458cf1bc74d01904
 ARG PER_HOST_SUBNET_ARCHIVE_SHA256=7237e83e96a64e7f3de64eb86bff9721c4e879c35cda9e9de1e4cb1ba225f298
 ARG PER_HOST_SUBNET_PROVENANCE_SHA256=afa2db0e0755c6bd3ee28e111937c521a6d84e6d71d563e99202cf4693000eaf
-ARG SERVER_RELEASE_TAG=v1.6.551
+ARG SERVER_RELEASE_TAG=v1.6.552
 ARG API_EXPLORER_RELEASE_TAG=v1.1.20
 ARG API_EXPLORER_ARTIFACT_SHA256=c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb
 ARG API_EXPLORER_COMMIT=a586f0dc0aa50df579049a8d4bf26f04400fdf75
@@ -714,6 +718,7 @@ ARG FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2
 ARG LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1
 ARG CA_CERTIFICATES_PACKAGE_VERSION=20260816ubuntu0.26.04.1
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
+ARG GLIBC_RUNTIME_PACKAGE_VERSION=2.43-2ubuntu2.4+pasturestack.1
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
 ARG PCRE2_PACKAGE_VERSION=10.46-1build1+pasturestack.1
 ARG WEB_CONSOLE_RELEASE_TAG=1.6.195
@@ -772,7 +777,8 @@ COPY scripts/install-ubuntu-security-updates.sh security/ubuntu-security-package
 # Keep the official zlib backport active: ldconfig otherwise prefers the old
 # upstream 1.3.2 library, which is affected by USN-8954-1 / CVE-2026-85091.
 # Retain the base image's removed, unused Git DAV/Expat surface after updating.
-RUN set -eux; \
+RUN --mount=from=ubuntu_security_backports,source=/out,target=/opt/pasturestack/ubuntu-security-backports,ro \
+    set -eux; \
     printf '%s\n' "${WEB_CONSOLE_COMMIT}" | grep -Eq '^[0-9a-f]{40}$'; \
     cd /tmp/pasturestack-runtime-security; \
     install -D -m 0755 /tmp/pasturestack-security-input/verify-pcre2-runtime.sh /usr/local/libexec/pasturestack/verify-pcre2-runtime.sh; \
@@ -781,17 +787,8 @@ RUN set -eux; \
     dpkg -i packages/*.deb; \
     install -D -m 0644 /tmp/pasturestack-security-input/ubuntu-security-packages.lock /usr/share/pasturestack/security/ubuntu-security-packages.lock; \
     sh /tmp/pasturestack-security-input/install-ubuntu-security-updates.sh /usr/share/pasturestack/security/ubuntu-security-packages.lock /tmp/pasturestack-runtime-security/security-updates; \
-    dpkg --path-include=/usr/share/doc/libpcre2-8-0/README.Debian -i pcre2/*.deb; \
-    for package in libpcre2-8-0 libpcre2-posix3; do \
-      test "$(dpkg-query -W -f='${Version}' "${package}")" = "${PCRE2_PACKAGE_VERSION}"; \
-      test -z "$(dpkg --verify "${package}")"; \
-    done; \
-    install -D -m 0644 pcre2/provenance.json /usr/share/pasturestack/security/pcre2-backport-provenance.json; \
-    install -D -m 0644 pcre2/pcre2.lock.json /usr/share/pasturestack/security/pcre2-backport.lock.json; \
-    install -D -m 0644 pcre2-runtime.sha256 /usr/share/pasturestack/security/pcre2-runtime.sha256; \
     rm -f /usr/lib/x86_64-linux-gnu/libz.so.1.3.2; \
     ldconfig; \
-    sh /usr/local/libexec/pasturestack/verify-pcre2-runtime.sh; \
     test "$(readlink -f /usr/lib/x86_64-linux-gnu/libz.so.1)" = /usr/lib/x86_64-linux-gnu/libz.so.1.3.1; \
     zlib_integrity="$(dpkg --verify zlib1g)"; \
     test -z "${zlib_integrity}"; \
@@ -799,6 +796,29 @@ RUN set -eux; \
     test ! -e /usr/lib/git-core/git-http-push; \
     rm -f /usr/lib/x86_64-linux-gnu/libexpat.so.1 /usr/lib/x86_64-linux-gnu/libexpat.so.1.11.2; \
     ldconfig; \
+    data=/opt/pasturestack/ubuntu-security-backports; \
+    evidence=/usr/share/pasturestack/security/ubuntu-backports; \
+    mkdir -p "${evidence}"; \
+    for package in rust-coreutils jq libjq1 libc6-dev libc-dev-bin libpcre2-dev libp11-kit-dev libxrender-dev; do \
+      test "$(dpkg-query -W -f='${db:Status-Status}' "${package}" 2>/dev/null || true)" != installed; \
+    done; \
+    "${data}/install-existing-backports" --install-in-docker-build > "${evidence}/install.json"; \
+    "${data}/install-existing-backports" --verify-installed > "${evidence}/verify.json"; \
+    for document in manifest.json qualification.json openvex.json source-inputs.lock.json; do \
+      install -m 0644 "${data}/${document}" "${evidence}/${document}"; \
+    done; \
+    printf '%s\n' 'ghcr.io/pasturestack/ubuntu-security-backports:v0.1.0@sha256:2742a3d429e4e14bc587f6dedc51ded4246cf90bbaedcd86c67d0885e32a6f2a' > "${evidence}/bundle-image.txt"; \
+    (cd "${evidence}" && sha256sum manifest.json qualification.json openvex.json source-inputs.lock.json install.json verify.json bundle-image.txt > SHA256SUMS); \
+    for package in libc6 libc-bin libc-gconv-modules-extra; do \
+      test "$(dpkg-query -W -f='${Version}' "${package}")" = "${GLIBC_RUNTIME_PACKAGE_VERSION}"; \
+    done; \
+    for package in libpcre2-8-0 libpcre2-posix3; do \
+      test "$(dpkg-query -W -f='${Version}' "${package}")" = "${PCRE2_PACKAGE_VERSION}"; \
+      test -z "$(dpkg --verify "${package}")"; \
+    done; \
+    install -m 0644 pcre2-backport-provenance.json pcre2-backport.lock.json pcre2-runtime.sha256 /usr/share/pasturestack/security/; \
+    sh /usr/local/libexec/pasturestack/verify-pcre2-runtime.sh; \
+    /opt/java/openjdk/bin/java -version 2>&1 | grep -F '25.0.5'; \
     install -D -m 0644 security-updates/manifest.tsv /usr/share/pasturestack/security/ubuntu-security-updates-manifest.tsv; \
     rm -rf /tmp/pasturestack-security-input; \
     test "$(dpkg-query -W -f='${Version}' ca-certificates)" = "${CA_CERTIFICATES_PACKAGE_VERSION}"; \
@@ -1191,8 +1211,8 @@ ENV CATTLE_RANCHER_SERVER_VERSION=${SERVER_RELEASE_TAG}
 ENV CATTLE_RANCHER_CLI_VERSION=v0.6.20
 ENV PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download
 ENV CATTLE_CATTLE_VERSION=${ORCHESTRATION_ENGINE_RELEASE_TAG}
-ENV DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.32
-ENV DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.32
+ENV DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.33
+ENV DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.33
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.33
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.33
 ENV CATTLE_API_UI_VERSION=1.1.20
@@ -1221,8 +1241,9 @@ ENV PASTURESTACK_CURL_PACKAGE_VERSION=${CURL_PACKAGE_VERSION}
 ENV PASTURESTACK_OPENSSL_VERSION=3.5.5
 ENV PASTURESTACK_OPENSSL_PACKAGE_VERSION=${OPENSSL_PACKAGE_VERSION}
 ENV PASTURESTACK_OPENSSL_SECURITY_SNAPSHOT=${UBUNTU_RUNTIME_SECURITY_SNAPSHOT}
-ENV PASTURESTACK_GLIBC_CVE_2026_18374_FIX=not-in-execute-path
-ENV PASTURESTACK_GLIBC_PACKAGE_VERSION=${GLIBC_PACKAGE_VERSION}
+ENV PASTURESTACK_GLIBC_CVE_2026_18374_FIX=official-source-backport
+ENV PASTURESTACK_GLIBC_OFFICIAL_PACKAGE_VERSION=${GLIBC_PACKAGE_VERSION}
+ENV PASTURESTACK_GLIBC_PACKAGE_VERSION=${GLIBC_RUNTIME_PACKAGE_VERSION}
 ENV PASTURESTACK_PERL_PACKAGE_VERSION=${PERL_PACKAGE_VERSION}
 ENV PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=${LIBDBI_PERL_PACKAGE_VERSION}
 ENV PASTURESTACK_FREETYPE_PACKAGE_VERSION=${FREETYPE_PACKAGE_VERSION}
@@ -1280,6 +1301,6 @@ ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_VERSION=${VSPHERE_CLI_BUNDLE_VERSION}
 ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_COMMIT=${VSPHERE_CLI_BUNDLE_COMMIT}
 ENV PASTURESTACK_VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256}
 ENV PASTURESTACK_GOVC_BINARY_SHA256=${GOVC_BINARY_SHA256}
-ENV PASTURESTACK_CATALOG_COMMIT=070e08d8f85ffc2779a0f97eb4e356c857812d34
-ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"070e08d8f85ffc2779a0f97eb4e356c857812d34"}}}'
-ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"070e08d8f85ffc2779a0f97eb4e356c857812d34"}}}'
+ENV PASTURESTACK_CATALOG_COMMIT=72b0d9767306baf7091fca021d0a2b6bdbca5d51
+ENV DEFAULT_CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"72b0d9767306baf7091fca021d0a2b6bdbca5d51"}}}'
+ENV CATTLE_CATALOG_URL='{"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"72b0d9767306baf7091fca021d0a2b6bdbca5d51"}}}'

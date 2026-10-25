@@ -14,7 +14,7 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.551}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.552}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
@@ -130,7 +130,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-6d4
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.551}
+image=${IMAGE:-pasturestack-validation/server:v1.6.552}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -399,8 +399,8 @@ for marker in \
     PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download \
     CATTLE_API_UI_VERSION=1.1.20 \
     CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}" \
-    DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.32 \
-    DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.32 \
+    DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.33 \
+    DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.33 \
     DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.33 \
     DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.33 \
     RC16_GO_AGENT_VERSION="${node_agent_version}" \
@@ -423,8 +423,9 @@ for marker in \
     PASTURESTACK_UBUNTU_SECURITY_REFRESH=2026-10-23 \
     PASTURESTACK_CURL_SECURITY_SNAPSHOT=20261002T000000Z \
     PASTURESTACK_CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.8 \
-    PASTURESTACK_GLIBC_CVE_2026_18374_FIX=not-in-execute-path \
-    PASTURESTACK_GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4 \
+    PASTURESTACK_GLIBC_CVE_2026_18374_FIX=official-source-backport \
+    PASTURESTACK_GLIBC_OFFICIAL_PACKAGE_VERSION=2.43-2ubuntu2.4 \
+    PASTURESTACK_GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4+pasturestack.1 \
     PASTURESTACK_PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3 \
     PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4 \
     PASTURESTACK_FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2 \
@@ -495,9 +496,9 @@ for marker in \
     PASTURESTACK_MACHINE_DRIVER_BINARY_SHA256="${machine_driver_binary_sha256}" \
     PASTURESTACK_PACKET_DRIVER_BINARY_SHA256="${packet_driver_binary_sha256}" \
     PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-08-28 \
-    PASTURESTACK_CATALOG_COMMIT=070e08d8f85ffc2779a0f97eb4e356c857812d34 \
-    'DEFAULT_CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"070e08d8f85ffc2779a0f97eb4e356c857812d34"}}}' \
-    'CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"070e08d8f85ffc2779a0f97eb4e356c857812d34"}}}'; do
+    PASTURESTACK_CATALOG_COMMIT=72b0d9767306baf7091fca021d0a2b6bdbca5d51 \
+    'DEFAULT_CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"72b0d9767306baf7091fca021d0a2b6bdbca5d51"}}}' \
+    'CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"72b0d9767306baf7091fca021d0a2b6bdbca5d51"}}}'; do
     test "$(grep -Fxc "$marker" <<<"$image_environment")" = 1
 done
 
@@ -968,7 +969,7 @@ EOF
     done
     for glibc_package in libc6 libc-bin libc-gconv-modules-extra; do
         test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${glibc_package}")" = \
-            "2.43-2ubuntu2.4"
+            "2.43-2ubuntu2.4+pasturestack.1"
     done
     for perl_package in libperl5.40 perl perl-base perl-modules-5.40; do
         test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${perl_package}")" = \
