@@ -11,25 +11,21 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current source candidate
+## Current release
 
-Server `v1.6.553` is a prepared source candidate, not a published image.
-It adds the accepted Google Brotli fix for CVE-2026-111497 through the qualified
+[Server v1.6.553](https://github.com/PastureStack/server/releases/tag/v1.6.553)
+is published. It applies the accepted Google Brotli fix for CVE-2026-111497 through the qualified
 Ubuntu backport bundle. Only already-installed packages are updated; package sets,
 providers, library interfaces and configuration are preserved.
 
 Web Console `1.6.195` and its original runtime SBOM, Engine `v0.183.354`,
 Host API `0.38.8` and Temurin `25.0.5+8` retain their verified inputs.
 Node Agent `v1.2.34` uses compatibility base `v0.3.8`. Published Catalog
-`v0.3.18` is pinned to `00eec89e5fdeb9728c1c41babccad8b7dfc8b297` and records
-the qualified component images and their publication evidence.
+`v0.3.18` records the qualified component images and their publication evidence.
 
 See its [release note](docs/releases/server-1.6.553.md) and the
 [compatibility contract](COMPATIBILITY.md#server-v16553-brotli)
 for producer identities, immutable image digests, SBOMs and remaining findings.
-The current published release remains
-[Server v1.6.552](https://github.com/PastureStack/server/releases/tag/v1.6.552),
-with its [release note](docs/releases/server-1.6.552.md).
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -56,8 +52,6 @@ Maintained CLI `0.6.20` propagates rejected requests as nonzero errors. Legacy `
 ## Quick start
 
 Public GHCR downloads do not require a registry login. Keep all three named volumes.
-This candidate is not yet available. The examples below use its numeric tag;
-run them only after its official release.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
