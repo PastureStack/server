@@ -1,6 +1,6 @@
 # Node agent image builds
 
-The compatibility base is `ghcr.io/pasturestack/node-agent-base:v0.3.7`.
+The compatibility base is `ghcr.io/pasturestack/node-agent-base:v0.3.8`.
 It builds Python 3.14.9 from the official SHA-256-verified archive, retains
 Docker CLI 29.9.2 (official Go 1.26.10 build), and uses the fixed Ubuntu 26.04 snapshot
 `20261023T000000Z`. Builder and runtime package inventories are compared;
@@ -34,7 +34,7 @@ findings fail the gate; vendor-unfixed Medium/Low findings remain recorded.
 Publication then pushes that same image, refuses an existing version tag,
 and verifies the anonymous digest readback and original image identity.
 
-The node-agent wrapper is version `v1.2.33` and inherits this base through
+The node-agent wrapper is version `v1.2.34` and inherits this base through
 its digest-pinned Dockerfile. Both `base` and `agent` components use the same
 qualified runtime-package receipts, native OpenVEX guard, raw/effective scans,
 runtime checks and publication gate.
