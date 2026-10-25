@@ -2,28 +2,60 @@
 
 <a id="server-v16553-brotli"></a>
 
-## Server v1.6.553 prepared, not published
+## Server v1.6.553 published
 
-This candidate adds the exact accepted Google Brotli fix for CVE-2026-111497 to
-the Ubuntu runtime package. Ubuntu's distribution advisory remains under
-evaluation; the downstream package is a PastureStack rebuild, not a Canonical
-release. Original package ownership, ABI and ordinary compression/streaming
-tests must pass before consumers install it.
+The published linux/amd64 image is
+`ghcr.io/pasturestack/server:v1.6.553@sha256:daf2562134dcd735a265f531f2e7fdf0a3aca762062566e4406c35ba7ce81101`,
+produced from `b0c121abf9a812f83204ee93bb28ee7046815021` in successful
+[run 40182084293](https://github.com/PastureStack/server/actions/runs/40182084293).
+Its distinct OCI config is
+`sha256:bf7147449c0e9e029579b6ae708abd7506d4dfccf5ca7c7966474f254aa4afb9`.
+All 35 anonymous release assets matched their producer checksums; native OCI
+provenance and CycloneDX attestations matched this exact image and source.
+Documentation commits do not change the runtime producer.
 
-Publication requires the qualified immutable bundle, final-rootfs package and
-linkage readback, SBOM and the existing full-severity scan policy. Existing
-unfixed findings and the original raw reports remain separate. No publication,
-deployment or multi-Host acceptance is claimed by this source preparation.
+The qualified build-only Ubuntu backport bundle applies the accepted Google
+Brotli decoder fix for CVE-2026-111497. The final image verified
+`libbrotli1 1.2.0-3build1+pasturestack.1` through an ordinary compression and
+linkage control. Its seven selected existing packages are `libbrotli1`,
+`libc-bin`, `libc-gconv-modules-extra`, `libc6`, `libp11-kit0`, `libpcre2-8-0`
+and `libpcre2-posix3`. Package ownership, ABI, configuration and the original
+package set/provider are preserved. These are PastureStack downstream rebuilds
+of pinned Ubuntu sources, not packages issued by Canonical.
 
-The candidate pins published Catalog `v0.3.18` source
+The release pins published Catalog `v0.3.18` source
 `00eec89e5fdeb9728c1c41babccad8b7dfc8b297` and Node Agent `v1.2.34`, based on
 compatibility base `v0.3.8`. Their immutable publication identities remain
-separate from this Server candidate and its later deployment acceptance.
+separate. Web Console `1.6.195`, Engine `v0.183.354`, Host API `0.38.8` and
+Temurin `25.0.5+8` retain their verified inputs and application behavior.
+
+The full raw report retains 51 finding occurrences; the qualified effective
+report retains 10 occurrences across nine officially unfixed CVEs. Critical,
+High, available-fix and secret counts are zero under the existing release
+policy. Exact-package code-absence decisions do not exempt the entire image.
+The original browser runtime SBOM and its incomplete coverage are retained;
+this release does not claim a new browser attestation or complete coverage.
+
+Scoped QA8080 cutover, actual Brotli runtime control, strict TLS, one Server
+restart and post-restart verification passed. Environment, mounts, AppArmor,
+restart policy and the three existing data volumes were preserved. All three
+Hosts/Agents are active; Agent `v1.2.34` has its separate per-Host acceptance
+receipts. The Server552 rollback remains retained. Eight-Stack functional
+and normal finish-upgrade acceptance passed separately across both projects.
+Together with the two previously completed independent Stack adoptions, the
+security-refresh scope has ten accepted affected Stacks and three Node Agent
+`v1.2.34` adoptions. The two unchanged NFS/diagnostics Stacks retain their health readbacks
+without new owning-function tests. Existing tenant container IDs, mounts and
+marker hashes were preserved; rollback checkpoints and old images remain.
+Role, UI and language evidence is carried forward, not rerun for this CVE refresh.
 
 Keep the existing environment, authentication, firewall backend, mounts,
 volumes and restart policy. Infrastructure Stacks and Host Agents adopt new
 images only through their normal upgrade lifecycle; changing Server defaults
 does not override an operator's existing database settings.
+See the [release note](docs/releases/server-1.6.553.md) for publication and
+scoped deployment evidence. Production, HAProxy and host firewall configuration
+were not changed by this QA deployment.
 
 <a id="server-v16552-runtime-backports"></a>
 

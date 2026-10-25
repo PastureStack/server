@@ -7,6 +7,9 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.553](releases/server-1.6.553.md) — published qualified Brotli
+  security backports, with exact artifact identities and scoped QA evidence
+  recorded separately from component publication.
 - [Server v1.6.549](releases/server-1.6.549.md) — published Web Console 1.6.195
   with an independent browser runtime SBOM, exact artifact identity and separate
   fresh-DB component lookup. The release note records incomplete coverage,
