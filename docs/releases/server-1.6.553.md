@@ -4,7 +4,7 @@ Prepared source only; no Server image or release has been published.
 Deployment acceptance is not claimed until the normal protected release workflow
 and the affected runtime checks complete.
 
-## Scope
+## Verified component inputs
 
 CVE-2026-111497 affects the Brotli decoder. The accepted Google fix is applied
 to the pinned Ubuntu source without replacing Ubuntu packaging or adding
