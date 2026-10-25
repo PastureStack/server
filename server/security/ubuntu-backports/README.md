@@ -14,7 +14,7 @@ Do not rerun an unchanged module that already has valid native PASS evidence.
 Its module source, lock, compiler/dependency inputs and expected artifact identity
 must still match. Changes to shared behavior require revalidating its consumers.
 
-Select `glibc`, `rust-coreutils`, `jq`, `p11-kit` or `libxrender` in the
+Select `glibc`, `rust-coreutils`, `jq`, `p11-kit` `libxrender` or `brotli` in the
 workflow. Source helpers run as a non-root user; Rust credential regression
 subprocesses alone receive privileges inside that temporary container. A failed
 helper retains logs and a failing result; exported files alone are not a PASS.
@@ -51,3 +51,10 @@ providers, in addition to the installer unit tests. A bundle PASS is still not a
 product PASS: every consumer must retain its normal source/release gates, exact
 final-rootfs SBOM, raw scan, scoped VEX and affected runtime smoke. See
 `bundle/installer/README.md` for the fixed mount and command contract.
+
+The Brotli module retains Ubuntu 1.2.0-3build1 packaging and applies only the
+accepted Google decoder fix for CVE-2026-111497. It exports libbrotli1 only,
+requires ordinary upstream/API/streaming tests and all three original library
+ABIs, and never executes a crafted CVE stream or installs packages on the host.
+Each new bundle requires native and consumer qualifications followed by
+separate immutable publication before a product may consume it.

@@ -22,6 +22,7 @@ var families = map[string][]string{
 	"rust-coreutils": {"rust-coreutils"}, "jq": {"jq", "libjq1"},
 	"p11-kit":    {"libp11-kit0", "p11-kit", "p11-kit-modules"},
 	"libxrender": {"libxrender1"},
+	"brotli":     {"libbrotli1"},
 }
 
 type Platform struct{ Distribution, Release, Architecture string }
@@ -201,7 +202,7 @@ func loadManifest(root string) (Manifest, map[string]Payload, error) {
 	if err = decode(b, &m, true); err != nil {
 		return m, nil, err
 	}
-	if m.SchemaVersion != 1 || m.BundleVersion != "0.1.0" || !validatePlatform(m.Platform) || len(m.Families) != 6 || len(m.Packages) != 12 || m.Qualification.Path != "qualification.json" {
+	if m.SchemaVersion != 1 || m.BundleVersion != "0.1.1" || !validatePlatform(m.Platform) || len(m.Families) != 7 || len(m.Packages) != 13 || m.Qualification.Path != "qualification.json" {
 		return m, nil, fmt.Errorf("unsupported bundle identity/catalog")
 	}
 	qb, err := boundRead(root, m.Qualification, 16<<20)
@@ -212,7 +213,7 @@ func loadManifest(root string) (Manifest, map[string]Payload, error) {
 	if err = decode(qb, &q, false); err != nil {
 		return m, nil, err
 	}
-	if q.SchemaVersion != 1 || q.BundleVersion != m.BundleVersion || !validatePlatform(q.Platform) || q.Status != "qualified" || len(q.Families) != 6 {
+	if q.SchemaVersion != 1 || q.BundleVersion != m.BundleVersion || !validatePlatform(q.Platform) || q.Status != "qualified" || len(q.Families) != 7 {
 		return m, nil, fmt.Errorf("bundle is not qualified")
 	}
 	if _, err = boundRead(root, Ref{"source-inputs.lock.json", q.SourceLockSHA256}, 8<<20); err != nil {
