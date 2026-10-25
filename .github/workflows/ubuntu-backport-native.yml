@@ -14,6 +14,7 @@ on:
       - 'server/security/ubuntu-backports/jq/**'
       - 'server/security/ubuntu-backports/p11-kit/**'
       - 'server/security/ubuntu-backports/libxrender/**'
+      - 'server/security/ubuntu-backports/brotli/**'
       - 'server/security/ubuntu-backports/source_helpers.py'
   workflow_dispatch:
     inputs:
@@ -22,7 +23,7 @@ on:
         required: true
         type: choice
         default: all
-        options: [all, glibc, rust-coreutils, jq, p11-kit, libxrender]
+        options: [all, glibc, rust-coreutils, jq, p11-kit, libxrender, brotli]
 
 permissions:
   contents: read
@@ -39,7 +40,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        module: ${{ fromJSON(inputs.module && inputs.module != 'all' && format('["{0}"]', inputs.module) || '["glibc","rust-coreutils","jq","p11-kit","libxrender"]') }}
+        module: ${{ fromJSON(inputs.module && inputs.module != 'all' && format('["{0}"]', inputs.module) || '["glibc","rust-coreutils","jq","p11-kit","libxrender","brotli"]') }}
     env:
       MODULE: ${{ matrix.module }}
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
