@@ -221,7 +221,31 @@ jobs:
         run: |
           set -Eeuo pipefail
           evidence="$RUNNER_TEMP/server-evidence"
+          # Compile against pinned public declarations, without installing a
+          # decoder or relying on runner-provided development packages.
+          python3 - "$evidence/brotli-headers" <<'PY'
+          import hashlib, io, json, pathlib, re, sys, tarfile, urllib.request
+          lock = json.loads(pathlib.Path('source/server/security/ubuntu-backports/brotli/brotli.lock.json').read_text())
+          item, = (x for x in lock['sourceFiles'] if x['name'] == 'brotli_1.2.0.orig.tar.gz')
+          with urllib.request.urlopen(item['url'], timeout=60) as response:
+              data = response.read(item['size'] + 1)
+          assert len(data) == item['size'] and hashlib.sha256(data).hexdigest() == item['sha256']
+          output = pathlib.Path(sys.argv[1]) / 'brotli'
+          output.mkdir(parents=True)
+          with tarfile.open(fileobj=io.BytesIO(data)) as archive:
+              names = set()
+              for member in archive.getmembers():
+                  match = re.fullmatch(r'google-brotli-028fb5a/c/include/brotli/([a-z_]+\.h)', member.name)
+                  if not match:
+                      continue
+                  assert member.isfile() and match[1] not in names
+                  names.add(match[1])
+                  (output / match[1]).write_bytes(archive.extractfile(member).read())
+          assert {'decode.h', 'encode.h', 'types.h', 'port.h'} <= names
+          assert hashlib.sha256((output / 'decode.h').read_bytes()).hexdigest() == lock['baselineSha256']['c/include/brotli/decode.h']
+          PY
           cc -O2 -Wall -Wextra -Werror \
+            -I"$evidence/brotli-headers" \
             source/server/security/ubuntu-backports/bundle/installer/testdata/consumer-brotli-probe.c \
             -ldl -o "$evidence/brotli-runtime-probe"
           docker run --rm --network none \

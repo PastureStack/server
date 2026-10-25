@@ -65,6 +65,8 @@ def verify(files):
                 and 'test -z "$brotli_integrity"' in source for source in (runtime, build)),
             'Brotli dpkg verification failure must propagate before its empty-output check')
     for marker in ['consumer-brotli-probe.c', '--entrypoint /tmp/brotli-runtime-probe "$CANDIDATE_IMAGE"',
+                   'brotli/brotli.lock.json', '-I"$evidence/brotli-headers"',
+                   "hashlib.sha256(data).hexdigest() == item['sha256']",
                    'PASS: three installed Brotli SONAMEs RTLD_NOW, ordinary compression/decompression']:
         require(marker in publisher, 'Missing actual final-image ordinary Brotli probe: ' + marker)
     require('              brotli-runtime.txt' in publisher and '"$evidence/brotli-runtime.txt"' in publisher,
@@ -135,6 +137,7 @@ class ServerBackportContract(unittest.TestCase):
                              (BUILD, 'brotli_linkage="$(ldd -r '),
                              (DOCKER, 'test -z "$brotli_integrity"'),
                              (BUILD, 'test -z "$brotli_integrity"'),
+                             (PUBLISH, '-I"$evidence/brotli-headers"'),
                              (PUBLISH, '--entrypoint /tmp/brotli-runtime-probe "$CANDIDATE_IMAGE"'),
                              (PUBLISH, '              brotli-runtime.txt')]:
             with self.subTest(name=name), self.assertRaises(AssertionError):
