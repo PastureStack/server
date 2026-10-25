@@ -1,5 +1,34 @@
 # Compatibility Contract
 
+<a id="server-v16552-runtime-backports"></a>
+
+## Server v1.6.552 prepared, not published
+
+This source candidate prepares the numeric `ghcr.io/pasturestack/server:v1.6.552`
+image tag. It has not been published. The normal publisher must retain the exact
+producer, OCI digest, SBOM, original vulnerability report and interpreted report
+before the candidate can be used.
+
+The digest-pinned, build-only Ubuntu backport bundle installs only existing
+packages. It retains the original package set, selected coreutils provider and
+configuration. The Python compiler keeps its original inputs; the final runtime
+uses the qualified library packages. Source/native-test qualification and actual
+installation receipts are retained under
+`/usr/share/pasturestack/security/ubuntu-backports/`. These downstream Debian
+packages apply accepted upstream fixes to pinned Ubuntu sources; they are not
+packages issued by Canonical.
+
+Node Agent `v1.2.33` pins base `v0.3.7`. Catalog `v0.3.17` records the component
+producer commits, image digests, SBOMs and scan evidence. Existing environments
+retain their configuration and require the normal infrastructure-stack upgrade
+flow to adopt new Catalog revisions. No host firewall backend is selected or
+changed by the runtime library installer.
+
+Available fixes and unreviewed findings block publication. Officially unfixed
+Low/Medium findings remain registered; exact-package code-absence decisions
+require separate source, package and native-scanner evidence. The original raw
+report is retained. See the [release note](docs/releases/server-1.6.552.md).
+
 <a id="server-v16551-release-assets"></a>
 
 ## Server v1.6.551 published
