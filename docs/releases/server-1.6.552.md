@@ -1,6 +1,10 @@
-# Server v1.6.552 candidate
+# Server v1.6.552
 
-Prepared source only; no Server image or release has been published.
+Published image: `ghcr.io/pasturestack/server:v1.6.552@sha256:f19a0fdd7340fde910c8eb66311bbe11d682301f5fe2df7768638b866e5ef1f4`.
+
+Source commit: `6be16e0c62473e65e4222e144fba513d61717f34`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
@@ -36,3 +40,14 @@ The official release includes the producer commit, immutable image digest,
 checksums, SBOMs, vulnerability reports and qualification receipts. Consult
 [the compatibility contract](../../COMPATIBILITY.md#server-v16552-runtime-backports)
 for the retained runtime boundaries.
+
+## Scoped QA acceptance
+
+The QA Server was updated by exact digest, then restarted once.
+The existing environment overrides, three named data volumes, Docker socket
+bind, AppArmor and restart policy were preserved. The prior v1.6.551 container
+and image remain available for rollback with the consistent database backup.
+PCRE2 integrity, runtime library versions, MariaDB regular-expression controls,
+/ping and all three active Host/Agent states passed. This is scoped acceptance;
+unrelated UI, role and language tests were not rerun. No production site,
+HAProxy or firewall was changed.

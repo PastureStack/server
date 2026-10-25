@@ -2,12 +2,20 @@
 
 <a id="server-v16552-runtime-backports"></a>
 
-## Server v1.6.552 prepared, not published
+## Server v1.6.552 published
 
-This source candidate prepares the numeric `ghcr.io/pasturestack/server:v1.6.552`
-image tag. It has not been published. The normal publisher must retain the exact
-producer, OCI digest, SBOM, original vulnerability report and interpreted report
-before the candidate can be used.
+The published linux/amd64 image is
+`ghcr.io/pasturestack/server:v1.6.552@sha256:f19a0fdd7340fde910c8eb66311bbe11d682301f5fe2df7768638b866e5ef1f4`,
+produced from `6be16e0c62473e65e4222e144fba513d61717f34` in successful
+[run 40149543657](https://github.com/PastureStack/server/actions/runs/40149543657).
+Its source, startup, restart, raw/qualified vulnerability scans and SBOM gates
+passed before publication. Anonymous asset and registry identity readback and
+both native image attestations were verified against this exact producer.
+
+The 8080 test deployment retained its settings, three data volumes, socket
+bind, AppArmor and restart policy. Package checks, MariaDB regex controls,
+one restart and all three Host/Agent states passed. The 551 rollback remains
+available. Production, HAProxy and host firewall configuration were not changed.
 
 The digest-pinned, build-only Ubuntu backport bundle installs only existing
 packages. It retains the original package set, selected coreutils provider and
