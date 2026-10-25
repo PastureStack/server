@@ -13,7 +13,7 @@ printf '%s\n' "$source_sha" >"$evidence/source-revision.txt"
 python3 scripts/test-agent-package-consistency.py
 
 case "${COMPONENT:-}" in
-  base) repository=ghcr.io/pasturestack/node-agent-base; version=v0.3.7 ;;
+  base) repository=ghcr.io/pasturestack/node-agent-base; version=v0.3.8 ;;
   agent) repository=ghcr.io/pasturestack/node-agent; version=v1.2.33 ;;
   *) echo 'Unsupported agent component' >&2; exit 1 ;;
 esac
@@ -113,6 +113,19 @@ backports_container=
 docker run --rm --network none --entrypoint /bin/bash "$candidate" -ec \
   'ldd "$(python3 -c "import _ssl; print(_ssl.__file__)")"; curl --version' \
   >"$evidence/python-ssl-linkage.txt"
+docker run --rm --network none --entrypoint python3 \
+  -e PYTHONDONTWRITEBYTECODE=1 -v "$PWD:/source:ro" -w /source "$candidate" \
+  scripts/check-agent-brotli-runtime.py >"$evidence/brotli-runtime.json"
+entry_args=()
+if [[ "$COMPONENT" = agent ]]; then entry_args=(--); fi
+docker run --rm --network none "$candidate" "${entry_args[@]}" /bin/bash -ec \
+  'test "$(python3 --version)" = "Python 3.14.9"; curl --version; printf "AGENT_ENTRYPOINT_EXEC_OK\n"' \
+  >"$evidence/entrypoint-smoke.txt"
+if [[ "$COMPONENT" = agent ]]; then
+  docker run --rm --network none --entrypoint bash \
+    -v "$PWD:/source:ro" -w /source "$candidate" \
+    scripts/check-agent-run-downloads.sh >"$evidence/bootstrap-download-smoke.txt"
+fi
 docker run --rm --network none --entrypoint /bin/bash "$candidate" -ec \
   'test "$(dpkg-query -W ca-certificates | cut -f2)" = 20260816ubuntu0.26.04.1; docker --version | grep -Fx "Docker version 29.9.2, build a82e528"; printf "6c71cfe71faff949a602946a4df4799b563232e79d0b8b6fd343d0ef081c9621  /usr/bin/docker\n" | sha256sum -c -; test -s /usr/bin/share-mnt; test -x /usr/bin/r' \
   |& tee "$evidence/runtime-tools.txt"
@@ -145,8 +158,8 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
   -v "$scratch/trivy-cache:/root/.cache/trivy" -v "$evidence:/evidence" "$trivy" image --scanners vuln,secret --list-all-pkgs --format json \
   --output /evidence/image-security.json "$candidate"
-backports_image=$(sed -n 's/^FROM \(ghcr.io\/pasturestack\/ubuntu-security-backports:v0\.1\.0@sha256:[0-9a-f]\{64\}\) AS ubuntu_security_backports$/\1/p' agent-base/Dockerfile)
-[[ "$backports_image" =~ ^ghcr.io/pasturestack/ubuntu-security-backports:v0\.1\.0@sha256:[0-9a-f]{64}$ ]]
+backports_image=$(sed -n 's/^FROM \(ghcr.io\/pasturestack\/ubuntu-security-backports:v0\.1\.1@sha256:[0-9a-f]\{64\}\) AS ubuntu_security_backports$/\1/p' agent-base/Dockerfile)
+[[ "$backports_image" =~ ^ghcr.io/pasturestack/ubuntu-security-backports:v0\.1\.1@sha256:[0-9a-f]{64}$ ]]
 docker pull --platform linux/amd64 "$backports_image"
 bundle_container=$(docker create --entrypoint /unused "$backports_image")
 docker cp "$bundle_container:/out/verify-consumer-evidence.py" "$scratch/verify-consumer-evidence.py"

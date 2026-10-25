@@ -23,20 +23,23 @@ class PackageConsistencyTests(unittest.TestCase):
                          'rust-coreutils': '0.10.0-1ubuntu2~26.04.1+pasturestack.1', 'jq': '1.8.2-0pasturestack1~26.04.1',
                          'libjq1': '1.8.2-0pasturestack1~26.04.1', 'p11-kit': '0.26.2-2+pasturestack.1',
                          'p11-kit-modules': '0.26.2-2+pasturestack.1', 'libp11-kit0': '0.26.2-2+pasturestack.1',
-                         'libxrender1': '1:0.9.12-1build1+pasturestack.1'}
+                         'libxrender1': '1:0.9.12-1build1+pasturestack.1',
+                         'libbrotli1': '1.2.0-3build1+pasturestack.1'}
         self.builder = {'libc6': '2.43-2ubuntu2.4', 'libpcre2-8-0': '10.46-1build1',
                         'libssl3t64': '3.5.5-1ubuntu3.7', 'curl': '8.18.0-1ubuntu2.8',
-                        'ca-certificates': '20260816ubuntu0.26.04.1', 'zlib1g': '1.3.1'}
+                        'ca-certificates': '20260816ubuntu0.26.04.1', 'zlib1g': '1.3.1',
+                        'libbrotli1': '1.2.0-3build1'}
         self.runtime = dict(self.builder, libc6=self.versions['libc6'])
         self.runtime['libpcre2-8-0'] = self.versions['libpcre2-8-0']
-        self.receipt = {'schemaVersion': 1, 'bundleVersion': '0.1.0', 'status': 'installed-and-verified',
+        self.runtime['libbrotli1'] = self.versions['libbrotli1']
+        self.receipt = {'schemaVersion': 1, 'bundleVersion': '0.1.1', 'status': 'installed-and-verified',
                         'providerPreserved': True, 'configurationPreserved': True,
-                        'packages': ['libc6', 'libpcre2-8-0']}
+                        'packages': ['libc6', 'libpcre2-8-0', 'libbrotli1']}
         qualification = {'status': 'qualified', 'consumerFixtures': [
             {'provider': 'gnu', 'status': 'PASS'}, {'provider': 'uutils', 'status': 'PASS'}]}
         content = (json.dumps(qualification) + '\n').encode()
         self.data['backports-qualification.json'] = content.decode('utf-8')
-        self.manifest = {'schemaVersion': 1, 'bundleVersion': '0.1.0',
+        self.manifest = {'schemaVersion': 1, 'bundleVersion': '0.1.1',
                          'platform': {'distribution': 'ubuntu', 'release': '26.04', 'architecture': 'amd64'},
                          'qualification': {'sha256': hashlib.sha256(content).hexdigest()},
                          'packages': [{'name': name, 'version': version} for name, version in self.versions.items()]}
@@ -49,7 +52,7 @@ class PackageConsistencyTests(unittest.TestCase):
         return module.verify(self.data)
 
     def test_only_qualified_final_runtime_differences_pass(self):
-        self.assertEqual(self.verify()['qualified_runtime_deltas'], ['libc6', 'libpcre2-8-0'])
+        self.assertEqual(self.verify()['qualified_runtime_deltas'], ['libbrotli1', 'libc6', 'libpcre2-8-0'])
         self.assertEqual(self.builder['libc6'], '2.43-2ubuntu2.4')
 
     def test_unrelated_drift_is_rejected(self):
@@ -59,6 +62,10 @@ class PackageConsistencyTests(unittest.TestCase):
     def test_nonqualified_library_version_is_rejected(self):
         self.runtime['libc6'] = '2.44'
         with self.assertRaisesRegex(ValueError, 'Unqualified'): self.verify()
+
+    def test_unpatched_brotli_is_rejected(self):
+        self.runtime['libbrotli1'] = self.builder['libbrotli1']
+        with self.assertRaisesRegex(ValueError, 'Unqualified runtime version: libbrotli1'): self.verify()
 
     def test_builder_changes_are_not_a_workaround(self):
         self.builder['libc6'] = self.versions['libc6']
