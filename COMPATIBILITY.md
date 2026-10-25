@@ -1,5 +1,30 @@
 # Compatibility Contract
 
+<a id="server-v16553-brotli"></a>
+
+## Server v1.6.553 prepared, not published
+
+This candidate adds the exact accepted Google Brotli fix for CVE-2026-111497 to
+the Ubuntu runtime package. Ubuntu's distribution advisory remains under
+evaluation; the downstream package is a PastureStack rebuild, not a Canonical
+release. Original package ownership, ABI and ordinary compression/streaming
+tests must pass before consumers install it.
+
+Publication requires the qualified immutable bundle, final-rootfs package and
+linkage readback, SBOM and the existing full-severity scan policy. Existing
+unfixed findings and the original raw reports remain separate. No publication,
+deployment or multi-Host acceptance is claimed by this source preparation.
+
+The candidate pins published Catalog `v0.3.18` source
+`00eec89e5fdeb9728c1c41babccad8b7dfc8b297` and Node Agent `v1.2.34`, based on
+compatibility base `v0.3.8`. Their immutable publication identities remain
+separate from this Server candidate and its later deployment acceptance.
+
+Keep the existing environment, authentication, firewall backend, mounts,
+volumes and restart policy. Infrastructure Stacks and Host Agents adopt new
+images only through their normal upgrade lifecycle; changing Server defaults
+does not override an operator's existing database settings.
+
 <a id="server-v16552-runtime-backports"></a>
 
 ## Server v1.6.552 published

@@ -216,6 +216,21 @@ jobs:
             printf 'SERVER_JAVA_SECURITY_RUNTIME_OK version=25.0.5+8 official_archive_sha256=68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb actual_candidate=1\n'
           } |& tee "$RUNNER_TEMP/server-evidence/java-security-runtime.txt"
 
+      - name: Verify ordinary Brotli operations against the actual final image
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          evidence="$RUNNER_TEMP/server-evidence"
+          cc -O2 -Wall -Wextra -Werror \
+            source/server/security/ubuntu-backports/bundle/installer/testdata/consumer-brotli-probe.c \
+            -ldl -o "$evidence/brotli-runtime-probe"
+          docker run --rm --network none \
+            --mount "type=bind,source=$evidence/brotli-runtime-probe,target=/tmp/brotli-runtime-probe,readonly" \
+            --entrypoint /tmp/brotli-runtime-probe "$CANDIDATE_IMAGE" |
+            tee "$evidence/brotli-runtime.txt"
+          grep -Fx 'PASS: three installed Brotli SONAMEs RTLD_NOW, ordinary compression/decompression' \
+            "$evidence/brotli-runtime.txt"
+
       - name: Start, restart, and export the candidate
         shell: bash
         run: |
@@ -575,8 +590,8 @@ jobs:
           # before passing its exact-package VEX to native Trivy.
           cp -a "$RUNNER_TEMP/server-rootfs/usr/share/pasturestack/security/ubuntu-backports" "$evidence/ubuntu-backports"
           (cd "$evidence/ubuntu-backports" && sha256sum --check SHA256SUMS)
-          bundle_image="$(sed -n 's/^FROM \(ghcr.io\/pasturestack\/ubuntu-security-backports:v0\.1\.0@sha256:[0-9a-f]\{64\}\) AS ubuntu_security_backports$/\1/p' source/server/Dockerfile.web-compose-release)"
-          [[ "$bundle_image" =~ ^ghcr.io/pasturestack/ubuntu-security-backports:v0\.1\.0@sha256:[0-9a-f]{64}$ ]]
+          bundle_image="$(sed -n 's/^FROM \(ghcr.io\/pasturestack\/ubuntu-security-backports:v0\.1\.1@sha256:[0-9a-f]\{64\}\) AS ubuntu_security_backports$/\1/p' source/server/Dockerfile.web-compose-release)"
+          [[ "$bundle_image" =~ ^ghcr.io/pasturestack/ubuntu-security-backports:v0\.1\.1@sha256:[0-9a-f]{64}$ ]]
           docker pull --platform linux/amd64 "$bundle_image"
           mkdir -p "$evidence/bundle-tools"
           bundle_container="$(docker create --entrypoint /unused "$bundle_image")"
@@ -771,6 +786,7 @@ jobs:
             cd "$evidence"
             sha256sum \
               build.log \
+              brotli-runtime.txt \
               candidate.log \
               candidate-smoke.txt \
               "host-api-${HOST_API_VERSION}.tar.gz" \
@@ -812,6 +828,7 @@ jobs:
             --notes-file "$evidence/release-notes.md" \
             "$evidence/SHA256SUMS" \
             "$evidence/build.log" \
+            "$evidence/brotli-runtime.txt" \
             "$evidence/candidate.log" \
             "$evidence/candidate-smoke.txt" \
             "$evidence/host-api-${HOST_API_VERSION}.tar.gz" \
