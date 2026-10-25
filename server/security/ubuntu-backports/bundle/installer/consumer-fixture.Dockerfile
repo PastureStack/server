@@ -5,7 +5,9 @@ FROM golang:1.27.3-bookworm@sha256:972b4110ba0f47539a975c31e52c64765e1ff19f2d744
 # qualified package. The probe dynamically loads libjq in the Ubuntu consumer;
 # neither libjq nor libm is linked into the executable at build time.
 ADD --checksum=sha256:71b8d6e8f5fe81f6c6d0d110e3892251f6ce76ed095abd315e26e6e1193af3af https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-1.8.2.tar.gz /tmp/jq.tar.gz
+ADD --checksum=sha256:eb5f7dadf215d0670665fd81566e1fe2dfdc154d983f09142de7299df4c182e6 https://archive.ubuntu.com/ubuntu/pool/main/b/brotli/brotli_1.2.0.orig.tar.gz /tmp/brotli.tar.gz
 COPY testdata/consumer-libjq-probe.c /src/consumer-libjq-probe.c
+COPY testdata/consumer-brotli-probe.c /src/consumer-brotli-probe.c
 RUN set -eux; \
     mkdir /tmp/headers; \
     tar --extract --gzip --file /tmp/jq.tar.gz --directory /tmp/headers --strip-components=2 jq-1.8.2/src/jq.h jq-1.8.2/src/jv.h; \
@@ -13,6 +15,13 @@ RUN set -eux; \
       /src/consumer-libjq-probe.c -ldl -o /consumer-libjq-probe; \
     readelf --dynamic /consumer-libjq-probe >/tmp/probe-dynamic.txt; \
     if grep -E 'NEEDED.*\[(libjq|libm)\.' /tmp/probe-dynamic.txt; then exit 1; fi
+RUN set -eux; \
+    mkdir /tmp/brotli-headers; \
+    tar --extract --gzip --file /tmp/brotli.tar.gz --directory /tmp/brotli-headers --strip-components=3 google-brotli-028fb5a/c/include; \
+    cc -std=gnu11 -Wall -Wextra -Werror -O2 -isystem /tmp/brotli-headers \
+      /src/consumer-brotli-probe.c -ldl -o /consumer-brotli-probe; \
+    readelf --dynamic /consumer-brotli-probe >/tmp/brotli-probe-dynamic.txt; \
+    if grep -E 'NEEDED.*\[libbrotli' /tmp/brotli-probe-dynamic.txt; then exit 1; fi
 
 FROM ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b AS consumer
 ARG PROVIDER=gnu
@@ -61,7 +70,7 @@ set -- \
     libc6=2.43-2ubuntu2.4 libc-bin=2.43-2ubuntu2.4 libc-gconv-modules-extra=2.43-2ubuntu2.4 \
     jq=1.8.1-4ubuntu2 libjq1=1.8.1-4ubuntu2 \
     p11-kit=0.26.2-2 p11-kit-modules=0.26.2-2 libp11-kit0=0.26.2-2 \
-    'libxrender1=1:0.9.12-1build1' gnu-coreutils=9.7-3ubuntu2.1 ca-certificates grep
+    'libxrender1=1:0.9.12-1build1' libbrotli1=1.2.0-3build1 gnu-coreutils=9.7-3ubuntu2.1 ca-certificates grep
 case "$PROVIDER" in
     gnu) set -- "$@" 'coreutils-from-gnu=0.0.0~ubuntu25' ;;
     uutils) set -- "$@" 'coreutils-from-uutils=0.0.0~ubuntu25' 'rust-coreutils=0.10.0-1ubuntu2~26.04.1' ;;
@@ -72,6 +81,7 @@ rm -rf /var/lib/apt/lists/* /tmp/ca-bootstrap /tmp/ca-certificates.deb
 SH
 COPY consumer-smoke.sh /consumer-smoke.sh
 COPY --from=embedding_probe /consumer-libjq-probe /consumer-libjq-probe
+COPY --from=embedding_probe /consumer-brotli-probe /consumer-brotli-probe
 RUN --mount=from=qualified,source=/out,target=/opt/pasturestack/ubuntu-security-backports,ro \
     /bin/bash /consumer-smoke.sh "$PROVIDER"
 

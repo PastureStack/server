@@ -18,7 +18,7 @@ FAMILIES = {
     'glibc': {'libc6', 'libc-bin', 'libc-gconv-modules-extra'},
     'rust-coreutils': {'rust-coreutils'}, 'jq': {'jq', 'libjq1'},
     'p11-kit': {'libp11-kit0', 'p11-kit', 'p11-kit-modules'},
-    'libxrender': {'libxrender1'},
+    'libxrender': {'libxrender1'}, 'brotli': {'libbrotli1'},
 }
 FILES = ('manifest.json', 'qualification.json', 'openvex.json',
          'source-inputs.lock.json', 'install.json', 'verify.json', 'bundle-image.txt')
@@ -170,7 +170,7 @@ def validate_glibc_vex_semantics(receipt, vex_sha, source_lock_sha):
 
 def verify(files, checksums, sbom, expected_digest, bundle_checksums):
     require(DIGEST.fullmatch(expected_digest) is not None, 'Expected bundle digest is not immutable')
-    expected_image = 'ghcr.io/pasturestack/ubuntu-security-backports:v0.1.0@' + expected_digest
+    expected_image = 'ghcr.io/pasturestack/ubuntu-security-backports:v0.1.1@' + expected_digest
     require(files['bundle-image.txt'].decode().strip() == expected_image, 'Consumer bundle identity mismatch')
     pins = {}
     for line in checksums.decode().splitlines():
@@ -194,7 +194,7 @@ def verify(files, checksums, sbom, expected_digest, bundle_checksums):
     manifest, qualification = docs['manifest.json'], docs['qualification.json']
     for name in ('manifest.json', 'qualification.json', 'source-inputs.lock.json'):
         item = docs[name]
-        require(item['schemaVersion'] == 1 and item['bundleVersion'] == '0.1.0'
+        require(item['schemaVersion'] == 1 and item['bundleVersion'] == '0.1.1'
                 and item['platform'] == PLATFORM, 'Unexpected qualified bundle schema/platform')
     require(manifest['qualification'] == {'path': 'qualification.json',
                 'sha256': sha(files['qualification.json'])}, 'Manifest qualification binding mismatch')
@@ -203,7 +203,7 @@ def verify(files, checksums, sbom, expected_digest, bundle_checksums):
             'Qualification/source-lock binding mismatch')
     families = {f['name']: f for f in manifest['families']}
     qualified = {f['name']: f for f in qualification['families']}
-    require(len(manifest['families']) == len(qualification['families']) == 6
+    require(len(manifest['families']) == len(qualification['families']) == 7
             and set(families) == set(qualified) == set(FAMILIES), 'Invalid qualified family set')
     for name, family in families.items():
         q = qualified[name]
@@ -212,7 +212,7 @@ def verify(files, checksums, sbom, expected_digest, bundle_checksums):
                 and SHA256.fullmatch(q['provenanceSha256'])
                 and SHA256.fullmatch(q['nativeInput']['lockSha256']), 'Unqualified family provenance')
     packages = {p['name']: p for p in manifest['packages']}
-    require(len(manifest['packages']) == 12 and set(packages) == set().union(*FAMILIES.values()),
+    require(len(manifest['packages']) == 13 and set(packages) == set().union(*FAMILIES.values()),
             'Invalid runtime package catalog')
     purls = {}
     for name, package in packages.items():
@@ -227,7 +227,7 @@ def verify(files, checksums, sbom, expected_digest, bundle_checksums):
         purls[package_purl(package)] = package
     install, installed = docs['install.json'], docs['verify.json']
     require(install['schemaVersion'] == installed['schemaVersion'] == 1
-            and install['bundleVersion'] == installed['bundleVersion'] == '0.1.0'
+            and install['bundleVersion'] == installed['bundleVersion'] == '0.1.1'
             and install['status'] == 'installed-and-verified' and installed['status'] == 'verified'
             and install['providerPreserved'] is True and install['configurationPreserved'] is True,
             'Installation/installed-verifier did not succeed')

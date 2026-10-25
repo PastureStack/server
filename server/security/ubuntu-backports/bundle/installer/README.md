@@ -56,11 +56,11 @@ install a package, change the host, run apt, or invoke libc-maintainer scripts.
 the pinned Ubuntu 26.04 image and signed 2026-10-23 archive snapshot. Run it in
 the CI runner twice with `PROVIDER=gnu` and `PROVIDER=uutils`, context this folder,
 additional build context `qualified=<qualified context containing out/>`, target
-`evidence`, and local output per provider. The GNU fixture has eleven selected
-packages and no Rust; the uutils fixture has all twelve. Both consume the same
+`evidence`, and local output per provider. The GNU fixture has twelve selected
+packages and no Rust; the uutils fixture has all thirteen. Both consume the same
 read-only qualified bundle bytes, restore deliberately path-excluded docs,
 perform actual install/verify, preserve package set and provider, and exercise
-the installed glibc loader/cache, jq, id, p11-kit, PCRE grep and NSS getent.
+the installed glibc loader/cache, jq, id, p11-kit, PCRE grep, NSS getent and Brotli valid-input API/streaming linkage.
 A separate test-only C probe uses the official jq release headers and
 `dlopen(..., RTLD_NOW)` without linking libjq or libm into the executable. Four
 threads each execute 128 runtime sorts using independent jq states, starting at
@@ -71,3 +71,8 @@ provider transition, including its required `--allow-remove-essential` option;
 this is confined to test setup, before the backport installer runs. The installer
 does not invoke apt or switch providers. These fixtures do not replace acceptance
 in each actual product rootfs.
+
+Bundle 0.1.1 adds only the Brotli family (`libbrotli1`) to the previous six
+qualified families. An image without libbrotli1 receives no Brotli package.
+Version 0.1.0 remains immutable and uses its original frozen verifier and
+producer checksums; the 0.1.1 verifier accepts only the new exact catalog.

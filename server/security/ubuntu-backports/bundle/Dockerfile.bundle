@@ -17,7 +17,7 @@ COPY --from=installer_build /out/install-existing-backports /install-existing-ba
 FROM scratch AS bundle
 ARG SOURCE_SHA
 LABEL org.opencontainers.image.title="Ubuntu security backport package inputs" \
-      org.opencontainers.image.version="0.1.0" \
+      org.opencontainers.image.version="0.1.1" \
       org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.revision="${SOURCE_SHA}" \
       org.opencontainers.image.description="First-party qualified amd64 Ubuntu 26.04 deb inputs; consumer rootfs validation is separate."

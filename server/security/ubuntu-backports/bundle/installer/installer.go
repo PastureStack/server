@@ -391,7 +391,7 @@ func unchangedInventory(before, after map[string]Installed, selected []Package) 
 	return nil
 }
 func (i Installer) Execute(install bool) (Receipt, error) {
-	r := Receipt{SchemaVersion: 1, BundleVersion: "0.1.0", Packages: []string{}, BeforeMissingDocumentation: []string{}, BeforeMissingTranslations: []string{}, ExactPathIncludes: []string{}}
+	r := Receipt{SchemaVersion: 1, BundleVersion: "0.1.1", Packages: []string{}, BeforeMissingDocumentation: []string{}, BeforeMissingTranslations: []string{}, ExactPathIncludes: []string{}}
 	if err := i.platform(); err != nil {
 		return r, err
 	}

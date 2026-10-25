@@ -35,14 +35,14 @@ GLIBC_AUDIT_FILE = HERE / 'glibc-nscd-source-closure.json'
 GUARD_SPEC = importlib.util.spec_from_file_location('backport_metadata_guard', HERE / 'verify-consumer-evidence.py')
 GUARD = importlib.util.module_from_spec(GUARD_SPEC)
 GUARD_SPEC.loader.exec_module(GUARD)
-WORK = Path(tempfile.gettempdir()) / 'pasturestack-ubuntu-security-backports-v0.1.0'
+WORK = Path(tempfile.gettempdir()) / 'pasturestack-ubuntu-security-backports-v0.1.1'
 REPO = 'PastureStack/server'
 PLATFORM = {'distribution': 'ubuntu', 'release': '26.04', 'architecture': 'amd64'}
 FAMILIES = {
     'pcre2': ['libpcre2-8-0', 'libpcre2-posix3'],
     'glibc': ['libc6', 'libc-bin', 'libc-gconv-modules-extra'],
     'rust-coreutils': ['rust-coreutils'], 'jq': ['jq', 'libjq1'],
-    'p11-kit': ['libp11-kit0', 'p11-kit', 'p11-kit-modules'], 'libxrender': ['libxrender1'],
+    'p11-kit': ['libp11-kit0', 'p11-kit', 'p11-kit-modules'], 'libxrender': ['libxrender1'], 'brotli': ['libbrotli1'],
 }
 BASE = 'server/security/ubuntu-backports/'
 PCRE2_STAGE_STEPS = [
@@ -109,7 +109,7 @@ def read_zip(path, digest):
 def load_lock(ready=False):
     lock = json.loads(LOCK_FILE.read_text(encoding='utf-8'))
     require(lock['schemaVersion'] == 1 and lock['repository'] == REPO
-            and lock['bundleVersion'] == '0.1.0' and lock['platform'] == PLATFORM,
+            and lock['bundleVersion'] == '0.1.1' and lock['platform'] == PLATFORM,
             'Unexpected bundle identity')
     require(set(lock['nativeInputs']) == set(FAMILIES) - {'pcre2'}, 'Wrong native family set')
     for family, item in lock['nativeInputs'].items():
@@ -117,9 +117,9 @@ def load_lock(ready=False):
         require(re.fullmatch('[0-9a-f]{40}', item['sourceCommit']) and type(item['runId']) is int,
                 'Native run/source must be immutable')
         if item['status'] == 'pending':
-            require(family == 'glibc' and item['artifactId'] is None and item['zipSha256'] is None,
+            require(family in ('glibc', 'brotli') and item['artifactId'] is None and item['zipSha256'] is None,
                     'Pending input must not invent an artifact')
-            require(not ready, 'glibc native artifact is pending; publication is blocked')
+            require(not ready, family + ' native artifact is pending; publication is blocked')
             continue
         require(item['status'] == 'qualified' and type(item['artifactId']) is int
                 and type(item['jobId']) is int and re.fullmatch('[0-9a-f]{64}', item['zipSha256']),
@@ -395,7 +395,7 @@ def registry_manifest(mode):
         token = json.load(response)['token']
     headers = {'Authorization': 'Bearer ' + token,
                'Accept': 'application/vnd.oci.image.index.v1+json, application/vnd.oci.image.manifest.v1+json, application/vnd.docker.distribution.manifest.v2+json'}
-    request = urllib.request.Request('https://ghcr.io/v2/pasturestack/ubuntu-security-backports/manifests/v0.1.0', headers=headers)
+    request = urllib.request.Request('https://ghcr.io/v2/pasturestack/ubuntu-security-backports/manifests/v0.1.1', headers=headers)
     try:
         with urllib.request.urlopen(request, timeout=30) as response:
             data = response.read(4 * 1024 * 1024 + 1)
@@ -405,7 +405,7 @@ def registry_manifest(mode):
         require(mode == 'absent' and error.code == 404 and codes
                 and codes <= {'MANIFEST_UNKNOWN', 'NAME_UNKNOWN'}, 'Registry response does not prove tag absence/public visibility')
         print('NEW_NUMERIC_TAG_CONFIRMED'); return
-    require(mode != 'absent', 'Refusing to overwrite existing v0.1.0')
+    require(mode != 'absent', 'Refusing to overwrite existing v0.1.1')
     digest = json.loads((WORK / 'publisher' / 'image-metadata.json').read_text())['containerimage.digest']
     require(re.fullmatch('sha256:[0-9a-f]{64}', digest) and 'sha256:' + sha(data) == digest,
             'Registry manifest differs from the exact pushed digest')
@@ -442,6 +442,18 @@ def check_owning_tests(family, files, provenance, directory):
                     and smoke['publicAbiSymbols'] > 0, 'jq original ABI/system oniguruma smoke missing')
         return {'status': 'qualified', 'owningTests': expected}
     helper = module_helper(family)
+    if family == 'brotli':
+        report = json.loads(files['brotli-tests.json'])
+        suites = helper.owning_results(files['cmake-tests.xml'].decode(), files['python-tests.log'].decode())
+        require(report == provenance['tests'] and report['status'] == 'PASS'
+                and report['owningSuites'] == suites and report['runtimeInstalled'] is False
+                and report['exploitExecuted'] is False
+                and len(report['abi']) == 3
+                and [a['soname'] for a in report['abi']] == helper.SONAMES
+                and all(a['status'] == 'PASS' and a['exports'] > 0 for a in report['abi'])
+                and report['packageApi'] == 'PASS: 15 valid roundtrips, 45 streaming roundtrips, three linked SONAMEs',
+                'Brotli original owning suite/three-library ABI/valid-input API evidence missing')
+        return report
     if family == 'p11-kit':
         suite = provenance['tests']['fullOwningSuite']
         (directory / 'test-suite.log').write_bytes(files['test-suite.log'])
@@ -763,24 +775,24 @@ def qualify(lock):
     glibc['codeAbsence'] = glibc_nscd_qualification(lock['nativeInputs']['glibc'], packages, glibc_payloads)
     absence_purls = GUARD.validate_glibc_nscd_qualification({q['name']: q for q in qualifications},
                                                          {p['name']: p for p in packages}, lock)
-    write_json(output / 'qualification.json', {'schemaVersion': 1, 'bundleVersion': '0.1.0', 'platform': PLATFORM,
+    write_json(output / 'qualification.json', {'schemaVersion': 1, 'bundleVersion': '0.1.1', 'platform': PLATFORM,
                'status': 'qualified', 'families': qualifications, 'sourceLockSha256': file_sha(LOCK_FILE),
                'installer': installer_proof,
                'consumerEvidenceVerifier': guard_proof,
                'consumerStatus': 'Package inputs only; consumer installation, rootfs scan and product acceptance remain required.'})
     shutil.copyfile(LOCK_FILE, output / 'source-inputs.lock.json')
-    write_json(output / 'manifest.json', {'schemaVersion': 1, 'bundleVersion': '0.1.0', 'platform': PLATFORM,
+    write_json(output / 'manifest.json', {'schemaVersion': 1, 'bundleVersion': '0.1.1', 'platform': PLATFORM,
                'qualification': {'path': 'qualification.json', 'sha256': file_sha(output / 'qualification.json')},
                'families': families, 'packages': packages})
     components = [{'type': 'library', 'name': p['name'], 'version': p['version'], 'purl': purl(p),
                    'bom-ref': purl(p), 'hashes': [{'alg': 'SHA-256', 'content': p['archive']['sha256']}]} for p in packages]
-    components.append({'type': 'application', 'name': 'install-existing-backports', 'version': '0.1.0',
-                       'bom-ref': 'pkg:generic/pasturestack/backport-installer@0.1.0',
-                       'purl': 'pkg:generic/pasturestack/backport-installer@0.1.0',
+    components.append({'type': 'application', 'name': 'install-existing-backports', 'version': '0.1.1',
+                       'bom-ref': 'pkg:generic/pasturestack/backport-installer@0.1.1',
+                       'purl': 'pkg:generic/pasturestack/backport-installer@0.1.1',
                        'hashes': [{'alg': 'SHA-256', 'content': sha(binary)}],
                        'properties': [{'name': 'pasturestack:go-toolchain', 'value': 'go1.27.3'}]})
     write_json(output / 'sbom.cdx.json', {'bomFormat': 'CycloneDX', 'specVersion': '1.6', 'version': 1,
-               'metadata': {'component': {'type': 'data', 'name': 'ubuntu-security-backports', 'version': '0.1.0'}},
+               'metadata': {'component': {'type': 'data', 'name': 'ubuntu-security-backports', 'version': '0.1.1'}},
                'components': components})
     statements = []
     for family in FAMILIES:
@@ -792,7 +804,7 @@ def qualify(lock):
                                'status': 'fixed', 'action_statement': item['vexScope']})
     statements.append(GUARD.glibc_nscd_statement(absence_purls))
     write_json(output / 'openvex.json', {'@context': 'https://openvex.dev/ns/v0.2.0',
-               '@id': 'https://github.com/PastureStack/server/ubuntu-security-backports/0.1.0',
+               '@id': 'https://github.com/PastureStack/server/ubuntu-security-backports/0.1.1',
                'author': 'PastureStack', 'timestamp': lock['vexTimestamp'], 'version': 1, 'statements': statements})
     write_json(output / 'tracked-scopes.json', lock['trackedScopes'])
     write_checksums(output)
@@ -807,7 +819,7 @@ def record_consumer_tests():
     manifest_sha = file_sha(output / 'manifest.json')
     records = []
     checks = ['batch-install', 'verify-installed', 'package-set', 'provider', 'docs-restored',
-              'glibc-loader', 'jq', 'libjq-RTLD_NOW-TLS-threads', 'id', 'p11-kit', 'grep', 'getent']
+              'glibc-loader', 'jq', 'libjq-RTLD_NOW-TLS-threads', 'id', 'p11-kit', 'grep', 'getent', 'brotli-RTLD_NOW-valid-roundtrip']
     for provider in ['gnu', 'uutils']:
         source = WORK / ('consumer-' + provider)
         result = json.loads((source / 'result.json').read_text())

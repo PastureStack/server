@@ -1,5 +1,5 @@
 {
-  "bundleVersion": "0.1.0",
+  "bundleVersion": "0.1.1",
   "consumerFixture": {
     "gnuBaselineProviderSetup": {
       "scope": "Disposable GNU fixture construction only; the backport installer must preserve the selected provider.",
@@ -45,21 +45,21 @@
     "snapshotURL": "https://snapshot.ubuntu.com/ubuntu/20261023T000000Z",
     "ubuntuImage": "ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b"
   },
-  "image": "ghcr.io/pasturestack/ubuntu-security-backports:v0.1.0",
+  "image": "ghcr.io/pasturestack/ubuntu-security-backports:v0.1.1",
   "nativeInputs": {
     "glibc": {
       "artifactId": 12573643405,
       "artifactName": "ubuntu-native-glibc-507cadcb3eaafcd6a85c453f2f180a8aef415d88-40122645083",
       "ciClosure": {
         ".github/workflows/ubuntu-backport-native.yml": {
-          "currentSha256": "329ad26ee9f4b22f6fae37b8d680c9bcf6e9dc65e22a016d4225b1dcba606b79",
+          "currentSha256": "d13cdeced4645989feff5846ad7452bc014ae2095e3f13ade370cc864cc191b2",
           "nativeSha256": "329ad26ee9f4b22f6fae37b8d680c9bcf6e9dc65e22a016d4225b1dcba606b79",
-          "reviewedDifference": "Native source and effective CI recipe are identical to the approved current files."
+          "reviewedDifference": "Native source and effective CI recipe are identical to the approved current files. Additive Brotli-only selection and native MODULE allowlist; this original family source/build/test behavior is unchanged."
         },
         "server/security/ubuntu-backports/Dockerfile.native-ci": {
-          "currentSha256": "ba6f233913a679b53f0234423a7c281e31c36b8305fde354b4ab177e05890f0b",
+          "currentSha256": "365dd371e17a58c7f2f7523c52a3511b513b16bef765e904dcfea23feb11cc5d",
           "nativeSha256": "ba6f233913a679b53f0234423a7c281e31c36b8305fde354b4ab177e05890f0b",
-          "reviewedDifference": "Native source and effective CI recipe are identical to the approved current files."
+          "reviewedDifference": "Native source and effective CI recipe are identical to the approved current files. Additive Brotli-only selection and native MODULE allowlist; this original family source/build/test behavior is unchanged."
         }
       },
       "codeAbsenceProof": {
@@ -150,14 +150,14 @@
       "artifactName": "ubuntu-native-jq-bc129a88a5ec8c4e64b3ed89bfd97c7e82362d7c-40116776455",
       "ciClosure": {
         ".github/workflows/ubuntu-backport-native.yml": {
-          "currentSha256": "329ad26ee9f4b22f6fae37b8d680c9bcf6e9dc65e22a016d4225b1dcba606b79",
+          "currentSha256": "d13cdeced4645989feff5846ad7452bc014ae2095e3f13ade370cc864cc191b2",
           "nativeSha256": "e2b32c1f0ccafc21503a4cd4b3eb5fb10a82aec82b7eb81c74dc634e7afa4c05",
-          "reviewedDifference": "Reviewed exact diff: workflow adds other module selection/initial-PR scheduling; recipe adds p11-kit/libxrender-only tools, Rust-only CI marker, builder inventory and failed-glibc diagnostics. jq effective source/build dependencies and owning commands are unchanged."
+          "reviewedDifference": "Reviewed exact diff: workflow adds other module selection/initial-PR scheduling; recipe adds p11-kit/libxrender-only tools, Rust-only CI marker, builder inventory and failed-glibc diagnostics. jq effective source/build dependencies and owning commands are unchanged. Additive Brotli-only selection and native MODULE allowlist; this original family source/build/test behavior is unchanged."
         },
         "server/security/ubuntu-backports/Dockerfile.native-ci": {
-          "currentSha256": "ba6f233913a679b53f0234423a7c281e31c36b8305fde354b4ab177e05890f0b",
+          "currentSha256": "365dd371e17a58c7f2f7523c52a3511b513b16bef765e904dcfea23feb11cc5d",
           "nativeSha256": "b3dd3e1f7bbad9ace7c35e32f061d307862cad31b60c4818a0a666ed4b25e0fb",
-          "reviewedDifference": "Reviewed exact diff: workflow adds other module selection/initial-PR scheduling; recipe adds p11-kit/libxrender-only tools, Rust-only CI marker, builder inventory and failed-glibc diagnostics. jq effective source/build dependencies and owning commands are unchanged."
+          "reviewedDifference": "Reviewed exact diff: workflow adds other module selection/initial-PR scheduling; recipe adds p11-kit/libxrender-only tools, Rust-only CI marker, builder inventory and failed-glibc diagnostics. jq effective source/build dependencies and owning commands are unchanged. Additive Brotli-only selection and native MODULE allowlist; this original family source/build/test behavior is unchanged."
         }
       },
       "copyright": {
@@ -251,14 +251,14 @@
       "artifactName": "ubuntu-native-libxrender-07e4a7afa827cb45514a72aba12f03b1d30d121d-40120642373",
       "ciClosure": {
         ".github/workflows/ubuntu-backport-native.yml": {
-          "currentSha256": "329ad26ee9f4b22f6fae37b8d680c9bcf6e9dc65e22a016d4225b1dcba606b79",
+          "currentSha256": "d13cdeced4645989feff5846ad7452bc014ae2095e3f13ade370cc864cc191b2",
           "nativeSha256": "f06a225d71f28b31f1592025ed272055aa54266c1c112bc08c70e55529d885f4",
-          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged."
+          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged. Additive Brotli-only selection and native MODULE allowlist; this original family source/build/test behavior is unchanged."
         },
         "server/security/ubuntu-backports/Dockerfile.native-ci": {
-          "currentSha256": "ba6f233913a679b53f0234423a7c281e31c36b8305fde354b4ab177e05890f0b",
+          "currentSha256": "365dd371e17a58c7f2f7523c52a3511b513b16bef765e904dcfea23feb11cc5d",
           "nativeSha256": "bca055ed1bd8fd213a906eceb23c5ff3f9449d06acb51e249c976c3174d406bb",
-          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged."
+          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged. Additive Brotli-only selection and native MODULE allowlist; this original family source/build/test behavior is unchanged."
         }
       },
       "copyright": {
@@ -313,14 +313,14 @@
       "artifactName": "ubuntu-native-p11-kit-2a47f3cd99b6afc47b54ee6d8837b834e95c50f2-40121338859",
       "ciClosure": {
         ".github/workflows/ubuntu-backport-native.yml": {
-          "currentSha256": "329ad26ee9f4b22f6fae37b8d680c9bcf6e9dc65e22a016d4225b1dcba606b79",
+          "currentSha256": "d13cdeced4645989feff5846ad7452bc014ae2095e3f13ade370cc864cc191b2",
           "nativeSha256": "f06a225d71f28b31f1592025ed272055aa54266c1c112bc08c70e55529d885f4",
-          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged."
+          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged. Additive Brotli-only selection and native MODULE allowlist; this original family source/build/test behavior is unchanged."
         },
         "server/security/ubuntu-backports/Dockerfile.native-ci": {
-          "currentSha256": "ba6f233913a679b53f0234423a7c281e31c36b8305fde354b4ab177e05890f0b",
+          "currentSha256": "365dd371e17a58c7f2f7523c52a3511b513b16bef765e904dcfea23feb11cc5d",
           "nativeSha256": "bca055ed1bd8fd213a906eceb23c5ff3f9449d06acb51e249c976c3174d406bb",
-          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged."
+          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged. Additive Brotli-only selection and native MODULE allowlist; this original family source/build/test behavior is unchanged."
         }
       },
       "copyright": {
@@ -524,14 +524,14 @@
       "artifactName": "ubuntu-native-rust-coreutils-07e4a7afa827cb45514a72aba12f03b1d30d121d-40120637646",
       "ciClosure": {
         ".github/workflows/ubuntu-backport-native.yml": {
-          "currentSha256": "329ad26ee9f4b22f6fae37b8d680c9bcf6e9dc65e22a016d4225b1dcba606b79",
+          "currentSha256": "d13cdeced4645989feff5846ad7452bc014ae2095e3f13ade370cc864cc191b2",
           "nativeSha256": "f06a225d71f28b31f1592025ed272055aa54266c1c112bc08c70e55529d885f4",
-          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged."
+          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged. Additive Brotli-only selection and native MODULE allowlist; this original family source/build/test behavior is unchanged."
         },
         "server/security/ubuntu-backports/Dockerfile.native-ci": {
-          "currentSha256": "ba6f233913a679b53f0234423a7c281e31c36b8305fde354b4ab177e05890f0b",
+          "currentSha256": "365dd371e17a58c7f2f7523c52a3511b513b16bef765e904dcfea23feb11cc5d",
           "nativeSha256": "bca055ed1bd8fd213a906eceb23c5ff3f9449d06acb51e249c976c3174d406bb",
-          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged."
+          "reviewedDifference": "Reviewed exact diff: removes tar selection, adds builder inventory and failed-glibc diagnostics only. This family effective build dependency setup, source inputs and owning commands are unchanged. Additive Brotli-only selection and native MODULE allowlist; this original family source/build/test behavior is unchanged."
         }
       },
       "copyright": {
@@ -600,6 +600,72 @@
       "status": "qualified",
       "vexScope": "Exact qualified rust-coreutils package bytes: the new id CVEs use the official ff382 backport and packaged GID checks; the other 18 have an independently reviewed exact Ubuntu orig + enabled quilt source/control audit, bound to this native lock, provenance and package SHA. Source closure does not claim new CVE-specific dynamic execution: retain 84 upstream ignored, 17 original filtered tests, missing dd/split unit execution and the logname real-login limitation. Consumer images still require native Trivy --vex, installation and product acceptance.",
       "zipSha256": "7f4b4780a492425bb9de239d67c6d594ccd3e8c0c85ac03eaa85035248ac5e2b"
+    },
+    "brotli": {
+      "status": "qualified",
+      "sourceCommit": "7f90a147c69ff1fdbfbf8a7e48b0bf12a95fbc56",
+      "runId": 40174455200,
+      "jobId": 121112022951,
+      "artifactId": 12592011612,
+      "zipSha256": "03ad6c149f55f3f05483cd1aa39d300c978f953b60c88c0acdc4edbfe2d569cb",
+      "runtimePackages": [
+        "libbrotli1"
+      ],
+      "sourceFiles": {
+        "server/security/ubuntu-backports/brotli/brotli.lock.json": "0b709047ae7f0e6f068dcfd8b06379007947256feb3920667a48381ed60dc6d5",
+        "server/security/ubuntu-backports/brotli/build-brotli-backport.py": "0db2bc183e1e6ff4e7cf2c100107e2473bd7325f459c6d9e6f14a7e63cabd223",
+        "server/security/ubuntu-backports/brotli/roundtrip.c": "a2891bf18f18b7ecd3c50871cc00c64d922dba0b4b2d899cb6a57eaec6da0a31",
+        "server/security/ubuntu-backports/brotli/test_brotli_backport.py": "a43213fa3da19ff139782e0a0a022165d5c954f484fb9cdf3bff64ff5efe62b9",
+        "server/security/ubuntu-backports/source_helpers.py": "d2b3f310f8ed99a50a696fe14094b7117ec5d7ed576e6080d5540c0e82891486",
+        "server/security/ubuntu-backports/build-pcre2-backport.py": "79ff6faf3ca5b8e6dfdfc38a78ba56238c749aeabfab59fd05ce2130537458b2"
+      },
+      "lockSha256": "0b709047ae7f0e6f068dcfd8b06379007947256feb3920667a48381ed60dc6d5",
+      "fixedVulnerabilities": [
+        "CVE-2026-111497"
+      ],
+      "packages": [
+        {
+          "file": "libbrotli1_1.2.0-3build1+pasturestack.1_amd64.deb",
+          "name": "libbrotli1",
+          "source": "brotli",
+          "version": "1.2.0-3build1+pasturestack.1",
+          "sha256": "a2dca2c08cbc5ffe9a57432e80b989c458f7ed38c39bad33f3a3fa006fea507b"
+        }
+      ],
+      "vexScope": "Exact accepted Google decoder security commit, preserved Ubuntu packaging and qualified native ordinary valid-input/API/streaming/three-library ABI controls. Only this first-party libbrotli1 package; no CVE trigger was executed.",
+      "ciClosure": {
+        ".github/workflows/ubuntu-backport-native.yml": {
+          "nativeSha256": "d13cdeced4645989feff5846ad7452bc014ae2095e3f13ade370cc864cc191b2",
+          "currentSha256": "d13cdeced4645989feff5846ad7452bc014ae2095e3f13ade370cc864cc191b2",
+          "reviewedDifference": "Identical native CI recipe."
+        },
+        "server/security/ubuntu-backports/Dockerfile.native-ci": {
+          "nativeSha256": "365dd371e17a58c7f2f7523c52a3511b513b16bef765e904dcfea23feb11cc5d",
+          "currentSha256": "365dd371e17a58c7f2f7523c52a3511b513b16bef765e904dcfea23feb11cc5d",
+          "reviewedDifference": "Identical native CI recipe."
+        }
+      },
+      "artifactName": "ubuntu-native-brotli-7f90a147c69ff1fdbfbf8a7e48b0bf12a95fbc56-40174455200",
+      "runConclusion": "success",
+      "copyright": {
+        "file": "COPYRIGHT",
+        "sha256": "24a64e5bb83d0960d1835696a1e23c0896ad6055b0ca47c66ab0eb9a766324b1"
+      },
+      "evidence": {
+        "COPYRIGHT": "24a64e5bb83d0960d1835696a1e23c0896ad6055b0ca47c66ab0eb9a766324b1",
+        "SHA256SUMS": "db1cc580ab7800f057d8711d6644d8852d57e9c20fe138148091ef762d3e5825",
+        "brotli-tests.json": "eeb45967ee74e0a9740ae2b9a449d012e79c6f1cb460b8c91f29fe8a38c8e67c",
+        "brotli.lock.json": "0b709047ae7f0e6f068dcfd8b06379007947256feb3920667a48381ed60dc6d5",
+        "brotli_1.2.0-3build1+pasturestack.1_amd64.buildinfo": "93d9788ce3be8a5031bd32bfde494603dc022f3595c3d68fd317044bd163a5fa",
+        "brotli_1.2.0-3build1+pasturestack.1_amd64.changes": "9e58e936c4d0c2e0b78857dbf220be9b6765119b75837af513280d31d4718dd2",
+        "build.log": "116f045b8e49ed5337478a64969249919148fcbeaf90a5dedecd48c0cf680edc",
+        "builder-packages.tsv": "576f5f872ce35505aab6d442d2fd119cffdc6b2013f50c98fb00d1adb192f02f",
+        "cmake-tests.log": "ff22bf7b56a8129502f9814277293a0da75cf55a053f8a163fb65d024c6b90bf",
+        "cmake-tests.xml": "489484b4eb71a4c0e04dff39b70e955ed12c62e8d38e60783bae30fbe6c36f89",
+        "manifest.tsv": "dbf238ddb9bce5b15410fd137fa0ec0754dc2cf699a1dfcfef7f50f7b6d6b003",
+        "provenance.json": "bc440934207f0bd57074b148990c3c2eaae3b10f078de5de16d0ad2f829fbb14",
+        "python-tests.log": "edd3a7d019490012c9978bfa6e84db3c1dc4c4f219800eeb1e4a17d50c5a88d4"
+      }
     }
   },
   "pcre2": {

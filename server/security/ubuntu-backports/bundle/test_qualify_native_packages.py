@@ -44,6 +44,25 @@ def pcre2_api(stage):
 
 
 class Boundaries(unittest.TestCase):
+    def test_brotli_qualification_replays_owning_receipts_and_three_library_contract(self):
+        xml = '<testsuites><testsuite>' + '<testcase status="run"/>' * 12 + '</testsuite></testsuites>'
+        python = 'Ran 135 tests in 0.1s\n\nOK\n'
+        report = {'status': 'PASS', 'owningSuites': {'status': 'PASS', 'cmakeCases': 12,
+            'pythonCases': 135, 'addedSkips': 0}, 'runtimeInstalled': False, 'exploitExecuted': False,
+            'abi': [{'soname': n, 'exports': 1, 'status': 'PASS'} for n in Q.module_helper('brotli').SONAMES],
+            'packageApi': 'PASS: 15 valid roundtrips, 45 streaming roundtrips, three linked SONAMEs'}
+        files = {'brotli-tests.json': json.dumps(report).encode(), 'cmake-tests.xml': xml.encode(),
+                 'python-tests.log': python.encode()}
+        result = Q.check_owning_tests('brotli', files, {'tests': report}, self.root / 'positive')
+        self.assertEqual(result, report)
+        for index, bad in enumerate([dict(report, runtimeInstalled=True), dict(report, exploitExecuted=True),
+                    dict(report, abi=report['abi'][:2]), dict(report, packageApi='PASS')]):
+            changed = dict(files, **{'brotli-tests.json': json.dumps(bad).encode()})
+            with self.assertRaises(ValueError):
+                Q.check_owning_tests('brotli', changed, {'tests': bad}, self.root / ('negative-' + str(index)))
+        changed = dict(files, **{'cmake-tests.xml': xml.replace('/>', '><skipped/></testcase>', 1).encode()})
+        with self.assertRaises(ValueError): Q.check_owning_tests('brotli', changed, {'tests': report}, self.root / 'skip')
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='bundle-unit-')
         self.addCleanup(self.temp.cleanup)
@@ -411,7 +430,7 @@ class Boundaries(unittest.TestCase):
             result = {'schemaVersion': 1, 'provider': provider, 'status': 'PASS', 'inputManifestSha256': digest,
                       'selectedPackages': selected, 'checks': ['batch-install', 'verify-installed', 'package-set',
                         'provider', 'docs-restored', 'glibc-loader', 'jq', 'libjq-RTLD_NOW-TLS-threads',
-                        'id', 'p11-kit', 'grep', 'getent']}
+                        'id', 'p11-kit', 'grep', 'getent', 'brotli-RTLD_NOW-valid-roundtrip']}
             if wrong and provider == 'gnu': wrong(result)
             source = work / ('consumer-' + provider); source.mkdir()
             Q.write_json(source / 'result.json', result)

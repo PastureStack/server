@@ -159,7 +159,7 @@ func fixture(t *testing.T, names ...string) (Installer, *fakeRunner) {
 	must(t, os.MkdirAll(filepath.Join(root, "var/lib/dpkg/alternatives"), 0755))
 	write(t, root, "usr/bin/ls", []byte("provider command"))
 	f := &fakeRunner{t: t, root: root, bundle: bundle, installed: map[string]Installed{}, packages: map[string]Package{}, payloads: map[string]Payload{}, tars: map[string][]byte{}, contents: map[string][]byte{}, beforeDiff: map[string]string{}, afterDiff: map[string]string{}}
-	m := Manifest{SchemaVersion: 1, BundleVersion: "0.1.0", Platform: Platform{"ubuntu", "26.04", "amd64"}, Families: []Family{}, Packages: []Package{}}
+	m := Manifest{SchemaVersion: 1, BundleVersion: "0.1.1", Platform: Platform{"ubuntu", "26.04", "amd64"}, Families: []Family{}, Packages: []Package{}}
 	q := Qualification{SchemaVersion: 1, BundleVersion: m.BundleVersion, Platform: m.Platform, Status: "qualified", Families: []QualifiedFamily{}}
 	lock := jsonFile(t, bundle, "source-inputs.lock.json", map[string]string{"identity": "source lock"})
 	q.SourceLockSHA256 = lock.SHA256

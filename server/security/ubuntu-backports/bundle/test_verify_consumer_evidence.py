@@ -36,7 +36,7 @@ def semantic_receipt(vex_sha, source_lock_sha):
 
 
 def fixture(absence=False):
-    source = {'schemaVersion': 1, 'bundleVersion': '0.1.0', 'platform': guard.PLATFORM}
+    source = {'schemaVersion': 1, 'bundleVersion': '0.1.1', 'platform': guard.PLATFORM}
     manifest = dict(source, families=[], packages=[])
     qualification = dict(source, status='qualified', sourceLockSha256=guard.sha(encoded(source)), families=[])
     for family, names in guard.FAMILIES.items():
@@ -51,9 +51,9 @@ def fixture(absence=False):
                 'archive': {'sha256': '3' * 64}, 'payload': {'sha256': '4' * 64}})
     manifest['qualification'] = {'path': 'qualification.json', 'sha256': guard.sha(encoded(qualification))}
     selected = ['libc6', 'libc-bin', 'libc-gconv-modules-extra', 'libpcre2-8-0', 'rust-coreutils']
-    install = {'schemaVersion': 1, 'bundleVersion': '0.1.0', 'status': 'installed-and-verified',
+    install = {'schemaVersion': 1, 'bundleVersion': '0.1.1', 'status': 'installed-and-verified',
                'providerPreserved': True, 'configurationPreserved': True, 'packages': selected}
-    verified = {'schemaVersion': 1, 'bundleVersion': '0.1.0', 'status': 'verified', 'packages': selected}
+    verified = {'schemaVersion': 1, 'bundleVersion': '0.1.1', 'status': 'verified', 'packages': selected}
     vex = {'@context': 'https://openvex.dev/ns/v0.2.0', 'statements': [
         {'vulnerability': {'name': 'CVE-2026-35370'}, 'status': 'fixed', 'action_statement': 'Exact official patch qualified.',
          'products': [{'@id': guard.package_purl(p)} for p in manifest['packages']]}]}
@@ -86,7 +86,7 @@ def fixture(absence=False):
         manifest['qualification']['sha256'] = guard.sha(encoded(qualification))
     files = {name: encoded(value) for name, value in [('manifest.json', manifest), ('qualification.json', qualification),
              ('source-inputs.lock.json', source), ('install.json', install), ('verify.json', verified), ('openvex.json', vex)]}
-    files['bundle-image.txt'] = ('ghcr.io/pasturestack/ubuntu-security-backports:v0.1.0@' + DIGEST + '\n').encode()
+    files['bundle-image.txt'] = ('ghcr.io/pasturestack/ubuntu-security-backports:v0.1.1@' + DIGEST + '\n').encode()
     sbom = {'bomFormat': 'CycloneDX', 'components': [{'name': p['name'], 'version': p['version'],
             'purl': guard.package_purl(p)} for p in manifest['packages'] if p['name'] in selected]}
     return files, sbom
@@ -110,6 +110,23 @@ def refresh_bindings(files):
 
 
 class ConsumerEvidenceTests(unittest.TestCase):
+    def test_brotli_is_bound_to_selected_exact_package_and_producer(self):
+        files, sbom = fixture()
+        package = next(p for p in json.loads(files['manifest.json'])['packages'] if p['name'] == 'libbrotli1')
+        for name in ['install.json', 'verify.json']:
+            change(files, name, lambda d: d['packages'].append('libbrotli1'))
+        sbom['components'].append({'name': package['name'], 'version': package['version'],
+                                   'purl': guard.package_purl(package)})
+        guard.verify(files, checksums(files), sbom, DIGEST, producer_checksums(files))
+        altered = copy.deepcopy(sbom)
+        altered['components'][-1]['version'] = '1.2.0-3build1'
+        with self.assertRaises(ValueError):
+            guard.verify(files, checksums(files), altered, DIGEST, producer_checksums(files))
+        original = producer_checksums(files)
+        change(files, 'manifest.json', lambda d: next(p for p in d['packages'] if p['name'] == 'libbrotli1')['archive'].update(sha256='f' * 64))
+        with self.assertRaisesRegex(ValueError, 'immutable OCI producer'):
+            guard.verify(files, checksums(files), sbom, DIGEST, original)
+
     def test_source_native_fixture_requires_no_debs_and_uses_production_generator(self):
         with tempfile.TemporaryDirectory(prefix='glibc-vex-source-unit-') as directory:
             work = Path(directory); target = work / 'fixture'
@@ -126,7 +143,7 @@ class ConsumerEvidenceTests(unittest.TestCase):
         files, sbom = fixture(absence=True); original = copy.deepcopy((files, sbom))
         result = guard.verify(files, checksums(files), sbom, DIGEST, producer_checksums(files))
         self.assertEqual(result['qualifiedCodeAbsentVexPairs'], 3)
-        self.assertEqual(result['qualifiedFixedVexPairs'], 12)
+        self.assertEqual(result['qualifiedFixedVexPairs'], 13)
         self.assertEqual((files, sbom), original)
         self.assertEqual(len(guard.FILES), 7)
 

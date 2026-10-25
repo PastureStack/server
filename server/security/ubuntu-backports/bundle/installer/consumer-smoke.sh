@@ -36,13 +36,13 @@ installed gnu-coreutils
 if [[ "$provider" == gnu ]]; then
     absent rust-coreutils
     absent coreutils-from-uutils
-    expected=11
+    expected=12
 else
     installed rust-coreutils
     absent coreutils-from-gnu
-    expected=12
+    expected=13
 fi
-for package in libc6-dev libc-dev-bin libpcre2-dev libjq-dev libp11-kit-dev libxrender-dev; do
+for package in libc6-dev libc-dev-bin libpcre2-dev libjq-dev libp11-kit-dev libxrender-dev libbrotli-dev; do
     absent "$package"
 done
 input_manifest_sha="$(sha256sum "$data/manifest.json" | awk '{print $1}')"
@@ -81,7 +81,7 @@ test -z "$(dpkg --audit)"
 test -s /etc/ld.so.cache
 sha256sum /etc/ld.so.cache >"$evidence/ld-so-cache-after.sha256"
 ldconfig -p >"$evidence/ldconfig.txt"
-for soname in libc.so.6 libpcre2-8.so.0 libpcre2-posix.so.3 libjq.so.1 libp11-kit.so.0 libXrender.so.1; do
+for soname in libc.so.6 libpcre2-8.so.0 libpcre2-posix.so.3 libjq.so.1 libp11-kit.so.0 libXrender.so.1 libbrotlicommon.so.1 libbrotlidec.so.1 libbrotlienc.so.1; do
     grep -F "$soname " "$evidence/ldconfig.txt"
 done
 getconf GNU_LIBC_VERSION | tee "$evidence/glibc-version.txt" | grep -Fx 'glibc 2.43'
@@ -90,6 +90,7 @@ ldd /usr/lib/x86_64-linux-gnu/libXrender.so.1 >"$evidence/libxrender-loader.txt"
 if grep -F 'not found' "$evidence/libxrender-loader.txt"; then exit 1; fi
 printf '%s\n' '{"numbers":[1,2,3]}' | jq -e '.numbers | add == 6'
 timeout 30 /consumer-libjq-probe | tee "$evidence/libjq-embedding.txt"
+timeout 30 /consumer-brotli-probe | tee "$evidence/brotli-linkage.txt"
 test "$(id -u)" = 0
 test "$(id -g)" = 0
 id -G >"$evidence/id-groups.txt"
@@ -99,5 +100,5 @@ getent passwd root | tee "$evidence/getent-root.txt" | grep -E '^root:[^:]*:0:0:
 test "$input_manifest_sha" = "$(sha256sum "$data/manifest.json" | awk '{print $1}')"
 jq -n --arg provider "$provider" --arg manifest "$input_manifest_sha" \
     --slurpfile receipt "$evidence/install.json" \
-    '{schemaVersion:1,provider:$provider,status:"PASS",inputManifestSha256:$manifest,selectedPackages:$receipt[0].packages,checks:["batch-install","verify-installed","package-set","provider","docs-restored","glibc-loader","jq","libjq-RTLD_NOW-TLS-threads","id","p11-kit","grep","getent"]}' >"$evidence/result.json"
+    '{schemaVersion:1,provider:$provider,status:"PASS",inputManifestSha256:$manifest,selectedPackages:$receipt[0].packages,checks:["batch-install","verify-installed","package-set","provider","docs-restored","glibc-loader","jq","libjq-RTLD_NOW-TLS-threads","id","p11-kit","grep","getent","brotli-RTLD_NOW-valid-roundtrip"]}' >"$evidence/result.json"
 cat "$evidence/result.json"
