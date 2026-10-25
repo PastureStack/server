@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "sourcePackage": "brotli",
+  "ubuntuSourceVersion": "1.2.0-3build1",
+  "customVersion": "1.2.0-3build1+pasturestack.1",
+  "distribution": "resolute",
+  "osVersion": "26.04",
+  "architecture": "amd64",
+  "sourceDateEpoch": 1792886400,
+  "identity": "First-party rebuild with unchanged Ubuntu packaging and the exact Google security commit; not issued by Canonical.",
+  "runtimePackages": [
+    "libbrotli1"
+  ],
+  "sourceFiles": [
+    {
+      "name": "brotli_1.2.0-3build1.dsc",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/b/brotli/brotli_1.2.0-3build1.dsc",
+      "sha256": "07c51f4299d065d4ae3cc269e9a837b9723453632fe62039cc47723a7d620eda",
+      "size": 2281
+    },
+    {
+      "name": "brotli_1.2.0.orig.tar.gz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/b/brotli/brotli_1.2.0.orig.tar.gz",
+      "sha256": "eb5f7dadf215d0670665fd81566e1fe2dfdc154d983f09142de7299df4c182e6",
+      "size": 646398
+    },
+    {
+      "name": "brotli_1.2.0-3build1.debian.tar.xz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/main/b/brotli/brotli_1.2.0-3build1.debian.tar.xz",
+      "sha256": "7ebbb009f9e33f54a7790e95da60af4667a3fc4a914b79ad49bfc06bb396d829",
+      "size": 5976
+    }
+  ],
+  "patches": [
+    {
+      "name": "b418fa81c48262a86a95332b0bc6d62c30aa78b6.patch",
+      "url": "https://github.com/google/brotli/commit/b418fa81c48262a86a95332b0bc6d62c30aa78b6.patch",
+      "sha256": "a4516e1df041108aefba2b3be1faf4c907a8b051710f205dc55d8b8f9d208dec",
+      "size": 9821,
+      "commit": "b418fa81c48262a86a95332b0bc6d62c30aa78b6",
+      "fixedCves": [
+        "CVE-2026-111497"
+      ],
+      "firstFixedVersion": "1.2.1"
+    }
+  ],
+  "baselineBinary": {
+    "name": "libbrotli1_1.2.0-3build1_amd64.deb",
+    "url": "https://archive.ubuntu.com/ubuntu/pool/main/b/brotli/libbrotli1_1.2.0-3build1_amd64.deb",
+    "sha256": "858242571fc2585c1f8eb83ae01d020f0f4a92679d0de8fe31146f6687bdd84a",
+    "size": 342830,
+    "version": "1.2.0-3build1"
+  },
+  "baselineSha256": {
+    "c/dec/decode.c": "f7749b1296128c0add4eaa454b9d82ee1c7b0451c1c9ed47d96733e6de6f2d7b",
+    "c/include/brotli/decode.h": "027b91e62e85de6955e6334628b2ba0c77901a449e169fd9f95d6ea1cc91f980"
+  },
+  "patchedSha256": {
+    "c/dec/decode.c": "6eaa6b923ab4dfa6c1ef4d517f19d4382c646c905d273baa1077b3fb4b27d586",
+    "c/include/brotli/decode.h": "5ef8d5603c9a7fce382cb2e8d0cf0c3bc2e8274f7601957ab671ba3b372937e7"
+  },
+  "ubuntuPackagingSha256": {
+    "debian/brotli.install": "c0f06a1e597977eefcd8b2a5eb99e678659de7a3adc59a74365f34ea29af793a",
+    "debian/brotli.manpages": "b3185d1368c756cc6cb54aa062781bc1b6222c8857e226b6cbf4c4f189970e63",
+    "debian/control": "6c68968c8170775d018a9867abd2b16557c1388168b9b80a20239ffa2a3cb534",
+    "debian/copyright": "24a64e5bb83d0960d1835696a1e23c0896ad6055b0ca47c66ab0eb9a766324b1",
+    "debian/libbrotli-dev.install": "77b28dcc32564d5844d26e329dcfc133042bad34aea9e759433ec4fceea8a1b6",
+    "debian/libbrotli1.install": "65e99705c6908377687751449eaf8fba0157ff8330b0f2ca14261fae0c4fe3d3",
+    "debian/libbrotli1.lintian-overrides": "2348de77b1f367dbd9891dd844d22a63299861d50db72b621849ecd0466467f2",
+    "debian/libbrotli1.symbols": "b40f838b0bcad033c4fe8e78d2f8d003062f2bad53efa5716d7c5042c3c15432",
+    "debian/not-installed": "30dbe7c8c1ef2061364b7d9495bf2d3c058d1bc9038a146421052cebe38ef49c",
+    "debian/patches/0001-disable-BROTLI_MODEL-macro-for-some-targets.patch": "b4db797f22d7932a97d738596d0ba1ca3c1f201421243bed96d3888888ad8f75",
+    "debian/patches/series": "5674e4744078f82842b0059baf59d616bc8f1fb122a767c7b7b59fc3d43fe54a",
+    "debian/python3-brotli.lintian-overrides": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "debian/rename-static-libs.sh": "7422c83b1c378e1defc9996bc3d25800ae7fae4a09434baaefaae25f4d8a1536",
+    "debian/rules": "aca35475dbd2576e31a33528b8862fb04525d6175b506ebaf8a7a4bf26986546",
+    "debian/salsa-ci.yml": "32997347e7094680bbc5a1dec4ec4f04424b79bcf4ccbb6bb318f0b601e78e3f",
+    "debian/source/format": "1be7080d72e6b566df3e236ce2c55efdfbbb8fa1c972d825e5b672ff8773be1a",
+    "debian/tests/control": "caafcc857a57c341a2c24eab30e483185131d98fa9ca6162490bb718b85daf54",
+    "debian/tests/python3": "b722bcad10002340598980243e88234aeea192bb0a67d9f78f23b69a92044fd4",
+    "debian/upstream/metadata": "1913e3632e37a9470a125d5045d1b2a85d6464b36a4564135c291df038c30af5",
+    "debian/watch": "aaba817f66ca20727032e925eabe92462ab364c0004ae17ed290e4563279a6d4"
+  },
+  "buildContract": {
+    "nativeUbuntuAmd64": true,
+    "buildUser": "non-root",
+    "originalRulesAndDependenciesPreserved": true,
+    "addedSkips": 0,
+    "runtimeInstalled": false,
+    "requiredSonames": [
+      "libbrotlicommon.so.1",
+      "libbrotlidec.so.1",
+      "libbrotlienc.so.1"
+    ]
+  },
+  "limitations": [
+    "No exploit, CVE trigger or crafted invalid stream is executed. Remediation is established by exact official source-patch closure; ordinary compression/streaming and ABI controls establish compatibility.",
+    "Source archives are SHA256-pinned and matched by the signed fixed-snapshot index in native CI; no Canonical signature is claimed for first-party rebuilt binaries."
+  ]
+}
