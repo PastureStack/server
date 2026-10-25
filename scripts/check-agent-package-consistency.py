@@ -27,7 +27,7 @@ def verify(data):
     qualification_bytes = data['backports-qualification.json'].encode('utf-8')
     qualification = json.loads(qualification_bytes)
     receipt = json.loads(data['backports-install.json'])
-    require(manifest['schemaVersion'] == 1 and manifest['bundleVersion'] == '0.1.0'
+    require(manifest['schemaVersion'] == 1 and manifest['bundleVersion'] == '0.1.1'
             and manifest['platform'] == {'distribution': 'ubuntu', 'release': '26.04', 'architecture': 'amd64'},
             'Unexpected backport manifest identity')
     require(manifest['qualification']['sha256'] == hashlib.sha256(qualification_bytes).hexdigest(),
@@ -38,12 +38,13 @@ def verify(data):
             and all(item['status'] == 'PASS' for item in fixtures),
             'Backport consumer qualification is incomplete')
     allowed = {'libc6', 'libc-bin', 'libc-gconv-modules-extra', 'libpcre2-8-0', 'libpcre2-posix3',
-               'rust-coreutils', 'jq', 'libjq1', 'p11-kit', 'p11-kit-modules', 'libp11-kit0', 'libxrender1'}
+               'rust-coreutils', 'jq', 'libjq1', 'p11-kit', 'p11-kit-modules', 'libp11-kit0', 'libxrender1',
+               'libbrotli1'}
     packages = manifest['packages']
     qualified = {p['name']: p['version'] for p in packages}
-    require(len(packages) == len(qualified) == 12 and set(qualified) == allowed,
+    require(len(packages) == len(qualified) == 13 and set(qualified) == allowed,
             'Unexpected qualified package catalog')
-    require(receipt['schemaVersion'] == 1 and receipt['bundleVersion'] == '0.1.0'
+    require(receipt['schemaVersion'] == 1 and receipt['bundleVersion'] == '0.1.1'
             and receipt['status'] == 'installed-and-verified'
             and receipt['providerPreserved'] is True and receipt['configurationPreserved'] is True,
             'Runtime installation did not preserve its provider/configuration')

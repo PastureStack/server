@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-IMAGE=${IMAGE:-ghcr.io/pasturestack/node-agent-base:v0.3.7}
+IMAGE=${IMAGE:-ghcr.io/pasturestack/node-agent-base:v0.3.8}
 
 SHARE_MNT_BIN="${SHARE_MNT_BIN:-}"
 if [ -z "$SHARE_MNT_BIN" ] || [ ! -f "$SHARE_MNT_BIN" ]; then
