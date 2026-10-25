@@ -36,6 +36,13 @@ def verify(files):
         require(marker in docker, 'Official download/custom runtime version boundary changed')
     require('PASTURESTACK_GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4+pasturestack.1' in build,
             'Runtime readback still expects the original libc version')
+    runtime_version = re.findall(r'^ARG GLIBC_RUNTIME_PACKAGE_VERSION=(\S+)$', docker, re.M)
+    libc_checks = re.findall(
+        r'for (?:package|glibc_package) in libc6 libc-bin libc-gconv-modules-extra; do\n(.*?)\n    done',
+        build, re.S)
+    require(len(runtime_version) == 1 and len(libc_checks) == 2 and all(
+        re.findall(r' =\s*(?:\\\s*)?"([^"\n]+)"', check) == runtime_version for check in libc_checks),
+        'Post-build libc package oracles must match the final runtime pin')
     runtime = docker.split('source=/out,target=/opt/pasturestack/ubuntu-security-backports,ro', 1)[1]
     positions = [runtime.index(marker) for marker in [
         'sh /tmp/pasturestack-security-input/install-ubuntu-security-updates.sh',
@@ -88,6 +95,14 @@ class ServerBackportContract(unittest.TestCase):
             verify(dict(FILES, **{DOCKER: FILES[DOCKER].replace(
                 'ENV PASTURESTACK_GLIBC_PACKAGE_VERSION=${GLIBC_RUNTIME_PACKAGE_VERSION}',
                 'ENV PASTURESTACK_GLIBC_PACKAGE_VERSION=${GLIBC_PACKAGE_VERSION}')}))
+
+    def test_each_post_build_libc_oracle_mismatch_is_rejected(self):
+        for variable in ['package', 'glibc_package']:
+            pattern = rf'(for {variable} in libc6 libc-bin libc-gconv-modules-extra; do\n.*?\n    done)'
+            broken = re.sub(pattern, lambda match: match[0].replace(
+                '2.43-2ubuntu2.4+pasturestack.1', '2.43-2ubuntu2.4'), FILES[BUILD], count=1, flags=re.S)
+            with self.subTest(variable=variable), self.assertRaises(AssertionError):
+                verify(dict(FILES, **{BUILD: broken}))
 
     def test_unbound_vex_or_narrowed_raw_scan_is_rejected(self):
         for old, new in [('--bundle-checksums', '--candidate-checksums'),
