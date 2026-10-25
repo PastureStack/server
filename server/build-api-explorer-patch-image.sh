@@ -513,7 +513,7 @@ docker run --rm --network none --entrypoint sh "$image" -eu -c '
 docker run --rm --entrypoint bash "$image" -lc '
     set -euo pipefail
     for package in libc6 libc-bin libc-gconv-modules-extra; do
-        test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${package}")" = "2.43-2ubuntu2.4"
+        test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${package}")" = "2.43-2ubuntu2.4+pasturestack.1"
     done
     for package in libperl5.40 perl perl-base perl-modules-5.40; do
         test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${package}")" = "5.40.1-7ubuntu0.3"
