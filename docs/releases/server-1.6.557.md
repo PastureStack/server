@@ -1,7 +1,10 @@
-# Server v1.6.557 candidate
+# Server v1.6.557
 
-Not published. Install examples continue to use the current published 556 image
-until the immutable 557 publication is verified. Deployment acceptance is pending.
+Published image: `ghcr.io/pasturestack/server:v1.6.557@sha256:801bb93400d6a225952be167a12454023816b725a28ad9770efa4689b12ba2ff`.
+
+Source commit: `9783aacf2b378f39e9dc00469156a57f9eb2e265`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
@@ -52,3 +55,19 @@ operations. Follow the [Key-policy rollback guide](../upgrades/api-key-policy-ro
 Officially unfixed Medium findings retain their exact package tracking policy;
 the release scan must still reject applicable fixed, High/Critical or untracked
 findings. Browser SBOM coverage remains explicitly incomplete.
+
+## Designated deployment findings
+
+The 8080 installation passed normal cutover, one actual restart and health
+readback with its configuration, volumes and three active Hosts/Agents retained.
+The first scoped Stack-create receipt now succeeds. Twelve remaining metadata
+and paired child-DENY checks passed individually. Sixteen unchanged locale/layout
+cases retain their screenshot hashes, unchanged Web archive and original evidence.
+These are bounded results.
+
+The complete workload journey remains failed: downscaling from two instances to
+one retires the service association before a later stop rechecks authorization,
+leaving the retired instance `stopping` with an `AUTHORIZATION_DENIED` completion.
+The test credential was revoked and removed; the exact test resource ledger is
+retained for source repair and cleanup. See the [current limitation](../ai-collaboration.md#workload-retirement-limitation).
+Do not interpret the new publication protocol gate as whole-workflow acceptance.
