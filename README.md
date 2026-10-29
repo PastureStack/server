@@ -11,18 +11,14 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current source candidate
+## Current release
 
-Server `v1.6.555` is a prepared source candidate, not a published image.
+[Server `v1.6.555`](https://github.com/PastureStack/server/releases/tag/v1.6.555) is published.
 It packages Web Console `1.6.197`, which restores the authenticated actor when
 a fresh browser session resumes, so human upgrade-plan review can load.
-Engine `v0.183.355`, the dedicated-Key boundary and all other components are
-unchanged. See the [candidate note](docs/releases/server-1.6.555.md).
-
-The current published release is
-[Server v1.6.554](https://github.com/PastureStack/server/releases/tag/v1.6.554),
-with its [release note](docs/releases/server-1.6.554.md) and
-[publication identities and the known UI limitation](COMPATIBILITY.md#server-v16554-webmcp).
+Engine `v0.183.355`, dedicated-Key permissions and other components are unchanged.
+See the [release note](docs/releases/server-1.6.555.md) and
+[verified publication identities](COMPATIBILITY.md#server-v16555-webmcp-actor).
 Scoped deployment and random-marker data-retention acceptance remain pending.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
@@ -58,8 +54,7 @@ operations, audit records and rollback.
 
 ## Quick start
 
-These examples target the candidate; run them only after its official release.
-This candidate is not yet available from GHCR. Public downloads do not require
+These examples use the published numeric version. Public downloads do not require
 a registry login. Keep all three named volumes.
 
 ```sh

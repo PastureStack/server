@@ -1,8 +1,10 @@
-# Server v1.6.555 candidate
+# Server v1.6.555
 
-Prepared source only; no Server image or release has been published.
-The release workflow records the final image digest and source
-revision only after its required checks pass.
+Published image: `ghcr.io/pasturestack/server:v1.6.555@sha256:59b2335d31c705184a155d21d89ee3be99b71b841d2b674b5d6c4ba656c730cc`.
+
+Source commit: `db04a4710c4d7019913610afbdd912245dc488d1`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
@@ -31,13 +33,30 @@ Server555 receives its own image and release; Server554 artifacts are not replac
 ## Acceptance boundary
 
 The Web producer completed its focused session-restoration tests and required
-release checks. Server555 must still pass its source, image, startup/restart and
+release checks. Server555 has passed its source, image, startup/restart and
 runtime security gates. The final seven-tool UI flow and a random marker read
 back across upgrade and restart remain separate 8080 acceptance work.
 The earlier Server554 publication passed, but its blocked human-inbox flow
 does not establish complete runtime acceptance or mounted-data preservation.
 The 78 panel layout cases and other unaffected producer evidence are retained;
 this correction does not claim completion of the full permission matrix.
+
+## Publication validation and remaining limits
+
+[Publisher 40868492262](https://github.com/PastureStack/server/actions/runs/40868492262)
+passed the original source, final-image, startup/restart and security checks.
+All 35 public assets passed anonymous byte/checksum readback. Native provenance
+and CycloneDX attestations bind the exact source and digest above.
+
+The raw runtime report retains 52 findings; the effective report retains ten
+Medium package occurrences across nine officially unfixed CVEs, with review due
+November 5, 2026. Untracked, High/Critical, available-fix and secret counts are
+zero under the existing policy. Browser runtime coverage remains incomplete;
+this is not a claim that every browser component has been fully scanned.
+
+Scoped 8080 deployment and the complete seven-tool flow, including random-marker
+persistence across upgrade and restart, remain pending. Publication does not
+establish those deployment-specific results.
 
 ## Activation, upgrade and rollback
 
