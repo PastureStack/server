@@ -2,14 +2,29 @@
 
 <a id="server-v16555-webmcp-actor"></a>
 
-## Server v1.6.555 prepared, not published
+## Server v1.6.555 published
 
-This candidate packages Web Console `1.6.197` to restore the authenticated actor
-after a fresh-cookie browser session resumes. The human upgrade-plan inbox can
-then use the current account identity; the separate authenticated confirmation
-requirement is unchanged. Engine `v0.183.355`, role/Key policies, component inputs
-and the existing security baseline remain unchanged. No Server555 image or
-runtime acceptance is claimed yet. See the [candidate note](docs/releases/server-1.6.555.md).
+The published linux/amd64 image is
+`ghcr.io/pasturestack/server:v1.6.555@sha256:59b2335d31c705184a155d21d89ee3be99b71b841d2b674b5d6c4ba656c730cc`,
+produced from `db04a4710c4d7019913610afbdd912245dc488d1` in successful
+[publisher 40868492262](https://github.com/PastureStack/server/actions/runs/40868492262).
+Its distinct OCI config is
+`sha256:2ee478ba85bd70d89ed2457bfbc3181e732454d5fcc6ac35df0f3aac2b27e5af`.
+All 35 public assets passed anonymous byte/checksum readback. Native provenance
+and CycloneDX attestations bind this image, source and publication workflow.
+Documentation commits do not change the runtime producer.
+
+Web Console `1.6.197` restores the authenticated actor after a fresh-cookie
+browser session resumes, allowing the human upgrade-plan inbox to load.
+Separate human confirmation, Engine `v0.183.355`, role/Key permissions and other
+component inputs remain unchanged. See the [release note](docs/releases/server-1.6.555.md).
+
+The raw runtime scan retains 52 findings; ten Medium package occurrences across
+nine officially unfixed CVEs remain tracked for review by November 5, 2026.
+Untracked, High/Critical, available-fix and secret counts are zero under the
+existing policy. The browser runtime SBOM retains its incomplete coverage.
+Scoped 8080 deployment, the complete seven-tool flow and random-marker
+persistence across upgrade and restart remain pending.
 
 <a id="server-v16554-webmcp"></a>
 
