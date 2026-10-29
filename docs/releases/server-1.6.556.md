@@ -1,6 +1,10 @@
-# Server v1.6.556 candidate
+# Server v1.6.556
 
-Prepared source only; no Server image or release has been published.
+Published image: `ghcr.io/pasturestack/server:v1.6.556@sha256:31502d8c873c6997682d8c74cd8b1db9ea80b7b74c1c0e8d8e438931185e8316`.
+
+Source commit: `66387f309157fcc64a17e141956eb632a8fcd570`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
@@ -58,3 +62,16 @@ unused plans and revoke dedicated bridge Keys before a downgrade. Follow the
 Use normal image/Compose deployment. Do not carry a previous image's
 version-owned environment defaults or a static-bundle runtime patch into the
 new image. Genuine operator overrides and persistent data must be preserved.
+
+## Deployment acceptance boundary
+
+The designated 8080 QA deployment retained its previous image, configuration and
+volumes, passed health and one restart, and retained three active Hosts/Agents.
+Thirty-five affected API role/Key ceiling and cross-ID cases and sixteen new-modal
+locale/layout cases passed. Thirty-four metadata cases passed before two native
+adapter mismatches were found. The first typed Stack creation succeeded, but
+its custom-Key operation read was incorrectly denied; the remaining workload
+sequence is not accepted. These findings are under source repair. Test credentials
+and the exact empty Stack were removed through normal APIs; no runtime patch
+was used. Unaffected earlier PASS remains separate. Full frontend WebMCP
+coverage, remaining resource forms and Catalog launch are still in progress.

@@ -2,9 +2,23 @@
 
 <a id="server-v16556-typed-resource-flows"></a>
 
-## Server v1.6.556 prepared, not published
+## Server v1.6.556 published
 
-Server v1.6.556 source candidate consumes Web Console 1.6.199 (producer
+Published image: `ghcr.io/pasturestack/server:v1.6.556@sha256:31502d8c873c6997682d8c74cd8b1db9ea80b7b74c1c0e8d8e438931185e8316`.
+Runtime producer: `66387f309157fcc64a17e141956eb632a8fcd570`; OCI config: `sha256:60eece627652999f89ce619f934025b3fcf4def4db347adbace87c7992ffa0c9`.
+[Publisher 40918679041](https://github.com/PastureStack/server/actions/runs/40918679041)
+passed source, build, startup/restart and existing security gates. All 35 public
+assets passed anonymous SHA-256 readback; native provenance and CycloneDX
+attestations passed. Later documentation commits do not change this runtime producer.
+The effective scan retains ten Medium occurrences across nine officially unfixed
+CVEs under the unchanged exact package policy; High/Critical, available-fix,
+untracked and secrets counts are zero. Browser SBOM coverage is still incomplete.
+Designated QA startup/restart and affected role/layout checks passed separately;
+new metadata and typed-operation completion findings remain open. See the
+[release note](docs/releases/server-1.6.556.md) for the exact acceptance boundary.
+
+
+Server v1.6.556 consumes Web Console 1.6.199 (producer
 `80a47df65f6406087b80aa81cfa99fe1f438ecff`) and Engine 0.183.356 (producer
 `24cfa1db113f54de3148cd4ac3191e66a1702806`), retaining the other pinned components.
 The matching optional stdio bridge is 0.2.1. Source and release assets record
