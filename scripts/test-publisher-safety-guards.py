@@ -117,6 +117,9 @@ docker() {
     if [[ "$2" == "$collision" ]]; then return 0; else return 1; fi
   fi
   printf '%s\\n' "$*" >>"$evidence/commands"
+  if [[ "$1 $2" == 'image inspect' ]]; then
+    printf '%s\\n' 'JAVA_OPTS=--add-opens=java.base/java.lang=ALL-UNNAMED'
+  fi
 }
 ''' + block
                 result = subprocess.run(['bash', '-c', script, 'guard-test', temporary, collision],
@@ -129,8 +132,12 @@ docker() {
                 else:
                     self.assertEqual(result.returncode, 0, result.stderr)
                     calls = commands.read_text().splitlines()
-                    self.assertTrue(calls[0].startswith('run -d --name candidate '))
-                    self.assertEqual(calls[1:], ['rm -f candidate', 'volume rm cattle mysql mysqllog'])
+                    self.assertTrue(calls[0].startswith('image inspect image --format '))
+                    self.assertTrue(calls[1].startswith('run -d --name candidate '))
+                    self.assertIn('JAVA_OPTS=--add-opens=java.base/java.lang=ALL-UNNAMED '
+                                  '-Dapi.ai.bridge.enabled=true -Dapi.ai.service.upgrade.enabled=true '
+                                  '-Dapi.ai.resource.change.enabled=true', calls[1])
+                    self.assertEqual(calls[2:], ['rm -f candidate', 'volume rm cattle mysql mysqllog'])
 
 
 if __name__ == '__main__':
