@@ -1,5 +1,24 @@
 # Compatibility Contract
 
+<a id="server-v16556-typed-resource-flows"></a>
+
+## Server v1.6.556 prepared, not published
+
+Server v1.6.556 source candidate consumes Web Console 1.6.199 (producer
+`80a47df65f6406087b80aa81cfa99fe1f438ecff`) and Engine 0.183.356 (producer
+`24cfa1db113f54de3148cd4ac3191e66a1702806`), retaining the other pinned components.
+The matching optional stdio bridge is 0.2.1. Source and release assets record
+immutable hashes and the same-tree merged identities. Assembly and 8080 runtime
+acceptance remain separate evidence; previous PASS is carried only where unaffected.
+
+The bridge and upgrade properties remain independent of the new opt-in
+`api.ai.resource.change.enabled` property. Basic Stack, Service and Container
+plans use live owner/Key permissions and human review. Global Services reject
+manual scale counts; Stack start/stop preflights its affected children. Advanced
+form fields, Catalog launching and other workflows remain pending adapters.
+Keep ordinary UI/API paths and use the [AI guide](docs/ai-collaboration.md) for
+activation, known boundaries and safe downgrade preparation.
+
 <a id="server-v16555-webmcp-actor"></a>
 
 ## Server v1.6.555 published

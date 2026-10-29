@@ -13,13 +13,13 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.555`](https://github.com/PastureStack/server/releases/tag/v1.6.555) is published.
-It packages Web Console `1.6.197`, which restores the authenticated actor when
-a fresh browser session resumes, so human upgrade-plan review can load.
-Engine `v0.183.355`, dedicated-Key permissions and other components are unchanged.
-See the [release note](docs/releases/server-1.6.555.md) and
-[verified publication identities](COMPATIBILITY.md#server-v16555-webmcp-actor).
-Scoped deployment and random-marker data-retention acceptance remain pending.
+[Server `v1.6.555`](https://github.com/PastureStack/server/releases/tag/v1.6.555)
+packages Web Console `1.6.197` and Engine `v0.183.355`. Fresh browser sessions
+restore the authenticated actor for human upgrade-plan review. See the
+[release note](docs/releases/server-1.6.555.md) and
+[publication identities](COMPATIBILITY.md#server-v16555-webmcp-actor).
+Its scoped upgrade, random-marker data-retention, restart and WebSocket
+acceptance is retained separately from subsequent frontend workflow expansion.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -45,12 +45,15 @@ Maintained CLI `0.6.20` propagates rejected requests as nonzero errors. Legacy `
 
 ## Optional AI collaboration
 
-The Web Console provides seven bounded service tools, an explicit per-page
-on/off control and human review of upgrade plans. An optional stdio bridge lets
-compatible clients use a dedicated scoped API Key. Both reuse current account
-permissions; a Key cannot approve its own upgrade. See the
-[AI collaboration guide](docs/ai-collaboration.md) for activation, supported
-operations, audit records and rollback.
+The next Server 1.6.556 source candidate (not yet published) expands to
+Web Console 1.6.199 and Engine 0.183.356. Its Web Console supports scoped resource
+discovery and basic Stack, Service and
+Container changes through twelve tools. Plans require normal human review and
+reuse live account and Key permissions. Global Services do not accept a manual
+instance count. Advanced forms and other resource workflows remain pending.
+See the [candidate note](docs/releases/server-1.6.556.md) and
+[AI collaboration guide](docs/ai-collaboration.md) for activation,
+supported operations, audit records and rollback.
 
 ## Quick start
 
