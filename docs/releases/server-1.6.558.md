@@ -1,7 +1,11 @@
-# Server v1.6.558 candidate
+# Server v1.6.558
 
-Not yet published. Install examples remain on the verified published 557 image
-until immutable 558 publication is verified. New runtime acceptance is pending.
+Published image: `ghcr.io/pasturestack/server:v1.6.558@sha256:c49c4bb1f7bcee2ae0299f196a8332657967fa2ed4e3a3496854f5bca89ec42b`.
+
+Source commit: `33f6056476ee29eb18aa9185e59b4cb3e86c5960`.
+
+The original publisher passed source, security, protocol and startup/restart gates.
+Deployment-specific findings below are separate; publication is not full acceptance.
 
 ## Verified component inputs
 
@@ -57,3 +61,31 @@ Keys. Preserve durable receipts and never replay uncertain operations. See the
 Officially unfixed Medium findings retain exact package tracking; applicable
 fixed, High/Critical, secret or untracked findings still block publication.
 Browser SBOM coverage remains explicitly incomplete.
+
+## Designated deployment findings
+
+The existing QA deployment passed normal upgrade and one actual restart with
+operator overrides, mounts, AppArmor, data and three active Hosts/Agents retained.
+All 35 public assets and native OCI provenance/SBOM attestations were verified.
+
+The complete affected flow remains FAILED. Ten operations completed through
+normal review and eleven approvals were made; individual Service stop then left
+its container stopping with an authorization-denied completion, although the
+Service itself became inactive. Its Key was revoked and removed after the
+failure. Downscale, Service restart and Stack stop/start passed. The exact owned
+Core fixture ledger is retained for source repair; no production site was touched.
+
+Five actual weak-model MCP cases passed: late-row Volume search, exact literal
+command/entry-point arrays, missing-image clarification, same-name disambiguation,
+and stale-reference recovery through the named Stack/Service hierarchy. The fifth
+case originally failed an overly narrow test oracle; its original trace and native
+plan readback prove an equivalent published tool sequence. A separate correction
+retains the original FAILED report and four original PASS records; no model replay
+or approval/apply was performed. Test Keys and six owned weak fixtures were removed
+normally. Their three private OS-volume retirements were proved separately while
+all 479 other recorded Volume identities/states and existing Core fixtures stayed
+unchanged. Original cleanup HOLD evidence is retained with that bounded correction.
+
+Unchanged layout and role evidence is carried forward without rerunning it.
+Catalog launch, Archive/restore, advanced forms, other workflows and KVM HOLD
+are not promoted to accepted coverage by this release.

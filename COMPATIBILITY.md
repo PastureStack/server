@@ -1,14 +1,34 @@
 # Compatibility Contract
 
-## Server v1.6.558 source candidate
+<a id="server-v16558-managed-retirement-and-search"></a>
 
-The candidate retains Web Console 1.6.199 and bridge 0.2.1, using the qualified
-Engine 0.183.358 artifact to fix scoped managed retirement and native name-query
-pagination. Ordinary Full access, live actor ceilings and explicit child DENY
-remain authoritative. See the [candidate note](docs/releases/server-1.6.558.md)
-for component inputs, required runtime acceptance and rollback. It is not yet
-a published deployment; install examples remain on the published 557 image.
+## Server v1.6.558 published
 
+Published image: `ghcr.io/pasturestack/server:v1.6.558@sha256:c49c4bb1f7bcee2ae0299f196a8332657967fa2ed4e3a3496854f5bca89ec42b`.
+Runtime producer: `33f6056476ee29eb18aa9185e59b4cb3e86c5960`; OCI config:
+`sha256:e9d3df5989c64f947150025935fc970f49289175d1337f21f6360f31bd5db025`.
+[Publisher 40941691098](https://github.com/PastureStack/server/actions/runs/40941691098)
+passed all original source/build, startup/restart, protocol and security gates.
+All 35 public assets passed anonymous SHA256/size readback; native provenance and
+CycloneDX attestations passed. Documentation commits do not change this producer.
+The exact package policy retains ten Medium occurrences across nine officially
+unfixed CVEs; applicable fixed, High/Critical, untracked and secrets gates passed.
+Browser SBOM coverage remains incomplete.
+
+Web Console 1.6.199 and bridge 0.2.1 remain unchanged. Engine 0.183.358 consumes
+original CI producer `1da1f4c37fe43b8c387045c263d286f7db01c574`, JAR SHA256
+`46ad548c6e284a7758eb7f65c85fb5878e2ebdc861ef5c396a00a6510709b733`.
+Its required CI passed 374 suites / 3,631 tests, zero failures/errors and one
+existing conditional skip. Ordinary Full/legacy paths are unchanged.
+
+Designated 8080 upgrade and actual restart preserve operator settings, mounts,
+AppArmor and three active Hosts/Agents. Scoped downscale, Service restart and
+Stack stop/start passed. The full workflow remains failed at individual Service
+stop: the Service is inactive but its container's stop is authorization-denied.
+Five real weak-model cases passed with a separately documented strict oracle
+correction; old failures and unaffected evidence are retained. See the
+[release boundaries](docs/releases/server-1.6.558.md). Catalog/Archive are not
+included; remaining frontend workflows and KVM HOLD are separately tracked.
 
 <a id="server-v16557-typed-read-fixes"></a>
 
