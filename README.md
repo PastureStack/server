@@ -13,13 +13,16 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.555`](https://github.com/PastureStack/server/releases/tag/v1.6.555)
-packages Web Console `1.6.197` and Engine `v0.183.355`. Fresh browser sessions
-restore the authenticated actor for human upgrade-plan review. See the
-[release note](docs/releases/server-1.6.555.md) and
-[publication identities](COMPATIBILITY.md#server-v16555-webmcp-actor).
-Its scoped upgrade, random-marker data-retention, restart and WebSocket
-acceptance is retained separately from subsequent frontend workflow expansion.
+[Server `v1.6.556`](https://github.com/PastureStack/server/releases/tag/v1.6.556)
+packages Web Console `1.6.199` and Engine `v0.183.356`. It expands optional AI
+collaboration to safe metadata queries and human-reviewed basic workload plans.
+See the [release note](docs/releases/server-1.6.556.md) and
+[publication identities](COMPATIBILITY.md#server-v16556-typed-resource-flows).
+
+Publication and 8080 startup/restart checks passed. New query and workload
+completion integration findings remain under repair; the opt-in expansion is
+not complete frontend coverage. Retained upgrade, data-preservation and session
+evidence does not establish that every new workflow has passed.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -45,13 +48,11 @@ Maintained CLI `0.6.20` propagates rejected requests as nonzero errors. Legacy `
 
 ## Optional AI collaboration
 
-The next Server 1.6.556 source candidate (not yet published) expands to
-Web Console 1.6.199 and Engine 0.183.356. Its Web Console supports scoped resource
-discovery and basic Stack, Service and
+The Web Console supports scoped resource discovery and basic Stack, Service and
 Container changes through twelve tools. Plans require normal human review and
 reuse live account and Key permissions. Global Services do not accept a manual
 instance count. Advanced forms and other resource workflows remain pending.
-See the [candidate note](docs/releases/server-1.6.556.md) and
+See the [release note](docs/releases/server-1.6.556.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
@@ -65,7 +66,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.555
+  ghcr.io/pasturestack/server:v1.6.556
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -73,7 +74,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.555
+    image: ghcr.io/pasturestack/server:v1.6.556
     restart: unless-stopped
     ports:
       - "8080:8080"

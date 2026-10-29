@@ -8,9 +8,9 @@ The following example is appropriate as a starting point for a dedicated
 16-vCPU host with about 32 GiB of RAM. It is not a universal performance
 profile; measure the real workload before increasing it further.
 
-The example uses the published Server `v1.6.555` numeric tag.
+The example uses the published Server `v1.6.556` numeric tag.
 The image and its release assets have passed public identity and checksum readback.
-See the [release note](../releases/server-1.6.555.md) and the
+See the [release note](../releases/server-1.6.556.md) and the
 [current release](../../README.md#current-release) for component versions and
 release details. Preserve the existing runtime overrides and all three named
 volumes during an upgrade or restart.
@@ -21,7 +21,7 @@ evidence is not a performance benchmark; measure the actual workload.
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.555
+    image: ghcr.io/pasturestack/server:v1.6.556
     restart: unless-stopped
     ports:
       - "8080:8080"
