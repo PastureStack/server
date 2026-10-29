@@ -146,10 +146,10 @@ INCREMENTAL_CONTRACTS = [
             "ARG HOST_PROVISIONER_COMMIT=d5f6d5c9f4f0599f4bf1bdc9d5d0cca2e2e0c1ba",
             "ARG HOST_PROVISIONER_ARCHIVE_SHA256=fd8a814c5810746091ba3192a9fd31699e6865a2598654b9bbb55eae90bef661",
             "ARG HOST_PROVISIONER_BINARY_SHA256=92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff",
-            "ARG SECRET_DELIVERY_API_VERSION=0.3.3",
-            "ARG SECRET_DELIVERY_API_COMMIT=da196acba539fe7a0c04539f6f7537cdfb2d8d69",
-            "ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=026ba87f4c8fb7bfbf991f63a496db9c4a0837913ab56dc505c187f9b9598699",
-            "ARG SECRET_DELIVERY_API_BINARY_SHA256=e4928ca7359975ba4ad73456296baace8ef0b428c0901055a0317244a17e4665",
+            "ARG SECRET_DELIVERY_API_VERSION=0.3.4",
+            "ARG SECRET_DELIVERY_API_COMMIT=705589989f542669b7e60e1fdab8ae2694ed5d5d",
+            "ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=941bed664e04f21d84754cd9e06e1d69cec1583ed6dbdadda13567f778605010",
+            "ARG SECRET_DELIVERY_API_BINARY_SHA256=1d302e8005e35fe56108d704cd3b18e12a0fbbc1871e7b5cd61ac429db37566c",
             "ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.4",
             "ARG USAGE_TELEMETRY_AGENT_COMMIT=4ee641bc1273cf582a77609af71d00b72f17b628",
             "ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866",
@@ -166,10 +166,10 @@ INCREMENTAL_CONTRACTS = [
             "host_provisioner_commit=${HOST_PROVISIONER_COMMIT:-d5f6d5c9f4f0599f4bf1bdc9d5d0cca2e2e0c1ba}",
             "host_provisioner_archive_sha256=${HOST_PROVISIONER_ARCHIVE_SHA256:-fd8a814c5810746091ba3192a9fd31699e6865a2598654b9bbb55eae90bef661}",
             "host_provisioner_binary_sha256=${HOST_PROVISIONER_BINARY_SHA256:-92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff}",
-            "secret_delivery_api_version=${SECRET_DELIVERY_API_VERSION:-0.3.3}",
-            "secret_delivery_api_commit=${SECRET_DELIVERY_API_COMMIT:-da196acba539fe7a0c04539f6f7537cdfb2d8d69}",
-            "secret_delivery_api_archive_sha256=${SECRET_DELIVERY_API_ARCHIVE_SHA256:-026ba87f4c8fb7bfbf991f63a496db9c4a0837913ab56dc505c187f9b9598699}",
-            "secret_delivery_api_binary_sha256=${SECRET_DELIVERY_API_BINARY_SHA256:-e4928ca7359975ba4ad73456296baace8ef0b428c0901055a0317244a17e4665}",
+            "secret_delivery_api_version=${SECRET_DELIVERY_API_VERSION:-0.3.4}",
+            "secret_delivery_api_commit=${SECRET_DELIVERY_API_COMMIT:-705589989f542669b7e60e1fdab8ae2694ed5d5d}",
+            "secret_delivery_api_archive_sha256=${SECRET_DELIVERY_API_ARCHIVE_SHA256:-941bed664e04f21d84754cd9e06e1d69cec1583ed6dbdadda13567f778605010}",
+            "secret_delivery_api_binary_sha256=${SECRET_DELIVERY_API_BINARY_SHA256:-1d302e8005e35fe56108d704cd3b18e12a0fbbc1871e7b5cd61ac429db37566c}",
             "usage_telemetry_agent_version=${USAGE_TELEMETRY_AGENT_VERSION:-0.4.4}",
             "usage_telemetry_agent_commit=${USAGE_TELEMETRY_AGENT_COMMIT:-4ee641bc1273cf582a77609af71d00b72f17b628}",
             "usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866}",
@@ -949,7 +949,7 @@ class Tests(unittest.TestCase):
                         verify_incremental_contract(dict(FILES, **{DOCKER: FILES[DOCKER].replace(marker, replacement)}))
         for upper, version, digest, binary in (
             ('HOST_PROVISIONER', '0.39.10', '92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff', '/usr/bin/host-provisioner.real'),
-            ('SECRET_DELIVERY_API', '0.3.3', 'e4928ca7359975ba4ad73456296baace8ef0b428c0901055a0317244a17e4665', '/usr/bin/secret-delivery-api'),
+            ('SECRET_DELIVERY_API', '0.3.4', '1d302e8005e35fe56108d704cd3b18e12a0fbbc1871e7b5cd61ac429db37566c', '/usr/bin/secret-delivery-api'),
             ('USAGE_TELEMETRY_AGENT', '0.4.4', '90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be', '/usr/bin/usage-telemetry-agent'),
         ):
             self.assertIn(digest + '  ' + binary, FILES[BUILD])
@@ -1606,11 +1606,11 @@ class Tests(unittest.TestCase):
 
     def test_machine_actual_binary_package_and_retired_boundary_are_verified(self):
         for name, value in (
-            ('MACHINE_DRIVER_BUNDLE_VERSION', '0.16.5'),
-            ('MACHINE_DRIVER_BUNDLE_COMMIT', 'f8d9d86f896ca14a50f3788c2f6a200a1c3b6b21'),
-            ('MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256', 'd9f33bcb16f478ceab44da4b185fb1fbadcab4f0f441f259c96a9805a854a28b'),
-            ('MACHINE_DRIVER_BINARY_SHA256', '9d379214de116542cb0e2b1a09c17409fd59fd2b0109428896d81de9cf9c0d31'),
-            ('PACKET_DRIVER_BINARY_SHA256', 'b3e5c71928fcebe1bb648f79ebbf38af9ad32d6f6dbb87587e1b92c6c331e100'),
+            ('MACHINE_DRIVER_BUNDLE_VERSION', '0.16.6'),
+            ('MACHINE_DRIVER_BUNDLE_COMMIT', 'd5bade2722a788f54fe7f3a25af6245336a1e841'),
+            ('MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256', '82747659c1c9c866ea0d4b5c8909e36f72445f97f13cdc7324c40f403e28a83d'),
+            ('MACHINE_DRIVER_BINARY_SHA256', '8c257c4eec578fd6ae0f198d8ccc5fa449aa00b8a590096489595f2d840e697c'),
+            ('PACKET_DRIVER_BINARY_SHA256', 'a4146c973254d36f8b1edcd8298c55154db600e24af6226810f4ed9ec4e5fb79'),
         ):
             self.assertEqual(2, FILES[DOCKER].count('ARG ' + name + '=' + value))
             self.assertIn(name.lower() + '=${' + name + ':-' + value + '}', FILES[BUILD])

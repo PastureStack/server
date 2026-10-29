@@ -10,12 +10,18 @@ revision only after its required checks pass.
   archive SHA256 `4f0a550c2754e244cbf77f380c5c138150687988791e063bbf39ce0150d880fa`.
 - Engine `v0.183.355`: producer `9ea138d1db1718cf65157c9564c379e62bafe9a0`,
   `cattle.jar` SHA256 `a7f651f84a9fe6deef2c9f66f50c13c70e450e25f9dfa6fb59129b2681f9f54f`.
+- Secret Delivery API `v0.3.4`: producer `705589989f542669b7e60e1fdab8ae2694ed5d5d`,
+  archive SHA256 `941bed664e04f21d84754cd9e06e1d69cec1583ed6dbdadda13567f778605010`.
+- Machine Driver Bundle `v0.16.6`: producer `d5bade2722a788f54fe7f3a25af6245336a1e841`,
+  archive SHA256 `82747659c1c9c866ea0d4b5c8909e36f72445f97f13cdc7324c40f403e28a83d`.
 
 This release integrates Web Console `1.6.196` and Engine `v0.183.355` for optional
 AI collaboration. Engine uses official Guava `33.7.2-jre` for
 `CVE-2026-102554`; assembly verifies the exact nested artifact and rejects older
-or additional Guava jars. Other component versions and the existing security backport
-baseline are retained. The build recipe pins component commits, archive hashes
+or additional Guava jars. The release also updates the secret-delivery and
+machine-driver transports to the qualified Go security dependencies. Remaining
+component versions and the existing security backport baseline are retained.
+The build recipe pins component commits, archive hashes
 and the Web Console runtime SBOM; the bridge has a separate source archive and
 SBOM because its Node.js process is not part of the browser bundle.
 
@@ -35,9 +41,10 @@ the stricter retired-instance path does not add a general delete grant.
 
 The isolated candidate completed two consecutive scoped-Key image upgrades and
 return to its original image, a weak-model upgrade through human confirmation,
-and an ordinary GENERAL/FULL Key upgrade as a control. Launch settings and
-mounted data were retained; retired instances and their live ports were gone.
-Server restart and browser refresh retained service state and data. Native
+and an ordinary GENERAL/FULL Key upgrade as a control. Launch settings were
+retained; retired instances and their live ports were gone. Mounted-data
+persistence is a separate deployment check using a random marker generated
+only when the mounted file is absent, verified across upgrade and restart. Native
 tool registration, explicit off/read-only/enabled modes, role/scope rejection,
 conditional-description conflicts and per-Key audit were checked separately.
 

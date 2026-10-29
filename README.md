@@ -17,7 +17,8 @@ Server `v1.6.554` is a prepared source candidate, not a published image.
 It integrates Web Console `1.6.196` and Engine `v0.183.355` for optional,
 scoped AI collaboration. New pages start with tools off. Upgrade execution
 requires an authenticated owner's separate confirmation; ordinary API Keys
-retain their existing permissions. See the [candidate note](docs/releases/server-1.6.554.md).
+retain their existing permissions. It also includes qualified security updates
+for secret delivery and host provisioning. See the [candidate note](docs/releases/server-1.6.554.md).
 
 The previous published release is
 [Server v1.6.553](https://github.com/PastureStack/server/releases/tag/v1.6.553),

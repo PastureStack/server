@@ -69,7 +69,8 @@ class CoverageTest(unittest.TestCase):
     def test_unreviewed_openpgp_target_or_version_blocks_before_vex(self):
         for target, purl in (
                 ('usr/bin/govc', 'pkg:golang/golang.org/x/crypto@v0.57.0'),
-                ('usr/bin/docker-machine', 'pkg:golang/golang.org/x/crypto@v0.58.0'),
+                ('usr/bin/docker-machine', 'pkg:golang/golang.org/x/crypto@v0.57.0'),
+                ('usr/bin/docker-machine', 'pkg:golang/golang.org/x/crypto@v0.59.0'),
                 ('tmp/docker-machine', 'pkg:golang/golang.org/x/crypto@v0.57.0'),
                 ('usr/bin/docker-machine', None)):
             with self.subTest(target=target, purl=purl):
