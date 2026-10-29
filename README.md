@@ -13,13 +13,14 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.555`](https://github.com/PastureStack/server/releases/tag/v1.6.555) is published.
-It packages Web Console `1.6.197`, which restores the authenticated actor when
-a fresh browser session resumes, so human upgrade-plan review can load.
-Engine `v0.183.355`, dedicated-Key permissions and other components are unchanged.
-See the [release note](docs/releases/server-1.6.555.md) and
-[verified publication identities](COMPATIBILITY.md#server-v16555-webmcp-actor).
-Scoped deployment and random-marker data-retention acceptance remain pending.
+[Server `v1.6.556`](https://github.com/PastureStack/server/releases/tag/v1.6.556)
+packages Web Console `1.6.199` and Engine `v0.183.356` for opt-in AI resource
+queries and human-reviewed basic workload changes. See the
+[release note](docs/releases/server-1.6.556.md) and
+[component compatibility](COMPATIBILITY.md#server-v16556-typed-resource-flows).
+Prior seven-tool upgrade, data-retention and restart evidence is retained
+separately. New typed-flow runtime acceptance is recorded with release evidence;
+this release does not complete all frontend WebMCP workflows.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -45,12 +46,12 @@ Maintained CLI `0.6.20` propagates rejected requests as nonzero errors. Legacy `
 
 ## Optional AI collaboration
 
-The Web Console provides seven bounded service tools, an explicit per-page
-on/off control and human review of upgrade plans. An optional stdio bridge lets
-compatible clients use a dedicated scoped API Key. Both reuse current account
-permissions; a Key cannot approve its own upgrade. See the
-[AI collaboration guide](docs/ai-collaboration.md) for activation, supported
-operations, audit records and rollback.
+The Web Console supports scoped resource discovery and basic Stack, Service and
+Container changes through twelve tools. Plans require normal human review and
+reuse live account and Key permissions. Global Services do not accept a manual
+instance count. Advanced forms and other resource workflows remain pending.
+See the [AI collaboration guide](docs/ai-collaboration.md) for activation,
+supported operations, audit records and rollback.
 
 ## Quick start
 
@@ -62,7 +63,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.555
+  ghcr.io/pasturestack/server:v1.6.556
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -70,7 +71,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.555
+    image: ghcr.io/pasturestack/server:v1.6.556
     restart: unless-stopped
     ports:
       - "8080:8080"
