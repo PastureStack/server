@@ -3,10 +3,12 @@
 import copy
 import hashlib
 import importlib.util
+import io
 import json
 from pathlib import Path
 import subprocess
 import sys
+import tarfile
 import tempfile
 import unittest
 
@@ -151,6 +153,51 @@ class WebConsoleSbom(unittest.TestCase):
         result = subprocess.run(command, capture_output=True, text=True)
         self.assertEqual(result.returncode, 1)
         self.assertIn('WEB_CONSOLE_SBOM_REJECTED', result.stderr)
+
+    def profile_archive(self, payload, *, duplicate=False, linked=False, missing=False):
+        with tarfile.open(self.archive, 'w:gz') as package:
+            info = tarfile.TarInfo(f'{self.version}/' + ('other.json' if missing else 'webmcp-build.json'))
+            info.size = len(payload)
+            if linked:
+                info.type = tarfile.SYMTYPE
+                info.linkname = 'outside'
+                info.size = 0
+            package.addfile(info, None if linked else io.BytesIO(payload))
+            if duplicate:
+                package.addfile(info, io.BytesIO(payload))
+        self.archive_hash = hashlib.sha256(self.archive.read_bytes()).hexdigest()
+        self.data['metadata']['component']['hashes'][0]['content'] = self.archive_hash
+        for item in self.data['metadata']['properties']:
+            if item['name'] == 'pasturestack:archive-sha256':
+                item['value'] = self.archive_hash
+        self.write()
+
+    def test_enabled_profile_keeps_new_pages_off(self):
+        self.profile_archive(b'{"ceiling":"enabled","initialMode":"off"}')
+        self.verify(webmcp_ceiling='enabled')
+
+    def test_wrong_ceiling_or_initial_mode_cannot_ship(self):
+        for profile in ({'ceiling': 'off', 'initialMode': 'off'},
+                        {'ceiling': 'enabled', 'initialMode': 'enabled'}):
+            with self.subTest(profile=profile):
+                self.profile_archive(json.dumps(profile).encode())
+                with self.assertRaisesRegex(ValueError, 'PROFILE_MISMATCH'):
+                    self.verify(webmcp_ceiling='enabled')
+
+    def test_duplicate_linked_or_oversized_profile_is_rejected(self):
+        for options in ({'duplicate': True}, {'linked': True}, {'missing': True}, {}):
+            with self.subTest(options=options):
+                payload = b' ' * 257 if not options else b'{}'
+                self.profile_archive(payload, **options)
+                with self.assertRaisesRegex(ValueError, 'PROFILE_MISSING_OR_INVALID'):
+                    self.verify(webmcp_ceiling='enabled')
+
+    def test_ambiguous_profile_and_absent_archive_are_rejected(self):
+        self.profile_archive(b'{"ceiling":"enabled","ceiling":"off","initialMode":"off"}')
+        with self.assertRaisesRegex(ValueError, 'DUPLICATE_JSON_KEY'):
+            self.verify(webmcp_ceiling='enabled')
+        with self.assertRaisesRegex(ValueError, 'PROFILE_INPUT_INVALID'):
+            self.verify(webmcp_ceiling='enabled', archive=None)
 
 
 if __name__ == '__main__':

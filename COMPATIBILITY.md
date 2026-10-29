@@ -1,5 +1,18 @@
 # Compatibility Contract
 
+<a id="server-v16554-webmcp"></a>
+
+## Server v1.6.554 prepared, not published
+
+The candidate integrates Web Console `1.6.196` and Engine `v0.183.355`.
+The build verifies the browser's enabled capability ceiling and off initial
+mode against the exact archive. Backend activation remains explicit.
+Seven typed tools share current RBAC and per-Key policy checks; service-upgrade
+plans require separate authenticated human approval. No general action proxy
+or approval tool is exposed. See the [candidate note](docs/releases/server-1.6.554.md)
+and [AI collaboration guide](docs/ai-collaboration.md).
+Final publication identities and 8080 acceptance will be recorded after release.
+
 <a id="server-v16553-brotli"></a>
 
 ## Server v1.6.553 published

@@ -11,21 +11,18 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current release
+## Current source candidate
 
-[Server v1.6.553](https://github.com/PastureStack/server/releases/tag/v1.6.553)
-is published. It applies the accepted Google Brotli fix for CVE-2026-111497 through the qualified
-Ubuntu backport bundle. Only already-installed packages are updated; package sets,
-providers, library interfaces and configuration are preserved.
+Server `v1.6.554` is a prepared source candidate, not a published image.
+It integrates Web Console `1.6.196` and Engine `v0.183.355` for optional,
+scoped AI collaboration. New pages start with tools off. Upgrade execution
+requires an authenticated owner's separate confirmation; ordinary API Keys
+retain their existing permissions. See the [candidate note](docs/releases/server-1.6.554.md).
 
-Web Console `1.6.195` and its original runtime SBOM, Engine `v0.183.354`,
-Host API `0.38.8` and Temurin `25.0.5+8` retain their verified inputs.
-Node Agent `v1.2.34` uses compatibility base `v0.3.8`. Published Catalog
-`v0.3.18` records the qualified component images and their publication evidence.
-
-See its [release note](docs/releases/server-1.6.553.md) and the
-[compatibility contract](COMPATIBILITY.md#server-v16553-brotli)
-for producer identities, immutable image digests, SBOMs and remaining findings.
+The previous published release is
+[Server v1.6.553](https://github.com/PastureStack/server/releases/tag/v1.6.553),
+with its [release note](docs/releases/server-1.6.553.md) and
+[immutable identities](COMPATIBILITY.md#server-v16553-brotli).
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -49,16 +46,27 @@ and a compatible Linux Node Agent lifecycle. Open a Key's audit from its action
 menu. See the [API Key guide](docs/api-keys.md) for policy and audit contracts.
 Maintained CLI `0.6.20` propagates rejected requests as nonzero errors. Legacy `0.6.14` can silently exit zero; see [client compatibility](COMPATIBILITY.md#maintained-cli-error-reporting) and check HTTP status explicitly for automation.
 
+## Optional AI collaboration
+
+The Web Console provides seven bounded service tools, an explicit per-page
+on/off control and human review of upgrade plans. An optional stdio bridge lets
+compatible clients use a dedicated scoped API Key. Both reuse current account
+permissions; a Key cannot approve its own upgrade. See the
+[AI collaboration guide](docs/ai-collaboration.md) for activation, supported
+operations, audit records and rollback.
+
 ## Quick start
 
-Public GHCR downloads do not require a registry login. Keep all three named volumes.
+These examples target the candidate; run them only after its official release.
+This candidate is not yet available from GHCR. Public downloads do not require
+a registry login. Keep all three named volumes.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.553
+  ghcr.io/pasturestack/server:v1.6.554
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -66,7 +74,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.553
+    image: ghcr.io/pasturestack/server:v1.6.554
     restart: unless-stopped
     ports:
       - "8080:8080"

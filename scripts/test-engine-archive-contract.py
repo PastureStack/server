@@ -14,7 +14,10 @@ HELPER = ROOT / 'server/artifacts/verify-engine-archive.sh'
 HAZELCAST_SHA = '825b5fc9526a10549bcb580f2d6c03bf1f5667625661722c0406ea6f796e83f2'
 HAZELCAST_ENTRY = 'WEB-INF/lib/hazelcast-5.7.6.jar'
 FREEMARKER_ENTRY = 'WEB-INF/lib/freemarker-2.3.35.jar'
+GUAVA_ENTRY = 'WEB-INF/lib/guava-33.7.2-jre.jar'
+GUAVA_SHA = 'b530942257fb935f8b2cfaa5f8eb5bd59c555fd8e8d01b8ce98912e077ea606c'
 PAYLOAD = b'small nested Hazelcast fixture'
+GUAVA_PAYLOAD = b'small nested Guava fixture'
 
 
 class EngineArchiveContract(unittest.TestCase):
@@ -28,13 +31,16 @@ class EngineArchiveContract(unittest.TestCase):
         # guard executes unchanged; the unmodified helper is also tested
         # separately against the exact published 88 MB Engine archive.
         self.helper = self.directory / 'verify.sh'
-        self.helper.write_text(source.replace(HAZELCAST_SHA, hashlib.sha256(PAYLOAD).hexdigest()))
+        self.helper.write_text(source.replace(HAZELCAST_SHA, hashlib.sha256(PAYLOAD).hexdigest())
+                               .replace(GUAVA_SHA, hashlib.sha256(GUAVA_PAYLOAD).hexdigest()))
 
-    def run_archive(self, extra=(), omitted=(), manifest='0.183.354', payload=PAYLOAD, wrong_hash=False):
+    def run_archive(self, extra=(), omitted=(), manifest='0.183.355', payload=PAYLOAD,
+                    guava_payload=GUAVA_PAYLOAD, wrong_hash=False):
         entries = [
             ('META-INF/MANIFEST.MF', ('Manifest-Version: 1.0\r\nImplementation-Version: ' + manifest + '\r\n').encode()),
             (FREEMARKER_ENTRY, b'Freemarker fixture'),
             (HAZELCAST_ENTRY, payload),
+            (GUAVA_ENTRY, guava_payload),
         ]
         archive = self.directory / 'engine.jar'
         with warnings.catch_warnings():
@@ -46,7 +52,7 @@ class EngineArchiveContract(unittest.TestCase):
         # Recompute each mutated archive's outer hash, so rejection cannot
         # accidentally be attributed to an unrelated whole-file mismatch.
         digest = '0' * 64 if wrong_hash else hashlib.sha256(archive.read_bytes()).hexdigest()
-        return subprocess.run(['sh', str(self.helper), str(archive), '0.183.354', digest],
+        return subprocess.run(['sh', str(self.helper), str(archive), '0.183.355', digest],
                               capture_output=True, text=True, timeout=15)
 
     def reject(self, marker, **kwargs):
@@ -92,6 +98,16 @@ class EngineArchiveContract(unittest.TestCase):
 
     def test_nested_hazelcast_hash(self):
         self.reject('FAILED', payload=b'altered nested bytes')
+
+    def test_old_extra_or_missing_guava(self):
+        for version in ('33.7.1-jre', '33.7.2-android'):
+            with self.subTest(version=version):
+                self.reject('Guava archive contract mismatch',
+                            extra=[('WEB-INF/lib/guava-' + version + '.jar', b'old')])
+        self.reject('Guava archive contract mismatch', omitted=(GUAVA_ENTRY,))
+
+    def test_nested_guava_hash(self):
+        self.reject('FAILED', guava_payload=b'altered nested Guava bytes')
 
     def test_shared_wiring_and_no_extra_layer_or_stale_variable(self):
         docker = (ROOT / 'server/Dockerfile.web-compose-release').read_text()
