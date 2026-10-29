@@ -44,4 +44,11 @@ if test "$hazelcast_entries" != 'WEB-INF/lib/hazelcast-5.7.6.jar'; then
 fi
 unzip -p "$archive" WEB-INF/lib/hazelcast-5.7.6.jar > "$work/hazelcast.jar"
 printf '%s  %s\n' '825b5fc9526a10549bcb580f2d6c03bf1f5667625661722c0406ea6f796e83f2' "$work/hazelcast.jar" | sha256sum -c -
-printf 'ENGINE_ARCHIVE_CONTRACT_OK version=%s freemarker=2.3.35 hazelcast=5.7.6 sha256=%s\n' "$expected_version" "$expected_sha256"
+guava_entries=$(grep -E '^WEB-INF/lib/guava-[^/]+\.jar$' "$work/listing" || true)
+if test "$guava_entries" != 'WEB-INF/lib/guava-33.7.2-jre.jar'; then
+    echo 'Guava archive contract mismatch: expected exactly 33.7.2-jre' >&2
+    exit 1
+fi
+unzip -p "$archive" WEB-INF/lib/guava-33.7.2-jre.jar > "$work/guava.jar"
+printf '%s  %s\n' 'b530942257fb935f8b2cfaa5f8eb5bd59c555fd8e8d01b8ce98912e077ea606c' "$work/guava.jar" | sha256sum -c -
+printf 'ENGINE_ARCHIVE_CONTRACT_OK version=%s freemarker=2.3.35 hazelcast=5.7.6 guava=33.7.2-jre sha256=%s\n' "$expected_version" "$expected_sha256"

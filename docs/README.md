@@ -7,6 +7,9 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.554 candidate](releases/server-1.6.554.md) — optional seven-tool
+  AI collaboration with scoped Keys, human approval and current authority checks.
+
 - [Server v1.6.553](releases/server-1.6.553.md) — published qualified Brotli
   security backports, with exact artifact identities and scoped QA evidence
   recorded separately from component publication.
