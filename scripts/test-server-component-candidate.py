@@ -58,6 +58,7 @@ def fixture_environment():
                    "API_EXPLORER_ARTIFACT": "api-explorer-1.1.19.tar.gz",
                    "WEBSOCKET_PROXY_VERSION": "0.23.17", "HOST_API_VERSION": "0.38.7",
                    "NODE_AGENT_VERSION": "0.13.31", "HOST_PROVISIONER_VERSION": "0.39.9",
+                   "SECRET_DELIVERY_API_VERSION": "0.3.3",
                    "USAGE_TELEMETRY_AGENT_VERSION": "0.4.3", "CATALOG_SERVICE_VERSION": "0.20.14",
                    "AUTHENTICATION_SERVICE_VERSION": "0.4.44", "COMPOSE_EXECUTOR_VERSION": "0.14.38",
                    "MACHINE_DRIVER_BUNDLE_VERSION": "0.16.5"}

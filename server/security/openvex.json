@@ -2,7 +2,7 @@
   "@context": "https://openvex.dev/ns/v0.2.0",
   "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.554",
   "author": "PastureStack Security",
-  "timestamp": "2026-10-29T09:57:33.809116+00:00",
+  "timestamp": "2026-10-29T10:54:00Z",
   "version": 66,
   "statements": [
     {
@@ -343,11 +343,14 @@
         },
         {
           "@id": "pkg:golang/golang.org/x/crypto@v0.56.0"
+        },
+        {
+          "@id": "pkg:golang/golang.org/x/crypto@v0.58.0"
         }
       ],
       "status": "not_affected",
       "justification": "vulnerable_code_not_present",
-      "impact_statement": "GO-2026-5932 applies only to the unmaintained golang.org/x/crypto/openpgp packages. The exact authentication-service 0.4.46 and machine-driver-bundle 0.16.5 release dependency graphs and govulncheck evidence contain no OpenPGP import or reachable symbol, including both docker-machine and docker-machine-driver-packet. The existing compose-executor and host-provisioner v0.56.0 paths remain unchanged. Before applying this VEX the publisher rejects any other executable path or module version using the reviewed occurrence allowlist; this does not authorize a new OpenPGP consumer."
+      "impact_statement": "GO-2026-5932 applies only to the unmaintained golang.org/x/crypto/openpgp packages. The authentication-service 0.4.46 (v0.57.0) and machine-driver-bundle 0.16.6 (v0.58.0) release dependency graphs and source-mode/symbol govulncheck evidence contain no OpenPGP package import or reachable function, including both docker-machine and docker-machine-driver-packet. The compose-executor and host-provisioner v0.56.0 paths are unchanged. Before applying this VEX, the publisher requires exact reviewed executable paths, module versions and binary SHA256 values; it rejects any new consumer or changed bytes. This is a code-absence decision, not a claim that the full crypto module is fixed."
     },
     {
       "vulnerability": {
