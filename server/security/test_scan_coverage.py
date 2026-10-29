@@ -1,12 +1,13 @@
 import copy
 import hashlib
+import re
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
 
 from check_scan_coverage import (validate_coverage, validate_vex_payloads,
-    ROOT_BINARIES, NESTED_BINARIES, OPENPGP_VEX_SCOPE)
+    ROOT_BINARIES, NESTED_BINARIES, OPENPGP_VEX_SCOPE, OPENPGP_VEX_BINARY_SHA256)
 
 
 class CoverageTest(unittest.TestCase):
@@ -103,6 +104,21 @@ class CoverageTest(unittest.TestCase):
             report['Results'][0]['Target'] = '../unreviewed'
             with self.assertRaisesRegex(ValueError, 'Unreviewed OpenPGP'):
                 validate_vex_payloads(report, root)
+
+    def test_reviewed_openpgp_hashes_match_the_actual_producer_pins(self):
+        recipe = (Path(__file__).resolve().parents[1] / 'Dockerfile.web-compose-release').read_text(encoding='utf-8')
+        pins = {
+            'usr/bin/authentication-service.real': 'AUTHENTICATION_SERVICE_BINARY_SHA256',
+            'usr/bin/docker-machine': 'MACHINE_DRIVER_BINARY_SHA256',
+            'usr/bin/docker-machine-driver-packet': 'PACKET_DRIVER_BINARY_SHA256',
+            'usr/bin/compose-executor.real': 'COMPOSE_EXECUTOR_BINARY_SHA256',
+            'usr/bin/host-provisioner.real': 'HOST_PROVISIONER_BINARY_SHA256',
+        }
+        self.assertEqual(set(OPENPGP_VEX_BINARY_SHA256), set(pins))
+        for target, name in pins.items():
+            with self.subTest(target=target):
+                actual = set(re.findall(r'^ARG ' + name + r'=([0-9a-f]{64})$', recipe, re.M))
+                self.assertEqual({OPENPGP_VEX_BINARY_SHA256[target]}, actual)
 
     def test_clean_null_vulnerabilities_need_no_exception(self):
         report = self.fixture(ROOT_BINARIES)

@@ -69,6 +69,21 @@ No unused ARG is invented to imply an additional consumer check.
 
 ## Included behavior and boundaries
 
+Server559 adopts Canonical Ubuntu 26.04 `libbrotli1 1.2.0-3ubuntu0.1`
+after complete immutable-bundle verification. The earlier backport retains its
+reviewed upstream-fix evidence; this switch follows the official-package
+preference and does not assert that the earlier backport remained vulnerable.
+The final official deb, signed index, dpkg identity, three SO hashes and native
+controls are verified separately against actual rootfs/SBOM bytes. Original
+bundle/helper/evidence bytes remain intact; other package checks stay exact.
+
+
+The Compose OpenPGP applicability decision is bound to the reviewed 0.14.40
+binary above. Its qualified source gate rejects OpenPGP dependencies; inspection
+of the shipped Go function and inline-name table confirms absence of the affected
+package while retaining positive maintained-crypto controls. Only this exact
+consumer hash is refreshed; target/module scope and all severity gates stay.
+
 The assembly includes opt-in typed Archive/restore and the first bounded
 Catalog-to-new-Stack workflow with matching Catalog 0.20.17/Compose 0.14.40 owners.
 Public tools never receive private Compose, question defaults, human secrets or

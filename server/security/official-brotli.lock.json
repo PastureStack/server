@@ -1,0 +1,36 @@
+{
+  "architecture": "amd64",
+  "archiveBytes": 343132,
+  "archiveSha256": "bedeef1cf3268f90338c411cdb0a45b224d0660fd2240f310f380316c8244606",
+  "archiveUrl": "https://security.ubuntu.com/ubuntu/pool/main/b/brotli/libbrotli1_1.2.0-3ubuntu0.1_amd64.deb",
+  "cve": "CVE-2026-111497",
+  "depends": "libc6 (>= 2.29)",
+  "distribution": "ubuntu-26.04",
+  "md5sumsSha256": "71595cf0ee66e012285edc233198e97d4a1a0fddbf64828566c9a9c4987637c6",
+  "notice": "https://ubuntu.com/security/notices/USN-8956-1",
+  "package": "libbrotli1",
+  "payloadSha256": {
+    "usr/lib/x86_64-linux-gnu/libbrotlicommon.so.1.2.0": "7f3acc17bffda6f12f7b022e9386514cfd83e77de67e71218bcbf19ec3577a99",
+    "usr/lib/x86_64-linux-gnu/libbrotlidec.so.1.2.0": "470ed7f6b9053163b65b83efebc53bb98ca0d7a5a30ead2b545a4e5574da9c91",
+    "usr/lib/x86_64-linux-gnu/libbrotlienc.so.1.2.0": "cc91392bf885be8bf1beecba292988686c7171f5f29ec5fece7bd92299f30365",
+    "usr/share/doc/libbrotli1/changelog.Debian.gz": "9b4ad375a050d3dd365d04abf6345bcc55ff662c5c37c21eaa3c14c4a466ad13",
+    "usr/share/doc/libbrotli1/copyright": "24a64e5bb83d0960d1835696a1e23c0896ad6055b0ca47c66ab0eb9a766324b1",
+    "usr/share/lintian/overrides/libbrotli1": "2348de77b1f367dbd9891dd844d22a63299861d50db72b621849ecd0466467f2"
+  },
+  "previousVersion": "1.2.0-3build1+pasturestack.1",
+  "schemaVersion": 1,
+  "signedIndex": {
+    "archiveSigningKey": "F6ECB3762474EDA9D21B7022871920D1991BC93C",
+    "inReleaseSha256": "b2f9ca10f4e009e733dad8112677fd141bb6f3feb255a2e4a5931f35139c2e1e",
+    "inReleaseUrl": "https://security.ubuntu.com/ubuntu/dists/resolute-security/InRelease",
+    "packagesPath": "main/binary-amd64/Packages.xz",
+    "packagesSha256": "97c36ce95f4af6d9bbc5561286249c37c18c0a73a98c84ed389f24d445e7ed57"
+  },
+  "source": "brotli",
+  "symlinks": {
+    "usr/lib/x86_64-linux-gnu/libbrotlicommon.so.1": "libbrotlicommon.so.1.2.0",
+    "usr/lib/x86_64-linux-gnu/libbrotlidec.so.1": "libbrotlidec.so.1.2.0",
+    "usr/lib/x86_64-linux-gnu/libbrotlienc.so.1": "libbrotlienc.so.1.2.0"
+  },
+  "version": "1.2.0-3ubuntu0.1"
+}
