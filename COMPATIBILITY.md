@@ -1,5 +1,16 @@
 # Compatibility Contract
 
+## Server v1.6.557 source candidate
+
+This candidate retains Web Console 1.6.199 and bridge 0.2.1 and consumes the
+qualified Engine 0.183.357 artifact. It repairs decoded internal Key scope reads
+and native process-pool identities. Public typed IDs, live actor ceilings,
+child DENY and ordinary Full access are preserved. See the
+[candidate note](docs/releases/server-1.6.557.md) for exact component inputs,
+unfinished QA and rollback. It is not yet a published or accepted deployment;
+the installation examples below remain on the published 556 image.
+
+
 <a id="server-v16556-typed-resource-flows"></a>
 
 ## Server v1.6.556 published
