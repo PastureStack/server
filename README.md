@@ -22,11 +22,6 @@ for secret delivery and host provisioning. See the [release note](docs/releases/
 and [verified publication identities](COMPATIBILITY.md#server-v16554-webmcp).
 Scoped deployment and data-retention acceptance on port 8080 remain pending.
 
-The previous published release is
-[Server v1.6.553](https://github.com/PastureStack/server/releases/tag/v1.6.553),
-with its [release note](docs/releases/server-1.6.553.md) and
-[immutable identities](COMPATIBILITY.md#server-v16553-brotli).
-
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
 ## API Keys
