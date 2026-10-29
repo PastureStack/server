@@ -1,8 +1,10 @@
-# Server v1.6.554 candidate
+# Server v1.6.554
 
-Prepared source only; no Server image or release has been published.
-The release workflow records the final image digest and source
-revision only after its required checks pass.
+Published image: `ghcr.io/pasturestack/server:v1.6.554@sha256:8fa087166970ca3670ad4a19b5b90a313041adb503f1a4be9d459e65bc8248a1`.
+
+Source commit: `25f5f40f852d7c0cb97b8776bd832d6fce3a89e5`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
@@ -53,6 +55,23 @@ automatic theme's day/night timer transitions. This is scoped acceptance of the
 new tools and affected UI, not completion of every existing frontend feature or
 the entire planned permission matrix. Rejected pre-confirmation requests are
 expected negative tests, not successful upgrades.
+
+## Publication validation and remaining limits
+
+[Publisher 40862854807](https://github.com/PastureStack/server/actions/runs/40862854807)
+passed source, final-image, startup/restart and security checks. All 35 public
+assets passed anonymous byte/checksum readback. Native image provenance and
+CycloneDX attestations bind the exact source and digest above.
+
+The raw runtime report retains 52 findings; the effective report retains ten
+Medium package occurrences across nine officially unfixed CVEs, with review due
+November 5, 2026. Untracked, High/Critical, available-fix and secret counts are
+zero under the existing policy. The independent browser runtime SBOM retains
+its incomplete coverage; supported npm components have no reported finding.
+
+Scoped 8080 deployment and the full seven-tool flow, including random-marker
+persistence across upgrade and restart, remain pending. These publication
+checks do not establish deployment-specific data retention.
 
 ## Activation, upgrade and rollback
 

@@ -11,14 +11,16 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current source candidate
+## Current release
 
-Server `v1.6.554` is a prepared source candidate, not a published image.
+[Server `v1.6.554`](https://github.com/PastureStack/server/releases/tag/v1.6.554) is published.
 It integrates Web Console `1.6.196` and Engine `v0.183.355` for optional,
 scoped AI collaboration. New pages start with tools off. Upgrade execution
 requires an authenticated owner's separate confirmation; ordinary API Keys
 retain their existing permissions. It also includes qualified security updates
-for secret delivery and host provisioning. See the [candidate note](docs/releases/server-1.6.554.md).
+for secret delivery and host provisioning. See the [release note](docs/releases/server-1.6.554.md)
+and [verified publication identities](COMPATIBILITY.md#server-v16554-webmcp).
+Scoped deployment and data-retention acceptance on port 8080 remain pending.
 
 The previous published release is
 [Server v1.6.553](https://github.com/PastureStack/server/releases/tag/v1.6.553),
@@ -58,8 +60,7 @@ operations, audit records and rollback.
 
 ## Quick start
 
-These examples target the candidate; run them only after its official release.
-This candidate is not yet available from GHCR. Public downloads do not require
+These examples use the published numeric version. Public downloads do not require
 a registry login. Keep all three named volumes.
 
 ```sh
