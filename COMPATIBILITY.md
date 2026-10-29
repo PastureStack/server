@@ -1,5 +1,17 @@
 # Compatibility Contract
 
+## Server v1.6.559 source candidate
+
+Not yet published. README/install examples remain on verified published 558.
+The candidate uses Web Console 1.6.200/optional bridge 0.2.2, Engine 0.183.359,
+Catalog 0.20.17 and Compose 0.14.40 from qualified original CI/public bytes.
+See the [candidate note](docs/releases/server-1.6.559.md) for exact source,
+archive/binary/SBOM/lock identities and four independent opt-ins.
+Core200, Catalog/Archive, affected roles/layouts/weak-model checks, three
+Hosts/Agents and an actual restart remain pending. Existing performance,
+origin, volume and rollback rules remain; this is not full frontend coverage.
+
+
 <a id="server-v16558-managed-retirement-and-search"></a>
 
 ## Server v1.6.558 published

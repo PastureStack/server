@@ -14,14 +14,14 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.558}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.559}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
-orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.358}
+orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.359}
 orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}
-orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-46ad548c6e284a7758eb7f65c85fb5878e2ebdc861ef5c396a00a6510709b733}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-1da1f4c37fe43b8c387045c263d286f7db01c574}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-07e7de2548bd98d5209bf3594d69fe5b9a5d7ddba36eed4b6b6e4406022c3f90}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-eac3fde5fc7779b6107e2702785120a9c591927b}
 orchestration_engine_version=${orchestration_engine_release_tag#v}
 engine_readonly_schema_sha256=${ENGINE_READONLY_SCHEMA_SHA256:-7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233}
 engine_restricted_schema_sha256=${ENGINE_RESTRICTED_SCHEMA_SHA256:-f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51}
@@ -63,19 +63,19 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.20.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb}
 api_explorer_commit=${API_EXPLORER_COMMIT:-a586f0dc0aa50df579049a8d4bf26f04400fdf75}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.199}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.199.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-ab60d4baa10685021b74db09b805dee1f866e9bd0fbccea4d54610df907c7570}
-web_console_commit=${WEB_CONSOLE_COMMIT:-80a47df65f6406087b80aa81cfa99fe1f438ecff}
-web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-e9f88f608cd4d516a69141464a6eb853ec1179bb86415979fad0569cdfa88173}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.200}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.200.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-97fe46c426cb83263fcfc7f5884c15ca90f7ec3ebec71d9ca023d8b7ad2665c0}
+web_console_commit=${WEB_CONSOLE_COMMIT:-03e0d7b25b8dfcbc45baecf6d448834016aac649}
+web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-1797dd27bb7b1c6b86b8689435e916b03523a9fdf45c5178ec7c2ea05706d4bd}
 web_console_runtime_sbom_artifact=${WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT:-web-console-${web_console_release_tag}-runtime.cdx.json}
-web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-324948a11348729a334864c04850a77b2e5c4643546168ee7b8c7289e983ac31}
+web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-0ce1f6b99e1e449c545d3d7df65302fdb58d1974fecea6477b20262c2148921c}
 catalog_service_release_base_url=${CATALOG_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/catalog-service/releases/download}
-catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.15}
-catalog_service_commit=${CATALOG_SERVICE_COMMIT:-6ea547594065f7f95d5877b82f0c1bc553e72640}
-catalog_service_archive_sha256=${CATALOG_SERVICE_ARCHIVE_SHA256:-7c059101265d897e4b176f503a9217b112946d37d91daa0c40f421fb16e4bb6b}
-catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-948a528987113a2d37f5ee519c4f682e09af4aa10ff64d490d9851ba7b633364}
-catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-b890cfc7941ad3ba1bde4038c0acde4098fa101512553159d4615e540f8bb659}
+catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.17}
+catalog_service_commit=${CATALOG_SERVICE_COMMIT:-2f70559e340865eb6243662ed33d8cbc7b1efa90}
+catalog_service_archive_sha256=${CATALOG_SERVICE_ARCHIVE_SHA256:-4f83f89763ce325262baf8984782da2c21fd81e3cc22c0a1c76aaa50b2a50f20}
+catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-f2a63056d5d48e032bdfd0dbcbe1b2254f6353f1a76125f86a72a31ec532da45}
+catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-94bd4729bd129c333435ab98963080f44d08bec00f814442c99c390ec97b46ce}
 catalog_service_license_sha256=${CATALOG_SERVICE_LICENSE_SHA256:-0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594}
 authentication_service_release_base_url=${AUTHENTICATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/authentication-service/releases/download}
 authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.46}
@@ -93,10 +93,10 @@ webhook_automation_service_commit=${WEBHOOK_AUTOMATION_SERVICE_COMMIT:-4da77ccac
 webhook_automation_service_archive_sha256=${WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256:-f2df8874d5a00a2d5713594609063256164ed624d29a733149d00cb271f0f66b}
 webhook_automation_service_binary_sha256=${WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256:-b98e55db2739ab45119eacc94c8f65cb44371480ebcebec95e5470fd67c72a4c}
 compose_executor_release_base_url=${COMPOSE_EXECUTOR_RELEASE_BASE_URL:-https://github.com/PastureStack/compose-cli/releases/download}
-compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.39}
-compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-53a33bdc13ae99f4bc4a2dc5cc760b6b2d098388}
-compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-4ab4685af67a8b8b11f3dd4996de9e087c26391ec401cf02cdcafe4c93094bab}
-compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-0f0c0ada23564572b569e1c73951ca363c0dc262fe7bba9c2474106650c4eac5}
+compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.40}
+compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-1835f8db645a8488e327b1f6e750bfdf3d1fb84d}
+compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-fa7a4127793ef4e8e6ef18d926d74b50046a80dd2097b08878ef576ddfce6732}
+compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-a5e5eaad64ac1938118c648546b63ee9e056ebea6d2a0f1618cb79ec0c3924cc}
 vsphere_cli_bundle_release_base_url=${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL:-https://github.com/PastureStack/vsphere-cli-bundle/releases/download}
 machine_driver_bundle_release_base_url=${MACHINE_DRIVER_BUNDLE_RELEASE_BASE_URL:-https://github.com/PastureStack/machine-driver-bundle/releases/download}
 machine_driver_bundle_version=${MACHINE_DRIVER_BUNDLE_VERSION:-0.16.6}
@@ -130,7 +130,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-6d4
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.558}
+image=${IMAGE:-pasturestack-validation/server:v1.6.559}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -873,7 +873,7 @@ docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_versi
     done
     cat <<'"'"'EOF'"'"' | sha256sum -c -
 e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192  /usr/bin/authentication-service.real
-0f0c0ada23564572b569e1c73951ca363c0dc262fe7bba9c2474106650c4eac5  /usr/bin/compose-executor.real
+a5e5eaad64ac1938118c648546b63ee9e056ebea6d2a0f1618cb79ec0c3924cc  /usr/bin/compose-executor.real
 92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff  /usr/bin/host-provisioner.real
 1d302e8005e35fe56108d704cd3b18e12a0fbbc1871e7b5cd61ac429db37566c  /usr/bin/secret-delivery-api
 90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be  /usr/bin/usage-telemetry-agent
