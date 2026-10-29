@@ -73,6 +73,7 @@ jobs:
           python3 source/scripts/test-publisher-safety-guards.py
           python3 source/scripts/test-web-console-sbom.py
           python3 source/scripts/test-server-backport-consumer-contract.py
+          python3 source/scripts/test-ai-resource-api-guards.py
 
           declared_release="$(sed -n 's/^ARG SERVER_RELEASE_TAG=//p' \
             source/server/Dockerfile.web-compose-release | sort -u)"
@@ -280,11 +281,17 @@ jobs:
           # Only arm cleanup after proving all names are available. A collision
           # must never remove another run's container or persistent volumes.
           trap cleanup_candidate EXIT
+          # Exercise the opt-in protocol on this disposable runtime while
+          # retaining the image's required Java arguments. Image defaults and
+          # the published configuration remain unchanged.
+          candidate_java_opts="$(docker image inspect "$CANDIDATE_IMAGE" \
+            --format '{{range .Config.Env}}{{println .}}{{end}}' | sed -n 's/^JAVA_OPTS=//p')"
           docker run -d \
             --name "$CANDIDATE_NAME" \
             --restart no \
             -p 127.0.0.1:18082:8080 \
             -e PROXY_PLATFORM_PUBLIC_ORIGIN=https://stack.example.test \
+            -e "JAVA_OPTS=${candidate_java_opts} -Dapi.ai.bridge.enabled=true -Dapi.ai.service.upgrade.enabled=true -Dapi.ai.resource.change.enabled=true" \
             -v "$CATTLE_VOLUME:/var/lib/cattle" \
             -v "$MYSQL_VOLUME:/var/lib/mysql" \
             -v "$MYSQL_LOG_VOLUME:/var/log/mysql" \
@@ -422,8 +429,10 @@ jobs:
           # Exercise the published API and real auth overlay on this fresh,
           # disposable database before the image is allowed to be released.
           python3 source/scripts/test-mfa-policy-api.py \
-            --port 18082 --disposable --registration-basic |
+            --port 18082 --disposable --registration-basic --ai-resource |
             tee "$evidence/mfa-policy-api-smoke.txt"
+          grep -E '^AI_RESOURCE_API_OK checks=[0-9]+ scoped_create_read=true process_pool=true human_cookie=true no_hosts=true$' \
+            "$evidence/mfa-policy-api-smoke.txt" >/dev/null
           grep -E '^REGISTRATION_BASIC_API_OK checks=7 ordinary_user=true entry_only=true node_active_verified=false script_sha256=[0-9a-f]{64}$' \
             "$evidence/mfa-policy-api-smoke.txt" >"$evidence/registration-basic-api-smoke.txt"
 
