@@ -1,5 +1,16 @@
 # Compatibility Contract
 
+<a id="server-v16555-webmcp-actor"></a>
+
+## Server v1.6.555 prepared, not published
+
+This candidate packages Web Console `1.6.197` to restore the authenticated actor
+after a fresh-cookie browser session resumes. The human upgrade-plan inbox can
+then use the current account identity; the separate authenticated confirmation
+requirement is unchanged. Engine `v0.183.355`, role/Key policies, component inputs
+and the existing security baseline remain unchanged. No Server555 image or
+runtime acceptance is claimed yet. See the [candidate note](docs/releases/server-1.6.555.md).
+
 <a id="server-v16554-webmcp"></a>
 
 ## Server v1.6.554 published
@@ -29,6 +40,9 @@ secret counts are zero under the existing release policy. The browser runtime
 SBOM retains its explicitly incomplete coverage.
 Scoped 8080 deployment, the full seven-tool flow and random-marker persistence
 across upgrade and restart remain pending; publication does not establish those results.
+The fresh-cookie UI restore can leave the authenticated account identity unset
+and block the human inbox. This product issue motivates the separate Server555
+candidate; it does not invalidate the recorded Server554 publication evidence.
 
 <a id="server-v16553-brotli"></a>
 
