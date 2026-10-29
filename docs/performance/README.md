@@ -8,8 +8,8 @@ The following example is appropriate as a starting point for a dedicated
 16-vCPU host with about 32 GiB of RAM. It is not a universal performance
 profile; measure the real workload before increasing it further.
 
-The example targets the Server `v1.6.554` candidate; run it only after its official release and image have been published and read back.
-The candidate is not yet available from GHCR.
+The example uses the published Server `v1.6.554` numeric tag.
+The image and its release assets have passed public identity and checksum readback.
 See the [release note](../releases/server-1.6.554.md) and the
 [current release](../../README.md#current-release) for component versions and
 release details. Preserve the existing runtime overrides and all three named

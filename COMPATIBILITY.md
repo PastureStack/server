@@ -2,16 +2,33 @@
 
 <a id="server-v16554-webmcp"></a>
 
-## Server v1.6.554 prepared, not published
+## Server v1.6.554 published
 
-The candidate integrates Web Console `1.6.196` and Engine `v0.183.355`.
+The published linux/amd64 image is
+`ghcr.io/pasturestack/server:v1.6.554@sha256:8fa087166970ca3670ad4a19b5b90a313041adb503f1a4be9d459e65bc8248a1`,
+produced from `25f5f40f852d7c0cb97b8776bd832d6fce3a89e5` in successful
+[publisher 40862854807](https://github.com/PastureStack/server/actions/runs/40862854807).
+Its distinct OCI config is
+`sha256:249e90384126e9dea1f4d150eb4aeb5be66696f73339c655c7931891b8a0a6ad`.
+All 35 public assets passed anonymous byte/checksum readback; image provenance
+and CycloneDX attestations match this exact digest, source and publication workflow.
+Documentation commits do not change the runtime producer.
+
+The release integrates Web Console `1.6.196` and Engine `v0.183.355`.
 The build verifies the browser's enabled capability ceiling and off initial
 mode against the exact archive. Backend activation remains explicit.
 Seven typed tools share current RBAC and per-Key policy checks; service-upgrade
 plans require separate authenticated human approval. No general action proxy
-or approval tool is exposed. See the [candidate note](docs/releases/server-1.6.554.md)
+or approval tool is exposed. See the [release note](docs/releases/server-1.6.554.md)
 and [AI collaboration guide](docs/ai-collaboration.md).
-Final publication identities and 8080 acceptance will be recorded after release.
+
+The raw runtime report retains 52 findings. The qualified effective report
+retains ten Medium package occurrences across nine officially unfixed CVEs,
+reviewed again by November 5, 2026. Untracked, High/Critical, available-fix and
+secret counts are zero under the existing release policy. The browser runtime
+SBOM retains its explicitly incomplete coverage.
+Scoped 8080 deployment, the full seven-tool flow and random-marker persistence
+across upgrade and restart remain pending; publication does not establish those results.
 
 <a id="server-v16553-brotli"></a>
 
