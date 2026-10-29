@@ -1,4 +1,13 @@
-# Server v1.6.556
+# Server v1.6.556 candidate
+
+Prepared source only; no Server image or release has been published.
+
+## Verified component inputs
+
+- Web Console `1.6.199`, producer `80a47df65f6406087b80aa81cfa99fe1f438ecff`; archive SHA256 `ab60d4baa10685021b74db09b805dee1f866e9bd0fbccea4d54610df907c7570`.
+- Engine `v0.183.356`, producer `24cfa1db113f54de3148cd4ac3191e66a1702806`; JAR SHA256 `dfce4c6df625a905a837770780bd09d871752cf9d8493b590145f84a8c78dd09`.
+- Optional stdio bridge `0.2.1`; ZIP SHA256 `f1477b74da0caefd7fcef77609b55b7d172683bda4afe3ffb884dfdf5a63dfae`.
+
 
 This release packages Web Console 1.6.199 and Engine 0.183.356 for opt-in AI
 resource discovery and typed, human-reviewed workload changes. The matching
