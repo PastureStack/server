@@ -2,8 +2,8 @@
   "@context": "https://openvex.dev/ns/v0.2.0",
   "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.559",
   "author": "PastureStack Security",
-  "timestamp": "2026-10-29T22:47:40Z",
-  "version": 71,
+  "timestamp": "2026-10-29T23:21:31Z",
+  "version": 72,
   "statements": [
     {
       "vulnerability": {
@@ -350,7 +350,7 @@
       ],
       "status": "not_affected",
       "justification": "vulnerable_code_not_present",
-      "impact_statement": "GO-2026-5932 applies only to the unmaintained golang.org/x/crypto/openpgp packages. The authentication-service 0.4.46 (v0.57.0) and machine-driver-bundle 0.16.6 (v0.58.0) release dependency graphs and source-mode/symbol govulncheck evidence contain no OpenPGP package import or reachable function, including both docker-machine and docker-machine-driver-packet. The compose-executor and host-provisioner v0.56.0 paths are unchanged. Before applying this VEX, the publisher requires exact reviewed executable paths, module versions and binary SHA256 values; it rejects any new consumer or changed bytes. This is a code-absence decision, not a claim that the full crypto module is fixed."
+      "impact_statement": "GO-2026-5932 applies only to the unmaintained golang.org/x/crypto/openpgp packages. The authentication-service 0.4.46 (v0.57.0) and machine-driver-bundle 0.16.6 (v0.58.0) release dependency graphs and source-mode/symbol govulncheck evidence contain no OpenPGP package import or reachable function, including both docker-machine and docker-machine-driver-packet. The compose-executor 0.14.40 v0.56.0 original binary has a qualified source package-graph gate and an inspected Go function/inline-name table with no OpenPGP code; maintained bcrypt/scrypt symbols provide positive controls. The host-provisioner v0.56.0 path is unchanged. Before applying this VEX, the publisher requires exact reviewed executable paths, module versions and binary SHA256 values; it rejects any new consumer or changed bytes. This is a code-absence decision, not a claim that the full crypto module is fixed."
     },
     {
       "vulnerability": {

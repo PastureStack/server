@@ -545,11 +545,16 @@ ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7
 ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4
 ARG FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2
 ARG LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1
+ARG BROTLI_PACKAGE_VERSION=1.2.0-3ubuntu0.1
 ARG CA_CERTIFICATES_PACKAGE_VERSION=20260816ubuntu0.26.04.1
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /build
 COPY scripts/download-ubuntu-security-updates.sh /usr/local/libexec/pasturestack/download-ubuntu-security-updates.sh
 COPY security/ubuntu-security-packages.lock /build/ubuntu-security-packages.lock
+COPY security/official-brotli.lock.json /build/official-brotli.lock.json
+ADD --checksum=sha256:bedeef1cf3268f90338c411cdb0a45b224d0660fd2240f310f380316c8244606 \
+    https://security.ubuntu.com/ubuntu/pool/main/b/brotli/libbrotli1_1.2.0-3ubuntu0.1_amd64.deb \
+    /tmp/libbrotli1.deb
 ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd \
     https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb \
     /tmp/ca-certificates.deb
@@ -653,8 +658,16 @@ RUN set -eux; \
       usr/lib/x86_64-linux-gnu/ossl-modules/legacy.so \
       > /out/openssl-runtime.sha256; \
     cp /usr/bin/tar /out/tar; \
+    test "$(dpkg-deb -f /tmp/libbrotli1.deb Package)" = libbrotli1; \
+    test "$(dpkg-deb -f /tmp/libbrotli1.deb Source)" = brotli; \
+    test "$(dpkg-deb -f /tmp/libbrotli1.deb Version)" = "${BROTLI_PACKAGE_VERSION}"; \
+    test "$(dpkg-deb -f /tmp/libbrotli1.deb Architecture)" = amd64; \
+    test "$(dpkg-deb -f /tmp/libbrotli1.deb Depends)" = 'libc6 (>= 2.29)'; \
+    mkdir -p /out/official-brotli; \
+    cp /tmp/libbrotli1.deb /out/official-brotli/libbrotli1.deb; \
+    cp /build/official-brotli.lock.json /out/official-brotli/lock.json; \
     cd /out; \
-    sha256sum packages/*.deb tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 freetype-runtime.sha256 libpng-runtime.sha256 > SHA256SUMS
+    sha256sum packages/*.deb official-brotli/* tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 freetype-runtime.sha256 libpng-runtime.sha256 > SHA256SUMS
 RUN sh /usr/local/libexec/pasturestack/download-ubuntu-security-updates.sh \
       /build/ubuntu-security-packages.lock /etc/ssl/certs/ca-certificates.crt /out/security-updates
 
@@ -717,6 +730,7 @@ ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7
 ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4
 ARG FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2
 ARG LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1
+ARG BROTLI_PACKAGE_VERSION=1.2.0-3ubuntu0.1
 ARG CA_CERTIFICATES_PACKAGE_VERSION=20260816ubuntu0.26.04.1
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG GLIBC_RUNTIME_PACKAGE_VERSION=2.43-2ubuntu2.4+pasturestack.1
@@ -774,7 +788,7 @@ ARG MACHINE_DRIVER_BINARY_SHA256=8c257c4eec578fd6ae0f198d8ccc5fa449aa00b8a590096
 ARG PACKET_DRIVER_BINARY_SHA256=a4146c973254d36f8b1edcd8298c55154db600e24af6226810f4ed9ec4e5fb79
 
 COPY --from=runtime_security_packages /out/ /tmp/pasturestack-runtime-security/
-COPY scripts/install-ubuntu-security-updates.sh security/ubuntu-security-packages.lock artifacts/verify-pcre2-runtime.sh /tmp/pasturestack-security-input/
+COPY scripts/install-ubuntu-security-updates.sh security/ubuntu-security-packages.lock artifacts/verify-pcre2-runtime.sh artifacts/verify-brotli-runtime.sh /tmp/pasturestack-security-input/
 # Keep the official zlib backport active: ldconfig otherwise prefers the old
 # upstream 1.3.2 library, which is affected by USN-8954-1 / CVE-2026-85091.
 # Retain the base image's removed, unused Git DAV/Expat surface after updating.
@@ -805,7 +819,10 @@ RUN --mount=from=ubuntu_security_backports,source=/out,target=/opt/pasturestack/
     done; \
     "${data}/install-existing-backports" --install-in-docker-build > "${evidence}/install.json"; \
     "${data}/install-existing-backports" --verify-installed > "${evidence}/verify.json"; \
-    test "$(dpkg-query -W -f='${Version}' libbrotli1)" = 1.2.0-3build1+pasturestack.1; \
+    install -D -m 0755 /tmp/pasturestack-security-input/verify-brotli-runtime.sh /usr/local/libexec/pasturestack/verify-brotli-runtime.sh; \
+    install -D -m 0644 official-brotli/lock.json /usr/share/pasturestack/security/brotli-official/lock.json; \
+    sh /usr/local/libexec/pasturestack/verify-brotli-runtime.sh --install > /usr/share/pasturestack/security/brotli-official/runtime.json; \
+    test "$(dpkg-query -W -f='${Version}' libbrotli1)" = "${BROTLI_PACKAGE_VERSION}"; \
     brotli_integrity="$(dpkg --verify libbrotli1)"; \
     test -z "$brotli_integrity"; \
     for library in libbrotlicommon.so.1 libbrotlidec.so.1 libbrotlienc.so.1; do \
@@ -1256,6 +1273,7 @@ ENV PASTURESTACK_PERL_PACKAGE_VERSION=${PERL_PACKAGE_VERSION}
 ENV PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=${LIBDBI_PERL_PACKAGE_VERSION}
 ENV PASTURESTACK_FREETYPE_PACKAGE_VERSION=${FREETYPE_PACKAGE_VERSION}
 ENV PASTURESTACK_LIBPNG_PACKAGE_VERSION=${LIBPNG_PACKAGE_VERSION}
+ENV PASTURESTACK_BROTLI_PACKAGE_VERSION=${BROTLI_PACKAGE_VERSION}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_COMMIT=${ORCHESTRATION_ENGINE_COMMIT}
 ENV PASTURESTACK_ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}
 ENV PASTURESTACK_WEB_CONSOLE_PACKAGE=${WEB_CONSOLE_RELEASE_TAG}

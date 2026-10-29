@@ -7,9 +7,11 @@ local OpenVEX handling remains the only VEX interpretation step.
 import argparse
 import hashlib
 import json
+import lzma
 from pathlib import Path
 import re
 import sys
+import subprocess
 from urllib.parse import quote
 
 PLATFORM = {'distribution': 'ubuntu', 'release': '26.04', 'architecture': 'amd64'}
@@ -168,7 +170,86 @@ def validate_glibc_vex_semantics(receipt, vex_sha, source_lock_sha):
             'Native Trivy exact glibc/nscd VEX semantic qualification is missing or changed')
 
 
-def verify(files, checksums, sbom, expected_digest, bundle_checksums):
+OFFICIAL_BROTLI_LOCK_SHA256 = 'abe40fd6d620eaff894782f1df93e7a91c4098e3acb120b11a4b20fbebc944fa'
+
+
+def verify_official_brotli(proof):
+    """One Server-only replacement, rechecked against the actual exported rootfs."""
+    require(isinstance(proof, dict) and set(proof) == {'rootfs', 'lock', 'receipt', 'deb', 'signedIndex'},
+            'Exact official Brotli proof inputs are required; a boolean is not authority')
+    raw = bounded_read(Path(proof['lock']))
+    require(sha(raw) == OFFICIAL_BROTLI_LOCK_SHA256, 'Official Brotli manifest is not the reviewed fixed manifest')
+    lock = json.loads(raw)
+    require(lock['package'] == 'libbrotli1' and lock['source'] == 'brotli'
+            and lock['version'] == '1.2.0-3ubuntu0.1' and lock['architecture'] == 'amd64'
+            and lock['distribution'] == 'ubuntu-26.04', 'Official Brotli package scope changed')
+    directory = Path(proof['signedIndex'])
+    release = bounded_read(directory / 'InRelease')
+    index = bounded_read(directory / 'Packages.xz')
+    signed = lock['signedIndex']
+    require(sha(release) == signed['inReleaseSha256'] and sha(index) == signed['packagesSha256'],
+            'Official Brotli signed metadata bytes differ')
+    signature = subprocess.run(['gpgv', '--status-fd', '1', '--keyring',
+        '/usr/share/keyrings/ubuntu-archive-keyring.gpg', str(directory / 'InRelease')],
+        capture_output=True, text=True, timeout=20)
+    require(signature.returncode == 0 and '[GNUPG:] VALIDSIG ' + signed['archiveSigningKey'] + ' ' in signature.stdout,
+            'Official Brotli Canonical signature is not valid under the Ubuntu archive keyring')
+    require(re.search(r'^ ' + signed['packagesSha256'] + r'\s+' + str(len(index)) + r'\s+'
+            + re.escape(signed['packagesPath']) + r'$', release.decode(), re.M) is not None,
+            'Official package index is not bound by the signed release')
+    rows = []
+    for stanza in lzma.decompress(index).decode().split('\n\n'):
+        row = dict(line.split(': ', 1) for line in stanza.splitlines() if ': ' in line and not line.startswith(' '))
+        if row.get('Package') == 'libbrotli1' and row.get('Version') == lock['version']:
+            rows.append(row)
+    require(len(rows) == 1 and all(rows[0].get(k) == v for k, v in {
+        'Source': 'brotli', 'Architecture': 'amd64', 'Depends': lock['depends'],
+        'SHA256': lock['archiveSha256'], 'Size': str(lock['archiveBytes']),
+        'Filename': lock['archiveUrl'].split('/ubuntu/', 1)[1]}.items()),
+        'Signed Ubuntu package identity/dependency/archive binding differs')
+    require(sha(bounded_read(Path(proof['deb']))) == lock['archiveSha256'], 'Official Brotli deb bytes differ')
+    root = Path(proof['rootfs']).resolve(strict=True)
+    require(root.is_dir(), 'Actual consumer rootfs is required')
+
+    def actual(relative):
+        path = root / relative
+        require(path.resolve(strict=True).is_relative_to(root), 'Official Brotli path escapes the rootfs')
+        return path
+
+    expected_sonames = {}
+    for relative, digest in lock['payloadSha256'].items():
+        path = actual(relative)
+        require(not path.is_symlink() and sha(bounded_read(path)) == digest,
+                'Actual official Brotli payload differs: ' + relative)
+    for relative, target in lock['symlinks'].items():
+        path = actual(relative)
+        require(path.is_symlink() and path.readlink().as_posix() == target,
+                'Actual official Brotli SONAME differs: ' + relative)
+        expected_sonames[path.name] = lock['payloadSha256'][(Path(relative).parent / target).as_posix()]
+    require(len(expected_sonames) == 3, 'Exactly three official Brotli SONAMEs are required')
+    require(sha(bounded_read(actual('var/lib/dpkg/info/libbrotli1:amd64.md5sums'))) == lock['md5sumsSha256'],
+            'Official Brotli installed dpkg manifest differs')
+    rows = []
+    for stanza in bounded_read(actual('var/lib/dpkg/status')).decode().split('\n\n'):
+        row = dict(line.split(': ', 1) for line in stanza.splitlines() if ': ' in line and not line.startswith(' '))
+        if row.get('Package') == 'libbrotli1':
+            rows.append(row)
+    require(len(rows) == 1 and all(rows[0].get(k) == v for k, v in {
+        'Status': 'install ok installed', 'Version': lock['version'], 'Source': lock['source'],
+        'Architecture': 'amd64', 'Depends': lock['depends']}.items()), 'Official Brotli dpkg identity differs')
+    install = json.loads(bounded_read(actual('usr/share/pasturestack/security/brotli-official/install.json')))
+    require(install == {'schemaVersion': 1, 'status': 'installed-and-verified',
+        'beforeVersion': lock['previousVersion'], 'version': lock['version'],
+        'packageSetUnchanged': True, 'dpkgConfigurationUnchanged': True}, 'Official Brotli install proof differs')
+    receipt = json.loads(bounded_read(Path(proof['receipt'])))
+    require(receipt == {'schemaVersion': 1, 'status': 'verified', 'package': 'libbrotli1', 'source': 'brotli',
+        'version': lock['version'], 'architecture': 'amd64', 'archiveSha256': lock['archiveSha256'],
+        'dpkgVerify': 'PASS', 'linkage': 'PASS', 'sonames': expected_sonames}, 'Official Brotli final runtime proof differs')
+    return {'name': 'libbrotli1', 'version': lock['version'], 'purl': package_purl({'name': 'libbrotli1', 'version': lock['version']}),
+            'archiveSha256': lock['archiveSha256'], 'manifestSha256': sha(raw), 'sonames': expected_sonames}
+
+
+def verify(files, checksums, sbom, expected_digest, bundle_checksums, official_brotli=None):
     require(DIGEST.fullmatch(expected_digest) is not None, 'Expected bundle digest is not immutable')
     expected_image = 'ghcr.io/pasturestack/ubuntu-security-backports:v0.1.1@' + expected_digest
     require(files['bundle-image.txt'].decode().strip() == expected_image, 'Consumer bundle identity mismatch')
@@ -234,6 +315,11 @@ def verify(files, checksums, sbom, expected_digest, bundle_checksums):
     selected = unique_names(install['packages'], 'install packages')
     require(selected == unique_names(installed['packages'], 'verified packages')
             and selected <= packages.keys(), 'Install/verify selected packages disagree')
+    official = None
+    if official_brotli is not None:
+        require('libbrotli1' in selected and packages['libbrotli1']['version'] == '1.2.0-3build1+pasturestack.1',
+                'Official replacement must follow the original selected Brotli backport')
+        official = verify_official_brotli(official_brotli)
     require(sbom.get('bomFormat') == 'CycloneDX' and isinstance(sbom.get('components'), list),
             'Actual consumer CycloneDX SBOM is missing')
     actual = {}
@@ -242,8 +328,10 @@ def verify(files, checksums, sbom, expected_digest, bundle_checksums):
         if name not in packages:
             continue
         require(name not in actual, 'Duplicate consumer runtime package in SBOM')
-        require(component.get('version') == packages[name]['version']
-                and component.get('purl') == package_purl(packages[name]),
+        expected = official if name == 'libbrotli1' and official is not None else {
+            'version': packages[name]['version'], 'purl': package_purl(packages[name])}
+        require(component.get('version') == expected['version']
+                and component.get('purl') == expected['purl'],
                 'Actual SBOM package is not the selected qualified version/PURL: ' + name)
         actual[name] = component['purl']
     require(set(actual) == selected, 'Actual SBOM and installed selected-package set differ')
@@ -283,7 +371,8 @@ def verify(files, checksums, sbom, expected_digest, bundle_checksums):
             'bundleChecksumsSha256': sha(bundle_checksums), 'producerMetadataSha256': producer,
             'selectedPackages': sorted(selected), 'selectedPURLs': sorted(actual.values()),
             'qualifiedVexPairs': len(pairs), 'qualifiedCodeAbsentVexPairs': 3 * absence_statements,
-            'qualifiedFixedVexPairs': len(pairs) - 3 * absence_statements, 'findingsFilteredByThisTool': False}
+            'qualifiedFixedVexPairs': len(pairs) - 3 * absence_statements, 'findingsFilteredByThisTool': False,
+            **({'officialReplacements': [official]} if official is not None else {})}
 
 
 def bounded_read(path):

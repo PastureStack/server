@@ -56,9 +56,20 @@ def verify(files):
             'Server absent-package boundary is missing')
     require('install -m 0644 pcre2-backport-provenance.json pcre2-backport.lock.json pcre2-runtime.sha256 /usr/share/pasturestack/security/' in runtime,
             'Legacy verifier metadata is not installed')
-    for marker in ["libbrotli1)\" = 1.2.0-3build1+pasturestack.1", 'dpkg --verify libbrotli1',
+    for marker in ['dpkg --verify libbrotli1',
                    'libbrotlicommon.so.1 libbrotlidec.so.1 libbrotlienc.so.1']:
         require(marker in runtime and marker in build, 'Missing final-rootfs Brotli version/integrity/linkage: ' + marker)
+    require('libbrotli1)" = "${BROTLI_PACKAGE_VERSION}"' in runtime
+            and 'libbrotli1)" = 1.2.0-3ubuntu0.1' in build,
+            'Final Brotli oracles must select the official version')
+    require('verify-brotli-runtime.sh --install' in runtime, 'Official replacement installation is missing')
+    require(runtime.index('"${data}/install-existing-backports" --verify-installed')
+            < runtime.index('verify-brotli-runtime.sh --install'), 'Official replacement must follow complete bundle verification')
+    require('official-brotli/libbrotli1.deb' in native and 'sha256:bedeef1cf3268f90338c411cdb0a45b224d0660fd2240f310f380316c8244606' in native,
+            'Official Brotli archive must be separately checksum-pinned, outside the early package batch')
+    require('verify-server-backport-consumer.py' in publisher and '--legacy-helper' in publisher
+            and '--official-brotli-dir' in publisher and '--rootfs' in publisher,
+            'Actual final official replacement closure is missing')
     require('brotli_linkage="$(ldd -r ' in build and 'require_resolved_linkage "$brotli_linkage"' in build,
             'Brotli ldd failure must propagate before the linkage text check')
     require(all('brotli_integrity="$(dpkg --verify libbrotli1)"' in source
@@ -98,6 +109,16 @@ def verify(files):
 class ServerBackportContract(unittest.TestCase):
     def test_current_source_contract(self):
         verify(FILES)
+
+    def test_official_replacement_pin_order_and_actual_rootfs_closure_are_required(self):
+        for name, old, new in [
+            (DOCKER, 'sha256:bedeef1cf3268f90338c411cdb0a45b224d0660fd2240f310f380316c8244606', 'sha256:' + 'a' * 64),
+            (DOCKER, 'verify-brotli-runtime.sh --install', 'verify-brotli-runtime.sh --skip'),
+            (BUILD, 'libbrotli1)" = 1.2.0-3ubuntu0.1', 'libbrotli1)" = 1.2.0-3build1+pasturestack.1'),
+            (PUBLISH, '--rootfs', '--missing-final-rootfs'),
+            (PUBLISH, '--legacy-helper', '--unbound-helper')]:
+            with self.subTest(name=name, old=old), self.assertRaises(AssertionError):
+                verify(dict(FILES, **{name: FILES[name].replace(old, new)}))
 
     def test_source_compile_or_absent_package_boundary_regression_is_rejected(self):
         for old, new in [('target=/bundle,ro', 'target=/bundle,ro # build-pcre2-backport.py'),

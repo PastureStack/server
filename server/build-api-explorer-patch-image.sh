@@ -430,6 +430,7 @@ for marker in \
     PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4 \
     PASTURESTACK_FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2 \
     PASTURESTACK_LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1 \
+    PASTURESTACK_BROTLI_PACKAGE_VERSION=1.2.0-3ubuntu0.1 \
     PASTURESTACK_COREUTILS_PROVIDER=gnu \
     PASTURESTACK_COREUTILS_UNIQ_VERSION=9.11 \
     PASTURESTACK_COREUTILS_UNIQ_FIX=d64e35a8a4c0e4608321433e0d84d917e4e36371 \
@@ -964,7 +965,8 @@ EOF
             return 1
         fi
     }
-    test "$(dpkg-query -W -f='"'"'${Version}'"'"' libbrotli1)" = 1.2.0-3build1+pasturestack.1
+    test "$(dpkg-query -W -f='"'"'${Version}'"'"' libbrotli1)" = 1.2.0-3ubuntu0.1
+    sh /usr/local/libexec/pasturestack/verify-brotli-runtime.sh
     brotli_integrity="$(dpkg --verify libbrotli1)"
     test -z "$brotli_integrity"
     for brotli_library in libbrotlicommon.so.1 libbrotlidec.so.1 libbrotlienc.so.1; do
