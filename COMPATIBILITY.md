@@ -1,15 +1,27 @@
 # Compatibility Contract
 
-## Server v1.6.557 source candidate
+<a id="server-v16557-typed-read-fixes"></a>
 
-This candidate retains Web Console 1.6.199 and bridge 0.2.1 and consumes the
-qualified Engine 0.183.357 artifact. It repairs decoded internal Key scope reads
-and native process-pool identities. Public typed IDs, live actor ceilings,
-child DENY and ordinary Full access are preserved. See the
-[candidate note](docs/releases/server-1.6.557.md) for exact component inputs,
-unfinished QA and rollback. It is not yet a published or accepted deployment;
-the installation examples below remain on the published 556 image.
+## Server v1.6.557 published
 
+Published image: `ghcr.io/pasturestack/server:v1.6.557@sha256:801bb93400d6a225952be167a12454023816b725a28ad9770efa4689b12ba2ff`.
+Runtime producer: `9783aacf2b378f39e9dc00469156a57f9eb2e265`; OCI config: `sha256:6e65466bdb73c82ce4bc5c006363ea78f2bf80bcf92c7b729e3f2141e454f4fe`.
+[Publisher 40929617683](https://github.com/PastureStack/server/actions/runs/40929617683)
+passed source, build, real disposable scoped-Key protocol, startup/restart and
+security checks. All 35 public assets passed anonymous byte/SHA256 readback;
+native OCI provenance and CycloneDX attestations passed. Documentation commits
+do not change this producer. The existing exact package policy retains ten
+Medium occurrences across nine officially unfixed CVEs; High/Critical,
+available-fix, untracked and source-secret gates passed. Browser SBOM coverage
+remains incomplete. Designated 8080 browser/workload acceptance is separate.
+
+Web Console 1.6.199 and bridge 0.2.1 are unchanged. Engine 0.183.357 uses original
+CI producer `2cd688b0c066658c41e7d3de5bed8c543687f275` and JAR SHA256
+`a46e832314b32292e3423133168020acf93052a7dd29e967bbaabc3df6dca8dc`.
+It fixes decoded internal scope reads and native process-pool identities while
+preserving public typed IDs, live owner ceilings, child DENY and ordinary Full
+access. [Release boundaries and rollback](docs/releases/server-1.6.557.md) keep
+unfinished full forms, Catalog launch, other batches and KVM HOLD explicit.
 
 <a id="server-v16556-typed-resource-flows"></a>
 

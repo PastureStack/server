@@ -1,6 +1,6 @@
 # Optional AI collaboration
 
-Server v1.6.556 combines Web Console 1.6.199 and Engine 0.183.356. The twelve
+Server v1.6.557 combines Web Console 1.6.199 and Engine 0.183.357. The twelve
 supported tools are `list_capabilities`, `find_resources`, `get_resource`,
 `preview_resource_change`, `apply_resource_change`, `find_stacks`,
 `find_services`, `get_service`, `update_service_description`,
@@ -8,6 +8,16 @@ supported tools are `list_capabilities`, `find_resources`, `get_resource`,
 The capability response distinguishes safe metadata, partial coverage and
 pending adapters. This is not complete WebMCP coverage of the console.
 Other platform operations retain their ordinary UI/API paths.
+
+## Workload retirement limitation
+
+Designated 8080 acceptance found that a scoped service downscale can lose its
+service/instance authorization ancestry after the association is retired. The
+later stop is denied and the retired instance can remain `stopping`, even though
+the Service reports its new scale. The source repair is in progress; the full
+typed workload flow is not accepted. Do not broaden a Key or blindly retry an
+uncertain plan to work around this failure. Other completed metadata, create,
+start, scale-up and unchanged layout cases remain separately recorded.
 
 ## Activation
 
