@@ -1,5 +1,15 @@
 # Compatibility Contract
 
+## Server v1.6.558 source candidate
+
+The candidate retains Web Console 1.6.199 and bridge 0.2.1, using the qualified
+Engine 0.183.358 artifact to fix scoped managed retirement and native name-query
+pagination. Ordinary Full access, live actor ceilings and explicit child DENY
+remain authoritative. See the [candidate note](docs/releases/server-1.6.558.md)
+for component inputs, required runtime acceptance and rollback. It is not yet
+a published deployment; install examples remain on the published 557 image.
+
+
 <a id="server-v16557-typed-read-fixes"></a>
 
 ## Server v1.6.557 published
