@@ -13,11 +13,12 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.557`](https://github.com/PastureStack/server/releases/tag/v1.6.557)
-packages Web Console `1.6.199` and Engine `v0.183.357`. It repairs scoped AI operation reads and native process-pool metadata while
-retaining live account/Key limits and ordinary UI/API behavior.
-See the [release note](docs/releases/server-1.6.557.md) and
-[publication identities](COMPATIBILITY.md#server-v16557-typed-read-fixes).
+[Server `v1.6.558`](https://github.com/PastureStack/server/releases/tag/v1.6.558)
+packages Web Console `1.6.199` and Engine `v0.183.358`. It repairs scoped managed
+retirement and typed name-query pagination while retaining live account/Key
+limits and ordinary UI/API behavior.
+See the [release note](docs/releases/server-1.6.558.md) and
+[publication identities](COMPATIBILITY.md#server-v16558-managed-retirement-and-search).
 
 Publication checks include a real scoped-Key preview, human-cookie confirmation,
 empty Stack creation and receipt read on a disposable fresh Server. Deployment
@@ -52,10 +53,10 @@ The Web Console supports scoped resource discovery and basic Stack, Service and
 Container changes through twelve tools. Plans require normal human review and
 reuse live account and Key permissions. Global Services do not accept a manual
 instance count. Advanced forms and other resource workflows remain pending.
-Scoped-Key workload retirement has an unresolved integration finding; review
+Individual scoped-Key Service stop has an unresolved integration finding; review
 the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation)
 before enabling these optional changes.
-See the [release note](docs/releases/server-1.6.557.md) and
+See the [release note](docs/releases/server-1.6.558.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
@@ -69,7 +70,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.557
+  ghcr.io/pasturestack/server:v1.6.558
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -77,7 +78,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.557
+    image: ghcr.io/pasturestack/server:v1.6.558
     restart: unless-stopped
     ports:
       - "8080:8080"
