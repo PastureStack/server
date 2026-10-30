@@ -13,21 +13,22 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.560`](https://github.com/PastureStack/server/releases/tag/v1.6.560)
-packages Web Console `1.6.201` / optional bridge `0.2.3`, Engine `v0.183.360`,
-Catalog `0.20.17` and Compose `0.14.40`. It adds bounded External Service, DNS
-Alias and audit metadata workflows, repairs scoped collection admission and
-retains authorization audit decisions across rejected typed transactions.
-Existing Catalog launch, Archive/restore and official Brotli package contracts
-remain. See the [release note](docs/releases/server-1.6.560.md) and
-[publication identities](COMPATIBILITY.md#server-v16560-publication).
+[Server `v1.6.561`](https://github.com/PastureStack/server/releases/tag/v1.6.561)
+packages Web Console `1.6.202` / optional bridge `0.2.4`, Engine `v0.183.361`,
+Catalog `0.20.17` and Compose `0.14.40`. It includes bounded Certificate
+name/description plans, native Container network-cleanup corrections, registered
+typed audit targets and a corrected fixed audit-owner topology. Existing Full
+and legacy permissions, operator settings, Catalog/Archive/session protections
+and official package contracts remain. See the
+[release note](docs/releases/server-1.6.561.md) and
+[publication identities](COMPATIBILITY.md#server-v16561-publication).
 
 | Qualification | Current evidence |
 |---|---|
 | Published image | Original publisher source/build, security, startup/restart and protocol gates passed. |
-| Public bytes and provenance | All 35 release assets and the OCI digest passed anonymous verification; native provenance and SBOM attestations passed. |
-| Designated runtime baseline | Server560 / Web201 cutover and one actual restart passed; configuration, mounts and rollback were preserved, with three active Hosts/Agents. |
-| Business workflow acceptance | Complete typed lifecycle and new Catalog/Archive/External/Alias/audit, role/cross-ID/layout/weak-model and durable-DENY acceptance remain pending. |
+| Public bytes and provenance | All 35 assets and the OCI digest passed anonymous verification; native provenance and SBOM attestations passed. |
+| Designated baseline | One actual Server561 restart passed, preserving config, mounts, AppArmor and rollback, with three active Hosts/Agents. |
+| Business workflows | Complete scoped lifecycle remains unaccepted: real scale-down found a ServiceIndex cleanup authorization gap. New domain, Certificate, layout and weak-model workflows remain pending. The audit-query oracle's HTTP201 handling is being corrected separately from the successful query/completion. |
 
 This is not complete frontend coverage. Original failures are retained and
 unchanged PASS evidence keeps its original scope.
@@ -63,7 +64,7 @@ instance count. Advanced forms and other resource workflows remain pending.
 The complete scoped lifecycle workflow remains unaccepted; review
 the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation)
 before enabling these optional changes.
-See the [release note](docs/releases/server-1.6.560.md) and
+See the [release note](docs/releases/server-1.6.561.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
@@ -77,7 +78,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.560
+  ghcr.io/pasturestack/server:v1.6.561
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -85,7 +86,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.560
+    image: ghcr.io/pasturestack/server:v1.6.561
     restart: unless-stopped
     ports:
       - "8080:8080"

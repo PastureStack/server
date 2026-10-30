@@ -1,7 +1,7 @@
 # Optional AI collaboration
 
-Published Server v1.6.560 combines Web Console 1.6.201 / optional bridge 0.2.3
-and Engine 0.183.360. The twelve
+Published Server v1.6.561 combines Web Console 1.6.202 / optional bridge 0.2.4
+and Engine 0.183.361. The twelve
 supported tools are `list_capabilities`, `find_resources`, `get_resource`,
 `preview_resource_change`, `apply_resource_change`, `find_stacks`,
 `find_services`, `get_service`, `update_service_description`,
@@ -12,15 +12,18 @@ Other platform operations retain their ordinary UI/API paths.
 
 ## Workload retirement limitation
 
-The prior 558 individual Service-stop and 559 post-create collection failures
-and their original reports remain recorded. Engine 360 contains the scoped
-lifecycle, collection and durable-audit corrections; publication and component
-tests do not establish a complete live workflow. Designated Server560 / Web201
-QA cutover and one actual restart passed, retaining configuration, mounts and
-rollback with three active Hosts/Agents. Complete Core, Catalog/Archive,
-External/Alias/audit, role/cross-ID/layout/weak-model and durable-DENY business
-acceptance remain pending. Do not broaden a Key or replay an uncertain write to overcome a
-rejection. Ordinary UI/API paths remain available.
+The complete scoped lifecycle is not accepted. Designated Server561 / Web202
+passed baseline cutover and one restart, but a real 2-to-1 Service scale-down
+exposed a missing authorization adapter for native ServiceIndex cleanup. The
+same native cleanup is used during Service and Stack removal. Do not broaden
+a Key, replay an uncertain write or assume a subcase proves the full flow.
+Ordinary Full/legacy UI and API paths retain their permissions.
+
+The fixed audit-owner topology now returns a real successful query and canonical
+completion. Its acceptance oracle must also recognize the native typed POST's
+HTTP201; remaining query cases stay pending until verified. New Certificate and
+other domain, role/cross-ID, layout and weak-model workflows remain separate
+gates. Original failures and unaffected PASS evidence keep their original scope.
 
 ## Activation
 
@@ -59,6 +62,10 @@ the two target modes cannot be mixed. DNS Aliases are created stopped and empty,
 then bind authorized local Service targets through a separate reviewed plan.
 Advanced/remote links and incoming-consumer/cross-source Alias cleanup remain
 unsupported. These source-supported paths do not imply live acceptance.
+
+Certificate plans accept name and description only, under the same native owner,
+Key ceiling, current-state check and normal human approval. Certificate PEM,
+private keys, chains, renewal and other material operations stay in the human UI.
 
 Audit metadata queries reuse the existing broker owner for Key, environment,
 time and decision filters. They work with native Cookie or the optional stdio
