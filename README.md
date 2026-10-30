@@ -26,7 +26,8 @@ remain. See the [release note](docs/releases/server-1.6.560.md) and
 |---|---|
 | Published image | Original publisher source/build, security, startup/restart and protocol gates passed. |
 | Public bytes and provenance | All 35 release assets and the OCI digest passed anonymous verification; native provenance and SBOM attestations passed. |
-| Designated live workflows | Server560 cutover, complete typed lifecycle and new browser/role/cross-ID/layout/weak-model acceptance remain pending. QA still runs Server559 / Web200. |
+| Designated runtime baseline | Server560 / Web201 cutover and one actual restart passed; configuration, mounts and rollback were preserved, with three active Hosts/Agents. |
+| Business workflow acceptance | Complete typed lifecycle and new Catalog/Archive/External/Alias/audit, role/cross-ID/layout/weak-model and durable-DENY acceptance remain pending. |
 
 This is not complete frontend coverage. Original failures are retained and
 unchanged PASS evidence keeps its original scope.

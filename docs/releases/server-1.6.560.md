@@ -44,7 +44,14 @@ typed read must remain auditable after its outer write rolls back. The fix
 keeps current metadata, capacity and failure behavior without nested account
 locks. Source/transaction tests passed; designated live durability is pending.
 
-## Required acceptance: pending
+## Designated runtime baseline
+
+The published digest above passed the designated 8080 cutover and one actual
+Server restart. The sealed checks retained operator/JVM configuration, mounts,
+AppArmor and rollback, with three active Hosts and three active Agents. This is
+baseline identity/health evidence, not acceptance of the complete business flows.
+
+## Required business acceptance: pending
 
 The previous 558 Service-stop failure, 559 post-create collection failure and
 their original reports remain recorded. No partial result is promoted to a

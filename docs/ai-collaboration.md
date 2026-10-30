@@ -15,10 +15,11 @@ Other platform operations retain their ordinary UI/API paths.
 The prior 558 individual Service-stop and 559 post-create collection failures
 and their original reports remain recorded. Engine 360 contains the scoped
 lifecycle, collection and durable-audit corrections; publication and component
-tests do not establish a complete live workflow. Designated QA still runs
-Server559 / Web200. Server560 cutover and complete Core, Catalog/Archive,
-External/Alias/audit, role/cross-ID/layout/weak-model and durable-DENY acceptance
-remain pending. Do not broaden a Key or replay an uncertain write to overcome a
+tests do not establish a complete live workflow. Designated Server560 / Web201
+QA cutover and one actual restart passed, retaining configuration, mounts and
+rollback with three active Hosts/Agents. Complete Core, Catalog/Archive,
+External/Alias/audit, role/cross-ID/layout/weak-model and durable-DENY business
+acceptance remain pending. Do not broaden a Key or replay an uncertain write to overcome a
 rejection. Ordinary UI/API paths remain available.
 
 ## Activation

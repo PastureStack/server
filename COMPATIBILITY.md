@@ -28,9 +28,12 @@ passed. Raw/effective scan results and exact VEX/vendor evidence remain distinct
 passing the gate is not zero reported vulnerabilities. Browser SBOM coverage
 remains incomplete.
 
-Designated QA still runs Server559 / Web200. Server560 cutover and combined
-Core/Catalog/Archive/new-domain, role/cross-ID/layout/weak-model and durable-DENY
-acceptance remain pending. Prior failures are retained. This does not complete
+Designated QA now runs the published Server560 / Web201 image above. Its 8080
+cutover and one actual restart passed, preserving configuration, mounts,
+AppArmor and rollback, with three active Hosts and three active Agents. This is
+runtime-baseline evidence; combined Core/Catalog/Archive/new-domain,
+role/cross-ID/layout/weak-model and durable-DENY business acceptance remain
+pending. Prior failures are retained. This does not complete
 the 243-group frontend inventory. See the [release note](docs/releases/server-1.6.560.md)
 for verified component inputs and rollback boundaries.
 
