@@ -13,18 +13,23 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.559`](https://github.com/PastureStack/server/releases/tag/v1.6.559)
-packages Web Console `1.6.200`, Engine `v0.183.359`, Catalog `0.20.17` and
-Compose `0.14.40`. It adds opt-in Catalog launch and Archive/restore workflows,
-scoped lifecycle repairs, and the official Ubuntu Brotli safety package.
-See the [release note](docs/releases/server-1.6.559.md) and
-[publication identities](COMPATIBILITY.md#server-v16559-publication).
+[Server `v1.6.560`](https://github.com/PastureStack/server/releases/tag/v1.6.560)
+packages Web Console `1.6.201` / optional bridge `0.2.3`, Engine `v0.183.360`,
+Catalog `0.20.17` and Compose `0.14.40`. It adds bounded External Service, DNS
+Alias and audit metadata workflows, repairs scoped collection admission and
+retains authorization audit decisions across rejected typed transactions.
+Existing Catalog launch, Archive/restore and official Brotli package contracts
+remain. See the [release note](docs/releases/server-1.6.560.md) and
+[publication identities](COMPATIBILITY.md#server-v16560-publication).
 
-Publication and designated QA startup/restart checks passed. Three Hosts/Agents
-remain active. The full typed resource workflow is not accepted: creating a Stack
-succeeds, but its subsequent scoped discovery returns 403. Catalog/Archive
-browser and role acceptance remain pending. This is not complete frontend
-coverage; unchanged PASS evidence retains only its original scope.
+| Qualification | Current evidence |
+|---|---|
+| Published image | Original publisher source/build, security, startup/restart and protocol gates passed. |
+| Public bytes and provenance | All 35 release assets and the OCI digest passed anonymous verification; native provenance and SBOM attestations passed. |
+| Designated live workflows | Server560 cutover, complete typed lifecycle and new browser/role/cross-ID/layout/weak-model acceptance remain pending. QA still runs Server559 / Web200. |
+
+This is not complete frontend coverage. Original failures are retained and
+unchanged PASS evidence keeps its original scope.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -57,7 +62,7 @@ instance count. Advanced forms and other resource workflows remain pending.
 The complete scoped lifecycle workflow remains unaccepted; review
 the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation)
 before enabling these optional changes.
-See the [release note](docs/releases/server-1.6.559.md) and
+See the [release note](docs/releases/server-1.6.560.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
@@ -71,7 +76,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.559
+  ghcr.io/pasturestack/server:v1.6.560
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -79,7 +84,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.559
+    image: ghcr.io/pasturestack/server:v1.6.560
     restart: unless-stopped
     ports:
       - "8080:8080"

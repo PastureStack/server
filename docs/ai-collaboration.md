@@ -1,6 +1,7 @@
 # Optional AI collaboration
 
-Server v1.6.559 combines Web Console 1.6.200 and Engine 0.183.359. The twelve
+Published Server v1.6.560 combines Web Console 1.6.201 / optional bridge 0.2.3
+and Engine 0.183.360. The twelve
 supported tools are `list_capabilities`, `find_resources`, `get_resource`,
 `preview_resource_change`, `apply_resource_change`, `find_stacks`,
 `find_services`, `get_service`, `update_service_description`,
@@ -11,12 +12,14 @@ Other platform operations retain their ordinary UI/API paths.
 
 ## Workload retirement limitation
 
-The prior 558 individual Service-stop failure remains recorded. Engine 359
-contains scoped lifecycle corrections, but the designated 559 complete workflow
-has not passed: Stack creation succeeds, then scoped Stack discovery returns
-403. Do not broaden a Key or replay an uncertain write to overcome this failure.
-Catalog launch and Archive/restore are included as opt-ins; their designated
-browser/role acceptance is still pending. Ordinary UI/API paths remain available.
+The prior 558 individual Service-stop and 559 post-create collection failures
+and their original reports remain recorded. Engine 360 contains the scoped
+lifecycle, collection and durable-audit corrections; publication and component
+tests do not establish a complete live workflow. Designated QA still runs
+Server559 / Web200. Server560 cutover and complete Core, Catalog/Archive,
+External/Alias/audit, role/cross-ID/layout/weak-model and durable-DENY acceptance
+remain pending. Do not broaden a Key or replay an uncertain write to overcome a
+rejection. Ordinary UI/API paths remain available.
 
 ## Activation
 
@@ -49,6 +52,19 @@ manual scaling of eligible non-global Services; and removal of those three resou
 cover name, description, image, scale where applicable, command and entry point.
 They create stopped workloads. Advanced environment, port, mount, hardware,
 security and other UI form fields require subsequent adapters.
+
+External Services add stopped creation and bounded hostname or IP targets;
+the two target modes cannot be mixed. DNS Aliases are created stopped and empty,
+then bind authorized local Service targets through a separate reviewed plan.
+Advanced/remote links and incoming-consumer/cross-source Alias cleanup remain
+unsupported. These source-supported paths do not imply live acceptance.
+
+Audit metadata queries reuse the existing broker owner for Key, environment,
+time and decision filters. They work with native Cookie or the optional stdio
+Key transport in the matching components, under the original caller's current
+role, scope and revision. Narrow the query when the bounded scan limit is
+reached. Tool output withholds private payloads and credentials; authorized
+people retain the ordinary audit UI's existing payload controls.
 
 The normal human review shows the exact typed changes and mounted-data rules.
 Stopping or removing a workload does not mean every external data directory is
@@ -104,6 +120,11 @@ Per-Key audit distinguishes the server's authorization decision, the HTTP
 result and the later operation result. Client-reported tool events are labelled
 separately; an ALLOW decision or accepted request is not proof of completion.
 Credentials, OTPs and description contents are not tool audit payloads.
+The Engine records the broker's complete query outcome separately from source
+page responses. Decisions written inside a Core transaction remain in the
+forced durable spool for independent replay, including when a rejected typed
+request rolls back. Durable spool acknowledgment is not database completion or
+business success; it never changes the original decision into an ALLOW.
 
 To stop native tools, select off in the panel. Before disabling the backend or
 downgrading, let accepted operations reach a terminal state, cancel unused
