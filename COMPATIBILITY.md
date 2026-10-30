@@ -1,17 +1,41 @@
 # Compatibility Contract
 
-## Server v1.6.560 source candidate
+<a id="server-v16560-publication"></a>
 
-Not yet published. Install examples remain on verified published 559.
-The candidate consumes published Web Console 1.6.201 / optional bridge 0.2.3
-and Engine 0.183.360 original CI artifacts. It adds External Service, DNS Alias
-and metadata-only audit flows, corrects the Catalog-validator collection
-admission and retains audit events across a rejected typed-write transaction.
-Native SQL/Key/role checks and unknown-filter denials are preserved.
-Catalog 0.20.17 / Compose 0.14.40 and official Brotli package proof are unchanged.
-Combined runtime, role, cross-ID, layout, weak-model and durable-DENY acceptance
-remain pending. This does not complete the 243-group frontend inventory.
-See the [candidate note](docs/releases/server-1.6.560.md) for identities and scope.
+## Server v1.6.560 published
+
+Image: `ghcr.io/pasturestack/server:v1.6.560@sha256:2f1533325f8314684b71062a37c9deae891e236b543a5ed7d958d698c21ff332`.
+Runtime producer: `48c1a180e19846eb61d8a7ad60f38368e74abae1`.
+OCI config: `sha256:45a9d6c22d5660f2a32992f2d43f2c3578b25846456cca4b7087f518f6aacab6`.
+[Publisher 40990392489](https://github.com/PastureStack/server/actions/runs/40990392489)
+passed its original source/build, security, startup/restart and protocol gates.
+All 35 public assets and the OCI digest passed anonymous verification; native
+provenance and SBOM attestations passed. Documentation commits do not replace
+this producer or rebuild the immutable image.
+
+The image consumes published Web Console 1.6.201 / optional bridge 0.2.3 and
+Engine 0.183.360 original CI artifacts. It adds External Service, DNS Alias and
+metadata-only audit flows, corrects the Catalog-validator collection admission
+and retains audit decisions across rejected typed transactions. Native SQL/Key/
+role checks and unknown-filter denials remain. Catalog 0.20.17 / Compose 0.14.40
+and official Brotli package proof are unchanged. Engine provenance is its
+original CI artifact/source/tree binding, without a native SLSA claim; that is
+separate from the Server image's verified native attestations.
+
+The exact existing package policy retains ten Medium occurrences across nine
+officially unfixed CVEs. High/Critical, available-fix, untracked and secret gates
+passed. Raw/effective scan results and exact VEX/vendor evidence remain distinct;
+passing the gate is not zero reported vulnerabilities. Browser SBOM coverage
+remains incomplete.
+
+Designated QA now runs the published Server560 / Web201 image above. Its 8080
+cutover and one actual restart passed, preserving configuration, mounts,
+AppArmor and rollback, with three active Hosts and three active Agents. This is
+runtime-baseline evidence; combined Core/Catalog/Archive/new-domain,
+role/cross-ID/layout/weak-model and durable-DENY business acceptance remain
+pending. Prior failures are retained. This does not complete
+the 243-group frontend inventory. See the [release note](docs/releases/server-1.6.560.md)
+for verified component inputs and rollback boundaries.
 
 
 <a id="server-v16559-publication"></a>

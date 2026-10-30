@@ -1,9 +1,10 @@
-# Server v1.6.560 candidate
+# Server v1.6.560
 
-Not published or runtime accepted. Install examples stay on published 559.
-Both components passed required CI, same-tree merge and immutable publication.
-All original public asset bytes were read back anonymously. Server assembly
-and designated live acceptance remain separate pending gates.
+Published image: `ghcr.io/pasturestack/server:v1.6.560@sha256:2f1533325f8314684b71062a37c9deae891e236b543a5ed7d958d698c21ff332`.
+
+Source commit: `48c1a180e19846eb61d8a7ad60f38368e74abae1`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
@@ -43,7 +44,14 @@ typed read must remain auditable after its outer write rolls back. The fix
 keeps current metadata, capacity and failure behavior without nested account
 locks. Source/transaction tests passed; designated live durability is pending.
 
-## Required acceptance: pending
+## Designated runtime baseline
+
+The published digest above passed the designated 8080 cutover and one actual
+Server restart. The sealed checks retained operator/JVM configuration, mounts,
+AppArmor and rollback, with three active Hosts and three active Agents. This is
+baseline identity/health evidence, not acceptance of the complete business flows.
+
+## Required business acceptance: pending
 
 The previous 558 Service-stop failure, 559 post-create collection failure and
 their original reports remain recorded. No partial result is promoted to a
