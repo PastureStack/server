@@ -13,6 +13,9 @@ import (
 )
 
 func main() {
+	if aiAuditCLI() {
+		return
+	}
 	cfg, err := configFromEnvironment()
 	if err != nil {
 		log.Fatalf("invalid console broker configuration: %s", safeLogValue(err))

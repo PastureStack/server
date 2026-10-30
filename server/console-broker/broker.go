@@ -254,6 +254,11 @@ func (b *broker) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
+	if request.URL.Path == aiAuditQueryPath {
+		b.serveAIAuditGateway(writer, request)
+		return
+	}
+
 	if isKeyAuditPath(request.URL.Path) {
 		b.serveKeyAudit(writer, request)
 		return
