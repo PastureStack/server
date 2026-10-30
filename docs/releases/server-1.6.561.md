@@ -1,7 +1,10 @@
-# Server v1.6.561 candidate
+# Server v1.6.561
 
-Not published. Matching component publication, required image checks and
-designated runtime acceptance remain pending.
+Published image: `ghcr.io/pasturestack/server:v1.6.561@sha256:c9dbda3065b3cd860a01745d0af289d38cd4b48cb74c8e1277de67d0c0497449`.
+
+Source commit: `6d83ff4cef4cd6d105e07f69af5a09c61441c634`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
@@ -63,3 +66,13 @@ backup. A later downgrade does not reverse completed writes. Do not replay
 uncertain operations, replace their captured Key identity or patch database state.
 After deployment, confirm old denied work is terminal before a separately
 authorized operator cleanup. Production, HAProxy and firewall are unchanged.
+
+## Designated acceptance after publication
+
+One actual restart and all three Host/Agent baseline checks passed while retaining
+operator configuration, mounts, AppArmor and rollback. The complete scoped Core
+workflow remains failed at ServiceIndex cleanup during Service scale-down. This
+same native owner is used by Service/Stack removal and is being corrected; do not
+replay an uncertain write. Audit query201/SUCCEEDED completion exists, with an
+acceptance-status oracle correction pending. Other designated domain, role,
+layout and weak-model cases remain separate gates. Prior evidence is retained.

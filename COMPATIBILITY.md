@@ -1,18 +1,33 @@
 # Compatibility Contract
 
-## Server v1.6.561 source candidate
+<a id="server-v16561-publication"></a>
 
-Consumes published Web Console 1.6.202 / bridge 0.2.4 and the original qualified
-Engine 0.183.361 JAR. Repairs verified native Container network cleanup,
-registered typed audit targets and fixed audit-owner topology. The new fixed
-child accepts normalized local HTTP(S) service origins only; ordinary broker
-operator settings and native role/Key boundaries remain. Certificate plans
-change name/description only; material remains in the human UI.
+## Server v1.6.561 published
 
-Required image publication and designated business/role/layout acceptance are
-separate pending gates. Published installation examples remain on 560 until the
-new image passes. See [candidate details](docs/releases/server-1.6.561.md).
+Image: `ghcr.io/pasturestack/server:v1.6.561@sha256:c9dbda3065b3cd860a01745d0af289d38cd4b48cb74c8e1277de67d0c0497449`.
+Producer: `6d83ff4cef4cd6d105e07f69af5a09c61441c634`.
+[Publisher41010568255](https://github.com/PastureStack/server/actions/runs/41010568255)
+passed source/build, security, startup/restart and protocol gates. All 35 public
+assets and the OCI digest passed anonymous readback; native image provenance and
+SBOM attestations passed. Original component artifacts are Web202 / bridge024
+and Engine361; Catalog0.20.17 / Compose0.14.40 and other package inputs remain.
+Documentation commits do not replace the immutable producer or rebuild the image.
 
+The fixed private audit child accepts normalized local HTTP(S) origins while the
+ordinary broker keeps its operator interface. Credentials stay in private stdin.
+Certificate plans change names/descriptions only. Current role/Key authority,
+explicit denial, precise native ownership and four default-off AI opt-ins remain.
+Ten Medium occurrences across nine officially unfixed CVEs remain registered;
+High/Critical, available-fix, untracked and secret gates passed. Raw/effective
+scan and VEX/vendor evidence remain distinct; browser SBOM is still incomplete.
+
+Designated Server561 cutover and one restart passed with three active Hosts and
+Agents, unchanged operator settings/mounts/AppArmor and retained560 rollback.
+Core business acceptance remains FAIL at native ServiceIndex removal during
+scale-down. The audit query's actual201/SUCCEEDED completion is recorded; its
+status oracle needs correction before the remaining cases can pass. Other new
+domain, role/layout/weak-model workflows remain pending. No complete243-group
+acceptance is claimed. See [release boundaries](docs/releases/server-1.6.561.md).
 
 <a id="server-v16560-publication"></a>
 
