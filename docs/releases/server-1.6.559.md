@@ -1,6 +1,13 @@
-# Server v1.6.559 candidate
+# Server v1.6.559
 
-Not yet published. README/install examples remain on verified published 558.
+Published image: `ghcr.io/pasturestack/server:v1.6.559@sha256:7af50ece5adc880a56e82cf39d70859f1faaea8393c0335a47da49dc7f8bc7cf`.
+Producer `8d7c6033311c4152b6b0e8c888221372adef257f`; publisher 40977604932.
+All original source/build/security gates, 35 public assets and native attestations
+passed. Designated 8080 startup and actual restart passed with three active
+Hosts/Agents, original persistent volumes/settings and the previous rollback.
+Sixteen new-version layout profiles passed; the complete Core flow failed at
+scoped Stack discovery (403) after successful creation. No partial flow is
+promoted to full acceptance. Catalog/Archive and new domains remain pending.
 Qualified component inputs do not establish Server559 runtime acceptance.
 
 ## Verified component inputs

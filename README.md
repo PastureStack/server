@@ -13,17 +13,18 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.558`](https://github.com/PastureStack/server/releases/tag/v1.6.558)
-packages Web Console `1.6.199` and Engine `v0.183.358`. It repairs scoped managed
-retirement and typed name-query pagination while retaining live account/Key
-limits and ordinary UI/API behavior.
-See the [release note](docs/releases/server-1.6.558.md) and
-[publication identities](COMPATIBILITY.md#server-v16558-managed-retirement-and-search).
+[Server `v1.6.559`](https://github.com/PastureStack/server/releases/tag/v1.6.559)
+packages Web Console `1.6.200`, Engine `v0.183.359`, Catalog `0.20.17` and
+Compose `0.14.40`. It adds opt-in Catalog launch and Archive/restore workflows,
+scoped lifecycle repairs, and the official Ubuntu Brotli safety package.
+See the [release note](docs/releases/server-1.6.559.md) and
+[publication identities](COMPATIBILITY.md#server-v16559-publication).
 
-Publication checks include a real scoped-Key preview, human-cookie confirmation,
-empty Stack creation and receipt read on a disposable fresh Server. Deployment
-and browser acceptance are tracked separately; the opt-in expansion is not
-complete frontend coverage. Earlier PASS is retained only where unaffected.
+Publication and designated QA startup/restart checks passed. Three Hosts/Agents
+remain active. The full typed resource workflow is not accepted: creating a Stack
+succeeds, but its subsequent scoped discovery returns 403. Catalog/Archive
+browser and role acceptance remain pending. This is not complete frontend
+coverage; unchanged PASS evidence retains only its original scope.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -53,10 +54,10 @@ The Web Console supports scoped resource discovery and basic Stack, Service and
 Container changes through twelve tools. Plans require normal human review and
 reuse live account and Key permissions. Global Services do not accept a manual
 instance count. Advanced forms and other resource workflows remain pending.
-Individual scoped-Key Service stop has an unresolved integration finding; review
+The complete scoped lifecycle workflow remains unaccepted; review
 the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation)
 before enabling these optional changes.
-See the [release note](docs/releases/server-1.6.558.md) and
+See the [release note](docs/releases/server-1.6.559.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
@@ -70,7 +71,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.558
+  ghcr.io/pasturestack/server:v1.6.559
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -78,7 +79,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.558
+    image: ghcr.io/pasturestack/server:v1.6.559
     restart: unless-stopped
     ports:
       - "8080:8080"

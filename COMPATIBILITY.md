@@ -1,18 +1,26 @@
 # Compatibility Contract
 
-## Server v1.6.559 source candidate
+<a id="server-v16559-publication"></a>
 
-Not yet published. README/install examples remain on verified published 558.
-The candidate uses Web Console 1.6.200/optional bridge 0.2.2, Engine 0.183.359,
-Catalog 0.20.17 and Compose 0.14.40 from qualified original CI/public bytes.
-See the [candidate note](docs/releases/server-1.6.559.md) for exact source,
-archive/binary/SBOM/lock identities and four independent opt-ins.
-The candidate prefers the official Ubuntu Brotli safety package; exact final
-rootfs/SBOM validation preserves the immutable earlier bundle proof and all other
-package checks. No new VEX exemption or weaker scan threshold is introduced.
-Core200, Catalog/Archive, affected roles/layouts/weak-model checks, three
-Hosts/Agents and an actual restart remain pending. Existing performance,
-origin, volume and rollback rules remain; this is not full frontend coverage.
+## Server v1.6.559 published
+
+Image: `ghcr.io/pasturestack/server:v1.6.559@sha256:7af50ece5adc880a56e82cf39d70859f1faaea8393c0335a47da49dc7f8bc7cf`.
+Runtime producer: `8d7c6033311c4152b6b0e8c888221372adef257f`.
+[Publisher 40977604932](https://github.com/PastureStack/server/actions/runs/40977604932)
+passed original source/build, startup/restart, protocol and security gates.
+All 35 public assets, native provenance and SBOM attestations were verified.
+Web Console 1.6.200/optional bridge 0.2.2, Engine 0.183.359, Catalog 0.20.17 and
+Compose 0.14.40 use qualified original artifacts. Official Ubuntu Brotli
+1.2.0-3ubuntu0.1 is checked against its signed index, deb and final rootfs/SBOM;
+no new VEX exemption or weaker scan threshold is introduced.
+
+Designated 8080 deployment and actual restart preserve performance/origin
+settings, mounts, AppArmor, restart policy and rollback. Three Hosts/Agents are
+active. New-version layout checks passed 16 profiles. The complete Core workflow
+remains failed: Stack creation succeeds, but subsequent scoped discovery returns
+403. The prior 558 failure is retained. Catalog/Archive, affected role/Key and
+weak-model runtime acceptance remain pending. This is not full frontend coverage.
+See the [release note](docs/releases/server-1.6.559.md) for component identities.
 
 
 <a id="server-v16558-managed-retirement-and-search"></a>

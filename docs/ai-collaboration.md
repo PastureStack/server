@@ -1,6 +1,6 @@
 # Optional AI collaboration
 
-Server v1.6.558 combines Web Console 1.6.199 and Engine 0.183.358. The twelve
+Server v1.6.559 combines Web Console 1.6.200 and Engine 0.183.359. The twelve
 supported tools are `list_capabilities`, `find_resources`, `get_resource`,
 `preview_resource_change`, `apply_resource_change`, `find_stacks`,
 `find_services`, `get_service`, `update_service_description`,
@@ -11,13 +11,12 @@ Other platform operations retain their ordinary UI/API paths.
 
 ## Workload retirement limitation
 
-The designated 558 installation fixed the previously observed scoped downscale
-failure. Service restart and Stack stop/start also passed. The complete typed
-workflow remains unaccepted: an individual Service stop can finish its Service
-transition while its container stop is authorization-denied and remains stopping.
-The cause is under source investigation. Do not broaden a Key or blindly replay
-an uncertain plan. Ordinary UI/API paths remain available; other completed
-operations and unchanged layout evidence retain their original scope.
+The prior 558 individual Service-stop failure remains recorded. Engine 359
+contains scoped lifecycle corrections, but the designated 559 complete workflow
+has not passed: Stack creation succeeds, then scoped Stack discovery returns
+403. Do not broaden a Key or replay an uncertain write to overcome this failure.
+Catalog launch and Archive/restore are included as opt-ins; their designated
+browser/role acceptance is still pending. Ordinary UI/API paths remain available.
 
 ## Activation
 
@@ -31,6 +30,8 @@ the same volumes, network, restart policy and security settings:
 
 The first property enables upgrade plans, the second permits dedicated bridge
 Keys, and the third enables typed resource-change plans. Each defaults to false.
+Catalog launch also requires `-Dapi.ai.catalog.launch.enabled=true`; it defaults
+to false and uses the same native owner and human-review boundaries.
 Disabling a bridge feature does not remove ordinary account/API Key permissions
 or alter an ordinary resource API.
 
