@@ -57,7 +57,7 @@ func main() {
 func configFromEnvironment() (brokerConfig, error) {
 	cfg := brokerConfig{
 		ListenAddress: environmentString("PASTURESTACK_CONSOLE_LISTEN_ADDRESS", ":8081"),
-		UpstreamURL:   environmentString("PASTURESTACK_CONSOLE_UPSTREAM_URL", "http://127.0.0.1:8082"),
+		UpstreamURL:   consoleUpstreamFromEnvironment(),
 		SessionDialURL: environmentString(
 			"PASTURESTACK_CONSOLE_SESSION_DIAL_URL",
 			"http://127.0.0.1:8080",
@@ -83,6 +83,10 @@ func configFromEnvironment() (brokerConfig, error) {
 	}
 
 	return cfg, nil
+}
+
+func consoleUpstreamFromEnvironment() string {
+	return environmentString("PASTURESTACK_CONSOLE_UPSTREAM_URL", "http://127.0.0.1:8082")
 }
 
 func environmentString(name, fallback string) string {
