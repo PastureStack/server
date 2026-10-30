@@ -126,7 +126,7 @@ func writeFixtureCollection(writer http.ResponseWriter, records []map[string]any
 	})
 }
 
-func newAuditTestBroker(t *testing.T, fixture *auditUpstreamFixture) *httptest.Server {
+func newAuditTestBroker(t *testing.T, fixture *auditUpstreamFixture, ownerOnly ...bool) *httptest.Server {
 	t.Helper()
 	cfg := brokerConfig{
 		ListenAddress: ":0", UpstreamURL: fixture.server.URL, SessionDialURL: fixture.server.URL,
@@ -136,7 +136,13 @@ func newAuditTestBroker(t *testing.T, fixture *auditUpstreamFixture) *httptest.S
 	if err != nil {
 		t.Fatal(err)
 	}
-	server := httptest.NewServer(instance)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if len(ownerOnly) > 0 && ownerOnly[0] && r.URL.Path == aiAuditQueryPath {
+			instance.serveAIAudit(w, r)
+			return
+		}
+		instance.ServeHTTP(w, r)
+	}))
 	t.Cleanup(func() {
 		server.Close()
 		instance.close()

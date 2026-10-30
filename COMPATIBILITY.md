@@ -1,5 +1,19 @@
 # Compatibility Contract
 
+## Server v1.6.560 source candidate
+
+Not yet published. Install examples remain on verified published 559.
+The candidate consumes published Web Console 1.6.201 / optional bridge 0.2.3
+and Engine 0.183.360 original CI artifacts. It adds External Service, DNS Alias
+and metadata-only audit flows, corrects the Catalog-validator collection
+admission and retains audit events across a rejected typed-write transaction.
+Native SQL/Key/role checks and unknown-filter denials are preserved.
+Catalog 0.20.17 / Compose 0.14.40 and official Brotli package proof are unchanged.
+Combined runtime, role, cross-ID, layout, weak-model and durable-DENY acceptance
+remain pending. This does not complete the 243-group frontend inventory.
+See the [candidate note](docs/releases/server-1.6.560.md) for identities and scope.
+
+
 <a id="server-v16559-publication"></a>
 
 ## Server v1.6.559 published

@@ -42,7 +42,7 @@ type keyAuditFixture struct {
 	redirectHits         int
 }
 
-func newKeyAuditFixture(t *testing.T) (*keyAuditFixture, *httptest.Server) {
+func newKeyAuditFixture(t *testing.T, ownerOnly ...bool) (*keyAuditFixture, *httptest.Server) {
 	t.Helper()
 	fixture := &keyAuditFixture{
 		keyID: "1a99", owner: "1a1", viewer: "1a1", keyStatus: http.StatusOK,
@@ -169,7 +169,7 @@ func newKeyAuditFixture(t *testing.T) (*keyAuditFixture, *httptest.Server) {
 		}
 	}))
 	t.Cleanup(upstream.server.Close)
-	return fixture, newAuditTestBroker(t, upstream)
+	return fixture, newAuditTestBroker(t, upstream, ownerOnly...)
 }
 
 func keyAuditRecord(id, keyID, project, created string) map[string]any {

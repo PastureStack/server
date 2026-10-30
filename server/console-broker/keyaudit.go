@@ -191,6 +191,26 @@ func (b *broker) fetchKeyAuditAuthorityInProject(ctx context.Context, incoming *
 		return errors.New("API key authority redirects are not allowed")
 	}}
 	for index, kind := range []string{"apiKey", "apiKeyRestricted"} {
+		if auditOwner(ctx) != nil {
+			collection, err := b.fetchAIAuditSource(ctx, incoming, "apiKey", keyID, projectID, kind, url.Values{})
+			if err != nil {
+				var denied *auditHTTPError
+				if errors.As(err, &denied) && denied.Status == 404 && index == 0 {
+					continue
+				}
+				if errors.As(err, &denied) && (denied.Status == 403 || denied.Status == 404) {
+					return "", "", &auditHTTPError{Status: 403, Code: "key_audit_access_lost", Message: "API key unavailable"}
+				}
+				return "", "", err
+			}
+			if len(collection.Data) != 1 || auditString(collection.Data[0], "id") != keyID ||
+				!strings.EqualFold(auditString(collection.Data[0], "type"), kind) ||
+				!keyAuditIDPattern.MatchString(auditString(collection.Data[0], "accountId")) ||
+				projectID != "" && (auditString(collection.Data[0], "accountId") != projectID || collection.viewerAccountID != principal) {
+				return "", "", &auditHTTPError{Status: 502, Code: "invalid_key_authority", Message: "API key authority invalid"}
+			}
+			return auditString(collection.Data[0], "accountId"), collection.viewerAccountID, nil
+		}
 		target.Path, target.RawPath, target.RawQuery, target.Fragment = "/v2-beta/"+strings.ToLower(kind)+"/"+keyID, "", "", ""
 		if projectID != "" {
 			target.RawQuery = url.Values{"projectId": {projectID}}.Encode()

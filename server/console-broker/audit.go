@@ -265,7 +265,7 @@ func (b *broker) fetchAuditProjects(ctx context.Context, incoming *http.Request,
 	if err != nil {
 		return nil, "", err
 	}
-	if keyQuery {
+	if keyQuery || auditOwner(ctx) != nil {
 		if len(projectPage.Data) > auditUpstreamPageSize {
 			return nil, "", &auditHTTPError{Status: http.StatusUnprocessableEntity, Code: "result_set_too_large", Message: "Current environment permissions exceeded the bounded authority query"}
 		}
@@ -365,6 +365,9 @@ func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, quer
 		// AccountPolicy applies to the requested Engine environment, not all
 		// memberships at once. The Key view must query each live authorized
 		// environment explicitly rather than silently showing personal rows only.
+		records, err = b.fetchKeyAuditLogs(ctx, incoming, query, allowedProjects, upstreamValues)
+	} else if auditOwner(ctx) != nil {
+		query.ViewerAccountID = viewer
 		records, err = b.fetchKeyAuditLogs(ctx, incoming, query, allowedProjects, upstreamValues)
 	} else {
 		records, err = b.fetchAllAuditLogs(ctx, incoming, upstreamValues)
@@ -494,6 +497,13 @@ func (b *broker) fetchAuditPage(ctx context.Context, incoming *http.Request, pat
 }
 
 func (b *broker) fetchAuditPagePolicy(ctx context.Context, incoming *http.Request, path string, values url.Values, keyQuery bool) (auditUpstreamCollection, error) {
+	if auditOwner(ctx) != nil {
+		category := map[string]string{"/v2-beta/projects": "project", "/v2-beta/accounts": "account", "/v2-beta/auditlogs": "auditLog"}[path]
+		if category == "" {
+			return auditUpstreamCollection{}, aiAuditInvalid()
+		}
+		return b.fetchAIAuditSource(ctx, incoming, category, "", "", "", values)
+	}
 	target := *b.upstreamURL
 	target.Path = path
 	target.RawPath = ""
@@ -508,7 +518,7 @@ func (b *broker) fetchAuditPagePolicy(ctx context.Context, incoming *http.Reques
 	request.Header.Set("Accept", "application/json")
 
 	client := &http.Client{Timeout: 20 * time.Second}
-	if keyQuery {
+	if keyQuery || isAIAuditRead(ctx) {
 		client.CheckRedirect = func(*http.Request, []*http.Request) error {
 			return errors.New("API key audit redirects are not allowed")
 		}
