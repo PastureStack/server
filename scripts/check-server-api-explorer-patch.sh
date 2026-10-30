@@ -1879,7 +1879,7 @@ for release_curl_security_marker in \
     '"libssl3t64=${OPENSSL_PACKAGE_VERSION}"' \
     '"openssl-provider-legacy=${OPENSSL_PACKAGE_VERSION}"' \
     'dpkg-deb --extract "${package_file}" /tmp/openssl-runtime' \
-    'sha256sum packages/*.deb tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 freetype-runtime.sha256 libpng-runtime.sha256 > SHA256SUMS' \
+    'sha256sum packages/*.deb official-brotli/* tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 freetype-runtime.sha256 libpng-runtime.sha256 > SHA256SUMS' \
     'sha256sum -c /usr/share/pasturestack/security/openssl-runtime.sha256' \
     'ENV PASTURESTACK_OPENSSL_VERSION=3.5.5' \
     'ENV PASTURESTACK_OPENSSL_PACKAGE_VERSION=${OPENSSL_PACKAGE_VERSION}' \
