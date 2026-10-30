@@ -1,5 +1,19 @@
 # Compatibility Contract
 
+## Server v1.6.561 source candidate
+
+Consumes published Web Console 1.6.202 / bridge 0.2.4 and the original qualified
+Engine 0.183.361 JAR. Repairs verified native Container network cleanup,
+registered typed audit targets and fixed audit-owner topology. The new fixed
+child accepts normalized local HTTP(S) service origins only; ordinary broker
+operator settings and native role/Key boundaries remain. Certificate plans
+change name/description only; material remains in the human UI.
+
+Required image publication and designated business/role/layout acceptance are
+separate pending gates. Published installation examples remain on 560 until the
+new image passes. See [candidate details](docs/releases/server-1.6.561.md).
+
+
 <a id="server-v16560-publication"></a>
 
 ## Server v1.6.560 published

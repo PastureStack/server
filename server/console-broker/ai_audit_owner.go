@@ -71,7 +71,7 @@ func runAIAuditOwnerCLI(stdin io.Reader, stdout io.Writer) int {
 			input.CredentialKind != "apiKey" && input.CredentialKind != "apiKeyRestricted") {
 		return 2 // No private input or diagnostic is printed.
 	}
-	cfg := brokerConfig{UpstreamURL: "http://127.0.0.1:8082", SessionDialURL: "http://127.0.0.1:8080",
+	cfg := brokerConfig{UpstreamURL: consoleUpstreamFromEnvironment(), SessionDialURL: "http://127.0.0.1:8080",
 		MaxSessions: 1, ReplayBytes: 65536, ActiveTTL: time.Hour, HistoryTTL: time.Hour, CleanupInterval: time.Hour}
 	b, err := newBroker(cfg, log.New(io.Discard, "", 0))
 	if err != nil {
