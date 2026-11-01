@@ -1,5 +1,18 @@
 # Compatibility Contract
 
+## Server v1.6.564 source candidate
+
+Not yet published. Installation examples remain on published Server563.
+The candidate consumes original published Engine365 / Web204. Optional bridge
+0.2.6 shares the Web producer and is not a second Server runtime. Exact private
+volume/pool cleanup, safe native validation status/code and Catalog wire
+compatibility are corrected. Web admission guidance retains submitted-apply
+UNKNOWN/context/ACK protection. Current actor/role/Key/revision, explicit DENY,
+human confirmation and CAS remain required. Other pins, VEX statements and
+vendor decisions are retained. Matching Server/native acceptance is pending.
+See [candidate coordinates](docs/releases/server-1.6.564.md).
+
+
 <a id="server-v16563-publication"></a>
 
 ## Server v1.6.563 published
