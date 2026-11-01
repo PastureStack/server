@@ -1,4 +1,4 @@
-# Server v1.6.562
+# Server v1.6.562 candidate
 
 Source candidate; not a published image. Published component bytes below are
 qualified independently. Server image publication and designated runtime QA
@@ -11,7 +11,7 @@ typed contract, explicit restricted-Key discovery and sanitized human guidance.
 Current role/Key/revision checks, human confirmation and four independent
 default-off AI opt-ins remain unchanged.
 
-## Qualified published component coordinates
+## Verified component inputs
 
 - Engine v0.183.363: producer `6b23ada41c0324d708739433b68f5ff00d2209c3`; tag source `0173d171053fd9d232d59ebe2adbf4c91f132ccf`; tested tree `4a0f382ec4371e0343060cc567103e5611fe5430`.
 - Original cattle.jar SHA256 `b2c1beca47f0654c22633012359eb8171202cb8192f7590ceddb02289875deda` (88234250 bytes); runtime SBOM `48896415699a4f4cb8d44d9429e63e8f32f35ece266f63f016dc5bb7f7405783`.
