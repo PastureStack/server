@@ -1,5 +1,19 @@
 # Compatibility Contract
 
+## Server v1.6.562 source candidate
+
+Not yet published. Installation examples remain on verified Server561.
+The candidate consumes published original Engine363 and Web203 / optional
+bridge0.2.5 artifacts. External Service before-value previews and the retained
+ServiceIndex cleanup authority use the original Engine; official MariaDB JDBC
+3.5.11 remains on the 3.5 line. Web203 retains explicit restricted-Key discovery
+and fixed public-code human guidance. Catalog0.20.17 / Compose0.14.40 and all
+other component pins and existing VEX/vendor decisions are unchanged.
+Assembled runtime, JDBC compatibility, roles, cross-ID, browser/layout and
+designated weak-model acceptance remain pending. This is not full frontend PASS.
+See [candidate coordinates](docs/releases/server-1.6.562.md).
+
+
 <a id="server-v16561-publication"></a>
 
 ## Server v1.6.561 published
