@@ -1,18 +1,37 @@
 # Compatibility Contract
 
-## Server v1.6.562 source candidate
+<a id="server-v16562-publication"></a>
 
-Not yet published. Installation examples remain on verified Server561.
-The candidate consumes published original Engine363 and Web203 / optional
-bridge0.2.5 artifacts. External Service before-value previews and the retained
-ServiceIndex cleanup authority use the original Engine; official MariaDB JDBC
-3.5.11 remains on the 3.5 line. Web203 retains explicit restricted-Key discovery
-and fixed public-code human guidance. Catalog0.20.17 / Compose0.14.40 and all
-other component pins and existing VEX/vendor decisions are unchanged.
-Assembled runtime, JDBC compatibility, roles, cross-ID, browser/layout and
-designated weak-model acceptance remain pending. This is not full frontend PASS.
-See [candidate coordinates](docs/releases/server-1.6.562.md).
+## Server v1.6.562 published
 
+[Server v1.6.562](https://github.com/PastureStack/server/releases/tag/v1.6.562)
+was published by the original
+[publisher 41279691957](https://github.com/PastureStack/server/actions/runs/41279691957)
+from `d6bec333a5852ced8f33733f614ee5a21aa7b38d`. Source/build, merged-runtime
+security, startup/restart and protocol gates passed. All 35 public assets and
+the OCI digest passed anonymous readback; native image provenance and SBOM
+attestations passed. The [release note](docs/releases/server-1.6.562.md) records
+the immutable image digest and original component identities. Documentation
+commits do not replace this producer, rebuild the image or alter its assets.
+
+Original inputs are Engine 363 and Web 203 / optional bridge 0.2.5, retaining
+Catalog 0.20.17 / Compose 0.14.40 and other qualified package pins. External
+Service before-value previews, restricted-Key selection, safe permission
+messages and pending-review/footer layout are corrected. Exact native
+ServiceIndex cleanup ownership and current actor/role/Key/revision checks remain;
+JDBC 3.5.11 retains the existing 3.5 line and database configuration. Human plan
+confirmation, Full/legacy access and four default-off AI flags are unchanged.
+
+Ten registered Medium occurrences remain. Critical/High, available-fix,
+untracked and secret gates passed; raw/effective scans and exact VEX/vendor
+evidence remain separate. Browser runtime SBOM coverage is still incomplete.
+
+Sealed 8080 cutover, restart and smoke passed with three active Hosts/Agents,
+preserved mounts/AppArmor, the explicit operator plan and retained rollback.
+Core, External, Certificate, Audit and B3 business workflows remain pending,
+including designated role/cross-ID/layout, JDBC compatibility and weak-model
+acceptance. Health and component/source checks do not establish complete 243-group
+acceptance. Older sections retain their original release-time scope and failures.
 
 <a id="server-v16561-publication"></a>
 

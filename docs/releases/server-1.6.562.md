@@ -1,15 +1,32 @@
-# Server v1.6.562 candidate
+# Server v1.6.562
 
-Source candidate; not a published image. Published component bytes below are
-qualified independently. Server image publication and designated runtime QA
-remain pending; installation instructions remain on published Server561.
+Published image: `ghcr.io/pasturestack/server:v1.6.562@sha256:0528940e29aabf142d852df14fb954be3cbf240db3be6b43822fbe48ea62af0d`.
 
-Engine363 repairs native External Service before-value previews, retains the
-exact ServiceIndex cleanup owner and updates official MariaDB Connector/J to
-3.5.11 on the same 3.5 line. Web203 / optional bridge0.2.5 retain the closed
-typed contract, explicit restricted-Key discovery and sanitized human guidance.
-Current role/Key/revision checks, human confirmation and four independent
-default-off AI opt-ins remain unchanged.
+Source commit: `d6bec333a5852ced8f33733f614ee5a21aa7b38d`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
+
+## Corrected workflows
+
+- External Service review now shows the actual current hostname/IP before
+  values through native dynamic fields, retaining safe display, owner and CAS
+  checks. The exact ServiceIndex cleanup fix for Service scale-down and
+  Service/Stack removal is retained without a generic cleanup grant.
+- Key discovery explicitly distinguishes legacy `apiKey` from restricted or
+  expiring `apiKeyRestricted`, including same-name candidates. Existing current
+  actor/role, Key scope and policy revision checks still decide access.
+- Human confirmation maps sanitized permission codes to clear account/Key
+  guidance and stale/session codes to re-query/preview guidance. Raw error
+  messages are not forwarded and hidden foreign targets are not disclosed.
+- Pending-review and authorization notices remain in content flow so footer
+  controls stay actionable, including the reviewed narrow/RTL profiles. Original
+  CI includes the compiled theme rules and 96 parameter combinations; those
+  combinations are not 96 unique tests or a completed browser/locale matrix.
+- Official MariaDB Connector/J `3.5.11` replaces `3.5.10` on the existing 3.5
+  line. The four reported JDBC CVEs are absent from qualified original component
+  scans; the assembled image passed its own security gate. SQL, connection
+  configuration and privilege contracts remain; real JDBC business compatibility
+  acceptance is separate.
 
 ## Verified component inputs
 
@@ -23,10 +40,38 @@ default-off AI opt-ins remain unchanged.
 - Optional bridge ZIP SHA256 `cafe59ca00122dfaf9534f65f2cbd96500e6c014f4819dd8c49fd3cd4fa23b93`. All 12 Engine and 13 Web public assets passed anonymous SHA256 readback against fresh metadata bytes.
 - Engine provenance is original GitHub artifact/source/tree evidence; no native Engine SLSA attestation is inferred.
 
-Catalog0.20.17 / Compose0.14.40 and other qualified component/package pins,
-base image, VEX statements and vendor entries are retained. This source change
-does not rebuild components. The original Server publisher must pass its own
-source, build, restart, merged-image/browser scan and native attestation gates.
-Matching JDBC/External Service workflows, role/cross-ID/layout and designated
-weak-model acceptance remain separate pending gates; component PASS is not
-whole frontend or runtime acceptance.
+Catalog `0.20.17`, Compose `0.14.40` and the other qualified component/package
+pins, base image, VEX statements and vendor entries are retained. Component
+publication reused original qualified bytes; Engine artifact/source provenance
+remains separate from the Server image's native attestations.
+
+## Publication verification
+
+The original [publisher 41279691957](https://github.com/PastureStack/server/actions/runs/41279691957)
+passed source/build, security, startup/restart and protocol gates. All 35 public
+assets and the OCI digest above passed anonymous SHA256 verification; native
+image provenance and SBOM attestations passed. Documentation changes do not
+replace the source commit, rebuild the immutable image or rewrite release assets.
+
+The merged-rootfs, active nested payload and independent browser runtime scans
+passed the existing exact VEX/vendor policy. Critical/High, available-fix,
+untracked and secret counts were zero. Ten registered Medium occurrences remain;
+passing the gate does not mean zero vulnerabilities. Raw/effective evidence is
+retained, and browser runtime SBOM coverage remains incomplete.
+
+## Designated deployment and pending acceptance
+
+Sealed 8080 cutover, one actual restart and smoke passed for this exact digest
+and producer, with three active Hosts and three active Agents. Host configuration,
+mounts and AppArmor were preserved, the explicit operator plan was verified,
+and the rollback container was retained. This designated baseline did not
+change production or replace the original publisher.
+
+Core, External, Certificate, Audit and B3 business workflows remain pending.
+Native ownership, role/Key/revision and cross-ID behavior, actual JDBC read/write
+and transaction compatibility, browser/footer/locale layouts and designated
+weak-model workflows require their own results on this image. Published source,
+component CI and baseline health are not business completion or full 243-group
+acceptance. Original failed and unaffected evidence keeps its original scope.
+Human confirmation, Full/legacy behavior and the four independent default-off
+AI properties remain unchanged.
