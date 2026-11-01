@@ -1,5 +1,6 @@
 import copy
 import hashlib
+import json
 import re
 from pathlib import Path
 import tempfile
@@ -127,6 +128,30 @@ class CoverageTest(unittest.TestCase):
         self.assertEqual(validate_coverage(report, ROOT_BINARIES), len(ROOT_BINARIES))
         with tempfile.TemporaryDirectory() as folder:
             self.assertEqual(validate_vex_payloads(report, Path(folder)), 0)
+
+    def test_compose_openpgp_review_binds_exact_new_payload_and_positive_controls(self):
+        review = json.loads((Path(__file__).parent / 'reviews/compose-0.14.41-openpgp.json').read_bytes())
+        scope, artifact = review['scope'], review['artifact']
+        self.assertIn((scope['executable'], scope['module']), OPENPGP_VEX_SCOPE)
+        self.assertEqual(scope['advisory'], 'GO-2026-5932')
+        self.assertEqual(scope['decision'], 'not_affected')
+        self.assertEqual(scope['justification'], 'vulnerable_code_not_present')
+        self.assertFalse(scope['moduleDeclaredFixed'])
+        self.assertFalse(scope['newConsumerOrScopeAllowed'])
+        self.assertEqual(OPENPGP_VEX_BINARY_SHA256[scope['executable']], artifact['binarySha256'])
+        self.assertEqual(artifact['releaseVersion'], '0.14.41')
+        self.assertEqual(artifact['compiler'], 'go1.27.3')
+        self.assertTrue(artifact['releaseGzipAndOfficialTestedProductBytesIdentical'])
+        graph, symbols = review['sourceGraph'], review['symbolEvidence']
+        self.assertTrue(graph['officialGo127SourceGatePassed'])
+        self.assertFalse(graph['dependencyAndVendorGraphChangedFrom01440'])
+        self.assertEqual(graph['openpgp'], 0)
+        self.assertEqual(symbols['openpgpEmitted'], 0)
+        self.assertEqual(symbols['openpgpFunctionInlineNames'], 0)
+        for prefix in ('bcrypt', 'scrypt'):
+            self.assertGreater(graph[prefix], 0)
+            self.assertGreater(symbols[prefix + 'Emitted'], 0)
+            self.assertGreater(symbols[prefix + 'FunctionInlineNames'], 0)
 
 
 if __name__ == '__main__':
