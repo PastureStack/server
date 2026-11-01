@@ -188,9 +188,10 @@ func TestAIAuditPublicGatewayIsFixedTypedAndForwardsOnlyVerifiedResponseMetadata
 		calls++
 		if r.Method != "POST" || r.URL.Path != "/v2-beta/aiAuditQueries" || r.URL.RawQuery != "" ||
 			r.Header.Get("Authorization") != "Basic caller" || r.Header.Get("X-PastureStack-Key-Expected-Revision") != "3" ||
-			r.Header.Get("X-Forwarded-User") != "" || r.Header.Get("X-API-Project-ID") != "" {
+			r.Header.Get("X-Forwarded-User") != "" || r.Header.Get("X-API-Project-ID") != "" || r.Header.Get("X-Api-User-Id") != "" {
 			t.Error("gateway escaped fixed route/authority")
 		}
+		w.Header().Set("X-API-USER-ID", "1a1")
 		w.Header().Set("X-PastureStack-Key-Purpose", "ai-bridge")
 		w.Header().Set("X-PastureStack-Key-Revision", "3")
 		_, _ = w.Write([]byte(`{"resourceType":"auditLog","data":[]}`))
@@ -200,9 +201,10 @@ func TestAIAuditPublicGatewayIsFixedTypedAndForwardsOnlyVerifiedResponseMetadata
 	r.Header.Set("X-PastureStack-Key-Expected-Revision", "3")
 	r.Header.Set("X-Forwarded-User", "forged")
 	r.Header.Set("X-API-Project-ID", "foreign")
+	r.Header.Set("X-Api-User-Id", "forged-incoming")
 	w := httptest.NewRecorder()
 	b.ServeHTTP(w, r)
-	if w.Code != 200 || calls != 1 || w.Header().Get("X-PastureStack-Key-Revision") != "3" {
+	if w.Code != 200 || calls != 1 || w.Header().Get("X-PastureStack-Key-Revision") != "3" || w.Header().Get("X-Api-User-Id") != "1a1" {
 		t.Fatal("fixed typed gateway failed")
 	}
 	r = httptest.NewRequest("POST", aiAuditQueryPath+"?url=http://foreign/", strings.NewReader("{}"))
@@ -210,6 +212,39 @@ func TestAIAuditPublicGatewayIsFixedTypedAndForwardsOnlyVerifiedResponseMetadata
 	b.ServeHTTP(w, r)
 	if w.Code != 400 || calls != 1 {
 		t.Fatal("arbitrary query forwarded")
+	}
+}
+
+func TestAIAuditPublicGatewayNeverFillsMissingOrEmptyUpstreamActor(t *testing.T) {
+	for _, headerPresent := range []bool{false, true} {
+		name := "absent"
+		if headerPresent {
+			name = "empty"
+		}
+		t.Run(name, func(t *testing.T) {
+			body := `{"resourceType":"auditLog","data":[],"actorId":"forged-body"}`
+			b := ownerTestBroker(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if r.Header.Get("X-Api-User-Id") != "" {
+					t.Error("incoming actor reached the Engine as authority")
+				}
+				if headerPresent {
+					w.Header().Set("X-Api-User-Id", "")
+				}
+				w.Header().Set("X-PastureStack-Key-Purpose", "ai-bridge")
+				w.Header().Set("X-PastureStack-Key-Revision", "3")
+				w.WriteHeader(http.StatusCreated)
+				_, _ = io.WriteString(w, body)
+			}))
+			r := httptest.NewRequest("POST", aiAuditQueryPath, strings.NewReader("{}"))
+			r.Header.Set("Authorization", "Basic caller")
+			r.Header.Set("X-Api-User-Id", "forged-incoming")
+			w := httptest.NewRecorder()
+			b.ServeHTTP(w, r)
+			if w.Code != http.StatusCreated || len(w.Header().Values("X-Api-User-Id")) != 0 || w.Body.String() != body ||
+				w.Header().Get("X-PastureStack-Key-Purpose") != "ai-bridge" || w.Header().Get("X-PastureStack-Key-Revision") != "3" {
+				t.Fatal("gateway invented actor metadata or changed the upstream response")
+			}
+		})
 	}
 }
 

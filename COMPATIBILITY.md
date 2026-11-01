@@ -1,5 +1,16 @@
 # Compatibility Contract
 
+## Server v1.6.565 source candidate
+
+Engine366 / Web205 / optional Bridge0.2.7 / Compose0.14.41 add reviewed Service
+create ports and health checks, preserve Catalog transform/request values, and
+retain verified audit actor metadata. Native authority, schema restrictions and
+default-off flags remain. Component publication is qualified; Server publication
+and designated runtime/matrix acceptance remain pending. See the
+[candidate note](docs/releases/server-1.6.565.md). Published installation below
+remains v1.6.564 until the new image is actually released.
+
+
 <a id="server-v16564-publication"></a>
 
 ## Server v1.6.564 published

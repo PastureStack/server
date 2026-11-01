@@ -258,6 +258,11 @@ func (b *broker) serveAIAuditGateway(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set(header, value)
 		}
 	}
+	if response.StatusCode >= 200 && response.StatusCode < 300 {
+		if actor := response.Header.Get("X-Api-User-Id"); actor != "" {
+			w.Header().Set("X-Api-User-Id", actor)
+		}
+	}
 	w.WriteHeader(response.StatusCode)
 	_, _ = w.Write(result)
 }
