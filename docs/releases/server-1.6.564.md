@@ -8,8 +8,7 @@ acceptance remains separate.
 
 | Publication evidence | Verified value |
 |---|---|
-| Image | `ghcr.io/pasturestack/server:v1.6.564` |
-| OCI digest | `sha256:884c94832cc507b25585437002dc49c7312d122ee527bb6ff941744c86705213` |
+| Immutable publication identity | `ghcr.io/pasturestack/server:v1.6.564@sha256:884c94832cc507b25585437002dc49c7312d122ee527bb6ff941744c86705213` |
 | Runtime producer | `0ce4a6fdfc00ceba8fc71bcd78af9148454f3bad` |
 | Original publisher | [41317439519](https://github.com/PastureStack/server/actions/runs/41317439519) |
 | Public verification | All 35 assets and the OCI digest passed anonymous verification; native provenance and SBOM attestations passed. |

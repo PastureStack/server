@@ -12,8 +12,7 @@ image provenance and SBOM attestations passed.
 
 | Evidence | Verified value |
 |---|---|
-| Image | `ghcr.io/pasturestack/server:v1.6.564` |
-| OCI digest | `sha256:884c94832cc507b25585437002dc49c7312d122ee527bb6ff941744c86705213` |
+| Immutable publication identity | `ghcr.io/pasturestack/server:v1.6.564@sha256:884c94832cc507b25585437002dc49c7312d122ee527bb6ff941744c86705213` |
 | Runtime producer | `0ce4a6fdfc00ceba8fc71bcd78af9148454f3bad` |
 | Designated 8080 runtime | Exact published identity, cutover, one real restart and smoke passed; three active Hosts and three active Agents. Production site unchanged. |
 
