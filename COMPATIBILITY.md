@@ -1,19 +1,44 @@
 # Compatibility Contract
 
-## Server v1.6.563 source candidate
+<a id="server-v16563-publication"></a>
 
-Not yet published. Installation examples remain on published Server562.
-The candidate consumes published original Engine364 while Web203 / optional
-bridge0.2.5, Catalog0.20.17 / Compose0.14.40 and all other pins remain unchanged.
-Engine364 corrects derived private-image cleanup for an authorized standalone
-container DELETE and stale hostname-map reconciliation during External target
-replacement. Current actor/role/Key/revision/expiry, explicit DENY, ownership,
-verified native graph and human-confirmation boundaries remain required.
-Existing VEX statements and vendor decisions are retained. Matching assembled
-Server/native business acceptance remains pending; component qualification is
-not runtime or full frontend PASS.
-See [candidate coordinates](docs/releases/server-1.6.563.md).
+## Server v1.6.563 published
 
+Image: `ghcr.io/pasturestack/server:v1.6.563@sha256:f4da77e0d49e5f53eec1cfbdd478fae628acb90a223edbdd2dda01d4edf2a572`.
+
+[Server v1.6.563](https://github.com/PastureStack/server/releases/tag/v1.6.563)
+was published by the original
+[publisher 41285405058](https://github.com/PastureStack/server/actions/runs/41285405058)
+from `fa1fbd1fe1b3a94e6b74aac80b78b2bbdee05036`. Source/build, merged-runtime security,
+startup/restart and protocol gates passed. All 35 assets and the OCI digest
+passed anonymous readback; native provenance and SBOM attestations passed.
+The [release note](docs/releases/server-1.6.563.md) records immutable image and
+original component identities. Documentation does not replace this producer,
+rebuild the image or alter release assets.
+
+Engine364 corrects CUSTOM-Key standalone container DELETE through its exact
+private OS-image/cache graph and External stale-hostname reconciliation. Current
+owner/role/Key revision/expiry, root grant, verified native frames and every
+explicit dependency DENY remain required. HTTP tuples/classifications are
+unchanged; derived cleanup authorization has a substantive behavior correction.
+Fourteen new methods passed original component CI; seven preview and eight
+Index cleanup methods are inherited, not new Engine364 cases.
+
+Web203 / optional bridge0.2.5, Catalog0.20.17 / Compose0.14.40 and other package
+pins are retained. Prior External before-value previews, restricted-Key discovery,
+clear public-code permission guidance, review/footer layout, ServiceIndex cleanup
+and JDBC3.5.11 fixes remain. Human confirmation, Full/legacy behavior, operator
+contracts and four independent default-off AI flags are preserved.
+
+Ten registered Medium occurrences remain. Critical/High, available-fix,
+untracked and secret gates passed; raw/effective scans and exact VEX/vendor
+evidence remain distinct. Browser runtime SBOM coverage remains incomplete.
+
+Server563 designated cutover/restart and Core, External, Certificate, Audit and
+B3 business workflows remain separate pending results, including role/Key/cross-ID,
+cleanup, JDBC, layout and weak-model acceptance. Publisher smoke and component
+CI are not native business completion or full 243-group acceptance. Historical
+release sections retain their original scope and evidence.
 
 <a id="server-v16562-publication"></a>
 

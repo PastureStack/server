@@ -13,22 +13,25 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.562`](https://github.com/PastureStack/server/releases/tag/v1.6.562)
-packages Engine `v0.183.363`, Web Console `1.6.203` / optional bridge `0.2.5`,
-Catalog `0.20.17` and Compose `0.14.40`. It corrects External Service preview
-before values, restricted-Key discovery, human-readable permission failures
-and pending-review/footer layout, while retaining exact ServiceIndex cleanup
-ownership. MariaDB Connector/J is updated to official `3.5.11` on the same
-3.5 line. Existing Full/legacy permissions, operator contracts and four
-independent default-off AI opt-ins remain. See the
-[release note](docs/releases/server-1.6.562.md) and
-[publication record](COMPATIBILITY.md#server-v16562-publication).
+[Server `v1.6.563`](https://github.com/PastureStack/server/releases/tag/v1.6.563)
+packages Engine `v0.183.364`, Web Console `1.6.203` / optional bridge `0.2.5`,
+Catalog `0.20.17` and Compose `0.14.40`. Engine364 corrects authorized native
+private-image cleanup during standalone container DELETE and stale hostname-map
+cleanup during External target replacement. The exact private graph, current
+actor/role/Key revision/expiry and every explicit DENY remain required.
+
+External before-value previews, ServiceIndex cleanup ownership, restricted-Key
+discovery, clear sanitized permission guidance and review/footer layout fixes
+are retained. Official MariaDB JDBC `3.5.11`, Full/legacy behavior, operator
+contracts and four independent default-off AI opt-ins remain. See the
+[release note](docs/releases/server-1.6.563.md) and
+[publication record](COMPATIBILITY.md#server-v16563-publication).
 
 | Qualification | Current evidence |
 |---|---|
 | Publication | Original publisher gates passed; all 35 public assets and the OCI digest passed anonymous verification, with native provenance and SBOM attestations. |
-| Designated baseline | Sealed 8080 cutover, restart and smoke passed with three active Hosts/Agents; mounts, AppArmor, the explicit operator plan and rollback were preserved. |
-| Business acceptance | Core, External, Certificate, Audit and B3 workflows, including role/cross-ID/layout and JDBC compatibility, remain pending. Baseline health is not business or full 243-group acceptance. |
+| Engine component | Original CI passed 3,872 tests in 416 suites: zero failures/errors and one existing skip. Fourteen new cleanup/lifecycle methods and the inherited preview/Index methods are recorded separately. |
+| Designated runtime and business acceptance | Server563 cutover/restart, Core, External, Certificate, Audit and B3 workflows, including role/Key/cross-ID/layout and JDBC compatibility, remain separate pending results. Publication and publisher smoke do not establish full 243-group acceptance. |
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -61,7 +64,7 @@ instance count. Advanced forms and other resource workflows remain pending.
 The complete scoped lifecycle workflow remains unaccepted; review
 the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation)
 before enabling these optional changes.
-See the [release note](docs/releases/server-1.6.562.md) and
+See the [release note](docs/releases/server-1.6.563.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
@@ -75,7 +78,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.562
+  ghcr.io/pasturestack/server:v1.6.563
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -83,7 +86,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.562
+    image: ghcr.io/pasturestack/server:v1.6.563
     restart: unless-stopped
     ports:
       - "8080:8080"

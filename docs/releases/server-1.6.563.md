@@ -1,8 +1,10 @@
-# Server v1.6.563 candidate
+# Server v1.6.563
 
-Source candidate; not a published image. The published component bytes below
-are qualified independently. Server image publication and matching runtime QA
-remain pending; installation instructions stay on published Server562.
+Published image: `ghcr.io/pasturestack/server:v1.6.563@sha256:f4da77e0d49e5f53eec1cfbdd478fae628acb90a223edbdd2dda01d4edf2a572`.
+
+Source commit: `fa1fbd1fe1b3a94e6b74aac80b78b2bbdee05036`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Corrected workflows
 
@@ -29,10 +31,37 @@ confirmation-footer layout remain inherited. Bridge0.2.5 stays unchanged.
 - Optional bridge ZIP SHA256 `cafe59ca00122dfaf9534f65f2cbd96500e6c014f4819dd8c49fd3cd4fa23b93`. All 12 Engine and 13 Web assets passed anonymous SHA readback against fresh metadata bytes.
 - Engine provenance is original GitHub artifact/source/tree evidence; no native Engine SLSA attestation is inferred.
 
-Catalog0.20.17 / Compose0.14.40, other component/package pins, base image,
-VEX statements and vendor entries are retained. This source change does not
-rebuild components. The original Server publisher must pass source, build,
-restart, merged-image/browser scan and native attestation gates. Matching Core,
-External/Alias, role/Key/cross-ID, cleanup and designated business workflows
-remain separate pending gates. The four AI opt-ins remain independently
-default-off. These component results are not complete frontend acceptance.
+Catalog0.20.17 / Compose0.14.40, other qualified component/package pins, base
+image, VEX statements and vendor entries are retained. Engine and Web publication
+reused original qualified bytes. Engine artifact/source provenance remains
+separate from the Server image's native attestations.
+
+## Publication verification
+
+The original [publisher 41285405058](https://github.com/PastureStack/server/actions/runs/41285405058)
+passed source/build, security, startup/restart and protocol gates. All 35 public
+assets and the OCI digest above passed anonymous SHA256 verification; native
+image provenance and SBOM attestations passed. Documentation changes do not
+replace the source commit, rebuild the image or rewrite release assets.
+
+The merged-rootfs, active nested payload and independent browser runtime scans
+passed the exact VEX/vendor policy. Critical/High, available-fix, untracked and
+secret counts were zero. Ten registered Medium occurrences remain; passing the
+gate does not mean zero vulnerabilities. Raw/effective reports remain distinct,
+and browser runtime SBOM coverage remains incomplete.
+
+## Designated deployment and pending acceptance
+
+Matching Server563 cutover/restart and native business acceptance remain pending
+in the publication record. The publisher's image startup/restart and protocol
+checks do not establish designated deployment or business completion. Previous
+Server562 sealed receipts retain their exact original image and scope.
+
+Core, External, Certificate, Audit and B3 workflows, native cleanup, applicable
+role/Key/revision and cross-ID cases, JDBC read/write and transaction compatibility,
+browser/footer/locale layouts and designated weak-model workflows require their
+own results on this image. Published source and component CI are not full
+243-group acceptance. Original failed and unaffected evidence retains its scope.
+Human confirmation, Full/legacy behavior, operator settings and four independent
+default-off AI properties remain unchanged. Preserve volumes and compatible
+backups during upgrade; do not blindly replay an uncertain old operation.
