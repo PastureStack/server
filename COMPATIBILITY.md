@@ -1,16 +1,35 @@
 # Compatibility Contract
 
-## Server v1.6.564 source candidate
+<a id="server-v16564-publication"></a>
 
-Not yet published. Installation examples remain on published Server563.
-The candidate consumes original published Engine365 / Web204. Optional bridge
+## Server v1.6.564 published
+
+[Server v1.6.564](https://github.com/PastureStack/server/releases/tag/v1.6.564)
+was published by the original
+[publisher 41317439519](https://github.com/PastureStack/server/actions/runs/41317439519).
+All 35 public assets and the OCI digest passed anonymous verification; native
+image provenance and SBOM attestations passed.
+
+| Evidence | Verified value |
+|---|---|
+| Image | `ghcr.io/pasturestack/server:v1.6.564` |
+| OCI digest | `sha256:884c94832cc507b25585437002dc49c7312d122ee527bb6ff941744c86705213` |
+| Runtime producer | `0ce4a6fdfc00ceba8fc71bcd78af9148454f3bad` |
+| Designated 8080 runtime | Exact published identity, cutover, one real restart and smoke passed; three active Hosts and three active Agents. Production site unchanged. |
+
+The image consumes original published Engine365 / Web204. Optional bridge
 0.2.6 shares the Web producer and is not a second Server runtime. Exact private
 volume/pool cleanup, safe native validation status/code and Catalog wire
 compatibility are corrected. Web admission guidance retains submitted-apply
 UNKNOWN/context/ACK protection. Current actor/role/Key/revision, explicit DENY,
 human confirmation and CAS remain required. Other pins, VEX statements and
-vendor decisions are retained. Matching Server/native acceptance is pending.
-See [candidate coordinates](docs/releases/server-1.6.564.md).
+vendor decisions are retained. Ten registered Medium occurrences remain;
+browser runtime SBOM coverage remains incomplete.
+
+The designated runtime result covers release identity, restart and health.
+Native business workflows and full 243-group WebMCP acceptance remain pending;
+component CI and runtime health do not complete that matrix. Four AI opt-ins
+remain independently default-off. See the [release note](docs/releases/server-1.6.564.md).
 
 
 <a id="server-v16563-publication"></a>

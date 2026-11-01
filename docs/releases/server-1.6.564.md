@@ -1,7 +1,18 @@
-# Server v1.6.564 candidate
+# Server v1.6.564
 
-Source candidate; not a published image. Installation remains on published563.
-Matching Server publication/restart/business acceptance is pending.
+[Server v1.6.564](https://github.com/PastureStack/server/releases/tag/v1.6.564)
+is published and deployed to the designated 8080 environment. Its exact release
+identity, cutover, one real restart and smoke passed, with three active Hosts
+and three active Agents. The production site was unchanged. Native business
+acceptance remains separate.
+
+| Publication evidence | Verified value |
+|---|---|
+| Image | `ghcr.io/pasturestack/server:v1.6.564` |
+| OCI digest | `sha256:884c94832cc507b25585437002dc49c7312d122ee527bb6ff941744c86705213` |
+| Runtime producer | `0ce4a6fdfc00ceba8fc71bcd78af9148454f3bad` |
+| Original publisher | [41317439519](https://github.com/PastureStack/server/actions/runs/41317439519) |
+| Public verification | All 35 assets and the OCI digest passed anonymous verification; native provenance and SBOM attestations passed. |
 
 Engine365 corrects the verified standalone private OS-volume/pool cleanup graph,
 safe native validation status/code propagation and bounded single-Base64 Catalog
@@ -28,9 +39,12 @@ Prior Web203 restricted-Key/human-review/footer layout behavior is inherited.
 - All12 Engine and13 Web assets passed actual anonymous SHA/length readback against exact public metadata. Web archive provenance and runtime-SBOM attestations passed. No native Engine SLSA attestation is inferred.
 
 Catalog0.20.17 / Compose0.14.40 and other pins/base image, VEX statements and
-vendor decisions remain unchanged. Source preparation rebuilds no component.
-The original Server publisher must pass its source/build/restart/merged-image
-and browser scans/native attestation gates. Core, External/Alias, Member,
-Catalog, roles/Keys/cross-ID, cleanup and weak-model runtime remain pending.
-Four AI opt-ins remain independently default-off. Server563 results do not
-become Server564 PASS. Full243 coverage is incomplete.
+vendor decisions remain unchanged. The original Server publisher passed its
+source/build/restart, merged-image and browser security gates. Ten registered
+Medium occurrences remain, and browser runtime SBOM coverage remains incomplete.
+Documentation does not change the runtime producer or published bytes.
+
+The designated deployment receipt covers release identity, restart and health
+only. Core, External/Alias, Member, Catalog, role/Key/cross-ID, cleanup, layout
+and weak-model business acceptance remain separately tracked. Four AI opt-ins
+remain independently default-off. Full 243-group WebMCP coverage is incomplete.
