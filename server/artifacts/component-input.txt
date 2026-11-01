@@ -1,2 +1,2 @@
 Default remote component source. Local builds override the component_input
-BuildKit context with a directory containing exactly the five verified assets.
+BuildKit context with the exact verified asset set required by build-api-explorer-patch-image.sh.
