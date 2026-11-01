@@ -4,6 +4,8 @@
 
 ## Server v1.6.562 published
 
+Image: `ghcr.io/pasturestack/server:v1.6.562@sha256:0528940e29aabf142d852df14fb954be3cbf240db3be6b43822fbe48ea62af0d`.
+
 [Server v1.6.562](https://github.com/PastureStack/server/releases/tag/v1.6.562)
 was published by the original
 [publisher 41279691957](https://github.com/PastureStack/server/actions/runs/41279691957)
