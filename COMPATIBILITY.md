@@ -1,5 +1,20 @@
 # Compatibility Contract
 
+## Server v1.6.563 source candidate
+
+Not yet published. Installation examples remain on published Server562.
+The candidate consumes published original Engine364 while Web203 / optional
+bridge0.2.5, Catalog0.20.17 / Compose0.14.40 and all other pins remain unchanged.
+Engine364 corrects derived private-image cleanup for an authorized standalone
+container DELETE and stale hostname-map reconciliation during External target
+replacement. Current actor/role/Key/revision/expiry, explicit DENY, ownership,
+verified native graph and human-confirmation boundaries remain required.
+Existing VEX statements and vendor decisions are retained. Matching assembled
+Server/native business acceptance remains pending; component qualification is
+not runtime or full frontend PASS.
+See [candidate coordinates](docs/releases/server-1.6.563.md).
+
+
 <a id="server-v16562-publication"></a>
 
 ## Server v1.6.562 published

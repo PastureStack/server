@@ -18,8 +18,8 @@ for name in "${required[@]}"; do
     case "$name" in *_COMMIT) [[ ${!name} =~ ^[0-9a-f]{40}$ ]] ;; *) [[ ${!name} =~ ^[0-9a-f]{64}$ ]] ;; esac
     export "$name"
 done
-export SERVER_RELEASE_TAG=${SERVER_RELEASE_TAG:-v1.6.562}
-export ORCHESTRATION_ENGINE_RELEASE_TAG=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.363}
+export SERVER_RELEASE_TAG=${SERVER_RELEASE_TAG:-v1.6.563}
+export ORCHESTRATION_ENGINE_RELEASE_TAG=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.364}
 export ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar
 export WEB_CONSOLE_RELEASE_TAG=${WEB_CONSOLE_RELEASE_TAG:-1.6.203}
 export WEB_CONSOLE_ARTIFACT="web-console-${WEB_CONSOLE_RELEASE_TAG}.tar.gz"
