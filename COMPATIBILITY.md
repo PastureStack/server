@@ -1,25 +1,43 @@
 # Compatibility Contract
 
-## Server v1.6.566 source candidate
+<a id="server-v16566-publication"></a>
 
+## Server v1.6.566 published
 
+[Server v1.6.566](https://github.com/PastureStack/server/releases/tag/v1.6.566)
+consumes published Engine 0.183.367, Web Console 1.6.206 and optional Bridge 0.2.8.
+Catalog 0.20.17, Compose 0.14.41 and all other component coordinates are retained.
+Service upgrade strategy review, closed typed Audit input and the three plan
+owners' action-operand lock ordering preserve current native authority, Key
+revision, preflight and a single durable claim.
 
-Engine367 / Web206 / optional Bridge0.2.8 add the three typed Service upgrade
+The original [publisher 41899489772](https://github.com/PastureStack/server/actions/runs/41899489772)
+completed successfully. All 35 public assets and the OCI digest passed anonymous
+verification; native image provenance and SBOM attestations passed. Its startup
+and restart checks used the publisher's disposable candidate. They do not establish
+designated deployment or business acceptance.
 
-strategy fields with immutable human review, closed original Audit input checks
+| Evidence | Verified value |
+|---|---|
+| Immutable publication identity | `ghcr.io/pasturestack/server:v1.6.566@sha256:de4d2d412baf267000a5eee579ca9cfb26b84389b1a857e9b3d1a915a16c4365` |
+| Runtime producer | `9bd7307eae849ff202a447f396cb9ca1d38021fd` |
+| Tested tree | `0d21ef21a004b55694de087be197bae3363fda43` |
+| Designated 8080 runtime | Published identity, cutover, one actual restart and smoke passed; three Hosts and three Agents are active. Existing mounts, volumes, restart/security settings and the four AI opt-ins were preserved. The stopped 565 container and a new database backup remain available for rollback; production was unchanged. |
 
-and the three owner action-operand lock-order repairs. Current native authority,
+The actual final scan records 50 raw findings and nine registered Medium package
+occurrences covering eight CVEs after VEX, with zero Critical/High,
+fixed-available, untracked or secret findings. Browser runtime SBOM coverage
+remains incomplete. The [pending tracker](server/security/vendor-pending.json)
+retains the active findings and the official CNA rejection evidence for retired
+CVE-2026-95209; no package fix or additional VEX exemption is claimed for that
+withdrawal. Compose builder evidence remains separate from Server runtime.
 
-Key revision, preflight and one-claim checks remain. Catalog017, Compose041 and
-
-all other component coordinates are retained. Server publication and designated
-
-runtime acceptance remain pending; see the [candidate note](docs/releases/server-1.6.566.md).
-
-Published installation defaults below remain v1.6.565 until actual566 publication.
-
-
-
+Deployment health does not establish business acceptance. The 27 affected cases
+covering Service strategy/roles/weak models, downgrade-fence, Audit remainder and
+Catalog launch/archive/restore, plus four new B3 weak-model cases, remain pending
+runtime acceptance with their own cleanup and layout evidence. Original failures
+and unaffected PASS retain their scope; the full 243-group frontend matrix is
+not complete. See the exact published [release note](docs/releases/server-1.6.566.md).
 
 <a id="server-v16565-publication"></a>
 

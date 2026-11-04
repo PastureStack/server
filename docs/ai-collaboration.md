@@ -1,7 +1,7 @@
 # Optional AI collaboration
 
-Published Server v1.6.565 combines Web Console 1.6.205 / optional bridge 0.2.7
-and Engine 0.183.366. The twelve
+Published Server v1.6.566 combines Web Console 1.6.206 / optional bridge 0.2.8
+and Engine 0.183.367. The twelve
 supported tools are `list_capabilities`, `find_resources`, `get_resource`,
 `preview_resource_change`, `apply_resource_change`, `find_stacks`,
 `find_services`, `get_service`, `update_service_description`,
@@ -14,9 +14,10 @@ Other platform operations retain their ordinary UI/API paths.
 
 ## Acceptance boundaries
 
-The full 243-group frontend workflow matrix is not complete. The current
-designated runtime passed publication identity, cutover, one restart and
-three-Host/Agent health checks. Native ServiceIndex and private OS-volume/pool
+The full 243-group frontend workflow matrix is not complete. Server 1.6.566
+publication and designated deployment health are recorded in the
+[compatibility contract](../COMPATIBILITY.md#server-v16566-publication).
+Matching native business acceptance remains pending. Native ServiceIndex and private OS-volume/pool
 cleanup repairs are included, but only the recorded business subcases establish
 their own acceptance. Do not broaden a Key, replay an uncertain write or treat
 runtime health as proof of the complete lifecycle. Ordinary Full/legacy UI and
@@ -78,6 +79,14 @@ role, scope and revision. Narrow the query when the bounded scan limit is
 reached. Tool output withholds private payloads and credentials; authorized
 people retain the ordinary audit UI's existing payload controls.
 
+Service image-upgrade previews accept optional `startFirst` (boolean),
+`batchSize` (integer, minimum 1) and `intervalMillis` (integer, minimum 100ms).
+Omission keeps false, 1 and 2000. Use exact JSON-safe integers. The normal human
+review shows these effective values; confirmation and apply cannot replace them.
+Native port/volume and strategy preflight still applies before an operation can
+be claimed. These component contracts do not replace the pending strategy,
+role/Key, layout and weak-model runtime cases.
+
 The normal human review shows the exact typed changes and mounted-data rules.
 Stopping or removing a workload does not mean every external data directory is
 backed up or retained. Review the existing domain's removal behavior before
@@ -137,6 +146,12 @@ page responses. Decisions written inside a Core transaction remain in the
 forced durable spool for independent replay, including when a rejected typed
 request rolls back. Durable spool acknowledgment is not database completion or
 business success; it never changes the original decision into an ALLOW.
+
+New plans bind their strategy to the private target snapshot so an older Engine
+rejects the newer operand as stale before claiming an operation. Genuine legacy
+image-only plans retain their original defaults. After a downgrade, preview and
+approve unused newer plans again instead of applying older defaults. Matching
+Server downgrade-fence acceptance remains separate and pending.
 
 To stop native tools, select off in the panel. Before disabling the backend or
 downgrading, let accepted operations reach a terminal state, cancel unused
