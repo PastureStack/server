@@ -213,7 +213,8 @@ jobs:
               done
               java --list-modules | grep -E "^(java.naming|java.security.jgss|jdk.crypto.ec)@25.0.5"
             '
-            RC16_JDK25_CHECK_IMAGE="$CANDIDATE_IMAGE" bash scripts/check-server-java-patches-jdk25.sh
+            RC16_JDK25_COMMONS_IO_IMAGE="$CANDIDATE_IMAGE" \
+              RC16_JDK25_CHECK_IMAGE="$CANDIDATE_IMAGE" bash scripts/check-server-java-patches-jdk25.sh
             printf 'SERVER_JAVA_SECURITY_RUNTIME_OK version=25.0.5+8 official_archive_sha256=68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb actual_candidate=1\n'
           } |& tee "$RUNNER_TEMP/server-evidence/java-security-runtime.txt"
 
