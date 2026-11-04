@@ -1,7 +1,7 @@
 # Optional AI collaboration
 
-Published Server v1.6.566 combines Web Console 1.6.206 / optional bridge 0.2.8
-and Engine 0.183.367. The twelve
+Published Server v1.6.567 combines Web Console 1.6.207 / optional bridge 0.2.9
+and Engine 0.183.368. The twelve
 supported tools are `list_capabilities`, `find_resources`, `get_resource`,
 `preview_resource_change`, `apply_resource_change`, `find_stacks`,
 `find_services`, `get_service`, `update_service_description`,
@@ -14,10 +14,11 @@ Other platform operations retain their ordinary UI/API paths.
 
 ## Acceptance boundaries
 
-The full 243-group frontend workflow matrix is not complete. Server 1.6.566
-publication and designated deployment health are recorded in the
-[compatibility contract](../COMPATIBILITY.md#server-v16566-publication).
-Matching native business acceptance remains pending. Native ServiceIndex and private OS-volume/pool
+The full 243-group frontend workflow matrix is not complete. Server 1.6.567
+publication is recorded in the
+[compatibility contract](../COMPATIBILITY.md#server-v16567-publication).
+Matching deployment and native business acceptance remain pending; Server 566
+remains the designated runtime. Native ServiceIndex and private OS-volume/pool
 cleanup repairs are included, but only the recorded business subcases establish
 their own acceptance. Do not broaden a Key, replay an uncertain write or treat
 runtime health as proof of the complete lifecycle. Ordinary Full/legacy UI and
@@ -63,7 +64,10 @@ intent. Creates remain stopped. Advanced environment, mount, hardware, security
 and other UI form fields require subsequent adapters.
 
 External Services add stopped creation and bounded hostname or IP targets;
-the two target modes cannot be mixed. DNS Aliases are created stopped and empty,
+the two target modes cannot be mixed. Creation also accepts an optional closed TCP
+health check with a required port and optional timing/threshold settings. HTTP
+checks and External health-check updates remain unsupported. DNS Aliases are created
+stopped and empty,
 then bind authorized local Service targets through a separate reviewed plan.
 Advanced/remote links and incoming-consumer/cross-source Alias cleanup remain
 unsupported. These source-supported paths do not imply live acceptance.
