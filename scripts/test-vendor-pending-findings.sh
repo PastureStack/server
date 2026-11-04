@@ -35,6 +35,8 @@ reject_case available_fix "$fixture_dir/fixed.tsv"
 reject_case untracked "$fixture_dir/untracked.tsv"
 tail -n +2 "$fixture_dir/exact.tsv" > "$fixture_dir/missing.tsv"
 reject_case missing_package "$fixture_dir/missing.tsv"
+{ cat "$fixture_dir/exact.tsv"; printf 'MEDIUM\tCVE-2026-95209\tlibgnutls30t64\t3.8.12-2ubuntu1.1\t\t/rootfs (ubuntu 26.04)\n'; } > "$fixture_dir/retired-reappeared.tsv"
+reject_case retired_reappeared "$fixture_dir/retired-reappeared.tsv"
 jq '.findings[0].reviewAfter="2000-01-01"' "$tracker" > "$fixture_dir/expired.json"
 reject_case expired_review "$fixture_dir/exact.tsv" "$fixture_dir/expired.json"
-printf 'VENDOR_PENDING_TESTS_OK accepted=1 rejected=5 policy_unchanged=true\n'
+printf 'VENDOR_PENDING_TESTS_OK accepted=1 rejected=6 policy_unchanged=true\n'
