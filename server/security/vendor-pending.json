@@ -139,23 +139,6 @@
       "vendorEvidenceSha256": "0d460c6b3ead6382852ad4413413c1adffaf9680c1aaf3abf2b727344b1a4ac0"
     },
     {
-      "vulnerabilityId": "CVE-2026-95209",
-      "severity": "MEDIUM",
-      "vendorStatus": "needs-evaluation",
-      "source": "https://ubuntu.com/security/CVE-2026-95209",
-      "reviewAfter": "2026-11-05",
-      "packages": [
-        {
-          "name": "libgnutls30t64",
-          "installedVersion": "3.8.12-2ubuntu1.1"
-        }
-      ],
-      "verifiedAt": "2026-10-29T09:57:07.268087+00:00",
-      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-95209.json",
-      "upstreamVendorStatus": "deferred",
-      "vendorEvidenceSha256": "e5e4a6178158471a4c281aa36d4ce2de1b43728ddba6d1470fb78cf0c66e6749"
-    },
-    {
       "vulnerabilityId": "CVE-2026-95210",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
@@ -171,6 +154,16 @@
       "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-95210.json",
       "upstreamVendorStatus": "deferred",
       "vendorEvidenceSha256": "3346e54d52e88e9521aa60871c147ffca621436244694f13a9f4646ebf50a711"
+    }
+  ],
+  "retiredFindings": [
+    {
+      "vulnerabilityId": "CVE-2026-95209",
+      "status": "CNA_REJECTED",
+      "rejectedAt": "2026-11-04T04:11:17.845Z",
+      "source": "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2026/95xxx/CVE-2026-95209.json",
+      "evidenceSha256": "3ac3cb8550cb37a1a60728e4986bdaa79ffe6a44e284ef9f69e245aed9287e8e",
+      "notes": "The CNA withdrew this candidate after determining it was not a security issue. Canonical OSV still contains its 2026-10-22 deferred entry; this retirement follows the newer CNA rejection and absence from both raw and effective publisher 41894064838 scans. No package remediation or VEX exception is claimed."
     }
   ]
 }
