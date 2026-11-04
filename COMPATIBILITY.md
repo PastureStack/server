@@ -1,5 +1,26 @@
 # Compatibility Contract
 
+## Server v1.6.566 source candidate
+
+
+
+Engine367 / Web206 / optional Bridge0.2.8 add the three typed Service upgrade
+
+strategy fields with immutable human review, closed original Audit input checks
+
+and the three owner action-operand lock-order repairs. Current native authority,
+
+Key revision, preflight and one-claim checks remain. Catalog017, Compose041 and
+
+all other component coordinates are retained. Server publication and designated
+
+runtime acceptance remain pending; see the [candidate note](docs/releases/server-1.6.566.md).
+
+Published installation defaults below remain v1.6.565 until actual566 publication.
+
+
+
+
 <a id="server-v16565-publication"></a>
 
 ## Server v1.6.565 published
