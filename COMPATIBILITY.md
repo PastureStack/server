@@ -1,5 +1,22 @@
 # Compatibility Contract
 
+## Server v1.6.567 source candidate
+
+Published Engine 0.183.368, Web Console 1.6.207 and optional Bridge 0.2.9 provide
+the closed External Service CREATE TCP health check, authorized Stack-name
+review and shared Audit payload-display correction. Exact role/Key authority,
+normal human approval, native preflight and one durable claim remain unchanged.
+The final source also retains the qualified Web build-only minimatch compatibility
+backport; raw reports and remaining findings are not rewritten.
+
+All component CI, original artifact and anonymous-byte prerequisites passed.
+These are component results: Server567 image publication, final image scan and
+matching native/UI acceptance remain pending. Catalog017, Compose041, other
+component coordinates, four default-off flags, existing VEX statements and
+security policy are retained. README installation examples continue to use
+published numeric tag v1.6.566. See the [candidate note](docs/releases/server-1.6.567.md).
+
+
 <a id="server-v16566-publication"></a>
 
 ## Server v1.6.566 published
