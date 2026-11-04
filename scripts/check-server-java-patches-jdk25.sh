@@ -7,6 +7,7 @@ cd "$repo_root"
 expected_patch="server/patches/PatchV1GlobalSubscribe.java"
 image="${RC16_JDK25_CHECK_IMAGE:-eclipse-temurin:25.0.4_7-jdk}"
 jdk_home="${RC16_JDK25_HOME:-}"
+commons_io_image="${RC16_JDK25_COMMONS_IO_IMAGE:-}"
 commons_io_version=2.22.0
 commons_io_sha256=2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758
 commons_io_url="https://repo.maven.apache.org/maven2/commons-io/commons-io/${commons_io_version}/commons-io-${commons_io_version}.jar"
@@ -15,6 +16,12 @@ java_bin=""
 javac_bin=""
 javap_bin=""
 classpath_separator=":"
+
+if [ "${RC16_JDK25_COMMONS_IO_IMAGE+x}" = x ] &&
+   { [ -z "$commons_io_image" ] || [ -n "$jdk_home" ] || [ "$commons_io_image" != "$image" ]; }; then
+  echo "JDK25_COMMONS_IO_IMAGE_INVALID must_match_check_image=1 local_jdk_allowed=0" >&2
+  exit 1
+fi
 
 resolve_jdk_tool() {
   local tool=$1
@@ -84,14 +91,22 @@ mkdir -p \
   "$tmp/classes" \
   "$tmp/lib"
 
-curl -fsSL \
-  --retry 5 \
-  --retry-all-errors \
-  --retry-delay 2 \
-  --connect-timeout 10 \
-  --max-time 300 \
-  -o "$tmp/lib/commons-io.jar" \
-  "$commons_io_url"
+if [ -n "$commons_io_image" ]; then
+  # Check the dependency shipped by this exact candidate, without a pull or download.
+  docker run --rm --pull=never --network none --entrypoint /bin/cat \
+    "$commons_io_image" \
+    "/usr/share/cattle/war/WEB-INF/lib/commons-io-${commons_io_version}.jar" \
+    > "$tmp/lib/commons-io.jar"
+else
+  curl -fsSL \
+    --retry 5 \
+    --retry-all-errors \
+    --retry-delay 2 \
+    --connect-timeout 10 \
+    --max-time 300 \
+    -o "$tmp/lib/commons-io.jar" \
+    "$commons_io_url"
+fi
 printf '%s  %s\n' "$commons_io_sha256" "$tmp/lib/commons-io.jar" | sha256sum -c -
 
 cat > "$tmp/src/io/github/ibuildthecloud/gdapi/model/Filter.java" <<'JAVA'
