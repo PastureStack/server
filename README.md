@@ -13,20 +13,24 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.566`](https://github.com/PastureStack/server/releases/tag/v1.6.566)
-packages Engine `v0.183.367`, Web Console `1.6.206` / optional bridge `0.2.8`,
-Catalog `0.20.17` and Compose `0.14.41`. Service image upgrade plans support
-optional start-first, batch-size and interval settings in the normal immutable
-human review. Current owner, role, Key revision and approval checks remain
-required for scoped changes.
+[Server `v1.6.567`](https://github.com/PastureStack/server/releases/tag/v1.6.567)
+packages Engine `v0.183.368`, Web Console `1.6.207` / optional bridge `0.2.9`,
+Catalog `0.20.17` and Compose `0.14.41`. External Service creation supports an
+optional TCP health check with a required port and optional timing/threshold
+settings; HTTP checks and External health-check updates remain unsupported.
+Service-create human review shows authorized Stack names. Audit payload details
+remain human-only and safely display metadata-only, empty and non-JSON values.
 
-Service creation keeps native ports and health checks, with actual assigned
-ports in verified results. Full/legacy behavior, MariaDB JDBC `3.5.11`, operator
-settings and the four independent default-off AI opt-ins remain. See the
-[release note](docs/releases/server-1.6.566.md) and
-[publication record](COMPATIBILITY.md#server-v16566-publication).
-Business acceptance is tracked separately; publication does not establish full
-243-group WebMCP acceptance. See the [acceptance boundaries](docs/ai-collaboration.md#workload-retirement-limitation).
+Service image upgrades retain optional start-first, batch-size and interval
+settings in immutable human review. Native authority, current role, Key revision,
+approval and preflight checks remain required. Ordinary Service ports and health
+checks, Full/legacy behavior, MariaDB JDBC `3.5.11`, operator settings and the
+four independent default-off AI opt-ins are retained. See the
+[release note](docs/releases/server-1.6.567.md) and
+[publication record](COMPATIBILITY.md#server-v16567-publication).
+Matching deployment and business acceptance remain pending; publication does not
+establish full 243-group WebMCP acceptance. See the
+[acceptance boundaries](docs/ai-collaboration.md#workload-retirement-limitation).
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -59,7 +63,7 @@ instance count. Advanced forms and other resource workflows remain pending.
 The complete scoped lifecycle workflow remains unaccepted; review
 the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation)
 before enabling these optional changes.
-See the [release note](docs/releases/server-1.6.566.md) and
+See the [release note](docs/releases/server-1.6.567.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
@@ -73,7 +77,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.566
+  ghcr.io/pasturestack/server:v1.6.567
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -81,7 +85,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.566
+    image: ghcr.io/pasturestack/server:v1.6.567
     restart: unless-stopped
     ports:
       - "8080:8080"

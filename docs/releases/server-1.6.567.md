@@ -1,8 +1,10 @@
-# Server v1.6.567 candidate
+# Server v1.6.567
 
-Source candidate only. Server publication and matching runtime acceptance remain
-pending. Installation defaults continue to reference published Server v1.6.566
-until this candidate passes the original publisher's required gates.
+Published image: `ghcr.io/pasturestack/server:v1.6.567@sha256:e070d3feb6a924e20be16a21930a4f1be028f2d3ca01f4d87a51303e90f76b73`.
+
+Source commit: `512c1c534f3e2cd6bca542c7ecba3cbfb8a6f5ae`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 

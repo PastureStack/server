@@ -1,21 +1,54 @@
 # Compatibility Contract
 
-## Server v1.6.567 source candidate
+<a id="server-v16567-publication"></a>
 
-Published Engine 0.183.368, Web Console 1.6.207 and optional Bridge 0.2.9 provide
-the closed External Service CREATE TCP health check, authorized Stack-name
-review and shared Audit payload-display correction. Exact role/Key authority,
-normal human approval, native preflight and one durable claim remain unchanged.
-The final source also retains the qualified Web build-only minimatch compatibility
-backport; raw reports and remaining findings are not rewritten.
+## Server v1.6.567 published
 
-All component CI, original artifact and anonymous-byte prerequisites passed.
-These are component results: Server567 image publication, final image scan and
-matching native/UI acceptance remain pending. Catalog017, Compose041, other
-component coordinates, four default-off flags, existing VEX statements and
-security policy are retained. README installation examples continue to use
-published numeric tag v1.6.566. See the [candidate note](docs/releases/server-1.6.567.md).
+[Server v1.6.567](https://github.com/PastureStack/server/releases/tag/v1.6.567)
+packages published Engine 0.183.368, Web Console 1.6.207 and optional Bridge 0.2.9.
+Catalog 0.20.17, Compose 0.14.41 and every other component coordinate are retained.
+External Service CREATE adds a closed TCP health check; human Service-create
+review resolves authorized Stack names, and the shared Audit modal safely renders
+metadata-only, empty and non-JSON values. Native role/Key boundaries, immutable
+human review, one durable claim and the four default-off AI flags remain.
+HTTP checks and External health-check updates remain unsupported.
 
+The original [publisher 41919516324](https://github.com/PastureStack/server/actions/runs/41919516324)
+completed successfully. All 35 public assets and the OCI identity passed anonymous
+byte verification; native image provenance and SBOM attestations passed. The
+immutable GitHub release body equals its original published release-note asset.
+Startup and restart passed on the publisher's disposable candidate.
+
+| Evidence | Verified value |
+|---|---|
+| Immutable publication identity | `ghcr.io/pasturestack/server:v1.6.567@sha256:e070d3feb6a924e20be16a21930a4f1be028f2d3ca01f4d87a51303e90f76b73` |
+| Runtime producer | `512c1c534f3e2cd6bca542c7ecba3cbfb8a6f5ae` |
+| Tested tree | `1debaec3138de3c0025c6a78ebe3e6a9a110a18f` |
+| Designated runtime | Server 566 remains deployed with Engine 367 / Web 206 / Bridge 0.2.8. Matching Server 567 deployment, restart and business acceptance are pending. |
+
+The actual final scan records 50 raw findings and nine registered Medium package
+occurrences covering eight CVEs after VEX, with zero Critical/High,
+fixed-available, untracked or secret findings. Browser runtime SBOM coverage
+remains incomplete. No VEX statement or security-policy exemption was added.
+The Web build-only minimatch compatibility backport retains original npm
+identities, raw reports and remaining Moderate findings; it is not a claim of
+complete runtime or whole-product vulnerability absence. Compose builder findings
+remain separate from Server runtime.
+
+Engine's original 425 suites / 3,947 tests and 132 required methods passed; its
+12 assets passed anonymous readback and cryptographic immutable-release
+attestation. Engine workflow SLSA remains NOT_PROVIDED. Web's full/enabled CI and
+CodeQL passed with 1,127 browser tests, four new Node cases and five new Audit-modal
+QUnit cases. Its 13 assets, archive provenance and runtime-SBOM attestations passed.
+Bridge retains 35 source files / 37 ZIP entries / 92 components: 0.2.5 clean-install
+evidence is carried, while the 0.2.9 SDK handshake is new verified evidence.
+
+These source, component and publisher results do not establish matching native
+TCP role/Key/UI receipt completion or the corrected Audit modal's deployment
+acceptance. Original runtime failures and unaffected scoped PASS retain their
+scope; full 243-group frontend acceptance is incomplete. Installation examples
+use numeric tag `v1.6.567`. See the exact published
+[release note](docs/releases/server-1.6.567.md).
 
 <a id="server-v16566-publication"></a>
 
