@@ -6,7 +6,7 @@ until this candidate passes the original publisher's required gates.
 
 ## Verified component inputs
 
-This candidate assembles published Engine v0.183.368, Web Console 1.6.207 and
+This Server assembly uses published Engine v0.183.368, Web Console 1.6.207 and
 optional Bridge 0.2.9. Catalog 0.20.17, Compose 0.14.41, all other component
 coordinates, four independent default-off AI opt-ins and security gates remain
 unchanged.
@@ -49,9 +49,9 @@ raw audit reports and the remaining Moderate findings are retained. The unused
 embedded upstream glob matcher is outside that qualification; no complete
 runtime or whole-product vulnerability-free claim is made.
 
-Server 1.6.566 remains the designated deployed release. This candidate adds no
-VEX statements or policy exemption. The publisher must produce the actual final
-Server image scan, SBOM, startup and restart evidence before publication.
+Server 1.6.566 remains the designated deployed release. No VEX statements or policy exemption are added. Final Server image scans,
+SBOM, startup and restart evidence are produced by the original publisher;
+deployment-specific acceptance is separate.
 External TCP role/Key boundaries, human review, native receipt completion and
 the new Audit modal still need acceptance on the matching deployed tuple.
 Original failures and unaffected scoped PASS keep their scope; the full
