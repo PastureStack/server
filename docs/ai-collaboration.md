@@ -1,7 +1,7 @@
 # Optional AI collaboration
 
-Published Server v1.6.561 combines Web Console 1.6.202 / optional bridge 0.2.4
-and Engine 0.183.361. The twelve
+Published Server v1.6.565 combines Web Console 1.6.205 / optional bridge 0.2.7
+and Engine 0.183.366. The twelve
 supported tools are `list_capabilities`, `find_resources`, `get_resource`,
 `preview_resource_change`, `apply_resource_change`, `find_stacks`,
 `find_services`, `get_service`, `update_service_description`,
@@ -10,20 +10,22 @@ The capability response distinguishes safe metadata, partial coverage and
 pending adapters. This is not complete WebMCP coverage of the console.
 Other platform operations retain their ordinary UI/API paths.
 
-## Workload retirement limitation
+<a id="workload-retirement-limitation"></a>
 
-The complete scoped lifecycle is not accepted. Designated Server561 / Web202
-passed baseline cutover and one restart, but a real 2-to-1 Service scale-down
-exposed a missing authorization adapter for native ServiceIndex cleanup. The
-same native cleanup is used during Service and Stack removal. Do not broaden
-a Key, replay an uncertain write or assume a subcase proves the full flow.
-Ordinary Full/legacy UI and API paths retain their permissions.
+## Acceptance boundaries
 
-The fixed audit-owner topology now returns a real successful query and canonical
-completion. Its acceptance oracle must also recognize the native typed POST's
-HTTP201; remaining query cases stay pending until verified. New Certificate and
-other domain, role/cross-ID, layout and weak-model workflows remain separate
-gates. Original failures and unaffected PASS evidence keep their original scope.
+The full 243-group frontend workflow matrix is not complete. The current
+designated runtime passed publication identity, cutover, one restart and
+three-Host/Agent health checks. Native ServiceIndex and private OS-volume/pool
+cleanup repairs are included, but only the recorded business subcases establish
+their own acceptance. Do not broaden a Key, replay an uncertain write or treat
+runtime health as proof of the complete lifecycle. Ordinary Full/legacy UI and
+API paths retain their permissions.
+
+Audit query authority remains bound to the native Engine and its verified actor
+metadata. Audit, Catalog, new Service-field, role/cross-ID, layout and weak-model
+results are tracked individually. Original failures and unaffected PASS evidence
+keep their original scope; component tests do not replace browser acceptance.
 
 ## Activation
 
@@ -54,8 +56,10 @@ Typed plans support basic creation and metadata editing for Stack, Service and
 Container resources; Stack/Service start and stop; Service/Container restart;
 manual scaling of eligible non-global Services; and removal of those three resource types. Creates currently
 cover name, description, image, scale where applicable, command and entry point.
-They create stopped workloads. Advanced environment, port, mount, hardware,
-security and other UI form fields require subsequent adapters.
+Service creation additionally accepts native port strings and a closed health-
+check object. Its verified result reports assigned ports separately from approved
+intent. Creates remain stopped. Advanced environment, mount, hardware, security
+and other UI form fields require subsequent adapters.
 
 External Services add stopped creation and bounded hostname or IP targets;
 the two target modes cannot be mixed. DNS Aliases are created stopped and empty,

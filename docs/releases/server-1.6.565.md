@@ -1,7 +1,10 @@
-# Server v1.6.565 candidate
+# Server v1.6.565
 
-Source candidate. The publisher adds the actual image identity only after its
-required checks pass; deployment acceptance is recorded separately.
+Published image: `ghcr.io/pasturestack/server:v1.6.565@sha256:7a69fa4e42615fba898e2847438a8525c57acc64d60b7e286433f1680bea3f4c`.
+
+Source commit: `1889ceeca212d879cf0b136ceb8a41503a516b3a`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
@@ -52,3 +55,12 @@ component inputs. QA8080 Audit remainder, Catalog launch/archive/restore and
 new Service-field/weak-model evidence are recorded separately. Existing
 unaffected PASS and original failures are retained; component or release
 checks do not establish acceptance of all 243 frontend groups.
+
+## Designated deployment acceptance
+
+The owned QA8080 deployment passed exact image/component identity, cutover,
+one real restart, HTTP ping and three active Hosts/Agents. Four mounts,
+nineteen volumes, operator JVM/environment settings, restart policy and
+AppArmor were preserved; the prior564 container and database backup remain.
+Audit, Catalog and Service-field business acceptance is tracked separately.
+The production site was not changed.

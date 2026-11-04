@@ -1,14 +1,31 @@
 # Compatibility Contract
 
-## Server v1.6.565 source candidate
+<a id="server-v16565-publication"></a>
+
+## Server v1.6.565 published
 
 Engine366 / Web205 / optional Bridge0.2.7 / Compose0.14.41 add reviewed Service
 create ports and health checks, preserve Catalog transform/request values, and
 retain verified audit actor metadata. Native authority, schema restrictions and
-default-off flags remain. Component publication is qualified; Server publication
-and designated runtime/matrix acceptance remain pending. See the
-[candidate note](docs/releases/server-1.6.565.md). Published installation below
-remains v1.6.564 until the new image is actually released.
+default-off flags remain. The original
+[publisher 41333177724](https://github.com/PastureStack/server/actions/runs/41333177724)
+passed. All 35 public assets and the OCI digest passed anonymous verification;
+native image provenance and SBOM attestations passed.
+
+| Evidence | Verified value |
+|---|---|
+| Immutable publication identity | `ghcr.io/pasturestack/server:v1.6.565@sha256:7a69fa4e42615fba898e2847438a8525c57acc64d60b7e286433f1680bea3f4c` |
+| Runtime producer | `1889ceeca212d879cf0b136ceb8a41503a516b3a` |
+| Designated 8080 runtime | Exact published identity, cutover, one real restart and smoke passed; three active Hosts and three active Agents. Existing mounts, volumes, JVM settings, restart policy and AppArmor were preserved; 564 rollback remains. Production site unchanged. |
+
+The final runtime scan retains ten registered Medium occurrences without an
+official fix. Compose's separate disposable builder tracks 99 additional Medium
+findings; these are build-only findings, not Server runtime fixes. The existing
+OpenPGP code-absence decision was requalified against the exact new Compose
+binary, without broadening its scope. Browser runtime SBOM coverage remains
+incomplete. Native Audit, Catalog and Service-field matrix results are separate
+from publication and health; full 243-group WebMCP acceptance remains in progress.
+See the [release note](docs/releases/server-1.6.565.md).
 
 
 <a id="server-v16564-publication"></a>
