@@ -1,7 +1,10 @@
-# Server v1.6.569 candidate
+# Server v1.6.569
 
-This source candidate is not a published Server image. Keep the current published
-installation until its release workflow and deployment checks complete.
+Published image: `ghcr.io/pasturestack/server:v1.6.569@sha256:0de2f923e9edc215e6aa2e520d3eeac0bcbd7b0d09bf8ec9eefea0028c26fb50`.
+
+Source commit: `b65aa8d9641950c375135eb82c675abd5e71d3ea`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
