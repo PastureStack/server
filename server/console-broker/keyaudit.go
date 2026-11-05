@@ -302,6 +302,7 @@ func safeKeyAuditRecord(record map[string]any, keyID string) map[string]any {
 			result[field] = value
 		}
 	}
+	projectClientToolAuditMetadata(record, result)
 	if keyAuditIDMatches(keyAuditMetadataString(record, "keyId"), keyID) {
 		result["keyId"] = keyID
 	}
@@ -312,4 +313,36 @@ func safeKeyAuditRecord(record map[string]any, keyID string) map[string]any {
 		}
 	}
 	return result
+}
+
+// Projection only: client reports are never a platform authorization decision.
+// Keep the AI-facing projection and all existing owner/Key checks unchanged.
+func projectClientToolAuditMetadata(record, result map[string]any) {
+	if keyAuditMetadataString(record, "resourceType") != "aiToolCallEvent" ||
+		keyAuditMetadataString(record, "evidenceSource") != "client_reported" ||
+		keyAuditMetadataString(record, "phase") != "client-report" ||
+		keyAuditMetadataString(record, "decision") != "NOT_EVALUATED" ||
+		keyAuditMetadataString(record, "outcome") != "REPORTED" {
+		return
+	}
+	result["evidenceSource"] = "client_reported"
+	for field, allowed := range map[string]string{
+		"clientReportedCommand": "find_stacks find_services get_service preview_service_upgrade apply_service_upgrade get_operation update_service_description list_capabilities find_resources get_resource preview_resource_change apply_resource_change unknown",
+		"clientReportedPhase":   "start result",
+		"clientReportedStatus":  "pending succeeded accepted running failed unknown cancelled rejected needs_user",
+		"clientReportedReason":  "NONE INVALID_INPUT UNAVAILABLE CONTEXT_CHANGED STALE_REFERENCE FORBIDDEN SESSION_REQUIRED CONFLICT NEEDS_USER INVALID_RESPONSE UNKNOWN_RESULT CANCELLED CAPACITY",
+	} {
+		value := keyAuditMetadataString(record, field)
+		for _, candidate := range strings.Fields(allowed) {
+			if value == candidate {
+				result[field] = candidate
+				break
+			}
+		}
+	}
+	if result["clientReportedCommand"] == "preview_resource_change" && result["clientReportedPhase"] == "result" &&
+		result["clientReportedStatus"] == "needs_user" && result["clientReportedReason"] == "NEEDS_USER" &&
+		keyAuditMetadataString(record, "clientReportedReasonDetail") == "BRIDGE_PROJECT_BINDING_REQUIRED" {
+		result["clientReportedReasonDetail"] = "BRIDGE_PROJECT_BINDING_REQUIRED"
+	}
 }
