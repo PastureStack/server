@@ -618,7 +618,7 @@ RUN set -eux; \
       > /etc/apt/sources.list.d/pasturestack-snapshot.sources; \
     printf 'Acquire::Retries "5";\nAcquire::https::CaInfo "/etc/ssl/certs/ca-certificates.crt";\nAcquire::https::Verify-Peer "true";\nAcquire::https::Verify-Host "true";\nAcquire::AllowInsecureRepositories "false";\nAPT::Get::AllowUnauthenticated "false";\n' \
       > /etc/apt/apt.conf.d/80pasturestack-snapshot; \
-    apt-get update; \
+    apt-get update --error-on=any; \
     apt-get install -y --no-install-recommends ca-certificates tar; \
     mkdir -p /out/packages /out/official-apt; \
     for package in apt libapt-pkg7.0; do \

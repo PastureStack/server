@@ -1,8 +1,12 @@
 """Focused source-only checks; no full gate, build, registry or runtime execution."""
 import json
+import os
 import pathlib
 import re
 import shlex
+import shutil
+import subprocess
+import tempfile
 import unittest
 
 
@@ -647,6 +651,44 @@ def previous_gate(gate=GATE):
 
 
 class Tests(unittest.TestCase):
+    def test_required_snapshot_index_failure_stops_before_install(self):
+        stage = FILES[DOCKER].split(' AS runtime_security_packages\n', 1)[1].split('\nFROM ', 1)[0]
+        commands = [line.strip().removesuffix(' \\').removesuffix(';') for line in stage.splitlines()
+                    if line.strip().startswith(('apt-get update', 'apt-get install'))]
+        self.assertEqual(2, len(commands))
+        self.assertEqual(['apt-get', 'update', '--error-on=any'], shlex.split(commands[0]))
+        self.assertEqual('apt-get install -y --no-install-recommends ca-certificates tar', commands[1])
+        shell = shutil.which('sh')
+        if not shell and os.name == 'nt':
+            git = shutil.which('git')
+            candidate = pathlib.Path(git).resolve().parents[1] / 'usr/bin/sh.exe' if git else None
+            shell = str(candidate) if candidate and candidate.is_file() else None
+        self.assertIsNotNone(shell, 'A POSIX shell is required; do not skip the build flow check')
+        with tempfile.TemporaryDirectory(prefix='server-apt-index-') as directory:
+            work = pathlib.Path(directory)
+            shim = work / 'apt-get'
+            shim.write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$APT_TEST_CALLS"\n'
+                            'if [ "$1" = update ] && [ "$APT_TEST_FAILED_INDEX" = 1 ]; then\n'
+                            '  case " $* " in *" --error-on=any "*) exit 100;; esac\n'
+                            'fi\nexit 0\n', encoding='utf-8')
+            shim.chmod(0o755)
+            for failed in ('0', '1'):
+                calls = work / ('calls-' + failed)
+                env = dict(os.environ, APT_TEST_CALLS=calls.as_posix(), APT_TEST_FAILED_INDEX=failed)
+                script = 'set -e\nPATH="$PWD:$PATH"\nexport PATH\n' + '\n'.join(commands)
+                result = subprocess.run([shell, '-c', script], cwd=work, env=env, capture_output=True, text=True, timeout=15)
+                self.assertEqual(100 if failed == '1' else 0, result.returncode, result.stderr)
+                self.assertEqual(commands[:1] if failed == '1' else commands,
+                                 ['apt-get ' + row for row in calls.read_text(encoding='utf-8').splitlines()])
+            # The pre-fix warning-only update continues to install: keep that
+            # exact regression observable rather than merely matching a string.
+            calls = work / 'calls-before'
+            env = dict(os.environ, APT_TEST_CALLS=calls.as_posix(), APT_TEST_FAILED_INDEX='1')
+            before = script.replace('apt-get update --error-on=any', 'apt-get update')
+            result = subprocess.run([shell, '-c', before], cwd=work, env=env, capture_output=True, text=True, timeout=15)
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual(2, len(calls.read_text(encoding='utf-8').splitlines()))
+
     def test_current_agent_defaults_keep_explicit_operator_overrides(self):
         image = 'ghcr.io/pasturestack/node-agent:v1.2.34'
         final_stage = FILES[DOCKER].rsplit('\nFROM ', 1)[-1]

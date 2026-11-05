@@ -26,6 +26,10 @@ APT plans with size and SHA256 verification. Local package cache binding and
 the final security overlay use the same transport; installation restrictions
 and the final package-version table are retained. No runtime patch is used.
 
+The runtime package stage stops immediately when any required signed APT index
+cannot be downloaded. Snapshot, signature, package and TLS checks are unchanged;
+an unavailable index is not reported as a missing package or a successful build.
+
 Web Console 1.6.209 and Bridge 0.2.11 are unchanged from Server v1.6.569.
 The selected-environment editor and new client-audit detail planned for Web
 Console 1.6.210 are not included in this assembly. Existing Full/legacy Key
