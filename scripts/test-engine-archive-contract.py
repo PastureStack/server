@@ -129,9 +129,23 @@ class EngineArchiveContract(unittest.TestCase):
             self.assertTrue(all(text.count(marker) == 1 for marker in markers))
             positions = [text.index(marker) for marker in markers]
             self.assertEqual(positions, sorted(positions))
-            starts = [text.rfind('\nRUN ', 0, position) for position in positions]
-            self.assertGreaterEqual(starts[0], 0)
-            self.assertEqual(len(set(starts)), 1)
+            run_blocks = []
+            lines = text.splitlines(keepends=True)
+            offset = 0
+            index = 0
+            while index < len(lines):
+                start = offset
+                is_run = lines[index].startswith('RUN ')
+                while True:
+                    line = lines[index]
+                    offset += len(line)
+                    index += 1
+                    if not line.rstrip('\r\n').endswith('\\') or index == len(lines):
+                        break
+                if is_run:
+                    run_blocks.append((start, offset))
+            self.assertTrue(any(all(start <= position < end for position in positions)
+                                for start, end in run_blocks))
 
         check_security_layer(final)
         with self.assertRaises(AssertionError):
@@ -141,6 +155,9 @@ class EngineArchiveContract(unittest.TestCase):
             check_security_layer(final.replace('sha256sum -c SHA256SUMS;', 'SWAPPED', 1)
                                  .replace('dpkg -i packages/*.deb;', 'sha256sum -c SHA256SUMS;', 1)
                                  .replace('SWAPPED', 'dpkg -i packages/*.deb;', 1))
+        with self.assertRaises(AssertionError):
+            check_security_layer(final.replace('    dpkg -i packages/*.deb;',
+                                               '    true;\nENV X="dpkg -i packages/*.deb;"', 1))
 
 
 if __name__ == '__main__':

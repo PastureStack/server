@@ -1,18 +1,47 @@
 # Compatibility Contract
 
-## Server v1.6.569 source candidate
+<a id="server-v16569-publication"></a>
 
-Server `v1.6.569` is a prepared source candidate, not a published image.
-It consumes published Engine v0.183.370, Web Console 1.6.209 and optional Bridge
-0.2.11; Catalog 0.20.17, Compose 0.14.41 and other component pins are retained.
-Host metadata updates require human approval and live authority; workload and
-Volume parent references remain bounded, permission-filtered and incomplete.
-Catalog binding occurs before scheduling. Official APT packages are SHA256-pinned;
-existing pending findings and security thresholds are not relaxed.
+## Server v1.6.569 published
 
-Component CI/publication does not establish Server publication or runtime acceptance.
-See the [candidate scope and rollback requirements](docs/releases/server-1.6.569.md).
-README installation commands continue to use the current published numeric tag.
+[Server v1.6.569](https://github.com/PastureStack/server/releases/tag/v1.6.569)
+packages Engine v0.183.370, Web Console 1.6.209 and optional Bridge 0.2.11.
+Catalog 0.20.17 and Compose 0.14.41 retain their published coordinates.
+Host updates are limited to name/description with immutable human approval.
+Workload/Volume references retain fresh native role, Key, schema and relationship
+checks; ambiguous or unreadable relationships remain unknown. Catalog plans bind
+to the created Stack before normal scheduling. Other object creation is unchanged.
+
+The [original publisher](https://github.com/PastureStack/server/actions/runs/41973757189)
+passed its source, security, startup, restart and typed-protocol checks.
+All 35 public asset byte lengths/SHA256 digests, OCI identity/environment, image
+provenance and SBOM attestations passed independent readback. The release is
+immutable. This source release note matches its public asset byte for byte.
+
+| Evidence | Verified value |
+|---|---|
+| Immutable publication identity | `ghcr.io/pasturestack/server:v1.6.569@sha256:0de2f923e9edc215e6aa2e520d3eeac0bcbd7b0d09bf8ec9eefea0028c26fb50` |
+| Runtime producer | `b65aa8d9641950c375135eb82c675abd5e71d3ea` |
+| Tested tree | `21dd2deb8aba2510ff761277738b1db6de2f0423` |
+| Deployment/business acceptance | Tracked separately; publication does not establish full frontend acceptance. |
+
+Both build and final images consume official Ubuntu APT 3.2.1ubuntu0.1 packages
+for CVE-2026-109518. The exact source lock and attested artifact SBOM identify
+`apt` and `libapt-pkg7.0` for Ubuntu 26.04 amd64. Native deployment readback is
+separate. Existing findings and security thresholds are retained. The final
+qualified scan has nine registered Medium package occurrences, zero Critical/High,
+fixed-available, untracked or secret findings. Browser SBOM coverage remains
+incomplete; no additional coverage is inferred.
+
+Engine original CI passed 3,981 tests with zero failures/errors and one inherited
+skip; all 166 required methods passed. Its twelve public assets/native release
+attestation passed. Workflow SLSA remains NOT_PROVIDED and four inherited lower
+CodeQL findings remain disclosed. Web CI passed 1,129 browser tests and all thirteen
+public assets/native release attestation passed. Bridge retains the original
+0.2.5 clean-install evidence and current SDK handshake, without claiming a new install.
+The 243-group WebMCP inventory remains incomplete. Operator settings, named volumes,
+restart policy, HTTPS origin, four independent default-off AI opt-ins and rollback
+requirements remain as described in the upgrade guide.
 
 <a id="server-v16568-publication"></a>
 
