@@ -1,6 +1,10 @@
-# Server v1.6.570 candidate
+# Server v1.6.570
 
-Not published. Server image and deployment acceptance remain pending.
+Published image: `ghcr.io/pasturestack/server:v1.6.570@sha256:e07a81bf07eedab77eabe7f42c654f4e43a5752e5824f9feeeb52dc1e6cceb0a`.
+
+Source commit: `dd0a9cebbbcec57d562aa1cb2b035f2b56ae0943`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
