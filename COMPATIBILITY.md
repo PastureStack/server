@@ -1,5 +1,55 @@
 # Compatibility Contract
 
+<a id="server-v16571-publication"></a>
+
+## Server v1.6.571 published
+
+[Server v1.6.571](https://github.com/PastureStack/server/releases/tag/v1.6.571)
+packages published Engine v0.183.372, Web Console 1.6.210 and optional Bridge
+0.2.12. Catalog 0.20.17, Compose 0.14.41 and the official two-package APT patch
+retain their qualified coordinates.
+
+The [official publisher](https://github.com/PastureStack/server/actions/runs/42054870171)
+passed its original source, build, startup/restart and security gates. Independent
+readback verified all 35 anonymous asset byte lengths/SHA256 values, exact OCI
+identity/component environment, image provenance and SBOM attestations. The
+published single-layer image is immutable; raw scan evidence is retained and the
+effective scan still reports nine MEDIUM findings, with no CRITICAL/HIGH finding.
+This is not a zero-CVE claim.
+
+| Evidence | Verified published value |
+|---|---|
+| Image identity | `ghcr.io/pasturestack/server:v1.6.571@sha256:d59fce0b3eda6abd11de6bc0b43fecf35c1ac9c37ad05f57ed234351164c4e25` |
+| Publisher source revision | `a578c4cac1f8d79386f2168f856a6a4aee7eecb2` (main merge; reviewed PR head `db7dc0fcb0117b703dc9f9f04472b9ff34734188` is not the image revision) |
+| Tested source tree | `63a18511b6fc631be4ce7730794874fbca0b6889` |
+| Public qualification metadata SHA256 | `7072e8fd9df439c099566ba69d973f8ed2e3333a4275981a6cf5d0cef8488c33` |
+| Engine / Web original component CI | 4,014 Engine tests / 1,134 browser tests; zero failures/errors, one inherited Engine skip; all 199 required Java methods and 39 Linux build controls passed. |
+| Broker tests in the official publisher | Unfiltered `go test ./...`; console-broker package passed in 2.795s. Both new bounded client-report projection methods are in the copied source; default Go output has no per-method result lines. |
+| Designated QA deployment | Initial health and a subsequent restart passed with the same exact Server571 container; HTTP200/pong, 3 Hosts/3 Agents, 4 mounts and all 19 Docker data volumes preserved. |
+| Runtime/APT/cache receipt pins | Deployment `fd7bfc7641d6c3d13a8c80f2ead76c3c7dc1e00188abcf8482bc796d047bb1e7`; all-host cache `66e646cd07db635ebb442b123cfaed9f7443b0a695ba5a9e168046ea4edfc72c`; APT19 `b515c86287249de581d3f42c5e800c2a13573f9b41402f485b77679720b4706b`. All 19 official ELF files, package pair and embedded lock matched. |
+| Project7 / LB7 / Host12 / B3 / weak-model / audit layouts | Functional acceptance remains pending and individually scoped; publication/deployment health does not establish these results or all 243 groups. |
+
+Selected-project typed editing accepts only name/description for the normally
+selected environment. Queries of other visible environments do not grant write
+access: switch context normally and obtain a fresh opaque reference before a new
+preview. Native project-owner, fresh Key/schema, queued-process, immutable
+approval and exact-once boundaries remain in force. Load-balancer metadata uses
+the native Service owner and separately authorized Stack reads; receipts reject
+changed target or parent identity even when requested values happen to match.
+
+Bridge 0.2.12 adds an explicit new-private-profile binding command. Bound restarts
+check the normalized endpoint and exact project identity, with no name fallback;
+legacy profiles are not overwritten. An unbound project rename is reported as a
+client NEEDS_USER event with its bounded reason detail. The human Key audit UI
+labels client-reported evidence as NOT_EVALUATED / REPORTED, never as a backend
+DENY. New Project7/LB7, restart/ref/weak-model cases and the client-audit block's
+52 locale/theme/viewport cells still need their own scoped native receipts.
+No full 243-group acceptance or workflow-SLSA claim is added.
+
+Operator settings, named volumes, restart policy, HTTPS origin, AppArmor and the
+four independent default-off AI opt-ins retain their existing contracts. Actual
+rollback to Server570 must retain the healthy container and matching data backup.
+
 <a id="server-v16570-publication"></a>
 
 ## Server v1.6.570 published

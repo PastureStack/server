@@ -1,7 +1,7 @@
 # Optional AI collaboration
 
-Published Server v1.6.568 combines Web Console 1.6.208 / optional bridge 0.2.10
-and Engine 0.183.369. The twelve
+Published Server v1.6.571 combines Web Console 1.6.210 / optional bridge 0.2.12
+and Engine 0.183.372. The twelve
 supported tools are `list_capabilities`, `find_resources`, `get_resource`,
 `preview_resource_change`, `apply_resource_change`, `find_stacks`,
 `find_services`, `get_service`, `update_service_description`,
@@ -14,9 +14,9 @@ Other platform operations retain their ordinary UI/API paths.
 
 ## Acceptance boundaries
 
-The full 243-group frontend workflow matrix is not complete. Server 1.6.568
+The full 243-group frontend workflow matrix is not complete. Server 1.6.571
 publication is recorded in the
-[compatibility contract](../COMPATIBILITY.md#server-v16568-publication).
+[compatibility contract](../COMPATIBILITY.md#server-v16571-publication).
 Designated deployment and native business acceptance are separate from publication
 and require their own runtime receipts. Native ServiceIndex and private OS-volume/
 pool cleanup repairs are included, but only the recorded business subcases establish
@@ -62,6 +62,14 @@ Service creation additionally accepts native port strings and a closed health-
 check object. Its verified result reports assigned ports separately from approved
 intent. Creates remain stopped. Advanced environment, mount, hardware, security
 and other UI form fields require subsequent adapters.
+
+Selected-environment and load-balancer plans accept only name and description.
+An environment edit must target the currently selected context: normally switch
+to another visible environment and find a fresh reference before editing it.
+The native project-owner check is retained; a Full Key does not add a role.
+Load-balancer metadata retains native Service authority and separate parent
+Stack reads; listeners, backends, weights and load-balancing configuration remain
+outside this metadata plan. A changed identity requires a new valid preview.
 
 Volume details add up to fifty currently readable active/stopped container
 references, including separately authorized Stack names where readable. Each
@@ -131,6 +139,14 @@ Keep the credential file local to that client. The bridge accepts HTTPS, with
 an HTTP exception only for loopback development connections. It does not take
 browser cookies, general-purpose Keys, arbitrary URLs or an approval command.
 
+Before a persistent environment rename through stdio, use the bridge guide's
+explicit profile-binding command to create a new private bound profile. It binds
+the endpoint and selected environment identity through fresh native reads, and
+never overwrites the original profile. A bound restart obtains fresh references
+for the same identity and its current name; references from the old process are
+stale. An unbound rename returns NEEDS_USER with the bounded binding-required
+reason, without creating a plan. Description changes keep their existing path.
+
 The client previews a typed resource change or image upgrade. The Key owner
 reviews its target and changes in the normal authenticated UI, then explicitly
 approves. The client applies that plan and reads the same operation until
@@ -153,6 +169,10 @@ Do not automatically retry an uncertain write.
 Per-Key audit distinguishes the server's authorization decision, the HTTP
 result and the later operation result. Client-reported tool events are labelled
 separately; an ALLOW decision or accepted request is not proof of completion.
+For the binding-required event, the normal Key action menu opens the owner's
+Key audit and shows the specific client-reported reason. These records are
+labelled NOT_EVALUATED and REPORTED: they do not assert a backend DENY or a
+verified operation. The 52 new-block layout cells remain separately tracked.
 Credentials, OTPs and description contents are not tool audit payloads.
 The Engine records the broker's complete query outcome separately from source
 page responses. Decisions written inside a Core transaction remain in the
