@@ -123,7 +123,24 @@ class EngineArchiveContract(unittest.TestCase):
         final = re.split(r'(?m)^FROM ', docker)[-1]
         self.assertLessEqual(1 + len(re.findall(r'(?m)^(?:RUN|COPY|ADD) ', final)), 32)
         self.assertNotIn('COPY --from=runtime_security_packages /out/tar /usr/bin/tar', final)
-        self.assertIn('sha256sum -c SHA256SUMS; \\\n    install -m 0755 tar /usr/bin/tar; \\\n    dpkg -i packages/*.deb;', final)
+        def check_security_layer(text):
+            markers = ('sha256sum -c SHA256SUMS;',
+                       'install -m 0755 tar /usr/bin/tar;', 'dpkg -i packages/*.deb;')
+            self.assertTrue(all(text.count(marker) == 1 for marker in markers))
+            positions = [text.index(marker) for marker in markers]
+            self.assertEqual(positions, sorted(positions))
+            starts = [text.rfind('\nRUN ', 0, position) for position in positions]
+            self.assertGreaterEqual(starts[0], 0)
+            self.assertEqual(len(set(starts)), 1)
+
+        check_security_layer(final)
+        with self.assertRaises(AssertionError):
+            check_security_layer(final.replace('    dpkg -i packages/*.deb;',
+                                               '\nRUN dpkg -i packages/*.deb;', 1))
+        with self.assertRaises(AssertionError):
+            check_security_layer(final.replace('sha256sum -c SHA256SUMS;', 'SWAPPED', 1)
+                                 .replace('dpkg -i packages/*.deb;', 'sha256sum -c SHA256SUMS;', 1)
+                                 .replace('SWAPPED', 'dpkg -i packages/*.deb;', 1))
 
 
 if __name__ == '__main__':
