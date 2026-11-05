@@ -1,5 +1,30 @@
 # Compatibility Contract
 
+<a id="server-v16568-candidate"></a>
+
+## Server v1.6.568 source candidate
+
+Server `v1.6.568` is a prepared source candidate, not a published image.
+It packages immutable-published Engine 0.183.369 and Web Console 1.6.208 /
+optional Bridge 0.2.10 using their original qualified bytes. Candidate image:
+`ghcr.io/pasturestack/server:v1.6.568`; run it only after its official release.
+Current installation instructions retain published Server 567.
+
+The bounded Volume usage read preserves fresh account/object/Key/schema checks
+and opaque target references. Hidden identities/counts and host source paths stay
+excluded; completeness remains unknown and no deletion safety is inferred.
+Native External TCP review states the LB-target-only boundary. Narrow AI/Audit
+modals preserve full values and native code scrolling. Bridge install versions
+are checked against both package identities, including raw Windows CRLF input.
+No tool, grant, write, default flag or other component coordinate is added.
+
+Component CI/publication/cryptographic evidence is complete; Server 568 image
+build, scan, SBOM, immutable publication and designated native permission,
+reference/audit/weak-model/layout acceptance remain pending. Existing VEX and
+pending finding identities/thresholds are unchanged. No whole-family or 243-group
+runtime completion is claimed. See the [candidate note](docs/releases/server-1.6.568.md).
+
+
 <a id="server-v16567-publication"></a>
 
 ## Server v1.6.567 published
