@@ -1,6 +1,7 @@
-# Server v1.6.571 candidate
+# Server v1.6.571
 
-Not published. Server image and deployment acceptance remain pending.
+Published immutable image. The designated QA deployment passed initial health
+and a subsequent restart; new business acceptance remains separately pending.
 
 ## Verified component inputs
 
@@ -38,3 +39,25 @@ origin and the previous healthy image. Back up the database and volumes and
 verify recovery before deployment. Rollback after data changes requires the
 matching database backup. Component CI and immutable publication do not replace
 deployment-specific business, permission or browser acceptance.
+
+## Publication evidence
+
+Official publisher: [42054870171](https://github.com/PastureStack/server/actions/runs/42054870171).
+Artifact source revision: `a578c4cac1f8d79386f2168f856a6a4aee7eecb2`.
+Tested tree: `63a18511b6fc631be4ce7730794874fbca0b6889`.
+Published image: `ghcr.io/pasturestack/server:v1.6.571@sha256:d59fce0b3eda6abd11de6bc0b43fecf35c1ac9c37ad05f57ed234351164c4e25`.
+All 35 anonymous assets, OCI/component identity, provenance and SBOM attestations
+passed independent readback. The official build ran unfiltered console-broker
+Go tests successfully, including the two new client-report projection methods.
+Effective scan findings retain nine MEDIUM entries; no CRITICAL/HIGH entries.
+
+This repository note is aligned after publication. The original public release
+asset stays immutable. The designated QA deployment retained the exact Server571 container through restart,
+HTTP200/pong, 3 Hosts/3 Agents, 4 mounts and all 19 Docker data volumes. All 19 official
+APT ELF hashes, package pair, runtime manifest and embedded lock matched; the
+three-daemon busybox cache was read back without new pulls. The prior healthy570
+container remains a rollback point with its matching-data requirements.
+
+Project7, LB7, Host12, B3, Bridge restart/ref/weak-model and client-audit 52-cell layout
+acceptance remain pending their own scoped receipts. No complete 243-group or
+workflow-SLSA acceptance is claimed.
