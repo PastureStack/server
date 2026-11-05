@@ -1,5 +1,19 @@
 # Compatibility Contract
 
+## Server v1.6.569 source candidate
+
+Server `v1.6.569` is a prepared source candidate, not a published image.
+It consumes published Engine v0.183.370, Web Console 1.6.209 and optional Bridge
+0.2.11; Catalog 0.20.17, Compose 0.14.41 and other component pins are retained.
+Host metadata updates require human approval and live authority; workload and
+Volume parent references remain bounded, permission-filtered and incomplete.
+Catalog binding occurs before scheduling. Official APT packages are SHA256-pinned;
+existing pending findings and security thresholds are not relaxed.
+
+Component CI/publication does not establish Server publication or runtime acceptance.
+See the [candidate scope and rollback requirements](docs/releases/server-1.6.569.md).
+README installation commands continue to use the current published numeric tag.
+
 <a id="server-v16568-publication"></a>
 
 ## Server v1.6.568 published

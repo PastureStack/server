@@ -90,13 +90,13 @@ ARG PER_HOST_SUBNET_STARTUP_SHA256=f22b41f18d1733c037babed4d2e0474efeedc6017a968
 ARG PER_HOST_SUBNET_PROVENANCE_SHA256=afa2db0e0755c6bd3ee28e111937c521a6d84e6d71d563e99202cf4693000eaf
 
 ARG WEB_CONSOLE_RELEASE_BASE_URL=https://github.com/PastureStack/web-console/releases/download
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.208
-ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.208.tar.gz
-ARG WEB_CONSOLE_ARTIFACT_SHA256=91384580cf5cb0e5ac618ed883638643f62701aefefca431fc771671e4c98894
-ARG WEB_CONSOLE_COMMIT=4f20e5d2f707086bdb4506f8f01b271104d04019
-ARG WEB_CONSOLE_LOCK_SHA256=ae7a38612ada96c2ce1075805a013bf3c68c4e3e79e1efd4d4502d2f20d09e93
-ARG WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT=web-console-1.6.208-runtime.cdx.json
-ARG WEB_CONSOLE_RUNTIME_SBOM_SHA256=a5f35523d39500f67f22ab0e4085ba1f8612972fb9f0e47080b3666431add7cf
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.209
+ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.209.tar.gz
+ARG WEB_CONSOLE_ARTIFACT_SHA256=88d295429b6de18bcd89c2367b99131c5a0e3ab5f9a024a93c5b05557026b3fb
+ARG WEB_CONSOLE_COMMIT=caf5e8e9be78c89cacbdbf11891be1ed21772f89
+ARG WEB_CONSOLE_LOCK_SHA256=e4fee3458155f76e30e87bd030a00a7802fc3c677a968b8250a30c8436c7fd1b
+ARG WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT=web-console-1.6.209-runtime.cdx.json
+ARG WEB_CONSOLE_RUNTIME_SBOM_SHA256=3b05888028f50dd93872ffa5f396289e860e259633e9aee9535a2a402f318e13
 ARG CATALOG_SERVICE_RELEASE_BASE_URL=https://github.com/PastureStack/catalog-service/releases/download
 ARG CATALOG_SERVICE_VERSION=0.20.17
 ARG CATALOG_SERVICE_COMMIT=2f70559e340865eb6243662ed33d8cbc7b1efa90
@@ -118,9 +118,9 @@ ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.5
 ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=f2df8874d5a00a2d5713594609063256164ed624d29a733149d00cb271f0f66b
 ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=b98e55db2739ab45119eacc94c8f65cb44371480ebcebec95e5470fd67c72a4c
 ARG ORCHESTRATION_ENGINE_RELEASE_BASE_URL=https://github.com/PastureStack/orchestration-engine/releases/download
-ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.369
+ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.370
 ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=7eb607a12d02c9d98a7b3e7377b01be1daf141de8730705a677de337b53e484b
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=c2f9726b61f8e147e4f0045a7feec251aa1a9da6cbdcaeb25de3642e5ddba765
 ARG COMPOSE_EXECUTOR_RELEASE_BASE_URL=https://github.com/PastureStack/compose-cli/releases/download
 ARG COMPOSE_EXECUTOR_VERSION=0.14.41
 ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=a9f489651e1457beaf0e27e04d578ca4d0f66dd60998faa539a20f4da55b19d0
@@ -546,12 +546,20 @@ ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4
 ARG FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2
 ARG LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1
 ARG BROTLI_PACKAGE_VERSION=1.2.0-3ubuntu0.1
+ARG APT_PACKAGE_VERSION=3.2.1ubuntu0.1
 ARG CA_CERTIFICATES_PACKAGE_VERSION=20260816ubuntu0.26.04.1
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /build
 COPY scripts/download-ubuntu-security-updates.sh /usr/local/libexec/pasturestack/download-ubuntu-security-updates.sh
 COPY security/ubuntu-security-packages.lock /build/ubuntu-security-packages.lock
 COPY security/official-brotli.lock.json /build/official-brotli.lock.json
+COPY security/official-apt.lock.json /build/official-apt.lock.json
+ADD --checksum=sha256:0de729b8fe0e1c67c04e8e8d5bd6e0420dbd47f75b93f0b71c8e740edc2d5ffc \
+    https://security.ubuntu.com/ubuntu/pool/main/a/apt/apt_3.2.1ubuntu0.1_amd64.deb \
+    /tmp/apt.deb
+ADD --checksum=sha256:94e5d41303265b66af0f8c70ade18bfb77260ad286edee6c8045faddef82b94c \
+    https://security.ubuntu.com/ubuntu/pool/main/a/apt/libapt-pkg7.0_3.2.1ubuntu0.1_amd64.deb \
+    /tmp/libapt-pkg7.0.deb
 ADD --checksum=sha256:bedeef1cf3268f90338c411cdb0a45b224d0660fd2240f310f380316c8244606 \
     https://security.ubuntu.com/ubuntu/pool/main/b/brotli/libbrotli1_1.2.0-3ubuntu0.1_amd64.deb \
     /tmp/libbrotli1.deb
@@ -577,6 +585,28 @@ ADD --checksum=sha256:7c0b37592f83a629cc22f0c98effa176da9edbd6d77b3f38184a9d0ddc
     https://security.ubuntu.com/ubuntu/pool/main/c/curl/libcurl4t64_8.18.0-1ubuntu2.8_amd64.deb \
     /tmp/libcurl4t64.deb
 RUN set -eux; \
+    printf '%s  %s\n' 0de729b8fe0e1c67c04e8e8d5bd6e0420dbd47f75b93f0b71c8e740edc2d5ffc /tmp/apt.deb 94e5d41303265b66af0f8c70ade18bfb77260ad286edee6c8045faddef82b94c /tmp/libapt-pkg7.0.deb | sha256sum -c -; \
+    test "$(wc -c < /tmp/apt.deb)" -eq 1506688; \
+    test "$(wc -c < /tmp/libapt-pkg7.0.deb)" -eq 1139022; \
+    . /etc/os-release; \
+    test "$ID:$VERSION_ID" = ubuntu:26.04; \
+    test "$(dpkg --print-architecture)" = amd64; \
+    for package in apt libapt-pkg7.0; do \
+      test "$(dpkg-query -W -f='${db:Status-Status}' "$package")" = installed; \
+      test "$(dpkg-query -W -f='${Architecture}' "$package")" = amd64; \
+      dpkg --compare-versions "$(dpkg-query -W -f='${Version}' "$package")" le "${APT_PACKAGE_VERSION}"; \
+      package_file="/tmp/${package}.deb"; \
+      test "$(dpkg-deb -f "$package_file" Package)" = "$package"; \
+      test "$(dpkg-deb -f "$package_file" Version)" = "${APT_PACKAGE_VERSION}"; \
+      test "$(dpkg-deb -f "$package_file" Architecture)" = amd64; \
+    done; \
+    apt_configuration_before="$(find /etc/apt -type f -exec sha256sum {} + | LC_ALL=C sort)"; \
+    dpkg -i /tmp/libapt-pkg7.0.deb /tmp/apt.deb; \
+    for package in apt libapt-pkg7.0; do \
+      test "$(dpkg-query -W -f='${Version}' "$package")" = "${APT_PACKAGE_VERSION}"; \
+      test "$(dpkg-query -W -f='${db:Status-Status}' "$package")" = installed; \
+    done; \
+    test "$(find /etc/apt -type f -exec sha256sum {} + | LC_ALL=C sort)" = "$apt_configuration_before"; \
     mkdir -p /tmp/ca-bootstrap /etc/ssl/certs; \
     dpkg-deb --extract /tmp/ca-certificates.deb /tmp/ca-bootstrap; \
     find /tmp/ca-bootstrap/usr/share/ca-certificates -type f -name '*.crt' | \
@@ -590,7 +620,13 @@ RUN set -eux; \
       > /etc/apt/apt.conf.d/80pasturestack-snapshot; \
     apt-get update; \
     apt-get install -y --no-install-recommends ca-certificates tar; \
-    mkdir -p /out/packages; \
+    mkdir -p /out/packages /out/official-apt; \
+    for package in apt libapt-pkg7.0; do \
+      cp "/tmp/${package}.deb" "/out/packages/${package}_${APT_PACKAGE_VERSION}_amd64.deb"; \
+    done; \
+    printf '%s  %s\n' 0de729b8fe0e1c67c04e8e8d5bd6e0420dbd47f75b93f0b71c8e740edc2d5ffc "/out/packages/apt_${APT_PACKAGE_VERSION}_amd64.deb" 94e5d41303265b66af0f8c70ade18bfb77260ad286edee6c8045faddef82b94c "/out/packages/libapt-pkg7.0_${APT_PACKAGE_VERSION}_amd64.deb" | sha256sum -c -; \
+    cp /build/official-apt.lock.json /out/official-apt/lock.json; \
+    dpkg-query -W -f='${Package}\t${Version}\t${Architecture}\t${db:Status-Status}\n' apt libapt-pkg7.0 > /out/official-apt/builder-packages.tsv; \
     test "$(dpkg-deb -f /tmp/ca-certificates.deb Package)" = ca-certificates; \
     test "$(dpkg-deb -f /tmp/ca-certificates.deb Version)" = "${CA_CERTIFICATES_PACKAGE_VERSION}"; \
     cp /tmp/ca-certificates.deb "/out/packages/ca-certificates_${CA_CERTIFICATES_PACKAGE_VERSION}_all.deb"; \
@@ -667,7 +703,7 @@ RUN set -eux; \
     cp /tmp/libbrotli1.deb /out/official-brotli/libbrotli1.deb; \
     cp /build/official-brotli.lock.json /out/official-brotli/lock.json; \
     cd /out; \
-    sha256sum packages/*.deb official-brotli/* tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 freetype-runtime.sha256 libpng-runtime.sha256 > SHA256SUMS
+    sha256sum packages/*.deb official-brotli/* official-apt/* tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 freetype-runtime.sha256 libpng-runtime.sha256 > SHA256SUMS
 RUN sh /usr/local/libexec/pasturestack/download-ubuntu-security-updates.sh \
       /build/ubuntu-security-packages.lock /etc/ssl/certs/ca-certificates.crt /out/security-updates
 
@@ -709,12 +745,12 @@ ARG PER_HOST_SUBNET_VERSION=0.2.5
 ARG PER_HOST_SUBNET_PRODUCER_COMMIT=e102e0bb38d84b0a9cbf87e5458cf1bc74d01904
 ARG PER_HOST_SUBNET_ARCHIVE_SHA256=7237e83e96a64e7f3de64eb86bff9721c4e879c35cda9e9de1e4cb1ba225f298
 ARG PER_HOST_SUBNET_PROVENANCE_SHA256=afa2db0e0755c6bd3ee28e111937c521a6d84e6d71d563e99202cf4693000eaf
-ARG SERVER_RELEASE_TAG=v1.6.568
+ARG SERVER_RELEASE_TAG=v1.6.569
 ARG API_EXPLORER_RELEASE_TAG=v1.1.20
 ARG API_EXPLORER_ARTIFACT_SHA256=c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb
 ARG API_EXPLORER_COMMIT=a586f0dc0aa50df579049a8d4bf26f04400fdf75
-ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.369
-ARG ORCHESTRATION_ENGINE_VERSION=0.183.369
+ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.370
+ARG ORCHESTRATION_ENGINE_VERSION=0.183.370
 ARG ENGINE_READONLY_SCHEMA_SHA256=7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233
 ARG ENGINE_RESTRICTED_SCHEMA_SHA256=f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51
 ARG HOST_API_VERSION=0.38.8
@@ -731,16 +767,17 @@ ARG LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4
 ARG FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2
 ARG LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1
 ARG BROTLI_PACKAGE_VERSION=1.2.0-3ubuntu0.1
+ARG APT_PACKAGE_VERSION=3.2.1ubuntu0.1
 ARG CA_CERTIFICATES_PACKAGE_VERSION=20260816ubuntu0.26.04.1
 ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4
 ARG GLIBC_RUNTIME_PACKAGE_VERSION=2.43-2ubuntu2.4+pasturestack.1
 ARG PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3
 ARG PCRE2_PACKAGE_VERSION=10.46-1build1+pasturestack.1
-ARG WEB_CONSOLE_RELEASE_TAG=1.6.208
-ARG WEB_CONSOLE_ARTIFACT_SHA256=91384580cf5cb0e5ac618ed883638643f62701aefefca431fc771671e4c98894
-ARG WEB_CONSOLE_COMMIT=4f20e5d2f707086bdb4506f8f01b271104d04019
-ARG WEB_CONSOLE_LOCK_SHA256=ae7a38612ada96c2ce1075805a013bf3c68c4e3e79e1efd4d4502d2f20d09e93
-ARG WEB_CONSOLE_RUNTIME_SBOM_SHA256=a5f35523d39500f67f22ab0e4085ba1f8612972fb9f0e47080b3666431add7cf
+ARG WEB_CONSOLE_RELEASE_TAG=1.6.209
+ARG WEB_CONSOLE_ARTIFACT_SHA256=88d295429b6de18bcd89c2367b99131c5a0e3ab5f9a024a93c5b05557026b3fb
+ARG WEB_CONSOLE_COMMIT=caf5e8e9be78c89cacbdbf11891be1ed21772f89
+ARG WEB_CONSOLE_LOCK_SHA256=e4fee3458155f76e30e87bd030a00a7802fc3c677a968b8250a30c8436c7fd1b
+ARG WEB_CONSOLE_RUNTIME_SBOM_SHA256=3b05888028f50dd93872ffa5f396289e860e259633e9aee9535a2a402f318e13
 ARG CATALOG_SERVICE_VERSION=0.20.17
 ARG CATALOG_SERVICE_COMMIT=2f70559e340865eb6243662ed33d8cbc7b1efa90
 ARG CATALOG_SERVICE_ARCHIVE_SHA256=4f83f89763ce325262baf8984782da2c21fd81e3cc22c0a1c76aaa50b2a50f20
@@ -759,8 +796,8 @@ ARG WEBHOOK_AUTOMATION_SERVICE_VERSION=0.10.5
 ARG WEBHOOK_AUTOMATION_SERVICE_COMMIT=4da77ccac464bc7f7cd2020e0659a666a5d1ff7e
 ARG WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=f2df8874d5a00a2d5713594609063256164ed624d29a733149d00cb271f0f66b
 ARG WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=b98e55db2739ab45119eacc94c8f65cb44371480ebcebec95e5470fd67c72a4c
-ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=7eb607a12d02c9d98a7b3e7377b01be1daf141de8730705a677de337b53e484b
-ARG ORCHESTRATION_ENGINE_COMMIT=69eba9f0e7e60907334a0514f19c84bb48a22f4c
+ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=c2f9726b61f8e147e4f0045a7feec251aa1a9da6cbdcaeb25de3642e5ddba765
+ARG ORCHESTRATION_ENGINE_COMMIT=efa6e4acf2bb023411ee7ab213c4a84d346e2662
 ARG HOST_PROVISIONER_VERSION=0.39.10
 ARG HOST_PROVISIONER_COMMIT=d5f6d5c9f4f0599f4bf1bdc9d5d0cca2e2e0c1ba
 ARG HOST_PROVISIONER_ARCHIVE_SHA256=fd8a814c5810746091ba3192a9fd31699e6865a2598654b9bbb55eae90bef661
@@ -799,7 +836,27 @@ RUN --mount=from=ubuntu_security_backports,source=/out,target=/opt/pasturestack/
     install -D -m 0755 /tmp/pasturestack-security-input/verify-pcre2-runtime.sh /usr/local/libexec/pasturestack/verify-pcre2-runtime.sh; \
     sha256sum -c SHA256SUMS; \
     install -m 0755 tar /usr/bin/tar; \
+    . /etc/os-release; \
+    test "$ID:$VERSION_ID" = ubuntu:26.04; \
+    test "$(dpkg --print-architecture)" = amd64; \
+    for package in apt libapt-pkg7.0; do \
+      test "$(dpkg-query -W -f='${db:Status-Status}' "$package")" = installed; \
+      test "$(dpkg-query -W -f='${Architecture}' "$package")" = amd64; \
+      dpkg --compare-versions "$(dpkg-query -W -f='${Version}' "$package")" le "${APT_PACKAGE_VERSION}"; \
+      package_file="packages/${package}_${APT_PACKAGE_VERSION}_amd64.deb"; \
+      test "$(dpkg-deb -f "$package_file" Package)" = "$package"; \
+      test "$(dpkg-deb -f "$package_file" Version)" = "${APT_PACKAGE_VERSION}"; \
+      test "$(dpkg-deb -f "$package_file" Architecture)" = amd64; \
+    done; \
+    apt_configuration_before="$(find /etc/apt -type f -exec sha256sum {} + | LC_ALL=C sort)"; \
     dpkg -i packages/*.deb; \
+    for package in apt libapt-pkg7.0; do \
+      test "$(dpkg-query -W -f='${Version}' "$package")" = "${APT_PACKAGE_VERSION}"; \
+      test "$(dpkg-query -W -f='${db:Status-Status}' "$package")" = installed; \
+    done; \
+    test "$(find /etc/apt -type f -exec sha256sum {} + | LC_ALL=C sort)" = "$apt_configuration_before"; \
+    install -D -m 0644 official-apt/lock.json /usr/share/pasturestack/security/apt-official/lock.json; \
+    dpkg-query -W -f='${Package}\t${Version}\t${Architecture}\t${db:Status-Status}\n' apt libapt-pkg7.0 > /usr/share/pasturestack/security/apt-official/runtime-packages.tsv; \
     install -D -m 0644 /tmp/pasturestack-security-input/ubuntu-security-packages.lock /usr/share/pasturestack/security/ubuntu-security-packages.lock; \
     sh /tmp/pasturestack-security-input/install-ubuntu-security-updates.sh /usr/share/pasturestack/security/ubuntu-security-packages.lock /tmp/pasturestack-runtime-security/security-updates; \
     rm -f /usr/lib/x86_64-linux-gnu/libz.so.1.3.2; \

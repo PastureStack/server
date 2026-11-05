@@ -45,7 +45,7 @@ class CurlFixedVexTests(unittest.TestCase):
 
     def test_actual_gate_accepts_only_the_eighteen_exact_official_fixes(self):
         self.assertEqual(len(self.indices), 18)
-        self.assertEqual(len(VEX['statements']), 69)
+        self.assertEqual(len(VEX['statements']), 57)
         self.assertTrue(self.gate_accepts(VEX))
         for index in self.indices:
             statement = VEX['statements'][index]

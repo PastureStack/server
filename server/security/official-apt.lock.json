@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "distribution": "ubuntu-26.04",
+  "architecture": "amd64",
+  "source": "apt",
+  "cve": "CVE-2026-109518",
+  "notice": "https://ubuntu.com/security/notices/USN-8996-1",
+  "version": "3.2.1ubuntu0.1",
+  "packages": [
+    {
+      "package": "apt",
+      "previousVersion": "3.2.0",
+      "version": "3.2.1ubuntu0.1",
+      "architecture": "amd64",
+      "archiveUrl": "https://security.ubuntu.com/ubuntu/pool/main/a/apt/apt_3.2.1ubuntu0.1_amd64.deb",
+      "archiveSha256": "0de729b8fe0e1c67c04e8e8d5bd6e0420dbd47f75b93f0b71c8e740edc2d5ffc",
+      "archiveBytes": 1506688
+    },
+    {
+      "package": "libapt-pkg7.0",
+      "previousVersion": "3.2.0",
+      "version": "3.2.1ubuntu0.1",
+      "architecture": "amd64",
+      "archiveUrl": "https://security.ubuntu.com/ubuntu/pool/main/a/apt/libapt-pkg7.0_3.2.1ubuntu0.1_amd64.deb",
+      "archiveSha256": "94e5d41303265b66af0f8c70ade18bfb77260ad286edee6c8045faddef82b94c",
+      "archiveBytes": 1139022
+    }
+  ],
+  "indexEvidence": {
+    "inReleaseSha256": "328216bb6389b8319eb34d94af4517177537dfec423c211e3f4b9f6900171612",
+    "packagesSha256": "5270d170c92ac81bb54098fb559bc068c8e819241bcb0d97ebd9cc3ddbd8d534",
+    "packagesBytes": 655304,
+    "packagesHashMatchesInRelease": true,
+    "localOpenPgpVerification": "NOT_EXECUTED_NO_CLAIM"
+  }
+}
