@@ -130,7 +130,7 @@ class CoverageTest(unittest.TestCase):
             self.assertEqual(validate_vex_payloads(report, Path(folder)), 0)
 
     def test_compose_openpgp_review_binds_exact_new_payload_and_positive_controls(self):
-        review = json.loads((Path(__file__).parent / 'reviews/compose-0.14.41-openpgp.json').read_bytes())
+        review = json.loads((Path(__file__).parent / 'reviews/compose-0.14.42-openpgp.json').read_bytes())
         scope, artifact = review['scope'], review['artifact']
         self.assertIn((scope['executable'], scope['module']), OPENPGP_VEX_SCOPE)
         self.assertEqual(scope['advisory'], 'GO-2026-5932')
@@ -139,7 +139,7 @@ class CoverageTest(unittest.TestCase):
         self.assertFalse(scope['moduleDeclaredFixed'])
         self.assertFalse(scope['newConsumerOrScopeAllowed'])
         self.assertEqual(OPENPGP_VEX_BINARY_SHA256[scope['executable']], artifact['binarySha256'])
-        self.assertEqual(artifact['releaseVersion'], '0.14.41')
+        self.assertEqual(artifact['releaseVersion'], '0.14.42')
         self.assertEqual(artifact['compiler'], 'go1.27.3')
         self.assertTrue(artifact['releaseGzipAndOfficialTestedProductBytesIdentical'])
         graph, symbols = review['sourceGraph'], review['symbolEvidence']
