@@ -1,5 +1,40 @@
 # Compatibility Contract
 
+<a id="server-v16570-publication"></a>
+
+## Server v1.6.570 published
+
+[Server v1.6.570](https://github.com/PastureStack/server/releases/tag/v1.6.570)
+packages published Engine v0.183.371, Web Console 1.6.209 and optional Bridge
+0.2.11. Catalog 0.20.17, Compose 0.14.41 and other component coordinates are unchanged.
+
+The [official publisher](https://github.com/PastureStack/server/actions/runs/42039677681)
+passed source, build, start/restart and security checks. Its immutable release
+contains 35 public assets. Independent asset-byte/crypto readback and deployment
+acceptance are separate; publication does not establish Host, Catalog or full
+243-group business acceptance.
+
+| Evidence | Published value |
+|---|---|
+| Immutable publication identity | `ghcr.io/pasturestack/server:v1.6.570@sha256:e07a81bf07eedab77eabe7f42c654f4e43a5752e5824f9feeeb52dc1e6cceb0a` |
+| Publisher source revision | `dd0a9cebbbcec57d562aa1cb2b035f2b56ae0943` |
+| Tested tree | `fc87a2cbb44609c13118635af759a09980658e3b` |
+
+Engine fixes Docker Host model recognition and the exact Catalog delegation
+version-root handshake; existing owner, role, Key revision, source and human
+approval checks remain in force. Signed APT index failures now stop the package
+stage before installation, without changing snapshot, package, GPG or TLS pins.
+Engine's original CI passed 3,988 tests, zero failures/errors and one inherited
+skip, all 173 required Java methods and 38 Linux build controls. Web's 1,129-test
+qualification and current SDK handshake are retained; Bridge clean-install
+remains a carry from 0.2.5. Raw/effective scan evidence and inherited CodeQL
+findings remain separate; no zero-CVE or workflow SLSA claim is added.
+
+Selected-project editing, the new client-audit reason display and new LB metadata
+candidates are not included. Host/Catalog business acceptance remains unclaimed.
+Operator settings, named volumes, restart policy, HTTPS origin, AppArmor,
+default-off AI opt-ins and matching-data rollback requirements are unchanged.
+
 <a id="server-v16569-publication"></a>
 
 ## Server v1.6.569 published
