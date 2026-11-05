@@ -28,7 +28,7 @@ OPENPGP_VEX_BINARY_SHA256 = {
     'usr/bin/authentication-service.real': 'e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192',
     'usr/bin/docker-machine': '8c257c4eec578fd6ae0f198d8ccc5fa449aa00b8a590096489595f2d840e697c',
     'usr/bin/docker-machine-driver-packet': 'a4146c973254d36f8b1edcd8298c55154db600e24af6226810f4ed9ec4e5fb79',
-    'usr/bin/compose-executor.real': '5cb5acf7c99788294e01dc03c2dac1080e1fc4db6184e5deb614ea38debc7768',
+    'usr/bin/compose-executor.real': 'aba99b567196d4c96c4860ad4297107badf7193bea529f0cfd7e190983d14264',
     'usr/bin/host-provisioner.real': '92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff',
 }
 
