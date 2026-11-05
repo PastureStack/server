@@ -1,4 +1,8 @@
-# Server v1.6.573
+# Server v1.6.573 candidate
+
+Not published.
+
+## Verified component inputs
 
 Packages Orchestration Engine v0.183.373, Web Console 1.6.214 with Bridge
 0.2.16, and Compose CLI v0.14.43 from their original qualified releases.
