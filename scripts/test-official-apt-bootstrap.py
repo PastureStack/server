@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Source/mock guards only: no downloads, package installs or image builds."""
-import argparse
 import copy
 import hashlib
 import json
@@ -224,9 +223,8 @@ def run_vex():
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--shell', default=shutil.which('sh'))
-    arguments = parser.parse_args()
-    assert arguments.shell and Path(arguments.shell).is_file(), 'POSIX shell required; no skip/fallback'
-    run(arguments.shell)
+    assert len(sys.argv) == 1, 'Command-line overrides are not accepted'
+    shell = shutil.which('sh')
+    assert shell and Path(shell).is_file(), 'POSIX shell required; no skip/fallback'
+    run(shell)
     run_vex()
