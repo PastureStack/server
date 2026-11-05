@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "release": "v1.6.573",
-  "generatedAt": "2026-10-29T09:57:33.809116+00:00",
+  "generatedAt": "2026-11-05T23:05:14.989623+00:00",
   "policy": {
     "allowedSeverities": [
       "LOW",
@@ -18,16 +18,16 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-102473",
-      "reviewAfter": "2026-11-05",
+      "reviewAfter": "2026-11-12",
       "packages": [
         {
           "name": "dash",
           "installedVersion": "0.5.12-12ubuntu3"
         }
       ],
-      "verifiedAt": "2026-10-29T09:57:07.268087+00:00",
+      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
       "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-102473.json",
-      "upstreamVendorStatus": "deferred",
+      "upstreamVendorStatus": "Vulnerable, fix deferred",
       "vendorEvidenceSha256": "ee3ce5fd986db42e62aff6989b4957bac30ce2a4667d035f1333f5bef171a3f0"
     },
     {
@@ -35,25 +35,25 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-102474",
-      "reviewAfter": "2026-11-05",
+      "reviewAfter": "2026-11-12",
       "packages": [
         {
           "name": "dash",
           "installedVersion": "0.5.12-12ubuntu3"
         }
       ],
-      "verifiedAt": "2026-10-29T09:57:07.268087+00:00",
+      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
       "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-102474.json",
-      "upstreamVendorStatus": "deferred",
+      "upstreamVendorStatus": "Vulnerable, fix deferred",
       "vendorEvidenceSha256": "269f45920d570ea9a9c7f4c192082dcb19123b019b1459fe8569b57862c6f86e"
     },
     {
       "vulnerabilityId": "CVE-2026-107161",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
-      "upstreamVendorStatus": "deferred",
+      "upstreamVendorStatus": "Vulnerable, fix deferred",
       "source": "https://ubuntu.com/security/CVE-2026-107161",
-      "reviewAfter": "2026-11-05",
+      "reviewAfter": "2026-11-12",
       "severityBasis": "Ubuntu priority Medium and the scanner's vendor severity; upstream CVSS v3 7.5 High is not a fix or a not-affected decision.",
       "packages": [
         {
@@ -65,7 +65,7 @@
           "installedVersion": "2.1.28+dfsg1-9ubuntu3"
         }
       ],
-      "verifiedAt": "2026-10-29T09:57:07.268087+00:00",
+      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
       "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-107161.json",
       "vendorEvidenceSha256": "93e0ff1c051b635fd12e912a2a14f23da82369b10d8c3a7f68dc672b3a3cb3d8"
     },
@@ -74,86 +74,117 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-67693",
-      "reviewAfter": "2026-11-05",
+      "reviewAfter": "2026-11-12",
       "packages": [
         {
           "name": "libgnutls30t64",
           "installedVersion": "3.8.12-2ubuntu1.1"
         }
       ],
-      "verifiedAt": "2026-10-29T09:57:07.268087+00:00",
+      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
       "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-67693.json",
-      "upstreamVendorStatus": "deferred",
-      "vendorEvidenceSha256": "cc2f1e0582680b8ce803cb5fe23f4ad52076be85d15346041d9c6ff0eb46bf14"
+      "upstreamVendorStatus": "Vulnerable, fix deferred",
+      "vendorEvidenceSha256": "a335090a80ed1933aa9010eff1fd99e9d56453bfc724fe6d618b0c47a49e6950"
     },
     {
       "vulnerabilityId": "CVE-2026-88647",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-88647",
-      "reviewAfter": "2026-11-05",
+      "reviewAfter": "2026-11-12",
       "packages": [
         {
           "name": "libgnutls30t64",
           "installedVersion": "3.8.12-2ubuntu1.1"
         }
       ],
-      "verifiedAt": "2026-10-29T09:57:07.268087+00:00",
+      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
       "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-88647.json",
-      "upstreamVendorStatus": "deferred",
-      "vendorEvidenceSha256": "691d53b0422bb396bd5c5318c5e767a58fb7ef0787bb17d237c36c0a975a9f07"
+      "upstreamVendorStatus": "Vulnerable, fix deferred",
+      "vendorEvidenceSha256": "c7b645f7a2cac68eea00bf4455389b000d86223dd9e699a7188198e433ddc9d7"
     },
     {
       "vulnerabilityId": "CVE-2026-88648",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
-      "upstreamVendorStatus": "deferred",
+      "upstreamVendorStatus": "Vulnerable, fix deferred",
       "source": "https://ubuntu.com/security/CVE-2026-88648",
-      "reviewAfter": "2026-11-05",
+      "reviewAfter": "2026-11-12",
       "packages": [
         {
           "name": "libgnutls30t64",
           "installedVersion": "3.8.12-2ubuntu1.1"
         }
       ],
-      "verifiedAt": "2026-10-29T09:57:07.268087+00:00",
+      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
       "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-88648.json",
       "notes": "Canonical lists Ubuntu 26.04 gnutls28 as vulnerable with its fix deferred. The official OSV range has no fixed event and the current runtime scan has an empty FixedVersion. Retain the raw finding; do not claim remediation or not_affected.",
-      "vendorEvidenceSha256": "cd2e721b40d5fe5b37e69de24ff3b3bb4c6aef20cbe8b643778f2413112e2846"
+      "vendorEvidenceSha256": "290d33ac8008f4164ec0813ffb4136fdf6ca0c3b788f1b4e71eb46eb9e76f61a"
     },
     {
       "vulnerabilityId": "CVE-2026-95184",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-95184",
-      "reviewAfter": "2026-11-05",
+      "reviewAfter": "2026-11-12",
       "packages": [
         {
           "name": "libgnutls30t64",
           "installedVersion": "3.8.12-2ubuntu1.1"
         }
       ],
-      "verifiedAt": "2026-10-29T09:57:07.268087+00:00",
+      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
       "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-95184.json",
-      "upstreamVendorStatus": "deferred",
-      "vendorEvidenceSha256": "0d460c6b3ead6382852ad4413413c1adffaf9680c1aaf3abf2b727344b1a4ac0"
+      "upstreamVendorStatus": "Vulnerable, fix deferred",
+      "vendorEvidenceSha256": "9387aa81f6b19804fae57e4849a46ba3dbb4e67b6d97a1f32b26693590549758"
     },
     {
       "vulnerabilityId": "CVE-2026-95210",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-95210",
-      "reviewAfter": "2026-11-05",
+      "reviewAfter": "2026-11-12",
       "packages": [
         {
           "name": "libgnutls30t64",
           "installedVersion": "3.8.12-2ubuntu1.1"
         }
       ],
-      "verifiedAt": "2026-10-29T09:57:07.268087+00:00",
+      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
       "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-95210.json",
-      "upstreamVendorStatus": "deferred",
-      "vendorEvidenceSha256": "3346e54d52e88e9521aa60871c147ffca621436244694f13a9f4646ebf50a711"
+      "upstreamVendorStatus": "Vulnerable, fix deferred",
+      "vendorEvidenceSha256": "e223ff15f050bcc5a7cbe914158b646217c57139a8d31ebc81fbe439a6acc382"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-82560",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-82560",
+      "packages": [
+        {
+          "name": "libperl5.40",
+          "installedVersion": "5.40.1-7ubuntu0.3"
+        },
+        {
+          "name": "perl",
+          "installedVersion": "5.40.1-7ubuntu0.3"
+        },
+        {
+          "name": "perl-base",
+          "installedVersion": "5.40.1-7ubuntu0.3"
+        },
+        {
+          "name": "perl-modules-5.40",
+          "installedVersion": "5.40.1-7ubuntu0.3"
+        }
+      ],
+      "severityBasis": "Ubuntu priority Medium and scanner vendor severity. Upstream CVSS 7.5 High is retained; no not-affected claim.",
+      "fixStatus": "Upstream podlators 6.1.1 exists; the Ubuntu 26.04 package remains Vulnerable without a fixed version. Track the vendor package update; do not replace distribution modules.",
+      "reviewAfter": "2026-11-12",
+      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-82560.json",
+      "vendorEvidenceSha256": "204828515fa8d0893c4574b9845722eb806995255e884f0e8222dd63f42ca4e5",
+      "upstreamVendorStatus": "Vulnerable"
     }
   ],
   "retiredFindings": [
