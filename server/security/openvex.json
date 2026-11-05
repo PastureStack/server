@@ -1,9 +1,9 @@
 {
   "@context": "https://openvex.dev/ns/v0.2.0",
-  "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.568",
+  "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.569",
   "author": "PastureStack Security",
-  "timestamp": "2026-11-04T21:39:16Z",
-  "version": 81,
+  "timestamp": "2026-11-05T03:55:02Z",
+  "version": 82,
   "statements": [
     {
       "vulnerability": {
@@ -950,6 +950,21 @@
       ],
       "status": "fixed",
       "impact_statement": "CVE-2026-89162 is fixed by the official PCRE2 release/pcre2-10.46 backports through 947809f11e9c9744aa0974b4b630a1ae461733dd (https://github.com/PCRE2Project/pcre2/blob/pcre2-10.49/SUPPORT-LIFECYCLE.md). This first-party 10.46-1build1+pasturestack.1 rebuild retains original Ubuntu source packaging and ABI; it is not issued by Canonical. All twelve exact SHA-256-pinned official backports, the original three native test suites, package metadata, ELF integrity and five runtime consumers are mandatory build/publication gates. Raw scanner findings remain available; this disposition applies only to the two exact patched package PURLs."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-109518"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/apt@3.2.1ubuntu0.1?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/libapt-pkg7.0@3.2.1ubuntu0.1?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "Ubuntu USN-8996-1 (https://ubuntu.com/security/notices/USN-8996-1) fixes CVE-2026-109518 in the official Ubuntu 26.04 amd64 apt and libapt-pkg7.0 version 3.2.1ubuntu0.1. The exact official apt archive SHA-256 is 0de729b8fe0e1c67c04e8e8d5bd6e0420dbd47f75b93f0b71c8e740edc2d5ffc; the libapt-pkg7.0 archive SHA-256 is 94e5d41303265b66af0f8c70ade18bfb77260ad286edee6c8045faddef82b94c. Assembly requires both packages already installed, validates official archive hashes, sizes and package/version/architecture before the first Ubuntu APT operation, and carries the same bytes into the final runtime with exact installed-version readback. This fixed disposition applies only to the two exact official fixed-package PURLs; older versions, other packages and raw scanner findings remain unchanged."
     }
   ]
 }
