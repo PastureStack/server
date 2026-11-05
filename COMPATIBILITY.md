@@ -1,5 +1,51 @@
 # Compatibility Contract
 
+<a id="server-v16572-publication"></a>
+
+## Server v1.6.572 published
+
+[Server v1.6.572](https://github.com/PastureStack/server/releases/tag/v1.6.572)
+packages Engine v0.183.372, Web Console 1.6.211, optional Bridge 0.2.13,
+Catalog 0.20.17 and Compose Executor 0.14.42 from their immutable published
+artifacts. Engine schemas, the APT lock, runtime settings and the four
+independent default-off AI opt-ins retain their existing contracts.
+
+The [original publisher](https://github.com/PastureStack/server/actions/runs/42090849778)
+passed its source, build, security and startup/restart gates. Independent
+readback verified all 35 public assets and native OCI provenance/SBOM
+attestations. The effective scan retains nine MEDIUM findings and zero
+CRITICAL/HIGH findings; this is not a zero-CVE claim.
+
+| Evidence | Verified published value |
+|---|---|
+| Immutable image identity | `ghcr.io/pasturestack/server:v1.6.572@sha256:f0d244b1bb857e76157884bc74228ebfae1fa4fd000b4ceab85a66ad1637b630` |
+| Publisher source revision | `f7e031febfb1fad6ba16f4bd242a34e5289f2a88` |
+| Tested source tree | `39ce30ea24534b7a4a9dd29c5b1e26e253cf2efd` |
+| Original Engine / Web CI | 4,014 Engine tests, zero failures/errors and one inherited skip; 199 required Java methods. Web: 1,140 browser tests and all 50 focused methods (39 Node / 11 QUnit), zero failures. |
+| Bridge source / dependencies | 45 source files / 47 ZIP entries; SDK 1.32.2; 92 components / 95 locations. A fresh source-archive SDK handshake passed; clean-install evidence remains a carry from 0.2.5. |
+| Designated deployment | Initial health and restart passed; HTTP200/pong, 3 Hosts / 3 Agents, 4 mounts and all 19 Docker data volumes preserved. |
+
+Web 1.6.211 fixes passive reload/session adoption without changing the
+asynchronous login/logout mutex or relaxing captured-credential validation.
+Compose 0.14.42 shares the exact typed Catalog mutation projection used by
+preview, including explicit empty service links. Ordinary and legacy SDK
+request bytes remain unchanged; Engine's request-digest checks remain strict.
+The existing OpenPGP qualification is rebound only to the exact 0.14.42 binary.
+
+Publication and deployment health do not establish complete business acceptance.
+The three-tab passive reload assertions passed in 2.183s; the original report's
+separate driver-close failure is preserved. Catalog's native workflow attempt
+failed after delegation rejected a request; the complete launch workflow remains
+under correction. Project7, LB7, weak-model and
+52-cell client-audit layout acceptance remain pending. Prior Host, TCP and Volume
+evidence retains its original scope. Process diagnostics from the unpublished
+follow-up cohort are not included. No full 243-group or workflow-SLSA claim is made.
+
+Preserve operator origin/performance settings, AppArmor, restart policy and all
+three named volumes. Retain the healthy Server571 rollback container and its
+matching data backup; do not restore an older image against incompatible data.
+See the [release note](docs/releases/server-1.6.572.md) for these boundaries.
+
 <a id="server-v16571-publication"></a>
 
 ## Server v1.6.571 published
