@@ -1,4 +1,9 @@
-# Server v1.6.572
+# Server v1.6.572 candidate
+
+Publication and deployment acceptance are recorded separately after their
+respective checks complete.
+
+## Verified component inputs
 
 This version integrates Compose Executor 0.14.42 and Web Console 1.6.211 /
 Bridge 0.2.13 from their qualified, immutable release artifacts. Publication
