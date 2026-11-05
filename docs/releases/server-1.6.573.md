@@ -36,3 +36,9 @@ Component CI and signed release evidence accompany the component assets.
 The Server image digest, security findings and scoped runtime acceptance are
 reported separately with the published image and acceptance workbook. Component
 test success does not mean every frontend workflow has completed acceptance.
+
+The runtime vendor-pending ledger records CVE-2026-82560 for four Perl
+packages at 5.40.1-7ubuntu0.3. Ubuntu 26.04 currently has no fixed package;
+the upstream podlators fix does not establish a distribution package fix.
+The original scanner findings remain visible and the existing severity,
+available-fix and exact-package checks remain enforced.
