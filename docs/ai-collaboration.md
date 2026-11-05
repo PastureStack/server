@@ -1,7 +1,7 @@
 # Optional AI collaboration
 
-Published Server v1.6.567 combines Web Console 1.6.207 / optional bridge 0.2.9
-and Engine 0.183.368. The twelve
+Published Server v1.6.568 combines Web Console 1.6.208 / optional bridge 0.2.10
+and Engine 0.183.369. The twelve
 supported tools are `list_capabilities`, `find_resources`, `get_resource`,
 `preview_resource_change`, `apply_resource_change`, `find_stacks`,
 `find_services`, `get_service`, `update_service_description`,
@@ -14,12 +14,12 @@ Other platform operations retain their ordinary UI/API paths.
 
 ## Acceptance boundaries
 
-The full 243-group frontend workflow matrix is not complete. Server 1.6.567
+The full 243-group frontend workflow matrix is not complete. Server 1.6.568
 publication is recorded in the
-[compatibility contract](../COMPATIBILITY.md#server-v16567-publication).
-Matching deployment and native business acceptance remain pending; Server 566
-remains the designated runtime. Native ServiceIndex and private OS-volume/pool
-cleanup repairs are included, but only the recorded business subcases establish
+[compatibility contract](../COMPATIBILITY.md#server-v16568-publication).
+Designated deployment and native business acceptance are separate from publication
+and require their own runtime receipts. Native ServiceIndex and private OS-volume/
+pool cleanup repairs are included, but only the recorded business subcases establish
 their own acceptance. Do not broaden a Key, replay an uncertain write or treat
 runtime health as proof of the complete lifecycle. Ordinary Full/legacy UI and
 API paths retain their permissions.
@@ -63,11 +63,20 @@ check object. Its verified result reports assigned ports separately from approve
 intent. Creates remain stopped. Advanced environment, mount, hardware, security
 and other UI form fields require subsequent adapters.
 
+Volume details add up to fifty currently readable active/stopped container
+references, including separately authorized Stack names where readable. Each
+reference remains bound to the current context. Hidden identities/counts, host
+source paths and secrets are withheld. Completeness remains unknown when
+relationships are limited or unavailable; an empty result never means unused or
+safe to delete. This read adds no grant, tool or write and does not change the
+native unallocated-volume or deletion rules.
+
 External Services add stopped creation and bounded hostname or IP targets;
 the two target modes cannot be mixed. Creation also accepts an optional closed TCP
-health check with a required port and optional timing/threshold settings. HTTP
-checks and External health-check updates remain unsupported. DNS Aliases are created
-stopped and empty,
+health check with a required port and optional timing/threshold settings. It is
+used only when the External Service is a load-balancer target; ordinary External
+Service deployment health is not proof of a TCP probe. HTTP checks and External
+health-check updates remain unsupported. DNS Aliases are created stopped and empty,
 then bind authorized local Service targets through a separate reviewed plan.
 Advanced/remote links and incoming-consumer/cross-source Alias cleanup remain
 unsupported. These source-supported paths do not imply live acceptance.

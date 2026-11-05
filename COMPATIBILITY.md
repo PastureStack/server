@@ -1,29 +1,55 @@
 # Compatibility Contract
 
-<a id="server-v16568-candidate"></a>
+<a id="server-v16568-publication"></a>
 
-## Server v1.6.568 source candidate
+## Server v1.6.568 published
 
-Server `v1.6.568` is a prepared source candidate, not a published image.
-It packages immutable-published Engine 0.183.369 and Web Console 1.6.208 /
-optional Bridge 0.2.10 using their original qualified bytes. Candidate image:
-`ghcr.io/pasturestack/server:v1.6.568`; run it only after its official release.
-Current installation instructions retain published Server 567.
+[Server v1.6.568](https://github.com/PastureStack/server/releases/tag/v1.6.568)
+packages published Engine 0.183.369, Web Console 1.6.208 and optional Bridge 0.2.10.
+Catalog 0.20.17, Compose 0.14.41 and all other component coordinates are retained.
+Bounded Volume usage reads preserve fresh account/object/role/Key/schema checks
+and opaque target references. Hidden identities/counts, host source paths and
+secrets stay excluded; unknown completeness never establishes unused storage or
+delete safety. External TCP review states the native load-balancer-target-only
+boundary. Scoped AI/Audit dialogs retain full long values and native code scrolling
+in narrow RTL viewports. No tool, grant, write or default flag is added.
 
-The bounded Volume usage read preserves fresh account/object/Key/schema checks
-and opaque target references. Hidden identities/counts and host source paths stay
-excluded; completeness remains unknown and no deletion safety is inferred.
-Native External TCP review states the LB-target-only boundary. Narrow AI/Audit
-modals preserve full values and native code scrolling. Bridge install versions
-are checked against both package identities, including raw Windows CRLF input.
-No tool, grant, write, default flag or other component coordinate is added.
+The original [publisher 41940218456](https://github.com/PastureStack/server/actions/runs/41940218456)
+completed successfully. All 35 public assets and the OCI identity passed anonymous
+checksum/length verification; native image provenance and SBOM attestations passed.
+Startup and restart passed on the publisher's disposable candidate. The source
+release note mirrors the immutable public release-note asset byte for byte.
 
-Component CI/publication/cryptographic evidence is complete; Server 568 image
-build, scan, SBOM, immutable publication and designated native permission,
-reference/audit/weak-model/layout acceptance remain pending. Existing VEX and
-pending finding identities/thresholds are unchanged. No whole-family or 243-group
-runtime completion is claimed. See the [candidate note](docs/releases/server-1.6.568.md).
+| Evidence | Verified value |
+|---|---|
+| Immutable publication identity | `ghcr.io/pasturestack/server:v1.6.568@sha256:d078fecbada57470fbfdd6c261e62882fa0aeb4aed3644539875a98516d8282e` |
+| Runtime producer | `d1ee401f61acbc7b0c2c10276b768c39e32b7155` |
+| Tested tree | `7515b40aca81b10056df2a53b640d6e8aa715abf` |
+| Designated deployment and business acceptance | Separate from publication and tracked by their own runtime receipts; no completion is claimed here. |
 
+The actual final scan records 50 raw findings and nine registered Medium package
+occurrences covering eight CVEs after VEX, with zero Critical/High,
+fixed-available, untracked or secret findings. Browser runtime SBOM coverage
+remains incomplete. Existing VEX statements, pending finding identities and
+security thresholds are unchanged; no finding is claimed patched by this assembly.
+
+Engine's original 427 suites / 3,957 tests and all 142 required methods passed;
+ten new and sixteen inherited affected methods passed. Its twelve public assets
+and cryptographic immutable-release attestation passed. Engine workflow SLSA
+remains NOT_PROVIDED; its four inherited lower CodeQL findings and 44 Medium /
+seven Low effective Dapper findings remain disclosed.
+Web's full/enabled CI and CodeQL passed with 1,129 browser tests, three Volume Node
+cases, one thirteen-locale LB-warning case, two layout QUnit cases and four
+install-version Python controls. Its thirteen public assets, archive provenance,
+runtime-SBOM and immutable-release attestations passed. Bridge retains 36 source
+files / 38 ZIP entries / 92 components: 0.2.5 clean-install evidence is carried,
+while the 0.2.10 SDK stdio handshake is new verified evidence.
+
+These results do not establish designated native permission/reference/audit,
+weak-model or RTL layout acceptance. Original failures and unaffected scoped PASS
+retain their scope; full 243-group frontend acceptance is incomplete. Installation
+examples use numeric tag `v1.6.568`. See the exact published
+[release note](docs/releases/server-1.6.568.md).
 
 <a id="server-v16567-publication"></a>
 
