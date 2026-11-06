@@ -1,5 +1,45 @@
 # Compatibility Contract
 
+<a id="server-v16573-publication"></a>
+
+## Server v1.6.573 published
+
+[Server v1.6.573](https://github.com/PastureStack/server/releases/tag/v1.6.573)
+packages Engine 0.183.373, Web Console 1.6.214 / optional Bridge 0.2.16,
+Catalog 0.20.17 and Compose Executor 0.14.43 from immutable component artifacts.
+The four default-off AI opt-ins, native roles and API Key ceilings remain unchanged.
+
+| Evidence | Verified value |
+|---|---|
+| Image | `ghcr.io/pasturestack/server:v1.6.573@sha256:aafbbd0d0be6872534f453ba5fe426ca48ba06d03235014ecd5c239a4fbc56e8` |
+| Publisher revision / tree | `231261a8bd81a72163a99b655d62b2bf1b15d903` / `75617812017593e83f7b788fbfec64eca1ad04ed` |
+| Original publisher | [42127235234](https://github.com/PastureStack/server/actions/runs/42127235234) |
+| Publication | 35 public assets and native OCI provenance/SBOM attestations verified. |
+| Component CI | Engine: 4,023 tests, zero failures/errors, one inherited skip; 208 required methods. Web: 1,140 browser tests and 61 focused methods, zero failures. |
+| Optional Bridge | 47 source files / 49 ZIP entries; SDK 1.32.2, 92 components / 95 locations. Fresh SDK handshake; clean-install evidence retains its original 0.2.5 scope. |
+| Deployment / restart | HTTP200/pong; 3 Hosts / 3 Agents, 4 mounts, 19 Docker volumes and operator origin/performance/AppArmor/restart settings preserved. |
+| Logical-volume continuity | 474 unrelated rows exact; the old Server root detached normally and one new root became active. |
+| Security | Zero effective CRITICAL/HIGH findings; 13 unresolved MEDIUM package findings across nine CVEs remain tracked. This is not a zero-CVE claim. |
+
+Bound Bridge startup uses policy discovery before the exact saved environment
+read. Resource details retain freshly authorized parent Stack context. Compose
+Catalog delegation preserves the typed approved payload and stable new-Stack
+binding. Process diagnostics expose bounded safe summaries through existing
+query tools, with unknown completeness and no replay or raw exception access.
+
+The runtime ledger records four Perl package findings for CVE-2026-82560.
+Ubuntu 26.04 still has no fixed package; upstream podlators 6.1.1 is recorded
+separately. Raw findings, exact package/version/target checks and blocking of
+available fixes or untracked findings are retained.
+
+Deployment and component CI are separate from end-to-end workflow acceptance.
+Catalog B3, Project7, LB7, Process diagnostics, weak-model and client-audit layout
+results remain under acceptance; no complete 243-group result is claimed.
+Retain Server572 and its matching backup for rollback. Reuse the original mounts
+and operator configuration; do not downgrade against incompatible data.
+See the [release note](docs/releases/server-1.6.573.md).
+
+
 <a id="server-v16572-publication"></a>
 
 ## Server v1.6.572 published
