@@ -1,8 +1,10 @@
-# Server v1.6.575 candidate
+# Server v1.6.575
 
-## Candidate boundary
+Published image: `ghcr.io/pasturestack/server:v1.6.575@sha256:8e5f129dbe6406c5ab2c41aa845fdd1f9a7383232ff173d1c7d13c2bba9256aa`.
 
-Normal required CI and Server575 publication remain pending. The Server574 installation guide remains current. Component qualification does not establish Server deployment or native business acceptance.
+Source commit: `f47f6624f9229e9aa2d3af9b34754422839b1379`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 

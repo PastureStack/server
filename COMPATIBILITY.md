@@ -1,5 +1,41 @@
 # Compatibility Contract
 
+<a id="server-v16575-publication"></a>
+
+## Server v1.6.575 published
+
+[Server v1.6.575](https://github.com/PastureStack/server/releases/tag/v1.6.575)
+packages Engine 0.183.377, Web Console 1.6.217 / optional Bridge 0.2.19,
+Catalog 0.20.17 and Compose Executor 0.14.43 from immutable component artifacts.
+
+| Evidence | Verified value |
+|---|---|
+| Image | `ghcr.io/pasturestack/server:v1.6.575@sha256:8e5f129dbe6406c5ab2c41aa845fdd1f9a7383232ff173d1c7d13c2bba9256aa` |
+| Candidate producer | `961f164dba155dc0ad726c0dec0598b880b14137` |
+| Image publisher revision / tested tree | `f47f6624f9229e9aa2d3af9b34754422839b1379` / `37c8ae1d173c360a7773f10ed8540d3764222ed2` |
+| Official publisher | [42192869339](https://github.com/PastureStack/server/actions/runs/42192869339): source, build, flattening, security, startup/restart, image push and OCI attestations passed. |
+| Public readback | Immutable Release 436302387; all 35 anonymous assets matched their sizes, SHA256 values and checksum manifest. Native release crypto verified 36 subjects; OCI provenance and SBOM signatures passed. |
+| Original component CI | Engine: 4,053 tests, zero failures/errors, one inherited skip and 238 required methods. Web: 1,141 browser tests and 75 focused methods. |
+| Optional Bridge | 48 source files / 49 manifest rows / 50 ZIP entries; one fresh SDK handshake, 92 components / 95 locations. Clean-install evidence retains its original 0.2.5 scope. |
+| Security | Zero effective CRITICAL/HIGH or available-fix findings; the same 13 tracked MEDIUM package findings remain. Raw scans, official package pins and severity gates are preserved. |
+| Deployment and business acceptance | Pending separately. Official workflow checks do not establish operator deployment, affected business workflows, attached-volume, weak-model or whole-243-group acceptance. |
+
+Human Key-audit details use an exact native event-ID/account filter. All-time
+queries use the fresh authorized Key-selector capability on MySQL/MariaDB;
+H2/HSQLDB keep bounded history. Errors cannot fall back to an unfiltered query.
+The existing actor, visible-Project, Key/revision and record checks remain in
+force, without truncating history or increasing the scan cap.
+
+AI resource reviews remain anchored to the viewport after page scrolling, with
+long values scrolling internally. Standalone Container creation preserves
+reviewed native port mappings in stopped configuration; live binding requires a
+separate approved start. Native roles, Key ceilings, opt-ins and other component
+and runtime settings remain unchanged.
+
+Preserve Server574 and its matching backup as the immediate rollback. Reuse the
+original mounts and operator configuration. This documentation commit is separate
+from the image publisher revision. See the [immutable release note](docs/releases/server-1.6.575.md).
+
 <a id="server-v16574-publication"></a>
 
 ## Server v1.6.574 published
