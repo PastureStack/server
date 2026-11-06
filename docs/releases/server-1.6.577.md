@@ -1,4 +1,10 @@
-# Server v1.6.577 candidate
+# Server v1.6.577
+
+Published image: `ghcr.io/pasturestack/server:v1.6.577@sha256:b2124eb8cad1713335221aefc6dcb505f1009168e7b82ab8941d280479e1fc84`.
+
+Source commit: `7b5d2642d98c78ee97f6583e06cb81a83732c371`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
