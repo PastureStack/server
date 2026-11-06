@@ -13,36 +13,19 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.577`](https://github.com/PastureStack/server/releases/tag/v1.6.577)
-packages Engine `v0.183.379`, Web Console `1.6.220` / optional bridge `0.2.22`,
+[Server `v1.6.578`](https://github.com/PastureStack/server/releases/tag/v1.6.578)
+packages Engine `v0.183.380`, Web Console `1.6.221` / optional bridge `0.2.23`,
 Catalog `0.20.17` and Compose `0.14.43`.
 
-Non-Global load balancers support human-reviewed manual scaling while preserving
-configuration and active/inactive state. An exact attested canceled Container-start
-process produces a fixed failed receipt; a stopped state alone does not establish
-failure. Metadata previews explain the nested parameters envelope without bypassing
-validation or human confirmation. Native business acceptance remains separate.
+Optional AI tools support bounded resource discovery, human-reviewed changes and
+an opt-in Stack dependency view. Native roles, API Key limits and the four
+independent default-off settings remain authoritative. Dependency results can be
+partial; an empty graph does not establish permission to stop or remove resources.
 
-API Key details show configured policy without claiming effective grants. Typed
-TCP load-balancer creation requires explicit activation and ordered rules;
-start/stop retains native authority, human review and configuration readback.
-Client-report text wraps within audit columns, including narrow RTL layouts.
-
-Key-audit details use exact native event filters. Supported MySQL/MariaDB audit
-queries select the Key before pagination; unsupported databases keep the bounded
-history path. Capability errors never retry without the selector. AI resource
-reviews remain anchored to the viewport when the page is scrolled.
-
-Optional AI tools provide bounded resource discovery, human-reviewed changes
-and read-only process summaries. Native roles, API Key limits and the four
-independent default-off opt-ins remain authoritative. Raw process exceptions,
-credentials and arbitrary HTTP requests are not exposed to these tools.
-
-See the [release note](docs/releases/server-1.6.577.md) and
-[publication record](COMPATIBILITY.md#server-v16577-publication) for component
-identity and scoped results. Publication and deployment health do not establish
-complete Catalog, metadata, weak-model or 243-group business acceptance. See the
+See the [release note](docs/releases/server-1.6.578.md),
+[publication record](COMPATIBILITY.md#server-v16578-publication) and
 [acceptance boundaries](docs/ai-collaboration.md#workload-retirement-limitation).
+Publishing an image does not establish complete business-workflow acceptance.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
@@ -89,7 +72,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.577
+  ghcr.io/pasturestack/server:v1.6.578
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -97,7 +80,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.577
+    image: ghcr.io/pasturestack/server:v1.6.578
     restart: unless-stopped
     ports:
       - "8080:8080"

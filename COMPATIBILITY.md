@@ -1,5 +1,32 @@
 # Compatibility Contract
 
+<a id="server-v16578-publication"></a>
+
+## Server v1.6.578 published
+
+[Server v1.6.578](https://github.com/PastureStack/server/releases/tag/v1.6.578)
+packages Engine 0.183.380, Web Console 1.6.221 / optional Bridge 0.2.23,
+Catalog 0.20.17 and Compose Executor 0.14.43 from immutable component artifacts.
+
+| Evidence | Verified value |
+|---|---|
+| Image | `ghcr.io/pasturestack/server:v1.6.578@sha256:05a2e55fe05c9101b367b09aaa058d4c617a7583b6e81f162780b5889b3a3a9d` |
+| Publisher revision / tested tree | `27cff5bbdbf46fde0ebf8c737640eaca48c3c40e` / `c58baf3b465b771a90c9ae9ce78f21ded4810d81` |
+| Official publisher | [42276197533](https://github.com/PastureStack/server/actions/runs/42276197533): source, build, flattening, security, startup/restart, image push and OCI attestations passed. |
+| Public readback | Immutable Release 436883454; all 35 anonymous assets matched size, SHA256 and the checksum manifest. Native release crypto verified all 36 subjects; OCI provenance and SBOM signatures passed. |
+| Original component CI | Engine: 4,084 tests, zero failures/errors, one inherited skip and 269 required methods. Web: 1,142 browser tests and 95 focused methods. |
+| Optional Bridge | 49 source files / 50 manifest rows / 51 ZIP entries; one fresh SDK handshake, 92 components / 95 locations. |
+| Security | Zero effective CRITICAL/HIGH or available-fix findings; 13 tracked vendor-pending MEDIUM findings remain. Raw scans, the reported incomplete browser coverage and original severity gates are preserved. |
+| Operator acceptance | Separate from publication; this record does not establish whole-243-group business acceptance. |
+
+The optional Stack graph returns only currently authorized ordinary-Service
+relations with bounded nodes/edges and unknown completeness. Omitted views do not
+query graph data; empty results never authorize destructive changes. CA bootstrap
+uses a fixed official snapshot with unchanged package bytes and SHA256. Existing
+runtime defaults, stored settings, native role/Key checks and default-off opt-ins
+are preserved. Retain the previous image, matching backup and original operator
+configuration for rollback. See the [release note](docs/releases/server-1.6.578.md).
+
 <a id="server-v16577-publication"></a>
 
 ## Server v1.6.577 published
