@@ -1,5 +1,33 @@
 # Compatibility Contract
 
+<a id="server-v16579-publication"></a>
+
+## Server v1.6.579 published
+
+[Server v1.6.579](https://github.com/PastureStack/server/releases/tag/v1.6.579)
+packages Engine 0.183.381, Web Console 1.6.222 / optional Bridge 0.2.24,
+Catalog 0.20.17 and Compose Executor 0.14.43 from immutable component artifacts.
+
+| Evidence | Verified value |
+|---|---|
+| Image | `ghcr.io/pasturestack/server:v1.6.579@sha256:f2b7e409457aa95e0b622101a355e000d82be846a66b59f837163298705aabbe` |
+| Publisher revision / tested tree | `4ad463e7149536b8c2bc17b3321c6f0fb4988926` / `c2b2f99b5db3b3d73386cfe828091755e740ffd9` |
+| Official publisher | [42303807649](https://github.com/PastureStack/server/actions/runs/42303807649): source, build, flattening, security, startup/restart, image push and OCI attestations passed. |
+| Public readback | Immutable Release 437124168; all 35 anonymous assets matched size, SHA256 and the checksum manifest. Native release crypto verified all 36 subjects; OCI provenance and SBOM signatures passed. |
+| Original component CI | Engine: 4,084 tests, zero failures/errors, one inherited skip and 269 required methods. Web: 1,142 browser tests and 102 focused methods. |
+| Optional Bridge | 49 source files / 50 manifest rows / 51 ZIP entries; one fresh SDK handshake, 92 components / 95 locations. |
+| Security | Zero effective CRITICAL/HIGH or available-fix findings; 13 tracked vendor-pending MEDIUM findings remain. Raw scans, the reported incomplete browser coverage and original severity gates are preserved. |
+| Operator acceptance | Separate from publication; this record does not establish whole-243-group business acceptance. |
+
+Engine381 fixes false denial when the framework returns numeric Stack/backend
+references. Web222 aligns administrator Project discovery and gives an actionable
+correction for legacy references passed to generic resource tools. Native role,
+Key and human-confirmation limits remain unchanged. Web222 retains its published
+minimum/matching Engine380 contract; this Server assembly separately verifies the
+current fourteen-input ABI against Engine381. Runtime defaults, stored settings
+and default-off opt-ins are preserved. Retain the previous image, matching backup and original operator
+configuration for rollback. See the [release note](docs/releases/server-1.6.579.md).
+
 <a id="server-v16578-publication"></a>
 
 ## Server v1.6.578 published
