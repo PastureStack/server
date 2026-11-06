@@ -1,9 +1,21 @@
-# Server v1.6.574 candidate
+# Server v1.6.574
 
-## Candidate boundary
+Published image: `ghcr.io/pasturestack/server:v1.6.574@sha256:c0c7348ad2cfa372ca8fb65cc409b6bd97dc301fa576350e03535ec40cae6651`.
 
-This source candidate is not a published Server image or deployment result.
-The normal Server workflow must build, scan and qualify the image before use.
+Image source: `1cf5e90ff06c3e37e5babcf2ad6c5753fd55a910`; tested tree
+`024e712709534a99d0b9682045ffbdf5a65fa218`.
+
+The original official workflow passed build, security, startup/restart, image push
+and OCI attestation checks, then failed at release-note rendering. Fixed official
+completion [42149039216](https://github.com/PastureStack/server/actions/runs/42149039216)
+published the original evidence and image without rebuilding. Independent public
+readback verified the immutable Release, all 35 asset sizes/SHA256 values and both
+native OCI attestations. The original failed run remains recorded in the
+[publication contract](../../COMPATIBILITY.md#server-v16574-publication).
+
+Designated deployment/restart, exact storage/cache readback and native business
+acceptance on this cohort remain pending. Component tests and workflow startup
+checks are not whole-workflow acceptance.
 
 ## Verified component inputs
 

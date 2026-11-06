@@ -1,5 +1,40 @@
 # Compatibility Contract
 
+<a id="server-v16574-publication"></a>
+
+## Server v1.6.574 published
+
+[Server v1.6.574](https://github.com/PastureStack/server/releases/tag/v1.6.574)
+packages Engine 0.183.375, Web Console 1.6.215 / optional Bridge 0.2.17,
+Catalog 0.20.17 and Compose Executor 0.14.43 from immutable component artifacts.
+Native roles, API Key ceilings and the four default-off AI opt-ins are unchanged.
+
+| Evidence | Verified value |
+|---|---|
+| Image | `ghcr.io/pasturestack/server:v1.6.574@sha256:c0c7348ad2cfa372ca8fb65cc409b6bd97dc301fa576350e03535ec40cae6651` |
+| Image publisher revision / tree | `1cf5e90ff06c3e37e5babcf2ad6c5753fd55a910` / `024e712709534a99d0b9682045ffbdf5a65fa218` |
+| Original build and image publication | [42146869143](https://github.com/PastureStack/server/actions/runs/42146869143): source, build, security, startup/restart, image push and both OCI attestations passed. The final release-note rendering step failed; that original failure is retained. |
+| Exact publication completion | [42149039216](https://github.com/PastureStack/server/actions/runs/42149039216) passed using the original evidence artifact and image digest. Only the pinned source-note heading was canonicalized before the original renderer, report compression and checksum process. No image was rebuilt, retagged or pushed. |
+| Completion source | `b83407c64e65f9087f6e934d80f708839d2fed0b`; this documentation/recovery commit is separate from the image publisher revision. |
+| Public readback | Immutable Release 436023467; all 35 anonymous asset sizes/SHA256 values and native OCI provenance/SBOM attestations matched. |
+| Original component CI | Engine: 4,037 tests, zero failures/errors, one inherited skip; 222 required methods. Web: 1,140 browser tests and 69 focused methods, zero failures. |
+| Optional Bridge | 48 source files / 50 ZIP entries; fresh SDK handshake, 92 components / 95 locations. Clean-install evidence retains its original 0.2.5 scope. |
+| Security | Zero effective CRITICAL/HIGH findings; the same 13 tracked MEDIUM package findings remain. Raw scan, official package pins and severity gates are preserved; this is not a zero-CVE claim. |
+| Designated deployment and business acceptance | Pending on this Server cohort. Official workflow startup/restart and component tests do not establish operator deployment, Project7, LB7, Catalog, Process, weak-model or complete 243-group acceptance. |
+
+Project metadata reads and exact captured processing remain authorized during a
+normal updating-active transition. New writes still require an active Project,
+and failed native processing cannot be verified merely from persisted values.
+Service finish-upgrade, rollback and cancel-upgrade use the existing typed
+preview, human approval and operation readback; cancellation verifies its native
+checkpoint rather than claiming a completed upgrade. Unsupported cancel-rollback
+is not exposed by these adapters.
+
+Preserve Server573 and its matching backup as the immediate rollback. Reuse the
+original mounts and operator configuration; do not downgrade against incompatible
+data. See the [release note](docs/releases/server-1.6.574.md).
+
+
 <a id="server-v16573-publication"></a>
 
 ## Server v1.6.573 published
