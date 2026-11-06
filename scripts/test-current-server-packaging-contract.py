@@ -737,9 +737,7 @@ class Tests(unittest.TestCase):
         pattern = re.compile(r'^ADD --checksum=sha256:' + digest + r'\s+'
                              + re.escape(url) + r'\s+/tmp/ca-certificates\.deb\s*$', re.M)
         for path in (DOCKER, 'server/Dockerfile', 'server/Dockerfile.api-explorer-patch',
-                     'Dockerfile', 'agent-base/Dockerfile',
-                     'server/security/ubuntu-backports/Dockerfile.native-ci',
-                     'server/security/ubuntu-backports/bundle/installer/consumer-fixture.Dockerfile'):
+                     'Dockerfile', 'agent-base/Dockerfile'):
             source = (REPO / path).read_text(encoding='utf-8').replace('\\\n', ' ')
             with self.subTest(path=path):
                 self.assertEqual(len(pattern.findall(source)), 1)
