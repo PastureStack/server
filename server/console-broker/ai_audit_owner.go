@@ -115,11 +115,27 @@ func (b *broker) fetchAIAuditSource(ctx context.Context, incoming *http.Request,
 	if state == nil {
 		return auditUpstreamCollection{}, aiAuditInvalid()
 	}
+	capabilitiesOnly := false
+	if items, present := values["capabilitiesOnly"]; present {
+		if category != "auditLog" || resourceID != "" || projectID != "" || keyKind != "" || len(values) != 1 || len(items) != 1 || items[0] != "true" {
+			return auditUpstreamCollection{}, aiAuditInvalid()
+		}
+		capabilitiesOnly = true
+	}
 	page := map[string]any{"limit": 1000}
+	if capabilitiesOnly {
+		page = map[string]any{"capabilitiesOnly": true}
+	}
 	for native, typed := range map[string]string{"marker": "marker", "projectId": "projectId", "accountId": "accountId", "created_gte": "from", "created_lte": "to"} {
 		if value := values.Get(native); value != "" {
 			page[typed] = value
 		}
+	}
+	if items, present := values["keyId"]; present {
+		if category != "auditLog" || resourceID != "" || len(items) != 1 || !keyAuditIDPattern.MatchString(items[0]) {
+			return auditUpstreamCollection{}, aiAuditInvalid()
+		}
+		page["keyId"] = items[0]
 	}
 	if projectID != "" {
 		page["projectId"] = projectID
@@ -166,11 +182,13 @@ func (b *broker) fetchAIAuditSource(ctx context.Context, incoming *http.Request,
 		return auditUpstreamCollection{}, &auditHTTPError{Status: status, Code: "audit_upstream_denied", Message: "Audit source denied"}
 	}
 	var result struct {
-		ResourceType     string           `json:"resourceType"`
-		Data             []map[string]any `json:"data"`
-		NextMarker       *string          `json:"nextMarker"`
-		SourcePageResult bool             `json:"sourcePageResult"`
-		Authority        struct {
+		ResourceType       string                     `json:"resourceType"`
+		Data               []map[string]any           `json:"data"`
+		NextMarker         *string                    `json:"-"`
+		NextMarkerRaw      json.RawMessage            `json:"nextMarker"`
+		NativeCapabilities map[string]json.RawMessage `json:"nativeCapabilities"`
+		SourcePageResult   bool                       `json:"sourcePageResult"`
+		Authority          struct {
 			ActorID      string `json:"actorId"`
 			AccountID    string `json:"accountId"`
 			CredentialID string `json:"credentialId"`
@@ -189,7 +207,19 @@ func (b *broker) fetchAIAuditSource(ctx context.Context, incoming *http.Request,
 		state.input.Authorization == "" && (result.Authority.CredentialID != "" || result.Authority.Revision != 0 || result.Authority.Kind != "") {
 		return auditUpstreamCollection{}, &auditHTTPError{Status: 502, Code: "invalid_key_authority", Message: "Audit source authority changed"}
 	}
+	if len(result.NextMarkerRaw) > 0 && json.Unmarshal(result.NextMarkerRaw, &result.NextMarker) != nil {
+		return auditUpstreamCollection{}, &auditHTTPError{Status: 502, Code: "invalid_audit_response", Message: "Audit source pagination rejected"}
+	}
 	collection := auditUpstreamCollection{Data: result.Data, Pagination: map[string]any{}, viewerAccountID: result.Authority.ActorID}
+	if capabilitiesOnly {
+		rawCapability, present := result.NativeCapabilities["keyIdSelector"]
+		var supported bool
+		if result.Data == nil || len(result.Data) != 0 || string(bytes.TrimSpace(result.NextMarkerRaw)) != "null" || len(result.NativeCapabilities) != 1 || !present || (string(bytes.TrimSpace(rawCapability)) != "true" && string(bytes.TrimSpace(rawCapability)) != "false") || json.Unmarshal(rawCapability, &supported) != nil {
+			return auditUpstreamCollection{}, &auditHTTPError{Status: 502, Code: "invalid_audit_response", Message: "Audit source capability could not be verified"}
+		}
+		collection.keyIDSelector = &supported
+		return collection, nil
+	}
 	if result.NextMarker != nil {
 		if len(result.Data) == 0 || !keyAuditIDPattern.MatchString(*result.NextMarker) ||
 			*result.NextMarker != auditString(result.Data[len(result.Data)-1], "id") || *result.NextMarker == values.Get("marker") {

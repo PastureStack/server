@@ -29,6 +29,7 @@ type auditUpstreamFixture struct {
 	applyTimeBounds bool
 	nextAuditQuery  string
 	viewerAccountID string
+	keyIDSelector   bool
 }
 
 func newAuditUpstreamFixture(t *testing.T) *auditUpstreamFixture {
@@ -45,6 +46,8 @@ func newAuditUpstreamFixture(t *testing.T) *auditUpstreamFixture {
 			writer.Header().Set("X-API-USER-ID", fixture.viewerAccountID)
 		}
 		switch request.URL.Path {
+		case "/v2-beta/schemas/auditLog":
+			_ = json.NewEncoder(writer).Encode(selectorCapabilitySchema(fixture.keyIDSelector))
 		case "/v2-beta/projects":
 			writeFixtureCollection(writer, []map[string]any{
 				{"type": "project", "id": "1p1", "displayName": "正式環境"},

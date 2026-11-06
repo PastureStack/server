@@ -87,6 +87,7 @@ type auditUpstreamCollection struct {
 	Pagination map[string]any   `json:"pagination"`
 	// Principal identity comes only from the Engine response header, never JSON.
 	viewerAccountID string
+	keyIDSelector   *bool
 }
 
 type auditHTTPError struct {
@@ -351,6 +352,15 @@ func (b *broker) runAuditQuery(ctx context.Context, incoming *http.Request, quer
 		"sort":  {"id"},
 		"order": {"desc"},
 	}
+	if query.KeyID != "" {
+		supported, capabilityErr := b.auditKeySelectorCapability(ctx, incoming, viewer)
+		if capabilityErr != nil {
+			return auditResult{}, capabilityErr
+		}
+		if supported {
+			upstreamValues.Set("keyId", query.KeyID)
+		}
+	}
 	if !query.AllTime {
 		upstreamValues.Set("created_gte", query.From.Format(time.RFC3339Nano))
 		// Bound the upstream candidate set too; the local [from,to) check
@@ -446,7 +456,7 @@ func (b *broker) fetchAllAuditLogsForViewer(ctx context.Context, incoming *http.
 	for name, items := range values {
 		fixedValues[name] = append([]string(nil), items...)
 	}
-	for _, name := range []string{"created_gte", "created_lte", "accountId", "projectId"} {
+	for _, name := range []string{"created_gte", "created_lte", "accountId", "projectId", "keyId"} {
 		if _, present := fixedValues[name]; !present {
 			fixedValues[name] = nil // An unbounded/personal query stays that way.
 		}
@@ -484,6 +494,17 @@ func (b *broker) fetchAllAuditLogsForViewer(ctx context.Context, incoming *http.
 	return nil, &auditHTTPError{Status: http.StatusUnprocessableEntity, Code: "result_set_too_large", Message: "Narrow the audit log time range or environment before continuing"}
 }
 
+func (b *broker) auditKeySelectorCapability(ctx context.Context, incoming *http.Request, viewer string) (bool, error) {
+	collection, err := b.fetchAuditPagePolicy(ctx, incoming, "/v2-beta/schemas/auditLog", nil, true)
+	if err != nil {
+		return false, err
+	}
+	if collection.keyIDSelector == nil || !keyAuditIDPattern.MatchString(viewer) || collection.viewerAccountID != viewer {
+		return false, &auditHTTPError{Status: 502, Code: "invalid_key_authority", Message: "Audit schema authority changed"}
+	}
+	return *collection.keyIDSelector, nil
+}
+
 func (b *broker) fetchAuditCollection(ctx context.Context, incoming *http.Request, path string, values url.Values) ([]map[string]any, error) {
 	collection, err := b.fetchAuditPage(ctx, incoming, path, values)
 	if err != nil {
@@ -498,6 +519,12 @@ func (b *broker) fetchAuditPage(ctx context.Context, incoming *http.Request, pat
 
 func (b *broker) fetchAuditPagePolicy(ctx context.Context, incoming *http.Request, path string, values url.Values, keyQuery bool) (auditUpstreamCollection, error) {
 	if auditOwner(ctx) != nil {
+		if path == "/v2-beta/schemas/auditLog" {
+			if len(values) != 0 {
+				return auditUpstreamCollection{}, aiAuditInvalid()
+			}
+			return b.fetchAIAuditSource(ctx, incoming, "auditLog", "", "", "", url.Values{"capabilitiesOnly": {"true"}})
+		}
 		category := map[string]string{"/v2-beta/projects": "project", "/v2-beta/accounts": "account", "/v2-beta/auditlogs": "auditLog"}[path]
 		if category == "" {
 			return auditUpstreamCollection{}, aiAuditInvalid()
@@ -516,6 +543,11 @@ func (b *broker) fetchAuditPagePolicy(ctx context.Context, incoming *http.Reques
 	}
 	copyAuditAuthHeaders(request.Header, incoming.Header)
 	request.Header.Set("Accept", "application/json")
+	if path == "/v2-beta/schemas/auditLog" {
+		if revision := incoming.Header.Get("X-PastureStack-Key-Expected-Revision"); revision != "" {
+			request.Header.Set("X-PastureStack-Key-Expected-Revision", revision)
+		}
+	}
 
 	client := &http.Client{Timeout: 20 * time.Second}
 	if keyQuery || isAIAuditRead(ctx) {
@@ -538,6 +570,42 @@ func (b *broker) fetchAuditPagePolicy(ctx context.Context, incoming *http.Reques
 		return auditUpstreamCollection{}, &auditHTTPError{Status: status, Code: "audit_upstream_denied", Message: "Audit log data is not available to this user"}
 	}
 
+	if path == "/v2-beta/schemas/auditLog" {
+		var schema struct {
+			ID                string   `json:"id"`
+			Type              string   `json:"type"`
+			CollectionMethods []string `json:"collectionMethods"`
+			ResourceFields    map[string]struct {
+				Type             string  `json:"type"`
+				ReadOnCreateOnly *bool   `json:"readOnCreateOnly"`
+				Transform        *string `json:"transform"`
+			} `json:"resourceFields"`
+			CollectionFilters map[string]json.RawMessage `json:"collectionFilters"`
+		}
+		raw, readErr := io.ReadAll(io.LimitReader(response.Body, 1024*1024+1))
+		if readErr != nil || len(raw) > 1024*1024 || json.Unmarshal(raw, &schema) != nil || schema.ID != "auditLog" || schema.Type != "schema" {
+			return auditUpstreamCollection{}, &auditHTTPError{Status: 502, Code: "invalid_audit_response", Message: "Audit schema capability could not be verified"}
+		}
+		readable := false
+		for _, method := range schema.CollectionMethods {
+			readable = readable || method == "GET"
+		}
+		field, exists := schema.ResourceFields["keyId"]
+		if !readable || !exists || field.Type != "string" || field.ReadOnCreateOnly == nil || *field.ReadOnCreateOnly || field.Transform != nil && *field.Transform != "" {
+			return auditUpstreamCollection{}, &auditHTTPError{Status: 502, Code: "invalid_audit_response", Message: "Audit key field is not readable"}
+		}
+		supported := false
+		if filter, exists := schema.CollectionFilters["keyId"]; exists {
+			var capability struct {
+				Modifiers []string `json:"modifiers"`
+			}
+			if json.Unmarshal(filter, &capability) != nil || len(capability.Modifiers) != 1 || capability.Modifiers[0] != "eq" {
+				return auditUpstreamCollection{}, &auditHTTPError{Status: 502, Code: "invalid_audit_response", Message: "Audit key selector capability is malformed"}
+			}
+			supported = true
+		}
+		return auditUpstreamCollection{Data: []map[string]any{}, keyIDSelector: &supported, viewerAccountID: response.Header.Get("X-API-USER-ID")}, nil
+	}
 	decoder := json.NewDecoder(io.LimitReader(response.Body, 32*1024*1024))
 	decoder.UseNumber()
 	var collection auditUpstreamCollection

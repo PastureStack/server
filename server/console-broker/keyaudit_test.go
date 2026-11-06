@@ -65,6 +65,8 @@ func newKeyAuditFixture(t *testing.T, ownerOnly ...bool) (*keyAuditFixture, *htt
 		defer fixture.mu.Unlock()
 		writer.Header().Set("X-API-USER-ID", fixture.viewer)
 		switch request.URL.Path {
+		case "/v2-beta/schemas/auditLog":
+			_ = json.NewEncoder(writer).Encode(selectorCapabilitySchema(false))
 		case "/v2-beta/apikey/" + fixture.keyID, "/v2-beta/apikeyrestricted/" + fixture.keyID:
 			fixture.keyQueries = append(fixture.keyQueries, request.URL.Query())
 			fixture.keyProjectHeaders = append(fixture.keyProjectHeaders, request.Header.Get("X-API-Project-ID"))
