@@ -1,7 +1,7 @@
 # Optional AI collaboration
 
-Published Server v1.6.571 combines Web Console 1.6.210 / optional bridge 0.2.12
-and Engine 0.183.372. The twelve
+Published Server v1.6.573 combines Web Console 1.6.214 / optional bridge 0.2.16
+and Engine 0.183.373. The twelve
 supported tools are `list_capabilities`, `find_resources`, `get_resource`,
 `preview_resource_change`, `apply_resource_change`, `find_stacks`,
 `find_services`, `get_service`, `update_service_description`,
@@ -14,9 +14,9 @@ Other platform operations retain their ordinary UI/API paths.
 
 ## Acceptance boundaries
 
-The full 243-group frontend workflow matrix is not complete. Server 1.6.571
+The full 243-group frontend workflow matrix is not complete. Server 1.6.573
 publication is recorded in the
-[compatibility contract](../COMPATIBILITY.md#server-v16571-publication).
+[compatibility contract](../COMPATIBILITY.md#server-v16573-publication).
 Designated deployment and native business acceptance are separate from publication
 and require their own runtime receipts. Native ServiceIndex and private OS-volume/
 pool cleanup repairs are included, but only the recorded business subcases establish
@@ -53,6 +53,10 @@ names repeat, and use the returned scoped reference for details or a preview.
 The user does not need to enter environment, Stack or Service IDs. Metadata
 projection excludes credential values, private keys, full configurations and
 raw process logs. Selected families remain partial and are labelled as such.
+
+Process queries return bounded safe summaries through the existing discovery
+and detail tools. Raw exceptions and replay are unavailable; incomplete results
+remain explicitly unknown. These queries do not add write authority.
 
 Typed plans support basic creation and metadata editing for Stack, Service and
 Container resources; Stack/Service start and stop; Service/Container restart;

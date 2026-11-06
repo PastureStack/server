@@ -1,6 +1,10 @@
-# Server v1.6.573 candidate
+# Server v1.6.573
 
-Not published.
+Published image: `ghcr.io/pasturestack/server:v1.6.573@sha256:aafbbd0d0be6872534f453ba5fe426ca48ba06d03235014ecd5c239a4fbc56e8`.
+
+Source commit: `231261a8bd81a72163a99b655d62b2bf1b15d903`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
@@ -42,3 +46,13 @@ packages at 5.40.1-7ubuntu0.3. Ubuntu 26.04 currently has no fixed package;
 the upstream podlators fix does not establish a distribution package fix.
 The original scanner findings remain visible and the existing severity,
 available-fix and exact-package checks remain enforced.
+
+## Designated deployment observations
+
+The designated 8080 deployment passed startup, restart and HTTP200/pong checks.
+All three Hosts/Agents, four mounts, nineteen Docker volumes and operator
+configuration were retained. Logical-volume readback found 474 unrelated rows
+unchanged, the old Server root normally detached and one new root active.
+
+These observations do not establish Catalog, metadata, Process, weak-model or
+full frontend workflow acceptance. Those results remain in the scoped matrix.

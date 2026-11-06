@@ -7,6 +7,10 @@ runtime gates have passed.
 
 ## Release notes
 
+- [Server v1.6.573](releases/server-1.6.573.md) — current published components,
+  immutable image identity and scoped deployment results. Full frontend workflow
+  acceptance remains incomplete.
+
 - [Server v1.6.554 candidate](releases/server-1.6.554.md) — optional seven-tool
   AI collaboration with scoped Keys, human approval and current authority checks.
 
