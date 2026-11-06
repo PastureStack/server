@@ -11,7 +11,7 @@ ARG COMPOSE_SHA256=33b208d7e76639db742fae84b966cc01dacae58ca3fc4dabbc907045aefdf
 ARG UBUNTU_SNAPSHOT=20260825T000000Z
 
 ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd \
-    https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb \
+    https://snapshot.ubuntu.com/ubuntu/20261104T000000Z/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb \
     /tmp/ca-certificates.deb
 
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
