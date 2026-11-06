@@ -25,6 +25,25 @@ class PublicationNotes(unittest.TestCase):
             notes.render(body, tag, 'sha256:' + 'a' * 64, 'b' * 40)
         else:
             self.assertTrue(body.startswith('# Server ' + tag + '\n'))
+            # A published heading is valid only after the installation docs
+            # identify that release. An unpublished candidate must render.
+            readme = (root / 'README.md').read_text(encoding='utf-8')
+            self.assertIn('ghcr.io/pasturestack/server:' + tag + '\n', readme)
+
+    def test_server574_recovery_canonicalizes_only_the_exact_original_heading(self):
+        path = Path(__file__).with_name('complete-server574-publication.py')
+        spec = importlib.util.spec_from_file_location('recovery574', path)
+        recovery = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(recovery)
+        root = Path(__file__).resolve().parents[1]
+        original = (root / 'docs/releases/server-1.6.574.md').read_bytes()
+        original = original.replace(b'# Server v1.6.574 candidate\n', b'# Server v1.6.574\n', 1)
+        result = recovery.canonical_candidate(original)
+        self.assertEqual(b'# Server v1.6.574 candidate\n', result.splitlines(keepends=True)[0])
+        self.assertEqual(original.split(b'\n', 1)[1], result.split(b'\n', 1)[1])
+        for changed in (original.replace(b'574', b'575', 1), original + b'\n', result):
+            with self.assertRaises(ValueError):
+                recovery.canonical_candidate(changed)
 
     def test_publication_identity_is_exact_and_deployment_is_not_claimed(self):
         result = notes.render(self.source, 'v1.6.546', 'sha256:' + 'a' * 64, 'b' * 40)

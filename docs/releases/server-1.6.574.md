@@ -1,4 +1,4 @@
-# Server v1.6.574
+# Server v1.6.574 candidate
 
 ## Candidate boundary
 
