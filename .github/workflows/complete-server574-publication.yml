@@ -32,5 +32,6 @@ jobs:
         with:
           name: server574-publication-completion-${{ github.run_id }}
           path: .server574-publication-completion
+          include-hidden-files: true
           if-no-files-found: warn
           retention-days: 30
