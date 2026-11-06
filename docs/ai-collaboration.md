@@ -1,7 +1,7 @@
 # Optional AI collaboration
 
-Published Server v1.6.573 combines Web Console 1.6.214 / optional bridge 0.2.16
-and Engine 0.183.373. The twelve
+Published Server v1.6.574 combines Web Console 1.6.215 / optional bridge 0.2.17
+and Engine 0.183.375. The twelve
 supported tools are `list_capabilities`, `find_resources`, `get_resource`,
 `preview_resource_change`, `apply_resource_change`, `find_stacks`,
 `find_services`, `get_service`, `update_service_description`,
@@ -14,9 +14,9 @@ Other platform operations retain their ordinary UI/API paths.
 
 ## Acceptance boundaries
 
-The full 243-group frontend workflow matrix is not complete. Server 1.6.573
+The full 243-group frontend workflow matrix is not complete. Server 1.6.574
 publication is recorded in the
-[compatibility contract](../COMPATIBILITY.md#server-v16573-publication).
+[compatibility contract](../COMPATIBILITY.md#server-v16574-publication).
 Designated deployment and native business acceptance are separate from publication
 and require their own runtime receipts. Native ServiceIndex and private OS-volume/
 pool cleanup repairs are included, but only the recorded business subcases establish

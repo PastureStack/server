@@ -13,8 +13,8 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.573`](https://github.com/PastureStack/server/releases/tag/v1.6.573)
-packages Engine `v0.183.373`, Web Console `1.6.214` / optional bridge `0.2.16`,
+[Server `v1.6.574`](https://github.com/PastureStack/server/releases/tag/v1.6.574)
+packages Engine `v0.183.375`, Web Console `1.6.215` / optional bridge `0.2.17`,
 Catalog `0.20.17` and Compose `0.14.43`.
 
 Optional AI tools provide bounded resource discovery, human-reviewed changes
@@ -22,8 +22,8 @@ and read-only process summaries. Native roles, API Key limits and the four
 independent default-off opt-ins remain authoritative. Raw process exceptions,
 credentials and arbitrary HTTP requests are not exposed to these tools.
 
-See the [release note](docs/releases/server-1.6.573.md) and
-[publication record](COMPATIBILITY.md#server-v16573-publication) for component
+See the [release note](docs/releases/server-1.6.574.md) and
+[publication record](COMPATIBILITY.md#server-v16574-publication) for component
 identity and scoped results. Publication and deployment health do not establish
 complete Catalog, metadata, weak-model or 243-group business acceptance. See the
 [acceptance boundaries](docs/ai-collaboration.md#workload-retirement-limitation).
@@ -59,7 +59,7 @@ instance count. Advanced forms and other resource workflows remain pending.
 The complete scoped lifecycle workflow remains unaccepted; review
 the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation)
 before enabling these optional changes.
-See the [release note](docs/releases/server-1.6.573.md) and
+See the [release note](docs/releases/server-1.6.574.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
@@ -73,7 +73,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.573
+  ghcr.io/pasturestack/server:v1.6.574
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -81,7 +81,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.573
+    image: ghcr.io/pasturestack/server:v1.6.574
     restart: unless-stopped
     ports:
       - "8080:8080"

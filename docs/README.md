@@ -7,7 +7,11 @@ runtime gates have passed.
 
 ## Release notes
 
-- [Server v1.6.573](releases/server-1.6.573.md) — current published components,
+- [Server v1.6.574](releases/server-1.6.574.md) — Engine375 / Web215 / Bridge0.2.17,
+  immutable public image and exact publication recovery. Deployment and business
+  acceptance remain separate.
+
+- [Server v1.6.573](releases/server-1.6.573.md) — previous published components,
   immutable image identity and scoped deployment results. Full frontend workflow
   acceptance remains incomplete.
 
