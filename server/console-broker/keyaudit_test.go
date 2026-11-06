@@ -40,6 +40,13 @@ type keyAuditFixture struct {
 	auditRedirect        bool
 	auditViewer          string
 	redirectHits         int
+	detailNext           string
+	detailByIDBroad      bool
+	detailQueries        []url.Values
+	detailStatus         int
+	detailViewer         string
+	detailRedirect       bool
+	detailOverride       map[string]any
 }
 
 func newKeyAuditFixture(t *testing.T, ownerOnly ...bool) (*keyAuditFixture, *httptest.Server) {
@@ -58,6 +65,8 @@ func newKeyAuditFixture(t *testing.T, ownerOnly ...bool) (*keyAuditFixture, *htt
 		defer fixture.mu.Unlock()
 		writer.Header().Set("X-API-USER-ID", fixture.viewer)
 		switch request.URL.Path {
+		case "/v2-beta/schemas/auditLog":
+			_ = json.NewEncoder(writer).Encode(selectorCapabilitySchema(false))
 		case "/v2-beta/apikey/" + fixture.keyID, "/v2-beta/apikeyrestricted/" + fixture.keyID:
 			fixture.keyQueries = append(fixture.keyQueries, request.URL.Query())
 			fixture.keyProjectHeaders = append(fixture.keyProjectHeaders, request.Header.Get("X-API-Project-ID"))
@@ -125,6 +134,45 @@ func newKeyAuditFixture(t *testing.T, ownerOnly ...bool) (*keyAuditFixture, *htt
 		case "/v2-beta/accounts":
 			writeFixtureCollection(writer, []map[string]any{{"type": "account", "id": "1a1", "name": "Owner"}}, "")
 		case "/v2-beta/auditlogs":
+			if exact := request.URL.Query().Get("id"); exact != "" {
+				fixture.detailQueries = append(fixture.detailQueries, request.URL.Query())
+				if fixture.detailRedirect {
+					http.Redirect(writer, request, "/authority-redirect", http.StatusFound)
+					return
+				}
+				if fixture.detailStatus != 0 {
+					http.Error(writer, "unavailable", fixture.detailStatus)
+					return
+				}
+				if fixture.detailViewer != "" {
+					writer.Header().Set("X-API-USER-ID", fixture.detailViewer)
+				}
+				account := fixture.viewer
+				if project := request.URL.Query().Get("projectId"); project != "" {
+					account = project
+				}
+				if request.URL.Query().Get("accountId") != account || request.URL.Query().Get("limit") != "2" ||
+					request.Header.Get("X-API-Project-ID") != "" || request.Header.Get("Accept") != "application/json" {
+					t.Error("server exact scope/filter changed")
+				}
+				var rows []map[string]any
+				for _, record := range fixture.records {
+					id := auditString(record, "id")
+					if strings.HasPrefix(id, "1al") {
+						id = strings.TrimPrefix(id, "1al")
+					}
+					if id != exact || auditString(record, "accountId") != account {
+						continue
+					}
+					copy := cloneAuditRecord(record)
+					for name, value := range fixture.detailOverride {
+						copy[name] = value
+					}
+					rows = append(rows, copy)
+				}
+				writeFixtureCollection(writer, rows, fixture.detailNext)
+				return
+			}
 			fixture.auditQueries = append(fixture.auditQueries, request.URL.Query())
 			if fixture.auditViewer != "" {
 				writer.Header().Set("X-API-USER-ID", fixture.auditViewer)
@@ -165,6 +213,39 @@ func newKeyAuditFixture(t *testing.T, ownerOnly ...bool) (*keyAuditFixture, *htt
 			fixture.redirectHits++
 			http.Error(writer, "must not follow", http.StatusServiceUnavailable)
 		default:
+			if strings.HasPrefix(request.URL.Path, "/v2-beta/auditlogs/") {
+				fixture.detailQueries = append(fixture.detailQueries, request.URL.Query())
+				if fixture.detailRedirect {
+					http.Redirect(writer, request, "/authority-redirect", http.StatusFound)
+					return
+				}
+				if fixture.detailStatus != 0 {
+					http.Error(writer, "unavailable", fixture.detailStatus)
+					return
+				}
+				if fixture.detailViewer != "" {
+					writer.Header().Set("X-API-USER-ID", fixture.detailViewer)
+				}
+				id := strings.TrimPrefix(request.URL.Path, "/v2-beta/auditlogs/")
+				account := fixture.viewer
+				if project := request.URL.Query().Get("projectId"); project != "" {
+					account = project
+				}
+				if request.Header.Get("X-API-Project-ID") != "" || request.Header.Get("Accept") != "application/json" {
+					t.Error("caller header or content negotiation changed")
+				}
+				for _, record := range fixture.records {
+					if auditString(record, "id") != id || !fixture.detailByIDBroad && auditString(record, "accountId") != account {
+						continue
+					}
+					copy := cloneAuditRecord(record)
+					for name, value := range fixture.detailOverride {
+						copy[name] = value
+					}
+					_ = json.NewEncoder(writer).Encode(copy)
+					return
+				}
+			}
 			http.NotFound(writer, request)
 		}
 	}))

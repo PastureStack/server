@@ -89,6 +89,9 @@ func sourceFixture(t *testing.T, mutate func(string, map[string]any, map[string]
 		}
 		result := map[string]any{"resourceType": firstNonEmpty(auditString(page, "keyKind"), category), "data": rows, "nextMarker": nil,
 			"nativeAuthority": authority, "sourcePageResult": true}
+		if page["capabilitiesOnly"] == true {
+			result["nativeCapabilities"] = map[string]bool{"keyIdSelector": false}
+		}
 		if mutate != nil {
 			if status := mutate(category, page, result); status != 0 {
 				w.WriteHeader(status)
