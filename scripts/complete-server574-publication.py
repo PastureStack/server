@@ -85,7 +85,7 @@ def main():
     need(os.environ.get('GITHUB_REPOSITORY') == REPOSITORY
          and os.environ.get('GITHUB_REF') == 'refs/heads/main', 'Official main workflow only')
     root = Path(__file__).resolve().parents[1]
-    work = Path(os.environ['RUNNER_TEMP']) / 'server574-publication-completion'
+    work = root / '.server574-publication-completion'
     work.mkdir(exist_ok=False)
     run = api('actions/runs/' + str(RUN))
     need((run['id'], run['head_sha'], run['run_attempt'], run['event'], run['path'], run['conclusion']) ==
