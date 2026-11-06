@@ -17,6 +17,7 @@ const keyAuditQueryPath = "/v2-beta/pasturestack/key-audit-logs"
 
 var keyAuditIDPattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_-]{0,159}$`)
 var canonicalKeyAuditIDPattern = regexp.MustCompile(`^1c([1-9][0-9]*)$`)
+var canonicalAuditEventIDPattern = regexp.MustCompile(`^1al([1-9][0-9]*)$`)
 
 func (b *broker) fetchKeyAuditLogs(ctx context.Context, incoming *http.Request, query auditQuery,
 	allowedProjects map[string]string, baseValues url.Values) ([]map[string]any, error) {
@@ -129,25 +130,98 @@ func (b *broker) serveKeyAudit(writer http.ResponseWriter, request *http.Request
 		return
 	}
 	query.KeyID, query.KeyOwnerAccountID, query.ViewerAccountID = keyID, owner, viewer
+	if detailID != "" {
+		record, err := b.fetchKeyAuditDetail(request.Context(), request, query, detailID)
+		if err != nil {
+			writeAuditFailure(writer, err)
+			return
+		}
+		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
+		writer.Header().Set("Cache-Control", "no-store")
+		writer.Header().Set("X-Content-Type-Options", "nosniff")
+		_ = json.NewEncoder(writer).Encode(record)
+		return
+	}
 	result, err := b.runAuditQuery(request.Context(), request, query)
 	if err != nil {
 		writeAuditFailure(writer, err)
 		return
 	}
-	if detailID != "" {
-		for _, record := range result.Records {
-			if auditString(record, "id") == detailID {
-				writer.Header().Set("Content-Type", "application/json; charset=utf-8")
-				writer.Header().Set("Cache-Control", "no-store")
-				writer.Header().Set("X-Content-Type-Options", "nosniff")
-				_ = json.NewEncoder(writer).Encode(record)
-				return
-			}
-		}
-		writeJSONError(writer, http.StatusNotFound, "key_audit_not_found", "The API key audit event is not available under your current permissions")
-		return
-	}
 	writeAuditCollection(writer, request, query, result)
+}
+
+// fetchKeyAuditDetail is only the normal human Key view's exact-event read.
+// The private typed audit owner must keep its existing bounded source-page path.
+func (b *broker) fetchKeyAuditDetail(ctx context.Context, incoming *http.Request, query auditQuery, detailID string) (map[string]any, error) {
+	if auditOwner(ctx) != nil {
+		return nil, &auditHTTPError{Status: http.StatusForbidden, Code: "key_audit_detail_transport_denied", Message: "This audit detail transport is not available"}
+	}
+	projects, viewer, err := b.fetchAuditProjects(ctx, incoming, true)
+	if err != nil {
+		return nil, err
+	}
+	if viewer != query.ViewerAccountID {
+		return nil, &auditHTTPError{Status: http.StatusBadGateway, Code: "invalid_key_authority", Message: "The current user changed while verifying API key permissions"}
+	}
+	if query.KeyOwnerAccountID != viewer {
+		if _, allowed := projects[query.KeyOwnerAccountID]; !allowed {
+			return nil, &auditHTTPError{Status: http.StatusForbidden, Code: "key_audit_access_lost", Message: "The API key environment is no longer available"}
+		}
+	}
+	if query.EnvironmentID != "" {
+		if _, allowed := projects[query.EnvironmentID]; !allowed {
+			return nil, &auditHTTPError{Status: http.StatusForbidden, Code: "environment_denied", Message: "The requested environment is not available to this user"}
+		}
+	}
+	contexts := make([]string, 0, len(projects)+1)
+	if query.KeyOwnerAccountID == viewer && query.EnvironmentID == "" {
+		contexts = append(contexts, "")
+	}
+	for projectID := range projects {
+		if query.EnvironmentID == "" || projectID == query.EnvironmentID {
+			contexts = append(contexts, projectID)
+		}
+	}
+	sort.Strings(contexts)
+	// The native ID field is a numeric SQL filter, while returned resource IDs
+	// retain the canonical wire form. This is only the auditLog prefix, never a
+	// generic caller-selected ID codec or route.
+	nativeID := detailID
+	if canonical := canonicalAuditEventIDPattern.FindStringSubmatch(detailID); canonical != nil {
+		nativeID = canonical[1]
+	}
+	for _, projectID := range contexts {
+		accountID := viewer
+		if projectID != "" {
+			accountID = projectID
+		}
+		values := url.Values{"id": {nativeID}, "accountId": {accountID}, "limit": {"2"}}
+		if projectID != "" {
+			values.Set("projectId", projectID)
+		}
+		page, err := b.fetchAuditPagePolicy(ctx, incoming, "/v2-beta/auditlogs", values, true)
+		if err != nil {
+			return nil, err
+		}
+		if page.viewerAccountID != viewer {
+			return nil, &auditHTTPError{Status: http.StatusBadGateway, Code: "invalid_key_authority", Message: "The current user changed while reading API key audit events"}
+		}
+		if next, present := page.Pagination["next"]; len(page.Data) > 1 || present && next != nil && next != "" {
+			return nil, &auditHTTPError{Status: http.StatusBadGateway, Code: "invalid_audit_response", Message: "Audit log service returned an invalid exact event page"}
+		}
+		if len(page.Data) == 0 {
+			continue
+		}
+		record := page.Data[0]
+		if auditString(record, "type") != "auditLog" || auditString(record, "id") != detailID || auditString(record, "accountId") != accountID {
+			return nil, &auditHTTPError{Status: http.StatusBadGateway, Code: "invalid_audit_response", Message: "Audit log service returned an invalid event"}
+		}
+		if !keyAuditIDMatches(keyAuditMetadataString(record, "keyId"), query.KeyID) {
+			return nil, &auditHTTPError{Status: http.StatusNotFound, Code: "key_audit_not_found", Message: "The API key audit event is not available under your current permissions"}
+		}
+		return safeKeyAuditRecord(record, query.KeyID), nil
+	}
+	return nil, &auditHTTPError{Status: http.StatusNotFound, Code: "key_audit_not_found", Message: "The API key audit event is not available under your current permissions"}
 }
 
 // Credential visibility and principal identity are determined by the Engine

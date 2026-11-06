@@ -14,14 +14,14 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.574}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.575}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
-orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.375}
+orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.376}
 orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}
-orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-8a9f09d4ca0193bd9a774933a5194e37480fb785a1b34c27d28de40077fab638}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-7d4e32d07e69a64f3800c6dac17dfbcc543204dc}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-a9e211bc8216fb5c017e95606fc738c748da0eca188677e09ca9731ee4017fb8}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-074cf58498d69bf89e2a0395f14c59c8cc847ac1}
 orchestration_engine_version=${orchestration_engine_release_tag#v}
 engine_readonly_schema_sha256=${ENGINE_READONLY_SCHEMA_SHA256:-7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233}
 engine_restricted_schema_sha256=${ENGINE_RESTRICTED_SCHEMA_SHA256:-f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51}
@@ -63,13 +63,13 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.20.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb}
 api_explorer_commit=${API_EXPLORER_COMMIT:-a586f0dc0aa50df579049a8d4bf26f04400fdf75}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.215}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.215.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-1547fdbd3c2726355dd233e938cc045b76cdfe3db18fd0b74f15a0e265e171c1}
-web_console_commit=${WEB_CONSOLE_COMMIT:-c66adfaff3bc1aeef13502b36ff613b203dd7364}
-web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-3e80a2c4d0ac5586879a1afea0bd29781baaa737d2c6fbd2b89acde479e7bf6b}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.216}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.216.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-bc5da83a6632beed34616206c7508885b9db7fcac23573763b38c208cd200bdf}
+web_console_commit=${WEB_CONSOLE_COMMIT:-ab4026507d50bae079933697c2511b7daf5b7cfd}
+web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-f2b296c7f57ef732ac3cde3acdd8905db6db6f91b45837477b00472d4c5c1fd2}
 web_console_runtime_sbom_artifact=${WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT:-web-console-${web_console_release_tag}-runtime.cdx.json}
-web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-9b718fe67c4d8f87c81927956b7685681b1d63cf67652d108c87b151324458c6}
+web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-7631d049b378302b5986317098075d54a191d7692a883894f69c4971b715ee16}
 catalog_service_release_base_url=${CATALOG_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/catalog-service/releases/download}
 catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.17}
 catalog_service_commit=${CATALOG_SERVICE_COMMIT:-2f70559e340865eb6243662ed33d8cbc7b1efa90}
@@ -130,7 +130,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-6d4
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.574}
+image=${IMAGE:-pasturestack-validation/server:v1.6.575}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
