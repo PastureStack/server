@@ -1,5 +1,37 @@
 # Compatibility Contract
 
+<a id="server-v16577-publication"></a>
+
+## Server v1.6.577 published
+
+[Server v1.6.577](https://github.com/PastureStack/server/releases/tag/v1.6.577)
+packages Engine 0.183.379, Web Console 1.6.220 / optional Bridge 0.2.22,
+Catalog 0.20.17 and Compose Executor 0.14.43 from immutable component artifacts.
+
+| Evidence | Verified value |
+|---|---|
+| Image | `ghcr.io/pasturestack/server:v1.6.577@sha256:b2124eb8cad1713335221aefc6dcb505f1009168e7b82ab8941d280479e1fc84` |
+| Candidate producer | `3e759aa6b3fcc0df3fc398ebde6039f349e57ca9` |
+| Image publisher revision / tested tree | `7b5d2642d98c78ee97f6583e06cb81a83732c371` / `8de69b8d2c6d1aa4bf9d08f5f941a43ab8a0f6bd` |
+| Official publisher | [42237314210](https://github.com/PastureStack/server/actions/runs/42237314210): source, build, flattening, security, startup/restart, image push and OCI attestations passed. |
+| Public readback | Immutable Release 436631120; all 35 anonymous assets matched sizes, SHA256 and the checksum manifest. Native release crypto verified 36 subjects; OCI provenance and SBOM signatures passed. |
+| Original component CI | Engine: 4,080 tests, zero failures/errors, one inherited skip and 265 required methods. Web: 1,142 browser tests and 93 focused methods. |
+| Optional Bridge | 49 source files / 50 manifest rows / 51 ZIP entries; one fresh SDK handshake, 92 components / 95 locations. Clean-install evidence retains its original 0.2.5 scope. |
+| Security | Zero effective CRITICAL/HIGH or available-fix findings; the same 13 tracked MEDIUM package findings remain. Raw scans, official pins and severity gates are preserved. |
+| Deployment and business acceptance | Pending for this Server cohort. Official workflow checks do not establish operator deployment, attached-volume, weak-model or whole-243-group acceptance. |
+
+Non-Global load-balancer manual scale preserves configuration and active/inactive
+state with fresh native role and Key checks. An exact attested canceled Container
+start records a fixed failed receipt; stopped state alone is insufficient.
+Metadata previews explain the nested parameters envelope without submitting a
+write or bypassing human confirmation. Existing native authority and guards remain.
+
+Preserve the previously deployed image, matching backup, original mounts and
+operator configuration for rollback. Explicit database settings can override new
+image defaults; check system-service image `activeValue` and preserve unknown
+custom values. This documentation commit is separate from the image publisher
+revision. See the [immutable release note](docs/releases/server-1.6.577.md).
+
 <a id="server-v16576-publication"></a>
 
 ## Server v1.6.576 published

@@ -13,9 +13,15 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.576`](https://github.com/PastureStack/server/releases/tag/v1.6.576)
-packages Engine `v0.183.378`, Web Console `1.6.219` / optional bridge `0.2.21`,
+[Server `v1.6.577`](https://github.com/PastureStack/server/releases/tag/v1.6.577)
+packages Engine `v0.183.379`, Web Console `1.6.220` / optional bridge `0.2.22`,
 Catalog `0.20.17` and Compose `0.14.43`.
+
+Non-Global load balancers support human-reviewed manual scaling while preserving
+configuration and active/inactive state. An exact attested canceled Container-start
+process produces a fixed failed receipt; a stopped state alone does not establish
+failure. Metadata previews explain the nested parameters envelope without bypassing
+validation or human confirmation. Native business acceptance remains separate.
 
 API Key details show configured policy without claiming effective grants. Typed
 TCP load-balancer creation requires explicit activation and ordered rules;
@@ -32,8 +38,8 @@ and read-only process summaries. Native roles, API Key limits and the four
 independent default-off opt-ins remain authoritative. Raw process exceptions,
 credentials and arbitrary HTTP requests are not exposed to these tools.
 
-See the [release note](docs/releases/server-1.6.576.md) and
-[publication record](COMPATIBILITY.md#server-v16576-publication) for component
+See the [release note](docs/releases/server-1.6.577.md) and
+[publication record](COMPATIBILITY.md#server-v16577-publication) for component
 identity and scoped results. Publication and deployment health do not establish
 complete Catalog, metadata, weak-model or 243-group business acceptance. See the
 [acceptance boundaries](docs/ai-collaboration.md#workload-retirement-limitation).
@@ -69,7 +75,7 @@ instance count. Advanced forms and other resource workflows remain pending.
 The complete scoped lifecycle workflow remains unaccepted; review
 the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation)
 before enabling these optional changes.
-See the [release note](docs/releases/server-1.6.576.md) and
+See the [release note](docs/releases/server-1.6.577.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
@@ -83,7 +89,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.576
+  ghcr.io/pasturestack/server:v1.6.577
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -91,7 +97,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.576
+    image: ghcr.io/pasturestack/server:v1.6.577
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -142,8 +148,11 @@ environment variables, restart policy, AppArmor, and reverse-proxy configuration
 Do not replace existing volumes with new empty ones or run `docker compose down -v`.
 
 Persisted image/download/catalog/Docker compatibility settings can outlive an
-image upgrade; review their effective values. The migration tool is read-only
-by default and requires explicit apply/rollback. Keep the previous image and
+image upgrade; review their effective values. Explicit database settings override
+new image `DEFAULT` values; for system-service images, check the global setting
+`activeValue` as the effective version. Unknown custom values are not automatically
+migrated. The migration tool is read-only by default and requires explicit
+apply/rollback. Keep the previous image and
 backup: after a database migration, rollback may require restoring matching data,
 not merely selecting an older image tag.
 
