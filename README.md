@@ -13,9 +13,14 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.575`](https://github.com/PastureStack/server/releases/tag/v1.6.575)
-packages Engine `v0.183.377`, Web Console `1.6.217` / optional bridge `0.2.19`,
+[Server `v1.6.576`](https://github.com/PastureStack/server/releases/tag/v1.6.576)
+packages Engine `v0.183.378`, Web Console `1.6.219` / optional bridge `0.2.21`,
 Catalog `0.20.17` and Compose `0.14.43`.
+
+API Key details show configured policy without claiming effective grants. Typed
+TCP load-balancer creation requires explicit activation and ordered rules;
+start/stop retains native authority, human review and configuration readback.
+Client-report text wraps within audit columns, including narrow RTL layouts.
 
 Key-audit details use exact native event filters. Supported MySQL/MariaDB audit
 queries select the Key before pagination; unsupported databases keep the bounded
@@ -27,8 +32,8 @@ and read-only process summaries. Native roles, API Key limits and the four
 independent default-off opt-ins remain authoritative. Raw process exceptions,
 credentials and arbitrary HTTP requests are not exposed to these tools.
 
-See the [release note](docs/releases/server-1.6.575.md) and
-[publication record](COMPATIBILITY.md#server-v16575-publication) for component
+See the [release note](docs/releases/server-1.6.576.md) and
+[publication record](COMPATIBILITY.md#server-v16576-publication) for component
 identity and scoped results. Publication and deployment health do not establish
 complete Catalog, metadata, weak-model or 243-group business acceptance. See the
 [acceptance boundaries](docs/ai-collaboration.md#workload-retirement-limitation).
@@ -64,7 +69,7 @@ instance count. Advanced forms and other resource workflows remain pending.
 The complete scoped lifecycle workflow remains unaccepted; review
 the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation)
 before enabling these optional changes.
-See the [release note](docs/releases/server-1.6.575.md) and
+See the [release note](docs/releases/server-1.6.576.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
@@ -78,7 +83,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.575
+  ghcr.io/pasturestack/server:v1.6.576
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -86,7 +91,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.575
+    image: ghcr.io/pasturestack/server:v1.6.576
     restart: unless-stopped
     ports:
       - "8080:8080"

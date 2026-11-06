@@ -1,5 +1,36 @@
 # Compatibility Contract
 
+<a id="server-v16576-publication"></a>
+
+## Server v1.6.576 published
+
+[Server v1.6.576](https://github.com/PastureStack/server/releases/tag/v1.6.576)
+packages Engine 0.183.378, Web Console 1.6.219 / optional Bridge 0.2.21,
+Catalog 0.20.17 and Compose Executor 0.14.43 from immutable component artifacts.
+
+| Evidence | Verified value |
+|---|---|
+| Image | `ghcr.io/pasturestack/server:v1.6.576@sha256:d8a7bd686a84e4a574f4ded4b51c28b6434e5464dffe186045bfecdbf77ea3c5` |
+| Candidate producer | `1f50e07442703d3b0bdbab0bab32d7a95c610b3d` |
+| Image publisher revision / tested tree | `f18d8bfe4ba2d9e66bb82cb8301dc3d5d44ea639` / `ace2a6b4783e864ff9d7821f0ba2abd18b5cd1f0` |
+| Official publisher | [42212559927](https://github.com/PastureStack/server/actions/runs/42212559927): source, build, flattening, security, startup/restart, image push and OCI attestations passed. |
+| Public readback | Immutable Release 436451364; all 35 anonymous assets matched sizes, SHA256 and the checksum manifest. Native release crypto verified 36 subjects; OCI provenance and SBOM signatures passed. |
+| Original component CI | Engine: 4,071 tests, zero failures/errors, one inherited skip and 256 required methods. Web: 1,142 browser tests and 88 focused methods. |
+| Optional Bridge | 48 source files / 49 manifest rows / 50 ZIP entries; one fresh SDK handshake, 92 components / 95 locations. Clean-install evidence retains its original 0.2.5 scope. |
+| Security | Zero effective CRITICAL/HIGH or available-fix findings; the same 13 tracked MEDIUM package findings remain. Raw scans, official pins and severity gates are preserved. |
+| Deployment and business acceptance | Pending for this Server cohort. Official workflow checks do not establish operator deployment, attached-volume, weak-model or whole-243-group acceptance. |
+
+Configured Key-policy details preserve rule order without exposing credentials or
+claiming effective grants. TCP load-balancer create requires explicit activation
+and complete ordered rules; start/stop retains native lifecycle and configuration
+readback. Client-report prose wraps within its existing audit columns while
+unrelated cells keep horizontal scrolling and resize behavior, including RTL.
+Existing native roles, Key ceilings, feature opt-ins and security guards remain.
+
+Preserve Server575 and its matching backup as the immediate rollback. Reuse the
+original mounts and operator configuration. This documentation commit is separate
+from the image publisher revision. See the [immutable release note](docs/releases/server-1.6.576.md).
+
 <a id="server-v16575-publication"></a>
 
 ## Server v1.6.575 published

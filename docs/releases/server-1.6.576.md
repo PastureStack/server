@@ -1,8 +1,10 @@
-# Server v1.6.576 candidate
+# Server v1.6.576
 
-## Candidate boundary
+Published image: `ghcr.io/pasturestack/server:v1.6.576@sha256:d8a7bd686a84e4a574f4ded4b51c28b6434e5464dffe186045bfecdbf77ea3c5`.
 
-This is a Server source candidate; publication, deployment and native acceptance remain pending. Install guides remain on published Server v1.6.575 until this version is published.
+Source commit: `f18d8bfe4ba2d9e66bb82cb8301dc3d5d44ea639`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
