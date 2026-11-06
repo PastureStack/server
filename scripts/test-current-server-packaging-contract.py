@@ -731,16 +731,18 @@ class Tests(unittest.TestCase):
             verify_load_balancer_contract(FILES, GATE.replace('current_lb_default_marker', 'removed_lb_default_marker'))
 
     def test_ca_bootstrap_keeps_verified_official_security_package_bytes(self):
-        url = ('https://archive.ubuntu.com/ubuntu/pool/main/c/'
+        url = ('https://snapshot.ubuntu.com/ubuntu/20261104T000000Z/pool/main/c/'
                'ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb')
         digest = '5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd'
         pattern = re.compile(r'^ADD --checksum=sha256:' + digest + r'\s+'
                              + re.escape(url) + r'\s+/tmp/ca-certificates\.deb\s*$', re.M)
-        for path in (DOCKER, 'server/Dockerfile', 'server/Dockerfile.api-explorer-patch'):
+        for path in (DOCKER, 'server/Dockerfile', 'server/Dockerfile.api-explorer-patch',
+                     'Dockerfile', 'agent-base/Dockerfile'):
             source = (REPO / path).read_text(encoding='utf-8').replace('\\\n', ' ')
             with self.subTest(path=path):
                 self.assertEqual(len(pattern.findall(source)), 1)
                 self.assertNotIn('ca-certificates_20260601~26.04.1_all.deb', source)
+                self.assertNotIn('https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/', source)
                 self.assertIsNone(pattern.search(source.replace(digest, '0' * 64)))
                 self.assertIsNone(pattern.search(source.replace('20260816ubuntu0.26.04.1', 'latest')))
         self.assertIn("ca_bootstrap_url='" + url + "'", GATE)

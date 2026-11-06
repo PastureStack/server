@@ -1308,7 +1308,7 @@ require_marker "$dockerfile" \
 # The moving archive removed this version. This signed snapshot serves the
 # identical package bytes; keep the exact path and checksum, not an arbitrary
 # snapshot or a replacement hash for an HTTP error page.
-ca_bootstrap_url='https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb'
+ca_bootstrap_url='https://snapshot.ubuntu.com/ubuntu/20261104T000000Z/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb'
 for bootstrap_dockerfile in "$dockerfile" "$core_dockerfile" "$release_dockerfile"; do
     require_marker "$bootstrap_dockerfile" \
         "$ca_bootstrap_url" \
