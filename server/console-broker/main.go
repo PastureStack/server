@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	if aiAuditCLI() {
+	if boundedLogsCLI() || aiAuditCLI() {
 		return
 	}
 	cfg, err := configFromEnvironment()
