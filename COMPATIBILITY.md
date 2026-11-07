@@ -3043,6 +3043,9 @@ rollback, artifact hashes, and non-root execution in isolated VMs.
 
 ## Server v1.6.584 publication
 
+Published immutable identity (verification record):
+`ghcr.io/pasturestack/server:v1.6.584@sha256:40a7aa6cbc6ac6e96b2581009bb2855ad100e82b662d74e80de545b45634d0b6`.
+
 The immutable image packages Engine `0.183.386`, Web Console `1.6.226`, optional
 Bridge `0.2.28`, Host API `0.38.9` and Node Agent `0.13.35`. The normal publisher
 verified all 35 public assets, 36 signed release subjects and both OCI proofs.

@@ -19,6 +19,9 @@ remain disabled by default. This release does not complete every frontend workfl
 
 ## Release identity and verification
 
+Published immutable identity (verification record):
+`ghcr.io/pasturestack/server:v1.6.584@sha256:40a7aa6cbc6ac6e96b2581009bb2855ad100e82b662d74e80de545b45634d0b6`.
+
 - Image: `ghcr.io/pasturestack/server:v1.6.584`.
 - Immutable digest: `sha256:40a7aa6cbc6ac6e96b2581009bb2855ad100e82b662d74e80de545b45634d0b6`.
 - Publisher source: `71c5369368fdc89a36296a76f98f589c651a3a56`.
