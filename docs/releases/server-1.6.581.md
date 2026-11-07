@@ -1,10 +1,10 @@
-# Server v1.6.581 candidate
+# Server v1.6.581
 
-## Candidate boundary
+Published image: `ghcr.io/pasturestack/server:v1.6.581@sha256:7340b135bfd1a046c724784931e778eeb4a8a480064daf059273afab0003aed6`.
 
-This is a source candidate, not a published Server image or deployment result.
-The normal Server publisher must build, scan, flatten, attest and qualify this
-assembly before use. Server v1.6.580 remains the latest published release.
+Source commit: `0dc430d30c843d653d3ab0a25639f1745841975c`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 

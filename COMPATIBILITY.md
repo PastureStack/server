@@ -1,5 +1,32 @@
 # Compatibility Contract
 
+<a id="server-v16581-publication"></a>
+
+## Server v1.6.581 published
+
+[Server v1.6.581](https://github.com/PastureStack/server/releases/tag/v1.6.581)
+packages Engine 0.183.383, Web Console 1.6.223 / optional Bridge 0.2.25,
+Catalog 0.20.17 and Compose Executor 0.14.43 from immutable component artifacts.
+
+| Evidence | Verified value |
+|---|---|
+| Image | `ghcr.io/pasturestack/server:v1.6.581@sha256:7340b135bfd1a046c724784931e778eeb4a8a480064daf059273afab0003aed6` |
+| Publisher revision / tested tree | `0dc430d30c843d653d3ab0a25639f1745841975c` / `1e52a386a290ee37757efff52bb87f8c0770d5dc` |
+| Official publisher | [42348808901](https://github.com/PastureStack/server/actions/runs/42348808901): source, build, flattening, security, startup/restart, image push and OCI attestations passed. |
+| Public readback | Immutable Release 437400116; all 35 anonymous assets matched size, SHA256 and the checksum manifest. Native release crypto verified 36 subjects; OCI provenance and SBOM verification passed. |
+| Engine component | Original CI: 460 suites, 4,145 tests, zero failures/errors, one inherited skip and 330 required methods; twelve anonymous assets / thirteen release-crypto subjects passed. |
+| Web component | Original CI: 1,142 browser tests; 126 focused cases include thirteen QUnit cases already counted in the browser total. Thirteen anonymous assets / fourteen release-crypto subjects and the new Bridge0.2.25 SDK handshake passed. |
+| Security | Zero effective CRITICAL/HIGH or available-fix findings; thirteen tracked vendor-pending MEDIUM findings remain. Original raw scans, exact-package policy and coverage limits are retained. |
+| Operator acceptance | Native Service/Registry/TCP and weak-model workflows remain separate; this publication is not full frontend acceptance. |
+
+Service simple dependency changes retain the full native link-set CAS and common
+SETLINKS lock through transaction completion. Registry activation/deactivation
+uses its native lifecycle; credentials are not exposed or changed. Schema, native
+roles, API Key ceilings and the four independent opt-ins retain their boundaries.
+Other component coordinates, mounts, restart policy, operator origin, AppArmor
+and firewall configuration do not change. Retain Server580 and a matching data
+backup for rollback. See the [release note](docs/releases/server-1.6.581.md).
+
 <a id="server-v16580-publication"></a>
 
 ## Server v1.6.580 published
