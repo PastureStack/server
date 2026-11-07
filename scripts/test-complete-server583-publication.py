@@ -17,6 +17,15 @@ def verified(recovery,kind,predicate):
  cert={'issuer':'https://token.actions.githubusercontent.com','subjectAlternativeName':p.SIGNER,'buildSignerURI':p.SIGNER,'buildSignerDigest':recovery['source'],'sourceRepositoryURI':'https://github.com/'+p.REPO,'sourceRepositoryDigest':recovery['source'],'sourceRepositoryRef':'refs/heads/main','buildConfigURI':p.SIGNER,'buildConfigDigest':recovery['source'],'runInvocationURI':recovery['invocation'],'runnerEnvironment':'github-hosted'}
  return [{'verificationResult':{'signature':{'certificate':cert},'verifiedTimestamps':[{'type':'Tlog'}],'statement':{'_type':'https://in-toto.io/Statement/v1','subject':[{'name':p.IMAGE,'digest':{'sha256':p.DIGEST[7:]}}],'predicateType':kind,'predicate':predicate}}}]
 class CompletionPolicy(unittest.TestCase):
+ def test_oci_bundle_source_keeps_exact_verification_argv(self):
+  r=p.recovery_identity('a'*40,123456,1)
+  for kind in (p.PROVENANCE,p.SBOM):
+   expected=['gh','attestation','verify','oci://'+p.IMAGE+'@'+p.DIGEST,'--bundle-from-oci','--repo',p.REPO,
+    '--signer-workflow',p.REPO+'/'+p.RECOVERY_WORKFLOW,'--signer-digest',r['source'],
+    '--source-digest',r['source'],'--source-ref','refs/heads/main','--predicate-type',kind,'--format','json']
+   command=p.verify_command(p.DIGEST,kind,r);self.assertEqual(command,expected)
+   for bad in ([x for x in command if x!='--bundle-from-oci'],command+['--bundle-from-oci'],command+['--bundle','untrusted-local.json']):
+    with self.subTest(kind=kind,command=bad),self.assertRaises(ValueError):p.validate_verify_argv(bad)
  def test_oci_verify_uses_private_anonymous_child_config_only(self):
   recovery=p.recovery_identity('a'*40,123456,1);directories=[]
   def child(*command,**kwargs):
