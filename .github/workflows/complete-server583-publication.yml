@@ -31,12 +31,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
-      - name: Attest original image provenance with truthful recovery signer
+      - name: Attest signed same-artifact recovery statement
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
           subject-name: ghcr.io/pasturestack/server
           subject-digest: sha256:e22ecd94bbc83c2d34f49aa7dde231301f42a26de9a89c929e8a11d886b6c78c
-          predicate-type: https://slsa.dev/provenance/v1
+          predicate-type: https://github.com/PastureStack/server/blob/main/docs/operations/server583-publication-recovery.md#same-artifact-publication-recovery-v1
           predicate-path: .server583-publication-completion/provenance-predicate.json
           push-to-registry: true
       - name: Attest original image SBOM
