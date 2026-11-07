@@ -60,7 +60,12 @@ def registry():
 
 def collect(recovery):
  run=api('actions/runs/'+str(policy.RUN));jobs=api('actions/runs/'+str(policy.RUN)+'/jobs');artifact=api('actions/artifacts/'+str(policy.ARTIFACT))
- log=command('gh','api','repos/'+policy.REPO+'/actions/jobs/'+str(policy.JOB)+'/logs',cap=2*1024**2)
+ diagnostics=[]
+ def diagnostic(row):diagnostics.append(row);print(json.dumps({'originalLogDownload':row},sort_keys=True))
+ try:log=policy.fetch_original_log(subprocess.run,diagnostic)
+ finally:
+  phase='complete'if(WORK/'prepared.json').exists()else'prepare'
+  write(WORK/('original-log-download-'+phase+'-diagnostics.json'),{'originalRun':policy.RUN,'originalJob':policy.JOB,'attempt':1,'safeDiagnostics':diagnostics,'rawStderrOrSignedLocationIncluded':False})
  job=policy.validate_original(run,jobs,log,artifact)
  original=api('git/commits/'+policy.SOURCE);signer=api('git/commits/'+recovery['source']);comparison=api('compare/'+policy.SOURCE+'...'+recovery['source'])
  policy.validate_source(original,comparison)

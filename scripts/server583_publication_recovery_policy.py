@@ -1,4 +1,4 @@
-"""Exact Server583 original-builder / recovery-signer policy. No I/O or weaker fallback."""
+"""Exact Server583 original-builder / recovery-signer policy. No implicit I/O; fixed official-log retrieval uses an explicit runner callback."""
 import hashlib,json,re
 REPO='PastureStack/server'
 TAG='v1.6.583'
@@ -33,6 +33,63 @@ def recovery_identity(source,run,attempt):
  need(type(run)is int and run>0 and run!=RUN and type(attempt)is int and attempt>0,'Actual separate recovery run and attempt required')
  return {'repository':REPO,'workflow':RECOVERY_WORKFLOW,'ref':'refs/heads/main','source':source,'run':run,'attempt':attempt,
          'invocation':'https://github.com/'+REPO+'/actions/runs/'+str(run)+'/attempts/'+str(attempt)}
+
+LOG_BYTES=764984
+LOG_SHA='a5d33e87a21b0868a9f8ed6a4106199fa8605680192b44dd626ed6990198ec87'
+LOG_CAP=2*1024**2
+ATTEMPT_ENTRY='0_publish.txt'
+
+def safe_log_diagnostic(kind,result,cap):
+ # Never return stderr/body/headers/Location. Redirect URLs may carry SAS secrets.
+ stderr=result.stderr if type(result.stderr)is bytes else b''
+ stdout=result.stdout if type(result.stdout)is bytes else b''
+ scan=stderr[:65536].decode('utf-8','replace');lower=scan.lower()
+ statuses=re.findall(r'\bHTTP\s*[:=]?\s*([1-5][0-9]{2})\b',scan,re.I)
+ status=int(statuses[-1])if statuses else None
+ return {'endpointKind':kind,'exitCode':int(result.returncode),'stdoutBytes':len(stdout),'stderrBytes':len(stderr),
+  'httpStatus':status,'stdoutCapExceeded':len(stdout)>cap,
+  'permissionDenied':any(x in lower for x in('resource not accessible by integration','must have admin rights','bad credentials','forbidden')),
+  'redirectFailure':'redirect'in lower,'serverError':status is not None and status>=500,
+  'transportFailure':any(x in lower for x in('tls handshake','connection reset','context deadline','unexpected eof'))}
+
+def exact_original_log(raw):
+ need(type(raw)is bytes and len(raw)==LOG_BYTES and len(raw)<=LOG_CAP and sha(raw)==LOG_SHA,'Exact official original job log bytes required')
+ return raw
+
+def log_from_attempt_archive(raw):
+ import io,zipfile
+ need(type(raw)is bytes and 0<len(raw)<=LOG_CAP,'Official attempt log archive keeps2MiB download cap')
+ try:
+  with zipfile.ZipFile(io.BytesIO(raw))as archive:
+   entries=archive.infolist();names=[x.filename for x in entries]
+   need(len(entries)<=128 and len(names)==len(set(names))and sum(x.file_size for x in entries)<=2*LOG_CAP,'Bounded unambiguous official attempt archive required')
+   need(names.count(ATTEMPT_ENTRY)==1,'Exact sole publish-job aggregate entry required')
+   entry=archive.getinfo(ATTEMPT_ENTRY);need(not entry.is_dir()and entry.file_size==LOG_BYTES,'Exact publish job log size required')
+   return exact_original_log(archive.read(entry))
+ except(zipfile.BadZipFile,RuntimeError,KeyError):raise ValueError('Invalid official original attempt log archive')from None
+
+def fetch_original_log(runner,diagnostic=None):
+ # Both routes are official read-only API endpoints for this fixed original run/job.
+ routes=(('job-log','repos/'+REPO+'/actions/jobs/'+str(JOB)+'/logs'),
+         ('run-attempt1-log-archive','repos/'+REPO+'/actions/runs/'+str(RUN)+'/attempts/1/logs'))
+ for kind,endpoint in routes:
+  try:result=runner(['gh','api','--method','GET','--header','Accept: application/vnd.github+json',endpoint],capture_output=True,timeout=90)
+  except Exception as error:
+   detail={'endpointKind':kind,'exitCode':None,'stdoutBytes':0,'stderrBytes':0,'httpStatus':None,
+           'transportException':'timeout'if type(error).__name__=='TimeoutExpired'else 'transport','rawDetailSuppressed':True}
+   if diagnostic is not None:diagnostic(detail)
+   continue
+  detail=safe_log_diagnostic(kind,result,LOG_CAP)
+  if result.returncode==0 and len(result.stdout)<=LOG_CAP:
+   try:log=exact_original_log(result.stdout)if kind=='job-log'else log_from_attempt_archive(result.stdout)
+   except(ValueError,TypeError):detail['exactOriginalLogMatched']=False
+   else:
+    detail['exactOriginalLogMatched']=True
+    if diagnostic is not None:diagnostic(detail)
+    return log
+  if diagnostic is not None:diagnostic(detail)
+ need(False,'Both official original-log routes failed exact readback; see bounded safe diagnostics')
+
 def validate_original(run,jobs,log,artifact):
  need((run['id'],run['head_sha'],run['run_attempt'],run['event'],run['path'],run['status'],run['conclusion'])==
       (RUN,SOURCE,1,'workflow_dispatch',ORIGINAL_WORKFLOW,'completed','failure'),'Exact original failed publisher required')

@@ -1,9 +1,9 @@
 """Focused fixed-recovery policy tests; no API, build, image or scanner invocation."""
-import argparse,copy,importlib.util,json,sys,unittest
+import argparse,copy,importlib.util,json,sys,unittest,io,zipfile,subprocess
 from pathlib import Path
 import server583_publication_recovery_policy as p
 spec=importlib.util.spec_from_file_location('complete583',Path(__file__).with_name('complete-server583-publication.py'));owner=importlib.util.module_from_spec(spec);spec.loader.exec_module(owner)
-parser=argparse.ArgumentParser(add_help=False);parser.add_argument('--original-evidence',type=Path);args,remaining=parser.parse_known_args();sys.argv=[sys.argv[0],*remaining]
+parser=argparse.ArgumentParser(add_help=False);parser.add_argument('--original-evidence',type=Path);parser.add_argument('--official-attempt-archive',type=Path);args,remaining=parser.parse_known_args();sys.argv=[sys.argv[0],*remaining]
 def fixture():
  steps=[{'name':n,'conclusion':'success','number':i+1,'completed_at':'2026-11-07T14:25:00Z'}for i,n in enumerate(p.PASSED)]
  steps +=[{'name':'Attest image provenance','conclusion':'failure','number':10},{'name':'Attest image SBOM','conclusion':'skipped','number':11},{'name':'Create immutable GitHub Release','conclusion':'skipped','number':12},{'name':'Clean run-owned resources','conclusion':'success','number':13}]
@@ -67,9 +67,40 @@ class CompletionPolicy(unittest.TestCase):
   self.assertLess(text.index('Attest original image SBOM'),text.index('Complete exact immutable release'))
   self.assertNotIn('docker build',text);self.assertNotIn('docker push',text);self.assertNotIn('docker pull',text)
   self.assertEqual(len(owner.NAMES),35)
+ def test_safe_log_diagnostic_never_exposes_signed_url_or_token(self):
+  secret=b'gh: Resource not accessible by integration (HTTP 403) Authorization: Bearer TEST_TOKEN Location: https://storage.example/log?sig=TEST_SAS'
+  result=subprocess.CompletedProcess([],1,b'{"secret":"DO_NOT_ECHO"}',secret)
+  detail=p.safe_log_diagnostic('job-log',result,p.LOG_CAP);encoded=json.dumps(detail)
+  self.assertEqual(detail['httpStatus'],403);self.assertTrue(detail['permissionDenied'])
+  for value in ('TEST_TOKEN','TEST_SAS','DO_NOT_ECHO','Location','Authorization','https://'):self.assertNotIn(value,encoded)
+  detail=p.safe_log_diagnostic('job-log',subprocess.CompletedProcess([],1,b'',b'HTTP 503 transient'),p.LOG_CAP);self.assertTrue(detail['serverError'])
+ def test_official_archive_fallback_is_exact_and_bounded(self):
+  original=(p.LOG_BYTES,p.LOG_SHA);body=b'Explicit unit fixture only: exact original tlog500 log bytes'
+  p.LOG_BYTES,p.LOG_SHA=len(body),p.sha(body)
+  def archive(name=p.ATTEMPT_ENTRY,payload=body):
+   target=io.BytesIO()
+   with zipfile.ZipFile(target,'w',zipfile.ZIP_DEFLATED)as z:z.writestr(name,payload)
+   return target.getvalue()
+  calls=[];diags=[]
+  def runner(command,**kwargs):
+   calls.append(command)
+   if command[-1].endswith('/actions/jobs/'+str(p.JOB)+'/logs'):return subprocess.CompletedProcess(command,1,b'',b'gh: forbidden (HTTP 403) Location: https://download/?sig=NEVER_PRINT')
+   self.assertTrue(command[-1].endswith('/actions/runs/'+str(p.RUN)+'/attempts/1/logs'))
+   return subprocess.CompletedProcess(command,0,archive(),b'')
+  try:
+   self.assertEqual(p.fetch_original_log(runner,diags.append),body);self.assertEqual(len(calls),2);self.assertEqual(calls[0][2:6],['--method','GET','--header','Accept: application/vnd.github+json'])
+   self.assertEqual(diags[0]['httpStatus'],403);self.assertTrue(diags[-1]['exactOriginalLogMatched']);self.assertNotIn('NEVER_PRINT',json.dumps(diags))
+   for raw in (archive('wrong-job.txt'),archive(payload=body+b'changed'),b'not-a-zip'):
+    with self.assertRaises(ValueError):p.log_from_attempt_archive(raw)
+   with self.assertRaises(ValueError):p.log_from_attempt_archive(b'x'*(p.LOG_CAP+1))
+   with self.assertRaises(ValueError):p.fetch_original_log(lambda *a,**k:subprocess.CompletedProcess([],1,b'',b'HTTP 500'),lambda d:None)
+  finally:p.LOG_BYTES,p.LOG_SHA=original
  def test_real_collected_original_when_provided(self):
   if args.original_evidence is None:self.skipTest('Optional actual-byte reader not a CI fixture')
   root=args.original_evidence;p.validate_original(json.loads((root/'run-original.json').read_bytes()),json.loads((root/'jobs-original.json').read_bytes()),(root/'job-original.log').read_bytes(),json.loads((root/'artifact-original.json').read_bytes()))
   rows=owner.validate_archive((root/'original-publication-evidence.zip').read_bytes());self.assertEqual(owner.sha(rows['server.cdx.json']),owner.SBOM_SHA)
   self.assertNotIn('release-notes.md',rows)
+  if args.official_attempt_archive is not None:
+   log=p.log_from_attempt_archive(args.official_attempt_archive.read_bytes());self.assertEqual(log,(root/'job-original.log').read_bytes())
+   self.assertEqual(len(log),764984)
 if __name__=='__main__':unittest.main()
