@@ -131,12 +131,14 @@ require_marker docs/releases/server-1.6.491.md '# Server v1.6.491' \
     SERVER_PREVIOUS_RELEASE_NOTES_MISSING
 require_marker docs/releases/server-1.6.487.md '# Server v1.6.487' \
     SERVER_LAST_PUBLISHED_RELEASE_NOTES_MISSING
+# Historical release contracts live in the archive, not the current install index.
+require_marker docs/README.md '[Release archive](RELEASE-ARCHIVE.md)' SERVER_RELEASE_ARCHIVE_LINK_MISSING
 require_marker COMPATIBILITY.md '## Server v1.6.514 published' SERVER_V514_COMPATIBILITY_MISSING
-require_marker docs/README.md '[Server v1.6.514](releases/server-1.6.514.md)' SERVER_V514_INDEX_MISSING
+require_marker docs/RELEASE-ARCHIVE.md '[Server v1.6.514](releases/server-1.6.514.md)' SERVER_V514_INDEX_MISSING
 require_marker docs/releases/server-1.6.514.md '# Server v1.6.514' SERVER_V514_RELEASE_NOTES_MISSING
 require_marker docs/releases/server-1.6.514.md 'including API template IDs, may remap' SERVER_V514_ID_REMAP_CONTRACT_MISSING
 require_marker COMPATIBILITY.md '## Server v1.6.516' SERVER_V516_COMPATIBILITY_MISSING
-require_marker docs/README.md '[Server v1.6.516](releases/server-1.6.516.md)' SERVER_V516_INDEX_MISSING
+require_marker docs/RELEASE-ARCHIVE.md '[Server v1.6.516](releases/server-1.6.516.md)' SERVER_V516_INDEX_MISSING
 require_marker docs/releases/server-1.6.516.md '# Server v1.6.516' SERVER_V516_RELEASE_NOTES_MISSING
 require_marker docs/releases/server-1.6.516.md '## Repair' SERVER_V516_PENDING_ACCEPTANCE_MISSING
 
@@ -170,10 +172,10 @@ require_marker COMPATIBILITY.md \
 require_marker docs/releases/server-1.6.509.md \
     'No migration or runtime patch is required.' \
     SERVER_V509_RELEASE_CONTRACT_MISSING
-require_marker docs/README.md \
+require_marker docs/RELEASE-ARCHIVE.md \
     '[Server v1.6.495](releases/server-1.6.495.md)' \
     SERVER_NEXT_DOC_INDEX_MISSING
-require_marker docs/README.md \
+require_marker docs/RELEASE-ARCHIVE.md \
     '[Server v1.6.496](releases/server-1.6.496.md)' \
     SERVER_PUBLISHED_DOC_INDEX_MISSING
 
@@ -184,7 +186,7 @@ check_server497_published_docs()
     local published_marker
     require_marker COMPATIBILITY.md 'Published Server `v1.6.497`' \
         SERVER_PUBLISHED_497_COMPATIBILITY_MISSING
-    require_marker docs/README.md '[Server v1.6.497](releases/server-1.6.497.md)' \
+    require_marker docs/RELEASE-ARCHIVE.md '[Server v1.6.497](releases/server-1.6.497.md)' \
         SERVER_PUBLISHED_497_DOC_INDEX_MISSING
     python3 - <<'PY'
 import pathlib
@@ -258,12 +260,12 @@ for path, heading, end_heading, exact_heading, intro, image_lead, source_lead, s
     if any(reference != image for reference in references):
         reject("SERVER_PUBLISHED_497_DIGEST_MISMATCH", path)
 
-documents["docs/README.md"] = pathlib.Path("docs/README.md").read_text(encoding="utf-8")
-index_lines = [line for line in documents["docs/README.md"].splitlines()
+documents["docs/RELEASE-ARCHIVE.md"] = pathlib.Path("docs/RELEASE-ARCHIVE.md").read_text(encoding="utf-8")
+index_lines = [line for line in documents["docs/RELEASE-ARCHIVE.md"].splitlines()
                if "[Server v1.6.497](releases/server-1.6.497.md)" in line]
 if len(index_lines) != 1 or " — published " not in index_lines[0]:
-    reject("SERVER_PUBLISHED_497_STATUS_MISMATCH", "docs/README.md")
-latest_sections["docs/README.md"] = index_lines[0]
+    reject("SERVER_PUBLISHED_497_STATUS_MISMATCH", "docs/RELEASE-ARCHIVE.md")
+latest_sections["docs/RELEASE-ARCHIVE.md"] = index_lines[0]
 for path, text in documents.items():
     if re.search(r"source[- ]only\s+assembly\s+candidate", latest_sections[path], re.I):
         reject("SERVER_PUBLISHED_497_CANDIDATE_STATUS_STALE", path)
@@ -277,7 +279,7 @@ PY
     require_marker COMPATIBILITY.md \
         'The recorded QA497 `8080` deployment ran `v1.6.497` / Web Console `1.6.164`;' \
         SERVER_PUBLISHED_497_QA_BOUNDARY_MISSING
-    require_marker docs/README.md \
+    require_marker docs/RELEASE-ARCHIVE.md \
         'QA8080 now497/Web164 first start/restart passed; packaged native Receiver browser acceptance pending, broader matrix INCOMPLETE' \
         SERVER_PUBLISHED_497_QA_BOUNDARY_MISSING
     for published_marker in \
@@ -1717,16 +1719,16 @@ for historical_v481_marker in \
 done
 require_marker COMPATIBILITY.md 'non-admin mutations owner-scoped.' \
     SERVER_CURRENT_COMPATIBILITY_CONTRACT_MISSING
-require_marker docs/README.md \
+require_marker docs/RELEASE-ARCHIVE.md \
     '[Server v1.6.483](releases/server-1.6.483.md)' \
     SERVER_CURRENT_DOC_INDEX_MISSING
-require_marker docs/README.md \
+require_marker docs/RELEASE-ARCHIVE.md \
     '[Server v1.6.482](releases/server-1.6.482.md)' \
     SERVER_V482_DOC_INDEX_MISSING
-require_marker docs/README.md \
+require_marker docs/RELEASE-ARCHIVE.md \
     '[Server v1.6.481](releases/server-1.6.481.md)' \
     SERVER_V481_DOC_INDEX_MISSING
-require_marker docs/README.md \
+require_marker docs/RELEASE-ARCHIVE.md \
     '[Server v1.6.480](releases/server-1.6.480.md)' \
     SERVER_V480_DOC_INDEX_MISSING
 require_marker docs/hosts/README.md \

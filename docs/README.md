@@ -10,7 +10,7 @@ operator deployment and business-workflow acceptance are recorded separately.
   optional Bridge0.2.27; immutable publication and full normal readback completed.
   Isolated deployment/restart/smoke passed; affected business/native/weak-model
   acceptance and whole-frontend coverage remain pending or incomplete.
-- [Release archive](releases/) — historical published and candidate notes retain
+- [Release archive](RELEASE-ARCHIVE.md) — historical published and candidate notes retain
   their original evidence, acceptance limits and rollback context; these are not
   the current installation guide.
 - [Current installation](../README.md#current-release)
