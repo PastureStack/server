@@ -42,6 +42,15 @@ class CompletionPolicy(unittest.TestCase):
   for mutate in (lambda x:x[0]['verificationResult']['verifiedTimestamps'].clear(),lambda x:x[0]['verificationResult']['statement']['subject'][0]['digest'].update(sha256='0'*64),lambda x:x[0]['verificationResult']['statement']['predicate']['originalBuildProvenance']['predicate']['runDetails']['builder'].update(id=p.SIGNER),lambda x:x[0]['verificationResult']['statement']['predicate']['originalBuild'].update(source=r['source'])):
    bad=copy.deepcopy(rows);mutate(bad)
    with self.assertRaises(ValueError):p.validate_verified(bad,p.PROVENANCE,r,pred)
+ def test_recovery_predicate_uri_consistent_and_bounded(self):
+  expected='https://github.com/PastureStack/server#recovery-v1'
+  self.assertEqual(p.PROVENANCE,expected);self.assertEqual(p.MAX_RECOVERY_PREDICATE_TYPE_BYTES,64);self.assertLessEqual(len(p.PROVENANCE.encode('utf-8')),p.MAX_RECOVERY_PREDICATE_TYPE_BYTES)
+  root=Path(__file__).resolve().parents[1]
+  workflow=(root/'.github/workflows/complete-server583-publication.yml').read_text()
+  self.assertEqual(workflow.count('predicate-type: '+expected),1)
+  document=(root/'docs/operations/server583-publication-recovery.md').read_text();self.assertIn('## Recovery v1',document);self.assertIn('`'+expected+'`',document)
+  recovery=p.recovery_identity('a'*40,123456,1);command=p.verify_command(p.DIGEST,p.PROVENANCE,recovery)
+  self.assertEqual(command[command.index('--predicate-type')+1],expected)
  def test_custom_recovery_is_not_claimed_as_original_native_slsa(self):
   data=fixture();job=p.validate_original(*data);r=p.recovery_identity('a'*40,123456,1);body=p.predicate(job,r)
   self.assertNotEqual(p.PROVENANCE,p.SLSA_PROVENANCE);self.assertFalse(body['originalNativeSlsaAvailable'])

@@ -1,6 +1,6 @@
 # Server583 same-artifact publication recovery
 
-## Same artifact publication recovery v1
+## Recovery v1
 
 This fixed protocol completes Server `v1.6.583` from image
 `sha256:e22ecd94bbc83c2d34f49aa7dde231301f42a26de9a89c929e8a11d886b6c78c`.
@@ -17,7 +17,9 @@ All original build/security/push steps and run-owned cleanup must pass; only the
 provenance transparency-log HTTP500 is eligible. SBOM/release must be skipped.
 
 The recovery workflow is a separate signed source and invocation. It emits the
-custom predicate type whose URI is this section, rather than submitting the
+custom predicate type `https://github.com/PastureStack/server#recovery-v1`,
+a short identifier in this repository namespace defined by this document, rather
+than submitting the
 statement as standard SLSA provenance. GitHub rejects unsupported SLSA build types
 and checks standard provenance against the signing certificate during storage.
 [Official build-type limitation](https://github.com/actions/attest/issues/195),

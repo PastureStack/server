@@ -36,7 +36,7 @@ jobs:
         with:
           subject-name: ghcr.io/pasturestack/server
           subject-digest: sha256:e22ecd94bbc83c2d34f49aa7dde231301f42a26de9a89c929e8a11d886b6c78c
-          predicate-type: https://github.com/PastureStack/server/blob/main/docs/operations/server583-publication-recovery.md#same-artifact-publication-recovery-v1
+          predicate-type: https://github.com/PastureStack/server#recovery-v1
           predicate-path: .server583-publication-completion/provenance-predicate.json
           push-to-registry: true
       - name: Attest original image SBOM
