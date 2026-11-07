@@ -1,6 +1,7 @@
 """Focused fixed-recovery policy tests; no API, build, image or scanner invocation."""
-import argparse,copy,importlib.util,json,sys,unittest,io,zipfile,subprocess
+import argparse,contextlib,copy,importlib.util,json,sys,unittest,io,zipfile,subprocess
 from pathlib import Path
+from unittest import mock
 import server583_publication_recovery_policy as p
 spec=importlib.util.spec_from_file_location('complete583',Path(__file__).with_name('complete-server583-publication.py'));owner=importlib.util.module_from_spec(spec);spec.loader.exec_module(owner)
 parser=argparse.ArgumentParser(add_help=False);parser.add_argument('--original-evidence',type=Path);parser.add_argument('--official-attempt-archive',type=Path);args,remaining=parser.parse_known_args();sys.argv=[sys.argv[0],*remaining]
@@ -16,6 +17,38 @@ def verified(recovery,kind,predicate):
  cert={'issuer':'https://token.actions.githubusercontent.com','subjectAlternativeName':p.SIGNER,'buildSignerURI':p.SIGNER,'buildSignerDigest':recovery['source'],'sourceRepositoryURI':'https://github.com/'+p.REPO,'sourceRepositoryDigest':recovery['source'],'sourceRepositoryRef':'refs/heads/main','buildConfigURI':p.SIGNER,'buildConfigDigest':recovery['source'],'runInvocationURI':recovery['invocation'],'runnerEnvironment':'github-hosted'}
  return [{'verificationResult':{'signature':{'certificate':cert},'verifiedTimestamps':[{'type':'Tlog'}],'statement':{'_type':'https://in-toto.io/Statement/v1','subject':[{'name':p.IMAGE,'digest':{'sha256':p.DIGEST[7:]}}],'predicateType':kind,'predicate':predicate}}}]
 class CompletionPolicy(unittest.TestCase):
+ def test_oci_verify_uses_private_anonymous_child_config_only(self):
+  recovery=p.recovery_identity('a'*40,123456,1);directories=[]
+  def child(*command,**kwargs):
+   self.assertEqual(command,tuple(p.verify_command(p.DIGEST,kind,recovery)))
+   env=kwargs['env'];self.assertEqual(env['GH_TOKEN'],'EXPLICIT_UNIT_TOKEN');self.assertNotEqual(env['DOCKER_CONFIG'],'ambient-authenticated-config')
+   config=Path(env['DOCKER_CONFIG']);directories.append(config)
+   self.assertEqual(json.loads((config/'config.json').read_bytes()),{'auths':{}});self.assertEqual(set(x.name for x in config.iterdir()),{'config.json'})
+   self.assertEqual(owner.os.environ['DOCKER_CONFIG'],'ambient-authenticated-config')
+   return b'unit-verified-by-command; full policy check remains in caller'
+  with mock.patch.dict(owner.os.environ,{'DOCKER_CONFIG':'ambient-authenticated-config','GH_TOKEN':'EXPLICIT_UNIT_TOKEN'}),mock.patch.object(owner,'command',side_effect=child):
+   for kind in (p.PROVENANCE,p.SBOM):self.assertTrue(owner.anonymous_oci_verify(kind,recovery))
+   self.assertEqual(owner.os.environ['DOCKER_CONFIG'],'ambient-authenticated-config')
+  self.assertEqual(len(directories),2);self.assertTrue(all(not x.exists()for x in directories))
+ def test_command_failure_emits_only_safe_categories_and_still_fails_closed(self):
+  stderr=b'error: docker-credential-desktop not found; unauthorized; HTTP 503; invalid argument; verification failed; no matching attestations; Authorization: Bearer SECRET_TOKEN; Location: https://download/?sig=SECRET_SAS'
+  result=subprocess.CompletedProcess([],1,b'{"body":"SECRET_BODY"}',stderr);out=io.StringIO()
+  with mock.patch.object(owner.subprocess,'run',return_value=result)as run,contextlib.redirect_stdout(out),self.assertRaises(ValueError)as failure:
+   owner.command('gh','attestation','verify','oci://unit',env={'DOCKER_CONFIG':'unit-only'})
+  detail=json.loads(out.getvalue())['requiredCommandFailure'];self.assertEqual(detail['exitCode'],1);self.assertEqual(detail['httpStatus'],503)
+  self.assertTrue(all(detail[x]for x in('ociAttestationVerify','credentialHelperUnavailable','authenticationFailure','attestationUnavailable','cryptographicVerificationFailure','invalidArgument','serverError')))
+  self.assertTrue(all(value is None or type(value)in(int,bool)for value in detail.values()))
+  self.assertEqual(run.call_args.kwargs['env'],{'DOCKER_CONFIG':'unit-only'})
+  for secret in ('SECRET_TOKEN','SECRET_SAS','SECRET_BODY','Authorization','Location','https://','oci://unit'):self.assertNotIn(secret,out.getvalue()+str(failure.exception))
+  for error,field in ((subprocess.TimeoutExpired(['sensitive-command'],1,output=b'SECRET_BODY',stderr=stderr),'timedOut'),(FileNotFoundError('SECRET_PATH'),'launchFailed')):
+   out=io.StringIO()
+   with mock.patch.object(owner.subprocess,'run',side_effect=error),contextlib.redirect_stdout(out),self.assertRaises(ValueError):owner.command('gh','attestation','verify','oci://unit')
+   detail=json.loads(out.getvalue())['requiredCommandFailure'];self.assertTrue(detail[field]);self.assertIsNone(detail['exitCode']);self.assertNotIn('SECRET',out.getvalue())
+  out=io.StringIO()
+  with mock.patch.object(owner.subprocess,'run',return_value=subprocess.CompletedProcess([],0,b'xx',b'')),contextlib.redirect_stdout(out),self.assertRaises(ValueError):owner.command('gh','api','unit',cap=1)
+  self.assertTrue(json.loads(out.getvalue())['requiredCommandFailure']['stdoutCapExceeded'])
+  with mock.patch.object(owner.subprocess,'run',return_value=subprocess.CompletedProcess([],0,b'ok',b''))as run:
+   self.assertEqual(owner.command('gh','api','unit'),b'ok');self.assertIsNone(run.call_args.kwargs['env'])
  def test_original_tlog_only_and_all_build_security_steps_remain_required(self):
   data=fixture();p.validate_original(*data)
   for name in p.PASSED:
