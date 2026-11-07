@@ -29,6 +29,13 @@ Publishing an image does not establish complete business-workflow acceptance.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
+### Upcoming source release
+
+Server `v1.6.581` is not yet published. It pins Engine `v0.183.383`, Web Console
+`1.6.223` / optional Bridge `0.2.25` for reviewed dependency links, Registry
+lifecycle and checked locking. Use the published installation below until the
+[candidate](docs/releases/server-1.6.581.md) completes the Server release gates.
+
 ## API Keys
 
 Choose allow-by-default with deny exceptions, or deny-by-default with allow
