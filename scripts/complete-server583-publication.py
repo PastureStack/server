@@ -1,7 +1,7 @@
 """Complete fixed original Server583 bytes after a transparency-log HTTP500.
 No image build/pull/retag/push or scanner/runtime invocation exists here.
 """
-import argparse,hashlib,importlib.util,json,os,re,shutil,subprocess,time,urllib.request,zipfile
+import argparse,hashlib,importlib.util,json,os,re,shutil,subprocess,tempfile,time,urllib.request,zipfile
 from pathlib import Path
 import server583_publication_recovery_policy as policy
 from server583_publication_recovery_policy import need,sha
@@ -16,9 +16,38 @@ CAP=32*1024**2
 FLOOR=10*1024**3+256*1024**2
 SBOM_SHA='3b24a8ec35e11f01d37834979ea6ec2e8217bd3479121dbec223052efad15c86'
 
-def command(*args,cap=8*1024**2,timeout=120):
- r=subprocess.run(list(map(str,args)),capture_output=True,timeout=timeout)
- need(r.returncode==0 and len(r.stdout)<=cap,'Bounded required command failed: '+str(args[:3]));return r.stdout
+def command_failure_diagnostic(result,cap,*,timed_out=False,launch_failed=False,oci_verify=False):
+ # Only closed numeric/boolean categories escape; never print command, stderr or body.
+ detail=policy.safe_log_diagnostic('required-command',result,cap);detail.pop('endpointKind')
+ scan=(result.stderr if type(result.stderr)is bytes else b'')[:65536].decode('utf-8','replace').lower()
+ detail.update(timedOut=timed_out,launchFailed=launch_failed,ociAttestationVerify=oci_verify,
+  credentialHelperUnavailable='docker-credential-'in scan and any(x in scan for x in('not found','no such file','not installed')),
+  authenticationFailure=any(x in scan for x in('unauthorized','authentication required','denied')),
+  attestationUnavailable=any(x in scan for x in('no attestations found','no matching attestations')),
+  cryptographicVerificationFailure=any(x in scan for x in('failed to verify','verification failed','failed to validate')),
+  invalidArgument=any(x in scan for x in('invalid argument','unsupported build type','data too long')))
+ if timed_out or launch_failed:detail['exitCode']=None
+ return detail
+
+def command(*args,cap=8*1024**2,timeout=120,env=None):
+ oci_verify=tuple(args[:3])==('gh','attestation','verify')
+ try:r=subprocess.run(list(map(str,args)),capture_output=True,timeout=timeout,env=env)
+ except(subprocess.TimeoutExpired,OSError)as error:
+  timeout_error=isinstance(error,subprocess.TimeoutExpired)
+  r=subprocess.CompletedProcess([], -1,getattr(error,'stdout',None)or b'',getattr(error,'stderr',None)or b'')
+  print(json.dumps({'requiredCommandFailure':command_failure_diagnostic(r,cap,timed_out=timeout_error,launch_failed=not timeout_error,oci_verify=oci_verify)},sort_keys=True),flush=True)
+  raise ValueError('Bounded required command transport failed; safe diagnostic emitted')from None
+ if r.returncode!=0 or len(r.stdout)>cap:
+  print(json.dumps({'requiredCommandFailure':command_failure_diagnostic(r,cap,oci_verify=oci_verify)},sort_keys=True),flush=True)
+  raise ValueError('Bounded required command failed; safe diagnostic emitted')from None
+ return r.stdout
+
+def anonymous_oci_verify(kind,recovery):
+ # Match the normal public verifier; isolate only this read-only child process.
+ with tempfile.TemporaryDirectory(prefix='pst583-public-oci-')as temporary:
+  Path(temporary,'config.json').write_text('{"auths":{}}',encoding='utf-8')
+  child_env=dict(os.environ,DOCKER_CONFIG=temporary)
+  return command(*policy.verify_command(policy.DIGEST,kind,recovery),env=child_env)
 
 def api(path):return json.loads(command('gh','api','repos/'+policy.REPO+'/'+path))
 
@@ -140,7 +169,7 @@ def complete():
  _,_,_,_,job,_,_,_=collect(recovery);need(registry()==prepared['image'],'Preserve existing exact semantic image and config')
  expected=policy.predicate(job,recovery);need(sha((WORK/'provenance-predicate.json').read_bytes())==prepared['predicateSha256']and json.loads((WORK/'provenance-predicate.json').read_bytes())==expected,'Prepared original-builder predicate must remain exact')
  for kind,name,body in [(policy.PROVENANCE,'oci-provenance.json',expected),(policy.SBOM,'oci-sbom.json',json.loads((WORK/'original-evidence/server.cdx.json').read_bytes()))]:
-  raw=command(*policy.verify_command(policy.DIGEST,kind,recovery));policy.validate_verified(json.loads(raw),kind,recovery,body);write(WORK/name,raw)
+  raw=anonymous_oci_verify(kind,recovery);policy.validate_verified(json.loads(raw),kind,recovery,body);write(WORK/name,raw)
  for n,row in prepared['assets'].items():p=WORK/'original-evidence'/n;need(p.stat().st_size==row['bytes']and sha(p.read_bytes())==row['sha256'],'Prepared release asset bytes changed')
  absent('releases/tags/'+policy.TAG);absent('git/ref/tags/'+policy.TAG)
  command('gh','release','create',policy.TAG,'--repo',policy.REPO,'--target',policy.SOURCE,'--title','PastureStack Server '+policy.TAG,'--notes-file',WORK/'original-evidence/release-notes.md',*[str(WORK/'original-evidence'/n)for n in NAMES],timeout=180)
