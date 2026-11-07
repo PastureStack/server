@@ -1,5 +1,32 @@
 # Compatibility Contract
 
+<a id="server-v16582-publication"></a>
+
+## Server v1.6.582 published
+
+[Server v1.6.582](https://github.com/PastureStack/server/releases/tag/v1.6.582)
+packages Engine 0.183.384, Web Console 1.6.224 / optional Bridge 0.2.26,
+Catalog 0.20.17 and Compose Executor 0.14.43 from immutable component artifacts.
+
+| Evidence | Verified value |
+|---|---|
+| Image manifest | `ghcr.io/pasturestack/server:v1.6.582@sha256:773e6166b219729ffa67a0f16ce4e10e493e86669b58fb47a2818d28ca513bc5` |
+| Publisher revision / tested tree | `0620f4de11a916463e9379fac75e8fe8a85ca01e` / `acf436649156cc12e49a07502577faf2c234047d` |
+| Normal publisher | [42362455329](https://github.com/PastureStack/server/actions/runs/42362455329): source, build, flattening, current scan, startup/restart, image publication and OCI attestations passed. |
+| Public readback | Immutable Release 437492528; 35 anonymous assets and 36 release-crypto subjects, OCI provenance and SBOM verification passed. |
+| Engine component | 471 suites / 4,216 tests; zero failures/errors, one inherited skip; 402 required methods and fresh compiled typed-role evidence passed. |
+| Web component | 1,142 browser tests and 269 distinct focused identities; 126 carried, 35 new and 108 affected existing. Bridge 0.2.26 passed its actual SDK handshake. |
+| Security | Zero effective Critical/High or available-fix findings; thirteen exact tracked no-fix Medium package occurrences remain. |
+| Operator acceptance | Affected Service, logical Volume, Container logs, stale-link inbox and TCP/weak-model native acceptance remain separate; publication is not complete frontend acceptance. |
+
+Same-image Service configuration upgrades preserve full native configurations.
+Logical Volume creation does not allocate or mount storage. Explicit Container
+logs require native LOGS authority; application text is untrusted and may contain
+secrets, while audit retains metadata only. Existing roles, Key ceilings, feature
+opt-ins, mounts, restart, origin, AppArmor and firewall settings remain authoritative.
+Retain Server581 and a matching data backup for rollback; see the
+[release note](docs/releases/server-1.6.582.md).
+
 <a id="server-v16581-publication"></a>
 
 ## Server v1.6.581 published

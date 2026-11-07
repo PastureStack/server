@@ -1,10 +1,18 @@
-# Server v1.6.582 candidate
+# Server v1.6.582
 
-## Candidate boundary
+## Publication and acceptance boundary
 
-This source candidate is not a published Server image or deployment result.
-The normal Server publisher must build, scan, flatten, attest and qualify this
-assembly before use. Server v1.6.581 remains the current published installation.
+The immutable [Server v1.6.582 release](https://github.com/PastureStack/server/releases/tag/v1.6.582)
+was built by [publisher 42362455329](https://github.com/PastureStack/server/actions/runs/42362455329)
+from `0620f4de11a916463e9379fac75e8fe8a85ca01e`, tested tree
+`acf436649156cc12e49a07502577faf2c234047d`. Its immutable image reference is
+`ghcr.io/pasturestack/server:v1.6.582@sha256:773e6166b219729ffa67a0f16ce4e10e493e86669b58fb47a2818d28ca513bc5`. All 35 anonymous public assets,
+36 native release-attestation subjects, OCI provenance and SBOM verification passed.
+The actual assembled image passed startup/restart and current scan policy: zero
+effective Critical/High or available-fix findings, with thirteen tracked no-fix
+Medium package occurrences. Source, image and publication checks do not establish
+complete frontend or business-workflow acceptance. Matching 8080 native acceptance
+remains separately recorded; this release does not authorize production deployment.
 
 ## Verified component inputs
 
@@ -24,7 +32,8 @@ equal display names do not establish resource identity.
 Container-log reads use the Container's current LOGS authorization and a bounded,
 actor/project-bound private broker request. The Server broker validates the pinned
 Host API v0.38.8 three-byte stream prefix (`00 `, `01 ` or `02 `), then streams
-application text with at most 200 lines, 64 KiB and five seconds. It closes the
+application text with at most 200 lines and 64 KiB, under a five-second broker
+dial/read deadline. Synchronous authorization/audit work is outside that deadline. It closes the
 upstream reader at the limit or cancellation without allocating an entire large
 WebSocket message, and preserves valid UTF-8 at the byte boundary. Literal
 `[RANLOGS]` in application text is preserved. Logs are untrusted application text
@@ -58,11 +67,11 @@ for this Server assembly.
 The recipe's multistage and flatten steps, proxy, Agent, Host API, Catalog,
 Compose, official APT pins and security thresholds remain unchanged. Existing
 VEX statements and the 13 package-scoped no-fix finding rows (nine CVE records)
-retain their exact scope. Only their release-document identity advances; the new
-Server582 merged-rootfs scan must run against the actual assembly. No inherited
-scan is presented as that result. Server CI, image scan, startup/restart,
-cryptographic publication, anonymous readback and native acceptance each require
-their own actual evidence.
+retain their exact scope. The new Server582 merged-rootfs scan and startup/restart
+passed in its normal publisher; original raw scans and package-scoped exceptions
+remain attached to the immutable release. Anonymous and cryptographic readback
+passed separately. Native acceptance is a separate evidence layer and is not
+inferred from component CI, image health or publication.
 
 Preserve the operator's mounts, named volumes, restart policy, AppArmor and
 firewall configuration. This batch introduces no data migration. Retain the
