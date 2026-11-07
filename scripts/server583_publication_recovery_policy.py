@@ -131,11 +131,12 @@ def predicate(job,recovery):
 
 def verify_command(digest,predicate_type,recovery):
  need(digest==DIGEST and predicate_type in(PROVENANCE,SBOM),'Exact subject and predicate type required')
- return validate_verify_argv(['gh','attestation','verify','oci://'+IMAGE+'@'+DIGEST,'--repo',REPO,
+ return validate_verify_argv(['gh','attestation','verify','oci://'+IMAGE+'@'+DIGEST,'--bundle-from-oci','--repo',REPO,
   '--signer-workflow',REPO+'/'+RECOVERY_WORKFLOW,'--signer-digest',recovery['source'],
   '--source-digest',recovery['source'],'--source-ref','refs/heads/main','--predicate-type',predicate_type,'--format','json'])
 
 def validate_verify_argv(command):
+ need(command.count('--bundle-from-oci')==1 and '--bundle'not in command,'Exact native OCI registry bundle source required')
  # GitHub CLI makes these identity-selector flags mutually exclusive.
  selectors=('--cert-identity','--cert-identity-regex','--signer-repo','--signer-workflow')
  need(sum(x in command for x in selectors)==1 and '--signer-workflow'in command,'Exactly the fixed signer-workflow selector required')

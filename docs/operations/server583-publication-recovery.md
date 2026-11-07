@@ -51,6 +51,20 @@ the true recovery certificate source; original image source is checked separatel
 against the reconstructed claim and original run. The custom type is always
 passed explicitly to the CLI; it never relies on the standard SLSA default. [GitHub CLI verification policy](https://cli.github.com/manual/gh_attestation_verify)
 
+Verification loads both native bundles from the fixed digest's OCI registry with
+`--bundle-from-oci`. The GitHub attestations API was reproduced returning HTTP422
+`predicate_type invalid predicate type provided` for this exact custom type;
+the same subject without that API filter returned its attestations. This changes
+the official bundle retrieval source, not the custom predicate, CLI version,
+cryptographic verification or identity policy. Explicit repo, signer, source/ref,
+predicate type, transparency witness and full payload checks all remain required.
+[Official OCI bundle loading mode](https://cli.github.com/manual/gh_attestation_verify)
+
+OCI bundle verification alone cannot detect a later repository rename/name reuse.
+The separate live GitHub checks of the original job/artifact/source and actual
+completion run/source remain mandatory; registry bundles do not replace that
+current official identity chain.
+
 The completion source may add only this document, the fixed workflow, script,
 policy and focused tests. It cannot modify recipes, source gates or CodeQL.
 Release publication is gated by fresh original-run/artifact/source checks, exact
