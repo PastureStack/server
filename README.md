@@ -13,8 +13,8 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.579`](https://github.com/PastureStack/server/releases/tag/v1.6.579)
-packages Engine `v0.183.381`, Web Console `1.6.222` / optional bridge `0.2.24`,
+[Server `v1.6.580`](https://github.com/PastureStack/server/releases/tag/v1.6.580)
+packages Engine `v0.183.382`, Web Console `1.6.222` / optional bridge `0.2.24`,
 Catalog `0.20.17` and Compose `0.14.43`.
 
 Optional AI tools support bounded resource discovery, human-reviewed changes and
@@ -22,8 +22,8 @@ an opt-in Stack dependency view. Native roles, API Key limits and the four
 independent default-off settings remain authoritative. Dependency results can be
 partial; an empty graph does not establish permission to stop or remove resources.
 
-See the [release note](docs/releases/server-1.6.579.md),
-[publication record](COMPATIBILITY.md#server-v16579-publication) and
+See the [release note](docs/releases/server-1.6.580.md),
+[publication record](COMPATIBILITY.md#server-v16580-publication) and
 [acceptance boundaries](docs/ai-collaboration.md#workload-retirement-limitation).
 Publishing an image does not establish complete business-workflow acceptance.
 
@@ -72,7 +72,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.579
+  ghcr.io/pasturestack/server:v1.6.580
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -80,7 +80,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.579
+    image: ghcr.io/pasturestack/server:v1.6.580
     restart: unless-stopped
     ports:
       - "8080:8080"

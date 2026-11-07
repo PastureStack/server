@@ -1,7 +1,10 @@
-# Server v1.6.580 candidate
+# Server v1.6.580
 
-This source candidate requires the normal Server image, security, startup,
-restart and immutable publication checks before installation.
+Published image: `ghcr.io/pasturestack/server:v1.6.580@sha256:231f073df5bbcdbcc82ed4a2f10c714093237e4e9099db294b6eb08c5c56aff8`.
+
+Source commit: `eb3154723f22d357784a36f385f16d16a4734f77`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
