@@ -17,7 +17,8 @@ BUILDER='https://github.com/'+REPO+'/'+ORIGINAL_WORKFLOW+'@refs/heads/main'
 SIGNER='https://github.com/'+REPO+'/'+RECOVERY_WORKFLOW+'@refs/heads/main'
 BUILD_TYPE='https://actions.github.io/buildtypes/workflow/v1'
 SLSA_PROVENANCE='https://slsa.dev/provenance/v1'
-PROVENANCE='https://github.com/'+REPO+'/blob/main/docs/operations/server583-publication-recovery.md#same-artifact-publication-recovery-v1'
+PROVENANCE='https://github.com/'+REPO+'#recovery-v1'
+MAX_RECOVERY_PREDICATE_TYPE_BYTES=64  # Conservative local bound; not a GitHub limit claim.
 PROVENANCE_MODEL='SIGNED_SAME_ARTIFACT_RECOVERY_STATEMENT'
 SBOM='https://cyclonedx.org/bom'
 PASSED=('Run source gates','Build exact release image once','Flatten and compare the release image for classic overlay2',
@@ -29,6 +30,8 @@ FILES={'.github/workflows/complete-server583-publication.yml','scripts/complete-
  'docs/operations/server583-publication-recovery.md'}
 def need(ok,reason):
  if not ok:raise ValueError(reason)
+need(len(PROVENANCE.encode('utf-8'))<=MAX_RECOVERY_PREDICATE_TYPE_BYTES,'Conservative local recovery predicate-type length bound required')
+
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def recovery_identity(source,run,attempt):
  need(type(source)is str and re.fullmatch('[0-9a-f]{40}',source)and source!=SOURCE,'Exact distinct recovery signer source required')
