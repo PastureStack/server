@@ -1,0 +1,61 @@
+name: Complete Server583 Same Artifact Publication
+on:
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: write
+  packages: write
+  id-token: write
+  attestations: write
+  artifact-metadata: write
+concurrency:
+  group: publish-current-server-v1.6.583
+  cancel-in-progress: false
+jobs:
+  complete:
+    if: github.repository == 'PastureStack/server' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Test exact completion policy before any mutation
+        run: python3 scripts/test-complete-server583-publication.py
+      - name: Validate exact original build and prepare immutable inputs
+        id: prepare
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/complete-server583-publication.py prepare
+      - name: Authenticate only for OCI attestation append
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+      - name: Attest original image provenance with truthful recovery signer
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-name: ghcr.io/pasturestack/server
+          subject-digest: sha256:e22ecd94bbc83c2d34f49aa7dde231301f42a26de9a89c929e8a11d886b6c78c
+          predicate-type: https://slsa.dev/provenance/v1
+          predicate-path: .server583-publication-completion/provenance-predicate.json
+          push-to-registry: true
+      - name: Attest original image SBOM
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-name: ghcr.io/pasturestack/server
+          subject-digest: sha256:e22ecd94bbc83c2d34f49aa7dde231301f42a26de9a89c929e8a11d886b6c78c
+          sbom-path: .server583-publication-completion/original-evidence/server.cdx.json
+          push-to-registry: true
+      - name: Complete exact immutable release and verify native chains
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/complete-server583-publication.py complete
+      - name: Retain original failure and separate recovery evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: server583-same-artifact-completion-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .server583-publication-completion
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 30
