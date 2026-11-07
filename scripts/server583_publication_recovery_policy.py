@@ -1,0 +1,104 @@
+"""Exact Server583 original-builder / recovery-signer policy. No I/O or weaker fallback."""
+import hashlib,json,re
+REPO='PastureStack/server'
+TAG='v1.6.583'
+SOURCE='6e6befedc7cd97dc3685ef7f6010b1fa2506bd77'
+TREE='aa6227d081ad14c6237e6af062357ce1c22d034b'
+RUN=42381092651
+JOB=128428683822
+ARTIFACT=13578150593
+ARTIFACT_BYTES=6656789
+ARTIFACT_SHA='e1a66835172702f891e52aa2df524b47516b599191b722af859287c0f8548a26'
+DIGEST='sha256:e22ecd94bbc83c2d34f49aa7dde231301f42a26de9a89c929e8a11d886b6c78c'
+IMAGE='ghcr.io/pasturestack/server'
+ORIGINAL_WORKFLOW='.github/workflows/publish-current-server.yml'
+RECOVERY_WORKFLOW='.github/workflows/complete-server583-publication.yml'
+BUILDER='https://github.com/'+REPO+'/'+ORIGINAL_WORKFLOW+'@refs/heads/main'
+SIGNER='https://github.com/'+REPO+'/'+RECOVERY_WORKFLOW+'@refs/heads/main'
+BUILD_TYPE='https://github.com/'+REPO+'/blob/main/docs/operations/server583-publication-recovery.md#original-build-with-recovery-signer-v1'
+PROVENANCE='https://slsa.dev/provenance/v1'
+SBOM='https://cyclonedx.org/bom'
+PASSED=('Run source gates','Build exact release image once','Flatten and compare the release image for classic overlay2',
+ 'Verify the actual candidate JDK security runtime','Verify ordinary Brotli operations against the actual final image',
+ 'Start, restart, and export the candidate','Retain the independent browser runtime SBOM from the actual candidate',
+ 'Scan the final merged runtime and create SBOM','Publish semantic image')
+FILES={'.github/workflows/complete-server583-publication.yml','scripts/complete-server583-publication.py',
+ 'scripts/server583_publication_recovery_policy.py','scripts/test-complete-server583-publication.py',
+ 'docs/operations/server583-publication-recovery.md'}
+def need(ok,reason):
+ if not ok:raise ValueError(reason)
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def recovery_identity(source,run,attempt):
+ need(type(source)is str and re.fullmatch('[0-9a-f]{40}',source)and source!=SOURCE,'Exact distinct recovery signer source required')
+ need(type(run)is int and run>0 and run!=RUN and type(attempt)is int and attempt>0,'Actual separate recovery run and attempt required')
+ return {'repository':REPO,'workflow':RECOVERY_WORKFLOW,'ref':'refs/heads/main','source':source,'run':run,'attempt':attempt,
+         'invocation':'https://github.com/'+REPO+'/actions/runs/'+str(run)+'/attempts/'+str(attempt)}
+def validate_original(run,jobs,log,artifact):
+ need((run['id'],run['head_sha'],run['run_attempt'],run['event'],run['path'],run['status'],run['conclusion'])==
+      (RUN,SOURCE,1,'workflow_dispatch',ORIGINAL_WORKFLOW,'completed','failure'),'Exact original failed publisher required')
+ need(len(jobs['jobs'])==jobs['total_count']==1,'One exact original publisher job required')
+ job=jobs['jobs'][0]
+ need((job['id'],job['run_id'],job['head_sha'],job['run_attempt'],job['name'],job['conclusion'])==(JOB,RUN,SOURCE,1,'publish','failure'),'Exact original job identity required')
+ failed=[s for s in job['steps']if s['conclusion']=='failure'];need(len(failed)==1 and failed[0]['name']=='Attest image provenance','Only provenance transport failure is eligible')
+ for name in PASSED:need(sum(s['name']==name and s['conclusion']=='success'for s in job['steps'])==1,'Original required build/security step must pass: '+name)
+ need(all(s['conclusion']=='success'for s in job['steps']if s['number']<failed[0]['number']),'Every step preceding failed attestation must pass')
+ for name in ('Attest image SBOM','Create immutable GitHub Release'):need(sum(s['name']==name and s['conclusion']=='skipped'for s in job['steps'])==1,'Original later step must remain skipped')
+ need(sum(s['name']=='Clean run-owned resources'and s['conclusion']=='success'for s in job['steps'])==1,'Original run-owned cleanup must pass')
+ need(b'InternalError: error creating tlog entry - (500) unexpected result from transparency log'in log,'Exact original tlog HTTP500 diagnosis required')
+ need((artifact['id'],artifact['name'],artifact['size_in_bytes'],artifact['digest'],artifact['workflow_run']['id'],artifact['workflow_run']['head_sha'],artifact['expired'])==
+      (ARTIFACT,'server-'+TAG+'-publication-'+str(RUN),ARTIFACT_BYTES,'sha256:'+ARTIFACT_SHA,RUN,SOURCE,False),'Exact original artifact identity required')
+ return job
+
+def predicate(job,recovery):
+ push=next(s for s in job['steps']if s['name']=='Publish semantic image')
+ return {'buildDefinition':{'buildType':BUILD_TYPE,'externalParameters':{
+   'originalBuild':{'repository':REPO,'workflow':ORIGINAL_WORKFLOW,'ref':'refs/heads/main','source':SOURCE,'tree':TREE,'run':RUN,'attempt':1,
+                    'conclusion':'failure','failure':'attestation-transparency-log-http500','buildSecurityAndImagePublish':'success'},
+   'RecoverySigner':recovery,'imageRebuilt':False,'imageRepushed':False,'scansReplayed':False},
+   'resolvedDependencies':[{'uri':'git+https://github.com/'+REPO+'@refs/heads/main','digest':{'gitCommit':SOURCE}},
+     {'uri':'https://github.com/'+REPO+'/actions/artifacts/'+str(ARTIFACT),'digest':{'sha256':ARTIFACT_SHA}}]},
+  'runDetails':{'builder':{'id':BUILDER},'metadata':{'invocationId':'https://github.com/'+REPO+'/actions/runs/'+str(RUN)+'/attempts/1',
+   'startedOn':job['started_at'],'finishedOn':push['completed_at']}}}
+
+def verify_command(digest,predicate_type,recovery):
+ need(digest==DIGEST and predicate_type in(PROVENANCE,SBOM),'Exact subject and predicate type required')
+ return validate_verify_argv(['gh','attestation','verify','oci://'+IMAGE+'@'+DIGEST,'--repo',REPO,
+  '--signer-workflow',REPO+'/'+RECOVERY_WORKFLOW,'--signer-digest',recovery['source'],
+  '--source-digest',recovery['source'],'--source-ref','refs/heads/main','--predicate-type',predicate_type,'--format','json'])
+
+def validate_verify_argv(command):
+ # GitHub CLI makes these identity-selector flags mutually exclusive.
+ selectors=('--cert-identity','--cert-identity-regex','--signer-repo','--signer-workflow')
+ need(sum(x in command for x in selectors)==1 and '--signer-workflow'in command,'Exactly the fixed signer-workflow selector required')
+ need('--repo'in command and '--signer-digest'in command and '--source-digest'in command and '--source-ref'in command,'All exact repository/source signer bindings required')
+ return command
+
+def validate_verified(rows,predicate_type,recovery,expected):
+ need(type(rows)is list and rows,'Native cryptographic verification result required');matched=[]
+ for row in rows:
+  result=row.get('verificationResult',{});cert=result.get('signature',{}).get('certificate',{})
+  good=(cert.get('issuer')=='https://token.actions.githubusercontent.com'and cert.get('subjectAlternativeName')==SIGNER
+    and cert.get('buildSignerURI')==SIGNER and cert.get('buildSignerDigest')==recovery['source']
+    and cert.get('sourceRepositoryURI')=='https://github.com/'+REPO and cert.get('sourceRepositoryDigest')==recovery['source']
+    and cert.get('sourceRepositoryRef')=='refs/heads/main'and cert.get('buildConfigURI')==SIGNER
+    and cert.get('buildConfigDigest')==recovery['source']and cert.get('runInvocationURI')==recovery['invocation']
+    and cert.get('runnerEnvironment')=='github-hosted'and any(x.get('type')=='Tlog'for x in result.get('verifiedTimestamps',[])))
+  statement=result.get('statement',{})
+  good=good and statement.get('_type')=='https://in-toto.io/Statement/v1'and statement.get('predicateType')==predicate_type
+  good=good and statement.get('subject')==[{'name':IMAGE,'digest':{'sha256':DIGEST[7:]}}]and statement.get('predicate')==expected
+  if good:matched.append(row)
+ need(matched,'Exact recovery-signer/original-builder pair and unchanged predicate required')
+ return matched
+
+def validate_completion_run(run,jobs,recovery):
+ need((run['id'],run['head_sha'],run['run_attempt'],run['event'],run['path'],run['status'],run['conclusion'])==
+      (recovery['run'],recovery['source'],recovery['attempt'],'workflow_dispatch',RECOVERY_WORKFLOW,'completed','success'),'Actual successful completion run required')
+ need(jobs['total_count']==len(jobs['jobs'])==1 and jobs['jobs'][0]['conclusion']=='success','Successful completion job required')
+ for name in ('Validate exact original build and prepare immutable inputs','Attest original image provenance with truthful recovery signer','Attest original image SBOM','Complete exact immutable release and verify native chains'):
+  need(sum(s['name']==name and s['conclusion']=='success'for s in jobs['jobs'][0]['steps'])==1,'Required completion step must pass: '+name)
+
+def validate_source(commit,comparison):
+ need(commit['sha']==SOURCE and commit['tree']['sha']==TREE and commit['verification']['verified']is True and commit['verification']['reason']=='valid','Signed original exact tested tree required')
+ need(comparison['base_commit']['sha']==comparison['merge_base_commit']['sha']==SOURCE and comparison['status']=='ahead','Recovery must descend from exact original source')
+ changed={x['filename']for x in comparison['files']}
+ need(changed==FILES and all(x['status']=='added'for x in comparison['files']),'Only fixed recovery workflow/script/policy/tests/docs additions allowed')
