@@ -533,7 +533,7 @@ require_marker "$release_dockerfile" \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 for web_sbom_release_marker in \
     'COPY --chmod=0755 artifacts/verify-web-console-sbom.py /usr/local/bin/verify-web-console-sbom' \
-    'ARG WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT=web-console-1.6.225-runtime.cdx.json' \
+    'ARG WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT=web-console-1.6.226-runtime.cdx.json' \
     '"${WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT}" "${WEB_CONSOLE_RUNTIME_SBOM_SHA256}" "${web_sbom}";' \
     '--lock-sha256 "${WEB_CONSOLE_LOCK_SHA256}" --archive "${web_archive}"' \
     '--webmcp-ceiling enabled;' \
@@ -571,7 +571,7 @@ python3 scripts/test-web-console-sbom.py
 python3 server/security/test_web_console_sbom_scan.py
 
 require_marker "$release_dockerfile" \
-    'ARG SERVER_RELEASE_TAG=v1.6.583' \
+    'ARG SERVER_RELEASE_TAG=v1.6.584' \
     SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"' \
@@ -599,28 +599,28 @@ require_marker "$publish_workflow" \
     'bash source/scripts/check-server-host-api-package.sh' \
     SERVER_HOST_API_RELEASE_CHECK_MISSING
 for release_host_marker in \
-    'ARG HOST_API_VERSION=0.38.8' \
+    'ARG HOST_API_VERSION=0.38.9' \
     'ARG HOST_API_PACKAGE_MODE=producer' \
     'ARG HOST_API_RELEASE_BASE_URL=https://github.com/PastureStack/host-api/releases/download' \
-    'ARG HOST_API_RELEASE_TAG=v0.38.8' \
-    'ARG HOST_API_COMMIT=4810ffbb4499c24d9f7066d64de3203f9a6771e4' \
-    'ARG HOST_API_PACKAGE_ID=4810ffbb4499c24d9f7066d64de3203f' \
-    'ARG HOST_API_ARCHIVE_SHA256=6903ffb6a618f5a9bc8c7c8997a1e0419c93a8bbdeaee6d288957366dccef444' \
-    'ARG HOST_API_BINARY_SHA256=85fceccc5e2724aa896560392123fc8927786915b03f6d42eb688e151a402b8a' \
+    'ARG HOST_API_RELEASE_TAG=v0.38.9' \
+    'ARG HOST_API_COMMIT=174c4471472fd77a056c9ae8639be11b2c0f4fd4' \
+    'ARG HOST_API_PACKAGE_ID=174c4471472fd77a056c9ae8639be11b' \
+    'ARG HOST_API_ARCHIVE_SHA256=f0bad8ef8c83a5019e89aedfe075e8553a297fc4746df342c89606f4651c294b' \
+    'ARG HOST_API_BINARY_SHA256=d1b66d98ab7f0306e253b28d64dd36b96a5d9927c4a20911bdb3d375c8b538f0' \
     'ARG HOST_API_APPLY_SHA256=8a21f63099832afb571755011bbcf8d97710994a50c419b20700cbc31efced0f' \
     'verify-host-api-package /out/host-api.tar.gz'; do
     require_marker "$release_dockerfile" "$release_host_marker" \
         SERVER_HOST_API_PRODUCER_IDENTITY_MISSING
 done
 for release_node_marker in \
-    'ARG NODE_AGENT_VERSION=0.13.33' \
-    'ARG NODE_AGENT_COMMIT=0aadd6f79890c994da2c047214a2a224471f9191' \
-    'ARG NODE_AGENT_PACKAGE_ID=0aadd6f79890c994da2c047214a2a224' \
-    'ARG NODE_AGENT_ARCHIVE_SHA256=2b86ca04c1071ab9f01983f70c45dfcec39694c8fc245031e7c1e8335dbd063d' \
-    'ARG NODE_AGENT_BINARY_SHA256=4b59d7af2f81d2dfe21eb0af9f67aeb53eddd48e9696e236f0889fb74a053e17' \
+    'ARG NODE_AGENT_VERSION=0.13.35' \
+    'ARG NODE_AGENT_COMMIT=ae15fa4fa7eeb0923871c1459685aef315b47aee' \
+    'ARG NODE_AGENT_PACKAGE_ID=ae15fa4fa7eeb0923871c1459685aef3' \
+    'ARG NODE_AGENT_ARCHIVE_SHA256=d54d8e1a0ee83272113488eacad61eb585a5cbe30fa9b7829aad838d4787718d' \
+    'ARG NODE_AGENT_BINARY_SHA256=3f8db3bb7b2870f46f7b1fd9e38f01342d8dd62dd0ee8e8dc7b7f77ba7f5c866' \
     'ARG NODE_AGENT_APPLY_SHA256=dd8cb342518a43e7468cc121db5c4e44b16731f2620b77ea0fd03c02c03766a9' \
-    'ARG NODE_AGENT_WINDOWS_ARCHIVE_SHA256=ec33a1d234126872017c4e29ae5dbede199798f25e1134a14850ec9d4dfff10e' \
-    'ARG NODE_AGENT_WINDOWS_BINARY_SHA256=0ea4c2d9c00b0084d041822195aa264f8fea69d50099c9b327f5fdbb8dc7ea78' \
+    'ARG NODE_AGENT_WINDOWS_ARCHIVE_SHA256=c51b8b216f5b45de73e221b6e16ad50c7e0efc5e5e779490c7bf1609a70e93c9' \
+    'ARG NODE_AGENT_WINDOWS_BINARY_SHA256=9fae62cf5daba01bebef5d2a49f1b907b366996cc1bbfb3d967460f77a3f156c' \
     'ARG NODE_AGENT_WINDOWS_STARTUP_SHA256=e1e84e1c5125db2b8f0c1a83ada8294556cb2390de969398a2436d9481378fca'; do
     require_marker "$release_dockerfile" "$release_node_marker" \
         SERVER_NODE_AGENT_PRODUCER_IDENTITY_MISSING
@@ -629,22 +629,22 @@ require_marker "$publish_workflow" \
     'bash source/server/artifacts/verify-host-api-package.sh' \
     SERVER_HOST_API_PRODUCER_RELEASE_CHECK_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.225' \
+    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.226' \
     SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.225.tar.gz' \
+    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.226.tar.gz' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=1e7ebdd819f7a36524e3345b9e1b06f8c5805fd313ede8586b72d099f543bb96' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=7c61ad9996701f8830eab0635e84b21dac3c2690bb01778b92058638ceadfa94' \
     SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=01e55cfc800b5bd728821df7193e2b6fe4286cd9' \
+    'ARG WEB_CONSOLE_COMMIT=2442f5a9b88f296e9305a125b52347c4c8cb097f' \
     SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_LOCK_SHA256=59345d739ab4acb2b8478b976f012b0e3298afee829ef64e528ac44f3ae5c6e9' \
+    'ARG WEB_CONSOLE_LOCK_SHA256=20e83779b761f38bea5393f711ebcfd254a1107de625c5859eba8120957987ef' \
     SERVER_INCREMENTAL_WEB_CONSOLE_LOCK_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_RUNTIME_SBOM_SHA256=54afae52563e9c8a83057e175a9a1c15591b9af0360e9bbe70e6aba41e18dd3d' \
+    'ARG WEB_CONSOLE_RUNTIME_SBOM_SHA256=afc8f9051c26fcfd589b930323cfe71931cb79ef4a7c01c31160ddf0593a6fec' \
     SERVER_INCREMENTAL_WEB_CONSOLE_SBOM_HASH_MISSING
 require_marker "$release_dockerfile" \
     "grep -aF 'hostsPage.permissionDenied'" \
@@ -653,22 +653,22 @@ require_marker "$release_dockerfile" \
     '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ZH_TW_PERMISSION_MESSAGE_MISSING
 require_marker "$build_script" \
-    'web_console_commit=${WEB_CONSOLE_COMMIT:-01e55cfc800b5bd728821df7193e2b6fe4286cd9}' \
+    'web_console_commit=${WEB_CONSOLE_COMMIT:-2442f5a9b88f296e9305a125b52347c4c8cb097f}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING
 require_marker "$build_script" \
-    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.225}' \
+    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.226}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.225.tar.gz}' \
+    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.226.tar.gz}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING
 require_marker "$build_script" \
-    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-1e7ebdd819f7a36524e3345b9e1b06f8c5805fd313ede8586b72d099f543bb96}' \
+    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-7c61ad9996701f8830eab0635e84b21dac3c2690bb01778b92058638ceadfa94}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING
 require_marker "$build_script" \
-    'web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-59345d739ab4acb2b8478b976f012b0e3298afee829ef64e528ac44f3ae5c6e9}' \
+    'web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-20e83779b761f38bea5393f711ebcfd254a1107de625c5859eba8120957987ef}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_LOCK_HASH_MISSING
 require_marker "$build_script" \
-    'web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-54afae52563e9c8a83057e175a9a1c15591b9af0360e9bbe70e6aba41e18dd3d}' \
+    'web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-afc8f9051c26fcfd589b930323cfe71931cb79ef4a7c01c31160ddf0593a6fec}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_SBOM_HASH_MISSING
 require_marker "$release_dockerfile" \
     'ARG CATALOG_SERVICE_VERSION=0.20.17' \
@@ -1139,21 +1139,21 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.583}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.584}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.583}' \
+    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.584}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING
 require_marker "$build_script" \
     'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"' \
     SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING
 for release_engine_marker in \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.385' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.386' \
     'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=b75146e629fa7991bf32087088f81629e59a7fa69f6d9e2f742aebca7d696762' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=1bd87ed39b0ccae7852c7407003692f35ecf83da' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=caab40811c651725b0d73ad861a744ce991466f75819e453e826d0b1a796e929' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=062d8e336339f1b55749fc5731a2f7797a12a005' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
-    'ARG ORCHESTRATION_ENGINE_VERSION=0.183.385' \
+    'ARG ORCHESTRATION_ENGINE_VERSION=0.183.386' \
     'sh /usr/share/cattle/verify-engine-archive.sh "${archive}" "${ORCHESTRATION_ENGINE_VERSION}" "${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'cattle-app-config-${ORCHESTRATION_ENGINE_VERSION}.jar' \
@@ -1172,10 +1172,10 @@ for release_engine_marker in \
         SERVER_INCREMENTAL_ENGINE_REPLACEMENT_MISSING
 done
 for release_engine_build_marker in \
-    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.385}' \
+    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.386}' \
     'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}' \
-    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-b75146e629fa7991bf32087088f81629e59a7fa69f6d9e2f742aebca7d696762}' \
-    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-1bd87ed39b0ccae7852c7407003692f35ecf83da}' \
+    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-caab40811c651725b0d73ad861a744ce991466f75819e453e826d0b1a796e929}' \
+    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-062d8e336339f1b55749fc5731a2f7797a12a005}' \
     'CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     '< "${server_dir}/artifacts/verify-engine-archive.sh"'; do
@@ -1694,10 +1694,10 @@ fi
 if grep -Fxq '## Current source candidate' README.md; then
     for candidate_readme_marker in \
         '<a id="current-release"></a>' \
-        'Server `v1.6.583` is a prepared source candidate, not a published image.' \
+        'Server `v1.6.584` is a prepared source candidate, not a published image.' \
         'run them only after its official release' \
         'This candidate is not yet available' \
-        'ghcr.io/pasturestack/server:v1.6.583'; do
+        'ghcr.io/pasturestack/server:v1.6.584'; do
         require_marker README.md "$candidate_readme_marker" \
             SERVER_CURRENT_CANDIDATE_README_MISSING
     done
@@ -2305,7 +2305,7 @@ done
 jq -e '
   ["CVE-2026-107928","CVE-2026-107929","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"] as $curl_fixed_cves
   |   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.583"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.584"
   and (.statements | length) == 57
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -2355,7 +2355,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.583 >/dev/null
+    "$vendor_pending_fixture" v1.6.584 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -2444,4 +2444,4 @@ for release_readback_contract in \
     fi
 done
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.583 base=v1.6.460 engine=0.183.385 web_console=1.6.225 catalog_service=0.20.17 webhook_automation_service=0.10.5 authentication_service=0.4.46 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.584 base=v1.6.460 engine=0.183.386 web_console=1.6.226 catalog_service=0.20.17 webhook_automation_service=0.10.5 authentication_service=0.4.46 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
