@@ -1,28 +1,49 @@
-# Server v1.6.584 candidate
+# Server v1.6.584
 
-Server `v1.6.584` is a prepared source candidate, not a published image.
-Server `v1.6.583` remains the published installation until normal584 publication.
+Server `v1.6.584` packages Engine `0.183.386`, Web Console `1.6.226`, optional
+Bridge `0.2.28`, Host API `0.38.9`, Node Agent `0.13.35`, Catalog `0.20.17` and
+Compose `0.14.43`. The bootstrap Agent remains `1.2.34`.
 
-## Verified component inputs
+## Changes
 
-Actual Engine `v0.183.386`, Web `1.6.226` / optional
-Bridge `0.2.28` retain original CI, immutable crypto and compiled
-wire/role/C03 closure. Ordinary Service links add complete named/plain pair replacement;
-External Service create adds bounded HTTP request lines. Exact approved non-Global LB
-scale and readable-target denied audits retain native role/Key/UUID/CAS ceilings.
+- Reviewed Service dependencies support complete named/plain link replacement.
+- External Service creation supports a bounded HTTP health-check request line.
+- Reviewed non-Global load-balancer scaling preserves native execution authority.
+- Denied changes to a readable target retain useful, authorized audit identity.
+- Bounded Container logs drain the final frame before EOF; cancellation and
+  existing stream authorization and size limits remain intact.
 
-Host API `0.38.9` producer `174c4471472fd77a056c9ae8639be11b2c0f4fd4` and Node Agent `0.13.35`
-producer `ae15fa4fa7eeb0923871c1459685aef315b47aee` use normal original public Linux packages and the Node
-Windows package. Host bounded-log EOF completion and the matching Node version remain
-subject to existing package checksum/buildinfo/version verifiers. Standalone native
-component attestations are unavailable; none is invented.
+Native account roles, live memberships, API Key restrictions, target identity and
+review confirmation remain authoritative. The four independent AI feature flags
+remain disabled by default. This release does not complete every frontend workflow.
 
-The normal Server publisher must build/scan/flatten/start/restart/push/attest and verify
-this assembly. All35 public assets/36 release subjects, anonymous bytes and both OCI
-proofs stay mandatory. Catalog02017/Compose043/APT19, independent opt-ins, mounts,
-named volumes, firewall and all protection floors are unchanged. Bootstrap Python
-remains v1.2.34, separate from the Go Node Agent version. Keep current qualified583
-and the retained582 rollback. Source is not native/UI/business acceptance or full243 PASS.
+## Release identity and verification
 
-After successful publication, installation examples use numeric
-`ghcr.io/pasturestack/server:v1.6.584`, without a digest Docker command.
+Published immutable identity (verification record):
+`ghcr.io/pasturestack/server:v1.6.584@sha256:40a7aa6cbc6ac6e96b2581009bb2855ad100e82b662d74e80de545b45634d0b6`.
+
+- Image: `ghcr.io/pasturestack/server:v1.6.584`.
+- Immutable digest: `sha256:40a7aa6cbc6ac6e96b2581009bb2855ad100e82b662d74e80de545b45634d0b6`.
+- Publisher source: `71c5369368fdc89a36296a76f98f589c651a3a56`.
+- Publisher: [successful normal release run](https://github.com/PastureStack/server/actions/runs/42419433474).
+
+The normal release verified 35 public assets, 36 cryptographically signed release
+subjects and both OCI proofs. Component CI passed 1,142 Web Console browser tests
+and 4,241 Engine tests (one inherited skip); Server packaging passed 50 checks.
+Artifact SBOMs and the vulnerability ledger accompany the release. Unfixed findings
+remain tracked separately and are not represented as patched.
+
+An isolated deployment passed startup, one restart, HTTP health checks, three
+active Hosts/Agents and installed-file verification of the 19 scoped APT files.
+Mounts, named volumes, operator configuration and the previous Server were retained.
+The affected log, dependency, HTTP-health and scaling business matrices remain in
+progress; deployment success alone is not their acceptance result.
+
+## Upgrade and recovery
+
+Use the numeric release tag in the [installation examples](../../README.md).
+Preserve the existing Compose configuration, named volumes and a verified backup
+before upgrading. Retain the previous image and configuration for recovery.
+Follow the existing database compatibility and downgrade checks; where restoration
+is required, restore the matching database/data backup rather than attaching an
+older Server to incompatible upgraded data.
