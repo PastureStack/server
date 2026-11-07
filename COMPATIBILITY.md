@@ -1,5 +1,34 @@
 # Compatibility Contract
 
+<a id="server-v16583-publication"></a>
+
+## Server v1.6.583 published
+
+[Server v1.6.583](https://github.com/PastureStack/server/releases/tag/v1.6.583)
+packages Engine 0.183.385, Web Console 1.6.225 / optional Bridge 0.2.27,
+Catalog 0.20.17 and Compose Executor 0.14.43 from immutable component artifacts.
+
+| Evidence | Verified value |
+|---|---|
+| Image manifest | `ghcr.io/pasturestack/server:v1.6.583@sha256:e22ecd94bbc83c2d34f49aa7dde231301f42a26de9a89c929e8a11d886b6c78c` |
+| Original build source / tested tree | `6e6befedc7cd97dc3685ef7f6010b1fa2506bd77` / `aa6227d081ad14c6237e6af062357ce1c22d034b` |
+| Original publisher | [42381092651](https://github.com/PastureStack/server/actions/runs/42381092651) remains failed at transparency-log HTTP500; its source/build/flatten/security/startup/restart and semantic image push steps passed. |
+| Same-artifact recovery | [42388223188](https://github.com/PastureStack/server/actions/runs/42388223188), source `b9fcd2bd840fb7425c575d487ca43c296d492fd3`, appended both OCI attestations and created immutable Release 437671242. Its immediate release verification failed; the workflow remains failed. |
+| Final public readback | `PASS_NORMAL_READ_ONLY_COMPOSITE`: all 35 exact anonymous assets, 36 native release-crypto subjects, original source tag and both OCI signature/predicate checks passed. No image rebuild, repush or immutable asset replacement. |
+| Attestation boundary | Signed custom same-artifact recovery statement plus original CycloneDX SBOM; `originalNativeSlsaAvailable=false`. This is not original standard SLSA provenance. |
+| Security | Zero effective Critical/High or available-fix findings; 13 tracked Medium package occurrences across nine CVEs remain in the recorded evidence. Browser scan coverage remains incomplete. |
+| Isolated deployment | Normal capture/pull/dry-run/cutover/restart/smoke all passed on the same published digest; container `f210c36d85949bc5689b696d048d597524c598dd9427168cea68c4f688db048f`. HTTP ping returned `pong` after restart; three Hosts and three Agents were active. |
+| Runtime preservation | Four mounts, nineteen named volumes, `unless-stopped`, AppArmor `docker-default`, origin/performance settings and all four existing feature opt-ins were preserved. Qualified582 rollback was retained. Post-restart cache readback passed on all three qualified daemons without new image pulls. |
+| Operator acceptance | This is isolated deployment/restart/smoke evidence. Affected business/native/weak-model workflows and complete 243-group frontend acceptance remain pending or incomplete; no full native PASS is claimed. |
+
+Ordinary Stack Group metadata retains literal string/null behavior, native role
+and Key ceilings, full CAS and normal human approval. Logical Volume completion
+follows native inactive creation without claiming physical allocation or mounts.
+Existing defaults, operator settings and independent feature opt-ins are unchanged.
+Retain qualified Server582 and its matching data backup for rollback. See the
+[release note](docs/releases/server-1.6.583.md) and
+[recovery protocol](docs/operations/server583-publication-recovery.md#recovery-v1).
+
 <a id="server-v16582-publication"></a>
 
 ## Server v1.6.582 published

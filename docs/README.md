@@ -1,160 +1,21 @@
 # PastureStack Server documentation
 
-This documentation covers the community-maintained Server source and validated
-versioned releases. Public images and Release assets exist only for tags whose
-published checksums, SBOM, licenses, anonymous-download checks, and isolated
-runtime gates have passed.
+This documentation covers the community-maintained Server and versioned releases.
+Release notes record checksums, SBOM/security evidence and publication status;
+operator deployment and business-workflow acceptance are recorded separately.
 
 ## Release notes
 
-- [Server v1.6.574](releases/server-1.6.574.md) — Engine375 / Web215 / Bridge0.2.17,
-  immutable public image and exact publication recovery. Deployment and business
-  acceptance remain separate.
-
-- [Server v1.6.573](releases/server-1.6.573.md) — previous published components,
-  immutable image identity and scoped deployment results. Full frontend workflow
-  acceptance remains incomplete.
-
-- [Server v1.6.554 candidate](releases/server-1.6.554.md) — optional seven-tool
-  AI collaboration with scoped Keys, human approval and current authority checks.
-
-- [Server v1.6.553](releases/server-1.6.553.md) — published qualified Brotli
-  security backports, with exact artifact identities and scoped QA evidence
-  recorded separately from component publication.
-- [Server v1.6.549](releases/server-1.6.549.md) — published Web Console 1.6.195
-  with an independent browser runtime SBOM, exact artifact identity and separate
-  fresh-DB component lookup. The release note records incomplete coverage,
-  same-image attachment recovery and scoped 8080/browser/SBOM-readback acceptance.
-- [Server v1.6.548](releases/server-1.6.548.md) — published Catalog revision 13
-  with CNI provider lifecycle and opaque Metadata version-watch repairs;
-  scoped eight-stack upgrades, browser authentication/session recovery and
-  two controlled Server restarts passed. The release note retains the exact
-  acceptance scope and controlled-downtime WebSocket errors.
-- [Server v1.6.547](releases/server-1.6.547.md) — published Catalog and Network
-  Plugin Manager lifecycle repair; exact image identity and publication
-  evidence are separate from real-host upgrade acceptance.
-- [Server v1.6.546](releases/server-1.6.546.md) — published security refresh;
-  verified component inputs, one-layer immutable image, full artifact scanning
-  and signed provenance. See the release note for scoped runtime evidence and
-  the exact officially unfixed findings; tracking is not remediation.
-- [Server v1.6.545](releases/server-1.6.545.md) — published service-upgrade and
-  endpoint identity repair with retained-data, refresh and restart verification.
-
-- [Server v1.6.537](releases/server-1.6.537.md) — published Web Console `1.6.190`
-  and Engine `v0.183.350` archive/restore; official source/build, fresh startup/restart,
-  final-image security/SBOM and anonymous 24-asset/image readback passed.
-  Immutable producer and manifest/config identities are recorded separately from
-  documentation. Pre-release feature acceptance retains its bounded original scope.
-
-- [Server v1.6.529](releases/server-1.6.529.md) — published with Engine
-  `0.183.347` and Web Console `1.6.184` for subscription terminal audit and its
-  translated target label. Official publication and immutable readback passed;
-  thirty-six focused native subscription cases passed. Whole-matrix acceptance
-  remains separate.
-
-- [Server v1.6.528](releases/server-1.6.528.md) — published with Engine
-  `0.183.346` and unchanged Web Console `1.6.183`; fixes MariaDB Stack-ancestry
-  queries without expanding authorization. Sixteen scoped native reads and a
-  separate isolated upgrade/restart passed; full matrix coverage remains separate.
-
-- [Server v1.6.526](releases/server-1.6.526.md) — published with Engine
-  `0.183.344` and unchanged Web Console `1.6.183`; operation-specific linked/action
-  lookups retain ordinary-read and owner-authority boundaries. Targeted native
-  acceptance and an isolated QA upgrade were verified; full coverage remains separate.
-
-- [Server v1.6.524](releases/server-1.6.524.md) — officially published using
-  released Engine `0.183.342` and Web Console `1.6.183`; operation-specific resource
-  lookups retain external read, scope and live owner-RBAC boundaries.
-  Immutable publication and isolated QA deployment were verified separately.
-  96 native write-only mutation/read-isolation cases passed; the complete
-  role/resource matrix and active-node lifecycle remain separate acceptance gates.
-
-- [Server v1.6.522](releases/server-1.6.522.md) — officially published using
-  released Engine `0.183.340` and Web Console `1.6.183`; dedicated registration
-  authentication, native Key project creation and schema-bound add-host access/navigation. Component checks
-  passed, as did the final image's startup/restart, MFA and seven-check native
-  registration entry gate. Entry checks do not establish active-node acceptance.
-
-- [Server v1.6.521](releases/server-1.6.521.md) — officially published with
-  Engine `0.183.337` and Web Console `1.6.181`; canonical API Key audit identifiers
-  and historical numeric-ID reads retain ownership and environment checks.
-  [Official release](https://github.com/PastureStack/server/releases/tag/v1.6.521).
-  Component and scoped evidence do not establish C-03, C-05 live or full-matrix
-  acceptance; exact identities and limits remain in the versioned release note.
-
-- [Server v1.6.518](releases/server-1.6.518.md) — officially published with Catalog v0.3.13 / Network Plugin Manager v0.8.22 CNI configuration migration fixes, Web Console 1.6.180 / audit broker full-retained-time query and export, and the official FreeType security fix; artifact readback and scoped isolated-QA deployment/read-only checks verified. Known limits remain in the release note.
-
-- [Server v1.6.517](releases/server-1.6.517.md) — officially published with Web Console 1.6.179; isolated start/restart, browser login and focused API acceptance passed. Known limits remain in the versioned release note.
-
-- [Server v1.6.516](releases/server-1.6.516.md) — candidate packaging published
-  Web Console 1.6.178 (848/848 CI tests, reproducible archive, 13 localized inactive
-  environment hints) and normally merged Catalog IPsec Overlay 12 / v0.14.38;
-  inactive global view/edit/member/delete capabilities preserved without forbidden
-  scoped reads; Server publication, isolated deployment and native acceptance pending;
-  explicit catalog overrides and historical HOLD preserved; full matrix INCOMPLETE
-- [Server v1.6.515](releases/server-1.6.515.md) — published Web Console 1.6.177
-  ended-workspace lifecycle repair; Web CI passed 841 tests, lightweight numeric tag
-  bound to signed source, identical archives and anonymous bytes verified; Server
-  publisher 37256753740 and independent artifact/runtime/security readback passed;
-  isolated QA 515 / Web 177 deployment/readback passed, reaching HTTP 200/pong after
-  10 initial-start and 11 restart polling attempts; runtime/environment, three named
-  volumes, five core-table counts and 514 rollback preserved; no Docker Healthcheck
-  or healthy claim; native acceptance pending, latest Project v2 run HOLD after
-  deactivate response/UI timeout with native removal and database cleanup incomplete;
-  Quick Start pins 515; Engine 333 / Catalog 0.20.12 / plugins unchanged;
-  full matrix INCOMPLETE,
-  historical HOLD unchanged
-- [Server v1.6.514](releases/server-1.6.514.md) — published Catalog Service0.20.12/Web Console1.6.176; Catalog CI39 twice/Web CI824/824 and immutable component bytes verified; official publisher37179046649 and independent readback verified; Quick Start pins514; QA125/8080 upgrade/readback passed with first-start11/restart9 HTTP200/pong, unchanged runtime/volumes/five core-table counts and512 rollback retained; two real eight-table catalog migration captures agreed, removing12 blank Git stubs and2 README-only items while preserving valid semantics; native acceptance remains in progress; full matrix INCOMPLETE and historical HOLD unchanged
-- [Server v1.6.513](releases/server-1.6.513.md) — published Web Console 1.6.175 image-validation aggregate repair; Web CI821/821, signed numeric tag, identical archives and anonymous bytes verified; immutable Server image, publisher37164995463, 23 assets/22 checksums, SBOM/security and public readback verified; isolated start13/restart7, 34 MFA/API and TLS gates passed; actual scan raw52/VEX51/vendor8 Medium package findings/4 CVEs, review2026-10-20 and no zero-CVE claim; Engine333/base460/four stages/single runtime layer unchanged; Quick Start pins513, QA remains512/513 not deployed; full matrix INCOMPLETE, historical HOLD unchanged
-- [Server v1.6.512](releases/server-1.6.512.md) — published Web Console 1.6.174 VM boot-image form safeguards and localized required-image errors; Web CI817/817, signed numeric tag and anonymous archive bytes verified; immutable Server image, isolated start12/restart8, 34 MFA/API checks, SBOM/security and public artifact readback verified; Quick Start pins512, Engine333/base460/runtime contract unchanged; full functional matrix incomplete, historical scoped/HOLD evidence unchanged
-- [Server v1.6.511](releases/server-1.6.511.md) — published Web Console 1.6.173 native Project Template card-name repair; official Web CI812/812, identical builds, signed numeric tag and anonymous archive readback verified; Server immutable image, isolated start/restart, SBOM/security and public artifact readback verified; QA125/8080 upgrade and independent read-only checks passed with first-start11/restart10, unchanged runtime/DB counts; no Docker healthy claim; existing Template117 native read-only proof passed with 3 Full17/14 guards, 0 resource writes and source-bound same-ID empty stacks/services, not a native-create finalizer; Process native list/link/detail and same-ID direct GET passed for one current ID, 12/12 six-role/two-root cells and 0 resource writes, not all-ID/write acceptance; fresh key1c6998 independently derived scoped verified (4 native writes, 13 guards, 6 cookie-free issued Basic GETs before deactivate/delete, 4 barriers, 18 first-delivery checks), original parent identity-schema HOLD retained without rewriting or write replay; Project/Host native acceptance pending, full matrix INCOMPLETE; historical HOLD unchanged
-- [Server v1.6.510](releases/server-1.6.510.md) — published Web Console 1.6.172 request-local create-only first delivery; exact official image, build/start/restart, SBOM/security and anonymous component/artifact readback verified; QA deployment and fresh native key/Host lifecycle pending, full matrix incomplete; 509 scoped evidence and key6982 HOLD unchanged
-- [Server v1.6.509](releases/server-1.6.509.md) — published Engine 0.183.333 canonical create-only redaction with Web Console 1.6.171; immutable artifact readback, QA start/restart and existing Account6974/Project6977 scoped closures verified; fresh key6982 first-delivery HOLD, fresh Host pending; full matrix incomplete
-- [Server v1.6.508](releases/server-1.6.508.md) — published Web Console 1.6.171 canonical create-response fix; immutable artifact, QA start/restart, scoped Volume and Registry lifecycle verified; full matrix incomplete
-- [Server v1.6.507](releases/server-1.6.507.md) — published Web Console 1.6.170 nullable Volume relation fix; immutable artifact and QA start/restart verified
-- [Server v1.6.506](releases/server-1.6.506.md) — source candidate for the Web Console 1.6.169 generated Volume identifier classifier fix; immutable publication and packaged native lifecycle acceptance pending
-- [Server v1.6.505](releases/server-1.6.505.md) — published Engine 0.183.332 with Web Console 1.6.168; immutable artifact and QA start/restart verified, broader permission matrix incomplete
-- [Server v1.6.504](releases/server-1.6.504.md) — published Web Console 1.6.168 Volume entry and permission repair; immutable artifact and QA start/restart verified
-- [Server v1.6.498](releases/server-1.6.498.md) — unpublished source candidate for Engine 0.183.329 low-role GenericObject capability protection; immutable artifact/deployment/browser gates pending
-- [Server v1.6.497](releases/server-1.6.497.md) — published Web Console 1.6.164 / Engine 0.183.328 / Cache 5.7.5; official source/build/start-restart/security/public artifact readback verified, QA8080 now497/Web164 first start/restart passed; packaged native Receiver browser acceptance pending, broader matrix INCOMPLETE
-- [Server v1.6.496](releases/server-1.6.496.md) — published Web Console 1.6.162 / Engine 0.183.328 / Cache 5.7.5; official artifact readback, isolated QA first start/restart and two scoped zero-write desktop cases passed; mobile/all-language/full-layout pending, broader matrix INCOMPLETE
-- [Server v1.6.495](releases/server-1.6.495.md) — published Certificate editor fix and official DBI security update; isolated start/restart and scoped owner/member Certificate browser checks verified, broader matrix INCOMPLETE
-- [Server v1.6.494](releases/server-1.6.494.md) — published artifact and isolated start/restart verified; Certificate QA pending
-- [Server v1.6.493](releases/server-1.6.493.md)
-- [Server v1.6.492](releases/server-1.6.492.md)
-- [Server v1.6.491](releases/server-1.6.491.md)
-- [Server v1.6.490](releases/server-1.6.490.md)
-- [Server v1.6.489](releases/server-1.6.489.md)
-- [Server v1.6.488](releases/server-1.6.488.md)
-- [Server v1.6.487](releases/server-1.6.487.md)
-- [Server v1.6.486](releases/server-1.6.486.md)
-- [Server v1.6.485](releases/server-1.6.485.md)
-- [Server v1.6.484](releases/server-1.6.484.md)
-- [Server v1.6.483](releases/server-1.6.483.md)
-- [Server v1.6.482](releases/server-1.6.482.md)
-- [Server v1.6.481](releases/server-1.6.481.md)
-- [Server v1.6.480](releases/server-1.6.480.md)
-- [Server v1.6.479](releases/server-1.6.479.md)
-- [Server v1.6.478](releases/server-1.6.478.md)
-- [Server v1.6.477](releases/server-1.6.477.md)
-- [Server v1.6.476](releases/server-1.6.476.md)
-- [Server v1.6.475](releases/server-1.6.475.md)
-- [Server v1.6.474](releases/server-1.6.474.md)
-- [Server v1.6.473](releases/server-1.6.473.md)
-- [Server v1.6.472](releases/server-1.6.472.md)
-- [Server v1.6.471](releases/server-1.6.471.md)
-- [Server v1.6.470](releases/server-1.6.470.md)
-- [Server v1.6.469](releases/server-1.6.469.md)
-- [Server v1.6.468](releases/server-1.6.468.md)
-- [Server v1.6.467](releases/server-1.6.467.md)
-- [Server v1.6.466](releases/server-1.6.466.md)
-- [Server v1.6.465](releases/server-1.6.465.md)
-- [Server v1.6.464](releases/server-1.6.464.md)
+- [Current Server v1.6.583](releases/server-1.6.583.md) — Engine385 / Web225 /
+  optional Bridge0.2.27; immutable publication and full normal readback completed.
+  Isolated deployment/restart/smoke passed; affected business/native/weak-model
+  acceptance and whole-frontend coverage remain pending or incomplete.
+- [Release archive](releases/) — historical published and candidate notes retain
+  their original evidence, acceptance limits and rollback context; these are not
+  the current installation guide.
+- [Current installation](../README.md#current-release)
 - [Performance settings](performance/README.md)
 - [Build and source POC](build-and-source-poc.md)
-
-Older immutable release records remain under [`releases/`](releases/) for
-audit and rollback context; they are not the current installation guide.
 
 ## Operations
 
