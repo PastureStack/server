@@ -1,0 +1,9 @@
+# Server v1.6.580 candidate
+
+This candidate changes the packaged Engine from 0.183.381 to 0.183.382 for the native authorization correction required by platform-managed load-balancer Agent creation, upgrade, Stack activation and cleanup. The normal render entry requires Engine382's actual immutable publication receipts, producer/tree, archive and compiled role-schema hashes before producing a packaging patch. Candidate source does not establish a published image or native acceptance.
+
+Published Web Console 1.6.222 / optional Bridge 0.2.24, Compose 0.14.43, Catalog 0.20.17, all other component identities, build-layer instructions, APT19 and existing security gates remain unchanged. Web222 retains its original published minimum-compatible and matching Engine380 metadata; this Server assembly separately checks its fourteen-input ABI against actual Engine382. This cohort does not include the later ordinary Service dependency-links feature.
+
+Native roles, account membership, API Key limits and explicit human preview/confirmation remain authoritative. Runtime flags, origins, JVM options, operator opt-ins, mounts, named volumes, restart policy, AppArmor and firewall configuration are retained. No volume creation or database migration is introduced by this packaging retarget.
+
+Server580 is not yet published or accepted on a runtime cohort. Normal Server CI, image/security/startup/restart gates and immutable publication must complete before installation documentation is updated. Subsequent native acceptance must use Root's actual healthy Server579 readback and protected account5 volume projection of 475, with a fresh matching baseline; historical 476/474 observations are not replacements for that baseline. Preserve the qualified Server579 image, operator configuration and matching database backup for rollback.
