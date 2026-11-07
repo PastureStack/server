@@ -13,28 +13,25 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.580`](https://github.com/PastureStack/server/releases/tag/v1.6.580)
-packages Engine `v0.183.382`, Web Console `1.6.222` / optional bridge `0.2.24`,
+[Server `v1.6.581`](https://github.com/PastureStack/server/releases/tag/v1.6.581)
+packages Engine `v0.183.383`, Web Console `1.6.223` / optional bridge `0.2.25`,
 Catalog `0.20.17` and Compose `0.14.43`.
+
+Ordinary Services support reviewed simple dependency-link replacement and clearing.
+Registry activation/deactivation retains its native owner and excludes credential
+writes. Dependency writers use checked locks through transaction completion.
 
 Optional AI tools support bounded resource discovery, human-reviewed changes and
 an opt-in Stack dependency view. Native roles, API Key limits and the four
 independent default-off settings remain authoritative. Dependency results can be
 partial; an empty graph does not establish permission to stop or remove resources.
 
-See the [release note](docs/releases/server-1.6.580.md),
-[publication record](COMPATIBILITY.md#server-v16580-publication) and
+See the [release note](docs/releases/server-1.6.581.md),
+[publication record](COMPATIBILITY.md#server-v16581-publication) and
 [acceptance boundaries](docs/ai-collaboration.md#workload-retirement-limitation).
 Publishing an image does not establish complete business-workflow acceptance.
 
 Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
-
-### Upcoming source release
-
-Server `v1.6.581` is not yet published. It pins Engine `v0.183.383`, Web Console
-`1.6.223` / optional Bridge `0.2.25` for reviewed dependency links, Registry
-lifecycle and checked locking. Use the published installation below until the
-[candidate](docs/releases/server-1.6.581.md) completes the Server release gates.
 
 ## API Keys
 
@@ -79,7 +76,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.580
+  ghcr.io/pasturestack/server:v1.6.581
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -87,7 +84,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.580
+    image: ghcr.io/pasturestack/server:v1.6.581
     restart: unless-stopped
     ports:
       - "8080:8080"
