@@ -11,7 +11,18 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current release
+## Current source candidate
+
+Server `v1.6.581` is a prepared source candidate, not a published image.
+It pins published Engine `v0.183.383`, Web Console `1.6.223` / optional Bridge
+`0.2.25` for ordinary-Service simple dependency links, Registry lifecycle and
+checked locking. These component qualifications do not establish native workflow
+or complete frontend acceptance. See the [candidate release note](docs/releases/server-1.6.581.md).
+
+This candidate is not yet available. Candidate installation commands would use
+`ghcr.io/pasturestack/server:v1.6.581`; run them only after its official release.
+
+## Latest published release
 
 [Server `v1.6.580`](https://github.com/PastureStack/server/releases/tag/v1.6.580)
 packages Engine `v0.183.382`, Web Console `1.6.222` / optional bridge `0.2.24`,
