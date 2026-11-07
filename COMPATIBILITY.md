@@ -1,5 +1,33 @@
 # Compatibility Contract
 
+<a id="server-v16580-publication"></a>
+
+## Server v1.6.580 published
+
+[Server v1.6.580](https://github.com/PastureStack/server/releases/tag/v1.6.580)
+packages Engine 0.183.382, Web Console 1.6.222 / optional Bridge 0.2.24,
+Catalog 0.20.17 and Compose Executor 0.14.43 from immutable component artifacts.
+
+| Evidence | Verified value |
+|---|---|
+| Image | `ghcr.io/pasturestack/server:v1.6.580@sha256:231f073df5bbcdbcc82ed4a2f10c714093237e4e9099db294b6eb08c5c56aff8` |
+| Publisher revision / tested tree | `eb3154723f22d357784a36f385f16d16a4734f77` / `114584c7c268b233738ca75d55b1029ccdddb796` |
+| Official publisher | [42331395737](https://github.com/PastureStack/server/actions/runs/42331395737): source, build, flattening, security, startup/restart, image push and OCI attestations passed. |
+| Public readback | Immutable Release 437281640; all 35 anonymous assets matched size, SHA256 and the checksum manifest. Native release crypto verified 36 subjects; OCI provenance and SBOM verification passed. |
+| Original Engine CI | 451 suites, 4,101 tests, zero failures/errors, one inherited skip and 286 required methods. |
+| Unchanged Web evidence | 1,142 browser tests and 102 focused methods; the matching fourteen-input Engine382 ABI is checked separately from Web222's original Engine380 metadata. |
+| Security | Zero effective CRITICAL/HIGH or available-fix findings; 13 tracked vendor-pending MEDIUM findings remain. Raw scans, disclosed browser coverage limits and original gates are preserved. |
+| Operator acceptance | Separate from publication; TCP, weak-model and complete frontend workflow acceptance is not established by this record. |
+
+Engine382 repairs authorization for the exact platform-managed load-balancer
+Agent lifecycle and preserves older verified process frames with an absent
+process name. The new dependency grant requires a nonempty captured process;
+no general Agent access, role grant or Full/system bypass is introduced.
+Other component identities, runtime defaults, stored settings and independent
+feature opt-ins are unchanged. Preserve Server579, the matching backup and
+original operator configuration for rollback. See the
+[release note](docs/releases/server-1.6.580.md).
+
 <a id="server-v16579-publication"></a>
 
 ## Server v1.6.579 published
