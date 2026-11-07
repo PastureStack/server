@@ -32,16 +32,32 @@ class CompletionPolicy(unittest.TestCase):
    with self.subTest(field=field),self.assertRaises(ValueError):p.validate_original(*bad)
  def test_builder_and_recovery_signer_are_distinct_and_both_bound(self):
   data=fixture();job=p.validate_original(*data);r=p.recovery_identity('a'*40,123456,1);pred=p.predicate(job,r)
-  self.assertEqual(pred['runDetails']['builder']['id'],p.BUILDER);self.assertNotEqual(p.BUILDER,p.SIGNER)
-  self.assertEqual(pred['buildDefinition']['externalParameters']['originalBuild']['source'],p.SOURCE)
+  self.assertEqual(pred['originalBuildProvenance']['predicate']['runDetails']['builder']['id'],p.BUILDER);self.assertNotEqual(p.BUILDER,p.SIGNER)
+  self.assertEqual(pred['originalBuild']['source'],p.SOURCE)
   rows=verified(r,p.PROVENANCE,pred);p.validate_verified(rows,p.PROVENANCE,r,pred)
   cert_fields=('issuer','subjectAlternativeName','buildSignerURI','buildSignerDigest','sourceRepositoryDigest','sourceRepositoryRef','buildConfigURI','buildConfigDigest','runInvocationURI','runnerEnvironment')
   for field in cert_fields:
    bad=copy.deepcopy(rows);bad[0]['verificationResult']['signature']['certificate'][field]='wrong'
    with self.subTest(field=field),self.assertRaises(ValueError):p.validate_verified(bad,p.PROVENANCE,r,pred)
-  for mutate in (lambda x:x[0]['verificationResult']['verifiedTimestamps'].clear(),lambda x:x[0]['verificationResult']['statement']['subject'][0]['digest'].update(sha256='0'*64),lambda x:x[0]['verificationResult']['statement']['predicate']['runDetails']['builder'].update(id=p.SIGNER),lambda x:x[0]['verificationResult']['statement']['predicate']['buildDefinition']['externalParameters']['originalBuild'].update(source=r['source'])):
+  for mutate in (lambda x:x[0]['verificationResult']['verifiedTimestamps'].clear(),lambda x:x[0]['verificationResult']['statement']['subject'][0]['digest'].update(sha256='0'*64),lambda x:x[0]['verificationResult']['statement']['predicate']['originalBuildProvenance']['predicate']['runDetails']['builder'].update(id=p.SIGNER),lambda x:x[0]['verificationResult']['statement']['predicate']['originalBuild'].update(source=r['source'])):
    bad=copy.deepcopy(rows);mutate(bad)
    with self.assertRaises(ValueError):p.validate_verified(bad,p.PROVENANCE,r,pred)
+ def test_custom_recovery_is_not_claimed_as_original_native_slsa(self):
+  data=fixture();job=p.validate_original(*data);r=p.recovery_identity('a'*40,123456,1);body=p.predicate(job,r)
+  self.assertNotEqual(p.PROVENANCE,p.SLSA_PROVENANCE);self.assertFalse(body['originalNativeSlsaAvailable'])
+  original=body['originalBuildProvenance'];self.assertFalse(original['originalSignatureAvailable'])
+  self.assertEqual(original['evidenceStatus'],'RECONSTRUCTED_FROM_ORIGINAL_OFFICIAL_RECORDS_NOT_ORIGINAL_SIGNED_PROVENANCE')
+  self.assertEqual(original['predicateType'],p.SLSA_PROVENANCE)
+  self.assertEqual(original['predicate']['buildDefinition']['buildType'],'https://actions.github.io/buildtypes/workflow/v1')
+  self.assertEqual(original['predicate']['buildDefinition']['externalParameters']['workflow'],{'repository':'https://github.com/'+p.REPO,'path':p.ORIGINAL_WORKFLOW,'ref':'refs/heads/main'})
+  self.assertEqual(body['originalBuild']['conclusion'],'failure');self.assertEqual(body['originalArtifact']['sha256'],p.ARTIFACT_SHA)
+  self.assertEqual(body['originalBuild']['passedBuildSecurityPublishSteps'],list(p.PASSED));self.assertEqual(body['RecoverySigner'],r)
+  rows=verified(r,p.PROVENANCE,body);p.validate_verified(rows,p.PROVENANCE,r,body)
+  with self.assertRaises(ValueError):p.verify_command(p.DIGEST,p.SLSA_PROVENANCE,r)
+  with self.assertRaises(ValueError):p.validate_verified(verified(r,p.SLSA_PROVENANCE,body),p.SLSA_PROVENANCE,r,body)
+  for field,value in [('originalNativeSlsaAvailable',True),('RecoverySigner',p.recovery_identity('b'*40,123457,1))]:
+   bad=copy.deepcopy(rows);bad[0]['verificationResult']['statement']['predicate'][field]=value
+   with self.assertRaises(ValueError):p.validate_verified(bad,p.PROVENANCE,r,body)
  def test_sbom_exact_and_signer_command_never_claims_original_certificate_source(self):
   r=p.recovery_identity('a'*40,123456,2);body={'bomFormat':'CycloneDX','original':True};rows=verified(r,p.SBOM,body);p.validate_verified(rows,p.SBOM,r,body)
   bad=copy.deepcopy(rows);bad[0]['verificationResult']['statement']['predicate']['original']=False
@@ -64,6 +80,8 @@ class CompletionPolicy(unittest.TestCase):
   text=Path(__file__).resolve().parents[1].joinpath('.github/workflows/complete-server583-publication.yml').read_text()
   self.assertEqual(text.count('actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6'),2)
   self.assertIn('predicate-path:',text);self.assertIn('sbom-path:',text)
+  self.assertIn('predicate-type: '+p.PROVENANCE,text);self.assertNotIn('predicate-type: '+p.SLSA_PROVENANCE,text)
+  self.assertIn('Attest signed same-artifact recovery statement',text)
   self.assertLess(text.index('Attest original image SBOM'),text.index('Complete exact immutable release'))
   self.assertNotIn('docker build',text);self.assertNotIn('docker push',text);self.assertNotIn('docker pull',text)
   self.assertEqual(len(owner.NAMES),35)

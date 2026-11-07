@@ -106,6 +106,7 @@ def prepare():
  renderer=ROOT/'scripts/render-server-release-notes.py';spec=importlib.util.spec_from_file_location('unchanged_server_note_renderer',renderer);notes=importlib.util.module_from_spec(spec);spec.loader.exec_module(notes)
  body=notes.render(originals['docs/releases/server-1.6.583.md'].decode(),policy.TAG,policy.DIGEST,policy.SOURCE)
  body+='\n\nPublication completed from the same original image; no rebuild or image repush.\nOriginal build run (failed only during transparency-log attestation): https://github.com/'+policy.REPO+'/actions/runs/'+str(policy.RUN)+'\nRecovery signer/run: '+recovery['invocation']+'\nRecovery workflow source: `'+recovery['source']+'`. Original image build source remains `'+policy.SOURCE+'`.\nOriginal artifact SHA-256: `'+policy.ARTIFACT_SHA+'`.\n'
+ body+='Native image evidence is a signed custom same-artifact recovery statement (`'+policy.PROVENANCE+'`) plus the original CycloneDX SBOM. Original native SLSA is unavailable (`originalNativeSlsaAvailable=false`).\n'
  write(WORK/'original-evidence/release-notes.md',body.encode())
  host=set(re.findall(rb'^ARG HOST_API_ARCHIVE_SHA256=([0-9a-f]{64})$',originals['server/Dockerfile.web-compose-release'],re.M));need(len(host)==1 and sha(rows['host-api-0.38.8.tar.gz']).encode()in host,'Original immutable Host API archive bytes required')
  compressed=command('gzip','-n','-c',WORK/'original-evidence/web-console-runtime-vulnerabilities.tsv');write(WORK/'original-evidence/web-console-runtime-vulnerabilities.tsv.gz',compressed)
@@ -113,7 +114,7 @@ def prepare():
  need(len(NAMES)==35 and all((WORK/'original-evidence'/n).stat().st_size>0 for n in NAMES),'Complete exact35 publication assets required')
  write(WORK/'provenance-predicate.json',policy.predicate(job,recovery))
  planned={n:{'sha256':sha((WORK/'original-evidence'/n).read_bytes()),'bytes':(WORK/'original-evidence'/n).stat().st_size}for n in NAMES}
- write(WORK/'prepared.json',{'schema':'server583-original-artifact-recovery-prepared-v1','originalConclusion':'failure','recovery':recovery,'image':image,'assets':planned,'originalArtifactSha256':policy.ARTIFACT_SHA,'predicateSha256':sha((WORK/'provenance-predicate.json').read_bytes()),'imageBuilds':0,'imagePushes':0,'scansReplayed':0})
+ write(WORK/'prepared.json',{'schema':'server583-original-artifact-recovery-prepared-v1','originalConclusion':'failure','recovery':recovery,'image':image,'assets':planned,'originalArtifactSha256':policy.ARTIFACT_SHA,'originalNativeSlsaAvailable':False,'attestationPredicateType':policy.PROVENANCE,'nativeProvenanceModel':policy.PROVENANCE_MODEL,'predicateSha256':sha((WORK/'provenance-predicate.json').read_bytes()),'imageBuilds':0,'imagePushes':0,'scansReplayed':0})
  print('Prepared exact original bytes and truthful recovery predicate; no image mutation')
 
 def release_crypto(proof,assets,release_id,tag_sha):
@@ -135,6 +136,7 @@ def anonymous_assets(assets):
 
 def complete():
  recovery=context();prepared=json.loads((WORK/'prepared.json').read_bytes());need(prepared['recovery']==recovery,'Same actual recovery signer/run required')
+ need(prepared['originalNativeSlsaAvailable']is False and prepared['attestationPredicateType']==policy.PROVENANCE and prepared['nativeProvenanceModel']==policy.PROVENANCE_MODEL,'Explicit custom recovery statement required; no standard SLSA claim')
  _,_,_,_,job,_,_,_=collect(recovery);need(registry()==prepared['image'],'Preserve existing exact semantic image and config')
  expected=policy.predicate(job,recovery);need(sha((WORK/'provenance-predicate.json').read_bytes())==prepared['predicateSha256']and json.loads((WORK/'provenance-predicate.json').read_bytes())==expected,'Prepared original-builder predicate must remain exact')
  for kind,name,body in [(policy.PROVENANCE,'oci-provenance.json',expected),(policy.SBOM,'oci-sbom.json',json.loads((WORK/'original-evidence/server.cdx.json').read_bytes()))]:
@@ -150,7 +152,7 @@ def complete():
  raw=command('gh','release','verify',policy.TAG,'--repo',policy.REPO,'--format','json');proof=json.loads(raw);release_crypto(proof,release['assets'],release['id'],tag_sha);write(WORK/'native-release-attestation.json',raw)
  anonymous=anonymous_assets(release['assets'])
  need(registry()==prepared['image'],'No semantic image overwrite during completion')
- report={'status':'PASS_EXACT_SERVER583_SAME_ARTIFACT_PUBLICATION_COMPLETION','originalRun':policy.RUN,'originalSource':policy.SOURCE,'originalTree':policy.TREE,'originalConclusion':'failure','originalFailure':'attestation-transparency-log-http500','originalArtifactId':policy.ARTIFACT,'originalArtifactSha256':policy.ARTIFACT_SHA,'imageDigest':policy.DIGEST,'recovery':recovery,'releaseId':release['id'],'assetCount':35,'cryptoSubjectCount':36,'assets':actual,'anonymousAssets':anonymous,'anonymousAssetCount':35,'imageBuilds':0,'imagePushes':0,'scansReplayed':0,'nativeAcceptance':'PENDING','fullFrontendPass':False}
+ report={'status':'PASS_EXACT_SERVER583_SAME_ARTIFACT_PUBLICATION_COMPLETION','originalRun':policy.RUN,'originalSource':policy.SOURCE,'originalTree':policy.TREE,'originalConclusion':'failure','originalNativeSlsaAvailable':False,'attestationPredicateType':policy.PROVENANCE,'nativeProvenanceModel':policy.PROVENANCE_MODEL,'originalFailure':'attestation-transparency-log-http500','originalArtifactId':policy.ARTIFACT,'originalArtifactSha256':policy.ARTIFACT_SHA,'imageDigest':policy.DIGEST,'recovery':recovery,'releaseId':release['id'],'assetCount':35,'cryptoSubjectCount':36,'assets':actual,'anonymousAssets':anonymous,'anonymousAssetCount':35,'imageBuilds':0,'imagePushes':0,'scansReplayed':0,'nativeAcceptance':'PENDING','fullFrontendPass':False}
  write(WORK/'publication-completion.json',report);print('PASS: original583 artifact completed; original run remains failure; native pending')
 
 def main():

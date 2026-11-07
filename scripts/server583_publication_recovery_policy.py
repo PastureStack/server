@@ -15,8 +15,10 @@ ORIGINAL_WORKFLOW='.github/workflows/publish-current-server.yml'
 RECOVERY_WORKFLOW='.github/workflows/complete-server583-publication.yml'
 BUILDER='https://github.com/'+REPO+'/'+ORIGINAL_WORKFLOW+'@refs/heads/main'
 SIGNER='https://github.com/'+REPO+'/'+RECOVERY_WORKFLOW+'@refs/heads/main'
-BUILD_TYPE='https://github.com/'+REPO+'/blob/main/docs/operations/server583-publication-recovery.md#original-build-with-recovery-signer-v1'
-PROVENANCE='https://slsa.dev/provenance/v1'
+BUILD_TYPE='https://actions.github.io/buildtypes/workflow/v1'
+SLSA_PROVENANCE='https://slsa.dev/provenance/v1'
+PROVENANCE='https://github.com/'+REPO+'/blob/main/docs/operations/server583-publication-recovery.md#same-artifact-publication-recovery-v1'
+PROVENANCE_MODEL='SIGNED_SAME_ARTIFACT_RECOVERY_STATEMENT'
 SBOM='https://cyclonedx.org/bom'
 PASSED=('Run source gates','Build exact release image once','Flatten and compare the release image for classic overlay2',
  'Verify the actual candidate JDK security runtime','Verify ordinary Brotli operations against the actual final image',
@@ -108,14 +110,21 @@ def validate_original(run,jobs,log,artifact):
 
 def predicate(job,recovery):
  push=next(s for s in job['steps']if s['name']=='Publish semantic image')
- return {'buildDefinition':{'buildType':BUILD_TYPE,'externalParameters':{
-   'originalBuild':{'repository':REPO,'workflow':ORIGINAL_WORKFLOW,'ref':'refs/heads/main','source':SOURCE,'tree':TREE,'run':RUN,'attempt':1,
-                    'conclusion':'failure','failure':'attestation-transparency-log-http500','buildSecurityAndImagePublish':'success'},
-   'RecoverySigner':recovery,'imageRebuilt':False,'imageRepushed':False,'scansReplayed':False},
-   'resolvedDependencies':[{'uri':'git+https://github.com/'+REPO+'@refs/heads/main','digest':{'gitCommit':SOURCE}},
-     {'uri':'https://github.com/'+REPO+'/actions/artifacts/'+str(ARTIFACT),'digest':{'sha256':ARTIFACT_SHA}}]},
+ # The nested SLSA-shaped record is reconstruction, never an original signature.
+ original_slsa={'buildDefinition':{'buildType':BUILD_TYPE,
+   'externalParameters':{'workflow':{'repository':'https://github.com/'+REPO,'path':ORIGINAL_WORKFLOW,'ref':'refs/heads/main'}},
+   'resolvedDependencies':[{'uri':'git+https://github.com/'+REPO+'@refs/heads/main','digest':{'gitCommit':SOURCE}}]},
   'runDetails':{'builder':{'id':BUILDER},'metadata':{'invocationId':'https://github.com/'+REPO+'/actions/runs/'+str(RUN)+'/attempts/1',
    'startedOn':job['started_at'],'finishedOn':push['completed_at']}}}
+ return {'schemaVersion':1,'originalNativeSlsaAvailable':False,
+  'originalBuild':{'repository':REPO,'workflow':ORIGINAL_WORKFLOW,'ref':'refs/heads/main','source':SOURCE,'tree':TREE,'run':RUN,'attempt':1,
+   'conclusion':'failure','failure':'attestation-transparency-log-http500','buildSecurityAndImagePublish':'success',
+   'passedBuildSecurityPublishSteps':list(PASSED),'runOwnedCleanup':'success'},
+  'originalBuildProvenance':{'predicateType':SLSA_PROVENANCE,'predicate':original_slsa,
+   'evidenceStatus':'RECONSTRUCTED_FROM_ORIGINAL_OFFICIAL_RECORDS_NOT_ORIGINAL_SIGNED_PROVENANCE','originalSignatureAvailable':False},
+  'originalArtifact':{'id':ARTIFACT,'uri':'https://github.com/'+REPO+'/actions/artifacts/'+str(ARTIFACT),'sha256':ARTIFACT_SHA,'bytes':ARTIFACT_BYTES,
+   'originalJob':JOB,'originalJobLogSha256':LOG_SHA},
+  'RecoverySigner':recovery,'image':{'name':IMAGE,'digest':DIGEST},'imageRebuilt':False,'imageRepushed':False,'scansReplayed':False}
 
 def verify_command(digest,predicate_type,recovery):
  need(digest==DIGEST and predicate_type in(PROVENANCE,SBOM),'Exact subject and predicate type required')
@@ -131,6 +140,7 @@ def validate_verify_argv(command):
  return command
 
 def validate_verified(rows,predicate_type,recovery,expected):
+ need(predicate_type in(PROVENANCE,SBOM),'Exact custom recovery or original SBOM type required; no standard SLSA substitution')
  need(type(rows)is list and rows,'Native cryptographic verification result required');matched=[]
  for row in rows:
   result=row.get('verificationResult',{});cert=result.get('signature',{}).get('certificate',{})
@@ -151,7 +161,7 @@ def validate_completion_run(run,jobs,recovery):
  need((run['id'],run['head_sha'],run['run_attempt'],run['event'],run['path'],run['status'],run['conclusion'])==
       (recovery['run'],recovery['source'],recovery['attempt'],'workflow_dispatch',RECOVERY_WORKFLOW,'completed','success'),'Actual successful completion run required')
  need(jobs['total_count']==len(jobs['jobs'])==1 and jobs['jobs'][0]['conclusion']=='success','Successful completion job required')
- for name in ('Validate exact original build and prepare immutable inputs','Attest original image provenance with truthful recovery signer','Attest original image SBOM','Complete exact immutable release and verify native chains'):
+ for name in ('Validate exact original build and prepare immutable inputs','Attest signed same-artifact recovery statement','Attest original image SBOM','Complete exact immutable release and verify native chains'):
   need(sum(s['name']==name and s['conclusion']=='success'for s in jobs['jobs'][0]['steps'])==1,'Required completion step must pass: '+name)
 
 def validate_source(commit,comparison):

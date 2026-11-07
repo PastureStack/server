@@ -1,6 +1,6 @@
 # Server583 same-artifact publication recovery
 
-## Original build with recovery signer v1
+## Same artifact publication recovery v1
 
 This fixed protocol completes Server `v1.6.583` from image
 `sha256:e22ecd94bbc83c2d34f49aa7dde231301f42a26de9a89c929e8a11d886b6c78c`.
@@ -16,15 +16,29 @@ Artifact `13578150593` is exactly6,656,789 bytes with SHA-256
 All original build/security/push steps and run-owned cleanup must pass; only the
 provenance transparency-log HTTP500 is eligible. SBOM/release must be skipped.
 
-The recovery workflow is a separate signed source and invocation. The SLSA
-predicate retains the original builder/invocation/source and artifact dependency;
-`RecoverySigner` explicitly records the real completion workflow/ref/source/run/
-attempt. Its certificate must identify that exact recovery signer and invocation.
-This protocol makes no SLSA level claim and never represents the recovery commit
-as the image build source. SLSA distinguishes builder from signer and requires
-specific trusted pairs. [SLSA provenance specification](https://slsa.dev/spec/v1.1/provenance#builder)
+The recovery workflow is a separate signed source and invocation. It emits the
+custom predicate type whose URI is this section, rather than submitting the
+statement as standard SLSA provenance. GitHub rejects unsupported SLSA build types
+and checks standard provenance against the signing certificate during storage.
+[Official build-type limitation](https://github.com/actions/attest/issues/195),
+[official persistence verification](https://github.com/actions/attest-build-provenance/issues/539).
 
-The pinned `actions/attest` action supports a custom predicate and a fixed OCI
+The custom statement retains the entire original build identity, failed-run
+status, successful security/build/push steps, cleanup and exact original evidence.
+A nested original-build SLSA-shaped record uses the documented GitHub workflow/v1
+format but is explicitly reconstructed from official records, with no original
+signature. `originalNativeSlsaAvailable` and `originalSignatureAvailable` are
+false. This is not a claim that original native SLSA provenance passed.
+[Official generator source](https://github.com/actions/toolkit/blob/main/packages/attest/src/provenance.ts)
+
+`RecoverySigner` records the real completion workflow/ref/source/run/attempt.
+The native certificate must identify that exact signer and invocation. Both
+certificate and full custom predicate must pass; standard SLSA cannot substitute
+for this custom statement. Metadata exposes the custom predicate type and model,
+and explicitly retains the absence of original native SLSA. No SLSA level or
+recovery-build claim is made for the original image.
+
+The pinned `actions/attest` Custom mode supports a custom predicate type and a fixed OCI
 subject digest. The original CycloneDX bytes receive a separate native SBOM
 attestation. [Pinned action inputs](https://github.com/actions/attest/blob/1e69f48acb82d1966a394da916b4c1698aa569d6/action.yml)
 
@@ -32,7 +46,8 @@ Verification requires native signature and transparency verification, exact
 signer workflow/digest, source digest/ref of the recovery workflow, certificate
 run invocation, original builder, and exact predicate. `--source-digest` here is
 the true recovery certificate source; original image source is checked separately
-against the predicate and original run. [GitHub CLI verification policy](https://cli.github.com/manual/gh_attestation_verify)
+against the reconstructed claim and original run. The custom type is always
+passed explicitly to the CLI; it never relies on the standard SLSA default. [GitHub CLI verification policy](https://cli.github.com/manual/gh_attestation_verify)
 
 The completion source may add only this document, the fixed workflow, script,
 policy and focused tests. It cannot modify recipes, source gates or CodeQL.
