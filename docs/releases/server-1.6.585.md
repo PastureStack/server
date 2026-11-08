@@ -1,7 +1,16 @@
-# Server v1.6.585 candidate
+# Server v1.6.585
 
-This candidate is not yet published. Use the current release in the README
-until the new image is available.
+[Server v1.6.585](https://github.com/PastureStack/server/releases/tag/v1.6.585) is formally published
+as immutable Release `437988708` with 35 assets. The original
+[publisher run](https://github.com/PastureStack/server/actions/runs/42438828513)
+completed its source, security, startup, restart and publication checks.
+
+Published image identity: `ghcr.io/pasturestack/server:v1.6.585@sha256:2f78f6ab0a4bf3de111ccaaf9ccd09ff304ac9ce0239efd063b67a2c798d4c6f`.
+Source commit: `661e919b4f85f304b04a45e845fbe3fcad970cd4`.
+
+Independent anonymous-asset and OCI verification remain pending. Deployment,
+actual network effects and affected role/UI business acceptance also remain
+pending; publication and component CI do not establish full frontend coverage.
 
 ## Verified component inputs
 
@@ -20,9 +29,9 @@ remain compatible when they omit the optional concurrency-check header.
 
 Component CI passed: Engine 4,273 tests with no failures or errors (one inherited
 skip); Web Console 326 focused cases and 1,144 browser cases; Bridge SDK handshake.
-Server image, deployment, actual network effects and affected role/UI acceptance
-remain pending. Publication alone does not establish full frontend coverage.
+These component results are separate from the pending deployment and affected
+business-workflow acceptance described above.
 
-Upgrade by changing the image tag to `ghcr.io/pasturestack/server:v1.6.585` after
-publication. Preserve existing configuration and named volumes, and retain the
+Use the numeric image tag `ghcr.io/pasturestack/server:v1.6.585` for upgrades.
+Preserve existing configuration and named volumes, and retain the
 previous image and a current database backup for rollback.
