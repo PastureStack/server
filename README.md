@@ -11,6 +11,8 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
+Upcoming Server `v1.6.585` source is tracked in the [candidate release note](docs/releases/server-1.6.585.md).
+
 ## Current release
 
 [Server `v1.6.584`](https://github.com/PastureStack/server/releases/tag/v1.6.584)
