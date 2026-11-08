@@ -1,5 +1,24 @@
 # Compatibility Contract
 
+## Current component compatibility
+
+[Server `v1.6.585`](https://github.com/PastureStack/server/releases/tag/v1.6.585) packages Engine
+`0.183.387`, Web Console `1.6.227` / optional Bridge `0.2.29`, Host API `0.38.9`,
+Node Agent `0.13.35`, Catalog `0.20.17` and Compose `0.14.43`. The bootstrap Agent
+remains `1.2.34`.
+
+Host custom-name reset preserves the native hostname. Existing Container Port
+and InstanceLink edits change only the approved public port or target; the parent
+Service's launch configuration is preserved. Ordinary native Port PUT clients
+may omit the before header. Typed edits require exact before-CAS, current native
+roles and API Key limits, and normal human confirmation. Activating Driver Service
+removal stays within its native deactivate/remove lifecycle.
+
+Existing runtime defaults, operator configuration and four independent default-off
+feature settings are unchanged. Deployment and affected business acceptance remain
+separate; see the [release note](docs/releases/server-1.6.585.md).
+Published release identity: `ghcr.io/pasturestack/server:v1.6.585@sha256:2f78f6ab0a4bf3de111ccaaf9ccd09ff304ac9ce0239efd063b67a2c798d4c6f`.
+
 <a id="server-v16583-publication"></a>
 
 ## Server v1.6.583 published
