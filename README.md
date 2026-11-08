@@ -11,11 +11,22 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current release
+## Current source candidate
 
-[Server `v1.6.585`](https://github.com/PastureStack/server/releases/tag/v1.6.585)
-packages Engine `v0.183.387`, Web Console `1.6.227` / optional bridge `0.2.29`,
+Server `v1.6.586` is a prepared source candidate, not a published image.
+The published installation remains
+[Server `v1.6.585`](https://github.com/PastureStack/server/releases/tag/v1.6.585),
+which packages Engine `v0.183.387`, Web Console `1.6.227` / optional Bridge `0.2.29`,
 Host API `0.38.9`, Node Agent `0.13.35`, Catalog `0.20.17` and Compose `0.14.43`.
+See the [published release note](docs/releases/server-1.6.585.md) and the
+[candidate note](docs/releases/server-1.6.586.md). Server build, publication,
+deployment and affected business acceptance remain pending for the candidate.
+
+## Candidate assembly
+
+Engine `v0.183.388` and Web Console `1.6.228` / Bridge `0.2.30` are published.
+Server `v1.6.586` assembles these components with unchanged Host API `0.38.9`,
+Node Agent `0.13.35`, Catalog `0.20.17` and Compose `0.14.43`.
 
 Ordinary Stacks support reviewed Group, name and description changes.
 Ordinary Services support reviewed named/plain dependency links and same-image
@@ -31,13 +42,17 @@ confirmation. These edits affect the current Container and preserve its parent
 Service's launch configuration. Activating Driver Services follow the native
 removal lifecycle.
 
+This candidate adds reviewed Host scheduling activation/deactivation without
+stopping workloads or removing Hosts. Failed or unconfirmed operations retain
+a visible safe next step; a stale terminal result cannot clear a newer review.
+
 Optional AI tools support bounded resource discovery, human-reviewed changes and
 an opt-in Stack dependency view. Native roles, API Key limits and the four
 independent default-off settings remain authoritative. Dependency results can be
 partial; an empty graph does not establish permission to stop or remove resources.
 
-See the [release note](docs/releases/server-1.6.585.md),
-[component compatibility](COMPATIBILITY.md#current-component-compatibility) and
+See the [release note](docs/releases/server-1.6.586.md),
+[component compatibility](COMPATIBILITY.md#server-v16586-prepared-not-published) and
 [acceptance boundaries](docs/ai-collaboration.md#workload-retirement-limitation).
 Deployment and affected business-workflow acceptance remain pending.
 
@@ -72,21 +87,22 @@ instance count. Advanced forms and other resource workflows remain pending.
 The complete scoped lifecycle workflow remains unaccepted; review
 the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation)
 before enabling these optional changes.
-See the [release note](docs/releases/server-1.6.585.md) and
+See the [release note](docs/releases/server-1.6.586.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
 ## Quick start
 
-These examples use the published numeric version. Public downloads do not require
-a registry login. Keep all three named volumes.
+These candidate examples use a numeric version tag.
+This candidate is not yet available from GHCR; run them only after its official release
+and image have been published and read back. Keep all three named volumes.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.585
+  ghcr.io/pasturestack/server:v1.6.586
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -94,7 +110,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.585
+    image: ghcr.io/pasturestack/server:v1.6.586
     restart: unless-stopped
     ports:
       - "8080:8080"

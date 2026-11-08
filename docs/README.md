@@ -8,8 +8,11 @@ operator deployment and business-workflow acceptance are recorded separately.
 
 - [Current Server v1.6.585](releases/server-1.6.585.md) — Engine `0.183.387` /
   Web Console `1.6.227` / optional Bridge `0.2.29`. Immutable publication is complete;
-  independent publication verification, deployment and affected business/native
-  acceptance remain separate and pending. Complete frontend coverage is not claimed.
+  deployment and affected business acceptance remain separate.
+- [Server v1.6.586 source candidate](releases/server-1.6.586.md) — Engine `0.183.388` /
+  Web Console `1.6.228` / optional Bridge `0.2.30`. Matching components are published;
+  Server build, publication, deployment and affected acceptance remain pending.
+
 - [Release archive](RELEASE-ARCHIVE.md) — historical published and candidate notes retain
   their original evidence, acceptance limits and rollback context; these are not
   the current installation guide.
