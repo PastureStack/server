@@ -1,10 +1,12 @@
-# Server v1.6.587 candidate
+# Server v1.6.587
 
-Prepared source only; no Server image or release has been published.
-No Server587 build, publication, deployment or native
-acceptance result is claimed. All matching component publications below have
-passed their exact anonymous-byte and cryptographic gates. The normal Server
-build/security/publication pipeline and matching runtime acceptance remain.
+Officially published:
+`ghcr.io/pasturestack/server:v1.6.587@sha256:c50ff593c35d64d16d93880b58562fa8db35824e4a7a79daacf8b78cb798f9f3`.
+Normal publisher [42490750764](https://github.com/PastureStack/server/actions/runs/42490750764)
+completed successfully for source `48c39adaa142444d1c1bc20f6235161c33163209`.
+All 35 anonymous release assets, 36 native release-attestation subjects and
+two OCI attestations passed. Matching deployment and native/UI acceptance
+remain pending; publication does not establish complete frontend coverage.
 
 ## Verified component inputs
 

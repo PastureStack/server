@@ -1,17 +1,20 @@
 # Compatibility Contract
 
 
-## Server v1.6.587 prepared, not published
+## Server v1.6.587 published
 
-Server `v1.6.587` is a source candidate for Engine `0.183.389`, Web Console
+Server `v1.6.587` packages Engine `0.183.389`, Web Console
 `1.6.230` / optional Bridge `0.2.32`, and Compose `0.14.44`. Matching components
 are published with exact anonymous-byte and cryptographic verification complete.
-Server587 build, image publication, deployment and affected native/UI acceptance
-remain pending; component results do not establish whole frontend coverage.
+The normal publisher and all 35 anonymous assets, 36 native release-attestation
+subjects and two OCI attestations passed. Image identity:
+`ghcr.io/pasturestack/server:v1.6.587@sha256:c50ff593c35d64d16d93880b58562fa8db35824e4a7a79daacf8b78cb798f9f3`.
+Deployment and affected native/UI acceptance remain separate and pending;
+publication does not establish whole frontend coverage.
 
 Host API `0.38.9`, Node Agent `0.13.35`, bootstrap Agent `1.2.34`, all other
 components, roles/Key ceilings, twelve tools and default-off settings remain.
-See the [candidate note](docs/releases/server-1.6.587.md). Prior publication
+See the [release note](docs/releases/server-1.6.587.md). Prior publication
 records below retain their original bytes and acceptance limits.
 
 ## Server v1.6.586 published

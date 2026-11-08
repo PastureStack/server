@@ -11,24 +11,18 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current source candidate
+## Current release
 
-Server `v1.6.587` is a prepared source candidate, not a published image.
-The current published baseline is
-[Server `v1.6.586`](https://github.com/PastureStack/server/releases/tag/v1.6.586),
-which packages Engine `v0.183.388`, Web Console `1.6.228` / optional Bridge `0.2.30`,
-Host API `0.38.9`, Node Agent `0.13.35`, Catalog `0.20.17` and Compose `0.14.43`.
-See its [published release note](docs/releases/server-1.6.586.md).
-Candidate versions and source pins are in the [candidate note](docs/releases/server-1.6.587.md)
-and [component compatibility](COMPATIBILITY.md#server-v16587-prepared-not-published).
-Server build, publication, deployment and affected native/UI workflows remain
-pending. Matching component anonymous-byte and cryptographic publication
-verification is complete; it does not establish Server acceptance.
+[Server `v1.6.587`](https://github.com/PastureStack/server/releases/tag/v1.6.587)
+packages Engine `v0.183.389`, Web Console `1.6.230` / optional Bridge `0.2.32`,
+Host API `0.38.9`, Node Agent `0.13.35`, Catalog `0.20.17` and Compose `0.14.44`.
+The immutable image, all 35 anonymous release assets, native release attestation
+and both OCI attestations passed verification. See the
+[release note](docs/releases/server-1.6.587.md) and
+[component compatibility](COMPATIBILITY.md#server-v16587-published).
+Deployment and affected native/UI acceptance remain separate and pending.
 
-## Candidate components
-
-Server `v1.6.587` matches published Engine `0.183.389`, Web Console `1.6.230` /
-optional Bridge `0.2.32` and Compose `0.14.44`.
+## Component capabilities
 
 Browser users can select an environment by name and review switching context or
 setting their own default environment. These client/session and account-preference
@@ -79,9 +73,7 @@ supported operations, audit records and rollback.
 
 ## Quick start
 
-These examples target the prepared numeric version tag; run them only after its official release
-and image have been published and read back. This candidate is not yet available
-from GHCR. Keep all three named volumes.
+These examples use the published numeric version tag. Keep all three named volumes.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
