@@ -3,6 +3,8 @@
 This candidate is not yet published. Use the current release in the README
 until the new image is available.
 
+## Verified component inputs
+
 Includes Engine v0.183.387, Web Console 1.6.227 and optional Bridge 0.2.29.
 Host API 0.38.9, Go Node Agent 0.13.35 and bootstrap Agent 1.2.34 are unchanged.
 
