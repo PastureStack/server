@@ -1,9 +1,14 @@
-# Server v1.6.588 candidate
+# Server v1.6.588
 
-This source candidate is not a published Server image or deployment result.
-The normal Server workflow must build, scan and qualify the exact image before use.
-Matching component publication inputs are verified; Server and affected native/UI
-acceptance remain pending.
+The immutable image is
+`ghcr.io/pasturestack/server:v1.6.588@sha256:98ed72f3d2ed8ea5fb8bb35fba26e30c1f131c42df5ebf3819b92689856918cd`.
+Normal publisher `42510664488` passed its source, build, final-image security,
+startup and restart checks. All 35 anonymous assets, 36 release-attestation
+subjects and both OCI attestations passed. Source revision
+`82b40a1e4b861eddf9f8a0830105f611f8e2805a` has the same tested tree as PR482
+producer `7b08078944f1dd619d5baffaff261cf289bc97ce`.
+At publication qualification, QA deployment and affected native/UI acceptance
+remained pending; these are separate from image and component qualification.
 
 ## Verified component inputs
 
@@ -11,7 +16,7 @@ Engine `v0.183.390` passed twelve anonymous asset checks and thirteen native
 release-attestation subjects. Its exact original JAR and frozen role/schema
 identities are bound to the signed producer
 `c5899bca4c15c7c853d668d021024eeba62fc8f9`. This component qualification does
-not establish a Server588 image or native workflow result.
+not by itself establish a native workflow result.
 
 Web Console `1.6.231` / optional Bridge `0.2.33`, immutable release 438433509,
 passed thirteen anonymous asset checks and fourteen native release-attestation
@@ -36,6 +41,6 @@ upgraded Stack retains its finish action. This does not add Registry removal.
 
 Existing operator configuration, networking/storage defaults, all four
 independent default-off settings, twelve tools, official dependency pins and
-security gates remain unchanged. Retain Server587 and its matching data backup
-as the immediate rollback. Deployment, affected native/UI workflows and whole
-frontend coverage remain separate and pending.
+security gates remain unchanged. Retain the preceding Server image and its
+matching data backup as the immediate rollback. Deployment-specific workflows
+and complete frontend coverage require their own acceptance evidence.
