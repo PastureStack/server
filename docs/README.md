@@ -6,10 +6,10 @@ operator deployment and business-workflow acceptance are recorded separately.
 
 ## Release notes
 
-- [Current Server v1.6.583](releases/server-1.6.583.md) — Engine385 / Web225 /
-  optional Bridge0.2.27; immutable publication and full normal readback completed.
-  Isolated deployment/restart/smoke passed; affected business/native/weak-model
-  acceptance and whole-frontend coverage remain pending or incomplete.
+- [Current Server v1.6.585](releases/server-1.6.585.md) — Engine `0.183.387` /
+  Web Console `1.6.227` / optional Bridge `0.2.29`. Immutable publication is complete;
+  independent publication verification, deployment and affected business/native
+  acceptance remain separate and pending. Complete frontend coverage is not claimed.
 - [Release archive](RELEASE-ARCHIVE.md) — historical published and candidate notes retain
   their original evidence, acceptance limits and rollback context; these are not
   the current installation guide.
