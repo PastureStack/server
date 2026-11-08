@@ -22,6 +22,16 @@ and both OCI attestations passed verification. See the
 [component compatibility](COMPATIBILITY.md#server-v16588-published).
 Deployment-specific workflow acceptance is recorded separately from image qualification.
 
+## Next source candidate
+
+Server `v1.6.589` is a prepared source candidate, not a published image. It
+matches Engine `0.183.391`, Web Console `1.6.232` / optional Bridge `0.2.34`,
+and the unchanged Compose `0.14.44`. Engine and Web/Bridge publication passed their anonymous-byte and cryptographic
+checks; these component proofs do not establish Server image or native acceptance.
+The current published installation examples remain Server `v1.6.588`.
+Server image qualification, deployment and affected native business acceptance
+remain separate. See the [candidate note](docs/releases/server-1.6.589.md).
+
 ## Component capabilities
 
 Browser users can select an environment by name and review switching context or
