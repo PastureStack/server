@@ -1,13 +1,21 @@
-# Server v1.6.589 candidate
+# Server v1.6.589
 
-Prepared source only; no Server image or release has been published.
+Published immutable image:
+`ghcr.io/pasturestack/server:v1.6.589@sha256:c79180cf0572bd4320a1c9dc65e61710898da56b99cb568ed99874b241070cea`.
 
-## Candidate boundary
+## Publication boundary
 
-This source candidate targets Engine `0.183.391`, Web Console `1.6.232` /
+This release packages Engine `0.183.391`, Web Console `1.6.232` /
 optional Bridge `0.2.34`, and Compose `0.14.44`. Component publication and
-anonymous readback are verified. Server build and image publication remain
-pending. The preceding qualified Server `v1.6.588` and its
+anonymous readback are verified. Normal publisher **42525104542** passed the
+build, final-image security scan, startup and restart. All 35 anonymous release
+assets, 36 cryptographic subjects and both OCI attestations passed verification.
+Release **438535197** targets signed commit
+`28f849b7427c627135efc58038771401d1a1b053`, sharing tested tree
+`e42260470ae79cf5c7cbd8b07ddbeffa3dfc9afb` with producer
+`f0f832d0ebab27f199f1aac6f4b64c39e81ea780`. The thirteen unchanged MEDIUM
+findings without an official fix remain individually tracked.
+The preceding qualified Server `v1.6.588` and its
 matching data backup remain the rollback; no deployment configuration is changed.
 
 ## Verified component inputs

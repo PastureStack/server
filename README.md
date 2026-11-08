@@ -13,24 +13,14 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.588`](https://github.com/PastureStack/server/releases/tag/v1.6.588)
-packages Engine `v0.183.390`, Web Console `1.6.231` / optional Bridge `0.2.33`,
+[Server `v1.6.589`](https://github.com/PastureStack/server/releases/tag/v1.6.589)
+packages Engine `v0.183.391`, Web Console `1.6.232` / optional Bridge `0.2.34`,
 Host API `0.38.9`, Node Agent `0.13.35`, Catalog `0.20.17` and Compose `0.14.44`.
 The immutable image, all 35 anonymous release assets, native release attestation
 and both OCI attestations passed verification. See the
-[release note](docs/releases/server-1.6.588.md) and
-[component compatibility](COMPATIBILITY.md#server-v16588-published).
+[release note](docs/releases/server-1.6.589.md) and
+[component compatibility](COMPATIBILITY.md#server-v16589-published).
 Deployment-specific workflow acceptance is recorded separately from image qualification.
-
-## Next source candidate
-
-Server `v1.6.589` is a prepared source candidate, not a published image. It
-matches Engine `0.183.391`, Web Console `1.6.232` / optional Bridge `0.2.34`,
-and the unchanged Compose `0.14.44`. Engine and Web/Bridge publication passed their anonymous-byte and cryptographic
-checks; these component proofs do not establish Server image or native acceptance.
-The current published installation examples remain Server `v1.6.588`.
-Server image qualification, deployment and affected native business acceptance
-remain separate. See the [candidate note](docs/releases/server-1.6.589.md).
 
 ## Component capabilities
 
@@ -77,7 +67,9 @@ instance count. Advanced forms and other resource workflows remain pending.
 The complete scoped lifecycle workflow remains unaccepted; review
 the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation)
 before enabling these optional changes.
-See the [release note](docs/releases/server-1.6.588.md) and
+Inactive Registry removal requires a separate preview and human approval. Scoped
+Bridge navigation reveals only authorized parent identity, not broader Project access.
+See the [release note](docs/releases/server-1.6.589.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
@@ -90,7 +82,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.588
+  ghcr.io/pasturestack/server:v1.6.589
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -98,7 +90,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.588
+    image: ghcr.io/pasturestack/server:v1.6.589
     restart: unless-stopped
     ports:
       - "8080:8080"

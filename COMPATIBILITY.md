@@ -1,22 +1,26 @@
 # Compatibility Contract
 
 
-## Server v1.6.589 prepared, not published
+## Server v1.6.589 published
 
-The source candidate matches Engine `0.183.391`, Web Console `1.6.232` /
+The published image matches Engine `0.183.391`, Web Console `1.6.232` /
 optional Bridge `0.2.34`, and unchanged Compose `0.14.44`. Engine's twelve
 anonymous assets and thirteen cryptographic subjects are verified. Web232 /
 Bridge034 passed thirteen anonymous assets and fourteen cryptographic subjects
 in immutable release 438525417. Original component archives, SBOM, lock and
-frozen schemas are pinned; the Server image remains an unpublished candidate.
+frozen schemas are pinned. The normal Server build, final-image security scan,
+startup and restart passed. All 35 anonymous assets, 36 release-attestation
+subjects and both OCI attestations passed verification. Image identity:
+`ghcr.io/pasturestack/server:v1.6.589@sha256:c79180cf0572bd4320a1c9dc65e61710898da56b99cb568ed99874b241070cea`.
 
 Registry removal retains the existing native StoragePool DELETE writer,
 complete credential-set comparison and human approval. The AI-purpose Bridge
 may resolve four-field parent environment identity through its own authorized
 child; the projection grants no ordinary Project or business access. Existing
 roles, Full/legacy behavior, expected Key revision and all native gates remain.
-Server build/publication, deployment and native business acceptance are pending.
-See the [candidate note](docs/releases/server-1.6.589.md).
+Deployment-specific and native business acceptance remain separate; publication
+does not establish whole frontend coverage.
+See the [release note](docs/releases/server-1.6.589.md).
 
 ## Server v1.6.588 published
 
