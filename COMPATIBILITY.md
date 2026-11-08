@@ -1,5 +1,16 @@
 # Compatibility Contract
 
+## Server v1.6.586 prepared, not published
+
+The candidate requires Engine `0.183.388`, Web Console `1.6.228` and optional
+Bridge `0.2.30`. These component publications are complete; Server assembly
+and publication remain pending. Host API `0.38.9`,
+Go Node Agent `0.13.35` and bootstrap Agent `1.2.34` remain unchanged.
+Host scheduling changes do not stop workloads. Cookie lifecycle completion must
+prove its own native processes and all existing readiness/configuration checks;
+Key, legacy native-client, human-review and default-off boundaries remain unchanged.
+Server585 remains the published installation. See the [candidate note](docs/releases/server-1.6.586.md).
+
 ## Current component compatibility
 
 [Server `v1.6.585`](https://github.com/PastureStack/server/releases/tag/v1.6.585) packages Engine
