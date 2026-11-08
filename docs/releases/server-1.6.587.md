@@ -1,6 +1,7 @@
 # Server v1.6.587 candidate
 
-Source preparation only. No Server587 build, publication, deployment or native
+Prepared source only; no Server image or release has been published.
+No Server587 build, publication, deployment or native
 acceptance result is claimed. All matching component publications below have
 passed their exact anonymous-byte and cryptographic gates. The normal Server
 build/security/publication pipeline and matching runtime acceptance remain.

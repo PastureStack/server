@@ -19,13 +19,16 @@ The current published baseline is
 which packages Engine `v0.183.388`, Web Console `1.6.228` / optional Bridge `0.2.30`,
 Host API `0.38.9`, Node Agent `0.13.35`, Catalog `0.20.17` and Compose `0.14.43`.
 See its [published release note](docs/releases/server-1.6.586.md).
-The next candidate matches published Engine `0.183.389`, Web Console `1.6.230` /
-optional Bridge `0.2.32` and Compose `0.14.44`. Its
-exact versions and source pins are in the [candidate note](docs/releases/server-1.6.587.md)
+Candidate versions and source pins are in the [candidate note](docs/releases/server-1.6.587.md)
 and [component compatibility](COMPATIBILITY.md#server-v16587-prepared-not-published).
 Server build, publication, deployment and affected native/UI workflows remain
 pending. Matching component anonymous-byte and cryptographic publication
 verification is complete; it does not establish Server acceptance.
+
+## Candidate components
+
+Server `v1.6.587` matches published Engine `0.183.389`, Web Console `1.6.230` /
+optional Bridge `0.2.32` and Compose `0.14.44`.
 
 Browser users can select an environment by name and review switching context or
 setting their own default environment. These client/session and account-preference
