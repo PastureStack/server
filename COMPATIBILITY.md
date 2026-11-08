@@ -1,6 +1,23 @@
 # Compatibility Contract
 
 
+## Server v1.6.589 prepared, not published
+
+The source candidate matches Engine `0.183.391`, Web Console `1.6.232` /
+optional Bridge `0.2.34`, and unchanged Compose `0.14.44`. Engine's twelve
+anonymous assets and thirteen cryptographic subjects are verified. Web232 /
+Bridge034 passed thirteen anonymous assets and fourteen cryptographic subjects
+in immutable release 438525417. Original component archives, SBOM, lock and
+frozen schemas are pinned; the Server image remains an unpublished candidate.
+
+Registry removal retains the existing native StoragePool DELETE writer,
+complete credential-set comparison and human approval. The AI-purpose Bridge
+may resolve four-field parent environment identity through its own authorized
+child; the projection grants no ordinary Project or business access. Existing
+roles, Full/legacy behavior, expected Key revision and all native gates remain.
+Server build/publication, deployment and native business acceptance are pending.
+See the [candidate note](docs/releases/server-1.6.589.md).
+
 ## Server v1.6.588 published
 
 Server `v1.6.588` packages Engine `0.183.390`, Web Console `1.6.231` / optional
