@@ -191,3 +191,7 @@ protocol fields and persisted identifiers are not translated.
 The inherited project uses [Apache License 2.0](LICENSE), with attribution in
 [COPYRIGHT_DETAILS.md](COPYRIGHT_DETAILS.md). Bundled components retain their own
 licenses and notices.
+
+## 1.6.590 來源候選（未發布）
+
+預定使用已發布並驗證的 Engine0.183.391、Web1.6.233／Bridge0.2.35、Compose0.14.44。此批修正 Bridge 對合法環境 ResourceImpl 回應的相容處理；父環境導航身分投影不授予環境業務權限。Server590 尚未完成 CI、發布、部署與前端狀態相依驗收；目前安裝仍使用上列已發布589。

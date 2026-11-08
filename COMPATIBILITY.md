@@ -3154,3 +3154,7 @@ three existing Host/Agent health checks, preserving mounts and the prior rollbac
 These deployment checks do not imply complete WebMCP workflow acceptance.
 See the [release note](docs/releases/server-1.6.584.md) for identity, checks and
 remaining acceptance boundaries.
+
+### Server1.6.590 來源候選
+
+匹配 Engine0.183.391／Web1.6.233／Bridge0.2.35／Compose0.14.44，元件皆有正式公開原件與驗證。Engine、Compose、JDK與其他runtime pins沿用589；Server590 本身尚未發布或部署，不宣稱前端或整組實機驗收完成。
