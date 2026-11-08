@@ -3,20 +3,16 @@
 
 ## Server v1.6.587 prepared, not published
 
-Server `v1.6.587` is a source candidate for Engine `0.183.388`, Web Console
-`1.6.229` and optional Bridge `0.2.31`. No Server587 image, build, publication,
-deployment or affected native/UI result is claimed. Web release 438112925 is
-reported published; its final anonymous-byte and cryptographic verification
-is still pending and must precede assembly. The local normal metadata fixes
-producer `feb75265ca36e1cc683924113a8106129ebbc5e3` and archive SHA256
-`d20d4df444a6b9268c9e55918b9922f3857a77e670486c9142c831d21eacce4d`.
+Server `v1.6.587` is a source candidate for Engine `0.183.389`, Web Console
+`1.6.230` / optional Bridge `0.2.32`, and Compose `0.14.44`. Matching components
+are published with exact anonymous-byte and cryptographic verification complete.
+Server587 build, image publication, deployment and affected native/UI acceptance
+remain pending; component results do not establish whole frontend coverage.
 
-Host API `0.38.9`, Node Agent `0.13.35`, bootstrap Agent `1.2.34`, Engine388,
-all other components, roles/Key ceilings, twelve tools and default-off settings
-are unchanged. Browser context/default actions require human confirmation;
-Bridge's fixed profile does not switch identity automatically. See the
-[candidate note](docs/releases/server-1.6.587.md). Prior publication records below
-retain their original bytes and acceptance limits.
+Host API `0.38.9`, Node Agent `0.13.35`, bootstrap Agent `1.2.34`, all other
+components, roles/Key ceilings, twelve tools and default-off settings remain.
+See the [candidate note](docs/releases/server-1.6.587.md). Prior publication
+records below retain their original bytes and acceptance limits.
 
 ## Server v1.6.586 published
 

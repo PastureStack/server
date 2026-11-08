@@ -1,47 +1,49 @@
 # Server v1.6.587 candidate
 
-Prepared source only; no Server image or release has been published. No Server587 build has run.
-Server build, publication, deployment and affected native/UI workflows remain
-pending. Web Console229 / Bridge031 immutable release 438112925 has been
-reported published by the release owner, but final anonymous-byte and
-cryptographic verification remain pending. The normal local prepared metadata
-supplies the pins below; it does not substitute for those publication checks.
-Do not assemble or publish until the release owner supplies their exact results.
+Prepared source only; no Server image or release has been published.
+No Server587 build, publication, deployment or native
+acceptance result is claimed. All matching component publications below have
+passed their exact anonymous-byte and cryptographic gates. The normal Server
+build/security/publication pipeline and matching runtime acceptance remain.
 
 ## Verified component inputs
 
-Engine `v0.183.388` is unchanged from published Server586: producer
-`09b12c0f0e5488fc8d25b3a58a228bec4e0c7da8`, JAR SHA256
-`2ad513ed2003c10723779cfb85d5b80276f742430a9605ad82e430ac73294bbb`.
-Its existing qualified release evidence remains separate from Server acceptance.
+Engine `v0.183.389`, immutable release 438285712, passed twelve anonymous asset
+readbacks and thirteen cryptographic subjects. Producer
+`339ad3f8d86725bdc70f5d90694401107170138a`, same-tested-tree tag commit
+`3d50bff82934306240bc4fa06b48f40724d8e63b`, tree
+`cf674da2284f3f821d80465123b4d29b31df38fa`; cattle.jar SHA256
+`6d1bfdc4bac47253246fb909547d12c15714b1bd153c1d2358911a140c37477b`.
+The readonly/restricted schema hashes retain the qualified published baseline.
 
-Web Console `1.6.229` / optional Bridge `0.2.31` uses producer
-`feb75265ca36e1cc683924113a8106129ebbc5e3`, tested tree
-`9dc98cf030e2b5741333d961868847036112ebd6` and tag merge
-`ff1a0de2aa08ce3b4c5a01d4a8cf3c946d6854cc`. The source input is Web archive SHA256
-`d20d4df444a6b9268c9e55918b9922f3857a77e670486c9142c831d21eacce4d`,
-lock SHA256 `a9a96e5b38281ed8c5ea8646e203d07fc8c243c18d5f2a4703ab2edbce33c889`
-and runtime SBOM SHA256
-`f9a3709c6429b45a91e5a5f60d16d4a69668eeed79260dc8eafffd5d475e3775`.
-Optional Bridge archive SHA256 is
-`95f466ae9d3113969038859da29cd80e4340c5924803d05c8a620664484ff2b8`;
-it is a separately installed client and is not added to the Server component set.
+Web Console `1.6.230` / optional Bridge `0.2.32`, immutable release 438291732,
+passed thirteen anonymous assets and fourteen cryptographic subjects. Producer
+`033154722c2e0e8e496532d3c9ae913df4bab027`, tag merge
+`a910708d92416f8fcbe33cd61f5b9c7bea4f3180`, tested tree
+`e88db2b8be4094f401ac948ac1f42f2f2155ebc4`. Web archive SHA256
+`6bb2f45e6a53dd53c44285a67b68a248fbf2043994067ed7310cc919b361a4d0`, lock
+`a4394748f1de7a773fd91849e0787a1ed1a2c7af186556fb3a8721c49ca5d681`, runtime SBOM
+`77a0e070dc54db54f4afa59b5db26bb249e36c429d608ec788d40aac95056c72`.
+Bridge ZIP SHA256 `aa31a13136aa72678a6b8810a616068255709f74c1aa211fdd058896ad2d3adf`;
+it remains a separately installed client, outside the Server component set.
 
-Browser environment selection uses names and opaque references, preview and
-human confirmation. Switching context is browser-only; setting the default
-awaits the account preference save and readback. Actor/session/generation and
-review ownership changes reject stale results. Model apply remains needs_user;
-the fixed-profile Bridge directs the human to the Browser instead of changing
-identity. These actions do not create native processes or workload proof.
+Compose `v0.14.44`, immutable release 438281262, passed twenty anonymous assets
+and twenty-one cryptographic subjects. Its tag points to producer
+`10a9279c79542ff7b221715baade93e5e644da90`; normal merge
+`eee7173d74d56eb6859ee92205cf5b93a5ac6b0d` has the same tested tree
+`7967d1c424b5c5470a6393b80c141cd707f528cf`. Archive SHA256
+`8fb49a7da9888c3167f7228934bb7e89250ce0cf0e5b986000b0c85ae3683a2e`;
+binary SHA256 `cdcc4ecbf600b39727f4ce5def76e68328662ea9a50ed23a968f3db3c4dc512d`.
+The existing OpenPGP code-absence scope is requalified for these exact bytes;
+no module-wide fixed claim, new consumer or exemption is added.
 
-Host API `0.38.9`, Go Node Agent `0.13.35`, bootstrap Agent `1.2.34` and all
-other components are unchanged. Native roles/Key limits, twelve tools, four
-independent default-off settings, multistage/flatten assembly, exact SHA fetch,
-crypto/security gates and runtime defaults remain. The same component fetcher
-continues checking archive, manifest, source, lock and runtime SBOM identities.
+Ordinary Stack finish/rollback/cancel use native handlers and human-reviewed typed plans.
+Rollback restores currently eligible children; already-finished/active and newly
+added services remain. It does not delete additions or recreate removed services.
+Cancel is a parent checkpoint and does not claim child upgrade completion.
+Component qualification does not establish Server or complete frontend acceptance.
 
-Server deployment and affected native/UI workflows remain pending. Component
-publication does not establish complete frontend coverage. Preserve all three
-named volumes, configuration, origin, performance settings, restart policy,
-AppArmor and firewall behavior, and keep the prior image and matching backup.
-Use only the numeric tag `ghcr.io/pasturestack/server:v1.6.587` after publication.
+Host API `0.38.9`, Node Agent `0.13.35`, bootstrap Agent `1.2.34`, Catalog `0.20.17` and other
+component pins, roles/Key ceilings, twelve tools, default-off settings, storage,
+networking, multistage/flatten assembly and security/crypto gates remain unchanged.
+Preserve the prior image, three named volumes, backup and operator configuration.

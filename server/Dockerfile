@@ -5,7 +5,7 @@ RUN rm -f /usr/bin/pebble
 
 ENV DEBIAN_FRONTEND=noninteractive
 ARG TEMURIN_JDK25_VERSION="25.0.5+8"
-ARG TEMURIN_JDK25_URL="https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jdk_x64_linux_hotspot_25.0.5_8.tar.gz"
+ARG TEMURIN_JDK25_URL="https://api.github.com/repos/adoptium/temurin25-binaries/releases/assets/665812068"
 ARG TEMURIN_JDK25_SHA256="68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb"
 ARG UBUNTU_SNAPSHOT=20260826T000000Z
 
@@ -15,6 +15,7 @@ ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510
 ARG SOURCE_DATE_EPOCH=1784851922
 ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH=${JAVA_HOME}/bin:${PATH}
+COPY --chmod=0755 artifacts/fetch-server-component.sh /usr/local/bin/fetch-server-component
 
 RUN set -eux; \
     mkdir -p /tmp/ca-bootstrap /etc/ssl/certs; \
@@ -62,7 +63,7 @@ RUN set -eux; \
     && : > /etc/machine-id
 
 RUN mkdir -p ${JAVA_HOME} /usr/lib/jvm && \
-    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 -o /tmp/temurin-jdk25.tar.gz "${TEMURIN_JDK25_URL}" && \
+    fetch-server-component remote "${TEMURIN_JDK25_URL}" temurin-jdk25.tar.gz "${TEMURIN_JDK25_SHA256}" /tmp/temurin-jdk25.tar.gz && \
     echo "${TEMURIN_JDK25_SHA256}  /tmp/temurin-jdk25.tar.gz" | sha256sum -c - && \
     tar -xzf /tmp/temurin-jdk25.tar.gz -C ${JAVA_HOME} --strip-components=1 && \
     rm -f /tmp/temurin-jdk25.tar.gz && \

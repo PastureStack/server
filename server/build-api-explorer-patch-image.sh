@@ -18,10 +18,11 @@ server_release_tag=${SERVER_RELEASE_TAG:-v1.6.587}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
-orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.388}
+orchestration_engine_asset_api_url=${ORCHESTRATION_ENGINE_ASSET_API_URL:-https://api.github.com/repos/PastureStack/orchestration-engine/releases/assets/724117355}
+orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.389}
 orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}
-orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-2ad513ed2003c10723779cfb85d5b80276f742430a9605ad82e430ac73294bbb}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-09b12c0f0e5488fc8d25b3a58a228bec4e0c7da8}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-6d1bfdc4bac47253246fb909547d12c15714b1bd153c1d2358911a140c37477b}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-339ad3f8d86725bdc70f5d90694401107170138a}
 orchestration_engine_version=${orchestration_engine_release_tag#v}
 engine_readonly_schema_sha256=${ENGINE_READONLY_SCHEMA_SHA256:-7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233}
 engine_restricted_schema_sha256=${ENGINE_RESTRICTED_SCHEMA_SHA256:-f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51}
@@ -63,13 +64,15 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.20.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb}
 api_explorer_commit=${API_EXPLORER_COMMIT:-a586f0dc0aa50df579049a8d4bf26f04400fdf75}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.229}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.229.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-d20d4df444a6b9268c9e55918b9922f3857a77e670486c9142c831d21eacce4d}
-web_console_commit=${WEB_CONSOLE_COMMIT:-feb75265ca36e1cc683924113a8106129ebbc5e3}
-web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-a9a96e5b38281ed8c5ea8646e203d07fc8c243c18d5f2a4703ab2edbce33c889}
+web_console_asset_api_url=${WEB_CONSOLE_ASSET_API_URL:-https://api.github.com/repos/PastureStack/web-console/releases/assets/724145552}
+web_console_sbom_asset_api_url=${WEB_CONSOLE_SBOM_ASSET_API_URL:-https://api.github.com/repos/PastureStack/web-console/releases/assets/724145560}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.230}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.230.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-6bb2f45e6a53dd53c44285a67b68a248fbf2043994067ed7310cc919b361a4d0}
+web_console_commit=${WEB_CONSOLE_COMMIT:-033154722c2e0e8e496532d3c9ae913df4bab027}
+web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-a4394748f1de7a773fd91849e0787a1ed1a2c7af186556fb3a8721c49ca5d681}
 web_console_runtime_sbom_artifact=${WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT:-web-console-${web_console_release_tag}-runtime.cdx.json}
-web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-f9a3709c6429b45a91e5a5f60d16d4a69668eeed79260dc8eafffd5d475e3775}
+web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-77a0e070dc54db54f4afa59b5db26bb249e36c429d608ec788d40aac95056c72}
 catalog_service_release_base_url=${CATALOG_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/catalog-service/releases/download}
 catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.17}
 catalog_service_commit=${CATALOG_SERVICE_COMMIT:-2f70559e340865eb6243662ed33d8cbc7b1efa90}
@@ -93,10 +96,11 @@ webhook_automation_service_commit=${WEBHOOK_AUTOMATION_SERVICE_COMMIT:-4da77ccac
 webhook_automation_service_archive_sha256=${WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256:-f2df8874d5a00a2d5713594609063256164ed624d29a733149d00cb271f0f66b}
 webhook_automation_service_binary_sha256=${WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256:-b98e55db2739ab45119eacc94c8f65cb44371480ebcebec95e5470fd67c72a4c}
 compose_executor_release_base_url=${COMPOSE_EXECUTOR_RELEASE_BASE_URL:-https://github.com/PastureStack/compose-cli/releases/download}
-compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.43}
-compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-dff0561a7d4e667e68daacb249b367d586a3221c}
-compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-05e54316867ead7e62cd1ac5b097bcad5b7ce19f2aaf77e815c54cb1d1472767}
-compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-aba99b567196d4c96c4860ad4297107badf7193bea529f0cfd7e190983d14264}
+compose_executor_asset_api_url=${COMPOSE_EXECUTOR_ASSET_API_URL:-https://api.github.com/repos/PastureStack/compose-cli/releases/assets/724096788}
+compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.44}
+compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-10a9279c79542ff7b221715baade93e5e644da90}
+compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-8fb49a7da9888c3167f7228934bb7e89250ce0cf0e5b986000b0c85ae3683a2e}
+compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-cdcc4ecbf600b39727f4ce5def76e68328662ea9a50ed23a968f3db3c4dc512d}
 vsphere_cli_bundle_release_base_url=${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL:-https://github.com/PastureStack/vsphere-cli-bundle/releases/download}
 machine_driver_bundle_release_base_url=${MACHINE_DRIVER_BUNDLE_RELEASE_BASE_URL:-https://github.com/PastureStack/machine-driver-bundle/releases/download}
 machine_driver_bundle_version=${MACHINE_DRIVER_BUNDLE_VERSION:-0.16.6}
@@ -302,6 +306,7 @@ docker buildx build \
     --build-arg "PER_HOST_SUBNET_STARTUP_SHA256=${per_host_subnet_startup_sha256}" \
     --build-arg "PER_HOST_SUBNET_PROVENANCE_SHA256=${per_host_subnet_provenance_sha256}" \
     --build-arg "ORCHESTRATION_ENGINE_RELEASE_BASE_URL=${orchestration_engine_release_base_url}" \
+    --build-arg "ORCHESTRATION_ENGINE_ASSET_API_URL=${orchestration_engine_asset_api_url}" \
     --build-arg "ORCHESTRATION_ENGINE_RELEASE_TAG=${orchestration_engine_release_tag}" \
     --build-arg "ORCHESTRATION_ENGINE_ARTIFACT=${orchestration_engine_artifact}" \
     --build-arg "ORCHESTRATION_ENGINE_ARTIFACT_SHA256=${orchestration_engine_artifact_sha256}" \
@@ -312,6 +317,8 @@ docker buildx build \
     --build-arg "API_EXPLORER_ARTIFACT_SHA256=${api_explorer_artifact_sha256}" \
     --build-arg "API_EXPLORER_COMMIT=${api_explorer_commit}" \
     --build-arg "WEB_CONSOLE_RELEASE_BASE_URL=${web_console_release_base_url}" \
+    --build-arg "WEB_CONSOLE_ASSET_API_URL=${web_console_asset_api_url}" \
+    --build-arg "WEB_CONSOLE_SBOM_ASSET_API_URL=${web_console_sbom_asset_api_url}" \
     --build-arg "WEB_CONSOLE_RELEASE_TAG=${web_console_release_tag}" \
     --build-arg "WEB_CONSOLE_ARTIFACT=${web_console_artifact}" \
     --build-arg "WEB_CONSOLE_ARTIFACT_SHA256=${web_console_artifact_sha256}" \
@@ -342,6 +349,7 @@ docker buildx build \
     --build-arg "WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256=${webhook_automation_service_archive_sha256}" \
     --build-arg "WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256=${webhook_automation_service_binary_sha256}" \
     --build-arg "COMPOSE_EXECUTOR_RELEASE_BASE_URL=${compose_executor_release_base_url}" \
+    --build-arg "COMPOSE_EXECUTOR_ASSET_API_URL=${compose_executor_asset_api_url}" \
     --build-arg "COMPOSE_EXECUTOR_VERSION=${compose_executor_version}" \
     --build-arg "COMPOSE_EXECUTOR_COMMIT=${compose_executor_commit}" \
     --build-arg "COMPOSE_EXECUTOR_ARCHIVE_SHA256=${compose_executor_archive_sha256}" \
@@ -874,7 +882,7 @@ docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_versi
     done
     cat <<'"'"'EOF'"'"' | sha256sum -c -
 e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192  /usr/bin/authentication-service.real
-aba99b567196d4c96c4860ad4297107badf7193bea529f0cfd7e190983d14264  /usr/bin/compose-executor.real
+cdcc4ecbf600b39727f4ce5def76e68328662ea9a50ed23a968f3db3c4dc512d  /usr/bin/compose-executor.real
 92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff  /usr/bin/host-provisioner.real
 1d302e8005e35fe56108d704cd3b18e12a0fbbc1871e7b5cd61ac429db37566c  /usr/bin/secret-delivery-api
 90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be  /usr/bin/usage-telemetry-agent

@@ -38,16 +38,16 @@ LB_RUNTIME_MARKERS = [
 PUBLISHED_508 = 'Server `v1.6.508` 已正式發布，封裝 Web Console `1.6.171`。'
 STALE_508_CANDIDATE = 'Server `v1.6.508` candidate packages Web Console `1.6.171`'
 COMPATIBILITY_CODE = 'SERVER_CREATE_RESPONSE_ORDER_COMPATIBILITY_MISSING'
-WEB_SHA = 'd20d4df444a6b9268c9e55918b9922f3857a77e670486c9142c831d21eacce4d'
-WEB_SOURCE = 'feb75265ca36e1cc683924113a8106129ebbc5e3'
-WEB_SBOM_SHA = 'f9a3709c6429b45a91e5a5f60d16d4a69668eeed79260dc8eafffd5d475e3775'
-WEB_LOCK_SHA = 'a9a96e5b38281ed8c5ea8646e203d07fc8c243c18d5f2a4703ab2edbce33c889'
+WEB_SHA = '6bb2f45e6a53dd53c44285a67b68a248fbf2043994067ed7310cc919b361a4d0'
+WEB_SOURCE = '033154722c2e0e8e496532d3c9ae913df4bab027'
+WEB_SBOM_SHA = '77a0e070dc54db54f4afa59b5db26bb249e36c429d608ec788d40aac95056c72'
+WEB_LOCK_SHA = 'a4394748f1de7a773fd91849e0787a1ed1a2c7af186556fb3a8721c49ca5d681'
 CATALOG_COMMIT = '00eec89e5fdeb9728c1c41babccad8b7dfc8b297'
-ENGINE_SHA = '2ad513ed2003c10723779cfb85d5b80276f742430a9605ad82e430ac73294bbb'
-ENGINE_SOURCE = '09b12c0f0e5488fc8d25b3a58a228bec4e0c7da8'
+ENGINE_SHA = '6d1bfdc4bac47253246fb909547d12c15714b1bd153c1d2358911a140c37477b'
+ENGINE_SOURCE = '339ad3f8d86725bdc70f5d90694401107170138a'
 OLD_COORDINATES = {
     'v1.6.587': 'v1.6.521',
-    '1.6.229': '1.6.181',
+    '1.6.230': '1.6.181',
     WEB_SHA: '9199681f2c4311f3fbe8727fcf0f6fa136c9bafe9fbe9d13878c55df442a7a03',
     WEB_SOURCE: '7f2bdad0c90a3241693c2ddd4475202ababba550',
     CATALOG_COMMIT: '7670ffd81d5f0b5570197fb03c7e55b46da45bf3',
@@ -64,7 +64,7 @@ CATALOG_FIELDS = (
     ('LICENSE_SHA256', 'license_sha256', '0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594'),
 )
 LEGACY_ENGINE_COORDINATES = {
-    '0.183.388': '0.183.337',
+    '0.183.389': '0.183.337',
     ENGINE_SHA: '7e45189f2b57097efc7929c04ddf7767aebbe027d1b9f90023aa6711522c5c80',
     ENGINE_SOURCE: 'ba041fe312dfe97fc1e5144af576ddcf1b573d8e',
 }
@@ -73,15 +73,15 @@ EXPECTED = {
     'SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING': (DOCKER, 'ARG SERVER_RELEASE_TAG=v1.6.587'),
     'SERVER_INCREMENTAL_RELEASE_VERSION_MISSING': (DOCKER, 'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"'),
     'SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING': (DOCKER, 'ENV CATTLE_RANCHER_SERVER_VERSION=${SERVER_RELEASE_TAG}'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RELEASE_TAG=1.6.229'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.229.tar.gz'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RELEASE_TAG=1.6.230'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.230.tar.gz'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT_SHA256=' + WEB_SHA),
     'SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_COMMIT=' + WEB_SOURCE),
     'SERVER_INCREMENTAL_WEB_CONSOLE_LOCK_HASH_MISSING': (DOCKER, 'ARG WEB_CONSOLE_LOCK_SHA256=' + WEB_LOCK_SHA),
     'SERVER_INCREMENTAL_WEB_CONSOLE_SBOM_HASH_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RUNTIME_SBOM_SHA256=' + WEB_SBOM_SHA),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING': (BUILD, 'web_console_commit=${WEB_CONSOLE_COMMIT:-' + WEB_SOURCE + '}'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING': (BUILD, 'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.229}'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING': (BUILD, 'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.229.tar.gz}'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING': (BUILD, 'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.230}'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING': (BUILD, 'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.230.tar.gz}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING': (BUILD, 'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-' + WEB_SHA + '}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_LOCK_HASH_MISSING': (BUILD, 'web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-' + WEB_LOCK_SHA + '}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_SBOM_HASH_MISSING': (BUILD, 'web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-' + WEB_SBOM_SHA + '}'),
@@ -107,18 +107,18 @@ for _upper, _lower, _value in CATALOG_FIELDS:
 CREATE_RESPONSE_CODES = ['SERVER_WEB_CREATE_IDENTITY_BUILD_GATE_MISSING','SERVER_WEB_CANONICAL_RECORD_BUILD_GATE_MISSING','SERVER_WEB_CREATE_IDENTITY_RUNTIME_GATE_MISSING','SERVER_WEB_CANONICAL_RECORD_RUNTIME_GATE_MISSING']
 ENGINE_EXPECTED = {
     'SERVER_INCREMENTAL_ENGINE_REPLACEMENT_MISSING': (DOCKER, 'release_engine_marker', (
-        'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.388',
+        'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.389',
         'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar',
         'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=' + ENGINE_SHA,
         'ARG ORCHESTRATION_ENGINE_COMMIT=' + ENGINE_SOURCE,
-        'ARG ORCHESTRATION_ENGINE_VERSION=0.183.388',
+        'ARG ORCHESTRATION_ENGINE_VERSION=0.183.389',
         'sh /usr/share/cattle/verify-engine-archive.sh "${archive}" "${ORCHESTRATION_ENGINE_VERSION}" "${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}"',
         'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar',
         'cattle-app-config-${ORCHESTRATION_ENGINE_VERSION}.jar',
         'ENV CATTLE_CATTLE_VERSION=${ORCHESTRATION_ENGINE_RELEASE_TAG}',
     )),
     'SERVER_INCREMENTAL_ENGINE_BUILD_COORDINATE_MISSING': (BUILD, 'release_engine_build_marker', (
-        'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.388}',
+        'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.389}',
         'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}',
         'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-' + ENGINE_SHA + '}',
         'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-' + ENGINE_SOURCE + '}',
@@ -158,8 +158,8 @@ INCREMENTAL_CONTRACTS = [
             "ARG USAGE_TELEMETRY_AGENT_COMMIT=4ee641bc1273cf582a77609af71d00b72f17b628",
             "ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866",
             "ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be",
-            "ARG COMPOSE_EXECUTOR_COMMIT=dff0561a7d4e667e68daacb249b367d586a3221c",
-            "ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=05e54316867ead7e62cd1ac5b097bcad5b7ce19f2aaf77e815c54cb1d1472767"
+            "ARG COMPOSE_EXECUTOR_COMMIT=10a9279c79542ff7b221715baade93e5e644da90",
+            "ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=8fb49a7da9888c3167f7228934bb7e89250ce0cf0e5b986000b0c85ae3683a2e"
         ]
     ],
     [
@@ -178,10 +178,10 @@ INCREMENTAL_CONTRACTS = [
             "usage_telemetry_agent_commit=${USAGE_TELEMETRY_AGENT_COMMIT:-4ee641bc1273cf582a77609af71d00b72f17b628}",
             "usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866}",
             "usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be}",
-            "compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.43}",
-            "compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-dff0561a7d4e667e68daacb249b367d586a3221c}",
-            "compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-05e54316867ead7e62cd1ac5b097bcad5b7ce19f2aaf77e815c54cb1d1472767}",
-            "compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-aba99b567196d4c96c4860ad4297107badf7193bea529f0cfd7e190983d14264}"
+            "compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.44}",
+            "compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-10a9279c79542ff7b221715baade93e5e644da90}",
+            "compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-8fb49a7da9888c3167f7228934bb7e89250ce0cf0e5b986000b0c85ae3683a2e}",
+            "compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-cdcc4ecbf600b39727f4ce5def76e68328662ea9a50ed23a968f3db3c4dc512d}"
         ]
     ],
     [
@@ -620,7 +620,7 @@ def verify(files, gate=GATE):
         raise AssertionError('CURRENT_VEX_RELEASE_MISMATCH')
     if json.loads(files[VENDOR]).get('release') != 'v1.6.587':
         raise AssertionError('CURRENT_VENDOR_RELEASE_MISMATCH')
-    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.587 base=v1.6.460 engine=0.183.388 web_console=1.6.229 catalog_service=0.20.17 ' not in gate:
+    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.587 base=v1.6.460 engine=0.183.389 web_console=1.6.230 catalog_service=0.20.17 ' not in gate:
         raise AssertionError('CURRENT_SUMMARY_MISMATCH')
     verify_incremental_contract(files, gate)
     verify_load_balancer_contract(files, gate)
@@ -639,7 +639,7 @@ def previous_gate(gate=GATE):
             'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.521"',
         '"$vendor_pending_fixture" v1.6.587 >/dev/null':
             '"$vendor_pending_fixture" v1.6.521 >/dev/null',
-        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.587 base=v1.6.460 engine=0.183.388 web_console=1.6.229 catalog_service=0.20.17 ':
+        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.587 base=v1.6.460 engine=0.183.389 web_console=1.6.230 catalog_service=0.20.17 ':
             'SERVER_API_EXPLORER_PATCH_OK release=v1.6.521 base=v1.6.460 engine=0.183.340 web_console=1.6.181 catalog_service=0.20.12 ',
     })
     for marker, stale_marker in replacements.items():
@@ -885,10 +885,10 @@ class Tests(unittest.TestCase):
     [
         "COMPOSE_EXECUTOR",
         "compose_executor",
-        "0.14.43",
-        "dff0561a7d4e667e68daacb249b367d586a3221c",
-        "05e54316867ead7e62cd1ac5b097bcad5b7ce19f2aaf77e815c54cb1d1472767",
-        "aba99b567196d4c96c4860ad4297107badf7193bea529f0cfd7e190983d14264"
+        "0.14.44",
+        "10a9279c79542ff7b221715baade93e5e644da90",
+        "8fb49a7da9888c3167f7228934bb7e89250ce0cf0e5b986000b0c85ae3683a2e",
+        "cdcc4ecbf600b39727f4ce5def76e68328662ea9a50ed23a968f3db3c4dc512d"
     ],
     [
         "VSPHERE_CLI_BUNDLE",
@@ -1100,9 +1100,10 @@ class Tests(unittest.TestCase):
         final = FILES[DOCKER].rsplit('FROM ${BASE_IMAGE}', 1)[1]
         # The already-flattened base contributes one real layer too.
         self.assertLessEqual(1 + len(re.findall(r'^(RUN|COPY|ADD)\b', final, re.M)), 32)
-        self.assertEqual(len(re.findall(r'^\s+fetch-server-component ', FILES[DOCKER], re.M)), 17)
+        self.assertEqual(len(re.findall(r'^\s+fetch-server-component ', FILES[DOCKER], re.M)), 18)
         self.assertIn('"${release_url%/}/v${version}/${artifact}" "${artifact}" "${archive_sha}"', FILES[DOCKER])
         release_stage = FILES[DOCKER].split('FROM ${ARTIFACT_HELPER_IMAGE} AS release_artifacts', 1)[1].split('FROM ${UBUNTU_SECURITY_IMAGE}', 1)[0]
+        self.assertEqual(len(re.findall(r'^\s+fetch-server-component ', release_stage, re.M)), 17)
         self.assertNotIn('curl -fsSL', release_stage)
         self.assertIn('"catalog-service-${CATALOG_SERVICE_VERSION}-LICENSE.txt" "${CATALOG_SERVICE_LICENSE_SHA256}"', release_stage)
         fetch = (REPO / 'server/artifacts/fetch-server-component.sh').read_text(encoding='utf-8')
@@ -1330,7 +1331,7 @@ class Tests(unittest.TestCase):
 
     def test_previous_server566_engine367_web206_component_pins_cannot_mix(self):
         previous = {
-            'v1.6.587': 'v1.6.566', '1.6.229': '1.6.206', '0.183.388': '0.183.367',
+            'v1.6.587': 'v1.6.566', '1.6.230': '1.6.206', '0.183.389': '0.183.367',
             ENGINE_SHA: '4435aec3508fafeb1b1d88f455b7cef815c026957820b9127a391728130aa86c',
             ENGINE_SOURCE: '7cdacb4aad8cfbee3db239bb602a6a047da31fcf',
             WEB_SHA: 'c385bd89cb9458650259a9fc46baa5a46e60dd6a67fd116a3ed13bcf372a2075',
@@ -1372,12 +1373,12 @@ class Tests(unittest.TestCase):
 
     def test_previous_engine383_unknown_and_missing_coordinates_rejected(self):
         controls = (
-            ('previous383', {'0.183.388': '0.183.383',
+            ('previous383', {'0.183.389': '0.183.383',
                              ENGINE_SHA: 'c1ce37023c9ad6fa648f198189bf9fe0ca087dbd0e15b2b54caf9cfe30f82f9b',
                              ENGINE_SOURCE: '63c6a19c1d03172297c400ab3ad98bde3ed0da08'}),
-            ('unknown', {'0.183.388': '0.183.999',
+            ('unknown', {'0.183.389': '0.183.999',
                          ENGINE_SHA: '0' * 64, ENGINE_SOURCE: '0' * 40}),
-            ('missing', {'0.183.388': '', ENGINE_SHA: '', ENGINE_SOURCE: ''}),
+            ('missing', {'0.183.389': '', ENGINE_SHA: '', ENGINE_SOURCE: ''}),
         )
         for label, coordinates in controls:
             checked = 0
@@ -1400,7 +1401,7 @@ class Tests(unittest.TestCase):
             self.assertEqual(7, checked)
 
     def test_historical_engine340_cannot_be_packaged(self):
-        old = {'0.183.388': '0.183.340',
+        old = {'0.183.389': '0.183.340',
                ENGINE_SHA: '5e5a1b908b43bf3824fc3bb2108bd661cd5199ce9bcfd187e0b18b5608a38cea',
                ENGINE_SOURCE: 'ff0a41e7676211043eb4f755a306a9e2a19abee1'}
         checked = 0
@@ -1422,12 +1423,12 @@ class Tests(unittest.TestCase):
     def test_engine352_actual_war_producer_and_previous351_350_boundary(self):
         candidate = (REPO / 'server/build-component-candidate.sh').read_text(encoding='utf-8')
         self.assertIn('export SERVER_RELEASE_TAG=${SERVER_RELEASE_TAG:-v1.6.587}', candidate)
-        self.assertIn('export ORCHESTRATION_ENGINE_RELEASE_TAG=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.388}', candidate)
+        self.assertIn('export ORCHESTRATION_ENGINE_RELEASE_TAG=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.389}', candidate)
         for old in (
-            {'0.183.388': '0.183.351',
+            {'0.183.389': '0.183.351',
              ENGINE_SHA: 'efd0e826364c551f782b281f081d53cadb48faa7d5c37c2f101e6f9c7d7f9ea6',
              ENGINE_SOURCE: '1befd83278618f9a5b7cdaf96522004dd89918ba'},
-            {'0.183.388': '0.183.350',
+            {'0.183.389': '0.183.350',
              ENGINE_SHA: '637ddaa42cd93c019b4d0813d7053b71dc42797a7f3ac2aa4b10fcc7e304cb31',
              ENGINE_SOURCE: '9c884710e5ea3d4136d80a870d9de9485674f3c3'},
             {ENGINE_SOURCE: '109f2623f00ca3a3a9079414a0f0f8bd23cd1eb2'},
@@ -1450,7 +1451,7 @@ class Tests(unittest.TestCase):
 
 
     def test_immediately_previous_engine341_cannot_be_packaged(self):
-        old = {'0.183.388': '0.183.341',
+        old = {'0.183.389': '0.183.341',
                ENGINE_SHA: '3ede1ad28b7a7e0754c4c953bd486162f7ffe0b2f76ce384ec485632af6b8e6d',
                ENGINE_SOURCE: 'b245cf778479445ded0786d3898b03fea153212e'}
         checked = 0
@@ -1471,7 +1472,7 @@ class Tests(unittest.TestCase):
 
 
     def test_immediately_previous_engine342_cannot_be_packaged(self):
-        old = {'0.183.388': '0.183.342',
+        old = {'0.183.389': '0.183.342',
                ENGINE_SHA: '3533f247392795329c92516a7966510aafbe81a52e3f922e5ec657a2071363b5',
                ENGINE_SOURCE: 'ddae4bb8e12806f70816f5782cd999eccd0f2ce6'}
         checked = 0
@@ -1492,7 +1493,7 @@ class Tests(unittest.TestCase):
 
 
     def test_immediately_previous_engine343_cannot_be_packaged(self):
-        old = {'0.183.388': '0.183.343',
+        old = {'0.183.389': '0.183.343',
                ENGINE_SHA: 'b29c0057f96dbae38bfe2c663c63bbe4c8b5c755b3090f39414aa51f9813025f',
                ENGINE_SOURCE: '5aa9d8978c75a7fe63330453c399a92716d88568'}
         checked = 0
@@ -1513,7 +1514,7 @@ class Tests(unittest.TestCase):
 
 
     def test_immediately_previous_engine344_cannot_be_packaged(self):
-        old = {'0.183.388': '0.183.344',
+        old = {'0.183.389': '0.183.344',
                ENGINE_SHA: 'ffafa4700156b74ec11bcae1b830738e49943f1a3b8b0565895ed6d7726eebf1',
                ENGINE_SOURCE: '72c42e6f2000301fe03ffd2442fb9ee89aee120c'}
         checked = 0
@@ -1533,7 +1534,7 @@ class Tests(unittest.TestCase):
         self.assertGreater(checked, 0)
 
     def test_immediately_previous_engine345_cannot_be_packaged(self):
-        old = {'0.183.388': '0.183.345',
+        old = {'0.183.389': '0.183.345',
                ENGINE_SHA: '780263c4a884527fa80a28b998ad4bda88b9ad6002a687f9f074602ecad46e62',
                ENGINE_SOURCE: 'd27d4ac73fa05ae43b9ae0c32875780e8a3765b1'}
         checked = 0
@@ -1553,7 +1554,7 @@ class Tests(unittest.TestCase):
         self.assertGreater(checked, 0)
 
     def test_immediately_previous_engine346_cannot_be_packaged(self):
-        old = {'0.183.388': '0.183.346',
+        old = {'0.183.389': '0.183.346',
                ENGINE_SHA: '9deeda5758b7f04135441a203092dd0308d90b65d25037b62ef4f9361d3cf806',
                ENGINE_SOURCE: 'e250e4a17958216c30c1f5d0d31f7b6418a968d5'}
         checked = 0
