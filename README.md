@@ -22,6 +22,16 @@ and both OCI attestations passed verification. See the
 [component compatibility](COMPATIBILITY.md#server-v16587-published).
 Deployment and affected native/UI acceptance remain separate and pending.
 
+## Next source candidate
+
+Server `v1.6.588` is a source candidate, not a published image. It targets Engine
+`v0.183.390`, Web Console `1.6.231` / optional Bridge `0.2.33`, and the unchanged
+Compose `0.14.44`. All matching component publication inputs are verified; the normal Server build,
+security, startup, release and deployment checks are still pending.
+The installation examples below continue to use the published Server587.
+See the [candidate note](docs/releases/server-1.6.588.md). Source and component CI
+results do not establish affected native/UI workflow acceptance.
+
 ## Component capabilities
 
 Browser users can select an environment by name and review switching context or

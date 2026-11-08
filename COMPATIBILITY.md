@@ -1,6 +1,23 @@
 # Compatibility Contract
 
 
+## Server v1.6.588 source candidate
+
+The target tuple is Engine `0.183.390`, Web Console `1.6.231` / optional Bridge
+`0.2.33`, and Compose `0.14.44`. All matching public component inputs are
+verified; the normal Server build, scan, startup, publication and deployment
+evidence remain pending.
+This source candidate is not a published image or a native acceptance result.
+
+Service startup command and entry-point changes retain native role/API Key
+ceilings, full configuration comparison and human approval. Ordinary Compose
+Stacks do not request Catalog templates; genuine Catalog upgrade lookups and
+finish actions retain their existing owner. Registry removal is outside this
+candidate. Host API `0.38.9`, Node Agent `0.13.35`, bootstrap Agent `1.2.34`,
+Catalog `0.20.17`, twelve tools and default-off settings remain unchanged.
+See the [candidate note](docs/releases/server-1.6.588.md). Existing publication
+and compatibility records below retain their original identities and limits.
+
 ## Server v1.6.587 published
 
 Server `v1.6.587` packages Engine `0.183.389`, Web Console
