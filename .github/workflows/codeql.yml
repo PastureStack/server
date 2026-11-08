@@ -88,10 +88,9 @@ jobs:
           # Use the same verified official patch archive as the product image.
           archive="$RUNNER_TEMP/temurin-jdk25.tar.gz"
           jdk="$RUNNER_TEMP/temurin-jdk25"
-          curl --fail --silent --show-error --location \
-            --proto '=https' --proto-redir '=https' \
-            --retry 3 --connect-timeout 15 --max-time 600 --output "$archive" \
-            'https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jdk_x64_linux_hotspot_25.0.5_8.tar.gz'
+          bash server/artifacts/fetch-server-component.sh remote \
+            'https://api.github.com/repos/adoptium/temurin25-binaries/releases/assets/665812068' temurin-jdk25.tar.gz \
+            68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb "$archive"
           printf '%s  %s\n' 68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb "$archive" |
             sha256sum --check --strict
           mkdir "$jdk"
@@ -163,10 +162,12 @@ jobs:
             printf '%s' "${values[0]}"
           }
           release_base="$(read_arg ORCHESTRATION_ENGINE_RELEASE_BASE_URL)"
+          asset_api_url="$(read_arg ORCHESTRATION_ENGINE_ASSET_API_URL)"
           release_tag="$(read_arg ORCHESTRATION_ENGINE_RELEASE_TAG)"
           artifact="$(read_arg ORCHESTRATION_ENGINE_ARTIFACT)"
           expected_sha256="$(read_arg ORCHESTRATION_ENGINE_ARTIFACT_SHA256)"
           test "$release_base" = 'https://github.com/PastureStack/orchestration-engine/releases/download'
+          [[ "$asset_api_url" =~ ^https://api\.github\.com/repos/PastureStack/orchestration-engine/releases/assets/[0-9]+$ ]]
           [[ "$release_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
           test "$artifact" = cattle.jar
           [[ "$expected_sha256" =~ ^[0-9a-f]{64}$ ]]
@@ -174,10 +175,8 @@ jobs:
           build_root="$RUNNER_TEMP/codeql-java-build"
           mkdir -p "$build_root/lib" "$build_root/classes"
           archive="$build_root/cattle.jar"
-          curl --fail --silent --show-error --location \
-            --proto '=https' --proto-redir '=https' \
-            --retry 3 --connect-timeout 15 --max-time 600 \
-            --output "$archive" "$release_base/$release_tag/$artifact"
+          bash server/artifacts/fetch-server-component.sh remote \
+            "$asset_api_url" "$artifact" "$expected_sha256" "$archive"
           printf '%s  %s\n' "$expected_sha256" "$archive" | sha256sum --check --strict
           unzip -j -q "$archive" 'WEB-INF/lib/*.jar' -d "$build_root/lib"
           compgen -G "$build_root/lib/*.jar" > /dev/null
