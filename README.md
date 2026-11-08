@@ -11,14 +11,25 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current release
+## Current source candidate
 
-[Server `v1.6.586`](https://github.com/PastureStack/server/releases/tag/v1.6.586)
-packages Engine `v0.183.388`, Web Console `1.6.228` / optional Bridge `0.2.30`,
+Server `v1.6.587` is a prepared source candidate, not a published image.
+The current published baseline is
+[Server `v1.6.586`](https://github.com/PastureStack/server/releases/tag/v1.6.586),
+which packages Engine `v0.183.388`, Web Console `1.6.228` / optional Bridge `0.2.30`,
 Host API `0.38.9`, Node Agent `0.13.35`, Catalog `0.20.17` and Compose `0.14.43`.
-The image is published; its release workflow passed source, build, security,
-startup and restart checks. See the [release note](docs/releases/server-1.6.586.md)
-and [component compatibility](COMPATIBILITY.md#server-v16586-published).
+See its [published release note](docs/releases/server-1.6.586.md).
+The next candidate changes only the Web/optional Bridge component pair; its
+exact versions and source pins are in the [candidate note](docs/releases/server-1.6.587.md)
+and [component compatibility](COMPATIBILITY.md#server-v16587-prepared-not-published).
+Server build, publication, deployment and affected native/UI workflows remain
+pending. Web's final anonymous-byte and cryptographic publication verification
+must complete before assembly.
+
+Browser users can select an environment by name and review switching context or
+setting their own default environment. These client/session and account-preference
+changes require human confirmation; the fixed-profile Bridge hands off to the
+browser. They do not create Engine processes or prove workload completion.
 
 Hosts support human-reviewed scheduling activation/deactivation without stopping
 workloads or removing Hosts. Optional AI collaboration retains native roles,
@@ -58,20 +69,22 @@ instance count. Advanced forms and other resource workflows remain pending.
 The complete scoped lifecycle workflow remains unaccepted; review
 the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation)
 before enabling these optional changes.
-See the [release note](docs/releases/server-1.6.586.md) and
+See the [release note](docs/releases/server-1.6.587.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
 ## Quick start
 
-These examples use the published numeric version tag. Keep all three named volumes.
+These examples target the prepared numeric version tag; run them only after its official release
+and image have been published and read back. This candidate is not yet available
+from GHCR. Keep all three named volumes.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.586
+  ghcr.io/pasturestack/server:v1.6.587
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -79,7 +92,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.586
+    image: ghcr.io/pasturestack/server:v1.6.587
     restart: unless-stopped
     ports:
       - "8080:8080"

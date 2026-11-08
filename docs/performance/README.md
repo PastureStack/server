@@ -8,13 +8,14 @@ The following example is appropriate as a starting point for a dedicated
 16-vCPU host with about 32 GiB of RAM. It is not a universal performance
 profile; measure the real workload before increasing it further.
 
-The example uses the published Server `v1.6.586` numeric tag. Its original
-release workflow passed source, build, security and startup/restart checks.
-Deployment and workload acceptance remain environment-specific.
-See the [release note](../releases/server-1.6.586.md) and the
-[current release](../../README.md#current-release) for component versions and
-release details. Preserve the existing runtime overrides and all three named
-volumes during an upgrade or restart.
+The example targets the prepared Server `v1.6.587` numeric tag; run it only after its official release and image have been published and read back.
+This candidate is not yet available from GHCR. Server build/publication and
+Web final publication verification are pending. Deployment and workload
+acceptance remain environment-specific. See the
+[candidate note](../releases/server-1.6.587.md) and the
+[current source candidate](../../README.md#current-release) for components.
+Preserve existing runtime overrides and all three named volumes during an
+upgrade or restart.
 
 This release retains the same performance-setting contract. Upgrade or restore
 evidence is not a performance benchmark; measure the actual workload.
@@ -22,7 +23,7 @@ evidence is not a performance benchmark; measure the actual workload.
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.586
+    image: ghcr.io/pasturestack/server:v1.6.587
     restart: unless-stopped
     ports:
       - "8080:8080"
