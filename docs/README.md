@@ -6,14 +6,10 @@ operator deployment and business-workflow acceptance are recorded separately.
 
 ## Release notes
 
-- [Current Server v1.6.586](releases/server-1.6.586.md) — Engine `0.183.388` /
-  Web Console `1.6.228` / optional Bridge `0.2.30`. Immutable publication and
+- [Current Server v1.6.587](releases/server-1.6.587.md) — Engine `0.183.389` /
+  Web Console `1.6.230` / optional Bridge `0.2.32`. Immutable publication and
   original workflow checks are complete; deployment-specific acceptance is
   recorded separately.
-- [Server v1.6.587 source candidate](releases/server-1.6.587.md) — Engine
-  `0.183.389`, Web Console `1.6.230` / optional Bridge `0.2.32` and Compose
-  `0.14.44`. Matching component publication is verified; Server build,
-  publication and runtime acceptance remain pending.
 - [Release archive](RELEASE-ARCHIVE.md) — historical published and candidate notes retain
   their original evidence, acceptance limits and rollback context; these are not
   the current installation guide.
