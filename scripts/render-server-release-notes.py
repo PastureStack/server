@@ -17,6 +17,15 @@ def render(source, tag, digest, revision):
     if source.count(heading) != 1:
         raise ValueError('Missing component evidence boundary')
     body = heading + source.split(heading, 1)[1]
+    # Only candidate-boundary text is discarded by rendering. Do not publish a
+    # contradictory prospective Server status from the retained evidence body.
+    pending_server = (r'\bServer build(?:,\s+publication| and publication)'
+                      r'(?:,\s+deployment and affected native/UI workflows)?'
+                      r'\s+(?:remain|remains|is|are)\s+pending\b')
+    for paragraph in re.split(r'\n[ \t]*\n', body):
+        if re.search(pending_server, ' '.join(paragraph.split()), re.IGNORECASE):
+            raise ValueError('Server build/publication pending text must move to '
+                             'Candidate boundary before ## Verified component inputs')
     return (f'# Server {tag}\n\n'
             f'Published image: `ghcr.io/pasturestack/server:{tag}@{digest}`.\n\n'
             f'Source commit: `{revision}`.\n\n'

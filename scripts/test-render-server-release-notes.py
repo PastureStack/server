@@ -54,6 +54,36 @@ class PublicationNotes(unittest.TestCase):
         self.assertNotIn('Not published.', result)
         self.assertNotIn('candidate', result)
 
+    def test_prospective_server_build_publication_pending_cannot_enter_published_body(self):
+        # Exact source6ff failure: the retained payload contradicted the new
+        # publication prefix. Whitespace wrapping does not change its meaning.
+        actual = ('Server build, publication, deployment and affected native/UI workflows remain\n'
+                  'pending.')
+        heading = '## Verified component inputs\n'
+        prefix = self.source.split(heading, 1)[0]
+        for status in (actual, actual.replace('\n', ' '),
+                       'Server build and publication are pending.'):
+            source = self.source + '\n' + status + '\n'
+            with self.subTest(status=status):
+                with self.assertRaisesRegex(ValueError, 'Candidate boundary before ## Verified component inputs'):
+                    notes.render(source, 'v1.6.546', 'sha256:' + 'a' * 64, 'b' * 40)
+                self.assertTrue(source.endswith(status + '\n'))
+        # A candidate-only statement belongs above the evidence boundary.
+        moved = prefix + '## Candidate boundary\n\n' + actual + '\n\n' + heading + '\n- Exact input.\n'
+        result = notes.render(moved, 'v1.6.546', 'sha256:' + 'a' * 64, 'b' * 40)
+        self.assertNotIn(actual, result)
+        self.assertTrue(result.endswith(heading + '\n- Exact input.\n'))
+
+    def test_native_and_deployment_pending_remain_exact_publication_payload(self):
+        body = ('Server deployment and affected native/UI workflows remain\n'
+                'pending.\n\n'
+                'Native acceptance remains pending; component publication does not prove it.\n\n'
+                'Server build and publication are complete; deployment remains pending.\n')
+        source = self.source + '\n' + body
+        result = notes.render(source, 'v1.6.546', 'sha256:' + 'a' * 64, 'b' * 40)
+        self.assertTrue(result.endswith(body))
+        self.assertTrue(result.endswith('## Verified component inputs\n\n- Exact input.\n\n' + body))
+
     def test_wrong_or_missing_identity_rejected(self):
         for tag, digest, revision in (
             ('v1.6.545', 'sha256:' + 'a' * 64, 'b' * 40),
