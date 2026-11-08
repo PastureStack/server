@@ -13,24 +13,14 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.587`](https://github.com/PastureStack/server/releases/tag/v1.6.587)
-packages Engine `v0.183.389`, Web Console `1.6.230` / optional Bridge `0.2.32`,
+[Server `v1.6.588`](https://github.com/PastureStack/server/releases/tag/v1.6.588)
+packages Engine `v0.183.390`, Web Console `1.6.231` / optional Bridge `0.2.33`,
 Host API `0.38.9`, Node Agent `0.13.35`, Catalog `0.20.17` and Compose `0.14.44`.
 The immutable image, all 35 anonymous release assets, native release attestation
 and both OCI attestations passed verification. See the
-[release note](docs/releases/server-1.6.587.md) and
-[component compatibility](COMPATIBILITY.md#server-v16587-published).
-Deployment and affected native/UI acceptance remain separate and pending.
-
-## Next source candidate
-
-Server `v1.6.588` is a source candidate, not a published image. It targets Engine
-`v0.183.390`, Web Console `1.6.231` / optional Bridge `0.2.33`, and the unchanged
-Compose `0.14.44`. All matching component publication inputs are verified; the normal Server build,
-security, startup, release and deployment checks are still pending.
-The installation examples below continue to use the published Server587.
-See the [candidate note](docs/releases/server-1.6.588.md). Source and component CI
-results do not establish affected native/UI workflow acceptance.
+[release note](docs/releases/server-1.6.588.md) and
+[component compatibility](COMPATIBILITY.md#server-v16588-published).
+Deployment-specific workflow acceptance is recorded separately from image qualification.
 
 ## Component capabilities
 
@@ -77,7 +67,7 @@ instance count. Advanced forms and other resource workflows remain pending.
 The complete scoped lifecycle workflow remains unaccepted; review
 the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation)
 before enabling these optional changes.
-See the [release note](docs/releases/server-1.6.587.md) and
+See the [release note](docs/releases/server-1.6.588.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
@@ -90,7 +80,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.587
+  ghcr.io/pasturestack/server:v1.6.588
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -98,7 +88,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.587
+    image: ghcr.io/pasturestack/server:v1.6.588
     restart: unless-stopped
     ports:
       - "8080:8080"
