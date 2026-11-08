@@ -1,10 +1,10 @@
-# Server v1.6.586 candidate
+# Server v1.6.586
 
-## Candidate boundary
+Published image: `ghcr.io/pasturestack/server:v1.6.586@sha256:8c5f2e3a15bb6f3b3720b835a50ed6a8c34b03c2ced71e8aa27a2bf5b059fd52`.
 
-Prepared source only; no Server image or release has been published.
-Server v1.6.585 remains the published installation. The matching components below
-are published; this Server must still complete its normal build and publication.
+Source commit: `6ffef66fda7190fe59cefd18224a6621b2a558cf`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
@@ -32,8 +32,7 @@ obtaining a fresh human-reviewed plan. No automatic resubmission is introduced.
 
 Existing Key/role ceilings, twelve tools, independent default-off flags,
 multistage build and flatten pipeline, package pins and security scope remain.
-Server build, publication, deployment and affected native/UI workflows remain
-pending. Component publication does not establish complete frontend coverage.
+Server deployment and affected native/UI workflows remain pending. Component publication does not establish complete frontend coverage.
 Preserve named volumes, configuration, origin, performance settings, restart
 policy, AppArmor and firewall behavior; retain the prior image and database backup.
 

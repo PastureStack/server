@@ -1,17 +1,30 @@
 # Compatibility Contract
 
-## Server v1.6.586 prepared, not published
+## Server v1.6.586 published
 
-The candidate requires Engine `0.183.388`, Web Console `1.6.228` and optional
-Bridge `0.2.30`. These component publications are complete; Server assembly
-and publication remain pending. Host API `0.38.9`,
-Go Node Agent `0.13.35` and bootstrap Agent `1.2.34` remain unchanged.
+Server `v1.6.586` packages Engine `0.183.388`, Web Console `1.6.228` and optional
+Bridge `0.2.30`. Host API `0.38.9`, Go Node Agent `0.13.35`, bootstrap Agent
+`1.2.34`, Catalog `0.20.17` and Compose `0.14.43` remain unchanged.
+
+### Publication identity and verification
+
+- Immutable [release 438067205](https://github.com/PastureStack/server/releases/tag/v1.6.586)
+  contains 35 assets.
+- Source/tag: `6ffef66fda7190fe59cefd18224a6621b2a558cf`;
+  tree: `a7022da1829e38f9e2a98c190d5507adbc959deb`.
+- [Original image publisher 42453047661](https://github.com/PastureStack/server/actions/runs/42453047661)
+  passed source, build, security, startup and restart checks and published
+  `ghcr.io/pasturestack/server:v1.6.586@sha256:8c5f2e3a15bb6f3b3720b835a50ed6a8c34b03c2ced71e8aa27a2bf5b059fd52`.
+- Independent Server verification of 35 anonymous assets and two OCI attestations,
+  deployment and affected native/UI workflows remain pending. Publication is not
+  deployment or complete frontend acceptance.
+
 Host scheduling changes do not stop workloads. Cookie lifecycle completion must
 prove its own native processes and all existing readiness/configuration checks;
 Key, legacy native-client, human-review and default-off boundaries remain unchanged.
-Server585 remains the published installation. See the [candidate note](docs/releases/server-1.6.586.md).
+See the [release note](docs/releases/server-1.6.586.md) for component evidence.
 
-## Current component compatibility
+## Server v1.6.585 historical compatibility
 
 [Server `v1.6.585`](https://github.com/PastureStack/server/releases/tag/v1.6.585) packages Engine
 `0.183.387`, Web Console `1.6.227` / optional Bridge `0.2.29`, Host API `0.38.9`,

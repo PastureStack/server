@@ -11,52 +11,23 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current source candidate
+## Current release
 
-Server `v1.6.586` is a prepared source candidate, not a published image.
-The published installation remains
-[Server `v1.6.585`](https://github.com/PastureStack/server/releases/tag/v1.6.585),
-which packages Engine `v0.183.387`, Web Console `1.6.227` / optional Bridge `0.2.29`,
+[Server `v1.6.586`](https://github.com/PastureStack/server/releases/tag/v1.6.586)
+packages Engine `v0.183.388`, Web Console `1.6.228` / optional Bridge `0.2.30`,
 Host API `0.38.9`, Node Agent `0.13.35`, Catalog `0.20.17` and Compose `0.14.43`.
-See the [published release note](docs/releases/server-1.6.585.md) and the
-[candidate note](docs/releases/server-1.6.586.md). Server build, publication,
-deployment and affected business acceptance remain pending for the candidate.
+The image is published; its release workflow passed source, build, security,
+startup and restart checks. See the [release note](docs/releases/server-1.6.586.md)
+and [component compatibility](COMPATIBILITY.md#server-v16586-published).
 
-## Candidate assembly
-
-Engine `v0.183.388` and Web Console `1.6.228` / Bridge `0.2.30` are published.
-Server `v1.6.586` assembles these components with unchanged Host API `0.38.9`,
-Node Agent `0.13.35`, Catalog `0.20.17` and Compose `0.14.43`.
-
-Ordinary Stacks support reviewed Group, name and description changes.
-Ordinary Services support reviewed named/plain dependency links and same-image
-ports/health-check upgrades. Optional tools can create builtin-local unallocated
-logical Volumes and read bounded Container application logs under native LOGS
-authority. Registry activation/deactivation excludes credential writes. These are
-partial workflows; physical storage, advanced settings and interactive terminals
-retain their normal operator interfaces.
-
-Hosts support reviewed custom-name reset to the existing hostname. Existing
-Container public-port bindings and link targets can be edited with human
-confirmation. These edits affect the current Container and preserve its parent
-Service's launch configuration. Activating Driver Services follow the native
-removal lifecycle.
-
-This candidate adds reviewed Host scheduling activation/deactivation without
-stopping workloads or removing Hosts. Failed or unconfirmed operations retain
-a visible safe next step; a stale terminal result cannot clear a newer review.
-
-Optional AI tools support bounded resource discovery, human-reviewed changes and
-an opt-in Stack dependency view. Native roles, API Key limits and the four
-independent default-off settings remain authoritative. Dependency results can be
-partial; an empty graph does not establish permission to stop or remove resources.
-
-See the [release note](docs/releases/server-1.6.586.md),
-[component compatibility](COMPATIBILITY.md#server-v16586-prepared-not-published) and
+Hosts support human-reviewed scheduling activation/deactivation without stopping
+workloads or removing Hosts. Optional AI collaboration retains native roles,
+API Key limits and four independent default-off settings; see the
 [acceptance boundaries](docs/ai-collaboration.md#workload-retirement-limitation).
-Deployment and affected business-workflow acceptance remain pending.
+Deployment-specific acceptance remains separate from these release checks.
 
-Personal API Keys remain available without an accessible environment. See the [Host guide](docs/hosts/README.md) before enrolling a host.
+Personal API Keys remain available without an accessible environment.
+See the [Host guide](docs/hosts/README.md) before enrolling a host.
 
 ## API Keys
 
@@ -93,9 +64,7 @@ supported operations, audit records and rollback.
 
 ## Quick start
 
-These candidate examples use a numeric version tag.
-This candidate is not yet available from GHCR; run them only after its official release
-and image have been published and read back. Keep all three named volumes.
+These examples use the published numeric version tag. Keep all three named volumes.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
