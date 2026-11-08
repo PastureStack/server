@@ -11,12 +11,16 @@ ADAPTER = SCRIPT.split(MARKER, 1)[1].split("python3 - <<'PY'\n", 1)[1].split('\n
 INSTALL_IMAGE = 'ghcr.io/pasturestack/server:v1.6.498'
 PUBLISHED_IMAGE = INSTALL_IMAGE + '@sha256:bd8671e99fbf3661f91d6667f6cb04b16ade89a8d463ae872ffd84ce1e65a6e7'
 PERFORMANCE = 'docs/performance/README.md'
+DOCS_INDEX = 'docs/README.md'
 FILES = {
     'README.md': ('## Current release\n\n'
                   '[Server v1.6.498](https://github.com/PastureStack/server/releases/tag/v1.6.498)\n'
+                  'Engine `v0.183.326`, Web Console `1.6.149` / optional Bridge `0.2.17`.\n'
                   '[release note](docs/releases/server-1.6.498.md)\n\n## Quick start\n\n'
                   '```sh\ndocker run\n  ' + INSTALL_IMAGE + '\n```\n\n```yaml\nservices:\n  server:\n    image: ' + INSTALL_IMAGE + '\n```\n'),
     PERFORMANCE: '```yaml\nservices:\n  server:\n    image: ' + INSTALL_IMAGE + '\n```\n',
+    DOCS_INDEX: ('- [Current Server v1.6.498](releases/server-1.6.498.md) — '
+                 'Engine `0.183.326` / Web Console `1.6.149` / optional Bridge `0.2.17`.\n'),
     'COMPATIBILITY.md': 'Server v1.6.499 preparing; no published digest.\nPublished Server v1.6.498\n' + PUBLISHED_IMAGE,
     'docs/releases/server-1.6.498.md': '# Server v1.6.498\n\nOfficially published: ' + PUBLISHED_IMAGE,
 }
@@ -41,11 +45,28 @@ CANDIDATE_FILES['docs/releases/server-1.6.537.md'] = (
     'Prepared source only; no Server image or release has been published.\n')
 
 
+
+def verify_docs_entry(files):
+    context = re.search(r'(?ms)^## Current (?:release|source candidate)\n(.*?)(?=^## |\Z)', files['README.md'])
+    tags = re.findall(r'https://github\.com/PastureStack/server/releases/tag/(v[0-9]+\.[0-9]+\.[0-9]+)(?=[)\s])', context[1] if context else '')
+    entries = re.findall(r'(?ms)^- \[Current Server (v[0-9]+\.[0-9]+\.[0-9]+)\]\(([^)]+)\)(.*?)(?=^- |\Z)', files.get(DOCS_INDEX, ''))
+    if len(tags) != 1 or len(entries) != 1 or entries[0][:2] != (tags[0], 'releases/server-' + tags[0][1:] + '.md'):
+        raise SystemExit('SERVER_CURRENT_DOCS_INDEX_MISMATCH')
+    for pattern in (r'\bEngine\s+`?v?([0-9]+\.[0-9]+\.[0-9]+)`?',
+                    r'\bWeb Console\s+`?([0-9]+\.[0-9]+\.[0-9]+)`?',
+                    r'\b[Bb]ridge\s+`?([0-9]+\.[0-9]+\.[0-9]+)`?'):
+        current = re.findall(pattern, context[1])
+        indexed = re.findall(pattern, entries[0][2])
+        if len(current) != 1 or indexed != current:
+            raise SystemExit('SERVER_CURRENT_DOCS_COMPONENTS_MISMATCH')
+
+
 def verify(files):
     def read(file, **_):
         return files[file.as_posix()]
     with patch.object(pathlib.Path, 'read_text', read), patch('builtins.print'):
         exec(compile(ADAPTER, 'published-install-contract', 'exec'), {})
+    verify_docs_entry(files)
 
 
 class Tests(unittest.TestCase):
@@ -53,7 +74,8 @@ class Tests(unittest.TestCase):
         readme = (REPO / 'README.md').read_text(encoding='utf-8')
         tags = set(re.findall(r'https://github\.com/PastureStack/server/releases/tag/(v[0-9]+\.[0-9]+\.[0-9]+)', readme))
         files = {'README.md': readme, 'COMPATIBILITY.md': (REPO / 'COMPATIBILITY.md').read_text(encoding='utf-8'),
-                 PERFORMANCE: (REPO / PERFORMANCE).read_text(encoding='utf-8')}
+                 PERFORMANCE: (REPO / PERFORMANCE).read_text(encoding='utf-8'),
+                 DOCS_INDEX: (REPO / DOCS_INDEX).read_text(encoding='utf-8')}
         note_paths = {'docs/releases/server-' + tag[1:] + '.md' for tag in tags}
         note_paths.update(re.findall(r'\((docs/releases/server-[0-9.]+\.md)\)', readme))
         for name in note_paths:
@@ -61,6 +83,21 @@ class Tests(unittest.TestCase):
             if notes.is_file():
                 files[name] = notes.read_text(encoding='utf-8')
         verify(files)
+        docs = files[DOCS_INDEX]
+        mutations = [
+            (re.sub(r'(?<=Current Server )v[0-9]+\.[0-9]+\.[0-9]+', 'v1.6.583', docs, count=1), 'DOCS_INDEX_MISMATCH'),
+            (re.sub(r'(?<=releases/server-)[0-9]+\.[0-9]+\.[0-9]+', '1.6.583', docs, count=1), 'DOCS_INDEX_MISMATCH'),
+            ('', 'DOCS_INDEX_MISMATCH'),
+        ]
+        for pattern in (r'(Engine\s+`?v?)[0-9]+\.[0-9]+\.[0-9]+',
+                        r'(Web Console\s+`?)[0-9]+\.[0-9]+\.[0-9]+',
+                        r'([Bb]ridge\s+`?)[0-9]+\.[0-9]+\.[0-9]+'):
+            mutations.append((re.sub(pattern, lambda match: match[1] + '0.0.0', docs, count=1), 'DOCS_COMPONENTS_MISMATCH'))
+        for changed, code in mutations:
+            with self.subTest(docs=changed):
+                stale = dict(files); stale[DOCS_INDEX] = changed
+                with self.assertRaisesRegex(SystemExit, code):
+                    verify(stale)
 
     def test_explicit_537_candidate_keeps_publication_evidence_and_numeric_examples(self):
         verify(CANDIDATE_FILES)
@@ -98,6 +135,7 @@ class Tests(unittest.TestCase):
         files = dict(FILES)
         files['README.md'] = files['README.md'].replace('v1.6.498', 'v1.6.537').replace('server-1.6.498.md', 'server-1.6.537.md')
         files[PERFORMANCE] = files[PERFORMANCE].replace('v1.6.498', 'v1.6.537')
+        files[DOCS_INDEX] = files[DOCS_INDEX].replace('v1.6.498', 'v1.6.537').replace('server-1.6.498.md', 'server-1.6.537.md')
         image = CANDIDATE_IMAGE + '@sha256:' + 'a' * 64
         files['COMPATIBILITY.md'] += '\n' + image
         files['docs/releases/server-1.6.537.md'] = '# Server v1.6.537\n\nOfficially published: ' + image
@@ -203,6 +241,7 @@ class Tests(unittest.TestCase):
         next_image = 'ghcr.io/pasturestack/server:v1.6.500@sha256:' + 'a' * 64
         files['README.md'] = files['README.md'].replace('v1.6.498', 'v1.6.500').replace('server-1.6.498.md', 'server-1.6.500.md')
         files[PERFORMANCE] = files[PERFORMANCE].replace('v1.6.498', 'v1.6.500')
+        files[DOCS_INDEX] = files[DOCS_INDEX].replace('v1.6.498', 'v1.6.500').replace('server-1.6.498.md', 'server-1.6.500.md')
         files['COMPATIBILITY.md'] += '\n' + next_image
         files['docs/releases/server-1.6.500.md'] = '# Server v1.6.500\n\n' + next_image
         verify(files)
