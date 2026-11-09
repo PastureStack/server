@@ -573,7 +573,7 @@ python3 scripts/test-web-console-sbom.py
 python3 server/security/test_web_console_sbom_scan.py
 
 require_marker "$release_dockerfile" \
-    'ARG SERVER_RELEASE_TAG=v1.6.591' \
+    'ARG SERVER_RELEASE_TAG=v1.6.592' \
     SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"' \
@@ -752,7 +752,7 @@ for incremental_producer_marker in \
     'ARG USAGE_TELEMETRY_AGENT_COMMIT=4ee641bc1273cf582a77609af71d00b72f17b628' \
     'ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866' \
     'ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be' \
-    'ARG COMPOSE_EXECUTOR_COMMIT=10a9279c79542ff7b221715baade93e5e644da90' \
+    'ARG COMPOSE_EXECUTOR_COMMIT=e10eee523467ef2aa75a8bbdf290c2f5c505fbdc' \
     'ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=090b160dce006da93220455aec27fcddcd7e0f850ac5d82bf018a869d636d366'; do
     require_marker "$release_dockerfile" "$incremental_producer_marker" \
         SERVER_INCREMENTAL_RUNTIME_PRODUCER_PIN_MISSING
@@ -771,7 +771,7 @@ for incremental_producer_build_marker in \
     'usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866}' \
     'usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be}' \
     'compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.45}' \
-    'compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-10a9279c79542ff7b221715baade93e5e644da90}' \
+    'compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-e10eee523467ef2aa75a8bbdf290c2f5c505fbdc}' \
     'compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-090b160dce006da93220455aec27fcddcd7e0f850ac5d82bf018a869d636d366}' \
     'compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-4b1d0ec194f7301467c5fb4b12ce602390bad6e34768a08e1370bffb76a8c8f7}'; do
     require_marker "$build_script" "$incremental_producer_build_marker" \
@@ -1141,10 +1141,10 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.591}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.592}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.591}' \
+    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.592}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING
 require_marker "$build_script" \
     'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"' \
@@ -1696,10 +1696,10 @@ fi
 if grep -Fxq '## Current source candidate' README.md; then
     for candidate_readme_marker in \
         '<a id="current-release"></a>' \
-        'Server `v1.6.591` is a prepared source candidate, not a published image.' \
+        'Server `v1.6.592` is a prepared source candidate, not a published image.' \
         'run them only after its official release' \
         'This candidate is not yet available' \
-        'ghcr.io/pasturestack/server:v1.6.591'; do
+        'ghcr.io/pasturestack/server:v1.6.592'; do
         require_marker README.md "$candidate_readme_marker" \
             SERVER_CURRENT_CANDIDATE_README_MISSING
     done
@@ -2307,7 +2307,7 @@ done
 jq -e '
   ["CVE-2026-107928","CVE-2026-107929","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"] as $curl_fixed_cves
   |   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.591"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.592"
   and (.statements | length) == 57
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -2357,7 +2357,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.591 >/dev/null
+    "$vendor_pending_fixture" v1.6.592 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -2457,4 +2457,4 @@ require_marker server/artifacts/fetch-server-component.sh "--header 'Accept: app
 require_marker server/artifacts/fetch-server-component.sh '--max-filesize 1073741824' SERVER_OFFICIAL_ASSET_SIZE_CAP_MISSING
 require_marker server/artifacts/fetch-server-component.sh 'Component response must contain the complete asset' SERVER_OFFICIAL_ASSET_FULL_RANGE_CHECK_MISSING
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.591 base=v1.6.460 engine=0.183.391 web_console=1.6.233 catalog_service=0.20.17 webhook_automation_service=0.10.5 authentication_service=0.4.46 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.592 base=v1.6.460 engine=0.183.391 web_console=1.6.233 catalog_service=0.20.17 webhook_automation_service=0.10.5 authentication_service=0.4.46 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'

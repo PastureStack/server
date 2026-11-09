@@ -4,12 +4,14 @@ import hashlib
 import contextlib
 import importlib.util
 import io
+import json
 import os
 from pathlib import Path
 import re
 import shlex
 import shutil
 import subprocess
+import sys
 import tarfile
 import tempfile
 import unittest
@@ -108,6 +110,33 @@ class ComponentRecipeTest(unittest.TestCase):
         docker = commands / "docker"
         docker.write_text('#!/bin/sh\nprintf "%s\\n" "$@" >"$FIXTURE_TRACE"\nexit 88\n')
         docker.chmod(0o755)
+        # These opaque test assets are not official release bytes. Keep the
+        # real identity validator, but give this isolated command fixture its
+        # own explicitly synthetic review instead of modifying a real review.
+        review = json.loads((ROOT / 'server/security/reviews/compose-0.14.45-openpgp.json').read_text())
+        artifact = review['artifact']
+        environment['COMPOSE_EXECUTOR_COMMIT'] = artifact['source']
+        environment['COMPOSE_EXECUTOR_BINARY_SHA256'] = artifact['binarySha256']
+        artifact['releaseVersion'] = environment['COMPOSE_EXECUTOR_VERSION']
+        artifact['releaseGzipSha256'] = environment['COMPOSE_EXECUTOR_ARCHIVE_SHA256']
+        fixture_review = path / 'synthetic-compose-review.json'
+        fixture_review.write_text(json.dumps(review))
+        review_driver = path / 'review-driver.py'
+        review_driver.write_text('import importlib.util, json, os, sys\n'
+                                'args = sys.argv[1:]\n'
+                                'if args[0] == "server/security/check_compose_release_identity.py":\n'
+                                '    spec = importlib.util.spec_from_file_location("identity", ' + repr(str(ROOT / 'server/security/check_compose_release_identity.py')) + ')\n'
+                                '    owner = importlib.util.module_from_spec(spec); spec.loader.exec_module(owner)\n'
+                                '    with open(os.environ["FIXTURE_COMPOSE_REVIEW"]) as stream: review = json.load(stream)\n'
+                                '    owner.validate(review, **{key: args[args.index("--" + key) + 1] for key in ("version", "source", "archive", "binary")})\n'
+                                '    sys.exit(0)\n'
+                                'os.execv(sys.executable, [sys.executable, *args])\n')
+        python_command = commands / 'python3'
+        python_command.write_text('#!/bin/sh\nexec "$FIXTURE_PYTHON" "$FIXTURE_REVIEW_DRIVER" "$@"\n')
+        python_command.chmod(0o755)
+        environment.update(FIXTURE_PYTHON=sys.executable,
+                           FIXTURE_REVIEW_DRIVER=str(review_driver),
+                           FIXTURE_COMPOSE_REVIEW=str(fixture_review))
         environment.update(PATH=str(commands) + os.pathsep + environment["PATH"],
                            PASTURESTACK_COMPONENT_ARTIFACT_DIR=str(assets),
                            PASTURESTACK_SERVER_REVISION=hashlib.sha1(b"unit-fixture-server").hexdigest(),

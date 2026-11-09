@@ -1,7 +1,7 @@
 # Server performance settings
 
 Candidate example: run it only after its official release and image have been published and read back.
-Server 1.6.591 is not yet available from GHCR. See the [candidate note](../releases/server-1.6.591.md).
+Server 1.6.592 is not yet available from GHCR. See the [candidate note](../releases/server-1.6.592.md).
 
 PastureStack Server supports typed performance settings through Docker or
 Docker Compose environment variables. These settings are optional: omitting
@@ -24,7 +24,7 @@ evidence is not a performance benchmark; measure the actual workload.
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.591
+    image: ghcr.io/pasturestack/server:v1.6.592
     restart: unless-stopped
     ports:
       - "8080:8080"

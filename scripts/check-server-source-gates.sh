@@ -63,6 +63,7 @@ run_gate graphite_exporter_artifact scripts/check-server-graphite-exporter-artif
 run_gate s6_overlay_artifact scripts/check-server-s6-overlay-artifact.sh
 run_gate runtime_license_bundle scripts/check-server-runtime-license-bundle.sh
 run_gate compose_executor_artifact scripts/check-server-compose-executor-artifact.sh
+run_gate compose_release_identity python3 server/security/test_compose_release_identity.py
 run_gate host_provisioner_artifact scripts/check-server-host-provisioner-artifact.sh
 run_gate machine_driver_bundle_artifact scripts/check-server-machine-driver-bundle-artifact.sh
 run_gate vsphere_cli_bundle_artifact scripts/check-server-vsphere-cli-bundle-artifact.sh
