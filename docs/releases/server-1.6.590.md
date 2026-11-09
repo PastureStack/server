@@ -1,9 +1,10 @@
-# Server v1.6.590 candidate
+# Server v1.6.590
 
-## Candidate boundary
+Published image: `ghcr.io/pasturestack/server:v1.6.590@sha256:74ccf78fc21ac8becb152c30fc5d50a6b32a2527a66389084939d2e4fe02c1b7`.
 
-Not published. Normal Server source checks, image qualification and publication
-must complete before this candidate can replace Server v1.6.589.
+Source commit: `3efcc21c627069fc5308d128dddc63ab49d3f130`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
@@ -31,3 +32,19 @@ requirements remain unchanged.
 Deployment and affected native/UI acceptance remain pending. Preserve the
 qualified Server589 rollback, existing mounts, volumes and operator settings;
 component qualifications do not establish complete workflow acceptance.
+
+## Deployment acceptance
+
+One isolated QA deployment passed the exact image/revision readback, startup
+and one restart, with three active Hosts/Agents and all 19 named volumes intact.
+The 474 pre-existing protected Volume rows were retained; one Server rootfs row
+was added. Operator JVM/origin settings, four existing AI feature flags, AppArmor
+and restart policy are preserved. Server589 and its verified DB backup remain
+the immediate rollback.
+
+The 35 anonymous asset checks, 36 cryptographic subjects and both OCI
+attestations passed independently of the original CI download. Thirteen
+unchanged runtime MEDIUM findings without an official fix remain tracked.
+Stack continuation, Service startup arguments and Registry removal business
+acceptance remain pending; source, publication and deployment results are
+reported separately from those workflows.

@@ -1,5 +1,24 @@
 # Compatibility Contract
 
+## Server v1.6.590 published
+
+Packages Engine **0.183.391**, Web Console **1.6.233** / optional Bridge
+**0.2.35**, and unchanged Compose **0.14.44**. The Bridge accepts the native
+scoped environment-identity envelope while retaining UUID checks, explicit
+parent denials and live role/Key limits. No broader Project access is granted.
+
+Publisher **42531527734** passed image/security/startup/restart checks. All
+35 anonymous assets, 36 cryptographic subjects and both OCI attestations passed.
+Image identity:
+`ghcr.io/pasturestack/server:v1.6.590@sha256:74ccf78fc21ac8becb152c30fc5d50a6b32a2527a66389084939d2e4fe02c1b7`.
+
+An isolated QA deployment passed one restart, retained its 19 named volumes and
+operator settings, and kept all three Hosts/Agents active. The 474 protected
+Volume rows remain, with only one new Server rootfs record. Server589 and its
+consistent DB backup are retained for rollback. Stack, Service startup arguments
+and Registry removal have separate native business acceptance; these deployment
+checks do not establish whole-workflow coverage.
+See the [release note](docs/releases/server-1.6.590.md).
 
 ## Server v1.6.589 published
 
@@ -3154,7 +3173,3 @@ three existing Host/Agent health checks, preserving mounts and the prior rollbac
 These deployment checks do not imply complete WebMCP workflow acceptance.
 See the [release note](docs/releases/server-1.6.584.md) for identity, checks and
 remaining acceptance boundaries.
-
-### Server1.6.590 來源候選
-
-匹配 Engine0.183.391／Web1.6.233／Bridge0.2.35／Compose0.14.44，元件皆有正式公開原件與驗證。Engine、Compose、JDK與其他runtime pins沿用589；Server590 本身尚未發布或部署，不宣稱前端或整組實機驗收完成。
