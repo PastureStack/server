@@ -21,6 +21,12 @@ class ComposeReleaseIdentity(unittest.TestCase):
     def test_original_reviewed_identity(self):
         self.assertEqual(owner.validate(self.review, **self.values)['source'], self.values['source'])
 
+    def test_only_registered_review_can_be_selected(self):
+        self.assertEqual(owner.load_review('0.14.45'), self.review)
+        for value in ('../README.md', '/etc/passwd', '', '0.14.999'):
+            with self.assertRaisesRegex(ValueError, 'ComposeReleaseIdentityReviewRequired'):
+                owner.load_review(value)
+
     def test_old_producer_cannot_label_new_binary(self):
         self.values['source'] = '10a9279c79542ff7b221715baade93e5e644da90'
         with self.assertRaisesRegex(ValueError, 'ComposeReleaseIdentityMismatch:source'):

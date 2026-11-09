@@ -190,7 +190,6 @@ fi
 [[ "$compose_executor_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
 [[ "$compose_executor_commit" =~ ^[0-9a-f]{40}$ ]]
 python3 server/security/check_compose_release_identity.py \
-    --review "server/security/reviews/compose-${compose_executor_version}-openpgp.json" \
     --version "$compose_executor_version" --source "$compose_executor_commit" \
     --archive "$compose_executor_archive_sha256" --binary "$compose_executor_binary_sha256"
 [[ "$compose_executor_archive_sha256" =~ ^[0-9a-f]{64}$ ]]

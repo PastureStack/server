@@ -122,10 +122,14 @@ class ComponentRecipeTest(unittest.TestCase):
         fixture_review = path / 'synthetic-compose-review.json'
         fixture_review.write_text(json.dumps(review))
         review_driver = path / 'review-driver.py'
-        review_driver.write_text('import os, sys\n'
+        review_driver.write_text('import importlib.util, json, os, sys\n'
                                 'args = sys.argv[1:]\n'
                                 'if args[0] == "server/security/check_compose_release_identity.py":\n'
-                                '    args[args.index("--review") + 1] = os.environ["FIXTURE_COMPOSE_REVIEW"]\n'
+                                '    spec = importlib.util.spec_from_file_location("identity", ' + repr(str(ROOT / 'server/security/check_compose_release_identity.py')) + ')\n'
+                                '    owner = importlib.util.module_from_spec(spec); spec.loader.exec_module(owner)\n'
+                                '    with open(os.environ["FIXTURE_COMPOSE_REVIEW"]) as stream: review = json.load(stream)\n'
+                                '    owner.validate(review, **{key: args[args.index("--" + key) + 1] for key in ("version", "source", "archive", "binary")})\n'
+                                '    sys.exit(0)\n'
                                 'os.execv(sys.executable, [sys.executable, *args])\n')
         python_command = commands / 'python3'
         python_command.write_text('#!/bin/sh\nexec "$FIXTURE_PYTHON" "$FIXTURE_REVIEW_DRIVER" "$@"\n')

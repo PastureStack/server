@@ -4,6 +4,16 @@ import json
 from pathlib import Path
 import re
 
+def load_review(version):
+    # Release recipes can select a registered coordinate, never an arbitrary
+    # command-line file. New releases require their reviewed record in source.
+    if version != '0.14.45':
+        raise ValueError('ComposeReleaseIdentityReviewRequired')
+    path = Path(__file__).resolve().parent / 'reviews/compose-0.14.45-openpgp.json'
+    if not path.is_file() or path.is_symlink() or path.stat().st_size > 65536:
+        raise ValueError('ComposeReleaseIdentityReviewRequired')
+    return json.loads(path.read_text(encoding='utf-8'))
+
 
 def validate(review, version, source, archive, binary):
     artifact = review.get('artifact', {})
@@ -20,13 +30,10 @@ def validate(review, version, source, archive, binary):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for field in ('review', 'version', 'source', 'archive', 'binary'):
+    for field in ('version', 'source', 'archive', 'binary'):
         parser.add_argument('--' + field, required=True)
     args = parser.parse_args()
-    path = Path(args.review)
-    if not path.is_file() or path.is_symlink() or path.stat().st_size > 65536:
-        raise ValueError('ComposeReleaseIdentityReviewRequired')
-    result = validate(json.loads(path.read_text(encoding='utf-8')),
+    result = validate(load_review(args.version),
                       args.version, args.source, args.archive, args.binary)
     print(json.dumps({'status': 'COMPOSE_RELEASE_IDENTITY_OK', **result}))
 
