@@ -2,6 +2,8 @@
 
 Prepared source only; no Server image or release has been published.
 
+## Verified component inputs
+
 Packages Compose Executor 0.14.45, retaining Engine 0.183.391, Web Console
 1.6.233 and optional Bridge 0.2.35. A transitioning child could outlast the
 three-second Compose wait; a wrapper then swallowed the timeout and all other
