@@ -1,8 +1,5 @@
 # Server performance settings
 
-Candidate example: run it only after its official release and image have been published and read back.
-Server 1.6.592 is not yet available from GHCR. See the [candidate note](../releases/server-1.6.592.md).
-
 PastureStack Server supports typed performance settings through Docker or
 Docker Compose environment variables. These settings are optional: omitting
 all of them preserves the image defaults.
@@ -11,9 +8,9 @@ The following example is appropriate as a starting point for a dedicated
 16-vCPU host with about 32 GiB of RAM. It is not a universal performance
 profile; measure the real workload before increasing it further.
 
-The example uses the published Server `v1.6.590` numeric tag. Deployment and
+The example uses the published Server `v1.6.592` numeric tag. Deployment and
 workload acceptance remain environment-specific. See the
-[release note](../releases/server-1.6.590.md) and the
+[release note](../releases/server-1.6.592.md) and the
 [current release](../../README.md#current-release) for components.
 Preserve existing runtime overrides and all three named volumes during an
 upgrade or restart.

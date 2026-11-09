@@ -1,6 +1,10 @@
-# Server v1.6.592 candidate
+# Server v1.6.592
 
-Prepared source only; no Server image or release has been published.
+Published image: `ghcr.io/pasturestack/server:v1.6.592@sha256:27a7f80e8a8114c3a28e730d2fdf6fd948f69dc85c0c9d62b3831ed0a6bf6c84`.
+
+Source commit: `e439c01628f3a29a5f552ce60f35b79576a471d4`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 

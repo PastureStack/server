@@ -9,20 +9,16 @@ Rancher 1.6 ecosystem. It is not affiliated with Rancher Labs or SUSE.
 This fork of [`rancher/rancher`](https://github.com/rancher/rancher) preserves
 upstream history, authorship, licenses, and notices.
 
-<a id="current-release"></a>
+## Current release
 
-## Current source candidate
-
-Server `v1.6.592` is a prepared source candidate, not a published image.
-It packages the qualified Compose 0.14.45 transition-wait correction.
-[candidate note](docs/releases/server-1.6.592.md)
-
-[Server `v1.6.591`](https://github.com/PastureStack/server/releases/tag/v1.6.591)
+[Server `v1.6.592`](https://github.com/PastureStack/server/releases/tag/v1.6.592)
 packages Engine `v0.183.391`, Web Console `1.6.233` / optional Bridge `0.2.35`,
-and Compose `0.14.45`. Its Compose source label still identifies the old producer;
-the execution bytes are patched but this image is not deployment-qualified.
-Keep the previously qualified release until this candidate is published and verified.
-See [the 591 limitation](docs/releases/server-1.6.591.md).
+and Compose `0.14.45`. Stack upgrade completion and rollback observe pending
+Service transitions with a bounded wait and keep the original event alive.
+The packaged Compose version, producer and archive/executable hashes are checked
+against the reviewed release before building.
+See the [release note](docs/releases/server-1.6.592.md) and
+[compatibility contract](COMPATIBILITY.md) for evidence and acceptance limits.
 
 ## Component capabilities
 
@@ -71,14 +67,11 @@ the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation
 before enabling these optional changes.
 Inactive Registry removal requires a separate preview and human approval. Scoped
 Bridge navigation reveals only authorized parent identity, not broader Project access.
-See the [release note](docs/releases/server-1.6.590.md) and
+See the [release note](docs/releases/server-1.6.592.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
 ## Quick start
-
-These are candidate commands; run them only after its official release.
-This candidate is not yet available from GHCR. Use the published release above until then.
 
 These examples use the published numeric version tag. Keep all three named volumes.
 
