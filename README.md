@@ -13,13 +13,13 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.589`](https://github.com/PastureStack/server/releases/tag/v1.6.589)
-packages Engine `v0.183.391`, Web Console `1.6.232` / optional Bridge `0.2.34`,
+[Server `v1.6.590`](https://github.com/PastureStack/server/releases/tag/v1.6.590)
+packages Engine `v0.183.391`, Web Console `1.6.233` / optional Bridge `0.2.35`,
 Host API `0.38.9`, Node Agent `0.13.35`, Catalog `0.20.17` and Compose `0.14.44`.
 The immutable image, all 35 anonymous release assets, native release attestation
 and both OCI attestations passed verification. See the
-[release note](docs/releases/server-1.6.589.md) and
-[component compatibility](COMPATIBILITY.md#server-v16589-published).
+[release note](docs/releases/server-1.6.590.md) and
+[component compatibility](COMPATIBILITY.md#server-v16590-published).
 Deployment-specific workflow acceptance is recorded separately from image qualification.
 
 ## Component capabilities
@@ -69,7 +69,7 @@ the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation
 before enabling these optional changes.
 Inactive Registry removal requires a separate preview and human approval. Scoped
 Bridge navigation reveals only authorized parent identity, not broader Project access.
-See the [release note](docs/releases/server-1.6.589.md) and
+See the [release note](docs/releases/server-1.6.590.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
@@ -82,7 +82,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.589
+  ghcr.io/pasturestack/server:v1.6.590
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -90,7 +90,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.589
+    image: ghcr.io/pasturestack/server:v1.6.590
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -191,7 +191,3 @@ protocol fields and persisted identifiers are not translated.
 The inherited project uses [Apache License 2.0](LICENSE), with attribution in
 [COPYRIGHT_DETAILS.md](COPYRIGHT_DETAILS.md). Bundled components retain their own
 licenses and notices.
-
-## 1.6.590 來源候選（未發布）
-
-預定使用已發布並驗證的 Engine0.183.391、Web1.6.233／Bridge0.2.35、Compose0.14.44。此批修正 Bridge 對合法環境 ResourceImpl 回應的相容處理；父環境導航身分投影不授予環境業務權限。Server590 尚未完成 CI、發布、部署與前端狀態相依驗收；目前安裝仍使用上列已發布589。
