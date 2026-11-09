@@ -13,18 +13,16 @@ upstream history, authorship, licenses, and notices.
 
 ## Current source candidate
 
-Server `v1.6.591` is a prepared source candidate, not a published image.
+Server `v1.6.592` is a prepared source candidate, not a published image.
 It packages the qualified Compose 0.14.45 transition-wait correction.
-[candidate note](docs/releases/server-1.6.591.md)
+[candidate note](docs/releases/server-1.6.592.md)
 
-[Server `v1.6.590`](https://github.com/PastureStack/server/releases/tag/v1.6.590)
+[Server `v1.6.591`](https://github.com/PastureStack/server/releases/tag/v1.6.591)
 packages Engine `v0.183.391`, Web Console `1.6.233` / optional Bridge `0.2.35`,
-Host API `0.38.9`, Node Agent `0.13.35`, Catalog `0.20.17` and Compose `0.14.44`.
-The immutable image, all 35 anonymous release assets, native release attestation
-and both OCI attestations passed verification. See the
-[release note](docs/releases/server-1.6.590.md) and
-[component compatibility](COMPATIBILITY.md#server-v16590-published).
-Deployment-specific workflow acceptance is recorded separately from image qualification.
+and Compose `0.14.45`. Its Compose source label still identifies the old producer;
+the execution bytes are patched but this image is not deployment-qualified.
+Keep the previously qualified release until this candidate is published and verified.
+See [the 591 limitation](docs/releases/server-1.6.591.md).
 
 ## Component capabilities
 
@@ -89,7 +87,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.591
+  ghcr.io/pasturestack/server:v1.6.592
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -97,7 +95,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.591
+    image: ghcr.io/pasturestack/server:v1.6.592
     restart: unless-stopped
     ports:
       - "8080:8080"

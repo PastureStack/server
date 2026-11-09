@@ -1,6 +1,16 @@
-# Server v1.6.591 candidate
+# Server v1.6.591
 
-Prepared source only; no Server image or release has been published.
+Published image: `ghcr.io/pasturestack/server:v1.6.591@sha256:5f45c51a9b9fdc226281f1099d841b601803c8b8d98a06ca34dbc13714a1cc5b`.
+
+Source commit: `f3913bbc4c4ebe3431024dc4426afe5b4ef111ab`.
+
+## Known limitation
+
+Do not deploy this image. Its Compose0.14.45 archive and executable are the
+qualified patched bytes, but `PASTURESTACK_COMPOSE_EXECUTOR_COMMIT` still names
+the previous producer. Deployment qualification rejected this mismatch before
+8080 was changed. The immutable tag is preserved; Server592 supplies the corrected
+provenance and a pre-build coordinate-consistency guard.
 
 ## Verified component inputs
 

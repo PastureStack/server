@@ -14,7 +14,7 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.591}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.592}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
@@ -98,7 +98,7 @@ webhook_automation_service_binary_sha256=${WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA
 compose_executor_release_base_url=${COMPOSE_EXECUTOR_RELEASE_BASE_URL:-https://github.com/PastureStack/compose-cli/releases/download}
 compose_executor_asset_api_url=${COMPOSE_EXECUTOR_ASSET_API_URL:-https://api.github.com/repos/PastureStack/compose-cli/releases/assets/725701155}
 compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.45}
-compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-10a9279c79542ff7b221715baade93e5e644da90}
+compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-e10eee523467ef2aa75a8bbdf290c2f5c505fbdc}
 compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-090b160dce006da93220455aec27fcddcd7e0f850ac5d82bf018a869d636d366}
 compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-4b1d0ec194f7301467c5fb4b12ce602390bad6e34768a08e1370bffb76a8c8f7}
 vsphere_cli_bundle_release_base_url=${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL:-https://github.com/PastureStack/vsphere-cli-bundle/releases/download}
@@ -134,7 +134,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-6d4
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.591}
+image=${IMAGE:-pasturestack-validation/server:v1.6.592}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -189,6 +189,10 @@ fi
 [[ "$webhook_automation_service_binary_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$compose_executor_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
 [[ "$compose_executor_commit" =~ ^[0-9a-f]{40}$ ]]
+python3 server/security/check_compose_release_identity.py \
+    --review "server/security/reviews/compose-${compose_executor_version}-openpgp.json" \
+    --version "$compose_executor_version" --source "$compose_executor_commit" \
+    --archive "$compose_executor_archive_sha256" --binary "$compose_executor_binary_sha256"
 [[ "$compose_executor_archive_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$compose_executor_binary_sha256" =~ ^[0-9a-f]{64}$ ]]
 [[ "$vsphere_cli_bundle_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]

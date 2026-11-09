@@ -1,10 +1,20 @@
 # Compatibility Contract
 
-## Server v1.6.591 prepared, not published
+## Server v1.6.592 prepared, not published
 
 Packages qualified Compose 0.14.45 with bounded Stack rollback/finish observation,
 original-event keepalive and one terminal-error owner. Engine391, Web233 and
 Bridge0.2.35 are unchanged. Matching runtime acceptance remains pending.
+
+## Server v1.6.591 published with provenance mismatch
+
+Published immutable image:
+`ghcr.io/pasturestack/server:v1.6.591@sha256:5f45c51a9b9fdc226281f1099d841b601803c8b8d98a06ca34dbc13714a1cc5b`.
+
+The immutable image contains patched Compose0.14.45 bytes but an old Compose
+producer label. It has not passed deployment qualification and must not replace
+the qualified deployment. Server592 corrects that label and checks all four
+release coordinates against the existing reviewed artifact before building.
 
 ## Server v1.6.590 published
 
