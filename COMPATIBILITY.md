@@ -1,10 +1,21 @@
 # Compatibility Contract
 
-## Server v1.6.592 prepared, not published
+## Server v1.6.592 published
 
-Packages qualified Compose 0.14.45 with bounded Stack rollback/finish observation,
-original-event keepalive and one terminal-error owner. Engine391, Web233 and
-Bridge0.2.35 are unchanged. Matching runtime acceptance remains pending.
+Image: `ghcr.io/pasturestack/server:v1.6.592@sha256:27a7f80e8a8114c3a28e730d2fdf6fd948f69dc85c0c9d62b3831ed0a6bf6c84`.
+Source commit: `e439c01628f3a29a5f552ce60f35b79576a471d4`.
+
+Packages Engine **0.183.391**, Web Console **1.6.233** / optional Bridge
+**0.2.35**, and Compose **0.14.45**. The Compose producer label now matches the
+reviewed original executable. A pre-build guard rejects mixed version, producer,
+archive and executable coordinates instead of merely mirroring their defaults.
+
+Publisher **42546184135** passed the normal build, image scan, startup and restart
+gates. The 35 anonymous release assets, 36 cryptographic subjects and both OCI
+attestations were independently verified. Thirteen runtime Medium findings with
+no official fix remain registered under the existing exact-set tracking policy.
+Deployment-specific and native business-workflow acceptance are separate.
+See the [release note](docs/releases/server-1.6.592.md).
 
 ## Server v1.6.591 published with provenance mismatch
 
