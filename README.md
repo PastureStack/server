@@ -11,7 +11,11 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current release
+## Current source candidate
+
+Server `v1.6.591` is a prepared source candidate, not a published image.
+It packages the qualified Compose 0.14.45 transition-wait correction.
+[candidate note](docs/releases/server-1.6.591.md)
 
 [Server `v1.6.590`](https://github.com/PastureStack/server/releases/tag/v1.6.590)
 packages Engine `v0.183.391`, Web Console `1.6.233` / optional Bridge `0.2.35`,
@@ -75,6 +79,9 @@ supported operations, audit records and rollback.
 
 ## Quick start
 
+These are candidate commands; run them only after its official release.
+This candidate is not yet available from GHCR. Use the published release above until then.
+
 These examples use the published numeric version tag. Keep all three named volumes.
 
 ```sh
@@ -82,7 +89,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.590
+  ghcr.io/pasturestack/server:v1.6.591
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -90,7 +97,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.590
+    image: ghcr.io/pasturestack/server:v1.6.591
     restart: unless-stopped
     ports:
       - "8080:8080"
