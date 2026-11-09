@@ -14,7 +14,7 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.590}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.591}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
@@ -96,11 +96,11 @@ webhook_automation_service_commit=${WEBHOOK_AUTOMATION_SERVICE_COMMIT:-4da77ccac
 webhook_automation_service_archive_sha256=${WEBHOOK_AUTOMATION_SERVICE_ARCHIVE_SHA256:-f2df8874d5a00a2d5713594609063256164ed624d29a733149d00cb271f0f66b}
 webhook_automation_service_binary_sha256=${WEBHOOK_AUTOMATION_SERVICE_BINARY_SHA256:-b98e55db2739ab45119eacc94c8f65cb44371480ebcebec95e5470fd67c72a4c}
 compose_executor_release_base_url=${COMPOSE_EXECUTOR_RELEASE_BASE_URL:-https://github.com/PastureStack/compose-cli/releases/download}
-compose_executor_asset_api_url=${COMPOSE_EXECUTOR_ASSET_API_URL:-https://api.github.com/repos/PastureStack/compose-cli/releases/assets/724096788}
-compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.44}
+compose_executor_asset_api_url=${COMPOSE_EXECUTOR_ASSET_API_URL:-https://api.github.com/repos/PastureStack/compose-cli/releases/assets/725701155}
+compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.45}
 compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-10a9279c79542ff7b221715baade93e5e644da90}
-compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-8fb49a7da9888c3167f7228934bb7e89250ce0cf0e5b986000b0c85ae3683a2e}
-compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-cdcc4ecbf600b39727f4ce5def76e68328662ea9a50ed23a968f3db3c4dc512d}
+compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-090b160dce006da93220455aec27fcddcd7e0f850ac5d82bf018a869d636d366}
+compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-4b1d0ec194f7301467c5fb4b12ce602390bad6e34768a08e1370bffb76a8c8f7}
 vsphere_cli_bundle_release_base_url=${VSPHERE_CLI_BUNDLE_RELEASE_BASE_URL:-https://github.com/PastureStack/vsphere-cli-bundle/releases/download}
 machine_driver_bundle_release_base_url=${MACHINE_DRIVER_BUNDLE_RELEASE_BASE_URL:-https://github.com/PastureStack/machine-driver-bundle/releases/download}
 machine_driver_bundle_version=${MACHINE_DRIVER_BUNDLE_VERSION:-0.16.6}
@@ -134,7 +134,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-6d4
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.590}
+image=${IMAGE:-pasturestack-validation/server:v1.6.591}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -882,7 +882,7 @@ docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_versi
     done
     cat <<'"'"'EOF'"'"' | sha256sum -c -
 e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192  /usr/bin/authentication-service.real
-cdcc4ecbf600b39727f4ce5def76e68328662ea9a50ed23a968f3db3c4dc512d  /usr/bin/compose-executor.real
+4b1d0ec194f7301467c5fb4b12ce602390bad6e34768a08e1370bffb76a8c8f7  /usr/bin/compose-executor.real
 92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff  /usr/bin/host-provisioner.real
 1d302e8005e35fe56108d704cd3b18e12a0fbbc1871e7b5cd61ac429db37566c  /usr/bin/secret-delivery-api
 90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be  /usr/bin/usage-telemetry-agent

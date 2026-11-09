@@ -1,5 +1,11 @@
 # Compatibility Contract
 
+## Server v1.6.591 prepared, not published
+
+Packages qualified Compose 0.14.45 with bounded Stack rollback/finish observation,
+original-event keepalive and one terminal-error owner. Engine391, Web233 and
+Bridge0.2.35 are unchanged. Matching runtime acceptance remains pending.
+
 ## Server v1.6.590 published
 
 Packages Engine **0.183.391**, Web Console **1.6.233** / optional Bridge
