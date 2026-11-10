@@ -1,12 +1,29 @@
 # Compatibility Contract
 
-## Server v1.6.595 candidate
+## Server v1.6.595 published
 
-Consumes immutable Web1.6.234 / Bridge0.2.36 with Engine0.183.394 and Compose0.14.45.
-The operation wire contract, API scopes, live RBAC ceilings and retained data
-remain unchanged. The Server image and matching8080 Registry removal acceptance
-are pending; preserve the594 rollback. No production change is included.
+Image: `ghcr.io/pasturestack/server:v1.6.595@sha256:33a90620cbd48a999e95a14166e1d86d78317c2f118d04aa33079a848b0ee351`.
+Source commit: `082836aed40d2399b07b6bc31aa3760d90c381dd`.
 
+Packages Engine **0.183.394**, Web Console **1.6.234** / optional Bridge
+**0.2.36**, and Compose **0.14.45**. A known, current-context Registry removal
+receipt remains observable after the last navigation witness disappears. Native
+actor, Key identity/revision, current role and exact target checks remain active.
+Other queries and mutations keep their existing navigation and API scope checks.
+
+Publisher **42812240379** passed the normal image, security, startup and restart
+checks. All 35 release assets, 36 signed subjects and two OCI attestations were
+independently verified. Component CI passed 378 required Web identities,
+1,149 browser cases and the packaged Bridge SDK handshake. Engine394's existing
+4,351-test qualification and the unchanged 18-source / 1,396-API-tuple wire
+contract were reused, rather than rerunning unaffected checks.
+
+QA deployment and restart passed with three active Hosts and Agents. Exact native
+rootfs joins explain the sole logical-volume addition (478 to 479); the 19 named
+volumes, four mounts and previous rollback image remain retained. This is not
+complete frontend or weak-model acceptance. Runtime findings remain 28 Medium
+package occurrences across 14 CVEs under the unchanged vendor-pending policy.
+See the [release note](docs/releases/server-1.6.595.md).
 
 ## Server v1.6.594 published
 
