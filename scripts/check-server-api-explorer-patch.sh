@@ -1187,10 +1187,10 @@ done
 for engine_archive_marker in \
     'grep -Fx "Implementation-Version: $expected_version"' \
     'WEB-INF/lib/freemarker-2.3.35.jar' \
-    'WEB-INF/lib/hazelcast-5.7.6.jar' \
+    'WEB-INF/lib/hazelcast-5.7.7.jar' \
     'WEB-INF/lib/guava-33.7.2-jre.jar' \
     'b530942257fb935f8b2cfaa5f8eb5bd59c555fd8e8d01b8ce98912e077ea606c' \
-    '825b5fc9526a10549bcb580f2d6c03bf1f5667625661722c0406ea6f796e83f2' \
+    'a72ddfd7638527cbccd79d9d3e3611e2979cadd78e615381f230c07a2767b631' \
     'Rejected old Freemarker dependency' \
     'Rejected old Hazelcast dependency' \
     'Duplicate Orchestration Engine JAR path' \
@@ -1428,7 +1428,7 @@ require_marker "$dockerfile" \
     'WEB-INF/lib/hazelcast-5\.7\.4\.jar' \
     SERVER_DISTRIBUTED_CACHE_RUNTIME_GATE_MISSING
 require_marker server/artifacts/verify-engine-archive.sh \
-    "'825b5fc9526a10549bcb580f2d6c03bf1f5667625661722c0406ea6f796e83f2'" \
+    "'a72ddfd7638527cbccd79d9d3e3611e2979cadd78e615381f230c07a2767b631'" \
     SERVER_DISTRIBUTED_CACHE_RUNTIME_HASH_GATE_MISSING
 require_marker "$build_script" \
     'image_orchestration' \
@@ -2456,5 +2456,9 @@ done
 require_marker server/artifacts/fetch-server-component.sh "--header 'Accept: application/octet-stream' --header 'Range: bytes=0-'" SERVER_OFFICIAL_ASSET_API_HEADERS_MISSING
 require_marker server/artifacts/fetch-server-component.sh '--max-filesize 1073741824' SERVER_OFFICIAL_ASSET_SIZE_CAP_MISSING
 require_marker server/artifacts/fetch-server-component.sh 'Component response must contain the complete asset' SERVER_OFFICIAL_ASSET_FULL_RANGE_CHECK_MISSING
+
+
+# Execute the shared archive verifier controls before starting an image build.
+python3 -B "$repo_root/scripts/test-engine-archive-contract.py"
 
 printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.593 base=v1.6.460 engine=0.183.393 web_console=1.6.233 catalog_service=0.20.17 webhook_automation_service=0.10.5 authentication_service=0.4.46 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
