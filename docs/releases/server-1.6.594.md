@@ -1,11 +1,20 @@
-# Server v1.6.594 candidate
+# Server v1.6.594
 
-## Candidate boundary
+## Published artifact
 
-This source candidate is not a published Server image or deployment result.
-The normal Server workflow must build, scan and verify startup/restart before
-publication. Matching Registry removal and retained-data acceptance on the QA
-server remain pending. No runtime patch or production change is included.
+Image: `ghcr.io/pasturestack/server:v1.6.594@sha256:4795d2a0ab9d91215ec98c713bdc752f0891289310547b4d1ee00062ffec58d4`.
+Source: `7186ad16e6b8ffe1f2140f156fa1d2937344cfc4`.
+Publisher [42796953358](https://github.com/PastureStack/server/actions/runs/42796953358)
+passed normal image build, security, startup and restart checks. Independent
+readback verified 35 public assets, 36 signed subjects and two OCI attestations.
+
+## Acceptance boundary
+
+Normal QA deployment and one Server restart preserve mounts, named volumes,
+operator configuration and all three Host/Agent identities. The previous Server
+is retained for rollback. Matching Registry business acceptance remains pending;
+this release does not claim the entire WebMCP inventory has passed. No production
+change or runtime patch is included.
 
 ## Verified component inputs
 

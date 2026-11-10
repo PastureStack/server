@@ -10,7 +10,7 @@ profile; measure the real workload before increasing it further.
 
 The example uses the published Server `v1.6.593` numeric tag. Deployment and
 workload acceptance remain environment-specific. See the
-[release note](../releases/server-1.6.593.md) and the
+[release note](../releases/server-1.6.594.md) and the
 [current release](../../README.md#current-release) for components.
 Preserve existing runtime overrides and all three named volumes during an
 upgrade or restart.
@@ -21,7 +21,7 @@ evidence is not a performance benchmark; measure the actual workload.
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.593
+    image: ghcr.io/pasturestack/server:v1.6.594
     restart: unless-stopped
     ports:
       - "8080:8080"

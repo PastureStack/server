@@ -11,21 +11,15 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.593`](https://github.com/PastureStack/server/releases/tag/v1.6.593)
-packages Engine `v0.183.393`, Web Console `1.6.233` / optional Bridge `0.2.35`,
-and Compose `0.14.45`. The Engine restores blocking lifecycle wait routing,
-retains API Key snapshot ownership through human confirmation and packages the
-maintained cache runtime with official org.json security fixes. Component versions,
+[Server `v1.6.594`](https://github.com/PastureStack/server/releases/tag/v1.6.594)
+packages Engine `v0.183.394`, Web Console `1.6.233` / optional Bridge `0.2.35`,
+and Compose `0.14.45`. Exact Registry API Key scopes now filter native queries
+and direct resource access consistently. Parent StoragePool denials still apply
+to the same Registry; Registry grants do not authorize ordinary storage pools.
+The owner's live permissions remain the access ceiling. Component versions,
 producers and archive/executable hashes are checked before building.
-See the [release note](docs/releases/server-1.6.593.md) and
+See the [release note](docs/releases/server-1.6.594.md) and
 [compatibility contract](COMPATIBILITY.md) for evidence and acceptance limits.
-
-## Candidate v1.6.594
-
-Engine 0.183.394 fixes exact Registry Key scopes while retaining parent-rule
-denials, native role ceilings and ordinary StoragePool isolation. Immutable
-Server publication and matching deployment acceptance are pending. See the
-[candidate note](docs/releases/server-1.6.594.md).
 
 ## Component capabilities
 
@@ -74,7 +68,7 @@ the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation
 before enabling these optional changes.
 Inactive Registry removal requires a separate preview and human approval. Scoped
 Bridge navigation reveals only authorized parent identity, not broader Project access.
-See the [release note](docs/releases/server-1.6.593.md) and
+See the [release note](docs/releases/server-1.6.594.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
@@ -87,7 +81,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.593
+  ghcr.io/pasturestack/server:v1.6.594
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -95,7 +89,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.593
+    image: ghcr.io/pasturestack/server:v1.6.594
     restart: unless-stopped
     ports:
       - "8080:8080"

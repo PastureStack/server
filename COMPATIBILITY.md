@@ -1,12 +1,24 @@
 # Compatibility Contract
 
-## Server v1.6.594 candidate
+## Server v1.6.594 published
 
-Consumes immutable Engine 0.183.394; Web1.6.233 / Bridge0.2.35 and Compose0.14.45
-are unchanged. Registry and parent StoragePool Key rules retain exact identity,
-deny precedence and the owner's live RBAC ceiling. The Server image and matching
-8080 business acceptance are pending. Preserve the qualified593 rollback.
+Image: `ghcr.io/pasturestack/server:v1.6.594@sha256:4795d2a0ab9d91215ec98c713bdc752f0891289310547b4d1ee00062ffec58d4`.
+Source commit: `7186ad16e6b8ffe1f2140f156fa1d2937344cfc4`.
 
+Packages Engine **0.183.394**, Web Console **1.6.233** / optional Bridge
+**0.2.35**, and Compose **0.14.45**. Registry rules use persisted kind and exact
+resource identity before pagination and during direct authorization. Parent
+StoragePool rules apply to the same Registry; denials win and Registry grants
+cannot authorize ordinary pools. Full/legacy Keys retain their native owner ceiling.
+
+Publisher **42796953358** passed the normal build, security, startup and restart
+checks. All 35 anonymous assets, 36 signed subjects and two OCI attestations were
+independently verified. Web233's 18 contract source files, role schema and 1,396
+API tuples remain compatible. Engine CI: 4,351 tests, zero failures/errors,
+one inherited skip; 538 mandatory identities and 95 packaged class families.
+Twenty-three unfixed runtime Medium package findings remain tracked; security
+gates are unchanged. Deployment and business acceptance are separate evidence.
+See the [release note](docs/releases/server-1.6.594.md).
 
 ## Server v1.6.593 published
 
