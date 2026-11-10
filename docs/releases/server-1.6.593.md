@@ -1,7 +1,11 @@
-# Server v1.6.593 candidate
+# Server v1.6.593
 
-This source candidate is not a published Server image or deployment result.
-The normal Server workflow must build, scan and qualify the image before use.
+Published immutable image: `ghcr.io/pasturestack/server:v1.6.593@sha256:dcb694d5b36ed2dc87e993b60b3df592a0b70b3c15f892f1ba719736b877524f`.
+Source: `b59661f6867bc0ce2cd01e4e485fc7fd45b9d15d`; publisher **42770771604**.
+All 35 public assets, 36 release subjects and both OCI attestations were verified.
+The normal final image scan, startup and restart gates passed. Twenty-three
+Medium package findings without official Resolute fixes remain registered.
+This release result does not establish all native business-workflow acceptance.
 
 ## Verified component inputs
 
@@ -25,7 +29,9 @@ relocated org.json classes of Hazelcast 5.7.6. No Server image or tag was
 published by that failed run. Engine 0.183.393 now consumes the immutable
 maintained runtime 5.7.7 with official org.json 20260719. Embedded metadata,
 artifact hash, numeric conversion regression cases and original runtime CI
-are verified. The final Server scan remains required before publication.
+are verified. The final Server scan passed without an org.json exemption.
+The Server archive gate verifies the actual nested runtime hash and JSON version;
+13 archive controls include old-runtime and malformed-metadata rejection cases.
 
 Original component CI does not establish native Server workflow acceptance.
 Registry removal, Stack restart/recovery and the remaining weak-model cases
