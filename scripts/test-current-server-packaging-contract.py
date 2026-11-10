@@ -129,10 +129,10 @@ ENGINE_EXPECTED = {
     'SERVER_INCREMENTAL_ENGINE_ARCHIVE_CONTRACT_MISSING': (ENGINE_ARCHIVE, 'engine_archive_marker', (
         'grep -Fx "Implementation-Version: $expected_version"',
         'WEB-INF/lib/freemarker-2.3.35.jar',
-        'WEB-INF/lib/hazelcast-5.7.6.jar',
+        'WEB-INF/lib/hazelcast-5.7.7.jar',
         'WEB-INF/lib/guava-33.7.2-jre.jar',
         'b530942257fb935f8b2cfaa5f8eb5bd59c555fd8e8d01b8ce98912e077ea606c',
-        '825b5fc9526a10549bcb580f2d6c03bf1f5667625661722c0406ea6f796e83f2',
+        'a72ddfd7638527cbccd79d9d3e3611e2979cadd78e615381f230c07a2767b631',
         'Rejected old Freemarker dependency',
         'Rejected old Hazelcast dependency',
         'Duplicate Orchestration Engine JAR path',

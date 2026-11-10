@@ -1,5 +1,6 @@
 """Direct archive rejection tests; no download, image build or runtime changes."""
 import hashlib
+import io
 from pathlib import Path
 import re
 import subprocess
@@ -11,12 +12,18 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 HELPER = ROOT / 'server/artifacts/verify-engine-archive.sh'
-HAZELCAST_SHA = '825b5fc9526a10549bcb580f2d6c03bf1f5667625661722c0406ea6f796e83f2'
-HAZELCAST_ENTRY = 'WEB-INF/lib/hazelcast-5.7.6.jar'
+HAZELCAST_SHA = 'a72ddfd7638527cbccd79d9d3e3611e2979cadd78e615381f230c07a2767b631'
+HAZELCAST_ENTRY = 'WEB-INF/lib/hazelcast-5.7.7.jar'
 FREEMARKER_ENTRY = 'WEB-INF/lib/freemarker-2.3.35.jar'
 GUAVA_ENTRY = 'WEB-INF/lib/guava-33.7.2-jre.jar'
 GUAVA_SHA = 'b530942257fb935f8b2cfaa5f8eb5bd59c555fd8e8d01b8ce98912e077ea606c'
-PAYLOAD = b'small nested Hazelcast fixture'
+def nested_json(version='20260719'):
+    data=io.BytesIO()
+    with zipfile.ZipFile(data,'w')as jar:
+        if version is not None:jar.writestr('META-INF/maven/org.json/json/pom.properties','version='+version+'\n')
+    return data.getvalue()
+
+PAYLOAD = nested_json()
 GUAVA_PAYLOAD = b'small nested Guava fixture'
 
 
@@ -34,7 +41,7 @@ class EngineArchiveContract(unittest.TestCase):
         self.helper.write_text(source.replace(HAZELCAST_SHA, hashlib.sha256(PAYLOAD).hexdigest())
                                .replace(GUAVA_SHA, hashlib.sha256(GUAVA_PAYLOAD).hexdigest()))
 
-    def run_archive(self, extra=(), omitted=(), manifest='0.183.355', payload=PAYLOAD,
+    def run_archive(self, extra=(), omitted=(), manifest='0.183.393', payload=PAYLOAD,
                     guava_payload=GUAVA_PAYLOAD, wrong_hash=False):
         entries = [
             ('META-INF/MANIFEST.MF', ('Manifest-Version: 1.0\r\nImplementation-Version: ' + manifest + '\r\n').encode()),
@@ -52,7 +59,7 @@ class EngineArchiveContract(unittest.TestCase):
         # Recompute each mutated archive's outer hash, so rejection cannot
         # accidentally be attributed to an unrelated whole-file mismatch.
         digest = '0' * 64 if wrong_hash else hashlib.sha256(archive.read_bytes()).hexdigest()
-        return subprocess.run(['sh', str(self.helper), str(archive), '0.183.355', digest],
+        return subprocess.run(['sh', str(self.helper), str(archive), '0.183.393', digest],
                               capture_output=True, text=True, timeout=15)
 
     def reject(self, marker, **kwargs):
@@ -70,7 +77,7 @@ class EngineArchiveContract(unittest.TestCase):
         self.reject('FAILED', wrong_hash=True)
 
     def test_manifest(self):
-        self.reject('implementation version mismatch', manifest='0.183.353')
+        self.reject('implementation version mismatch', manifest='0.183.392')
 
     def test_old_hazelcast_alone_and_alongside(self):
         for omitted in ((), (HAZELCAST_ENTRY,)):
@@ -78,12 +85,22 @@ class EngineArchiveContract(unittest.TestCase):
                 self.reject('Rejected old Hazelcast dependency', omitted=omitted,
                             extra=[('WEB-INF/lib/hazelcast-5.7.5.jar', b'old')])
 
+    def test_old_576_is_rejected_and_embedded_json_must_be_patched(self):
+        self.reject('Rejected old Hazelcast dependency', omitted=(HAZELCAST_ENTRY,),
+                    extra=[('WEB-INF/lib/hazelcast-5.7.6.jar', b'old')])
+        for version in ('20250107', '20260719\nversion=20250107', None):
+            with self.subTest(version=version):
+                payload=nested_json(version)
+                self.helper.write_text(HELPER.read_text().replace(HAZELCAST_SHA,hashlib.sha256(payload).hexdigest())
+                                       .replace(GUAVA_SHA,hashlib.sha256(GUAVA_PAYLOAD).hexdigest()))
+                self.reject('Hazelcast embedded JSON',payload=payload)
+
     def test_old_freemarker(self):
         self.reject('Rejected old Freemarker dependency',
                     extra=[('WEB-INF/lib/freemarker-2.3.34.jar', b'old')])
 
     def test_unexpected_dependency_version(self):
-        for name, marker in [('WEB-INF/lib/hazelcast-5.7.7.jar', 'Hazelcast'),
+        for name, marker in [('WEB-INF/lib/hazelcast-5.7.8.jar', 'Hazelcast'),
                              ('WEB-INF/lib/freemarker-2.3.36.jar', 'Freemarker')]:
             with self.subTest(name=name):
                 self.reject(marker + ' archive contract mismatch', extra=[(name, b'other')])
