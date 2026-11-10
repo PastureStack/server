@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "release": "v1.6.595",
-  "generatedAt": "2026-11-10T04:21:55.365013+00:00",
+  "generatedAt": "2026-11-10T11:58:55.771054+00:00",
   "policy": {
     "allowedSeverities": [
       "LOW",
@@ -265,6 +265,54 @@
       "vendorEvidenceSha256": "94c84b1d40b5cddb8633dfb00c7f52f0e14f9ecf1bdd13c90157f0b3323306ab",
       "upstreamVendorStatus": "Ubuntu26.04 Resolute: needed; no released fixed package",
       "severityBasis": "Ubuntu priority Medium and scanner vendor severity. CVSS3.1 6.5 Medium and CVSS4.0 8.3 High remain disclosed; upstream 3.5.0 is not a released Resolute package."
+    },
+    {
+      "vulnerabilityId": "CVE-2026-93990",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-93990",
+      "reviewAfter": "2026-11-17",
+      "packages": [
+        {
+          "name": "libexpat1",
+          "installedVersion": "2.7.4-1ubuntu0.2"
+        }
+      ],
+      "verifiedAt": "2026-11-10T11:58:55.771054+00:00",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-93990.json",
+      "vendorEvidenceSha256": "43aa8a8f150ee993e730035c8ccb55881ddaf92dfed4dbc2816d4ed4cfef7f02",
+      "upstreamVendorStatus": "Ubuntu26.04 Resolute: needs evaluation; no released fixed package",
+      "severityBasis": "Ubuntu priority Medium and native scanner vendor severity; upstream CVSS3 7.5 High remains disclosed. A fix in another Ubuntu release or upstream source is not a released compatible Resolute package."
+    },
+    {
+      "vulnerabilityId": "CVE-2026-9538",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-9538",
+      "reviewAfter": "2026-11-17",
+      "packages": [
+        {
+          "name": "libperl5.40",
+          "installedVersion": "5.40.1-7ubuntu0.3"
+        },
+        {
+          "name": "perl",
+          "installedVersion": "5.40.1-7ubuntu0.3"
+        },
+        {
+          "name": "perl-base",
+          "installedVersion": "5.40.1-7ubuntu0.3"
+        },
+        {
+          "name": "perl-modules-5.40",
+          "installedVersion": "5.40.1-7ubuntu0.3"
+        }
+      ],
+      "verifiedAt": "2026-11-10T11:58:55.771054+00:00",
+      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-9538.json",
+      "vendorEvidenceSha256": "b4fec8678d98b63b45909520b47ebabb19db5586926e78b8c0051a032ac9ab67",
+      "upstreamVendorStatus": "Ubuntu26.04 Resolute: needs evaluation; no released fixed package",
+      "severityBasis": "Ubuntu priority Medium and native scanner vendor severity; upstream CVSS3 7.5 High remains disclosed. A fix in another Ubuntu release or upstream source is not a released compatible Resolute package."
     }
   ],
   "retiredFindings": [
