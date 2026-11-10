@@ -6,7 +6,7 @@ operator deployment and business-workflow acceptance are recorded separately.
 
 ## Release notes
 
-- [Current Server v1.6.592](releases/server-1.6.592.md) — Engine `0.183.391` /
+- [Current Server v1.6.593](releases/server-1.6.593.md) — Engine `0.183.393` /
   Web Console `1.6.233` / optional Bridge `0.2.35`. Immutable publication and
   original workflow checks are complete; deployment-specific acceptance is
   recorded separately.
