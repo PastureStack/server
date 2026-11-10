@@ -24,3 +24,8 @@ Original Web CI, static provenance/SBOM, required CodeQL and the packaged Bridge
 SDK handshake passed before component publication. These checks do not establish
 deployed business acceptance or complete frontend coverage. Existing runtime CVEs
 remain tracked under the unchanged fixable/HIGH/CRITICAL publication gates.
+
+Two newly observed Medium CVEs add five exact vendor-pending package occurrences
+(28 total /14 CVEs). Canonical has no released Resolute fix for these exact
+packages; upstream CVSS3 High ratings remain disclosed. See the
+[vendor review](../../server/security/reviews/server-1.6.595-vendor-pending.md).
