@@ -1,13 +1,25 @@
 # Compatibility Contract
 
-## Server v1.6.593 candidate
+## Server v1.6.593 published
 
-Engine0.183.393 fixes Machine Driver wait routing and human confirmation of
-Key-bound lifecycle snapshots. Web1.6.233/Bridge0.2.35 and Compose0.14.45 are
-unchanged. Native roles, Full/legacy Key behavior and explicit process routing
-overrides remain supported. The immutable Server image and matching 8080
-acceptance are pending; keep the qualified Server592 deployment for rollback.
+Image: `ghcr.io/pasturestack/server:v1.6.593@sha256:dcb694d5b36ed2dc87e993b60b3df592a0b70b3c15f892f1ba719736b877524f`.
+Source commit: `b59661f6867bc0ce2cd01e4e485fc7fd45b9d15d`.
 
+Packages Engine **0.183.393**, Web Console **1.6.233** / optional Bridge
+**0.2.35**, and Compose **0.14.45**. Machine Driver waits use the existing
+blocking executor; Cookie approval retains the API Key plan snapshot binding.
+The cache runtime is 5.7.7 with official org.json 20260719. The Web233 wire
+contract remains unchanged: all 18 contract source files, role schema bytes and
+1,396 API tuples match its published Engine391 baseline. This is compatibility
+evidence, not a claim that business workflows have all passed.
+
+Publisher **42770771604** passed the normal image build, final security scan,
+startup and restart checks. All 35 anonymous release assets, 36 cryptographic
+subjects and both OCI attestations were independently verified. Twenty-three
+Medium package findings without official Resolute fixes remain in the exact-set
+tracking ledger. Fixed-version, HIGH/CRITICAL and unregistered findings still block.
+Deployment-specific and native business-workflow results are separate.
+See the [release note](docs/releases/server-1.6.593.md).
 
 ## Server v1.6.592 published
 

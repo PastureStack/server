@@ -11,13 +11,13 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.592`](https://github.com/PastureStack/server/releases/tag/v1.6.592)
-packages Engine `v0.183.391`, Web Console `1.6.233` / optional Bridge `0.2.35`,
-and Compose `0.14.45`. Stack upgrade completion and rollback observe pending
-Service transitions with a bounded wait and keep the original event alive.
-The packaged Compose version, producer and archive/executable hashes are checked
-against the reviewed release before building.
-See the [release note](docs/releases/server-1.6.592.md) and
+[Server `v1.6.593`](https://github.com/PastureStack/server/releases/tag/v1.6.593)
+packages Engine `v0.183.393`, Web Console `1.6.233` / optional Bridge `0.2.35`,
+and Compose `0.14.45`. The Engine restores blocking lifecycle wait routing,
+retains API Key snapshot ownership through human confirmation and packages the
+maintained cache runtime with official org.json security fixes. Component versions,
+producers and archive/executable hashes are checked before building.
+See the [release note](docs/releases/server-1.6.593.md) and
 [compatibility contract](COMPATIBILITY.md) for evidence and acceptance limits.
 
 ## Component capabilities
@@ -67,7 +67,7 @@ the [current limitation](docs/ai-collaboration.md#workload-retirement-limitation
 before enabling these optional changes.
 Inactive Registry removal requires a separate preview and human approval. Scoped
 Bridge navigation reveals only authorized parent identity, not broader Project access.
-See the [release note](docs/releases/server-1.6.592.md) and
+See the [release note](docs/releases/server-1.6.593.md) and
 [AI collaboration guide](docs/ai-collaboration.md) for activation,
 supported operations, audit records and rollback.
 
@@ -80,7 +80,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.592
+  ghcr.io/pasturestack/server:v1.6.593
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -88,7 +88,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.592
+    image: ghcr.io/pasturestack/server:v1.6.593
     restart: unless-stopped
     ports:
       - "8080:8080"
