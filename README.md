@@ -21,6 +21,13 @@ producers and archive/executable hashes are checked before building.
 See the [release note](docs/releases/server-1.6.594.md) and
 [compatibility contract](COMPATIBILITY.md) for evidence and acceptance limits.
 
+## Candidate v1.6.595
+
+Web Console1.6.234 / Bridge0.2.36 retain observation of an already-issued scoped
+Registry removal receipt after its target is removed. Native receipt ownership,
+Key revision and live role checks are preserved. Image publication and matching
+8080 acceptance are pending. See the [candidate note](docs/releases/server-1.6.595.md).
+
 ## Component capabilities
 
 Browser users can select an environment by name and review switching context or
