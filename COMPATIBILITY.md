@@ -1,5 +1,14 @@
 # Compatibility Contract
 
+## Server v1.6.593 candidate
+
+Engine0.183.392 fixes Machine Driver wait routing and human confirmation of
+Key-bound lifecycle snapshots. Web1.6.233/Bridge0.2.35 and Compose0.14.45 are
+unchanged. Native roles, Full/legacy Key behavior and explicit process routing
+overrides remain supported. The immutable Server image and matching 8080
+acceptance are pending; keep the qualified Server592 deployment for rollback.
+
+
 ## Server v1.6.592 published
 
 Image: `ghcr.io/pasturestack/server:v1.6.592@sha256:27a7f80e8a8114c3a28e730d2fdf6fd948f69dc85c0c9d62b3831ed0a6bf6c84`.

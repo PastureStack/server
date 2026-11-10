@@ -573,7 +573,7 @@ python3 scripts/test-web-console-sbom.py
 python3 server/security/test_web_console_sbom_scan.py
 
 require_marker "$release_dockerfile" \
-    'ARG SERVER_RELEASE_TAG=v1.6.592' \
+    'ARG SERVER_RELEASE_TAG=v1.6.593' \
     SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"' \
@@ -1141,21 +1141,21 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.592}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.593}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.592}' \
+    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.593}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING
 require_marker "$build_script" \
     'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"' \
     SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING
 for release_engine_marker in \
-    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.391' \
+    'ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.392' \
     'ARG ORCHESTRATION_ENGINE_ARTIFACT=cattle.jar' \
-    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=54d574c92999c9eaafd0288626b0b996b543793e41e9194ab70ec474949d07d4' \
-    'ARG ORCHESTRATION_ENGINE_COMMIT=bcd470712a4e8d429760b02e8df337ae53d92e2b' \
+    'ARG ORCHESTRATION_ENGINE_ARTIFACT_SHA256=bb697ff2ca8f63874e03228523bc5542850759bcda79cb97d6579789a9e167dd' \
+    'ARG ORCHESTRATION_ENGINE_COMMIT=b95ea614b4d933aa8da044147551597be9b577e8' \
     'COPY --from=release_artifacts /out/orchestration-engine.jar /tmp/orchestration-engine.jar' \
-    'ARG ORCHESTRATION_ENGINE_VERSION=0.183.391' \
+    'ARG ORCHESTRATION_ENGINE_VERSION=0.183.392' \
     'sh /usr/share/cattle/verify-engine-archive.sh "${archive}" "${ORCHESTRATION_ENGINE_VERSION}" "${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     'cattle-app-config-${ORCHESTRATION_ENGINE_VERSION}.jar' \
@@ -1174,10 +1174,10 @@ for release_engine_marker in \
         SERVER_INCREMENTAL_ENGINE_REPLACEMENT_MISSING
 done
 for release_engine_build_marker in \
-    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.391}' \
+    'orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.392}' \
     'orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}' \
-    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-54d574c92999c9eaafd0288626b0b996b543793e41e9194ab70ec474949d07d4}' \
-    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-bcd470712a4e8d429760b02e8df337ae53d92e2b}' \
+    'orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-bb697ff2ca8f63874e03228523bc5542850759bcda79cb97d6579789a9e167dd}' \
+    'orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-b95ea614b4d933aa8da044147551597be9b577e8}' \
     'CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}"' \
     'cattle-resources-${ORCHESTRATION_ENGINE_VERSION}.jar' \
     '< "${server_dir}/artifacts/verify-engine-archive.sh"'; do
@@ -1696,10 +1696,10 @@ fi
 if grep -Fxq '## Current source candidate' README.md; then
     for candidate_readme_marker in \
         '<a id="current-release"></a>' \
-        'Server `v1.6.592` is a prepared source candidate, not a published image.' \
+        'Server `v1.6.593` is a prepared source candidate, not a published image.' \
         'run them only after its official release' \
         'This candidate is not yet available' \
-        'ghcr.io/pasturestack/server:v1.6.592'; do
+        'ghcr.io/pasturestack/server:v1.6.593'; do
         require_marker README.md "$candidate_readme_marker" \
             SERVER_CURRENT_CANDIDATE_README_MISSING
     done
@@ -2307,7 +2307,7 @@ done
 jq -e '
   ["CVE-2026-107928","CVE-2026-107929","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"] as $curl_fixed_cves
   |   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.592"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.593"
   and (.statements | length) == 57
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
@@ -2357,7 +2357,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.592 >/dev/null
+    "$vendor_pending_fixture" v1.6.593 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -2447,7 +2447,7 @@ for release_readback_contract in \
 done
 
 for native_asset_marker in \
-    'ARG ORCHESTRATION_ENGINE_ASSET_API_URL=https://api.github.com/repos/PastureStack/orchestration-engine/releases/assets/725195049' \
+    'ARG ORCHESTRATION_ENGINE_ASSET_API_URL=https://api.github.com/repos/PastureStack/orchestration-engine/releases/assets/730078523' \
     'ARG COMPOSE_EXECUTOR_ASSET_API_URL=https://api.github.com/repos/PastureStack/compose-cli/releases/assets/725701155' \
     'ARG WEB_CONSOLE_ASSET_API_URL=https://api.github.com/repos/PastureStack/web-console/releases/assets/725408871' \
     'ARG WEB_CONSOLE_SBOM_ASSET_API_URL=https://api.github.com/repos/PastureStack/web-console/releases/assets/725408872'; do
@@ -2457,4 +2457,4 @@ require_marker server/artifacts/fetch-server-component.sh "--header 'Accept: app
 require_marker server/artifacts/fetch-server-component.sh '--max-filesize 1073741824' SERVER_OFFICIAL_ASSET_SIZE_CAP_MISSING
 require_marker server/artifacts/fetch-server-component.sh 'Component response must contain the complete asset' SERVER_OFFICIAL_ASSET_FULL_RANGE_CHECK_MISSING
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.592 base=v1.6.460 engine=0.183.391 web_console=1.6.233 catalog_service=0.20.17 webhook_automation_service=0.10.5 authentication_service=0.4.46 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.593 base=v1.6.460 engine=0.183.392 web_console=1.6.233 catalog_service=0.20.17 webhook_automation_service=0.10.5 authentication_service=0.4.46 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
