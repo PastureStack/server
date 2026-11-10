@@ -92,7 +92,7 @@ cat "$MOCK_BODY"
             self.assertIn('68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb', source)
             self.assertIn('fetch-server-component', source)
         for source in (docker, build):
-            self.assertIn(api+'PastureStack/orchestration-engine/releases/assets/730078523', source)
+            self.assertIn(api+'PastureStack/orchestration-engine/releases/assets/730360375', source)
             self.assertIn(api+'PastureStack/compose-cli/releases/assets/725701155', source)
             self.assertIn(api+'PastureStack/web-console/releases/assets/725408871', source)
             self.assertIn(api+'PastureStack/web-console/releases/assets/725408872', source)

@@ -247,6 +247,24 @@
       "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-102633.json",
       "upstreamVendorStatus": "Ubuntu26.04 Resolute: needed; no released fixed package",
       "severityBasis": "Ubuntu priority Medium and scanner vendor severity; upstream CVSS4.0 8.2 High remains disclosed."
+    },
+    {
+      "vulnerabilityId": "CVE-2026-70457",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-70457",
+      "reviewAfter": "2026-11-17",
+      "packages": [
+        {
+          "name": "rsync",
+          "installedVersion": "3.4.1+ds1-7ubuntu0.3"
+        }
+      ],
+      "verifiedAt": "2026-11-10T04:49:43.422177+00:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-70457.json",
+      "vendorEvidenceSha256": "94c84b1d40b5cddb8633dfb00c7f52f0e14f9ecf1bdd13c90157f0b3323306ab",
+      "upstreamVendorStatus": "Ubuntu26.04 Resolute: needed; no released fixed package",
+      "severityBasis": "Ubuntu priority Medium and scanner vendor severity. CVSS3.1 6.5 Medium and CVSS4.0 8.3 High remain disclosed; upstream 3.5.0 is not a released Resolute package."
     }
   ],
   "retiredFindings": [

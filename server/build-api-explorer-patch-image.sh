@@ -18,11 +18,11 @@ server_release_tag=${SERVER_RELEASE_TAG:-v1.6.593}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
-orchestration_engine_asset_api_url=${ORCHESTRATION_ENGINE_ASSET_API_URL:-https://api.github.com/repos/PastureStack/orchestration-engine/releases/assets/730078523}
-orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.392}
+orchestration_engine_asset_api_url=${ORCHESTRATION_ENGINE_ASSET_API_URL:-https://api.github.com/repos/PastureStack/orchestration-engine/releases/assets/730360375}
+orchestration_engine_release_tag=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.393}
 orchestration_engine_artifact=${ORCHESTRATION_ENGINE_ARTIFACT:-cattle.jar}
-orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-bb697ff2ca8f63874e03228523bc5542850759bcda79cb97d6579789a9e167dd}
-orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-b95ea614b4d933aa8da044147551597be9b577e8}
+orchestration_engine_artifact_sha256=${ORCHESTRATION_ENGINE_ARTIFACT_SHA256:-10b51ab32d1c6f03e63bcc86fc55112b38b0c248b691d319247e02b18436328e}
+orchestration_engine_commit=${ORCHESTRATION_ENGINE_COMMIT:-43b61b91723fff8e75b4ece7d75e2d81c0b9c85d}
 orchestration_engine_version=${orchestration_engine_release_tag#v}
 engine_readonly_schema_sha256=${ENGINE_READONLY_SCHEMA_SHA256:-7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233}
 engine_restricted_schema_sha256=${ENGINE_RESTRICTED_SCHEMA_SHA256:-f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51}
