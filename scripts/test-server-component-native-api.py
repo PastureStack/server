@@ -94,8 +94,8 @@ cat "$MOCK_BODY"
         for source in (docker, build):
             self.assertIn(api+'PastureStack/orchestration-engine/releases/assets/730933200', source)
             self.assertIn(api+'PastureStack/compose-cli/releases/assets/725701155', source)
-            self.assertIn(api+'PastureStack/web-console/releases/assets/725408871', source)
-            self.assertIn(api+'PastureStack/web-console/releases/assets/725408872', source)
+            self.assertIn(api+'PastureStack/web-console/releases/assets/731229146', source)
+            self.assertIn(api+'PastureStack/web-console/releases/assets/731229145', source)
             self.assertIn('WEB_CONSOLE_ASSET_API_URL', source)
             self.assertIn('WEB_CONSOLE_SBOM_ASSET_API_URL', source)
         self.assertIn('"${WEB_CONSOLE_ASSET_API_URL}"', docker)
