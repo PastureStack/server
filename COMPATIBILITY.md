@@ -1,5 +1,13 @@
 # Compatibility Contract
 
+## Server v1.6.594 candidate
+
+Consumes immutable Engine 0.183.394; Web1.6.233 / Bridge0.2.35 and Compose0.14.45
+are unchanged. Registry and parent StoragePool Key rules retain exact identity,
+deny precedence and the owner's live RBAC ceiling. The Server image and matching
+8080 business acceptance are pending. Preserve the qualified593 rollback.
+
+
 ## Server v1.6.593 published
 
 Image: `ghcr.io/pasturestack/server:v1.6.593@sha256:dcb694d5b36ed2dc87e993b60b3df592a0b70b3c15f892f1ba719736b877524f`.
