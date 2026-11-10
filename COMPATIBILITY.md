@@ -1,5 +1,13 @@
 # Compatibility Contract
 
+## Server v1.6.595 candidate
+
+Consumes immutable Web1.6.234 / Bridge0.2.36 with Engine0.183.394 and Compose0.14.45.
+The operation wire contract, API scopes, live RBAC ceilings and retained data
+remain unchanged. The Server image and matching8080 Registry removal acceptance
+are pending; preserve the594 rollback. No production change is included.
+
+
 ## Server v1.6.594 published
 
 Image: `ghcr.io/pasturestack/server:v1.6.594@sha256:4795d2a0ab9d91215ec98c713bdc752f0891289310547b4d1ee00062ffec58d4`.
