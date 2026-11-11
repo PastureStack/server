@@ -11,15 +11,11 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.595`](https://github.com/PastureStack/server/releases/tag/v1.6.595)
-packages Engine `v0.183.394`, Web Console `1.6.234` / optional Bridge `0.2.36`,
-and Compose `0.14.45`. Scoped Registry removals remain observable after their
-last target is removed, using the existing session-bound native receipt checks.
-Exact Registry API Key scopes retain their owner's live permission ceiling,
-parent StoragePool denials and isolation from ordinary storage pools.
-Component versions, producers and artifact hashes are verified before building.
-See the [release note](docs/releases/server-1.6.595.md) and
-[compatibility contract](COMPATIBILITY.md) for evidence and acceptance limits.
+[Server `v1.6.596`](https://github.com/PastureStack/server/releases/tag/v1.6.596) packages Engine `v0.183.395`, Web Console `1.6.235`,
+optional Bridge `0.2.37` and Compose `0.14.45`. Host lookup matches the native
+hostname and any custom name within the caller's existing permissions.
+See the [release note](docs/releases/server-1.6.596.md) and
+[compatibility contract](COMPATIBILITY.md).
 
 ## Component capabilities
 
@@ -81,7 +77,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.595
+  ghcr.io/pasturestack/server:v1.6.596
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -89,7 +85,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.595
+    image: ghcr.io/pasturestack/server:v1.6.596
     restart: unless-stopped
     ports:
       - "8080:8080"
