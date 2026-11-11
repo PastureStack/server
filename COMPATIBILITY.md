@@ -1,5 +1,20 @@
 # Compatibility Contract
 
+## Server v1.6.596 published
+
+Immutable image `ghcr.io/pasturestack/server:v1.6.596@sha256:6c2bf310a0308ff0292e74afa29205e81071094a7d7fea6423519f4582c507af`.
+Source revision `532de11774d42581f46b936a82a2872bb5e06b4d`.
+
+Packages Engine **0.183.395**, Web Console **1.6.235**, optional Bridge
+**0.2.37** and Compose **0.14.45**. The 18 Web-to-Engine wire inputs and
+1,396 API tuples retain their existing contract. Host search also considers
+the native hostname when a custom name is absent.
+
+The [publisher run](https://github.com/PastureStack/server/actions/runs/42940883563)
+passed the normal image, security, startup and restart checks. See the
+[release note](docs/releases/server-1.6.596.md) for the component scope and
+upgrade instructions.
+
 ## Server v1.6.595 published
 
 Image: `ghcr.io/pasturestack/server:v1.6.595@sha256:33a90620cbd48a999e95a14166e1d86d78317c2f118d04aa33079a848b0ee351`.
