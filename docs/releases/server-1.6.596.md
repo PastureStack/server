@@ -2,7 +2,7 @@
 
 ## Publication
 
-Immutable image digest `sha256:6c2bf310a0308ff0292e74afa29205e81071094a7d7fea6423519f4582c507af`.
+Immutable image `ghcr.io/pasturestack/server:v1.6.596@sha256:6c2bf310a0308ff0292e74afa29205e81071094a7d7fea6423519f4582c507af`.
 Source revision `532de11774d42581f46b936a82a2872bb5e06b4d`.
 
 The [publisher run](https://github.com/PastureStack/server/actions/runs/42940883563)

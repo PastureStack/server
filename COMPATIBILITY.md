@@ -2,7 +2,8 @@
 
 ## Server v1.6.596 published
 
-Immutable image digest `sha256:6c2bf310a0308ff0292e74afa29205e81071094a7d7fea6423519f4582c507af`. Source revision `532de11774d42581f46b936a82a2872bb5e06b4d`.
+Immutable image `ghcr.io/pasturestack/server:v1.6.596@sha256:6c2bf310a0308ff0292e74afa29205e81071094a7d7fea6423519f4582c507af`.
+Source revision `532de11774d42581f46b936a82a2872bb5e06b4d`.
 
 Packages Engine **0.183.395**, Web Console **1.6.235**, optional Bridge
 **0.2.37** and Compose **0.14.45**. The 18 Web-to-Engine wire inputs and
