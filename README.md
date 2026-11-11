@@ -11,10 +11,10 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.596`](https://github.com/PastureStack/server/releases/tag/v1.6.596) packages Engine `v0.183.395`, Web Console `1.6.235`,
-optional Bridge `0.2.37` and Compose `0.14.45`. Host lookup matches the native
-hostname and any custom name within the caller's existing permissions.
-See the [release note](docs/releases/server-1.6.596.md) and
+[Server `v1.6.597`](https://github.com/PastureStack/server/releases/tag/v1.6.597) packages Engine `v0.183.395`, Web Console `1.6.236`,
+optional Bridge `0.2.37` and Compose `0.14.45`. Shared dialogs stay above the
+floating Shell and Log workspace while open.
+See the [release note](docs/releases/server-1.6.597.md) and
 [compatibility contract](COMPATIBILITY.md).
 
 ## Component capabilities
@@ -77,7 +77,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.596
+  ghcr.io/pasturestack/server:v1.6.597
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -85,7 +85,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.596
+    image: ghcr.io/pasturestack/server:v1.6.597
     restart: unless-stopped
     ports:
       - "8080:8080"
