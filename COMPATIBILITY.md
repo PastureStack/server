@@ -1,5 +1,17 @@
 # Compatibility Contract
 
+## Server v1.6.597 published
+
+Immutable image `ghcr.io/pasturestack/server:v1.6.597@sha256:09a9c7741b3dca23e228de32b146c7f4f2878b1e65489bf9c3f13ba7e7089636`.
+Source revision `e250a0fdc519ed874dea90bac6b12f599818efb0`.
+
+Packages Engine **0.183.395**, Web Console **1.6.236**, optional Bridge
+**0.2.37** and Compose **0.14.45**. Shared dialogs appear above the
+floating Shell and Log workspace.
+
+See the [release note](docs/releases/server-1.6.597.md) for the verified
+component inputs and publication checks.
+
 ## Server v1.6.596 published
 
 Immutable image `ghcr.io/pasturestack/server:v1.6.596@sha256:6c2bf310a0308ff0292e74afa29205e81071094a7d7fea6423519f4582c507af`.
