@@ -1,4 +1,6 @@
-# Server v1.6.597
+# Server v1.6.597 candidate
+
+## Verified component inputs
 
 This patch packages Web Console 1.6.236 with Engine v0.183.395, optional Bridge 0.2.37 and Compose 0.14.45.
 
