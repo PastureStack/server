@@ -21,7 +21,7 @@ COMPATIBILITY = 'COMPATIBILITY.md'
 COMPOSE = 'server/artifacts/compose/docker-compose.yml'
 IMAGE_REFERENCES = 'scripts/check-server-runtime-image-references.sh'
 FILES = {name: (REPO / name).read_text(encoding='utf-8') for name in (DOCKER, BUILD, ENGINE_ARCHIVE, VEX, VENDOR, COMPATIBILITY, COMPOSE, IMAGE_REFERENCES)}
-LB_IMAGE = 'ghcr.io/pasturestack/load-balancer-service:v0.9.33'
+LB_IMAGE = 'ghcr.io/pasturestack/load-balancer-service:v0.9.34'
 LB_DEFAULT_MARKERS = [
     'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=' + LB_IMAGE,
     'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:' + LB_IMAGE,
@@ -46,7 +46,7 @@ CATALOG_COMMIT = '00eec89e5fdeb9728c1c41babccad8b7dfc8b297'
 ENGINE_SHA = '0c446a67b9a11fb9018045be0b114b328365e4c3da314d1db6e4e4421d07fcfa'
 ENGINE_SOURCE = '9611a0abde9b8e13a21182b544b98cdac92b7c6a'
 OLD_COORDINATES = {
-    'v1.6.597': 'v1.6.521',
+    'v1.6.598': 'v1.6.521',
     '1.6.236': '1.6.181',
     WEB_SHA: '9199681f2c4311f3fbe8727fcf0f6fa136c9bafe9fbe9d13878c55df442a7a03',
     WEB_SOURCE: '7f2bdad0c90a3241693c2ddd4475202ababba550',
@@ -70,7 +70,7 @@ LEGACY_ENGINE_COORDINATES = {
 }
 EXPECTED = {
     COMPATIBILITY_CODE: (COMPATIBILITY, PUBLISHED_508),
-    'SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING': (DOCKER, 'ARG SERVER_RELEASE_TAG=v1.6.597'),
+    'SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING': (DOCKER, 'ARG SERVER_RELEASE_TAG=v1.6.598'),
     'SERVER_INCREMENTAL_RELEASE_VERSION_MISSING': (DOCKER, 'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"'),
     'SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING': (DOCKER, 'ENV CATTLE_RANCHER_SERVER_VERSION=${SERVER_RELEASE_TAG}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RELEASE_TAG=1.6.236'),
@@ -85,8 +85,8 @@ EXPECTED = {
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING': (BUILD, 'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-' + WEB_SHA + '}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_LOCK_HASH_MISSING': (BUILD, 'web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-' + WEB_LOCK_SHA + '}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_SBOM_HASH_MISSING': (BUILD, 'web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-' + WEB_SBOM_SHA + '}'),
-    'SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING': (BUILD, 'image=${IMAGE:-pasturestack-validation/server:v1.6.597}'),
-    'SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING': (BUILD, 'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.597}'),
+    'SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING': (BUILD, 'image=${IMAGE:-pasturestack-validation/server:v1.6.598}'),
+    'SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING': (BUILD, 'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.598}'),
     'SERVER_INCREMENTAL_RELEASE_BUILD_RUNTIME_VERSION_MISSING': (BUILD, 'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"'),
     'SERVER_WEB_CONSOLE_RUNTIME_VERSION_GATE_MISSING': (BUILD, 'test "$(cat "${web_root}/VERSION.txt")" = "${WEB_CONSOLE_RELEASE_TAG}"'),
     'SERVER_VOLUME_NATIVE_READ_ONLY_BUILD_GATE_MISSING': (DOCKER, 'grep -F \'"volume.isNative" : "r"\' >/dev/null'),
@@ -217,11 +217,11 @@ INCREMENTAL_CONTRACTS = [
         "incremental_go_marker",
         "server/Dockerfile.web-compose-release",
         [
-            "ARG ARTIFACT_HELPER_IMAGE=golang:1.27.3-bookworm@sha256:972b4110ba0f47539a975c31e52c64765e1ff19f2d74469ae4a595c6676e80a5",
-            "test \"$(go version | awk '{print $3}')\" = go1.27.3;",
-            "test \"$(go version -m /out/pasturestack-console-broker | awk 'NR==1 {print $2}')\" = go1.27.3;",
+            "ARG ARTIFACT_HELPER_IMAGE=golang:1.27.4-bookworm@sha256:4fa7c968ba93f1635670522dbb01a2c78150443e1385746924566079f36570ea",
+            "test \"$(go version | awk '{print $3}')\" = go1.27.4;",
+            "test \"$(go version -m /out/pasturestack-console-broker | awk 'NR==1 {print $2}')\" = go1.27.4;",
             "ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.3",
-            "ENV PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.3",
+            "ENV PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.4",
             "ARG ENGINE_READONLY_SCHEMA_SHA256=7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233",
             "ARG ENGINE_RESTRICTED_SCHEMA_SHA256=f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51"
         ]
@@ -231,10 +231,10 @@ INCREMENTAL_CONTRACTS = [
         "server/build-api-explorer-patch-image.sh",
         [
             "PASTURESTACK_RUNTIME_GO_VERSION=1.27.3",
-            "PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.3",
+            "PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.4",
             "test -x /usr/bin/pasturestack-console-broker",
-            "grep -aF \"go1.27.3\" /usr/bin/pasturestack-console-broker >/dev/null",
-            "console_broker_go=1.27.3",
+            "grep -aF \"go1.27.4\" /usr/bin/pasturestack-console-broker >/dev/null",
+            "console_broker_go=1.27.4",
             "grep -aF \"go1.27.3\" \"${binary}\" >/dev/null",
             "runtime_go=1.27.3",
             "engine_readonly_schema_sha256=${ENGINE_READONLY_SCHEMA_SHA256:-7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233}",
@@ -550,7 +550,7 @@ def verify_load_balancer_contract(files, gate=GATE):
             raise AssertionError('CURRENT_LB_READBACK_GUARD_BYPASS')
     references = files[IMAGE_REFERENCES]
     for marker in (
-        'approved_balancer="${approved_registry}/load-balancer-service:v0.9.33"',
+        'approved_balancer="${approved_registry}/load-balancer-service:v0.9.34"',
         'historical_balancer="${approved_registry}/load-balancer-service:v0.9.27"',
         '"ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=${approved_balancer}" \\\n    server/Dockerfile.web-compose-release',
         '"ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=${historical_balancer}" \\\n    server/Dockerfile',
@@ -612,15 +612,15 @@ def verify(files, gate=GATE):
                 pipeline = r'(?:^|[;\n])\s*' + re.escape(marker) + r'(?=\s*(?:;|\n|$))'
                 if len(re.findall(pipeline, source)) != 1:
                     raise AssertionError('CURRENT_CATALOG_HASH_BYPASS')
-    if 'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.597"' not in gate:
+    if 'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.598"' not in gate:
         raise AssertionError('CURRENT_VEX_GATE_PIN_MISMATCH')
-    if '"$vendor_pending_fixture" v1.6.597 >/dev/null' not in gate:
+    if '"$vendor_pending_fixture" v1.6.598 >/dev/null' not in gate:
         raise AssertionError('CURRENT_VENDOR_GATE_PIN_MISMATCH')
-    if json.loads(files[VEX]).get('@id') != 'https://github.com/PastureStack/server/security/openvex/v1.6.597':
+    if json.loads(files[VEX]).get('@id') != 'https://github.com/PastureStack/server/security/openvex/v1.6.598':
         raise AssertionError('CURRENT_VEX_RELEASE_MISMATCH')
-    if json.loads(files[VENDOR]).get('release') != 'v1.6.597':
+    if json.loads(files[VENDOR]).get('release') != 'v1.6.598':
         raise AssertionError('CURRENT_VENDOR_RELEASE_MISMATCH')
-    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.597 base=v1.6.460 engine=0.183.395 web_console=1.6.236 catalog_service=0.20.17 ' not in gate:
+    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.598 base=v1.6.460 engine=0.183.395 web_console=1.6.236 catalog_service=0.20.17 ' not in gate:
         raise AssertionError('CURRENT_SUMMARY_MISMATCH')
     verify_incremental_contract(files, gate)
     verify_load_balancer_contract(files, gate)
@@ -635,11 +635,11 @@ def previous_gate(gate=GATE):
         if stale(marker) != marker:
             replacements["'" + marker + "' "] = "'" + stale(marker) + "' "
     replacements.update({
-        'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.597"':
+        'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.598"':
             'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.521"',
-        '"$vendor_pending_fixture" v1.6.597 >/dev/null':
+        '"$vendor_pending_fixture" v1.6.598 >/dev/null':
             '"$vendor_pending_fixture" v1.6.521 >/dev/null',
-        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.597 base=v1.6.460 engine=0.183.395 web_console=1.6.236 catalog_service=0.20.17 ':
+        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.598 base=v1.6.460 engine=0.183.395 web_console=1.6.236 catalog_service=0.20.17 ':
             'SERVER_API_EXPLORER_PATCH_OK release=v1.6.521 base=v1.6.460 engine=0.183.340 web_console=1.6.181 catalog_service=0.20.12 ',
     })
     for marker, stale_marker in replacements.items():
@@ -711,10 +711,10 @@ class Tests(unittest.TestCase):
 
     def test_load_balancer_old_defaults_missing_copy_forced_override_and_disabled_readback_rejected(self):
         mutations = [
-            (DOCKER, FILES[DOCKER].replace(LB_DEFAULT_MARKERS[0], LB_DEFAULT_MARKERS[0].replace('v0.9.33', 'v0.9.27'))),
+            (DOCKER, FILES[DOCKER].replace(LB_DEFAULT_MARKERS[0], LB_DEFAULT_MARKERS[0].replace('v0.9.34', 'v0.9.27'))),
             (DOCKER, FILES[DOCKER].replace(LB_DEFAULT_MARKERS[2], '# ' + LB_DEFAULT_MARKERS[2])),
             (DOCKER, FILES[DOCKER] + '\nENV CATTLE_LB_INSTANCE_IMAGE=' + LB_IMAGE + '\n'),
-            (COMPOSE, FILES[COMPOSE].replace(LB_IMAGE, LB_IMAGE.replace('v0.9.33', 'v0.9.27'), 1)),
+            (COMPOSE, FILES[COMPOSE].replace(LB_IMAGE, LB_IMAGE.replace('v0.9.34', 'v0.9.27'), 1)),
             (BUILD, FILES[BUILD].replace(LB_RUNTIME_MARKERS[2], '# ' + LB_RUNTIME_MARKERS[2])),
             (BUILD, FILES[BUILD].replace(LB_RUNTIME_MARKERS[-1], LB_RUNTIME_MARKERS[-1] + ' || true')),
             (BUILD, FILES[BUILD].replace('. /usr/share/cattle/env_vars', '# no inherited environment readback')),
@@ -731,25 +731,27 @@ class Tests(unittest.TestCase):
             verify_load_balancer_contract(FILES, GATE.replace('current_lb_default_marker', 'removed_lb_default_marker'))
 
     def test_ca_bootstrap_keeps_verified_official_security_package_bytes(self):
-        url = ('https://snapshot.ubuntu.com/ubuntu/20261104T000000Z/pool/main/c/'
-               'ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb')
-        digest = '5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd'
-        pattern = re.compile(r'^ADD --checksum=sha256:' + digest + r'\s+'
-                             + re.escape(url) + r'\s+/tmp/ca-certificates\.deb\s*$', re.M)
+        current_url = 'https://security.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.2_all.deb'
+        historical_url = 'https://snapshot.ubuntu.com/ubuntu/20261104T000000Z/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb'
         for path in (DOCKER, 'server/Dockerfile', 'server/Dockerfile.api-explorer-patch',
                      'Dockerfile', 'agent-base/Dockerfile'):
+            url, digest = (current_url, 'a7e3bf769aec16ba21ca39cba180d6d311dafcbae68346a05f137c5cc26c9ca6') if path == DOCKER else (
+                historical_url, '5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd')
+            pattern = re.compile(r'^ADD --checksum=sha256:' + digest + r'\s+'
+                                 + re.escape(url) + r'\s+/tmp/ca-certificates\.deb\s*$', re.M)
             source = (REPO / path).read_text(encoding='utf-8').replace('\\\n', ' ')
             with self.subTest(path=path):
                 self.assertEqual(len(pattern.findall(source)), 1)
                 self.assertNotIn('ca-certificates_20260601~26.04.1_all.deb', source)
                 self.assertNotIn('https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/', source)
                 self.assertIsNone(pattern.search(source.replace(digest, '0' * 64)))
-                self.assertIsNone(pattern.search(source.replace('20260816ubuntu0.26.04.1', 'latest')))
-        self.assertIn("ca_bootstrap_url='" + url + "'", GATE)
+                self.assertIsNone(pattern.search(source.replace(url, url.rsplit('/', 1)[0] + '/latest.deb')))
+        self.assertIn("ca_bootstrap_url='" + current_url + "'", GATE)
+        self.assertIn("ca_bootstrap_url='" + historical_url + "'", GATE)
         self.assertIn('SERVER_CA_CERTIFICATES_UNREVIEWED_BOOTSTRAP_SOURCE_BLOCKED', GATE)
         self.assertIn('SERVER_CA_CERTIFICATES_BOOTSTRAP_HASH_MISSING', GATE)
         recipe = FILES[DOCKER]
-        self.assertEqual(recipe.count('ARG CA_CERTIFICATES_PACKAGE_VERSION=20260816ubuntu0.26.04.1'), 2)
+        self.assertEqual(recipe.count('ARG CA_CERTIFICATES_PACKAGE_VERSION=20260816ubuntu0.26.04.2'), 2)
         self.assertIn('cp /tmp/ca-certificates.deb "/out/packages/ca-certificates_${CA_CERTIFICATES_PACKAGE_VERSION}_all.deb"', recipe)
         self.assertIn('test "$(dpkg-query -W -f=\'${Version}\' ca-certificates)" = "${CA_CERTIFICATES_PACKAGE_VERSION}"', recipe)
 
@@ -935,12 +937,12 @@ class Tests(unittest.TestCase):
                             with self.assertRaises(AssertionError):
                                 check(FILES, GATE.replace(marker, 'REMOVED_FORMAL_PIN'))
 
-    def test_current_go1273_producers_do_not_rewrite_historical_base_go(self):
+    def test_current_go_producers_do_not_rewrite_historical_base_go(self):
         codeql = (REPO / '.github/workflows/codeql.yml').read_text(encoding='utf-8')
         compiler = codeql.split('- name: Set up the production Go compiler', 1)[1].split('- name:', 1)[0]
-        self.assertIn("go-version: '1.27.3'", compiler)
+        self.assertIn("go-version: '1.27.4'", compiler)
         self.assertNotIn('1.27.2', compiler)
-        self.assertIn('test "$(go env GOVERSION)" = \'go1.27.3\'', codeql)
+        self.assertIn('test "$(go env GOVERSION)" = \'go1.27.4\'', codeql)
         verify_incremental_contract(FILES)
         historical = (
             'ARG GO_BUILDER_IMAGE=golang:1.27.0-bookworm@sha256:ded31c68586d2e49e760acc2e65a884b23d032e9bbbed0ae0c55abd3fcaf4452',
@@ -954,7 +956,7 @@ class Tests(unittest.TestCase):
         for name in (DOCKER, BUILD):
             with self.subTest(active=name):
                 with self.assertRaisesRegex(AssertionError, 'CURRENT_INCREMENTAL_SOURCE_CONTRACT_MISMATCH'):
-                    verify_incremental_contract(dict(FILES, **{name: FILES[name].replace('1.27.3', '1.27.2')}))
+                    verify_incremental_contract(dict(FILES, **{name: FILES[name].replace('1.27.4', '1.27.3')}))
 
     def test_incremental_formal_producer_pins_and_every_missing_gate_rejected(self):
         verify_incremental_contract(FILES)
@@ -1331,7 +1333,7 @@ class Tests(unittest.TestCase):
 
     def test_previous_server566_engine367_web206_component_pins_cannot_mix(self):
         previous = {
-            'v1.6.597': 'v1.6.566', '1.6.236': '1.6.206', '0.183.395': '0.183.367',
+            'v1.6.598': 'v1.6.566', '1.6.236': '1.6.206', '0.183.395': '0.183.367',
             ENGINE_SHA: '4435aec3508fafeb1b1d88f455b7cef815c026957820b9127a391728130aa86c',
             ENGINE_SOURCE: '7cdacb4aad8cfbee3db239bb602a6a047da31fcf',
             WEB_SHA: 'c385bd89cb9458650259a9fc46baa5a46e60dd6a67fd116a3ed13bcf372a2075',
@@ -1422,7 +1424,7 @@ class Tests(unittest.TestCase):
 
     def test_engine352_actual_war_producer_and_previous351_350_boundary(self):
         candidate = (REPO / 'server/build-component-candidate.sh').read_text(encoding='utf-8')
-        self.assertIn('export SERVER_RELEASE_TAG=${SERVER_RELEASE_TAG:-v1.6.597}', candidate)
+        self.assertIn('export SERVER_RELEASE_TAG=${SERVER_RELEASE_TAG:-v1.6.598}', candidate)
         self.assertIn('export ORCHESTRATION_ENGINE_RELEASE_TAG=${ORCHESTRATION_ENGINE_RELEASE_TAG:-v0.183.395}', candidate)
         for old in (
             {'0.183.395': '0.183.351',
@@ -1730,7 +1732,7 @@ class Tests(unittest.TestCase):
     def test_current_readme_status_specific_prose_does_not_block_publication_transition(self):
         common = GATE.split('for current_readme_marker in ', 1)[1].split('; do', 1)[0]
         self.assertNotIn('candidate', common)
-        self.assertNotIn('v1.6.597', common)
+        self.assertNotIn('v1.6.598', common)
         self.assertIn("grep -Fqi 'keep all three named volumes' README.md", GATE)
         status = GATE.split("if grep -Fxq '## Current source candidate' README.md; then", 1)[1]
         candidate, published = status.split("elif grep -Fxq '## Current release' README.md; then", 1)
@@ -1739,7 +1741,7 @@ class Tests(unittest.TestCase):
         self.assertIn('This candidate is not yet available', candidate)
         self.assertIn('SERVER_CURRENT_PUBLISHED_README_MISSING', published)
         self.assertNotIn('candidate', published)
-        self.assertNotIn('v1.6.597', published)
+        self.assertNotIn('v1.6.598', published)
 
 
 if __name__ == '__main__':
