@@ -544,7 +544,6 @@ RUN set -eux; \
 
 FROM ${UBUNTU_SECURITY_IMAGE} AS runtime_security_packages
 
-ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20261002T000000Z
 ARG PCRE2_PACKAGE_VERSION=10.46-1build1+pasturestack.1
 ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.8
 ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7
@@ -560,6 +559,9 @@ COPY scripts/download-ubuntu-security-updates.sh /usr/local/libexec/pasturestack
 COPY security/ubuntu-security-packages.lock /build/ubuntu-security-packages.lock
 COPY security/official-brotli.lock.json /build/official-brotli.lock.json
 COPY security/official-apt.lock.json /build/official-apt.lock.json
+ADD --checksum=sha256:9737a6cce092902c6808caee114d2e8179f7b003dbf41ae71fdb96b2c76f2057 \
+    https://security.ubuntu.com/ubuntu/pool/main/t/tar/tar_1.35+dfsg-4ubuntu0.4_amd64.deb \
+    /tmp/tar.deb
 ADD --checksum=sha256:0de729b8fe0e1c67c04e8e8d5bd6e0420dbd47f75b93f0b71c8e740edc2d5ffc \
     https://security.ubuntu.com/ubuntu/pool/main/a/apt/apt_3.2.1ubuntu0.1_amd64.deb \
     /tmp/apt.deb
@@ -619,13 +621,12 @@ RUN set -eux; \
       LC_ALL=C sort | while IFS= read -r certificate; do sed -e '$a\' "${certificate}"; done \
       > /etc/ssl/certs/ca-certificates.crt; \
     rm -rf /tmp/ca-bootstrap; \
-    rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; \
-    printf 'Types: deb\nURIs: https://snapshot.ubuntu.com/ubuntu/%s\nSuites: resolute resolute-updates resolute-backports resolute-security\nComponents: main universe restricted multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nSnapshot: no\n' "${UBUNTU_RUNTIME_SECURITY_SNAPSHOT}" \
-      > /etc/apt/sources.list.d/pasturestack-snapshot.sources; \
-    printf 'Acquire::Retries "5";\nAcquire::https::CaInfo "/etc/ssl/certs/ca-certificates.crt";\nAcquire::https::Verify-Peer "true";\nAcquire::https::Verify-Host "true";\nAcquire::AllowInsecureRepositories "false";\nAPT::Get::AllowUnauthenticated "false";\n' \
-      > /etc/apt/apt.conf.d/80pasturestack-snapshot; \
-    apt-get update --error-on=any; \
-    apt-get install -y --no-install-recommends ca-certificates tar; \
+    test -s /etc/ssl/certs/ca-certificates.crt; \
+    test "$(dpkg-deb -f /tmp/tar.deb Package)" = tar; \
+    test "$(dpkg-deb -f /tmp/tar.deb Version)" = "1.35+dfsg-4ubuntu0.4"; \
+    test "$(dpkg-deb -f /tmp/tar.deb Architecture)" = amd64; \
+    dpkg-deb --extract /tmp/tar.deb /tmp/tar-bootstrap; \
+    test -x /tmp/tar-bootstrap/usr/bin/tar; \
     mkdir -p /out/packages /out/official-apt; \
     for package in apt libapt-pkg7.0; do \
       cp "/tmp/${package}.deb" "/out/packages/${package}_${APT_PACKAGE_VERSION}_amd64.deb"; \
@@ -699,7 +700,7 @@ RUN set -eux; \
       usr/lib/x86_64-linux-gnu/engines-3/padlock.so \
       usr/lib/x86_64-linux-gnu/ossl-modules/legacy.so \
       > /out/openssl-runtime.sha256; \
-    cp /usr/bin/tar /out/tar; \
+    cp /tmp/tar-bootstrap/usr/bin/tar /out/tar; \
     test "$(dpkg-deb -f /tmp/libbrotli1.deb Package)" = libbrotli1; \
     test "$(dpkg-deb -f /tmp/libbrotli1.deb Source)" = brotli; \
     test "$(dpkg-deb -f /tmp/libbrotli1.deb Version)" = "${BROTLI_PACKAGE_VERSION}"; \
@@ -714,8 +715,28 @@ RUN sh /usr/local/libexec/pasturestack/download-ubuntu-security-updates.sh \
       /build/ubuntu-security-packages.lock /etc/ssl/certs/ca-certificates.crt /out/security-updates
 
 COPY security/ubuntu-perl-security.lock /build/ubuntu-perl-security.lock
-RUN sh /usr/local/libexec/pasturestack/download-ubuntu-security-updates.sh \
-      /build/ubuntu-perl-security.lock /etc/ssl/certs/ca-certificates.crt /out/perl-security-updates 20261112T000000Z
+ADD --checksum=sha256:90f8eaff943d093fd62036d60aa3d57d6a8bf9836d620e675b0a71be80124d86 \
+    https://security.ubuntu.com/ubuntu/pool/main/p/perl/libperl5.40_5.40.1-7ubuntu0.4_amd64.deb \
+    /out/perl-security-updates/libperl5.40.deb
+ADD --checksum=sha256:080d50944d3f9893a93c7e9c28ae403275b2385277640dbd7c67cb53adb2de12 \
+    https://security.ubuntu.com/ubuntu/pool/main/p/perl/perl_5.40.1-7ubuntu0.4_amd64.deb \
+    /out/perl-security-updates/perl.deb
+ADD --checksum=sha256:59392eb03fbf15419340c736e2eb4cfd345e03491810711495fccc03264b1f0b \
+    https://security.ubuntu.com/ubuntu/pool/main/p/perl/perl-base_5.40.1-7ubuntu0.4_amd64.deb \
+    /out/perl-security-updates/perl-base.deb
+ADD --checksum=sha256:9f96eab53f45388c41e5d470257c1cab231ec33bf968cef65a558b5d8452aeb5 \
+    https://security.ubuntu.com/ubuntu/pool/main/p/perl/perl-modules-5.40_5.40.1-7ubuntu0.4_all.deb \
+    /out/perl-security-updates/perl-modules-5.40.deb
+RUN set -eux; \
+    cd /out/perl-security-updates; \
+    printf 'lock-sha256\t%s\n' "$(sha256sum /build/ubuntu-perl-security.lock | cut -d ' ' -f 1)" > manifest.tsv; \
+    while IFS='=' read -r package version; do \
+      test "$(dpkg-deb -f "$package.deb" Package)" = "$package"; \
+      test "$(dpkg-deb -f "$package.deb" Version)" = "$version"; \
+      arch=$(dpkg-deb -f "$package.deb" Architecture); \
+      case "$arch" in amd64|all) ;; *) exit 1;; esac; \
+      printf '%s\t%s\t%s\t%s\t%s.deb\n' "$package" "$version" "$arch" "$(sha256sum "$package.deb" | cut -d ' ' -f 1)" "$package" >> manifest.tsv; \
+    done < /build/ubuntu-perl-security.lock
 
 # The immutable bundle was qualified by the released Server551 producer. This
 # builder only derives the legacy PCRE runtime receipt from those exact deb bytes.

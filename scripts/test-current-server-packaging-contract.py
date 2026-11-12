@@ -652,12 +652,13 @@ def previous_gate(gate=GATE):
 
 class Tests(unittest.TestCase):
     def test_required_snapshot_index_failure_stops_before_install(self):
-        stage = FILES[DOCKER].split(' AS runtime_security_packages\n', 1)[1].split('\nFROM ', 1)[0]
-        commands = [line.strip().removesuffix(' \\').removesuffix(';') for line in stage.splitlines()
-                    if line.strip().startswith(('apt-get update', 'apt-get install'))]
-        self.assertEqual(2, len(commands))
-        self.assertEqual(['apt-get', 'update', '--error-on=any'], shlex.split(commands[0]))
-        self.assertEqual('apt-get install -y --no-install-recommends ca-certificates tar', commands[1])
+        source = (REPO / 'server/scripts/download-ubuntu-security-updates.sh').read_text(encoding='utf-8')
+        update = next(line for line in source.splitlines() if line.startswith('apt_security update'))
+        download = 'apt_security --print-uris download'
+        self.assertEqual('apt_security update --error-on=any', update)
+        self.assertLess(source.index(update), source.index(download))
+        commands = [update, download + ' package=1.0']
+
         shell = shutil.which('sh')
         if not shell and os.name == 'nt':
             git = shutil.which('git')
@@ -675,16 +676,16 @@ class Tests(unittest.TestCase):
             for failed in ('0', '1'):
                 calls = work / ('calls-' + failed)
                 env = dict(os.environ, APT_TEST_CALLS=calls.as_posix(), APT_TEST_FAILED_INDEX=failed)
-                script = 'set -e\nPATH="$PWD:$PATH"\nexport PATH\n' + '\n'.join(commands)
+                script = 'set -e\nPATH="$PWD:$PATH"\nexport PATH\napt_security() { apt-get "$@"; }\n' + '\n'.join(commands)
                 result = subprocess.run([shell, '-c', script], cwd=work, env=env, capture_output=True, text=True, timeout=15)
                 self.assertEqual(100 if failed == '1' else 0, result.returncode, result.stderr)
                 self.assertEqual(commands[:1] if failed == '1' else commands,
-                                 ['apt-get ' + row for row in calls.read_text(encoding='utf-8').splitlines()])
+                                 ['apt_security ' + row for row in calls.read_text(encoding='utf-8').splitlines()])
             # The pre-fix warning-only update continues to install: keep that
             # exact regression observable rather than merely matching a string.
             calls = work / 'calls-before'
             env = dict(os.environ, APT_TEST_CALLS=calls.as_posix(), APT_TEST_FAILED_INDEX='1')
-            before = script.replace('apt-get update --error-on=any', 'apt-get update')
+            before = script.replace('apt_security update --error-on=any', 'apt_security update')
             result = subprocess.run([shell, '-c', before], cwd=work, env=env, capture_output=True, text=True, timeout=15)
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertEqual(2, len(calls.read_text(encoding='utf-8').splitlines()))
@@ -773,7 +774,7 @@ class Tests(unittest.TestCase):
             self.assertIn('ADD --checksum=sha256:' + digest, declared)
             self.assertIn(url, declared)
         self.assertEqual(recipe.count('ARG CURL_PACKAGE_VERSION=' + version), 2)
-        self.assertEqual(recipe.count('ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20261002T000000Z'), 2)
+        self.assertEqual(recipe.count('ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20261002T000000Z'), 1)
         self.assertNotRegex(recipe, r'apt-get download\s+\\\s*\n\s*"curl=')
         copy = 'cp "/tmp/${package}.deb" "/out/packages/${package}_${CURL_PACKAGE_VERSION}_amd64.deb"'
         self.assertIn(copy, declared)
