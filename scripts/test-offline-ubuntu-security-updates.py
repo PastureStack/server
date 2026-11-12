@@ -54,7 +54,7 @@ elif name == 'apt-get':
     digest=hashlib.sha256(source.read_bytes()).hexdigest()
     if os.environ.get('FIXTURE_BAD_HASH'): digest='0'*64
     if '--print-uris' in args:
-        origin='https://snapshot.ubuntu.com/ubuntu/20261023T000000Z/'
+        origin='https://archive.ubuntu.com/ubuntu/'
         if os.environ.get('FIXTURE_BAD_URI'): origin='http://untrusted.invalid/'
         kind='SHA256'
         if 'Acquire::ForceHash=sha256' not in args:
