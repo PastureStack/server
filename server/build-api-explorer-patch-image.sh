@@ -14,7 +14,7 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.597}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.598}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
@@ -134,7 +134,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-6d4
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.597}
+image=${IMAGE:-pasturestack-validation/server:v1.6.598}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -412,8 +412,8 @@ for marker in \
     CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}" \
     DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.34 \
     DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.34 \
-    DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.33 \
-    DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.33 \
+    DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.34 \
+    DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.34 \
     RC16_GO_AGENT_VERSION="${node_agent_version}" \
     RC16_PER_HOST_SUBNET_VERSION="${per_host_subnet_version}" \
     PASTURESTACK_PER_HOST_SUBNET_PRODUCER_COMMIT="${per_host_subnet_producer_commit}" \
@@ -437,7 +437,7 @@ for marker in \
     PASTURESTACK_GLIBC_CVE_2026_18374_FIX=official-source-backport \
     PASTURESTACK_GLIBC_OFFICIAL_PACKAGE_VERSION=2.43-2ubuntu2.4 \
     PASTURESTACK_GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4+pasturestack.1 \
-    PASTURESTACK_PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3 \
+    PASTURESTACK_PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.4 \
     PASTURESTACK_LIBDBI_PERL_PACKAGE_VERSION=1.647-1ubuntu0.26.04.4 \
     PASTURESTACK_FREETYPE_PACKAGE_VERSION=2.14.2+dfsg-1ubuntu0.2 \
     PASTURESTACK_LIBPNG_PACKAGE_VERSION=1.6.57-1ubuntu0.1 \
@@ -456,7 +456,7 @@ for marker in \
     PASTURESTACK_RUNTIME_USER_MAPPING=removed \
     PASTURESTACK_GPG_VERIFIER=removed \
     PASTURESTACK_CONTAINER_SOURCE_BUILD_MODE=removed \
-    PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.3 \
+    PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.4 \
     PASTURESTACK_API_EXPLORER_PACKAGE=1.1.20 \
     PASTURESTACK_API_EXPLORER_COMMIT="${api_explorer_commit}" \
     PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256="${api_explorer_artifact_sha256}" \
@@ -517,9 +517,9 @@ done
 docker run --rm --network none --entrypoint sh "$image" -eu -c '
     . /usr/share/cattle/env_vars
     test -z "${CATTLE_LB_INSTANCE_IMAGE:-}${CATTLE_LB_INSTANCE_IMAGE_UUID:-}${RC16_LB_INSTANCE_IMAGE:-}${RC16_LB_INSTANCE_IMAGE_UUID:-}"
-    test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE" = ghcr.io/pasturestack/load-balancer-service:v0.9.33
-    test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID" = docker:ghcr.io/pasturestack/load-balancer-service:v0.9.33
-    test "$(grep -Fxc "  image: ghcr.io/pasturestack/load-balancer-service:v0.9.33" /usr/share/cattle/compose/docker-compose.yml)" = 2
+    test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE" = ghcr.io/pasturestack/load-balancer-service:v0.9.34
+    test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID" = docker:ghcr.io/pasturestack/load-balancer-service:v0.9.34
+    test "$(grep -Fxc "  image: ghcr.io/pasturestack/load-balancer-service:v0.9.34" /usr/share/cattle/compose/docker-compose.yml)" = 2
 '
 
 docker run --rm --entrypoint bash "$image" -lc '
@@ -528,7 +528,7 @@ docker run --rm --entrypoint bash "$image" -lc '
         test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${package}")" = "2.43-2ubuntu2.4+pasturestack.1"
     done
     for package in libperl5.40 perl perl-base perl-modules-5.40; do
-        test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${package}")" = "5.40.1-7ubuntu0.3"
+        test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${package}")" = "5.40.1-7ubuntu0.4"
     done
     active_entrypoints=(
         /usr/bin/entry
@@ -910,7 +910,7 @@ EOF
         grep -aF "go1.27.3" "${binary}" >/dev/null
     done
     test -x /usr/bin/pasturestack-console-broker
-    grep -aF "go1.27.3" /usr/bin/pasturestack-console-broker >/dev/null
+    grep -aF "go1.27.4" /usr/bin/pasturestack-console-broker >/dev/null
     /usr/bin/authentication-service.real --version | grep -F "0.4.46" >/dev/null
     for marker in \
         oidcAccessPolicyUpdate \
@@ -994,7 +994,7 @@ EOF
     done
     for perl_package in libperl5.40 perl perl-base perl-modules-5.40; do
         test "$(dpkg-query -W -f='"'"'${Version}'"'"' "${perl_package}")" = \
-            "5.40.1-7ubuntu0.3"
+            "5.40.1-7ubuntu0.4"
     done
     version_at_least libssh2-1t64 1.11.1-1ubuntu0.26.04.4
     version_at_least systemd 259.5-0ubuntu3.4
@@ -1116,7 +1116,7 @@ EOF
 docker run --rm -i --network none --entrypoint bash "$image" -s \
     < scripts/test-server-openssl-tls.sh
 
-printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s catalog_service=%s catalog_service_commit=%s catalog_service_archive_sha256=%s catalog_service_binary_sha256=%s catalog_service_sqlite_binary_sha256=%s authentication_service=%s authentication_service_commit=%s authentication_service_archive_sha256=%s authentication_service_binary_sha256=%s websocket_proxy=%s websocket_proxy_commit=%s websocket_proxy_archive_sha256=%s websocket_proxy_binary_sha256=%s compose_executor=%s compose_executor_commit=%s compose_executor_archive_sha256=%s compose_executor_binary_sha256=%s vsphere_cli=%s vsphere_cli_commit=%s vsphere_cli_archive_sha256=%s govc_binary_sha256=%s runtime_go=1.27.3 console_broker_go=1.27.3 orchestration_updated=1 wrappers_pinned=1 audit_log_filters=1 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 vendor_pending=exact-set artifact_scan=required\n' \
+printf 'SERVER_API_EXPLORER_PATCH_IMAGE_OK image=%s revision=%s base=%s orchestration=%s orchestration_commit=%s orchestration_sha256=%s api_explorer=%s api_explorer_commit=%s artifact_sha256=%s web_console=%s web_console_commit=%s web_console_sha256=%s catalog_service=%s catalog_service_commit=%s catalog_service_archive_sha256=%s catalog_service_binary_sha256=%s catalog_service_sqlite_binary_sha256=%s authentication_service=%s authentication_service_commit=%s authentication_service_archive_sha256=%s authentication_service_binary_sha256=%s websocket_proxy=%s websocket_proxy_commit=%s websocket_proxy_archive_sha256=%s websocket_proxy_binary_sha256=%s compose_executor=%s compose_executor_commit=%s compose_executor_archive_sha256=%s compose_executor_binary_sha256=%s vsphere_cli=%s vsphere_cli_commit=%s vsphere_cli_archive_sha256=%s govc_binary_sha256=%s runtime_go=1.27.3 console_broker_go=1.27.4 orchestration_updated=1 wrappers_pinned=1 audit_log_filters=1 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 vendor_pending=exact-set artifact_scan=required\n' \
     "$image" "$revision" "$base_image" "${orchestration_engine_release_tag#v}" \
     "$orchestration_engine_commit" "$orchestration_engine_artifact_sha256" \
     "${api_explorer_release_tag#v}" "$api_explorer_commit" "$api_explorer_artifact_sha256" \

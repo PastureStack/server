@@ -183,7 +183,7 @@ def run_vex():
     expressions = re.findall(r"jq -e '(\n.*?)\n' \"\$runtime_vex\" >/dev/null", gate, re.S)
     assert len(expressions) == 1, 'Expected the single actual production VEX predicate'
     document = json.loads((REPO / 'server/security/openvex.json').read_bytes())
-    assert len(document['statements']) == 57
+    assert len(document['statements']) == 58
     indices = [i for i, row in enumerate(document['statements']) if row['vulnerability']['name'] == 'CVE-2026-109518']
     assert len(indices) == 1
     index = indices[0]

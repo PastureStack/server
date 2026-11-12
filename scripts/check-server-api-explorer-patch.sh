@@ -573,7 +573,7 @@ python3 scripts/test-web-console-sbom.py
 python3 server/security/test_web_console_sbom_scan.py
 
 require_marker "$release_dockerfile" \
-    'ARG SERVER_RELEASE_TAG=v1.6.597' \
+    'ARG SERVER_RELEASE_TAG=v1.6.598' \
     SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"' \
@@ -805,11 +805,11 @@ for incremental_producer_runtime_marker in \
         SERVER_INCREMENTAL_RUNTIME_PRODUCER_GUARD_MISSING
 done
 for incremental_go_marker in \
-    'ARG ARTIFACT_HELPER_IMAGE=golang:1.27.3-bookworm@sha256:972b4110ba0f47539a975c31e52c64765e1ff19f2d74469ae4a595c6676e80a5' \
-    'test "$(go version | awk '"'"'{print $3}'"'"')" = go1.27.3;' \
-    'test "$(go version -m /out/pasturestack-console-broker | awk '"'"'NR==1 {print $2}'"'"')" = go1.27.3;' \
+    'ARG ARTIFACT_HELPER_IMAGE=golang:1.27.4-bookworm@sha256:4fa7c968ba93f1635670522dbb01a2c78150443e1385746924566079f36570ea' \
+    'test "$(go version | awk '"'"'{print $3}'"'"')" = go1.27.4;' \
+    'test "$(go version -m /out/pasturestack-console-broker | awk '"'"'NR==1 {print $2}'"'"')" = go1.27.4;' \
     'ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.3' \
-    'ENV PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.3' \
+    'ENV PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.4' \
     'ARG ENGINE_READONLY_SCHEMA_SHA256=7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233' \
     'ARG ENGINE_RESTRICTED_SCHEMA_SHA256=f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51'; do
     require_marker "$release_dockerfile" "$incremental_go_marker" \
@@ -817,10 +817,10 @@ for incremental_go_marker in \
 done
 for incremental_go_build_marker in \
     'PASTURESTACK_RUNTIME_GO_VERSION=1.27.3' \
-    'PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.3' \
+    'PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.4' \
     'test -x /usr/bin/pasturestack-console-broker' \
-    'grep -aF "go1.27.3" /usr/bin/pasturestack-console-broker >/dev/null' \
-    'console_broker_go=1.27.3' \
+    'grep -aF "go1.27.4" /usr/bin/pasturestack-console-broker >/dev/null' \
+    'console_broker_go=1.27.4' \
     'grep -aF "go1.27.3" "${binary}" >/dev/null' \
     'runtime_go=1.27.3' \
     'engine_readonly_schema_sha256=${ENGINE_READONLY_SCHEMA_SHA256:-7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233}' \
@@ -1141,10 +1141,10 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.597}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.598}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.597}' \
+    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.598}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING
 require_marker "$build_script" \
     'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"' \
@@ -1307,16 +1307,21 @@ require_marker "$dockerfile" \
 require_marker "$dockerfile" \
     'ARG UBUNTU_SNAPSHOT=20260910T100000Z' \
     SERVER_API_EXPLORER_PATCH_UBUNTU_SNAPSHOT_NOT_CURRENT
-# The moving archive removed this version. This signed snapshot serves the
-# identical package bytes; keep the exact path and checksum, not an arbitrary
-# snapshot or a replacement hash for an HTTP error page.
-ca_bootstrap_url='https://snapshot.ubuntu.com/ubuntu/20261104T000000Z/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb'
+# Historical recipes keep their frozen CA input. The current image uses the
+# official updated package and independently pinned bytes.
 for bootstrap_dockerfile in "$dockerfile" "$core_dockerfile" "$release_dockerfile"; do
+    if [ "$bootstrap_dockerfile" = "$release_dockerfile" ]; then
+        ca_bootstrap_url='https://security.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.2_all.deb'
+        ca_bootstrap_hash='a7e3bf769aec16ba21ca39cba180d6d311dafcbae68346a05f137c5cc26c9ca6'
+    else
+        ca_bootstrap_url='https://snapshot.ubuntu.com/ubuntu/20261104T000000Z/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb'
+        ca_bootstrap_hash='5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd'
+    fi
     require_marker "$bootstrap_dockerfile" \
         "$ca_bootstrap_url" \
         SERVER_CA_CERTIFICATES_OFFICIAL_BOOTSTRAP_SOURCE_MISSING
     require_marker "$bootstrap_dockerfile" \
-        'ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd' \
+        "ADD --checksum=sha256:$ca_bootstrap_hash" \
         SERVER_CA_CERTIFICATES_BOOTSTRAP_HASH_MISSING
     if grep -F '/pool/main/c/ca-certificates/' "$bootstrap_dockerfile" | \
         grep -Fv "$ca_bootstrap_url" >/dev/null; then
@@ -1359,21 +1364,21 @@ require_marker "$dockerfile" \
 # These checks own the current assembly; the historical patch recipe above
 # remains pinned to the original 1.1.18 artifact.
 for current_lb_default_marker in \
-    'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.33' \
-    'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.33' \
+    'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.34' \
+    'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.34' \
     'COPY artifacts/compose/ /usr/share/cattle/compose/'; do
     require_marker "$release_dockerfile" "$current_lb_default_marker" SERVER_CURRENT_LB_DEFAULT_MISSING
 done
 for current_lb_runtime_marker in \
-    'DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.33' \
-    'DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.33' \
+    'DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.34' \
+    'DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.34' \
     'test -z "${CATTLE_LB_INSTANCE_IMAGE:-}${CATTLE_LB_INSTANCE_IMAGE_UUID:-}${RC16_LB_INSTANCE_IMAGE:-}${RC16_LB_INSTANCE_IMAGE_UUID:-}"' \
-    'test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE" = ghcr.io/pasturestack/load-balancer-service:v0.9.33' \
-    'test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID" = docker:ghcr.io/pasturestack/load-balancer-service:v0.9.33' \
-    'test "$(grep -Fxc "  image: ghcr.io/pasturestack/load-balancer-service:v0.9.33" /usr/share/cattle/compose/docker-compose.yml)" = 2'; do
+    'test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE" = ghcr.io/pasturestack/load-balancer-service:v0.9.34' \
+    'test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID" = docker:ghcr.io/pasturestack/load-balancer-service:v0.9.34' \
+    'test "$(grep -Fxc "  image: ghcr.io/pasturestack/load-balancer-service:v0.9.34" /usr/share/cattle/compose/docker-compose.yml)" = 2'; do
     require_marker "$build_script" "$current_lb_runtime_marker" SERVER_CURRENT_LB_RUNTIME_GATE_MISSING
 done
-if [ "$(grep -Fxc '  image: ghcr.io/pasturestack/load-balancer-service:v0.9.33' server/artifacts/compose/docker-compose.yml)" -ne 2 ]; then
+if [ "$(grep -Fxc '  image: ghcr.io/pasturestack/load-balancer-service:v0.9.34' server/artifacts/compose/docker-compose.yml)" -ne 2 ]; then
     echo SERVER_CURRENT_LB_COMPOSE_REFERENCE_MISMATCH >&2
     exit 1
 fi
@@ -1696,10 +1701,10 @@ fi
 if grep -Fxq '## Current source candidate' README.md; then
     for candidate_readme_marker in \
         '<a id="current-release"></a>' \
-        'Server `v1.6.597` is a prepared source candidate, not a published image.' \
+        'Server `v1.6.598` is a prepared source candidate, not a published image.' \
         'run them only after its official release' \
         'This candidate is not yet available' \
-        'ghcr.io/pasturestack/server:v1.6.597'; do
+        'ghcr.io/pasturestack/server:v1.6.598'; do
         require_marker README.md "$candidate_readme_marker" \
             SERVER_CURRENT_CANDIDATE_README_MISSING
     done
@@ -1990,7 +1995,7 @@ require_marker "$build_script" \
     'PASTURESTACK_GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4+pasturestack.1' \
     SERVER_GLIBC_IMAGE_VERSION_GATE_MISSING
 require_marker "$build_script" \
-    'PASTURESTACK_PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.3' \
+    'PASTURESTACK_PERL_PACKAGE_VERSION=5.40.1-7ubuntu0.4' \
     SERVER_PERL_IMAGE_VERSION_GATE_MISSING
 for runtime_reachability_marker in \
     '/usr/share/cattle/cattle.sh' \
@@ -2307,11 +2312,21 @@ done
 jq -e '
   ["CVE-2026-107928","CVE-2026-107929","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"] as $curl_fixed_cves
   |   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.597"
-  and (.statements | length) == 57
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.598"
+  and (.statements | length) == 58
+  and ([.statements[] | select(.vulnerability.name == "CVE-2026-82560")] | length) == 1
+  and any(.statements[];
+      .vulnerability.name == "CVE-2026-82560" and .status == "fixed"
+      and (has("justification") | not)
+      and ([.products[]."@id"] | sort) == [
+          "pkg:deb/ubuntu/libperl5.40@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04",
+          "pkg:deb/ubuntu/perl-base@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04",
+          "pkg:deb/ubuntu/perl-modules-5.40@5.40.1-7ubuntu0.4?arch=all&distro=ubuntu-26.04",
+          "pkg:deb/ubuntu/perl@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
+      ])
   and ([.statements[].vulnerability.name] | length == (unique | length))
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
-      == ["CVE-2024-52005","CVE-2026-103111","CVE-2026-107928","CVE-2026-107929","CVE-2026-109518","CVE-2026-12087","CVE-2026-13221","CVE-2026-18798","CVE-2026-27171","CVE-2026-56391","CVE-2026-57432","CVE-2026-57433","CVE-2026-75803","CVE-2026-85091","CVE-2026-86145","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-89156","CVE-2026-89157","CVE-2026-89158","CVE-2026-89160","CVE-2026-89161","CVE-2026-89162","CVE-2026-8932","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"]
+      == ["CVE-2024-52005","CVE-2026-103111","CVE-2026-107928","CVE-2026-107929","CVE-2026-109518","CVE-2026-12087","CVE-2026-13221","CVE-2026-18798","CVE-2026-27171","CVE-2026-56391","CVE-2026-57432","CVE-2026-57433","CVE-2026-75803","CVE-2026-82560","CVE-2026-85091","CVE-2026-86145","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-89156","CVE-2026-89157","CVE-2026-89158","CVE-2026-89160","CVE-2026-89161","CVE-2026-89162","CVE-2026-8932","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"]
   and ([.statements[] | select(.status == "not_affected") | .vulnerability.name] | sort)
       == ["CVE-2024-2236","CVE-2024-56433","CVE-2025-1352","CVE-2025-1376","CVE-2025-66382","CVE-2026-13757","CVE-2026-18374","CVE-2026-18477","CVE-2026-18508","CVE-2026-27456","CVE-2026-3184","CVE-2026-40228","CVE-2026-53910","CVE-2026-54371","CVE-2026-56392","CVE-2026-56855","CVE-2026-57062","CVE-2026-78662","GO-2026-5932"]
   and ([.statements[] | select(.status == "under_investigation") | .vulnerability.name] | sort)
@@ -2357,7 +2372,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.597 >/dev/null
+    "$vendor_pending_fixture" v1.6.598 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -2461,4 +2476,4 @@ require_marker server/artifacts/fetch-server-component.sh 'Component response mu
 # Execute the shared archive verifier controls before starting an image build.
 python3 -B "$repo_root/scripts/test-engine-archive-contract.py"
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.597 base=v1.6.460 engine=0.183.395 web_console=1.6.236 catalog_service=0.20.17 webhook_automation_service=0.10.5 authentication_service=0.4.46 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.598 base=v1.6.460 engine=0.183.395 web_console=1.6.236 catalog_service=0.20.17 webhook_automation_service=0.10.5 authentication_service=0.4.46 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'

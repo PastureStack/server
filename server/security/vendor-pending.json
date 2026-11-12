@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "release": "v1.6.597",
-  "generatedAt": "2026-11-10T11:58:55.771054+00:00",
+  "release": "v1.6.598",
+  "generatedAt": "2026-11-12T08:08:21.373684+00:00",
   "policy": {
     "allowedSeverities": [
       "LOW",
@@ -18,7 +18,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-102473",
-      "reviewAfter": "2026-11-12",
+      "reviewAfter": "2026-11-19",
       "packages": [
         {
           "name": "dash",
@@ -35,7 +35,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-102474",
-      "reviewAfter": "2026-11-12",
+      "reviewAfter": "2026-11-19",
       "packages": [
         {
           "name": "dash",
@@ -53,7 +53,7 @@
       "vendorStatus": "needs-evaluation",
       "upstreamVendorStatus": "Vulnerable, fix deferred",
       "source": "https://ubuntu.com/security/CVE-2026-107161",
-      "reviewAfter": "2026-11-12",
+      "reviewAfter": "2026-11-19",
       "severityBasis": "Ubuntu priority Medium and the scanner's vendor severity; upstream CVSS v3 7.5 High is not a fix or a not-affected decision.",
       "packages": [
         {
@@ -74,7 +74,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-67693",
-      "reviewAfter": "2026-11-12",
+      "reviewAfter": "2026-11-19",
       "packages": [
         {
           "name": "libgnutls30t64",
@@ -91,7 +91,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-88647",
-      "reviewAfter": "2026-11-12",
+      "reviewAfter": "2026-11-19",
       "packages": [
         {
           "name": "libgnutls30t64",
@@ -109,7 +109,7 @@
       "vendorStatus": "needs-evaluation",
       "upstreamVendorStatus": "Vulnerable, fix deferred",
       "source": "https://ubuntu.com/security/CVE-2026-88648",
-      "reviewAfter": "2026-11-12",
+      "reviewAfter": "2026-11-19",
       "packages": [
         {
           "name": "libgnutls30t64",
@@ -126,7 +126,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-95184",
-      "reviewAfter": "2026-11-12",
+      "reviewAfter": "2026-11-19",
       "packages": [
         {
           "name": "libgnutls30t64",
@@ -143,7 +143,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-95210",
-      "reviewAfter": "2026-11-12",
+      "reviewAfter": "2026-11-19",
       "packages": [
         {
           "name": "libgnutls30t64",
@@ -156,42 +156,11 @@
       "vendorEvidenceSha256": "e223ff15f050bcc5a7cbe914158b646217c57139a8d31ebc81fbe439a6acc382"
     },
     {
-      "vulnerabilityId": "CVE-2026-82560",
-      "severity": "MEDIUM",
-      "vendorStatus": "needs-evaluation",
-      "source": "https://ubuntu.com/security/CVE-2026-82560",
-      "packages": [
-        {
-          "name": "libperl5.40",
-          "installedVersion": "5.40.1-7ubuntu0.3"
-        },
-        {
-          "name": "perl",
-          "installedVersion": "5.40.1-7ubuntu0.3"
-        },
-        {
-          "name": "perl-base",
-          "installedVersion": "5.40.1-7ubuntu0.3"
-        },
-        {
-          "name": "perl-modules-5.40",
-          "installedVersion": "5.40.1-7ubuntu0.3"
-        }
-      ],
-      "severityBasis": "Ubuntu priority Medium and scanner vendor severity. Upstream CVSS 7.5 High is retained; no not-affected claim.",
-      "fixStatus": "Upstream podlators 6.1.1 exists; the Ubuntu 26.04 package remains Vulnerable without a fixed version. Track the vendor package update; do not replace distribution modules.",
-      "reviewAfter": "2026-11-12",
-      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
-      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-82560.json",
-      "vendorEvidenceSha256": "204828515fa8d0893c4574b9845722eb806995255e884f0e8222dd63f42ca4e5",
-      "upstreamVendorStatus": "Vulnerable"
-    },
-    {
       "vulnerabilityId": "CVE-2026-78408",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-78408",
-      "reviewAfter": "2026-11-17",
+      "reviewAfter": "2026-11-19",
       "packages": [
         {
           "name": "bsdutils",
@@ -236,7 +205,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-102633",
-      "reviewAfter": "2026-11-17",
+      "reviewAfter": "2026-11-19",
       "packages": [
         {
           "name": "libexpat1",
@@ -253,7 +222,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-70457",
-      "reviewAfter": "2026-11-17",
+      "reviewAfter": "2026-11-19",
       "packages": [
         {
           "name": "rsync",
@@ -271,7 +240,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-93990",
-      "reviewAfter": "2026-11-17",
+      "reviewAfter": "2026-11-19",
       "packages": [
         {
           "name": "libexpat1",
@@ -289,23 +258,23 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-9538",
-      "reviewAfter": "2026-11-17",
+      "reviewAfter": "2026-11-19",
       "packages": [
         {
           "name": "libperl5.40",
-          "installedVersion": "5.40.1-7ubuntu0.3"
+          "installedVersion": "5.40.1-7ubuntu0.4"
         },
         {
           "name": "perl",
-          "installedVersion": "5.40.1-7ubuntu0.3"
+          "installedVersion": "5.40.1-7ubuntu0.4"
         },
         {
           "name": "perl-base",
-          "installedVersion": "5.40.1-7ubuntu0.3"
+          "installedVersion": "5.40.1-7ubuntu0.4"
         },
         {
           "name": "perl-modules-5.40",
-          "installedVersion": "5.40.1-7ubuntu0.3"
+          "installedVersion": "5.40.1-7ubuntu0.4"
         }
       ],
       "verifiedAt": "2026-11-10T11:58:55.771054+00:00",

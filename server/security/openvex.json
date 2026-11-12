@@ -1,9 +1,9 @@
 {
   "@context": "https://openvex.dev/ns/v0.2.0",
-  "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.597",
+  "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.598",
   "author": "PastureStack Security",
-  "timestamp": "2026-11-05T03:55:02Z",
-  "version": 89,
+  "timestamp": "2026-11-12T08:08:21Z",
+  "version": 90,
   "statements": [
     {
       "vulnerability": {
@@ -416,20 +416,20 @@
       },
       "products": [
         {
-          "@id": "pkg:deb/ubuntu/libperl5.40@5.40.1-7ubuntu0.3?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/libperl5.40@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/perl@5.40.1-7ubuntu0.3?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/perl@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/perl-base@5.40.1-7ubuntu0.3?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/perl-base@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/perl-modules-5.40@5.40.1-7ubuntu0.3?arch=all&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/perl-modules-5.40@5.40.1-7ubuntu0.4?arch=all&distro=ubuntu-26.04"
         }
       ],
       "status": "fixed",
-      "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed package revision for CVE-2026-12087. The final image installs and exact-verifies that revision for libperl5.40, perl, perl-base, and perl-modules-5.40 from the signed 2026-09-10 snapshot."
+      "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed revision for CVE-2026-12087. The runtime installs and exact-verifies the superseding 5.40.1-7ubuntu0.4 from the signed 2026-11-12 Ubuntu snapshot."
     },
     {
       "vulnerability": {
@@ -437,20 +437,20 @@
       },
       "products": [
         {
-          "@id": "pkg:deb/ubuntu/libperl5.40@5.40.1-7ubuntu0.3?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/libperl5.40@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/perl@5.40.1-7ubuntu0.3?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/perl@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/perl-base@5.40.1-7ubuntu0.3?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/perl-base@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/perl-modules-5.40@5.40.1-7ubuntu0.3?arch=all&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/perl-modules-5.40@5.40.1-7ubuntu0.4?arch=all&distro=ubuntu-26.04"
         }
       ],
       "status": "fixed",
-      "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed package revision for CVE-2026-13221. The final image installs and exact-verifies that revision for libperl5.40, perl, perl-base, and perl-modules-5.40 from the signed 2026-09-10 snapshot."
+      "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed revision for CVE-2026-13221. The runtime installs and exact-verifies the superseding 5.40.1-7ubuntu0.4 from the signed 2026-11-12 Ubuntu snapshot."
     },
     {
       "vulnerability": {
@@ -458,20 +458,20 @@
       },
       "products": [
         {
-          "@id": "pkg:deb/ubuntu/libperl5.40@5.40.1-7ubuntu0.3?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/libperl5.40@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/perl@5.40.1-7ubuntu0.3?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/perl@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/perl-base@5.40.1-7ubuntu0.3?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/perl-base@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/perl-modules-5.40@5.40.1-7ubuntu0.3?arch=all&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/perl-modules-5.40@5.40.1-7ubuntu0.4?arch=all&distro=ubuntu-26.04"
         }
       ],
       "status": "fixed",
-      "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed package revision for CVE-2026-57432. The final image installs and exact-verifies that revision for libperl5.40, perl, perl-base, and perl-modules-5.40 from the signed 2026-09-10 snapshot."
+      "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed revision for CVE-2026-57432. The runtime installs and exact-verifies the superseding 5.40.1-7ubuntu0.4 from the signed 2026-11-12 Ubuntu snapshot."
     },
     {
       "vulnerability": {
@@ -479,20 +479,20 @@
       },
       "products": [
         {
-          "@id": "pkg:deb/ubuntu/libperl5.40@5.40.1-7ubuntu0.3?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/libperl5.40@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/perl@5.40.1-7ubuntu0.3?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/perl@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/perl-base@5.40.1-7ubuntu0.3?arch=amd64&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/perl-base@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
         },
         {
-          "@id": "pkg:deb/ubuntu/perl-modules-5.40@5.40.1-7ubuntu0.3?arch=all&distro=ubuntu-26.04"
+          "@id": "pkg:deb/ubuntu/perl-modules-5.40@5.40.1-7ubuntu0.4?arch=all&distro=ubuntu-26.04"
         }
       ],
       "status": "fixed",
-      "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed package revision for CVE-2026-57433. The final image installs and exact-verifies that revision for libperl5.40, perl, perl-base, and perl-modules-5.40 from the signed 2026-09-10 snapshot."
+      "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed revision for CVE-2026-57433. The runtime installs and exact-verifies the superseding 5.40.1-7ubuntu0.4 from the signed 2026-11-12 Ubuntu snapshot."
     },
     {
       "vulnerability": {
@@ -965,6 +965,27 @@
       ],
       "status": "fixed",
       "impact_statement": "Ubuntu USN-8996-1 (https://ubuntu.com/security/notices/USN-8996-1) fixes CVE-2026-109518 in the official Ubuntu 26.04 amd64 apt and libapt-pkg7.0 version 3.2.1ubuntu0.1. The exact official apt archive SHA-256 is 0de729b8fe0e1c67c04e8e8d5bd6e0420dbd47f75b93f0b71c8e740edc2d5ffc; the libapt-pkg7.0 archive SHA-256 is 94e5d41303265b66af0f8c70ade18bfb77260ad286edee6c8045faddef82b94c. Assembly requires both packages already installed, validates official archive hashes, sizes and package/version/architecture before the first Ubuntu APT operation, and carries the same bytes into the final runtime with exact installed-version readback. This fixed disposition applies only to the two exact official fixed-package PURLs; older versions, other packages and raw scanner findings remain unchanged."
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2026-82560"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/libperl5.40@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/perl@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/perl-base@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
+        },
+        {
+          "@id": "pkg:deb/ubuntu/perl-modules-5.40@5.40.1-7ubuntu0.4?arch=all&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "impact_statement": "https://ubuntu.com/security/CVE-2026-82560 identifies 5.40.1-7ubuntu0.4 as the fixed Ubuntu 26.04 Perl revision. The runtime installs and exact-verifies all four packages from the signed 2026-11-12 Ubuntu snapshot."
     }
   ]
 }
