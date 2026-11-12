@@ -429,7 +429,7 @@
         }
       ],
       "status": "fixed",
-      "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed revision for CVE-2026-12087. The runtime installs and exact-verifies the superseding 5.40.1-7ubuntu0.4 from the signed 2026-11-12 Ubuntu snapshot."
+      "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed revision for CVE-2026-12087. The runtime installs and exact-verifies the superseding 5.40.1-7ubuntu0.4 from the official Ubuntu security archive with SHA-256 pins verified against the signed index."
     },
     {
       "vulnerability": {
@@ -450,7 +450,7 @@
         }
       ],
       "status": "fixed",
-      "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed revision for CVE-2026-13221. The runtime installs and exact-verifies the superseding 5.40.1-7ubuntu0.4 from the signed 2026-11-12 Ubuntu snapshot."
+      "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed revision for CVE-2026-13221. The runtime installs and exact-verifies the superseding 5.40.1-7ubuntu0.4 from the official Ubuntu security archive with SHA-256 pins verified against the signed index."
     },
     {
       "vulnerability": {
@@ -471,7 +471,7 @@
         }
       ],
       "status": "fixed",
-      "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed revision for CVE-2026-57432. The runtime installs and exact-verifies the superseding 5.40.1-7ubuntu0.4 from the signed 2026-11-12 Ubuntu snapshot."
+      "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed revision for CVE-2026-57432. The runtime installs and exact-verifies the superseding 5.40.1-7ubuntu0.4 from the official Ubuntu security archive with SHA-256 pins verified against the signed index."
     },
     {
       "vulnerability": {
@@ -492,7 +492,7 @@
         }
       ],
       "status": "fixed",
-      "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed revision for CVE-2026-57433. The runtime installs and exact-verifies the superseding 5.40.1-7ubuntu0.4 from the signed 2026-11-12 Ubuntu snapshot."
+      "impact_statement": "Ubuntu USN-8675-2 identifies 5.40.1-7ubuntu0.3 as the Ubuntu 26.04 fixed revision for CVE-2026-57433. The runtime installs and exact-verifies the superseding 5.40.1-7ubuntu0.4 from the official Ubuntu security archive with SHA-256 pins verified against the signed index."
     },
     {
       "vulnerability": {
@@ -985,7 +985,7 @@
         }
       ],
       "status": "fixed",
-      "impact_statement": "https://ubuntu.com/security/CVE-2026-82560 identifies 5.40.1-7ubuntu0.4 as the fixed Ubuntu 26.04 Perl revision. The runtime installs and exact-verifies all four packages from the signed 2026-11-12 Ubuntu snapshot."
+      "impact_statement": "https://ubuntu.com/security/CVE-2026-82560 identifies 5.40.1-7ubuntu0.4 as the fixed Ubuntu 26.04 Perl revision. The runtime installs and exact-verifies all four packages from the official Ubuntu security archive with SHA-256 pins verified against the signed index."
     }
   ]
 }

@@ -3,7 +3,7 @@
 ## Verified component inputs
 
 The Server runtime installs Ubuntu 26.04 Perl packages at `5.40.1-7ubuntu0.4`
-from the signed Ubuntu snapshot to address
+from checksum-pinned Ubuntu security packages to address
 [CVE-2026-82560](https://ubuntu.com/security/CVE-2026-82560).
 The build also includes the CA package update from
 [USN-9001-1](https://ubuntu.com/security/notices/USN-9001-1).
