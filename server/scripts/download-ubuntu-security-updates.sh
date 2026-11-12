@@ -1,5 +1,5 @@
 #!/bin/sh
-# APT authenticates the snapshot only in the disposable Ubuntu build stage.
+# APT authenticates the official archive only in the disposable Ubuntu build stage.
 set -eu
 test "$#" -eq 3 || { echo 'usage: download-security-updates LOCK TRUSTED_CA_BUNDLE OUTPUT' >&2; exit 2; }
 lock=$1 trusted_ca=$2 output=$3
@@ -11,7 +11,7 @@ test ! -e "$output"
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT HUP INT TERM
 mkdir -p "$tmp/lists/partial" "$tmp/download" "$output"
-printf 'Types: deb\nURIs: https://snapshot.ubuntu.com/ubuntu/20261023T000000Z\nSuites: resolute-updates resolute-security\nComponents: main\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nSnapshot: no\n' > "$tmp/security.sources"
+printf 'Types: deb\nURIs: https://archive.ubuntu.com/ubuntu\nSuites: resolute-updates resolute-security\nComponents: main\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n' > "$tmp/security.sources"
 apt_security() {
     apt-get -o Dir::Etc::sourcelist="$tmp/security.sources" \
         -o Dir::State::lists="$tmp/lists" \
@@ -37,7 +37,7 @@ while IFS= read -r entry || test -n "$entry"; do
     # --print-uris exposes the SHA-256 from the authenticated Packages index.
     apt_security --print-uris download "$entry" > "$tmp/uri"
     test "$(wc -l < "$tmp/uri")" -eq 1
-    grep -F "'https://snapshot.ubuntu.com/ubuntu/20261023T000000Z/" "$tmp/uri" >/dev/null
+    grep -F "'https://archive.ubuntu.com/ubuntu/" "$tmp/uri" >/dev/null
     digest=$(awk '{for(i=1;i<=NF;i++) if($i ~ /^SHA256:/) print substr($i,8)}' "$tmp/uri")
     if printf '%s\n' "$digest" | grep -Eq '^[0-9a-f]{64}$'; then :; else
         echo "Authenticated index did not provide exactly one SHA256 for $entry" >&2

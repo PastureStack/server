@@ -1874,9 +1874,6 @@ for release_curl_security_marker in \
     'ARG UBUNTU_RUNTIME_SECURITY_SNAPSHOT=20261002T000000Z' \
     'ARG CURL_PACKAGE_VERSION=8.18.0-1ubuntu2.8' \
     'ARG OPENSSL_PACKAGE_VERSION=3.5.5-1ubuntu3.7' \
-    'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg' \
-    'Acquire::AllowInsecureRepositories "false"' \
-    'APT::Get::AllowUnauthenticated "false"' \
     'COPY --from=runtime_security_packages /out/ /tmp/pasturestack-runtime-security/' \
     'sha256sum -c SHA256SUMS' \
     'dpkg -i packages/*.deb' \
@@ -1893,6 +1890,17 @@ for release_curl_security_marker in \
     'ENV PASTURESTACK_OPENSSL_SECURITY_SNAPSHOT=${UBUNTU_RUNTIME_SECURITY_SNAPSHOT}'; do
     require_marker "$release_dockerfile" "$release_curl_security_marker" \
         SERVER_INCREMENTAL_CURL_SECURITY_REFRESH_MISSING
+done
+for signed_package_marker in \
+    'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg' \
+    'Acquire::https::Verify-Peer=true' \
+    'Acquire::https::Verify-Host=true' \
+    'Acquire::AllowInsecureRepositories=false' \
+    'APT::Get::AllowUnauthenticated=false' \
+    'Acquire::ForceHash=sha256' \
+    'apt_security update --error-on=any'; do
+    require_marker server/scripts/download-ubuntu-security-updates.sh "$signed_package_marker" \
+        SERVER_SIGNED_PACKAGE_SECURITY_SOURCE_MISSING
 done
 python3 scripts/test-official-apt-bootstrap.py
 
