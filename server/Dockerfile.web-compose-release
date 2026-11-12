@@ -622,6 +622,8 @@ RUN set -eux; \
       > /etc/ssl/certs/ca-certificates.crt; \
     rm -rf /tmp/ca-bootstrap; \
     test -s /etc/ssl/certs/ca-certificates.crt; \
+    sh /usr/local/libexec/pasturestack/download-ubuntu-security-updates.sh \
+      /build/ubuntu-security-packages.lock /etc/ssl/certs/ca-certificates.crt /out/security-updates; \
     test "$(dpkg-deb -f /tmp/tar.deb Package)" = tar; \
     test "$(dpkg-deb -f /tmp/tar.deb Version)" = "1.35+dfsg-4ubuntu0.4"; \
     test "$(dpkg-deb -f /tmp/tar.deb Architecture)" = amd64; \
@@ -663,11 +665,8 @@ RUN set -eux; \
       test "$(dpkg-deb -f "${package_file}" Version)" = "${CURL_PACKAGE_VERSION}"; \
       test "$(dpkg-deb -f "${package_file}" Architecture)" = amd64; \
     done; \
-    apt-get download \
-      "openssl=${OPENSSL_PACKAGE_VERSION}" \
-      "libssl3t64=${OPENSSL_PACKAGE_VERSION}" \
-      "openssl-provider-legacy=${OPENSSL_PACKAGE_VERSION}"; \
     for package in openssl libssl3t64 openssl-provider-legacy; do \
+      cp "/out/security-updates/$package.deb" "./${package}_${OPENSSL_PACKAGE_VERSION}_amd64.deb"; \
       package_file="$(find . -maxdepth 1 -type f -name "${package}_*.deb" -print)"; \
       test -n "${package_file}"; \
       test "$(printf '%s\n' "${package_file}" | wc -l)" -eq 1; \
@@ -711,8 +710,6 @@ RUN set -eux; \
     cp /build/official-brotli.lock.json /out/official-brotli/lock.json; \
     cd /out; \
     sha256sum packages/*.deb official-brotli/* official-apt/* tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 freetype-runtime.sha256 libpng-runtime.sha256 > SHA256SUMS
-RUN sh /usr/local/libexec/pasturestack/download-ubuntu-security-updates.sh \
-      /build/ubuntu-security-packages.lock /etc/ssl/certs/ca-certificates.crt /out/security-updates
 
 COPY security/ubuntu-perl-security.lock /build/ubuntu-perl-security.lock
 ADD --checksum=sha256:90f8eaff943d093fd62036d60aa3d57d6a8bf9836d620e675b0a71be80124d86 \

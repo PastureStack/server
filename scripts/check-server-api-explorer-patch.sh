@@ -1879,9 +1879,7 @@ for release_curl_security_marker in \
     'dpkg -i packages/*.deb' \
     'test "$(dpkg-query -W -f=' \
     'ENV PASTURESTACK_CURL_SECURITY_SNAPSHOT=${UBUNTU_RUNTIME_SECURITY_SNAPSHOT}' \
-    '"openssl=${OPENSSL_PACKAGE_VERSION}"' \
-    '"libssl3t64=${OPENSSL_PACKAGE_VERSION}"' \
-    '"openssl-provider-legacy=${OPENSSL_PACKAGE_VERSION}"' \
+    'cp "/out/security-updates/$package.deb" "./${package}_${OPENSSL_PACKAGE_VERSION}_amd64.deb"' \
     'dpkg-deb --extract "${package_file}" /tmp/openssl-runtime' \
     'sha256sum packages/*.deb official-brotli/* official-apt/* tar openssl-runtime.sha256 libdbi-perl-runtime.sha256 freetype-runtime.sha256 libpng-runtime.sha256 > SHA256SUMS' \
     'sha256sum -c /usr/share/pasturestack/security/openssl-runtime.sha256' \

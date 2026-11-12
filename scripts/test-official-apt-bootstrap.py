@@ -44,7 +44,7 @@ def source_guards():
         assert (row['version'], row['architecture']) == (VERSION, 'amd64')
         assert 'ADD --checksum=sha256:' + digest in stage and url in stage
         assert stage.count(digest) == 3 and str(size) in stage
-    assert stage.index('dpkg -i /tmp/libapt-pkg7.0.deb /tmp/apt.deb') < stage.index('RUN sh /usr/local/libexec/pasturestack/download-ubuntu-security-updates.sh')
+    assert stage.index('dpkg -i /tmp/libapt-pkg7.0.deb /tmp/apt.deb') < stage.index('    sh /usr/local/libexec/pasturestack/download-ubuntu-security-updates.sh')
     assert stage.index('sha256sum -c -') < stage.index('dpkg-deb -f') < stage.index('dpkg -i /tmp/')
     assert 'cp "/tmp/${package}.deb" "/out/packages/${package}_${APT_PACKAGE_VERSION}_amd64.deb"' in stage
     assert 'official-apt/*' in stage and 'COPY --from=runtime_security_packages /out/' in final
