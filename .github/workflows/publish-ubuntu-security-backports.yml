@@ -42,8 +42,12 @@ jobs:
           printf 'fixture=%s\n' "$fixture" >>"$GITHUB_OUTPUT"
           python3 -B "$helper" --prepare-source
           docker run --rm --platform linux/amd64 -v "$fixture:/work" "$TRIVY_IMAGE" --version >"$fixture/trivy-version.txt"
+          # A historical fixture needs the advisory metadata from the time of
+          # qualification. Published runtime scans still use the current DB.
           docker run --rm --platform linux/amd64 -v "$fixture:/work" "$TRIVY_IMAGE" \
-            image --cache-dir /work/cache --download-db-only 2>&1 | tee "$fixture/database.log"
+            image --cache-dir /work/cache \
+            --db-repository ghcr.io/aquasecurity/trivy-db@sha256:2be5d0d3f03c6609c1741fc01d0c5b9a4eb084c935967d78bd1e7c8309293b60 \
+            --download-db-only 2>&1 | tee "$fixture/database.log"
           for mode in raw effective; do
             vex=()
             if [[ "$mode" == effective ]]; then vex=(--vex /work/scoped.openvex.json); fi
@@ -164,8 +168,12 @@ jobs:
           fixture="$WORK/glibc-vex-semantic"
           python3 -B "$helper" --prepare
           docker run --rm --platform linux/amd64 -v "$fixture:/work" "$TRIVY_IMAGE" --version >"$fixture/trivy-version.txt"
+          # A historical fixture needs the advisory metadata from the time of
+          # qualification. Published runtime scans still use the current DB.
           docker run --rm --platform linux/amd64 -v "$fixture:/work" "$TRIVY_IMAGE" \
-            image --cache-dir /work/cache --download-db-only 2>&1 | tee "$fixture/database.log"
+            image --cache-dir /work/cache \
+            --db-repository ghcr.io/aquasecurity/trivy-db@sha256:2be5d0d3f03c6609c1741fc01d0c5b9a4eb084c935967d78bd1e7c8309293b60 \
+            --download-db-only 2>&1 | tee "$fixture/database.log"
           for mode in raw effective; do
             vex=()
             if [[ "$mode" == effective ]]; then vex=(--vex /work/scoped.openvex.json); fi
