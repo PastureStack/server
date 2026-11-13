@@ -88,7 +88,8 @@ cat "$MOCK_BODY"
         codeql = (ROOT/'.github/workflows/codeql.yml').read_text(encoding='utf-8')
         build = (ROOT/'server/build-api-explorer-patch-image.sh').read_text(encoding='utf-8')
         for source in (main, docker, codeql):
-            self.assertIn(api+'adoptium/temurin25-binaries/releases/assets/665812068', source)
+            self.assertIn('https://github.com/adoptium/temurin25-binaries/releases/download/'
+                          'jdk-25.0.5%2B8/OpenJDK25U-jdk_x64_linux_hotspot_25.0.5_8.tar.gz', source)
             self.assertIn('68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb', source)
             self.assertIn('fetch-server-component', source)
         for source in (docker, build):

@@ -19,7 +19,7 @@ write_fixture_tree() {
 # syntax=docker/dockerfile:1.7
 ${docker_base}
 ARG TEMURIN_JDK25_VERSION="25.0.5+8"
-ARG TEMURIN_JDK25_URL="https://api.github.com/repos/adoptium/temurin25-binaries/releases/assets/665812068"
+ARG TEMURIN_JDK25_URL="https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jdk_x64_linux_hotspot_25.0.5_8.tar.gz"
 ARG TEMURIN_JDK25_SHA256="68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb"
 ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH=\${JAVA_HOME}/bin:\${PATH}
@@ -35,7 +35,7 @@ DOCKER
   cat >"$root/server/Dockerfile.web-compose-release" <<'CURRENT'
 FROM helper AS temurin_security_runtime
 ARG TEMURIN_JDK25_SHA256=68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb
-ARG TEMURIN_JDK25_URL=https://api.github.com/repos/adoptium/temurin25-binaries/releases/assets/665812068
+ARG TEMURIN_JDK25_URL=https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jdk_x64_linux_hotspot_25.0.5_8.tar.gz
 RUN fetch-server-component remote
 FROM base
 RUN rm -rf /opt/java/openjdk

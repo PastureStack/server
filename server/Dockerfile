@@ -5,7 +5,7 @@ RUN rm -f /usr/bin/pebble
 
 ENV DEBIAN_FRONTEND=noninteractive
 ARG TEMURIN_JDK25_VERSION="25.0.5+8"
-ARG TEMURIN_JDK25_URL="https://api.github.com/repos/adoptium/temurin25-binaries/releases/assets/665812068"
+ARG TEMURIN_JDK25_URL="https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jdk_x64_linux_hotspot_25.0.5_8.tar.gz"
 ARG TEMURIN_JDK25_SHA256="68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb"
 ARG UBUNTU_SNAPSHOT=20260826T000000Z
 
