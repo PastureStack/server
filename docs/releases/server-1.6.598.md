@@ -27,7 +27,7 @@ The console broker and 16 packaged binaries use Go 1.27.4.
 | Webhook Automation Service | v0.10.6 |
 | WebSocket Proxy | v0.23.19 |
 | Host API | v0.38.10 |
-| Node Agent | v0.13.36 |
+| Node Agent | v0.13.37 |
 | Per-Host Subnet Windows CNI | v0.2.6 |
 
 New load balancers use `ghcr.io/pasturestack/load-balancer-service:v0.9.34`
