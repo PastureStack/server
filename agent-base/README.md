@@ -15,7 +15,7 @@ are retained under `/usr/share/pasturestack/security/ubuntu-backports/`.
 The bundle and installer are read-only build mounts, not runtime dependencies.
 
 The shared `tools/pip-security-overlay` helper builds the clearly identified
-downstream wheel `pip 26.2.2+pasturestack.1` from pinned official inputs using
+downstream wheel `pip 26.2.2+pasturestack.2` from pinned official inputs using
 upstream vendoring machinery. Only urllib3 changes to 2.8.0; unrelated vendored
 sources and licenses are byte-preserved. Both live pip and the embedded
 ensurepip wheel are updated, and a fresh venv runs the same streaming/TLS tests.

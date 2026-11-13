@@ -20,7 +20,7 @@ parser.add_argument("--stdlib", type=Path, required=True)
 parser.add_argument("--wheel", type=Path, required=True)
 parser.add_argument("--sha256", required=True)
 args = parser.parse_args()
-version = "26.2.2+pasturestack.1"
+version = "26.2.2+pasturestack.2"
 wheel = args.wheel.resolve()
 assert wheel.name == f"pip-{version}-py3-none-any.whl"
 assert hashlib.sha256(wheel.read_bytes()).hexdigest() == args.sha256
