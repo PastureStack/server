@@ -28,6 +28,20 @@ ADD --checksum=sha256:0de729b8fe0e1c67c04e8e8d5bd6e0420dbd47f75b93f0b71c8e740edc
 ADD --checksum=sha256:94e5d41303265b66af0f8c70ade18bfb77260ad286edee6c8045faddef82b94c \
     https://security.ubuntu.com/ubuntu/pool/main/a/apt/libapt-pkg7.0_3.2.1ubuntu0.1_amd64.deb \
     /tmp/libapt-pkg7.0.deb
+FROM scratch AS perl_security_inputs
+ADD --checksum=sha256:90f8eaff943d093fd62036d60aa3d57d6a8bf9836d620e675b0a71be80124d86 \
+    https://security.ubuntu.com/ubuntu/pool/main/p/perl/libperl5.40_5.40.1-7ubuntu0.4_amd64.deb \
+    /perl/libperl5.40.deb
+ADD --checksum=sha256:080d50944d3f9893a93c7e9c28ae403275b2385277640dbd7c67cb53adb2de12 \
+    https://security.ubuntu.com/ubuntu/pool/main/p/perl/perl_5.40.1-7ubuntu0.4_amd64.deb \
+    /perl/perl.deb
+ADD --checksum=sha256:59392eb03fbf15419340c736e2eb4cfd345e03491810711495fccc03264b1f0b \
+    https://security.ubuntu.com/ubuntu/pool/main/p/perl/perl-base_5.40.1-7ubuntu0.4_amd64.deb \
+    /perl/perl-base.deb
+ADD --checksum=sha256:9f96eab53f45388c41e5d470257c1cab231ec33bf968cef65a558b5d8452aeb5 \
+    https://security.ubuntu.com/ubuntu/pool/main/p/perl/perl-modules-5.40_5.40.1-7ubuntu0.4_all.deb \
+    /perl/perl-modules-5.40.deb
+
 FROM ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b AS python-builder
 
 RUN rm -f /usr/bin/pebble
@@ -44,6 +58,7 @@ ADD --checksum=sha256:a7e3bf769aec16ba21ca39cba180d6d311dafcbae68346a05f137c5cc2
 
 
 RUN --mount=from=apt_security_inputs,source=/tmp,target=/opt/official-apt,ro \
+    --mount=from=perl_security_inputs,source=/perl,target=/opt/official-perl,ro \
     set -eux; \
     mkdir -p /tmp/ca-bootstrap /etc/ssl/certs; \
     dpkg-deb --extract /tmp/ca-certificates.deb /tmp/ca-bootstrap; \
@@ -76,6 +91,10 @@ RUN --mount=from=apt_security_inputs,source=/tmp,target=/opt/official-apt,ro \
         curl \
         xz-utils \
         zlib1g-dev && \
+    dpkg -i /opt/official-perl/*.deb && \
+    for package in libperl5.40 perl perl-base perl-modules-5.40; do \
+        test "$(dpkg-query -W -f='${Version}' "$package")" = 5.40.1-7ubuntu0.4 || exit 1; \
+    done && \
     dpkg -i /tmp/ca-certificates.deb && \
     test "$(dpkg-query -W -f='${Version}' ca-certificates)" = 20260816ubuntu0.26.04.2 && \
     install -Dm0644 /tmp/ca-certificates.deb /usr/share/pasturestack/ca-certificates.deb && \
@@ -90,9 +109,9 @@ RUN --mount=from=apt_security_inputs,source=/tmp,target=/opt/official-apt,ro \
     make install && \
     ldconfig && \
     python3 /tmp/pip-security-overlay/build-pip-overlay.py --work /tmp/pip-build --output /tmp/pip-dist && \
-    echo 'be5f63d537bbe611dc422fabb6740a44b5997888b592888df5091727f023802a  /tmp/pip-dist/pip-26.2.2+pasturestack.1-py3-none-any.whl' | sha256sum -c - && \
-    python3 /tmp/pip-security-overlay/install-ensurepip-wheel.py --stdlib /usr/local/lib/python3.14 --wheel /tmp/pip-dist/pip-26.2.2+pasturestack.1-py3-none-any.whl --sha256 be5f63d537bbe611dc422fabb6740a44b5997888b592888df5091727f023802a && \
-    python3 -m pip install --no-index --no-deps /tmp/pip-dist/pip-26.2.2+pasturestack.1-py3-none-any.whl && \
+    echo '2aef7c341eef310645ab56455f5789de2819463b25fa70151954e1d208d2db36  /tmp/pip-dist/pip-26.2.2+pasturestack.2-py3-none-any.whl' | sha256sum -c - && \
+    python3 /tmp/pip-security-overlay/install-ensurepip-wheel.py --stdlib /usr/local/lib/python3.14 --wheel /tmp/pip-dist/pip-26.2.2+pasturestack.2-py3-none-any.whl --sha256 2aef7c341eef310645ab56455f5789de2819463b25fa70151954e1d208d2db36 && \
+    python3 -m pip install --no-index --no-deps /tmp/pip-dist/pip-26.2.2+pasturestack.2-py3-none-any.whl && \
     install -Dm0644 /tmp/pip-dist/build-evidence.json /usr/share/pasturestack/pip-build-evidence.json && \
     install -Dm0644 /tmp/pip-dist/pip-vendor.cdx.json /usr/share/pasturestack/pip-vendor.cdx.json && \
     dpkg-query -W -f='${binary:Package}\t${Version}\n' > /usr/share/pasturestack/python-builder-packages.tsv
@@ -124,6 +143,7 @@ ARG UBUNTU_SNAPSHOT=20261023T000000Z
 COPY --from=python-builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
 RUN --mount=from=apt_security_inputs,source=/tmp,target=/opt/official-apt,ro \
+    --mount=from=perl_security_inputs,source=/perl,target=/opt/official-perl,ro \
     rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources && \
     printf 'Types: deb\nURIs: https://snapshot.ubuntu.com/ubuntu/%s\nSuites: resolute resolute-updates resolute-backports resolute-security\nComponents: main universe restricted multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nSnapshot: no\n' "${UBUNTU_SNAPSHOT}" > /etc/apt/sources.list.d/pasturestack-snapshot.sources && \
     printf 'Acquire::Retries "5";\nAcquire::https::CaInfo "/etc/ssl/certs/ca-certificates.crt";\nAcquire::https::Verify-Peer "true";\nAcquire::https::Verify-Host "true";\nAcquire::AllowInsecureRepositories "false";\nAPT::Get::AllowUnauthenticated "false";\n' > /etc/apt/apt.conf.d/80pasturestack-snapshot && \
@@ -162,6 +182,10 @@ RUN --mount=from=apt_security_inputs,source=/tmp,target=/opt/official-apt,ro \
         tcpdump \
         vim-tiny \
         zlib1g && \
+    dpkg -i /opt/official-perl/*.deb && \
+    for package in libperl5.40 perl perl-base perl-modules-5.40; do \
+        test "$(dpkg-query -W -f='${Version}' "$package")" = 5.40.1-7ubuntu0.4 || exit 1; \
+    done && \
     dpkg -i /tmp/ca-certificates.deb && \
     test "$(dpkg-query -W -f='${Version}' ca-certificates)" = 20260816ubuntu0.26.04.2 && \
     rm -f /tmp/ca-certificates.deb && \
@@ -169,7 +193,7 @@ RUN --mount=from=apt_security_inputs,source=/tmp,target=/opt/official-apt,ro \
     ln -sf /usr/local/bin/python3.14 /usr/local/bin/python3 && \
     ln -sf /usr/local/bin/python3 /usr/local/bin/python && \
     test "$(python3 --version)" = 'Python 3.14.9' && \
-    python3 -c "import pip, ensurepip, pip._vendor.certifi as certifi, pip._vendor.urllib3 as urllib3; assert pip.__version__ == ensurepip.version() == '26.2.2+pasturestack.1'; assert urllib3.__version__ == '2.8.0'; assert certifi.__version__ == '2026.10.19'" && \
+    python3 -c "import pip, ensurepip, pip._vendor.certifi as certifi, pip._vendor.urllib3 as urllib3; assert pip.__version__ == ensurepip.version() == '26.2.2+pasturestack.2'; assert urllib3.__version__ == '2.8.0'; assert certifi.__version__ == '2026.10.19'" && \
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p /var/lib/cattle /var/lib/rancher && \
     chmod +x /usr/bin/share-mnt /usr/bin/r /usr/bin/update-platform-ssl && \

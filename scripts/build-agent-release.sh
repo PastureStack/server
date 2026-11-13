@@ -14,7 +14,7 @@ python3 scripts/test-agent-package-consistency.py
 
 case "${COMPONENT:-}" in
   base) repository=ghcr.io/pasturestack/node-agent-base; version=v0.3.9 ;;
-  agent) repository=ghcr.io/pasturestack/node-agent; version=v1.2.34 ;;
+  agent) repository=ghcr.io/pasturestack/node-agent; version=v1.2.35 ;;
   *) echo 'Unsupported agent component' >&2; exit 1 ;;
 esac
 [[ "${PUBLISH:-false}" = true || "${PUBLISH:-false}" = false ]]
@@ -48,9 +48,9 @@ trap cleanup EXIT
 if [[ "$COMPONENT" = base ]]; then
   # All values are constants from the reviewed source tree.
   source agent-base/release-inputs.env
-  [[ "$MOUNT_PROPAGATION_VERSION" = 1.0.12 ]]
+  [[ "$MOUNT_PROPAGATION_VERSION" = 1.0.14 ]]
   [[ "$MOUNT_PROPAGATION_SHA256" =~ ^[0-9a-f]{64}$ ]]
-  [[ "$MOUNT_PROPAGATION_ASSET" = mount-propagation-v1.0.12-linux-amd64 ]]
+  [[ "$MOUNT_PROPAGATION_ASSET" = mount-propagation-v1.0.14-linux-amd64 ]]
   export MOUNT_PROPAGATION_VERSION MOUNT_PROPAGATION_ASSET MOUNT_PROPAGATION_SHA256
   export MOUNT_PROPAGATION_ASSET_ID MOUNT_PROPAGATION_ASSET_SIZE MOUNT_PROPAGATION_SOURCE
   export MOUNT_PROPAGATION_TREE MOUNT_PROPAGATION_TAG_OBJECT
@@ -80,8 +80,23 @@ if [[ "$COMPONENT" = base ]]; then
   CHECK_QUALIFIED_BACKPORTS=1 SHARE_MNT_BIN="$scratch/share-mnt" R_BIN="$scratch/r" IMAGE="$candidate" \
     bash agent-base/build-image.sh |& tee "$evidence/build.log"
 else
-  grep -Eq '^FROM ghcr.io/pasturestack/node-agent-base:v0\.3\.8@sha256:[0-9a-f]{64}$' agent/Dockerfile
-  grep -Fq 'org.opencontainers.image.version="v1.2.34"' agent/Dockerfile
+  source agent/base-evidence.env
+  [[ "$AGENT_BASE_RUN" =~ ^[0-9]+$ && "$AGENT_BASE_REVISION" =~ ^[0-9a-f]{40}$ ]]
+  [[ "$AGENT_BASE_DIGEST" =~ ^sha256:[0-9a-f]{64}$ && "$AGENT_BASE_RECEIPT_SHA256" =~ ^[0-9a-f]{64}$ ]]
+  grep -Fx "FROM ghcr.io/pasturestack/node-agent-base:v0.3.9@$AGENT_BASE_DIGEST" agent/Dockerfile
+  grep -Fq 'org.opencontainers.image.version="v1.2.35"' agent/Dockerfile
+  gh api "repos/PastureStack/server/actions/runs/$AGENT_BASE_RUN" \
+    --jq '[.head_sha,.conclusion,.path] | @tsv' \
+    | grep -Fx "$(printf '%s\tsuccess\t.github/workflows/publish-node-agent.yml' "$AGENT_BASE_REVISION")"
+  base_evidence="$scratch/base-evidence"
+  gh run download "$AGENT_BASE_RUN" --repo PastureStack/server \
+    --name "node-agent-base-$AGENT_BASE_REVISION" --dir "$base_evidence"
+  printf '%s  %s\n' "$AGENT_BASE_RECEIPT_SHA256" "$base_evidence/SHA256SUMS" | sha256sum --check --strict
+  (cd "$base_evidence"; sha256sum --check --strict SHA256SUMS)
+  grep -Fx "repository=ghcr.io/pasturestack/node-agent-base" "$base_evidence/published.txt"
+  grep -Fx "version=v0.3.9" "$base_evidence/published.txt"
+  grep -Fx "source=$AGENT_BASE_REVISION" "$base_evidence/published.txt"
+  grep -Fx "digest=$AGENT_BASE_DIGEST" "$base_evidence/published.txt"
   IMAGE="$candidate" bash agent/build-image.sh |& tee "$evidence/build.log"
 fi
 
@@ -98,6 +113,11 @@ if [[ "$COMPONENT" = base ]]; then
   package_comparison_inventory="$evidence/qualified-stage-packages.tsv"
   docker run --rm --network none --entrypoint dpkg-query "$candidate-backports" \
     -W -f='${binary:Package}\t${Version}\n' >"$package_comparison_inventory"
+else
+  cmp "$base_evidence/runtime-packages.tsv" "$evidence/runtime-packages.tsv"
+  cmp "$base_evidence/builder-packages.tsv" "$evidence/builder-packages.tsv"
+  cp "$base_evidence/qualified-stage-packages.tsv" "$evidence/"
+  package_comparison_inventory="$evidence/qualified-stage-packages.tsv"
 fi
 for name in manifest qualification install; do
   docker run --rm --network none --entrypoint cat "$candidate" \
@@ -132,27 +152,18 @@ if [[ "$COMPONENT" = agent ]]; then
     -v "$PWD:/source:ro" -w /source "$candidate" \
     scripts/check-agent-run-downloads.sh >"$evidence/bootstrap-download-smoke.txt"
 fi
-if [[ "$COMPONENT" = base ]]; then
-  docker run --rm --network none --entrypoint /bin/bash "$candidate" -ec '
-    test "$(dpkg-query -W -f="\${Version}" ca-certificates)" = 20260816ubuntu0.26.04.2
-    test "$(dpkg-query -W -f="\${Version}" apt)" = 3.2.1ubuntu0.1
-    docker --version | grep -Fx "Docker version 29.9.3, build 5457199"
-    printf "%s  /usr/bin/docker\n" "$(cat /usr/share/pasturestack/docker.sha256)" | sha256sum -c -
-    test -s /usr/bin/share-mnt
-    test -x /usr/bin/r
-  ' |& tee "$evidence/runtime-tools.txt"
-  docker run --rm --network none --entrypoint cat "$candidate" /usr/bin/docker >"$scratch/docker-cli"
-  go version -m "$scratch/docker-cli" | tee "$evidence/docker-cli-go-version.txt"
-  head -1 "$evidence/docker-cli-go-version.txt" | grep -F 'go1.27.4'
-  awk '$1=="dep" && $2=="golang.org/x/net" && $3=="v0.62.0" { found=1 } END { exit !found }' "$evidence/docker-cli-go-version.txt"
-else
-  docker run --rm --network none --entrypoint /bin/bash "$candidate" -ec \
-    'test "$(dpkg-query -W ca-certificates | cut -f2)" = 20260816ubuntu0.26.04.1; docker --version | grep -Fx "Docker version 29.9.2, build a82e528"; printf "6c71cfe71faff949a602946a4df4799b563232e79d0b8b6fd343d0ef081c9621  /usr/bin/docker\n" | sha256sum -c -; test -s /usr/bin/share-mnt; test -x /usr/bin/r' \
-    |& tee "$evidence/runtime-tools.txt"
-  docker run --rm --network none --entrypoint cat "$candidate" /usr/bin/docker >"$scratch/docker-cli"
-  go version -m "$scratch/docker-cli" | tee "$evidence/docker-cli-go-version.txt"
-  head -1 "$evidence/docker-cli-go-version.txt" | grep -F 'go1.26.10'
-fi
+docker run --rm --network none --entrypoint /bin/bash "$candidate" -ec '
+  test "$(dpkg-query -W -f="\${Version}" ca-certificates)" = 20260816ubuntu0.26.04.2
+  test "$(dpkg-query -W -f="\${Version}" apt)" = 3.2.1ubuntu0.1
+  docker --version | grep -Fx "Docker version 29.9.3, build 5457199"
+  printf "%s  /usr/bin/docker\n" "$(cat /usr/share/pasturestack/docker.sha256)" | sha256sum -c -
+  test -s /usr/bin/share-mnt
+  test -x /usr/bin/r
+' |& tee "$evidence/runtime-tools.txt"
+docker run --rm --network none --entrypoint cat "$candidate" /usr/bin/docker >"$scratch/docker-cli"
+go version -m "$scratch/docker-cli" | tee "$evidence/docker-cli-go-version.txt"
+head -1 "$evidence/docker-cli-go-version.txt" | grep -F 'go1.27.4'
+awk '$1=="dep" && $2=="golang.org/x/net" && $3=="v0.62.0" { found=1 } END { exit !found }' "$evidence/docker-cli-go-version.txt"
 docker run --rm --network none --entrypoint python3 \
   -e PYTHONDONTWRITEBYTECODE=1 -v "$PWD:/source:ro" -w /source "$candidate" \
   scripts/check-agent-python-runtime.py |& tee "$evidence/python-tls-registration.json"
@@ -182,8 +193,11 @@ if [[ "$COMPONENT" = base ]]; then
   docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$scratch/trivy-cache:/root/.cache/trivy" -v "$evidence:/evidence" "$trivy" image --format cyclonedx \
     --output /evidence/qualified-stage.cdx.json "$candidate-backports"
-  python3 scripts/check-agent-official-glibc.py "$qualification_sbom" "$evidence/image.cdx.json"
+else
+  qualification_sbom="$evidence/qualified-stage.cdx.json"
+  cp "$base_evidence/qualified-stage.cdx.json" "$qualification_sbom"
 fi
+python3 scripts/check-agent-official-glibc.py "$qualification_sbom" "$evidence/image.cdx.json"
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
   -v "$scratch/trivy-cache:/root/.cache/trivy" -v "$evidence:/evidence" "$trivy" image --scanners vuln,secret --list-all-pkgs --format json \
   --output /evidence/image-security.json "$candidate"
