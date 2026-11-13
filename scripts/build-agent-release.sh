@@ -48,9 +48,9 @@ trap cleanup EXIT
 if [[ "$COMPONENT" = base ]]; then
   # All values are constants from the reviewed source tree.
   source agent-base/release-inputs.env
-  [[ "$MOUNT_PROPAGATION_VERSION" = 1.0.12 ]]
+  [[ "$MOUNT_PROPAGATION_VERSION" = 1.0.14 ]]
   [[ "$MOUNT_PROPAGATION_SHA256" =~ ^[0-9a-f]{64}$ ]]
-  [[ "$MOUNT_PROPAGATION_ASSET" = mount-propagation-v1.0.12-linux-amd64 ]]
+  [[ "$MOUNT_PROPAGATION_ASSET" = mount-propagation-v1.0.14-linux-amd64 ]]
   export MOUNT_PROPAGATION_VERSION MOUNT_PROPAGATION_ASSET MOUNT_PROPAGATION_SHA256
   export MOUNT_PROPAGATION_ASSET_ID MOUNT_PROPAGATION_ASSET_SIZE MOUNT_PROPAGATION_SOURCE
   export MOUNT_PROPAGATION_TREE MOUNT_PROPAGATION_TAG_OBJECT
