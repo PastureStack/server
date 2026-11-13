@@ -1,5 +1,33 @@
 # syntax=docker/dockerfile:1.7
 FROM ghcr.io/pasturestack/ubuntu-security-backports:v0.1.1@sha256:45d6b507b63a18459ae5cf76afd4d9731f8ef43b9c40e4c3dbb01899e1752b19 AS ubuntu_security_backports
+FROM golang:1.27.4-bookworm@sha256:4fa7c968ba93f1635670522dbb01a2c78150443e1385746924566079f36570ea AS docker_cli
+ADD --checksum=sha256:36d502ba53623c50c51fe44f916aeff4c4051b1132aabde2e8982895d0361651 https://codeload.github.com/docker/cli/tar.gz/5457199aa57c45e990c59c89cab5f02b817238d7 /tmp/docker-cli.tgz
+WORKDIR /build
+RUN set -eux; \
+    test "$(go env GOVERSION)" = go1.27.4; \
+    tar -xzf /tmp/docker-cli.tgz --strip-components=1; \
+    cp vendor.mod go.mod; \
+    cp vendor.sum go.sum; \
+    export GOTOOLCHAIN=local GOFLAGS=-mod=mod GOPROXY=https://proxy.golang.org GOSUMDB=sum.golang.org; \
+    go get golang.org/x/net@v0.62.0; \
+    go mod download; \
+    go mod verify; \
+    export GOPROXY=off; \
+    CGO_ENABLED=1 go build -trimpath -buildvcs=false -tags 'grpcnotrace osusergo netgo' \
+        -ldflags '-X github.com/docker/cli/cli/version.GitCommit=5457199 -X github.com/docker/cli/cli/version.Version=29.9.3 -linkmode external -extldflags=-static' \
+        -o /out/docker ./cmd/docker; \
+    go version -m /out/docker > /out/docker-go-version.txt; \
+    grep -F 'go1.27.4' /out/docker-go-version.txt; \
+    awk '$1=="dep" && $2=="golang.org/x/net" && $3=="v0.62.0" { found=1 } END { exit !found }' /out/docker-go-version.txt; \
+    sha256sum /out/docker | cut -d' ' -f1 > /out/docker.sha256
+
+FROM scratch AS apt_security_inputs
+ADD --checksum=sha256:0de729b8fe0e1c67c04e8e8d5bd6e0420dbd47f75b93f0b71c8e740edc2d5ffc \
+    https://security.ubuntu.com/ubuntu/pool/main/a/apt/apt_3.2.1ubuntu0.1_amd64.deb \
+    /tmp/apt.deb
+ADD --checksum=sha256:94e5d41303265b66af0f8c70ade18bfb77260ad286edee6c8045faddef82b94c \
+    https://security.ubuntu.com/ubuntu/pool/main/a/apt/libapt-pkg7.0_3.2.1ubuntu0.1_amd64.deb \
+    /tmp/libapt-pkg7.0.deb
 FROM ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b AS python-builder
 
 RUN rm -f /usr/bin/pebble
@@ -10,11 +38,13 @@ ARG UBUNTU_SNAPSHOT=20261023T000000Z
 
 COPY ./pip-security-overlay /tmp/pip-security-overlay
 
-ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd \
-    https://snapshot.ubuntu.com/ubuntu/20261104T000000Z/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb \
+ADD --checksum=sha256:a7e3bf769aec16ba21ca39cba180d6d311dafcbae68346a05f137c5cc26c9ca6 \
+    https://security.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.2_all.deb \
     /tmp/ca-certificates.deb
 
-RUN set -eux; \
+
+RUN --mount=from=apt_security_inputs,source=/tmp,target=/opt/official-apt,ro \
+    set -eux; \
     mkdir -p /tmp/ca-bootstrap /etc/ssl/certs; \
     dpkg-deb --extract /tmp/ca-certificates.deb /tmp/ca-bootstrap; \
     find /tmp/ca-bootstrap/usr/share/ca-certificates -type f -name '*.crt' | LC_ALL=C sort | while IFS= read -r certificate; do sed -e '$a\' "${certificate}"; done > /etc/ssl/certs/ca-certificates.crt; \
@@ -22,7 +52,10 @@ RUN set -eux; \
     rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; \
     printf 'Types: deb\nURIs: https://snapshot.ubuntu.com/ubuntu/%s\nSuites: resolute resolute-updates resolute-backports resolute-security\nComponents: main universe restricted multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nSnapshot: no\n' "${UBUNTU_SNAPSHOT}" > /etc/apt/sources.list.d/pasturestack-snapshot.sources; \
     printf 'Acquire::Retries "5";\nAcquire::https::CaInfo "/etc/ssl/certs/ca-certificates.crt";\nAcquire::https::Verify-Peer "true";\nAcquire::https::Verify-Host "true";\nAcquire::AllowInsecureRepositories "false";\nAPT::Get::AllowUnauthenticated "false";\n' > /etc/apt/apt.conf.d/80pasturestack-snapshot; \
-    apt-get update && \
+    dpkg -i /opt/official-apt/libapt-pkg7.0.deb /opt/official-apt/apt.deb && \
+    test "$(dpkg-query -W -f='${Version}' apt)" = 3.2.1ubuntu0.1 && \
+    test "$(dpkg-query -W -f='${Version}' libapt-pkg7.0)" = 3.2.1ubuntu0.1 && \
+    apt-get update --error-on=any && \
     DEBIAN_FRONTEND=noninteractive apt-get upgrade --no-install-recommends -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
         build-essential \
@@ -44,7 +77,7 @@ RUN set -eux; \
         xz-utils \
         zlib1g-dev && \
     dpkg -i /tmp/ca-certificates.deb && \
-    test "$(dpkg-query -W -f='${Version}' ca-certificates)" = 20260816ubuntu0.26.04.1 && \
+    test "$(dpkg-query -W -f='${Version}' ca-certificates)" = 20260816ubuntu0.26.04.2 && \
     install -Dm0644 /tmp/ca-certificates.deb /usr/share/pasturestack/ca-certificates.deb && \
     curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 \
         -o /tmp/Python-${PYTHON_VERSION}.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz" && \
@@ -64,13 +97,13 @@ RUN set -eux; \
     install -Dm0644 /tmp/pip-dist/pip-vendor.cdx.json /usr/share/pasturestack/pip-vendor.cdx.json && \
     dpkg-query -W -f='${binary:Package}\t${Version}\n' > /usr/share/pasturestack/python-builder-packages.tsv
 
-FROM ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b
+FROM ubuntu:26.04@sha256:2260313b31c8c011cd2eebe728008efac1b3982be73eb71348ea2648d2c0e09b AS qualified_backports
 
 ARG VCS_REF
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack node-agent compatibility base image." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v0.3.8" \
+      org.opencontainers.image.version="v0.3.9" \
       org.opencontainers.image.revision="$VCS_REF"
 
 RUN rm -f /usr/bin/pebble
@@ -84,17 +117,20 @@ COPY ./share-mnt /usr/bin/share-mnt
 COPY ./r /usr/bin/r
 COPY ./update-platform-ssl /usr/bin/update-platform-ssl
 
-ARG DOCKER_VERSION=29.9.2
-ARG DOCKER_SHA256=9ac225999fd5e863f7694c728ef23d480616b1e5639328fa309befd4243d69eb
-ARG DOCKER_BINARY_SHA256=6c71cfe71faff949a602946a4df4799b563232e79d0b8b6fd343d0ef081c9621
+COPY --from=docker_cli /out/docker /usr/bin/docker
+COPY --from=docker_cli /out/docker-go-version.txt /out/docker.sha256 /usr/share/pasturestack/
 ARG UBUNTU_SNAPSHOT=20261023T000000Z
 
 COPY --from=python-builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
-RUN rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources && \
+RUN --mount=from=apt_security_inputs,source=/tmp,target=/opt/official-apt,ro \
+    rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources && \
     printf 'Types: deb\nURIs: https://snapshot.ubuntu.com/ubuntu/%s\nSuites: resolute resolute-updates resolute-backports resolute-security\nComponents: main universe restricted multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nSnapshot: no\n' "${UBUNTU_SNAPSHOT}" > /etc/apt/sources.list.d/pasturestack-snapshot.sources && \
     printf 'Acquire::Retries "5";\nAcquire::https::CaInfo "/etc/ssl/certs/ca-certificates.crt";\nAcquire::https::Verify-Peer "true";\nAcquire::https::Verify-Host "true";\nAcquire::AllowInsecureRepositories "false";\nAPT::Get::AllowUnauthenticated "false";\n' > /etc/apt/apt.conf.d/80pasturestack-snapshot && \
-    apt-get update && \
+    dpkg -i /opt/official-apt/libapt-pkg7.0.deb /opt/official-apt/apt.deb && \
+    test "$(dpkg-query -W -f='${Version}' apt)" = 3.2.1ubuntu0.1 && \
+    test "$(dpkg-query -W -f='${Version}' libapt-pkg7.0)" = 3.2.1ubuntu0.1 && \
+    apt-get update --error-on=any && \
     DEBIAN_FRONTEND=noninteractive apt-get upgrade --no-install-recommends -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
         arptables \
@@ -127,7 +163,7 @@ RUN rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.
         vim-tiny \
         zlib1g && \
     dpkg -i /tmp/ca-certificates.deb && \
-    test "$(dpkg-query -W -f='${Version}' ca-certificates)" = 20260816ubuntu0.26.04.1 && \
+    test "$(dpkg-query -W -f='${Version}' ca-certificates)" = 20260816ubuntu0.26.04.2 && \
     rm -f /tmp/ca-certificates.deb && \
     ldconfig && \
     ln -sf /usr/local/bin/python3.14 /usr/local/bin/python3 && \
@@ -137,14 +173,6 @@ RUN rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p /var/lib/cattle /var/lib/rancher && \
     chmod +x /usr/bin/share-mnt /usr/bin/r /usr/bin/update-platform-ssl && \
-    docker_tgz=/tmp/docker.tgz && \
-    curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 300 \
-        -o "$docker_tgz" "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz" && \
-    echo "${DOCKER_SHA256}  $docker_tgz" | sha256sum -c - && \
-    tar xzf "$docker_tgz" -C /usr/bin --strip-components=1 docker/docker && \
-    echo "${DOCKER_BINARY_SHA256}  /usr/bin/docker" | sha256sum -c - && \
-    rm -f "$docker_tgz" && \
-    chmod +x /usr/bin/docker && \
     rm /var/run && \
     mkdir /var/run
 
@@ -163,5 +191,32 @@ RUN --mount=from=ubuntu_security_backports,source=/out,target=/opt/pasturestack/
     printf '%s\n' 'ghcr.io/pasturestack/ubuntu-security-backports:v0.1.1@sha256:45d6b507b63a18459ae5cf76afd4d9731f8ef43b9c40e4c3dbb01899e1752b19' > "$evidence/bundle-image.txt"; \
     cd "$evidence"; \
     sha256sum manifest.json qualification.json openvex.json source-inputs.lock.json install.json verify.json bundle-image.txt > SHA256SUMS
+
+FROM scratch AS official_glibc
+ADD --checksum=sha256:be83aefc14597fba683031a520f303950a7338b95d74decbe625faa51c49933e https://security.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.43-2ubuntu2.7_amd64.deb /tmp/official-glibc/libc6.deb
+ADD --checksum=sha256:c0393ea4fa3c45cefe0351db369d3a4a459edc8045856f2e3612ca17e77b2797 https://security.ubuntu.com/ubuntu/pool/main/g/glibc/libc-bin_2.43-2ubuntu2.7_amd64.deb /tmp/official-glibc/libc-bin.deb
+ADD --checksum=sha256:408ba056d39651c2489b59522a614276d7a96020c6a401e73cd0da7d771764b0 https://security.ubuntu.com/ubuntu/pool/main/g/glibc/libc-gconv-modules-extra_2.43-2ubuntu2.7_amd64.deb /tmp/official-glibc/libc-gconv-modules-extra.deb
+FROM qualified_backports AS runtime
+RUN --mount=from=official_glibc,source=/tmp/official-glibc,target=/tmp/official-glibc,ro \
+    set -eux; \
+    for package in libc6 libc-bin libc-gconv-modules-extra; do \
+        archive="/tmp/official-glibc/$package.deb"; \
+        test "$(dpkg-deb -f "$archive" Package)" = "$package"; \
+        test "$(dpkg-deb -f "$archive" Source)" = glibc; \
+        test "$(dpkg-deb -f "$archive" Architecture)" = amd64; \
+        test "$(dpkg-deb -f "$archive" Version)" = 2.43-2ubuntu2.7; \
+        dpkg --compare-versions "$(dpkg-query -W -f='${Version}' "$package")" lt 2.43-2ubuntu2.7; \
+    done; \
+    dpkg --path-include='/usr/share/doc/libc6/*' --path-include='/usr/share/man/man1/getconf.1.gz' \
+        --path-include='/usr/share/man/man1/tzselect.1.gz' --install /tmp/official-glibc/*.deb; \
+    audit="$(dpkg --audit)"; \
+    test -z "$audit"; \
+    for package in libc6 libc-bin libc-gconv-modules-extra; do \
+        integrity="$(dpkg --verify "$package")"; \
+        test -z "$integrity"; \
+    done; \
+    getent hosts localhost >/dev/null; \
+    rm -f /var/cache/ldconfig/aux-cache /var/log/dpkg.log; \
+    dpkg-query -W -f='${binary:Package}\t${Version}\n' | LC_ALL=C sort > /usr/share/pasturestack/ubuntu-security-packages.tsv
 
 ENTRYPOINT ["/pasturestack-entrypoint.sh"]
