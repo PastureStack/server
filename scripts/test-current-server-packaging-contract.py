@@ -736,7 +736,7 @@ class Tests(unittest.TestCase):
         historical_url = 'https://snapshot.ubuntu.com/ubuntu/20261104T000000Z/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb'
         for path in (DOCKER, 'server/Dockerfile', 'server/Dockerfile.api-explorer-patch',
                      'Dockerfile', 'agent-base/Dockerfile'):
-            url, digest = (current_url, 'a7e3bf769aec16ba21ca39cba180d6d311dafcbae68346a05f137c5cc26c9ca6') if path == DOCKER else (
+            url, digest = (current_url, 'a7e3bf769aec16ba21ca39cba180d6d311dafcbae68346a05f137c5cc26c9ca6') if path in (DOCKER, 'agent-base/Dockerfile') else (
                 historical_url, '5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd')
             pattern = re.compile(r'^ADD --checksum=sha256:' + digest + r'\s+'
                                  + re.escape(url) + r'\s+/tmp/ca-certificates\.deb\s*$', re.M)
