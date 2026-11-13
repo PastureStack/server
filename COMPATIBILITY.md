@@ -1,5 +1,18 @@
 # Compatibility Contract
 
+## Server v1.6.598 published
+
+Immutable image `ghcr.io/pasturestack/server:v1.6.598@sha256:05399d56c45846d4e98bff3db809285c279110b714e35b29e01b7c1b49393e05`.
+Source revision `9ef6b12d922ffb799d915440b371c12a8c592df3`.
+
+Packages Engine **0.183.395**, Web Console **1.6.236**, optional Bridge
+**0.2.37** and Compose **0.14.46**. New registrations use compatibility
+Agent **1.2.35**. Existing managed services keep their selected image
+until upgraded.
+
+See the [release note](docs/releases/server-1.6.598.md) for verified inputs
+and publication evidence.
+
 ## Server v1.6.597 published
 
 Immutable image `ghcr.io/pasturestack/server:v1.6.597@sha256:09a9c7741b3dca23e228de32b146c7f4f2878b1e65489bf9c3f13ba7e7089636`.
