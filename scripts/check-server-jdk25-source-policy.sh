@@ -86,7 +86,7 @@ publish_workflow = read_text(".github/workflows/publish-current-server.yml")
 for marker in (
     'AS temurin_security_runtime',
     'ARG TEMURIN_JDK25_SHA256=68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb',
-    'ARG TEMURIN_JDK25_URL=https://api.github.com/repos/adoptium/temurin25-binaries/releases/assets/665812068',
+    'ARG TEMURIN_JDK25_URL=https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jdk_x64_linux_hotspot_25.0.5_8.tar.gz',
     'fetch-server-component remote',
     'RUN rm -rf /opt/java/openjdk',
     'COPY --from=temurin_security_runtime /out/java/ /opt/java/openjdk/',
@@ -117,7 +117,7 @@ for marker, code in [
     ("FROM ubuntu:26.04", "SERVER_JDK25_SOURCE_POLICY_UBUNTU2604_BASE_OK"),
     ("apt-get update && apt-get upgrade -y", "SERVER_JDK25_SOURCE_POLICY_APT_SECURITY_UPGRADE_OK"),
     ('ARG TEMURIN_JDK25_VERSION="25.0.5+8"', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_VERSION_OK"),
-    ('ARG TEMURIN_JDK25_URL="https://api.github.com/repos/adoptium/temurin25-binaries/releases/assets/665812068"', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_URL_OK"),
+    ('ARG TEMURIN_JDK25_URL="https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5%2B8/OpenJDK25U-jdk_x64_linux_hotspot_25.0.5_8.tar.gz"', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_URL_OK"),
     ('ARG TEMURIN_JDK25_SHA256="68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb"', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_SHA256_OK"),
     ('echo "${TEMURIN_JDK25_SHA256}  /tmp/temurin-jdk25.tar.gz" | sha256sum -c -', "SERVER_JDK25_SOURCE_POLICY_TEMURIN25_CHECK_OK"),
     ("ENV JAVA_HOME=/opt/java/openjdk", "SERVER_JDK25_SOURCE_POLICY_JAVA_HOME_OK"),
