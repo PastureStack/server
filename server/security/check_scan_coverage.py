@@ -18,18 +18,16 @@ NESTED_BINARIES = frozenset({
 # These exact shipped executables have separately verified source/binary
 # dependency graphs; the image builder pins their producer and payload SHA256.
 OPENPGP_VEX_SCOPE = frozenset({
-    ('usr/bin/authentication-service.real', 'pkg:golang/golang.org/x/crypto@v0.57.0'),
     ('usr/bin/docker-machine', 'pkg:golang/golang.org/x/crypto@v0.58.0'),
     ('usr/bin/docker-machine-driver-packet', 'pkg:golang/golang.org/x/crypto@v0.58.0'),
     ('usr/bin/compose-executor.real', 'pkg:golang/golang.org/x/crypto@v0.56.0'),
     ('usr/bin/host-provisioner.real', 'pkg:golang/golang.org/x/crypto@v0.56.0'),
 })
 OPENPGP_VEX_BINARY_SHA256 = {
-    'usr/bin/authentication-service.real': 'e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192',
-    'usr/bin/docker-machine': '8c257c4eec578fd6ae0f198d8ccc5fa449aa00b8a590096489595f2d840e697c',
-    'usr/bin/docker-machine-driver-packet': 'a4146c973254d36f8b1edcd8298c55154db600e24af6226810f4ed9ec4e5fb79',
-    'usr/bin/compose-executor.real': '4b1d0ec194f7301467c5fb4b12ce602390bad6e34768a08e1370bffb76a8c8f7',
-    'usr/bin/host-provisioner.real': '92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff',
+    'usr/bin/docker-machine': 'f77366c8460baf78798dcaaa675cdd5f656c9670b79c651983129c55bb41dd37',
+    'usr/bin/docker-machine-driver-packet': '601e958704a2eea7bd3872db99b54007fe2b04cd0c66e96ccf15c50133f4dba0',
+    'usr/bin/compose-executor.real': 'a22985547fea122edd12606728d3bc5f98d9457ae5724d65a21ef3c36d62cab5',
+    'usr/bin/host-provisioner.real': '54c22fa95bb16ce9b49df6bec012b9103f3e1b0eafc947d205eaef49e11b45a8',
 }
 
 

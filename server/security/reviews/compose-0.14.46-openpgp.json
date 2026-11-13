@@ -1,0 +1,64 @@
+{
+  "format": "pasturestack-qualified-go-code-absence-v1",
+  "scope": {
+    "executable": "usr/bin/compose-executor.real",
+    "module": "pkg:golang/golang.org/x/crypto@v0.56.0",
+    "advisory": "GO-2026-5932",
+    "decision": "not_affected",
+    "justification": "vulnerable_code_not_present",
+    "moduleDeclaredFixed": false,
+    "newConsumerOrScopeAllowed": false
+  },
+  "artifact": {
+    "releaseVersion": "0.14.46",
+    "releaseGzipSha256": "625004f26fdaa89d4ccdbae133c1ecac2ea993f810b1aa850615c4e8f622991b",
+    "binarySha256": "a22985547fea122edd12606728d3bc5f98d9457ae5724d65a21ef3c36d62cab5",
+    "binaryBytes": 21733500,
+    "source": "c10fea6d53fd196c728aa11c15c7d055d461b907",
+    "tree": "661516eb86d5728a597c6a230d99c95f68ea5fd4",
+    "producerRun": 43338490491,
+    "officialCiArtifactZipSha256": "e17fbe4b17733f19afaaa60c309a7a410b80882f73a0cfb74f44a61b0ed900ab",
+    "releaseGzipAndOfficialTestedProductBytesIdentical": true,
+    "compiler": "go1.27.4",
+    "binaryVcsRevisionEmbedded": false
+  },
+  "sourceGraph": {
+    "packages": 402,
+    "openpgp": 0,
+    "bcrypt": 1,
+    "scrypt": 1,
+    "inspectorGo": "go version go1.27.1 windows/amd64",
+    "vendorTree": "90aca042386ac70e079e940cca25f88009357508",
+    "packageGraphSha256": "a020dc969c286328968fdefddc25db5295bdb311a9d447d8ff89aba0b6282206",
+    "officialGo127SourceGatePassed": true,
+    "dependencyAndVendorGraphChangedFrom01440": false,
+    "GOOS": "linux",
+    "GOARCH": "amd64",
+    "vendorMode": true,
+    "cryptoModule": "v0.56.0"
+  },
+  "symbolEvidence": {
+    "emittedFunctions": 22001,
+    "functionAndInlineNameEntries": 26707,
+    "uniqueFunctionAndInlineNames": 26664,
+    "nonEmittedUniqueNames": 4705,
+    "fullCountProofSha256": "687cafb6d15793c38ca772f3f7a280af9259bca3d05ad831307343ffe4eca6b0",
+    "tableDialect": "Linker funcnametab includes every emitted and inlined function name. Non-emitted names are not asserted to equal inline call-site count.",
+    "openpgpEmitted": 0,
+    "openpgpFunctionInlineNames": 0,
+    "openpgpNonEmittedNames": 0,
+    "bcryptEmitted": 10,
+    "bcryptFunctionInlineNames": 11,
+    "bcryptNonEmittedNames": 1,
+    "scryptEmitted": 4,
+    "scryptFunctionInlineNames": 7,
+    "scryptNonEmittedNames": 3
+  },
+  "linkerLayout": {
+    "sha256": "6562c101bb8555579af885b2ea016007d76db7fccf00de993ac0398e25cb0e99",
+    "goVersion": "go1.27.4"
+  },
+  "publicQualificationSha256": "195ee4bf5c0a00b0b7a1d79306e729f08ac9c68e969887641e39bb593a9a52e9",
+  "artifactRebuilt": true,
+  "moduleClaimedFixed": false
+}

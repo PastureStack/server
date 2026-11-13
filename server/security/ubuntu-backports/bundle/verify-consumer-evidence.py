@@ -249,7 +249,7 @@ def verify_official_brotli(proof):
             'archiveSha256': lock['archiveSha256'], 'manifestSha256': sha(raw), 'sonames': expected_sonames}
 
 
-def verify(files, checksums, sbom, expected_digest, bundle_checksums, official_brotli=None):
+def verify(files, checksums, sbom, expected_digest, bundle_checksums, official_brotli=None, official_glibc=None):
     require(DIGEST.fullmatch(expected_digest) is not None, 'Expected bundle digest is not immutable')
     expected_image = 'ghcr.io/pasturestack/ubuntu-security-backports:v0.1.1@' + expected_digest
     require(files['bundle-image.txt'].decode().strip() == expected_image, 'Consumer bundle identity mismatch')
@@ -320,6 +320,9 @@ def verify(files, checksums, sbom, expected_digest, bundle_checksums, official_b
         require('libbrotli1' in selected and packages['libbrotli1']['version'] == '1.2.0-3build1+pasturestack.1',
                 'Official replacement must follow the original selected Brotli backport')
         official = verify_official_brotli(official_brotli)
+    if official_glibc is not None:
+        require(set(official_glibc) == FAMILIES['glibc'] and FAMILIES['glibc'] <= selected,
+                'Official glibc replacement requires all three originally verified packages')
     require(sbom.get('bomFormat') == 'CycloneDX' and isinstance(sbom.get('components'), list),
             'Actual consumer CycloneDX SBOM is missing')
     actual = {}
@@ -330,6 +333,8 @@ def verify(files, checksums, sbom, expected_digest, bundle_checksums, official_b
         require(name not in actual, 'Duplicate consumer runtime package in SBOM')
         expected = official if name == 'libbrotli1' and official is not None else {
             'version': packages[name]['version'], 'purl': package_purl(packages[name])}
+        if official_glibc is not None and name in official_glibc:
+            expected = official_glibc[name]
         require(component.get('version') == expected['version']
                 and component.get('purl') == expected['purl'],
                 'Actual SBOM package is not the selected qualified version/PURL: ' + name)
@@ -372,7 +377,8 @@ def verify(files, checksums, sbom, expected_digest, bundle_checksums, official_b
             'selectedPackages': sorted(selected), 'selectedPURLs': sorted(actual.values()),
             'qualifiedVexPairs': len(pairs), 'qualifiedCodeAbsentVexPairs': 3 * absence_statements,
             'qualifiedFixedVexPairs': len(pairs) - 3 * absence_statements, 'findingsFilteredByThisTool': False,
-            **({'officialReplacements': [official]} if official is not None else {})}
+            **({'officialReplacements': ([official] if official is not None else []) + list((official_glibc or {}).values())}
+               if official is not None or official_glibc is not None else {})}
 
 
 def bounded_read(path):

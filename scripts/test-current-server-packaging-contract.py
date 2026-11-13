@@ -42,7 +42,7 @@ WEB_SHA = '93917f9e4f7629e4642fe6bd74599433e67097df19fca28e55936af767d66171'
 WEB_SOURCE = '7a64037859fde2618c8b61dce1f1f2a25829db0a'
 WEB_SBOM_SHA = 'ea9ca004d908a7d0286d3040685860f66d34de1e4c70f6c139d1021c1b20d942'
 WEB_LOCK_SHA = '028d0fb61227c960eeb46e4f4c4afbe4dee81e4e04ef1bfd804ea07a7c8db2c3'
-CATALOG_COMMIT = '00eec89e5fdeb9728c1c41babccad8b7dfc8b297'
+CATALOG_COMMIT = 'd2f0f93ee58970f24994fc6cbcc6526687f6b8ad'
 ENGINE_SHA = '0c446a67b9a11fb9018045be0b114b328365e4c3da314d1db6e4e4421d07fcfa'
 ENGINE_SOURCE = '9611a0abde9b8e13a21182b544b98cdac92b7c6a'
 OLD_COORDINATES = {
@@ -56,11 +56,11 @@ OLD_COORDINATES = {
 # Published521 component values remain mutation controls.
 # Component coordinates do not establish Server artifact/runtime acceptance.
 CATALOG_FIELDS = (
-    ('VERSION', 'version', '0.20.17'),
-    ('COMMIT', 'commit', '2f70559e340865eb6243662ed33d8cbc7b1efa90'),
-    ('ARCHIVE_SHA256', 'archive_sha256', '4f83f89763ce325262baf8984782da2c21fd81e3cc22c0a1c76aaa50b2a50f20'),
-    ('BINARY_SHA256', 'binary_sha256', 'f2a63056d5d48e032bdfd0dbcbe1b2254f6353f1a76125f86a72a31ec532da45'),
-    ('SQLITE_BINARY_SHA256', 'sqlite_binary_sha256', '94bd4729bd129c333435ab98963080f44d08bec00f814442c99c390ec97b46ce'),
+    ('VERSION', 'version', '0.20.18'),
+    ('COMMIT', 'commit', '193234b5c44d29638b4a546dfaa4f07eeb2fd56b'),
+    ('ARCHIVE_SHA256', 'archive_sha256', '91dd703a07a49f6491d383ba8bec894f359b24ac091fc576a05ab8b480072b1a'),
+    ('BINARY_SHA256', 'binary_sha256', 'fe5a4c2a9aaaf64bd3f7f4a64697af84169a44ddba00ae054b5a6a10d8b1596b'),
+    ('SQLITE_BINARY_SHA256', 'sqlite_binary_sha256', '6f79e877dd76603d8a40bcc2b89619deb5be7d2c23c89a69a1b2372c7b3fcd43'),
     ('LICENSE_SHA256', 'license_sha256', '0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594'),
 )
 LEGACY_ENGINE_COORDINATES = {
@@ -146,42 +146,42 @@ INCREMENTAL_CONTRACTS = [
         "incremental_producer_marker",
         "server/Dockerfile.web-compose-release",
         [
-            "ARG HOST_PROVISIONER_VERSION=0.39.10",
-            "ARG HOST_PROVISIONER_COMMIT=d5f6d5c9f4f0599f4bf1bdc9d5d0cca2e2e0c1ba",
-            "ARG HOST_PROVISIONER_ARCHIVE_SHA256=fd8a814c5810746091ba3192a9fd31699e6865a2598654b9bbb55eae90bef661",
-            "ARG HOST_PROVISIONER_BINARY_SHA256=92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff",
-            "ARG SECRET_DELIVERY_API_VERSION=0.3.4",
-            "ARG SECRET_DELIVERY_API_COMMIT=705589989f542669b7e60e1fdab8ae2694ed5d5d",
-            "ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=941bed664e04f21d84754cd9e06e1d69cec1583ed6dbdadda13567f778605010",
-            "ARG SECRET_DELIVERY_API_BINARY_SHA256=1d302e8005e35fe56108d704cd3b18e12a0fbbc1871e7b5cd61ac429db37566c",
-            "ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.4",
-            "ARG USAGE_TELEMETRY_AGENT_COMMIT=4ee641bc1273cf582a77609af71d00b72f17b628",
-            "ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866",
-            "ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be",
-            "ARG COMPOSE_EXECUTOR_COMMIT=e10eee523467ef2aa75a8bbdf290c2f5c505fbdc",
-            "ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=090b160dce006da93220455aec27fcddcd7e0f850ac5d82bf018a869d636d366"
+            "ARG HOST_PROVISIONER_VERSION=0.39.11",
+            "ARG HOST_PROVISIONER_COMMIT=59e945e8019c11b69bba7389a849c02096123ce2",
+            "ARG HOST_PROVISIONER_ARCHIVE_SHA256=01813dfba991709f23658616ad424bc6ef5f9caf956d777093620b7a767fe095",
+            "ARG HOST_PROVISIONER_BINARY_SHA256=54c22fa95bb16ce9b49df6bec012b9103f3e1b0eafc947d205eaef49e11b45a8",
+            "ARG SECRET_DELIVERY_API_VERSION=0.3.5",
+            "ARG SECRET_DELIVERY_API_COMMIT=b97466fd1cfc11253ca8e095a5016a2d44513f6d",
+            "ARG SECRET_DELIVERY_API_ARCHIVE_SHA256=9fdc7c1cc135047b86b20fc12bf17fe994f22856527158379e36eebb4a291492",
+            "ARG SECRET_DELIVERY_API_BINARY_SHA256=8733f1c3c10f4998ea01724f3586fd45ce013a843620e954c0fc3a950ee212b2",
+            "ARG USAGE_TELEMETRY_AGENT_VERSION=0.4.5",
+            "ARG USAGE_TELEMETRY_AGENT_COMMIT=88dd6c690e4e6af43b06ded4ee9b548cb3fd2ab0",
+            "ARG USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256=c330191944777ec8f68e812cc3aab2f78daf59d0519ed748dc4f4cbff0425da9",
+            "ARG USAGE_TELEMETRY_AGENT_BINARY_SHA256=48e22a6654c058cef7126dfa7c39da4c98a92bb939d37f09536d992f507f92ca",
+            "ARG COMPOSE_EXECUTOR_COMMIT=c10fea6d53fd196c728aa11c15c7d055d461b907",
+            "ARG COMPOSE_EXECUTOR_ARCHIVE_SHA256=625004f26fdaa89d4ccdbae133c1ecac2ea993f810b1aa850615c4e8f622991b"
         ]
     ],
     [
         "incremental_producer_build_marker",
         "server/build-api-explorer-patch-image.sh",
         [
-            "host_provisioner_version=${HOST_PROVISIONER_VERSION:-0.39.10}",
-            "host_provisioner_commit=${HOST_PROVISIONER_COMMIT:-d5f6d5c9f4f0599f4bf1bdc9d5d0cca2e2e0c1ba}",
-            "host_provisioner_archive_sha256=${HOST_PROVISIONER_ARCHIVE_SHA256:-fd8a814c5810746091ba3192a9fd31699e6865a2598654b9bbb55eae90bef661}",
-            "host_provisioner_binary_sha256=${HOST_PROVISIONER_BINARY_SHA256:-92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff}",
-            "secret_delivery_api_version=${SECRET_DELIVERY_API_VERSION:-0.3.4}",
-            "secret_delivery_api_commit=${SECRET_DELIVERY_API_COMMIT:-705589989f542669b7e60e1fdab8ae2694ed5d5d}",
-            "secret_delivery_api_archive_sha256=${SECRET_DELIVERY_API_ARCHIVE_SHA256:-941bed664e04f21d84754cd9e06e1d69cec1583ed6dbdadda13567f778605010}",
-            "secret_delivery_api_binary_sha256=${SECRET_DELIVERY_API_BINARY_SHA256:-1d302e8005e35fe56108d704cd3b18e12a0fbbc1871e7b5cd61ac429db37566c}",
-            "usage_telemetry_agent_version=${USAGE_TELEMETRY_AGENT_VERSION:-0.4.4}",
-            "usage_telemetry_agent_commit=${USAGE_TELEMETRY_AGENT_COMMIT:-4ee641bc1273cf582a77609af71d00b72f17b628}",
-            "usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-6d482fed63734d4912174747ad1b70bc57ee0ac52e0cc60e7d43a12ad17d3866}",
-            "usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be}",
-            "compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.45}",
-            "compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-e10eee523467ef2aa75a8bbdf290c2f5c505fbdc}",
-            "compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-090b160dce006da93220455aec27fcddcd7e0f850ac5d82bf018a869d636d366}",
-            "compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-4b1d0ec194f7301467c5fb4b12ce602390bad6e34768a08e1370bffb76a8c8f7}"
+            "host_provisioner_version=${HOST_PROVISIONER_VERSION:-0.39.11}",
+            "host_provisioner_commit=${HOST_PROVISIONER_COMMIT:-59e945e8019c11b69bba7389a849c02096123ce2}",
+            "host_provisioner_archive_sha256=${HOST_PROVISIONER_ARCHIVE_SHA256:-01813dfba991709f23658616ad424bc6ef5f9caf956d777093620b7a767fe095}",
+            "host_provisioner_binary_sha256=${HOST_PROVISIONER_BINARY_SHA256:-54c22fa95bb16ce9b49df6bec012b9103f3e1b0eafc947d205eaef49e11b45a8}",
+            "secret_delivery_api_version=${SECRET_DELIVERY_API_VERSION:-0.3.5}",
+            "secret_delivery_api_commit=${SECRET_DELIVERY_API_COMMIT:-b97466fd1cfc11253ca8e095a5016a2d44513f6d}",
+            "secret_delivery_api_archive_sha256=${SECRET_DELIVERY_API_ARCHIVE_SHA256:-9fdc7c1cc135047b86b20fc12bf17fe994f22856527158379e36eebb4a291492}",
+            "secret_delivery_api_binary_sha256=${SECRET_DELIVERY_API_BINARY_SHA256:-8733f1c3c10f4998ea01724f3586fd45ce013a843620e954c0fc3a950ee212b2}",
+            "usage_telemetry_agent_version=${USAGE_TELEMETRY_AGENT_VERSION:-0.4.5}",
+            "usage_telemetry_agent_commit=${USAGE_TELEMETRY_AGENT_COMMIT:-88dd6c690e4e6af43b06ded4ee9b548cb3fd2ab0}",
+            "usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-c330191944777ec8f68e812cc3aab2f78daf59d0519ed748dc4f4cbff0425da9}",
+            "usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-48e22a6654c058cef7126dfa7c39da4c98a92bb939d37f09536d992f507f92ca}",
+            "compose_executor_version=${COMPOSE_EXECUTOR_VERSION:-0.14.46}",
+            "compose_executor_commit=${COMPOSE_EXECUTOR_COMMIT:-c10fea6d53fd196c728aa11c15c7d055d461b907}",
+            "compose_executor_archive_sha256=${COMPOSE_EXECUTOR_ARCHIVE_SHA256:-625004f26fdaa89d4ccdbae133c1ecac2ea993f810b1aa850615c4e8f622991b}",
+            "compose_executor_binary_sha256=${COMPOSE_EXECUTOR_BINARY_SHA256:-a22985547fea122edd12606728d3bc5f98d9457ae5724d65a21ef3c36d62cab5}"
         ]
     ],
     [
@@ -208,7 +208,7 @@ INCREMENTAL_CONTRACTS = [
             "/usr/bin/usage-telemetry-agent --version | grep -F \"usage-telemetry-agent ${USAGE_TELEMETRY_AGENT_VERSION} (\" >/dev/null;",
             "test \"$(readlink -f /usr/bin/telemetry)\" = /usr/bin/usage-telemetry-agent;",
             "test ! -e \"${license_dir}/${component}\";",
-            "grep -Fx 'Go compiler: 1.27.3' \"${license_dir}/SERVER-PRODUCER-SOURCES.txt\" >/dev/null;",
+            "grep -Fx 'Go compiler: 1.27.4' \"${license_dir}/SERVER-PRODUCER-SOURCES.txt\" >/dev/null;",
             "test -s \"${license_dir}/${component}-${suffix}\";",
             "test -s /usr/share/licenses/pasturestack/usage-telemetry-agent/usage-telemetry-agent-PRIVACY.md;"
         ]
@@ -220,7 +220,7 @@ INCREMENTAL_CONTRACTS = [
             "ARG ARTIFACT_HELPER_IMAGE=golang:1.27.4-bookworm@sha256:4fa7c968ba93f1635670522dbb01a2c78150443e1385746924566079f36570ea",
             "test \"$(go version | awk '{print $3}')\" = go1.27.4;",
             "test \"$(go version -m /out/pasturestack-console-broker | awk 'NR==1 {print $2}')\" = go1.27.4;",
-            "ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.3",
+            "ENV PASTURESTACK_RUNTIME_GO_VERSION=1.27.4",
             "ENV PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.4",
             "ARG ENGINE_READONLY_SCHEMA_SHA256=7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233",
             "ARG ENGINE_RESTRICTED_SCHEMA_SHA256=f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51"
@@ -230,13 +230,13 @@ INCREMENTAL_CONTRACTS = [
         "incremental_go_build_marker",
         "server/build-api-explorer-patch-image.sh",
         [
-            "PASTURESTACK_RUNTIME_GO_VERSION=1.27.3",
+            "PASTURESTACK_RUNTIME_GO_VERSION=1.27.4",
             "PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.4",
             "test -x /usr/bin/pasturestack-console-broker",
             "grep -aF \"go1.27.4\" /usr/bin/pasturestack-console-broker >/dev/null",
             "console_broker_go=1.27.4",
-            "grep -aF \"go1.27.3\" \"${binary}\" >/dev/null",
-            "runtime_go=1.27.3",
+            "grep -aF \"go1.27.4\" \"${binary}\" >/dev/null",
+            "runtime_go=1.27.4",
             "engine_readonly_schema_sha256=${ENGINE_READONLY_SCHEMA_SHA256:-7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233}",
             "engine_restricted_schema_sha256=${ENGINE_RESTRICTED_SCHEMA_SHA256:-f854ba99260f29e324ab7446a8592996946038920ac9bcf17689d98d1ebc5e51}"
         ]
@@ -620,7 +620,7 @@ def verify(files, gate=GATE):
         raise AssertionError('CURRENT_VEX_RELEASE_MISMATCH')
     if json.loads(files[VENDOR]).get('release') != 'v1.6.598':
         raise AssertionError('CURRENT_VENDOR_RELEASE_MISMATCH')
-    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.598 base=v1.6.460 engine=0.183.395 web_console=1.6.236 catalog_service=0.20.17 ' not in gate:
+    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.598 base=v1.6.460 engine=0.183.395 web_console=1.6.236 catalog_service=0.20.18 ' not in gate:
         raise AssertionError('CURRENT_SUMMARY_MISMATCH')
     verify_incremental_contract(files, gate)
     verify_load_balancer_contract(files, gate)
@@ -639,7 +639,7 @@ def previous_gate(gate=GATE):
             'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.521"',
         '"$vendor_pending_fixture" v1.6.598 >/dev/null':
             '"$vendor_pending_fixture" v1.6.521 >/dev/null',
-        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.598 base=v1.6.460 engine=0.183.395 web_console=1.6.236 catalog_service=0.20.17 ':
+        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.598 base=v1.6.460 engine=0.183.395 web_console=1.6.236 catalog_service=0.20.18 ':
             'SERVER_API_EXPLORER_PATCH_OK release=v1.6.521 base=v1.6.460 engine=0.183.340 web_console=1.6.181 catalog_service=0.20.12 ',
     })
     for marker, stale_marker in replacements.items():
@@ -864,41 +864,41 @@ class Tests(unittest.TestCase):
     [
         "AUTHENTICATION_SERVICE",
         "authentication_service",
-        "0.4.46",
-        "35333ee3e40d9de032c10307ee80113c980be00a",
-        "15950344ac9cc688610eae6d1c023ae6ba66182de675f04445f4c98ced2f19ec",
-        "e121cee8b7a6bd3c0eb6fe3e15ff304b78119b426642ed76f13e3d92be161192"
+        "0.4.47",
+        "621488e73a41257f053bf22237c833eda2035822",
+        "a3ec5a38d0ed497c881c020a9712acc7d5ac27bd15c4f279c1697d82be574ff3",
+        "f4e6db78d33483a799e52954c4afa0e780136d1d87fc09914369e54f5a9f8f05"
     ],
     [
         "WEBSOCKET_PROXY",
         "websocket_proxy",
-        "0.23.18",
-        "d3f71afb5945b8dedc1b6b80892be6145238cad1",
-        "9b1cbb2eac08eafadc4e69aca728ca33787b58923abbf3b585db2aa729f09434",
-        "72e67b9ff5ce6cf59a03860960ad59a06f6e6d7af9926f73c1f5dbec05dd97e7"
+        "0.23.19",
+        "bab79fd154ad1a2da6ba2c35227f9408a4c80b15",
+        "715705c0a6217e5f064dddff486b76af249fa52d710a37800567015da86cfb03",
+        "a3387ce01f70bac130e8b5665e263d7fc384ef7b4d37e18e43cb56f327494231"
     ],
     [
         "WEBHOOK_AUTOMATION_SERVICE",
         "webhook_automation_service",
-        "0.10.5",
-        "4da77ccac464bc7f7cd2020e0659a666a5d1ff7e",
-        "f2df8874d5a00a2d5713594609063256164ed624d29a733149d00cb271f0f66b",
-        "b98e55db2739ab45119eacc94c8f65cb44371480ebcebec95e5470fd67c72a4c"
+        "0.10.6",
+        "ae1eb711b786463d1b3619d6668a88f4909e37fe",
+        "0f4535bf6c47302c1766dcae57f202f49ff25e39da6baa35e06e5d3038f8b3cb",
+        "52e548ddb5905863dd1da713bfbd15491ef143fe98854d4759219f78b88f3912"
     ],
     [
         "COMPOSE_EXECUTOR",
         "compose_executor",
-        "0.14.45",
-        "e10eee523467ef2aa75a8bbdf290c2f5c505fbdc",
-        "090b160dce006da93220455aec27fcddcd7e0f850ac5d82bf018a869d636d366",
-        "4b1d0ec194f7301467c5fb4b12ce602390bad6e34768a08e1370bffb76a8c8f7"
+        "0.14.46",
+        "c10fea6d53fd196c728aa11c15c7d055d461b907",
+        "625004f26fdaa89d4ccdbae133c1ecac2ea993f810b1aa850615c4e8f622991b",
+        "a22985547fea122edd12606728d3bc5f98d9457ae5724d65a21ef3c36d62cab5"
     ],
     [
         "VSPHERE_CLI_BUNDLE",
         "vsphere_cli_bundle",
-        "0.55.4",
-        "35ca999b775a41e7fb34e9a6b6ceb4fa51f3f242",
-        "abec8c22504adde66e2ccd89b7b764c8a643c5e1e4425dafb2964abde75806a0",
+        "0.55.5",
+        "2388ea4277ed63f6b05d0a8003cda7f662daa3d9",
+        "bc3fda8383746c4d9927eb0d91155df5ca43a689668f07bcc4621bf808bb9ec6",
         None
     ]
 ]
@@ -918,7 +918,7 @@ class Tests(unittest.TestCase):
                     # its producer and hashes are also bound in the build gate.
                     if not (upper == 'WEBSOCKET_PROXY' and field == 'VERSION'):
                         self.assertIn(build_marker, gate)
-            self.assertIn('ARG GOVC_BINARY_SHA256=8f43086cc85de88a93e510efe9375a1ff6e265ca12e764c1fc8ae4c35be69ded', files[DOCKER])
+            self.assertIn('ARG GOVC_BINARY_SHA256=7319102b997d19d3a1571b36485c52fd881a23338dfa0410546719b6d4719784', files[DOCKER])
 
         check(FILES)
         for upper, lower, version, commit, archive, binary in coordinates:
@@ -995,9 +995,9 @@ class Tests(unittest.TestCase):
                     with self.assertRaisesRegex(AssertionError, 'CURRENT_(?:INCREMENTAL|RUNTIME)_.*(?:MISMATCH|BYPASS)'):
                         verify_incremental_contract(dict(FILES, **{DOCKER: FILES[DOCKER].replace(marker, replacement)}))
         for upper, version, digest, binary in (
-            ('HOST_PROVISIONER', '0.39.10', '92c6d9ce1222a93802ff2c92b100eeb6c58286f3fca90698f9687b92d6fa9dff', '/usr/bin/host-provisioner.real'),
-            ('SECRET_DELIVERY_API', '0.3.4', '1d302e8005e35fe56108d704cd3b18e12a0fbbc1871e7b5cd61ac429db37566c', '/usr/bin/secret-delivery-api'),
-            ('USAGE_TELEMETRY_AGENT', '0.4.4', '90ed65f689c91801abd0cf482211c96a01e7c63ef695e4faecdf4713eff730be', '/usr/bin/usage-telemetry-agent'),
+            ('HOST_PROVISIONER', '0.39.11', '54c22fa95bb16ce9b49df6bec012b9103f3e1b0eafc947d205eaef49e11b45a8', '/usr/bin/host-provisioner.real'),
+            ('SECRET_DELIVERY_API', '0.3.5', '8733f1c3c10f4998ea01724f3586fd45ce013a843620e954c0fc3a950ee212b2', '/usr/bin/secret-delivery-api'),
+            ('USAGE_TELEMETRY_AGENT', '0.4.5', '48e22a6654c058cef7126dfa7c39da4c98a92bb939d37f09536d992f507f92ca', '/usr/bin/usage-telemetry-agent'),
         ):
             self.assertIn(digest + '  ' + binary, FILES[BUILD])
             self.assertIn('PASTURESTACK_' + upper + '_VERSION="' + '$' + '{' + upper.lower() + '_version}"', FILES[BUILD])
@@ -1015,12 +1015,12 @@ class Tests(unittest.TestCase):
 
     def test_cni025_source_pins_typed_qualifier_and_final_env_override(self):
         cni = {
-            'VERSION': '0.2.5',
-            'PRODUCER_COMMIT': 'e102e0bb38d84b0a9cbf87e5458cf1bc74d01904',
-            'ARCHIVE_SHA256': '7237e83e96a64e7f3de64eb86bff9721c4e879c35cda9e9de1e4cb1ba225f298',
-            'BINARY_SHA256': '3d0e5b3f32eacf88cde9a8700432b64ad157810a053e59ebffe82a924a18ee30',
+            'VERSION': '0.2.6',
+            'PRODUCER_COMMIT': '05c69dba52ab770062e81a9b60b69408cbe58218',
+            'ARCHIVE_SHA256': 'a3a7592582c443f4f36b31c54a0a3c87d5961d664e3604b20acb97dec55725be',
+            'BINARY_SHA256': 'a0e8d6aaa44cfc0579878611a15ace3a939d52d709165b92fb4d45eed49a112c',
             'STARTUP_SHA256': 'f22b41f18d1733c037babed4d2e0474efeedc6017a96849d4309dd864f5f86d1',
-            'PROVENANCE_SHA256': 'afa2db0e0755c6bd3ee28e111937c521a6d84e6d71d563e99202cf4693000eaf',
+            'PROVENANCE_SHA256': '272ea108e8d938c352cf47a4fa82e0dab3c81b6f3b181d0d12b71e1469f87edd',
         }
         def exact_cni_sources(files):
             for suffix, value in cni.items():
@@ -1052,12 +1052,12 @@ class Tests(unittest.TestCase):
 
     def test_current_host_node_coordinates_match_official_original_bytes(self):
         coordinates = {
-            'HOST_API_VERSION': '0.38.9',
-            'HOST_API_RELEASE_TAG': 'v0.38.9',
-            'HOST_API_COMMIT': '174c4471472fd77a056c9ae8639be11b2c0f4fd4',
-            'HOST_API_PACKAGE_ID': '174c4471472fd77a056c9ae8639be11b',
-            'HOST_API_ARCHIVE_SHA256': 'f0bad8ef8c83a5019e89aedfe075e8553a297fc4746df342c89606f4651c294b',
-            'HOST_API_BINARY_SHA256': 'd1b66d98ab7f0306e253b28d64dd36b96a5d9927c4a20911bdb3d375c8b538f0',
+            'HOST_API_VERSION': '0.38.10',
+            'HOST_API_RELEASE_TAG': 'v0.38.10',
+            'HOST_API_COMMIT': 'b82be96846a267f8b20ba836449dbd494636bf83',
+            'HOST_API_PACKAGE_ID': 'b82be96846a267f8b20ba836449dbd49',
+            'HOST_API_ARCHIVE_SHA256': '804154a1a1df32c8520bbd2849a3caa46237ea551c9c08316c49e1284bed454f',
+            'HOST_API_BINARY_SHA256': 'bfcaa9871df9a5d13d31f5f60036a2a655911ab4549950821586b82e0bd4be53',
             'HOST_API_APPLY_SHA256': '8a21f63099832afb571755011bbcf8d97710994a50c419b20700cbc31efced0f',
             'NODE_AGENT_VERSION': '0.13.35',
             'NODE_AGENT_COMMIT': 'ae15fa4fa7eeb0923871c1459685aef315b47aee',
@@ -1124,7 +1124,7 @@ class Tests(unittest.TestCase):
         source = (REPO / 'server/artifacts/verify-runtime-producer.sh').read_text(encoding='utf-8')
         for marker in (
             'echo "$binary_sha  $output/$type" | sha256sum -c -',
-            'test "$(printf \'%s\\n\' "$metadata" | awk \'NR==1 {print $2}\')" = go1.27.3',
+            'test "$(printf \'%s\\n\' "$metadata" | awk \'NR==1 {print $2}\')" = go1.27.4',
             "'CGO_ENABLED=0' 'GOOS=linux' 'GOARCH=amd64' 'GOAMD64=v1'",
             'test ! -s "$duplicates"',
             "if grep -Eq '^[lh]' \"$verbose\"; then",
@@ -1655,9 +1655,9 @@ class Tests(unittest.TestCase):
 
     def test_proxy_binary_readback_uses_the_verified_component_parameter(self):
         for field, value in (
-            ('COMMIT', 'd3f71afb5945b8dedc1b6b80892be6145238cad1'),
-            ('ARCHIVE_SHA256', '9b1cbb2eac08eafadc4e69aca728ca33787b58923abbf3b585db2aa729f09434'),
-            ('BINARY_SHA256', '72e67b9ff5ce6cf59a03860960ad59a06f6e6d7af9926f73c1f5dbec05dd97e7'),
+            ('COMMIT', 'bab79fd154ad1a2da6ba2c35227f9408a4c80b15'),
+            ('ARCHIVE_SHA256', '715705c0a6217e5f064dddff486b76af249fa52d710a37800567015da86cfb03'),
+            ('BINARY_SHA256', 'a3387ce01f70bac130e8b5665e263d7fc384ef7b4d37e18e43cb56f327494231'),
         ):
             docker_marker = 'ARG WEBSOCKET_PROXY_' + field + '=' + value
             build_marker = 'websocket_proxy_' + field.lower() + '=${WEBSOCKET_PROXY_' + field + ':-' + value + '}'
@@ -1676,10 +1676,10 @@ class Tests(unittest.TestCase):
 
     def test_govc_fixed_dependency_and_binary_readback_use_formal_pins(self):
         for upper, lower, value in (
-            ('VSPHERE_CLI_BUNDLE_VERSION', 'vsphere_cli_bundle_version', '0.55.4'),
-            ('VSPHERE_CLI_BUNDLE_COMMIT', 'vsphere_cli_bundle_commit', '35ca999b775a41e7fb34e9a6b6ceb4fa51f3f242'),
-            ('VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256', 'vsphere_cli_bundle_archive_sha256', 'abec8c22504adde66e2ccd89b7b764c8a643c5e1e4425dafb2964abde75806a0'),
-            ('GOVC_BINARY_SHA256', 'govc_binary_sha256', '8f43086cc85de88a93e510efe9375a1ff6e265ca12e764c1fc8ae4c35be69ded'),
+            ('VSPHERE_CLI_BUNDLE_VERSION', 'vsphere_cli_bundle_version', '0.55.5'),
+            ('VSPHERE_CLI_BUNDLE_COMMIT', 'vsphere_cli_bundle_commit', '2388ea4277ed63f6b05d0a8003cda7f662daa3d9'),
+            ('VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256', 'vsphere_cli_bundle_archive_sha256', 'bc3fda8383746c4d9927eb0d91155df5ca43a689668f07bcc4621bf808bb9ec6'),
+            ('GOVC_BINARY_SHA256', 'govc_binary_sha256', '7319102b997d19d3a1571b36485c52fd881a23338dfa0410546719b6d4719784'),
         ):
             docker_marker = 'ARG ' + upper + '=' + value
             build_marker = lower + '=${' + upper + ':-' + value + '}'
@@ -1711,11 +1711,11 @@ class Tests(unittest.TestCase):
 
     def test_machine_actual_binary_package_and_retired_boundary_are_verified(self):
         for name, value in (
-            ('MACHINE_DRIVER_BUNDLE_VERSION', '0.16.6'),
-            ('MACHINE_DRIVER_BUNDLE_COMMIT', 'd5bade2722a788f54fe7f3a25af6245336a1e841'),
-            ('MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256', '82747659c1c9c866ea0d4b5c8909e36f72445f97f13cdc7324c40f403e28a83d'),
-            ('MACHINE_DRIVER_BINARY_SHA256', '8c257c4eec578fd6ae0f198d8ccc5fa449aa00b8a590096489595f2d840e697c'),
-            ('PACKET_DRIVER_BINARY_SHA256', 'a4146c973254d36f8b1edcd8298c55154db600e24af6226810f4ed9ec4e5fb79'),
+            ('MACHINE_DRIVER_BUNDLE_VERSION', '0.16.7'),
+            ('MACHINE_DRIVER_BUNDLE_COMMIT', '5db9eb04f45853ad296832b6311cf800b981319f'),
+            ('MACHINE_DRIVER_BUNDLE_ARCHIVE_SHA256', '903d7fa1703ae30203c13d69ceba355239c518147a5a1836f0d4b8055463f194'),
+            ('MACHINE_DRIVER_BINARY_SHA256', 'f77366c8460baf78798dcaaa675cdd5f656c9670b79c651983129c55bb41dd37'),
+            ('PACKET_DRIVER_BINARY_SHA256', '601e958704a2eea7bd3872db99b54007fe2b04cd0c66e96ccf15c50133f4dba0'),
         ):
             self.assertEqual(2, FILES[DOCKER].count('ARG ' + name + '=' + value))
             self.assertIn(name.lower() + '=${' + name + ':-' + value + '}', FILES[BUILD])

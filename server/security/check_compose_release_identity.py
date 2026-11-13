@@ -7,9 +7,9 @@ import re
 def load_review(version):
     # Release recipes can select a registered coordinate, never an arbitrary
     # command-line file. New releases require their reviewed record in source.
-    if version != '0.14.45':
+    if version not in ('0.14.45', '0.14.46'):
         raise ValueError('ComposeReleaseIdentityReviewRequired')
-    path = Path(__file__).resolve().parent / 'reviews/compose-0.14.45-openpgp.json'
+    path = Path(__file__).resolve().parent / f'reviews/compose-{version}-openpgp.json'
     if not path.is_file() or path.is_symlink() or path.stat().st_size > 65536:
         raise ValueError('ComposeReleaseIdentityReviewRequired')
     return json.loads(path.read_text(encoding='utf-8'))

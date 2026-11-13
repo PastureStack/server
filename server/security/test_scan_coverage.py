@@ -109,7 +109,6 @@ class CoverageTest(unittest.TestCase):
     def test_reviewed_openpgp_hashes_match_the_actual_producer_pins(self):
         recipe = (Path(__file__).resolve().parents[1] / 'Dockerfile.web-compose-release').read_text(encoding='utf-8')
         pins = {
-            'usr/bin/authentication-service.real': 'AUTHENTICATION_SERVICE_BINARY_SHA256',
             'usr/bin/docker-machine': 'MACHINE_DRIVER_BINARY_SHA256',
             'usr/bin/docker-machine-driver-packet': 'PACKET_DRIVER_BINARY_SHA256',
             'usr/bin/compose-executor.real': 'COMPOSE_EXECUTOR_BINARY_SHA256',
@@ -144,7 +143,7 @@ class CoverageTest(unittest.TestCase):
         self.assertFalse(scope['newConsumerOrScopeAllowed'])
         self.assertEqual(OPENPGP_VEX_BINARY_SHA256[scope['executable']], artifact['binarySha256'])
         self.assertEqual(artifact['releaseVersion'], version)
-        self.assertEqual(artifact['compiler'], 'go1.27.3')
+        self.assertEqual(artifact['compiler'], 'go1.27.4')
         self.assertTrue(artifact['releaseGzipAndOfficialTestedProductBytesIdentical'])
         graph, symbols = review['sourceGraph'], review['symbolEvidence']
         self.assertTrue(graph['officialGo127SourceGatePassed'])

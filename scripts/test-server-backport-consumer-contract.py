@@ -28,13 +28,13 @@ def verify(files):
                    '/bundle/provenance/pcre2/provenance.json', '/bundle/provenance/pcre2/pcre2.lock.json',
                    'sha256sum usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 usr/lib/x86_64-linux-gnu/libpcre2-posix.so.3']:
         require(marker in native, 'Missing producer-derived PCRE compatibility receipt: ' + marker)
-    for marker in ['ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4\n',
-                   'ARG GLIBC_RUNTIME_PACKAGE_VERSION=2.43-2ubuntu2.4+pasturestack.1',
+    for marker in ['ARG GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.7\n',
+                   'ARG GLIBC_RUNTIME_PACKAGE_VERSION=2.43-2ubuntu2.7',
                    'ENV PASTURESTACK_GLIBC_OFFICIAL_PACKAGE_VERSION=${GLIBC_PACKAGE_VERSION}',
                    'ENV PASTURESTACK_GLIBC_PACKAGE_VERSION=${GLIBC_RUNTIME_PACKAGE_VERSION}',
-                   'ENV PASTURESTACK_GLIBC_CVE_2026_18374_FIX=official-source-backport']:
+                   'ENV PASTURESTACK_GLIBC_CVE_2026_18374_FIX=official-ubuntu-package']:
         require(marker in docker, 'Official download/custom runtime version boundary changed')
-    require('PASTURESTACK_GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.4+pasturestack.1' in build,
+    require('PASTURESTACK_GLIBC_PACKAGE_VERSION=2.43-2ubuntu2.7' in build,
             'Runtime readback still expects the original libc version')
     runtime_version = re.findall(r'^ARG GLIBC_RUNTIME_PACKAGE_VERSION=(\S+)$', docker, re.M)
     libc_checks = re.findall(
@@ -62,6 +62,10 @@ def verify(files):
     require('libbrotli1)" = "${BROTLI_PACKAGE_VERSION}"' in runtime
             and 'libbrotli1)" = 1.2.0-3ubuntu0.1' in build,
             'Final Brotli oracles must select the official version')
+    require('--install official-glibc/libc6.deb official-glibc/libc-bin.deb official-glibc/libc-gconv-modules-extra.deb' in runtime,
+            'Official glibc package batch is missing')
+    require(runtime.index('install-existing-backports" --verify-installed') < runtime.index('--install official-glibc/libc6.deb'),
+            'Verify the original bundle before official glibc replacement')
     require('verify-brotli-runtime.sh --install' in runtime, 'Official replacement installation is missing')
     require(runtime.index('"${data}/install-existing-backports" --verify-installed')
             < runtime.index('verify-brotli-runtime.sh --install'), 'Official replacement must follow complete bundle verification')
@@ -136,7 +140,7 @@ class ServerBackportContract(unittest.TestCase):
         for variable in ['package', 'glibc_package']:
             pattern = rf'(for {variable} in libc6 libc-bin libc-gconv-modules-extra; do\n.*?\n    done)'
             broken = re.sub(pattern, lambda match: match[0].replace(
-                '2.43-2ubuntu2.4+pasturestack.1', '2.43-2ubuntu2.4'), FILES[BUILD], count=1, flags=re.S)
+                '2.43-2ubuntu2.7', '2.43-2ubuntu2.4'), FILES[BUILD], count=1, flags=re.S)
             with self.subTest(variable=variable), self.assertRaises(AssertionError):
                 verify(dict(FILES, **{BUILD: broken}))
 

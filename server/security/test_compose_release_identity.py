@@ -13,7 +13,7 @@ spec.loader.exec_module(owner)
 
 class ComposeReleaseIdentity(unittest.TestCase):
     def setUp(self):
-        self.review = json.loads((HERE / 'reviews/compose-0.14.45-openpgp.json').read_text())
+        self.review = json.loads((HERE / 'reviews/compose-0.14.46-openpgp.json').read_text())
         a = self.review['artifact']
         self.values = dict(version=a['releaseVersion'], source=a['source'],
                            archive=a['releaseGzipSha256'], binary=a['binarySha256'])
@@ -22,7 +22,8 @@ class ComposeReleaseIdentity(unittest.TestCase):
         self.assertEqual(owner.validate(self.review, **self.values)['source'], self.values['source'])
 
     def test_only_registered_review_can_be_selected(self):
-        self.assertEqual(owner.load_review('0.14.45'), self.review)
+        self.assertEqual(owner.load_review('0.14.46'), self.review)
+        self.assertEqual(owner.load_review('0.14.45')['artifact']['releaseVersion'], '0.14.45')
         for value in ('../README.md', '/etc/passwd', '', '0.14.999'):
             with self.assertRaisesRegex(ValueError, 'ComposeReleaseIdentityReviewRequired'):
                 owner.load_review(value)

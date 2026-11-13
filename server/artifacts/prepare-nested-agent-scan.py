@@ -49,7 +49,7 @@ def member_bytes(archive, name, windows, cni=False):
 def metadata(path, source, windows):
     # go version -m reads executable metadata; it does not run the payload.
     text = subprocess.check_output(['go', 'version', '-m', str(path)], text=True)
-    need(text.splitlines()[0].split()[-1] == 'go1.27.3', 'FIXED_GO_COMPILER_REQUIRED')
+    need(text.splitlines()[0].split()[-1] == 'go1.27.4', 'FIXED_GO_COMPILER_REQUIRED')
     fields = {line.strip().split('\t', 1)[1] for line in text.splitlines()
               if line.strip().startswith('build\t')}
     for field in ('CGO_ENABLED=0', 'GOARCH=amd64', 'vcs.modified=false',
@@ -60,7 +60,7 @@ def metadata(path, source, windows):
 def cni_metadata(path):
     """Only the producer's explicit buildvcs=false CNI contract; never a general fallback."""
     text = subprocess.check_output(['go', 'version', '-m', str(path)], text=True)
-    need(text.splitlines()[0].split()[-1] == 'go1.27.3', 'FIXED_GO_COMPILER_REQUIRED')
+    need(text.splitlines()[0].split()[-1] == 'go1.27.4', 'FIXED_GO_COMPILER_REQUIRED')
     fields = {line.strip().split('\t', 1)[1] for line in text.splitlines()
               if line.strip().startswith('build\t')}
     for field in ('CGO_ENABLED=0', 'GOARCH=amd64', 'GOOS=windows', 'GOAMD64=v1'):
@@ -73,7 +73,7 @@ def cni_payload(rootfs, pins, output):
     version = pins['PER_HOST_SUBNET_VERSION']
     producer = pins['PER_HOST_SUBNET_PRODUCER_COMMIT']
     provenance = pins['PER_HOST_SUBNET_PROVENANCE_SHA256']
-    need(version == '0.2.5' and re.fullmatch(r'[0-9a-f]{40}', producer) and
+    need(version == '0.2.6' and re.fullmatch(r'[0-9a-f]{40}', producer) and
          re.fullmatch(r'[0-9a-f]{64}', provenance), 'FORMAL_CNI_PROVENANCE_PINS_REQUIRED')
     archive = rootfs / 'usr/share/cattle/artifacts' / ('per-host-subnet-' + version + '-windows-amd64.zip')
     need(archive.is_file() and not archive.is_symlink() and archive.resolve().is_relative_to(rootfs),
@@ -100,7 +100,7 @@ def cni_payload(rootfs, pins, output):
     return {'component': 'per-host-subnet', 'platform': 'windows/amd64', 'version': version,
             'producerSource': producer, 'provenanceReceiptSha256': provenance,
             'vcsMetadata': 'ABSENT_BY_PRODUCER_BUILDVCS_FALSE_CONTRACT',
-            'compiler': 'go1.27.3', 'archive': archive.name, 'archiveSha256': archive_sha,
+            'compiler': 'go1.27.4', 'archive': archive.name, 'archiveSha256': archive_sha,
             'binary': target.name, 'binarySha256': binary_sha, 'bytes': len(binary),
             'payloadExecuted': False}
 
@@ -148,7 +148,7 @@ def prepare(rootfs, recipe, output):
         target.chmod(0o700)
         metadata(target, source, windows)
         records.append({'component': component, 'platform': 'windows/amd64' if windows else 'linux/amd64',
-                        'version': version, 'source': source, 'compiler': 'go1.27.3',
+                        'version': version, 'source': source, 'compiler': 'go1.27.4',
                         'archive': archive.name, 'archiveSha256': archive_sha,
                         'binary': target.name, 'binarySha256': binary_sha, 'bytes': len(binary),
                         'payloadExecuted': False})

@@ -2,9 +2,9 @@
 set -euo pipefail
 
 artifact="${PASTURESTACK_PER_HOST_SUBNET_WINDOWS_ARTIFACT:-}"
-expected_version="${PASTURESTACK_EXPECTED_PER_HOST_SUBNET_VERSION:-0.2.5}"
-expected_artifact_sha256="${PASTURESTACK_EXPECTED_PER_HOST_SUBNET_WINDOWS_ARTIFACT_SHA256:-7237e83e96a64e7f3de64eb86bff9721c4e879c35cda9e9de1e4cb1ba225f298}"
-expected_binary_sha256="${PASTURESTACK_EXPECTED_PER_HOST_SUBNET_WINDOWS_BINARY_SHA256:-3d0e5b3f32eacf88cde9a8700432b64ad157810a053e59ebffe82a924a18ee30}"
+expected_version="${PASTURESTACK_EXPECTED_PER_HOST_SUBNET_VERSION:-0.2.6}"
+expected_artifact_sha256="${PASTURESTACK_EXPECTED_PER_HOST_SUBNET_WINDOWS_ARTIFACT_SHA256:-a3a7592582c443f4f36b31c54a0a3c87d5961d664e3604b20acb97dec55725be}"
+expected_binary_sha256="${PASTURESTACK_EXPECTED_PER_HOST_SUBNET_WINDOWS_BINARY_SHA256:-a0e8d6aaa44cfc0579878611a15ace3a939d52d709165b92fb4d45eed49a112c}"
 expected_startup_sha256="${PASTURESTACK_EXPECTED_PER_HOST_SUBNET_WINDOWS_STARTUP_SHA256:-f22b41f18d1733c037babed4d2e0474efeedc6017a96849d4309dd864f5f86d1}"
 expected_name="per-host-subnet-${expected_version}-windows-amd64.zip"
 
@@ -70,7 +70,7 @@ file "$binary" | grep -F 'x86-64' >/dev/null
 LC_ALL=C grep -aF "v${expected_version}" "$binary" >/dev/null
 
 metadata=$(go version -m "$binary")
-test "$(printf '%s\n' "$metadata" | awk 'NR == 1 {print $NF}')" = go1.27.3
+test "$(printf '%s\n' "$metadata" | awk 'NR == 1 {print $NF}')" = go1.27.4
 for field in CGO_ENABLED=0 GOOS=windows GOARCH=amd64 GOAMD64=v1; do
   printf '%s\n' "$metadata" | grep -Fx "$(printf '\tbuild\t%s' "$field")" >/dev/null
 done
