@@ -35,15 +35,15 @@ host_api_package_id=${HOST_API_PACKAGE_ID:-b82be96846a267f8b20ba836449dbd49}
 host_api_binary_sha256=${HOST_API_BINARY_SHA256:-bfcaa9871df9a5d13d31f5f60036a2a655911ab4549950821586b82e0bd4be53}
 host_api_apply_sha256=${HOST_API_APPLY_SHA256:-8a21f63099832afb571755011bbcf8d97710994a50c419b20700cbc31efced0f}
 host_api_commit=${HOST_API_COMMIT:-b82be96846a267f8b20ba836449dbd494636bf83}
-node_agent_version=${NODE_AGENT_VERSION:-0.13.35}
+node_agent_version=${NODE_AGENT_VERSION:-0.13.36}
 node_agent_release_base_url=${NODE_AGENT_RELEASE_BASE_URL:-https://github.com/PastureStack/node-agent/releases/download}
-node_agent_commit=${NODE_AGENT_COMMIT:-ae15fa4fa7eeb0923871c1459685aef315b47aee}
+node_agent_commit=${NODE_AGENT_COMMIT:-fcdf27422d392e415d2781622fdb7fbe999343ed}
 node_agent_package_id=${NODE_AGENT_PACKAGE_ID:-${node_agent_commit:0:32}}
-node_agent_archive_sha256=${NODE_AGENT_ARCHIVE_SHA256:-d54d8e1a0ee83272113488eacad61eb585a5cbe30fa9b7829aad838d4787718d}
-node_agent_binary_sha256=${NODE_AGENT_BINARY_SHA256:-3f8db3bb7b2870f46f7b1fd9e38f01342d8dd62dd0ee8e8dc7b7f77ba7f5c866}
+node_agent_archive_sha256=${NODE_AGENT_ARCHIVE_SHA256:-8a54f88a293d6982b363882a148dcd5cf83eb00fce2f2ef039353bdc12111fa9}
+node_agent_binary_sha256=${NODE_AGENT_BINARY_SHA256:-7c3d5fe509c2a8497c16b9a8744cdbc733f5fb0b4db909640f08fe9dc765f78f}
 node_agent_apply_sha256=${NODE_AGENT_APPLY_SHA256:-dd8cb342518a43e7468cc121db5c4e44b16731f2620b77ea0fd03c02c03766a9}
-node_agent_windows_archive_sha256=${NODE_AGENT_WINDOWS_ARCHIVE_SHA256:-c51b8b216f5b45de73e221b6e16ad50c7e0efc5e5e779490c7bf1609a70e93c9}
-node_agent_windows_binary_sha256=${NODE_AGENT_WINDOWS_BINARY_SHA256:-9fae62cf5daba01bebef5d2a49f1b907b366996cc1bbfb3d967460f77a3f156c}
+node_agent_windows_archive_sha256=${NODE_AGENT_WINDOWS_ARCHIVE_SHA256:-32acf59e06c50b127077abc23e9b0a4b788101ec555983f514627f4be5ec8b0a}
+node_agent_windows_binary_sha256=${NODE_AGENT_WINDOWS_BINARY_SHA256:-42515ffe1004081b160383499e143c75fea69518dbd6f9cc70c553a7706d71a1}
 node_agent_windows_startup_sha256=${NODE_AGENT_WINDOWS_STARTUP_SHA256:-e1e84e1c5125db2b8f0c1a83ada8294556cb2390de969398a2436d9481378fca}
 per_host_subnet_version=${PER_HOST_SUBNET_VERSION:-0.2.6}
 per_host_subnet_release_base_url=${PER_HOST_SUBNET_RELEASE_BASE_URL:-https://github.com/PastureStack/per-host-subnet/releases/download}
@@ -508,9 +508,9 @@ for marker in \
     PASTURESTACK_MACHINE_DRIVER_BINARY_SHA256="${machine_driver_binary_sha256}" \
     PASTURESTACK_PACKET_DRIVER_BINARY_SHA256="${packet_driver_binary_sha256}" \
     PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-08-28 \
-    PASTURESTACK_CATALOG_COMMIT=d2f0f93ee58970f24994fc6cbcc6526687f6b8ad \
-    'DEFAULT_CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"d2f0f93ee58970f24994fc6cbcc6526687f6b8ad"}}}' \
-    'CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"d2f0f93ee58970f24994fc6cbcc6526687f6b8ad"}}}'; do
+    PASTURESTACK_CATALOG_COMMIT=88183beee826effcc92451624bbe3465bb3e6a7b \
+    'DEFAULT_CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"88183beee826effcc92451624bbe3465bb3e6a7b"}}}' \
+    'CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"88183beee826effcc92451624bbe3465bb3e6a7b"}}}'; do
     test "$(grep -Fxc "$marker" <<<"$image_environment")" = 1
 done
 

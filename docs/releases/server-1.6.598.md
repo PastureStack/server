@@ -34,6 +34,8 @@ New load balancers use `ghcr.io/pasturestack/load-balancer-service:v0.9.34`
 with HAProxy 3.4.7, AWS-LC 5.14.0 and Lua 5.4. Existing services retain
 their selected image until upgraded. The bundled Catalog selects
 Metadata Healthcheck `v0.3.21` with Ubuntu glibc `2.43-2ubuntu2.7` and
-HAProxy `3.2.25-0ubuntu0.26.04.2`. Catalog revision 5 remains available for rollback.
+HAProxy `3.2.25-0ubuntu0.26.04.2`. Catalog revisions 4 and 5 remain available for rollback.
+Network Services revision 16 and Network Policy Manager revision 6 carry
+updated Ubuntu inputs, as do Secret Volume revision 5 and Vault Volume revision 6.
 
 Web Console 1.6.236 and Engine v0.183.395 remain the bundled application versions.
