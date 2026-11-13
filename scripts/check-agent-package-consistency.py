@@ -19,7 +19,8 @@ def inventory(text):
     return result
 
 
-def verify(data):
+def verify(data, component="agent"):
+    require(component in {"base", "agent"}, "Unsupported component")
     builder = inventory(data['builder-packages.tsv'])
     runtime = inventory(data['runtime-packages.tsv'])
     manifest_bytes = data['backports-manifest.json'].encode('utf-8')
@@ -60,7 +61,7 @@ def verify(data):
     # may differ, and only by the exact qualified manifest above.
     require(builder.get('libc6') == '2.43-2ubuntu2.4', 'Unexpected Python-builder libc version')
     expected = {'libssl3t64': '3.5.5-1ubuntu3.7', 'curl': '8.18.0-1ubuntu2.8',
-                'ca-certificates': '20260816ubuntu0.26.04.1'}
+                'ca-certificates': '20260816ubuntu0.26.04.2' if component == 'base' else '20260816ubuntu0.26.04.1'}
     for name, version in expected.items():
         require(runtime.get(name) == version, 'Unexpected unchanged security package: ' + name)
     return {'builder_packages': len(builder), 'runtime_packages': len(runtime),
@@ -70,7 +71,7 @@ def verify(data):
 
 
 if __name__ == '__main__':
-    require(not sys.argv[1:], 'Unsupported arguments')
+    require(len(sys.argv) <= 2 and (len(sys.argv) == 1 or sys.argv[1] in {'base', 'agent'}), 'Unsupported arguments')
     data = json.load(sys.stdin)
-    report = verify(data)
+    report = verify(data, sys.argv[1] if len(sys.argv) == 2 else "agent")
     print(json.dumps(report, indent=2))

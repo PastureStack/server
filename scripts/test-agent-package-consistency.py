@@ -44,16 +44,25 @@ class PackageConsistencyTests(unittest.TestCase):
                          'qualification': {'sha256': hashlib.sha256(content).hexdigest()},
                          'packages': [{'name': name, 'version': version} for name, version in self.versions.items()]}
 
-    def verify(self):
+    def verify(self, component="agent"):
         for filename, data in [('backports-manifest.json', self.manifest), ('backports-install.json', self.receipt)]:
             self.data[filename] = json.dumps(data)
         for filename, data in [('builder-packages.tsv', self.builder), ('runtime-packages.tsv', self.runtime)]:
             self.data[filename] = ''.join(name + '\t' + version + '\n' for name, version in data.items())
-        return module.verify(self.data)
+        return module.verify(self.data, component)
 
     def test_only_qualified_final_runtime_differences_pass(self):
         self.assertEqual(self.verify()['qualified_runtime_deltas'], ['libbrotli1', 'libc6', 'libpcre2-8-0'])
         self.assertEqual(self.builder['libc6'], '2.43-2ubuntu2.4')
+
+    def test_base_requires_the_updated_ca_in_both_stages(self):
+        with self.assertRaisesRegex(ValueError, 'ca-certificates'):
+            self.verify('base')
+        for inventory in (self.builder, self.runtime):
+            inventory['ca-certificates'] = '20260816ubuntu0.26.04.2'
+        self.assertTrue(self.verify('base')['expected_security_packages'])
+        with self.assertRaisesRegex(ValueError, 'ca-certificates'):
+            self.verify('agent')
 
     def test_unrelated_drift_is_rejected(self):
         self.runtime['zlib1g'] = 'unexpected'
