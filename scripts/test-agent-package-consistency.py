@@ -27,7 +27,7 @@ class PackageConsistencyTests(unittest.TestCase):
                          'libbrotli1': '1.2.0-3build1+pasturestack.1'}
         self.builder = {'libc6': '2.43-2ubuntu2.4', 'libpcre2-8-0': '10.46-1build1',
                         'libssl3t64': '3.5.5-1ubuntu3.7', 'curl': '8.18.0-1ubuntu2.8',
-                        'ca-certificates': '20260816ubuntu0.26.04.1', 'zlib1g': '1.3.1',
+                        'ca-certificates': '20260816ubuntu0.26.04.2', 'zlib1g': '1.3.1',
                         'libbrotli1': '1.2.0-3build1'}
         self.runtime = dict(self.builder, libc6=self.versions['libc6'])
         self.runtime['libpcre2-8-0'] = self.versions['libpcre2-8-0']
@@ -55,14 +55,14 @@ class PackageConsistencyTests(unittest.TestCase):
         self.assertEqual(self.verify()['qualified_runtime_deltas'], ['libbrotli1', 'libc6', 'libpcre2-8-0'])
         self.assertEqual(self.builder['libc6'], '2.43-2ubuntu2.4')
 
-    def test_base_requires_the_updated_ca_in_both_stages(self):
-        with self.assertRaisesRegex(ValueError, 'ca-certificates'):
-            self.verify('base')
+    def test_base_and_wrapper_require_the_updated_ca(self):
+        for component in ('base', 'agent'):
+            self.assertTrue(self.verify(component)['expected_security_packages'])
         for inventory in (self.builder, self.runtime):
-            inventory['ca-certificates'] = '20260816ubuntu0.26.04.2'
-        self.assertTrue(self.verify('base')['expected_security_packages'])
-        with self.assertRaisesRegex(ValueError, 'ca-certificates'):
-            self.verify('agent')
+            inventory['ca-certificates'] = '20260816ubuntu0.26.04.1'
+        for component in ('base', 'agent'):
+            with self.assertRaisesRegex(ValueError, 'ca-certificates'):
+                self.verify(component)
 
     def test_unrelated_drift_is_rejected(self):
         self.runtime['zlib1g'] = 'unexpected'

@@ -61,7 +61,7 @@ def verify(data, component="agent"):
     # may differ, and only by the exact qualified manifest above.
     require(builder.get('libc6') == '2.43-2ubuntu2.4', 'Unexpected Python-builder libc version')
     expected = {'libssl3t64': '3.5.5-1ubuntu3.7', 'curl': '8.18.0-1ubuntu2.8',
-                'ca-certificates': '20260816ubuntu0.26.04.2' if component == 'base' else '20260816ubuntu0.26.04.1'}
+                'ca-certificates': '20260816ubuntu0.26.04.2'}
     for name, version in expected.items():
         require(runtime.get(name) == version, 'Unexpected unchanged security package: ' + name)
     return {'builder_packages': len(builder), 'runtime_packages': len(runtime),
