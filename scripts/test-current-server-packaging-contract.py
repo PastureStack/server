@@ -691,7 +691,7 @@ class Tests(unittest.TestCase):
             self.assertEqual(2, len(calls.read_text(encoding='utf-8').splitlines()))
 
     def test_current_agent_defaults_keep_explicit_operator_overrides(self):
-        image = 'ghcr.io/pasturestack/node-agent:v1.2.34'
+        image = 'ghcr.io/pasturestack/node-agent:v1.2.35'
         final_stage = FILES[DOCKER].rsplit('\nFROM ', 1)[-1]
         for name in ('DEFAULT_CATTLE_AGENT_IMAGE', 'DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE'):
             self.assertEqual(final_stage.splitlines().count('ENV ' + name + '=' + image), 1)

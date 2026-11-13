@@ -38,4 +38,10 @@ HAProxy `3.2.25-0ubuntu0.26.04.2`. Catalog revisions 4 and 5 remain available fo
 Network Services revision 16 and Network Policy Manager revision 6 carry
 updated Ubuntu inputs, as do Secret Volume revision 5 and Vault Volume revision 6.
 
+New host registrations use the compatibility Node Agent image `v1.2.35`
+with Ubuntu APT and CA updates, official glibc and Perl packages, msgpack 1.2.3
+and Docker CLI rebuilt with Go 1.27.4. Its verified OCI digest is
+`sha256:91f940ad15ba5dc43af1508d7595ee4532e59b8e77c0711150b5b8653a5befcf`.
+Existing hosts keep their current registration image until reconfigured.
+
 Web Console 1.6.236 and Engine v0.183.395 remain the bundled application versions.
