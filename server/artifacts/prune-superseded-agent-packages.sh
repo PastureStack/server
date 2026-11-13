@@ -7,7 +7,7 @@ env_file=$2
 host_version=$3
 node_version=$4
 cni_version=$5
-test "$cni_version" = 0.2.5 || exit 1
+case "$cni_version" in 0.2.5|0.2.6) ;; *) exit 1 ;; esac
 test -d "$directory" || exit 1
 test ! -L "$directory" || exit 1
 test -f "$env_file" || exit 1

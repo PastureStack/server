@@ -12,3 +12,4 @@ server/security/ubuntu-backports/bundle/installer/testdata/*.c text eol=lf
 scripts/** text eol=lf
 server/bin/** text eol=lf
 server/service/** text eol=lf
+server/artifacts/compose/docker-compose.yml text eol=lf

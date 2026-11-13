@@ -28,14 +28,14 @@ printf '%s  %s\n' "$machine_sha" "$output/docker-machine" "$packet_sha" "$output
 grep -Fx "BUNDLE_VERSION=$version" "$output/machine-driver-bundle-SOURCES.txt"
 grep -Fx "DOCKER_MACHINE_BINARY_SHA256=$machine_sha" "$output/machine-driver-bundle-SOURCES.txt"
 grep -Fx "PACKET_DRIVER_BINARY_SHA256=$packet_sha" "$output/machine-driver-bundle-SOURCES.txt"
-grep -Fx 'GO_VERSION=1.27.3' "$output/machine-driver-bundle-SOURCES.txt"
+grep -Fx 'GO_VERSION=1.27.4' "$output/machine-driver-bundle-SOURCES.txt"
 grep -Fx 'PACKET_DRIVER_STATUS=retired-compatibility-only' "$output/machine-driver-bundle-SOURCES.txt"
 grep -Fx 'PACKET_DRIVER_NEW_INSTALL_DEFAULT=false' "$output/machine-driver-bundle-SOURCES.txt"
 grep -F '"newInstallDefault": false' "$output/machine-driver-bundle-PROVIDER-LIFECYCLE.json"
 grep -F '"existingConfigurationPolicy": "preserve-for-rollback"' "$output/machine-driver-bundle-PROVIDER-LIFECYCLE.json"
 for binary in docker-machine docker-machine-driver-packet; do
     chmod 0755 "$output/$binary"
-    test "$(go version -m "$output/$binary" | awk 'NR==1 {print $2}')" = go1.27.3
+    test "$(go version -m "$output/$binary" | awk 'NR==1 {print $2}')" = go1.27.4
 done
 "$output/docker-machine" version | grep -F "docker-machine version $version,"
 mkdir -p "$output/licenses"

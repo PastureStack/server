@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Server-only official replacement closure; no SBOM or finding transformation."""
 import argparse
+import subprocess
 import importlib.util
 import json
 from pathlib import Path
@@ -11,6 +12,37 @@ def load(path, name):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+GLIBC_VERSION = '2.43-2ubuntu2.7'
+GLIBC_PACKAGES = ('libc6', 'libc-bin', 'libc-gconv-modules-extra')
+
+
+def verify_glibc(root, verifier):
+    root = root.resolve(strict=True)
+    status = verifier.bounded_read(root / 'var/lib/dpkg/status').decode()
+    rows = {}
+    for stanza in status.split('\n\n'):
+        fields = dict(line.split(': ', 1) for line in stanza.splitlines() if ': ' in line and not line.startswith(' '))
+        name = fields.get('Package')
+        if name in GLIBC_PACKAGES:
+            verifier.require(name not in rows, 'Duplicate libc package in the final image')
+            rows[name] = fields
+    proof = {}
+    for name in GLIBC_PACKAGES:
+        row = rows.get(name, {})
+        verifier.require(row.get('Status') == 'install ok installed'
+                         and row.get('Version') == GLIBC_VERSION
+                         and row.get('Architecture') == 'amd64'
+                         and row.get('Source') == 'glibc',
+                         'Final Ubuntu glibc identity mismatch: ' + name)
+        integrity = subprocess.run(['dpkg', '--root=' + str(root), '--verify', name],
+                                   capture_output=True, text=True, timeout=30)
+        verifier.require(integrity.returncode == 0 and not integrity.stdout.strip()
+                         and not integrity.stderr.strip(), 'Final Ubuntu glibc payload verification failed: ' + name)
+        proof[name] = {'name': name, 'version': GLIBC_VERSION,
+                       'purl': verifier.package_purl({'name': name, 'version': GLIBC_VERSION})}
+    return proof
 
 
 def main():
@@ -37,7 +69,7 @@ def main():
     result = current.verify(files, retained_sums, json.loads(current.bounded_read(args.sbom)),
         args.expected_bundle_digest, sums, official_brotli={'rootfs': args.rootfs,
         'lock': directory / 'lock.json', 'receipt': directory / 'runtime.json', 'deb': directory / 'libbrotli1.deb',
-        'signedIndex': directory / 'signed-index'})
+        'signedIndex': directory / 'signed-index'}, official_glibc=verify_glibc(args.rootfs, current))
     result.update(originalHelperSha256=helper_sha[0], serverHelperSha256=current.sha(Path(current.__file__).read_bytes()),
                   serverWrapperSha256=current.sha(Path(__file__).read_bytes()), originalEvidencePreserved=True)
     print(json.dumps(result, indent=2, sort_keys=True))
