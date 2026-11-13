@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-IMAGE=${IMAGE:-ghcr.io/pasturestack/node-agent-base:v0.3.8}
+IMAGE=${IMAGE:-ghcr.io/pasturestack/node-agent-base:v0.3.9}
 
 SHARE_MNT_BIN="${SHARE_MNT_BIN:-}"
 if [ -z "$SHARE_MNT_BIN" ] || [ ! -f "$SHARE_MNT_BIN" ]; then
@@ -30,5 +30,8 @@ cp ../server/bin/update-platform-ssl "$tmpdir/update-platform-ssl"
 cp -R ../tools/pip-security-overlay "$tmpdir/pip-security-overlay"
 
 echo "Building $IMAGE"
+if [ "${CHECK_QUALIFIED_BACKPORTS:-0}" = 1 ]; then
+    docker build --target qualified_backports --build-arg "VCS_REF=$(git rev-parse HEAD)" -t "$IMAGE-backports" "$tmpdir"
+fi
 docker build --build-arg "VCS_REF=$(git rev-parse HEAD)" -t "$IMAGE" "$tmpdir"
 echo "Built $IMAGE"

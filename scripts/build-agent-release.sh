@@ -13,7 +13,7 @@ printf '%s\n' "$source_sha" >"$evidence/source-revision.txt"
 python3 scripts/test-agent-package-consistency.py
 
 case "${COMPONENT:-}" in
-  base) repository=ghcr.io/pasturestack/node-agent-base; version=v0.3.8 ;;
+  base) repository=ghcr.io/pasturestack/node-agent-base; version=v0.3.9 ;;
   agent) repository=ghcr.io/pasturestack/node-agent; version=v1.2.34 ;;
   *) echo 'Unsupported agent component' >&2; exit 1 ;;
 esac
@@ -77,7 +77,7 @@ if [[ "$COMPONENT" = base ]]; then
   docker rm -v "$helper_container" >/dev/null
   (cd "$scratch" && sha256sum share-mnt r) >"$evidence/helper-inputs.sha256"
   cp agent-base/release-inputs.env "$evidence/"
-  SHARE_MNT_BIN="$scratch/share-mnt" R_BIN="$scratch/r" IMAGE="$candidate" \
+  CHECK_QUALIFIED_BACKPORTS=1 SHARE_MNT_BIN="$scratch/share-mnt" R_BIN="$scratch/r" IMAGE="$candidate" \
     bash agent-base/build-image.sh |& tee "$evidence/build.log"
 else
   grep -Eq '^FROM ghcr.io/pasturestack/node-agent-base:v0\.3\.8@sha256:[0-9a-f]{64}$' agent/Dockerfile
@@ -93,19 +93,25 @@ docker run --rm --network none --entrypoint cat "$candidate" \
   /usr/share/pasturestack/python-builder-packages.tsv >"$evidence/builder-packages.tsv"
 docker run --rm --network none --entrypoint dpkg-query "$candidate" \
   -W -f='${binary:Package}\t${Version}\n' >"$evidence/runtime-packages.tsv"
+package_comparison_inventory="$evidence/runtime-packages.tsv"
+if [[ "$COMPONENT" = base ]]; then
+  package_comparison_inventory="$evidence/qualified-stage-packages.tsv"
+  docker run --rm --network none --entrypoint dpkg-query "$candidate-backports" \
+    -W -f='${binary:Package}\t${Version}\n' >"$package_comparison_inventory"
+fi
 for name in manifest qualification install; do
   docker run --rm --network none --entrypoint cat "$candidate" \
     "/usr/share/pasturestack/security/ubuntu-backports/${name}.json" >"$evidence/backports-${name}.json"
 done
 jq -n --rawfile builder "$evidence/builder-packages.tsv" \
-  --rawfile runtime "$evidence/runtime-packages.tsv" \
+  --rawfile runtime "$package_comparison_inventory" \
   --rawfile manifest "$evidence/backports-manifest.json" \
   --rawfile qualification "$evidence/backports-qualification.json" \
   --rawfile installation "$evidence/backports-install.json" \
   '{"builder-packages.tsv":$builder,"runtime-packages.tsv":$runtime,
     "backports-manifest.json":$manifest,"backports-qualification.json":$qualification,
     "backports-install.json":$installation}' \
-  | python3 scripts/check-agent-package-consistency.py >"$evidence/package-comparison.json"
+  | python3 scripts/check-agent-package-consistency.py "$COMPONENT" >"$evidence/package-comparison.json"
 backports_container=$(docker create "$candidate")
 docker cp "$backports_container:/usr/share/pasturestack/security/ubuntu-backports" "$evidence/ubuntu-backports"
 docker rm -v "$backports_container" >/dev/null
@@ -126,12 +132,27 @@ if [[ "$COMPONENT" = agent ]]; then
     -v "$PWD:/source:ro" -w /source "$candidate" \
     scripts/check-agent-run-downloads.sh >"$evidence/bootstrap-download-smoke.txt"
 fi
-docker run --rm --network none --entrypoint /bin/bash "$candidate" -ec \
-  'test "$(dpkg-query -W ca-certificates | cut -f2)" = 20260816ubuntu0.26.04.1; docker --version | grep -Fx "Docker version 29.9.2, build a82e528"; printf "6c71cfe71faff949a602946a4df4799b563232e79d0b8b6fd343d0ef081c9621  /usr/bin/docker\n" | sha256sum -c -; test -s /usr/bin/share-mnt; test -x /usr/bin/r' \
-  |& tee "$evidence/runtime-tools.txt"
-docker run --rm --network none --entrypoint cat "$candidate" /usr/bin/docker >"$scratch/docker-cli"
-go version -m "$scratch/docker-cli" | tee "$evidence/docker-cli-go-version.txt"
-head -1 "$evidence/docker-cli-go-version.txt" | grep -F 'go1.26.10'
+if [[ "$COMPONENT" = base ]]; then
+  docker run --rm --network none --entrypoint /bin/bash "$candidate" -ec '
+    test "$(dpkg-query -W -f="\${Version}" ca-certificates)" = 20260816ubuntu0.26.04.2
+    test "$(dpkg-query -W -f="\${Version}" apt)" = 3.2.1ubuntu0.1
+    docker --version | grep -Fx "Docker version 29.9.3, build 5457199"
+    printf "%s  /usr/bin/docker\n" "$(cat /usr/share/pasturestack/docker.sha256)" | sha256sum -c -
+    test -s /usr/bin/share-mnt
+    test -x /usr/bin/r
+  ' |& tee "$evidence/runtime-tools.txt"
+  docker run --rm --network none --entrypoint cat "$candidate" /usr/bin/docker >"$scratch/docker-cli"
+  go version -m "$scratch/docker-cli" | tee "$evidence/docker-cli-go-version.txt"
+  head -1 "$evidence/docker-cli-go-version.txt" | grep -F 'go1.27.4'
+  awk '$1=="dep" && $2=="golang.org/x/net" && $3=="v0.62.0" { found=1 } END { exit !found }' "$evidence/docker-cli-go-version.txt"
+else
+  docker run --rm --network none --entrypoint /bin/bash "$candidate" -ec \
+    'test "$(dpkg-query -W ca-certificates | cut -f2)" = 20260816ubuntu0.26.04.1; docker --version | grep -Fx "Docker version 29.9.2, build a82e528"; printf "6c71cfe71faff949a602946a4df4799b563232e79d0b8b6fd343d0ef081c9621  /usr/bin/docker\n" | sha256sum -c -; test -s /usr/bin/share-mnt; test -x /usr/bin/r' \
+    |& tee "$evidence/runtime-tools.txt"
+  docker run --rm --network none --entrypoint cat "$candidate" /usr/bin/docker >"$scratch/docker-cli"
+  go version -m "$scratch/docker-cli" | tee "$evidence/docker-cli-go-version.txt"
+  head -1 "$evidence/docker-cli-go-version.txt" | grep -F 'go1.26.10'
+fi
 docker run --rm --network none --entrypoint python3 \
   -e PYTHONDONTWRITEBYTECODE=1 -v "$PWD:/source:ro" -w /source "$candidate" \
   scripts/check-agent-python-runtime.py |& tee "$evidence/python-tls-registration.json"
@@ -155,6 +176,14 @@ mkdir -p "$scratch/trivy-cache"
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
   -v "$scratch/trivy-cache:/root/.cache/trivy" -v "$evidence:/evidence" "$trivy" image --format cyclonedx \
   --output /evidence/image.cdx.json "$candidate"
+qualification_sbom="$evidence/image.cdx.json"
+if [[ "$COMPONENT" = base ]]; then
+  qualification_sbom="$evidence/qualified-stage.cdx.json"
+  docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+    -v "$scratch/trivy-cache:/root/.cache/trivy" -v "$evidence:/evidence" "$trivy" image --format cyclonedx \
+    --output /evidence/qualified-stage.cdx.json "$candidate-backports"
+  python3 scripts/check-agent-official-glibc.py "$qualification_sbom" "$evidence/image.cdx.json"
+fi
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
   -v "$scratch/trivy-cache:/root/.cache/trivy" -v "$evidence:/evidence" "$trivy" image --scanners vuln,secret --list-all-pkgs --format json \
   --output /evidence/image-security.json "$candidate"
@@ -167,7 +196,7 @@ docker cp "$bundle_container:/out/SHA256SUMS" "$scratch/backports-SHA256SUMS"
 docker rm "$bundle_container" >/dev/null
 bundle_container=
 python3 "$scratch/verify-consumer-evidence.py" --evidence-dir "$evidence/ubuntu-backports" \
-  --sbom "$evidence/image.cdx.json" --expected-bundle-digest "${backports_image##*@}" \
+  --sbom "$qualification_sbom" --expected-bundle-digest "${backports_image##*@}" \
   --bundle-checksums "$scratch/backports-SHA256SUMS" \
   >"$evidence/ubuntu-backports-consumer-proof.json"
 # Preserve the original full scan. Native Trivy applies only the qualified,
