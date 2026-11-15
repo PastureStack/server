@@ -10,6 +10,9 @@ driver. The browser continues to use the existing same-origin API proxy.
 
 The affected system images adopt the official Ubuntu 26.04 Brotli package
 `1.2.0-3ubuntu0.1` from [USN-8956-1](https://ubuntu.com/security/notices/USN-8956-1).
+The pinned [Catalog revision](https://github.com/PastureStack/catalog-templates/commit/6e7b935b6f08e711e1884ef8369cd9dcd110901f)
+updates the Healthcheck, IPsec/VXLAN networking, and Resource Scheduler
+templates. Existing services retain their selected image until upgraded.
 PCRE2 retains the qualified `10.46-1build1+pasturestack.1` backport. The
 [Ubuntu revision](https://ubuntu.com/security/notices/USN-8974-1) does not
 contain all of the current JIT and callout fixes.

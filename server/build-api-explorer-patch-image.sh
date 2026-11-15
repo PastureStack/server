@@ -508,9 +508,9 @@ for marker in \
     PASTURESTACK_MACHINE_DRIVER_BINARY_SHA256="${machine_driver_binary_sha256}" \
     PASTURESTACK_PACKET_DRIVER_BINARY_SHA256="${packet_driver_binary_sha256}" \
     PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-08-28 \
-    PASTURESTACK_CATALOG_COMMIT=1a6dae025e232fc7fc139244812bef73f99c6dbf \
-    'DEFAULT_CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"1a6dae025e232fc7fc139244812bef73f99c6dbf"}}}' \
-    'CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"1a6dae025e232fc7fc139244812bef73f99c6dbf"}}}'; do
+    PASTURESTACK_CATALOG_COMMIT=6e7b935b6f08e711e1884ef8369cd9dcd110901f \
+    'DEFAULT_CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"6e7b935b6f08e711e1884ef8369cd9dcd110901f"}}}' \
+    'CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"6e7b935b6f08e711e1884ef8369cd9dcd110901f"}}}'; do
     test "$(grep -Fxc "$marker" <<<"$image_environment")" = 1
 done
 
