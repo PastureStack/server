@@ -174,14 +174,25 @@ RUN set -eux; \
     command -v sha256sum; \
     command -v tar; \
     test -n "${WEB_CONSOLE_ARTIFACT_SHA256}"; \
+    fetch_web_console_asset() { \
+        fetch-server-component "${COMPONENT_ARTIFACT_MODE}" "$@" || { \
+            download_status=$?; \
+            if [ "${COMPONENT_ARTIFACT_MODE}" != remote ] || [ "$download_status" -ne 22 ]; then \
+                return "$download_status"; \
+            fi; \
+            fetch-server-component remote \
+                "${WEB_CONSOLE_RELEASE_BASE_URL%/}/${WEB_CONSOLE_RELEASE_TAG}/$2" \
+                "$2" "$3" "$4"; \
+        }; \
+    }; \
     web_archive=/tmp/web-console.tar.gz; \
     web_listing=/tmp/web-console-files.txt; \
-    fetch-server-component "${COMPONENT_ARTIFACT_MODE}" \
+    fetch_web_console_asset \
         "${WEB_CONSOLE_ASSET_API_URL}" \
         "${WEB_CONSOLE_ARTIFACT}" "${WEB_CONSOLE_ARTIFACT_SHA256}" "${web_archive}"; \
     echo "${WEB_CONSOLE_ARTIFACT_SHA256}  ${web_archive}" | sha256sum -c -; \
     web_sbom=/tmp/web-console-runtime.cdx.json; \
-    fetch-server-component "${COMPONENT_ARTIFACT_MODE}" \
+    fetch_web_console_asset \
         "${WEB_CONSOLE_SBOM_ASSET_API_URL}" \
         "${WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT}" "${WEB_CONSOLE_RUNTIME_SBOM_SHA256}" "${web_sbom}"; \
     python3 /usr/local/bin/verify-web-console-sbom \
