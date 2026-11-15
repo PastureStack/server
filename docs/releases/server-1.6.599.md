@@ -1,4 +1,8 @@
-# Server v1.6.599
+# Server v1.6.599 candidate
+
+The Server workflow must qualify the image before publication.
+
+## Verified component inputs
 
 Docker Machine v0.16.8 and the Docker CLI in Agent v1.2.36 use
 OpenTelemetry Go 1.47.0 for
