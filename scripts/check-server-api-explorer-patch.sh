@@ -2407,7 +2407,7 @@ for marker in \
     'docker restart "$CANDIDATE_NAME"' \
     'python3 source/scripts/test-mfa-policy-api.py' \
     'mfa-policy-api-smoke.txt' \
-    'ghcr.io/aquasecurity/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969' \
+    'ghcr.io/aquasecurity/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb' \
     'server.openvex.json' \
     'server.vendor-pending.json' \
     'validate-vendor-pending-findings.sh' \

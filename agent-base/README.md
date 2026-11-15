@@ -1,12 +1,15 @@
 # Node agent image builds
 
-The compatibility base is `ghcr.io/pasturestack/node-agent-base:v0.3.9`.
+The compatibility base is `ghcr.io/pasturestack/node-agent-base:v0.3.10`.
 It builds Python 3.14.9 from the official SHA-256-verified archive, retains
-Docker CLI 29.9.3 rebuilt from its official source using Go 1.27.4, and uses the fixed Ubuntu 26.04 snapshot
+Docker CLI 29.9.3 rebuilt from its official source using Go 1.27.4 and OpenTelemetry 1.47.0 (CVE-2026-128085), and uses the fixed Ubuntu 26.04 snapshot
 `20261023T000000Z`. Builder and runtime package inventories are compared;
-only exact qualified security-backport versions may differ in the final runtime.
+only qualified backports and the pinned official glibc and Brotli revisions
+may differ in the final runtime.
 The Python compiler stage keeps its original libc. The runtime verifies the
-patched OpenSSL, curl, libc and CA package versions.
+patched OpenSSL, curl, libc, Brotli, PCRE2 and CA package versions.
+PCRE2 retains the qualified maintenance-branch fixes, including the callout
+correction absent from Ubuntu revision `10.46-1ubuntu0.1` (USN-8974-1).
 
 The digest-pinned, build-only Ubuntu backport bundle updates only already
 installed packages, preserving the existing coreutils provider and package set.
@@ -29,13 +32,12 @@ existing image is patched in place.
 The protected-main-only **Publish Node Agent Runtime** workflow builds once,
 runs Python/ensurepip/pip/CA, TLS 1.2/1.3, rejected-certificate, registration
 URL and credential-file checks inside the resulting image, and retains the
-raw SBOM and vulnerability/secret reports. Critical/High or vendor-fixed
+raw SBOM and vulnerability/secret reports with Trivy 0.76.2. Critical/High or vendor-fixed
 findings fail the gate; vendor-unfixed Medium/Low findings remain recorded.
 Publication then pushes that same image, refuses an existing version tag,
 and verifies the anonymous digest readback and original image identity.
 
-The node-agent wrapper is version `v1.2.35` and inherits this base through
-its digest-pinned Dockerfile. Both `base` and `agent` components use the same
+The node-agent wrapper pins a published base digest in its Dockerfile. Both `base` and `agent` components use the same
 qualified runtime-package receipts, native OpenVEX guard, raw/effective scans,
 runtime checks and publication gate. The wrapper binds the base producer run,
 artifact checksum and OCI digest, then verifies its own package inventory and

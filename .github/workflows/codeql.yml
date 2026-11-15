@@ -175,8 +175,11 @@ jobs:
           build_root="$RUNNER_TEMP/codeql-java-build"
           mkdir -p "$build_root/lib" "$build_root/classes"
           archive="$build_root/cattle.jar"
-          bash server/artifacts/fetch-server-component.sh remote \
-            "$asset_api_url" "$artifact" "$expected_sha256" "$archive"
+          if ! bash server/artifacts/fetch-server-component.sh remote \
+            "$asset_api_url" "$artifact" "$expected_sha256" "$archive"; then
+            bash server/artifacts/fetch-server-component.sh remote \
+              "$release_base/$release_tag/$artifact" "$artifact" "$expected_sha256" "$archive"
+          fi
           printf '%s  %s\n' "$expected_sha256" "$archive" | sha256sum --check --strict
           unzip -j -q "$archive" 'WEB-INF/lib/*.jar' -d "$build_root/lib"
           compgen -G "$build_root/lib/*.jar" > /dev/null

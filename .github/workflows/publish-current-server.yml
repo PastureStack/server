@@ -34,7 +34,7 @@ jobs:
       CATTLE_VOLUME: pasturestack-server-release-cattle-${{ github.run_id }}
       MYSQL_VOLUME: pasturestack-server-release-mysql-${{ github.run_id }}
       MYSQL_LOG_VOLUME: pasturestack-server-release-mysqllog-${{ github.run_id }}
-      TRIVY_IMAGE: ghcr.io/aquasecurity/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
+      TRIVY_IMAGE: ghcr.io/aquasecurity/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb
 
     steps:
       - name: Enable the containerd image store
@@ -717,7 +717,7 @@ jobs:
           raw_count="$(wc -l <"$evidence/server-vulnerabilities-raw.tsv")"
           vendor_pending_count="$(wc -l <"$evidence/server-vulnerabilities-unresolved.tsv" | tr -d ' ')"
           browser_scan_coverage="$(jq -r '.coverage' "$evidence/web-console-runtime-scan-coverage.json")"
-          printf 'SERVER_SECURITY_GATE_OK untracked=0 vendor_pending=%s critical_high=0 fixed_available=0 secrets=0 raw_findings=%s vex=openvex-0.2.0 scan_target=merged-rootfs-and-active-payloads-and-browser-runtime-sbom trivy=0.74.0 browser_scan_coverage=%s\n' \
+          printf 'SERVER_SECURITY_GATE_OK untracked=0 vendor_pending=%s critical_high=0 fixed_available=0 secrets=0 raw_findings=%s vex=openvex-0.2.0 scan_target=merged-rootfs-and-active-payloads-and-browser-runtime-sbom trivy=0.76.2 browser_scan_coverage=%s\n' \
             "$vendor_pending_count" "$raw_count" "$browser_scan_coverage" |
             tee "$evidence/security-summary.txt"
 

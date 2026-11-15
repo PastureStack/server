@@ -103,6 +103,7 @@ cat "$MOCK_BODY"
         self.assertIn('"${WEB_CONSOLE_SBOM_ASSET_API_URL}"', docker)
         self.assertIn('asset_api_url="$(read_arg ORCHESTRATION_ENGINE_ASSET_API_URL)"', codeql)
         self.assertIn('"$asset_api_url" "$artifact" "$expected_sha256" "$archive"', codeql)
+        self.assertIn('"$release_base/$release_tag/$artifact" "$artifact" "$expected_sha256" "$archive"', codeql)
         self.assertNotIn('--output "$archive" "$release_base/$release_tag/$artifact"', codeql)
 
 
