@@ -8,6 +8,9 @@ Docker Machine v0.16.8 and the Docker CLI in Agent v1.2.36 use
 OpenTelemetry Go 1.47.0 for
 [CVE-2026-128085](https://github.com/open-telemetry/opentelemetry-go/security/advisories/GHSA-q7gw-24fr-5p69).
 The Docker CLI command and registration interfaces remain compatible.
+Server also embeds Host API v0.38.11 and Node Agent v0.13.38 with
+OpenTelemetry Go 1.47.0. The publication scan covers their Linux binaries
+and the bundled Node Agent Windows executable.
 
 Web Console 1.6.237 uses the AWS SDK for JavaScript v3 for the EC2 host
 driver. The browser continues to use the existing same-origin API proxy.
