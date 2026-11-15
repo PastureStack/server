@@ -515,10 +515,14 @@ jobs:
           ) >"$RUNNER_TEMP/server-nested-qualified.json"
           mkdir -p "$RUNNER_TEMP/trivy-cache"
           docker pull "$TRIVY_IMAGE" >/dev/null
-          docker image inspect "$TRIVY_IMAGE" --format '{{json .RepoDigests}}' |
+          trivy_tag="${TRIVY_IMAGE%@*}"
+          if ! docker image inspect "$TRIVY_IMAGE" --format '{{json .RepoDigests}}' |
             jq -e --arg expected \
-              'ghcr.io/aquasecurity/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969' \
-              'index($expected) != null' >/dev/null
+              "${trivy_tag%:*}@${TRIVY_IMAGE##*@}" \
+              'index($expected) != null' >/dev/null; then
+            echo 'Pulled Trivy digest does not match the release scanner pin' >&2
+            exit 1
+          fi
           docker run --rm \
             -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
             "$TRIVY_IMAGE" image --download-db-only

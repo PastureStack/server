@@ -15,6 +15,26 @@ COMMONS_IO_FIXTURE_BYTES = b'fixture Commons IO bytes; not a Java runtime accept
 
 
 class PublisherSafetyGuards(unittest.TestCase):
+    def test_scanner_readback_follows_the_configured_digest(self):
+        source = WORKFLOW.read_text()
+        scanner = self.guard('TRIVY_IMAGE: ').split(': ', 1)[1]
+        tag, digest = scanner.split('@')
+        repository = tag.rsplit(':', 1)[0]
+        start = source.index('          trivy_tag=')
+        end = source.index('          docker run --rm', start)
+        guard = textwrap.dedent(source[start:end])
+        script = ('set -euo pipefail; TRIVY_IMAGE="$1"; reported="$2"; '
+                  'docker() { printf \'["%s"]\\n\' "$reported"; }; ' + guard)
+        for reported, status in ((digest, 0), ('sha256:' + '0' * 64, 1)):
+            with self.subTest(reported=reported):
+                result = subprocess.run(['bash', '-c', script, 'scanner-fixture',
+                                         scanner, repository + '@' + reported],
+                                        capture_output=True, text=True)
+                self.assertEqual(result.returncode, status, result.stderr)
+                if status:
+                    self.assertIn('does not match the release scanner pin',
+                                  result.stderr)
+
     def test_browser_report_upload_is_nonempty_lossless_and_keeps_internal_gate_bytes(self):
         source = WORKFLOW.read_text()
         release = source.split('      - name: Create immutable GitHub Release', 1)[1]
