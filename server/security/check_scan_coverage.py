@@ -24,8 +24,8 @@ OPENPGP_VEX_SCOPE = frozenset({
     ('usr/bin/host-provisioner.real', 'pkg:golang/golang.org/x/crypto@v0.56.0'),
 })
 OPENPGP_VEX_BINARY_SHA256 = {
-    'usr/bin/docker-machine': 'f77366c8460baf78798dcaaa675cdd5f656c9670b79c651983129c55bb41dd37',
-    'usr/bin/docker-machine-driver-packet': '601e958704a2eea7bd3872db99b54007fe2b04cd0c66e96ccf15c50133f4dba0',
+    'usr/bin/docker-machine': '3d78d962b6aa7f4d5bc1b63a9db703710eed4084bd354b233d62528f49d41116',
+    'usr/bin/docker-machine-driver-packet': '0f1bf952c603f05c18970ea46be3fc2481544d0f78015aa98339dee1bbbe8764',
     'usr/bin/compose-executor.real': 'a22985547fea122edd12606728d3bc5f98d9457ae5724d65a21ef3c36d62cab5',
     'usr/bin/host-provisioner.real': '54c22fa95bb16ce9b49df6bec012b9103f3e1b0eafc947d205eaef49e11b45a8',
 }

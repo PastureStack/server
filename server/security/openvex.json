@@ -347,7 +347,7 @@
       ],
       "status": "not_affected",
       "justification": "vulnerable_code_not_present",
-      "impact_statement": "GO-2026-5932 applies to the unmaintained golang.org/x/crypto/openpgp packages. The exact Linux Go 1.27.4 executables from machine-driver-bundle 0.16.7, host-provisioner 0.39.11, and compose-executor 0.14.46 have no OpenPGP entries in the complete function and inline-name table. The release gate binds each path and module version to its reviewed binary SHA-256. The Compose record also verifies its vendor dependency graph and bcrypt/scrypt positive controls. This finding concerns code absent from these executables."
+      "impact_statement": "GO-2026-5932 applies to the unmaintained golang.org/x/crypto/openpgp packages. The exact Linux Go 1.27.4 executables from machine-driver-bundle 0.16.8, host-provisioner 0.39.11, and compose-executor 0.14.46 have no OpenPGP entries in their complete function and inline-name tables. Both Machine bundle executables have linked and inline-only x/crypto/chacha20 positive controls. The release gate binds each path and module version to its reviewed binary SHA-256. The Compose record also verifies its vendor dependency graph and bcrypt/scrypt positive controls."
     },
     {
       "vulnerability": {
