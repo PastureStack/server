@@ -174,26 +174,26 @@ RUN set -eux; \
     command -v sha256sum; \
     command -v tar; \
     test -n "${WEB_CONSOLE_ARTIFACT_SHA256}"; \
-    fetch_web_console_asset() { \
-        fetch-server-component "${COMPONENT_ARTIFACT_MODE}" "$@" || { \
+    fetch_release_asset() { \
+        fetch-server-component "${COMPONENT_ARTIFACT_MODE}" "$1" "$3" "$4" "$5" || { \
             download_status=$?; \
             if [ "${COMPONENT_ARTIFACT_MODE}" != remote ] || [ "$download_status" -ne 22 ]; then \
                 return "$download_status"; \
             fi; \
-            fetch-server-component remote \
-                "${WEB_CONSOLE_RELEASE_BASE_URL%/}/${WEB_CONSOLE_RELEASE_TAG}/$2" \
-                "$2" "$3" "$4"; \
+            fetch-server-component remote "$2" "$3" "$4" "$5"; \
         }; \
     }; \
     web_archive=/tmp/web-console.tar.gz; \
     web_listing=/tmp/web-console-files.txt; \
-    fetch_web_console_asset \
+    fetch_release_asset \
         "${WEB_CONSOLE_ASSET_API_URL}" \
+        "${WEB_CONSOLE_RELEASE_BASE_URL%/}/${WEB_CONSOLE_RELEASE_TAG}/${WEB_CONSOLE_ARTIFACT}" \
         "${WEB_CONSOLE_ARTIFACT}" "${WEB_CONSOLE_ARTIFACT_SHA256}" "${web_archive}"; \
     echo "${WEB_CONSOLE_ARTIFACT_SHA256}  ${web_archive}" | sha256sum -c -; \
     web_sbom=/tmp/web-console-runtime.cdx.json; \
-    fetch_web_console_asset \
+    fetch_release_asset \
         "${WEB_CONSOLE_SBOM_ASSET_API_URL}" \
+        "${WEB_CONSOLE_RELEASE_BASE_URL%/}/${WEB_CONSOLE_RELEASE_TAG}/${WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT}" \
         "${WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT}" "${WEB_CONSOLE_RUNTIME_SBOM_SHA256}" "${web_sbom}"; \
     python3 /usr/local/bin/verify-web-console-sbom \
         --sbom "${web_sbom}" --sbom-sha256 "${WEB_CONSOLE_RUNTIME_SBOM_SHA256}" \
@@ -406,8 +406,8 @@ RUN set -eux; \
     grep -Fx 'Release source commit: ae1eb711b786463d1b3619d6668a88f4909e37fe' \
         /out/webhook-automation-service/webhook-automation-service-SOURCES.txt; \
     compose_archive=/tmp/compose-executor.gz; \
-    fetch-server-component "${COMPONENT_ARTIFACT_MODE}" \
-        "${COMPOSE_EXECUTOR_ASSET_API_URL:-${COMPOSE_EXECUTOR_RELEASE_BASE_URL%/}/v${COMPOSE_EXECUTOR_VERSION}/compose-executor-${COMPOSE_EXECUTOR_VERSION}-linux-amd64.gz}" \
+    compose_release_url="${COMPOSE_EXECUTOR_RELEASE_BASE_URL%/}/v${COMPOSE_EXECUTOR_VERSION}/compose-executor-${COMPOSE_EXECUTOR_VERSION}-linux-amd64.gz"; \
+    fetch_release_asset "${COMPOSE_EXECUTOR_ASSET_API_URL:-$compose_release_url}" "$compose_release_url" \
         "compose-executor-${COMPOSE_EXECUTOR_VERSION}-linux-amd64.gz" "${COMPOSE_EXECUTOR_ARCHIVE_SHA256}" "${compose_archive}"; \
     echo "${COMPOSE_EXECUTOR_ARCHIVE_SHA256}  ${compose_archive}" | sha256sum -c -; \
     gzip -dc "${compose_archive}" >/out/compose-executor; \
@@ -416,8 +416,8 @@ RUN set -eux; \
     compose_version_output="$(/out/compose-executor --version 2>&1)"; \
     test "${compose_version_output}" = "compose-executor version ${COMPOSE_EXECUTOR_VERSION}"; \
     engine_archive=/out/orchestration-engine.jar; \
-    fetch-server-component "${COMPONENT_ARTIFACT_MODE}" \
-        "${ORCHESTRATION_ENGINE_ASSET_API_URL:-${ORCHESTRATION_ENGINE_RELEASE_BASE_URL%/}/${ORCHESTRATION_ENGINE_RELEASE_TAG}/${ORCHESTRATION_ENGINE_ARTIFACT}}" \
+    engine_release_url="${ORCHESTRATION_ENGINE_RELEASE_BASE_URL%/}/${ORCHESTRATION_ENGINE_RELEASE_TAG}/${ORCHESTRATION_ENGINE_ARTIFACT}"; \
+    fetch_release_asset "${ORCHESTRATION_ENGINE_ASSET_API_URL:-$engine_release_url}" "$engine_release_url" \
         "${ORCHESTRATION_ENGINE_ARTIFACT}" "${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}" "${engine_archive}"; \
     echo "${ORCHESTRATION_ENGINE_ARTIFACT_SHA256}  ${engine_archive}" | sha256sum -c -; \
     vsphere_archive=/tmp/vsphere-cli-bundle.tar.xz; \

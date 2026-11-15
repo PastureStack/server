@@ -81,32 +81,30 @@ cat "$MOCK_BODY"
         self.assertNotEqual(code, 0)
         self.assertEqual(args, [])
 
-    def test_web_release_fallback_only_recovers_an_http_failure(self):
+    def test_release_fallback_only_recovers_an_http_failure(self):
         docker = (ROOT/'server/Dockerfile.web-compose-release').read_text(encoding='utf-8')
-        start = docker.index('    fetch_web_console_asset() {')
+        start = docker.index('    fetch_release_asset() {')
         end = docker.index('    web_archive=', start)
         fetch = docker[start:end].replace('\\\n', ' ')
         primary = 'https://api.github.com/repos/PastureStack/web-console/releases/assets/123'
-        release_base = 'https://github.com/PastureStack/web-console/releases/download'
+        alternate = 'https://github.com/PastureStack/web-console/releases/download/1.6.237/fixture.bin'
         for mode, error, fallback in (('remote', 22, True), ('remote', 1, False),
                                       ('local', 22, False), ('remote', 0, False)):
             with self.subTest(mode=mode, error=error):
                 script = '''set -eu
 COMPONENT_ARTIFACT_MODE=$1
-WEB_CONSOLE_RELEASE_BASE_URL=$2
-WEB_CONSOLE_RELEASE_TAG=1.6.237
 fetch-server-component() {
     printf '%s %s %s %s\\n' "$1" "$2" "$3" "$4"
     if [ "$2" = "$PRIMARY" ]; then return "$FETCH_STATUS"; fi
 }
 PRIMARY=$3 FETCH_STATUS=$4
-''' + fetch + '\nfetch_web_console_asset "$PRIMARY" fixture.bin "$5" ./verified'
+''' + fetch + '\nfetch_release_asset "$PRIMARY" "$2" fixture.bin "$5" ./verified'
                 result = subprocess.run([BASH, '-c', script, 'fixture',
-                                         mode, release_base, primary, str(error), SHA],
+                                         mode, alternate, primary, str(error), SHA],
                                         capture_output=True, text=True, timeout=20)
                 expected = [f'{mode} {primary} fixture.bin {SHA}']
                 if fallback:
-                    expected.append(f'remote {release_base}/1.6.237/fixture.bin fixture.bin {SHA}')
+                    expected.append(f'remote {alternate} fixture.bin {SHA}')
                 self.assertEqual(result.stdout.splitlines(), expected)
                 self.assertEqual(result.returncode, 0 if fallback else error, result.stderr)
 
@@ -130,6 +128,9 @@ PRIMARY=$3 FETCH_STATUS=$4
             self.assertIn('WEB_CONSOLE_SBOM_ASSET_API_URL', source)
         self.assertIn('"${WEB_CONSOLE_ASSET_API_URL}"', docker)
         self.assertIn('"${WEB_CONSOLE_SBOM_ASSET_API_URL}"', docker)
+        for asset_api, published_url in (('COMPOSE_EXECUTOR_ASSET_API_URL', 'compose_release_url'),
+                                         ('ORCHESTRATION_ENGINE_ASSET_API_URL', 'engine_release_url')):
+            self.assertIn(f'fetch_release_asset "${{{asset_api}:-${published_url}}}" "${published_url}"', docker)
         self.assertIn('asset_api_url="$(read_arg ORCHESTRATION_ENGINE_ASSET_API_URL)"', codeql)
         self.assertIn('"$asset_api_url" "$artifact" "$expected_sha256" "$archive"', codeql)
         self.assertIn('"$release_base/$release_tag/$artifact" "$artifact" "$expected_sha256" "$archive"', codeql)
