@@ -1,5 +1,17 @@
 # Compatibility Contract
 
+## Server v1.6.599 published
+
+Immutable image `ghcr.io/pasturestack/server:v1.6.599@sha256:7d058e251843133b2d6da3309f48a777ec1da97c13448efa573ed9b5b3c4f1b0`.
+Source revision `a9df085affc2cd63036658788b178d627a767921`.
+
+Packages Engine **0.183.395**, Web Console **1.6.237**, optional Bridge
+**0.2.37** and Compose **0.14.46**. New registrations use Agent **1.2.36**.
+Existing managed components keep their selected image until upgraded.
+
+See the [release note](docs/releases/server-1.6.599.md) and the
+[publisher checks](https://github.com/PastureStack/server/actions/runs/43721423468).
+
 ## Server v1.6.598 published
 
 Immutable image `ghcr.io/pasturestack/server:v1.6.598@sha256:05399d56c45846d4e98bff3db809285c279110b714e35b29e01b7c1b49393e05`.

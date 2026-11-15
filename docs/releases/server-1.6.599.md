@@ -1,6 +1,10 @@
-# Server v1.6.599 candidate
+# Server v1.6.599
 
-The Server workflow must qualify the image before publication.
+Published image: `ghcr.io/pasturestack/server:v1.6.599@sha256:7d058e251843133b2d6da3309f48a777ec1da97c13448efa573ed9b5b3c4f1b0`.
+
+Source commit: `a9df085affc2cd63036658788b178d627a767921`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 

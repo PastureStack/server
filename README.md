@@ -11,11 +11,12 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.598`](https://github.com/PastureStack/server/releases/tag/v1.6.598) packages Engine `v0.183.395`, Web Console `1.6.236`,
-optional Bridge `0.2.37` and Compose `0.14.46`. This release rebuilds
-16 bundled binaries with Go 1.27.4 and refreshes signed Ubuntu security
-packages and the infrastructure Catalog.
-See the [release note](docs/releases/server-1.6.598.md) and
+[Server `v1.6.599`](https://github.com/PastureStack/server/releases/tag/v1.6.599)
+packages Engine `v0.183.395`, Web Console `1.6.237`, optional Bridge `0.2.37`
+and Compose `0.14.46`. New node registrations use Agent `v1.2.36`.
+This release updates the EC2 host driver to AWS SDK v3 and the bundled
+Docker Machine and Agent Docker CLI to OpenTelemetry Go 1.47.0.
+See the [release note](docs/releases/server-1.6.599.md) and
 [compatibility contract](COMPATIBILITY.md).
 
 ## Component capabilities
@@ -78,7 +79,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.598
+  ghcr.io/pasturestack/server:v1.6.599
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -86,7 +87,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.598
+    image: ghcr.io/pasturestack/server:v1.6.599
     restart: unless-stopped
     ports:
       - "8080:8080"
