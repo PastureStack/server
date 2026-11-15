@@ -81,6 +81,35 @@ cat "$MOCK_BODY"
         self.assertNotEqual(code, 0)
         self.assertEqual(args, [])
 
+    def test_web_release_fallback_only_recovers_an_http_failure(self):
+        docker = (ROOT/'server/Dockerfile.web-compose-release').read_text(encoding='utf-8')
+        start = docker.index('    fetch_web_console_asset() {')
+        end = docker.index('    web_archive=', start)
+        fetch = docker[start:end].replace('\\\n', ' ')
+        primary = 'https://api.github.com/repos/PastureStack/web-console/releases/assets/123'
+        release_base = 'https://github.com/PastureStack/web-console/releases/download'
+        for mode, error, fallback in (('remote', 22, True), ('remote', 1, False),
+                                      ('local', 22, False), ('remote', 0, False)):
+            with self.subTest(mode=mode, error=error):
+                script = '''set -eu
+COMPONENT_ARTIFACT_MODE=$1
+WEB_CONSOLE_RELEASE_BASE_URL=$2
+WEB_CONSOLE_RELEASE_TAG=1.6.237
+fetch-server-component() {
+    printf '%s %s %s %s\\n' "$1" "$2" "$3" "$4"
+    if [ "$2" = "$PRIMARY" ]; then return "$FETCH_STATUS"; fi
+}
+PRIMARY=$3 FETCH_STATUS=$4
+''' + fetch + '\nfetch_web_console_asset "$PRIMARY" fixture.bin "$5" ./verified'
+                result = subprocess.run([BASH, '-c', script, 'fixture',
+                                         mode, release_base, primary, str(error), SHA],
+                                        capture_output=True, text=True, timeout=20)
+                expected = [f'{mode} {primary} fixture.bin {SHA}']
+                if fallback:
+                    expected.append(f'remote {release_base}/1.6.237/fixture.bin fixture.bin {SHA}')
+                self.assertEqual(result.stdout.splitlines(), expected)
+                self.assertEqual(result.returncode, 0 if fallback else error, result.stderr)
+
     def test_exact_shared_jdk_and_component_api_sources_are_wired(self):
         api = 'https://api.github.com/repos/'
         main = (ROOT/'server/Dockerfile').read_text(encoding='utf-8')
