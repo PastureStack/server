@@ -14,7 +14,7 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.600}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.601}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
@@ -64,15 +64,15 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.20.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb}
 api_explorer_commit=${API_EXPLORER_COMMIT:-a586f0dc0aa50df579049a8d4bf26f04400fdf75}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_asset_api_url=${WEB_CONSOLE_ASSET_API_URL:-https://api.github.com/repos/PastureStack/web-console/releases/assets/751342909}
-web_console_sbom_asset_api_url=${WEB_CONSOLE_SBOM_ASSET_API_URL:-https://api.github.com/repos/PastureStack/web-console/releases/assets/751342910}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.238}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.238.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-108bd5f78961ae61f6a62f61845afd3c1a1ac8fdbe4a5de10dc6d900b3aac560}
-web_console_commit=${WEB_CONSOLE_COMMIT:-9eceac4b383022e3d435448bd606e8518fc81172}
-web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-08dcad7bd558ab69fc61c5a5cfb398f0779508400e61a2117bd26f9e381c303c}
+web_console_asset_api_url=${WEB_CONSOLE_ASSET_API_URL:-https://api.github.com/repos/PastureStack/web-console/releases/assets/751534644}
+web_console_sbom_asset_api_url=${WEB_CONSOLE_SBOM_ASSET_API_URL:-https://api.github.com/repos/PastureStack/web-console/releases/assets/751534635}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.239}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.239.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-3c16d3752bb9fa4a2d633955c872df6db56924781898b69631c4f41bc0b2fea4}
+web_console_commit=${WEB_CONSOLE_COMMIT:-4dd98e415613a092369f5ef24ae73b72397877a7}
+web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-ac9bcf33acfc74d7a40a25dfeef10f946aa3cdcb3b3d8637d8cb1c6c3f50c6af}
 web_console_runtime_sbom_artifact=${WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT:-web-console-${web_console_release_tag}-runtime.cdx.json}
-web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-462c732988ca4155b4db5861441159afb4c7bf6ef7d9f06d9ad7db30a92d1883}
+web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-1bb6d0ae88b7ba0832fc9e440d8de5cd716d9ee9207efee9d61b04a79f18259e}
 catalog_service_release_base_url=${CATALOG_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/catalog-service/releases/download}
 catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.18}
 catalog_service_commit=${CATALOG_SERVICE_COMMIT:-193234b5c44d29638b4a546dfaa4f07eeb2fd56b}
@@ -118,10 +118,10 @@ vsphere_cli_bundle_commit=${VSPHERE_CLI_BUNDLE_COMMIT:-2388ea4277ed63f6b05d0a800
 vsphere_cli_bundle_archive_sha256=${VSPHERE_CLI_BUNDLE_ARCHIVE_SHA256:-bc3fda8383746c4d9927eb0d91155df5ca43a689668f07bcc4621bf808bb9ec6}
 govc_binary_sha256=${GOVC_BINARY_SHA256:-7319102b997d19d3a1571b36485c52fd881a23338dfa0410546719b6d4719784}
 host_provisioner_release_base_url=${HOST_PROVISIONER_RELEASE_BASE_URL:-https://github.com/PastureStack/host-provisioner/releases/download}
-host_provisioner_version=${HOST_PROVISIONER_VERSION:-0.39.11}
-host_provisioner_commit=${HOST_PROVISIONER_COMMIT:-59e945e8019c11b69bba7389a849c02096123ce2}
-host_provisioner_archive_sha256=${HOST_PROVISIONER_ARCHIVE_SHA256:-01813dfba991709f23658616ad424bc6ef5f9caf956d777093620b7a767fe095}
-host_provisioner_binary_sha256=${HOST_PROVISIONER_BINARY_SHA256:-54c22fa95bb16ce9b49df6bec012b9103f3e1b0eafc947d205eaef49e11b45a8}
+host_provisioner_version=${HOST_PROVISIONER_VERSION:-0.39.12}
+host_provisioner_commit=${HOST_PROVISIONER_COMMIT:-9d2f0e8e8efe0e9bf6825bd76099071ced775897}
+host_provisioner_archive_sha256=${HOST_PROVISIONER_ARCHIVE_SHA256:-ece20a9a82df61aecac6a1af72c1f075952a480cb76b416bf780c6195aa12473}
+host_provisioner_binary_sha256=${HOST_PROVISIONER_BINARY_SHA256:-2ebf8c3ebe90b3cfe8196c34e00f5099f6f3d058f4a1104eb09e230ee71d95ab}
 secret_delivery_api_release_base_url=${SECRET_DELIVERY_API_RELEASE_BASE_URL:-https://github.com/PastureStack/secret-delivery-api/releases/download}
 secret_delivery_api_version=${SECRET_DELIVERY_API_VERSION:-0.3.5}
 secret_delivery_api_commit=${SECRET_DELIVERY_API_COMMIT:-b97466fd1cfc11253ca8e095a5016a2d44513f6d}
@@ -134,7 +134,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-c33
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-48e22a6654c058cef7126dfa7c39da4c98a92bb939d37f09536d992f507f92ca}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.600}
+image=${IMAGE:-pasturestack-validation/server:v1.6.601}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -886,7 +886,7 @@ docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=${orchestration_engine_versi
     cat <<'"'"'EOF'"'"' | sha256sum -c -
 f4e6db78d33483a799e52954c4afa0e780136d1d87fc09914369e54f5a9f8f05  /usr/bin/authentication-service.real
 a22985547fea122edd12606728d3bc5f98d9457ae5724d65a21ef3c36d62cab5  /usr/bin/compose-executor.real
-54c22fa95bb16ce9b49df6bec012b9103f3e1b0eafc947d205eaef49e11b45a8  /usr/bin/host-provisioner.real
+2ebf8c3ebe90b3cfe8196c34e00f5099f6f3d058f4a1104eb09e230ee71d95ab  /usr/bin/host-provisioner.real
 8733f1c3c10f4998ea01724f3586fd45ce013a843620e954c0fc3a950ee212b2  /usr/bin/secret-delivery-api
 48e22a6654c058cef7126dfa7c39da4c98a92bb939d37f09536d992f507f92ca  /usr/bin/usage-telemetry-agent
 52e548ddb5905863dd1da713bfbd15491ef143fe98854d4759219f78b88f3912  /usr/bin/webhook-automation-service
