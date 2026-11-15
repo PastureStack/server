@@ -6,8 +6,8 @@ operator deployment and business-workflow acceptance are recorded separately.
 
 ## Release notes
 
-- [Current Server v1.6.598](releases/server-1.6.598.md) — Engine `0.183.395` /
-  Web Console `1.6.236` / optional Bridge `0.2.37`.
+- [Current Server v1.6.599](releases/server-1.6.599.md) — Engine `0.183.395` /
+  Web Console `1.6.237` / optional Bridge `0.2.37`.
 
 - [Release archive](RELEASE-ARCHIVE.md) — historical published and candidate notes retain
   their original evidence, acceptance limits and rollback context; these are not
