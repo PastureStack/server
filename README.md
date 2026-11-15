@@ -11,12 +11,12 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server `v1.6.599`](https://github.com/PastureStack/server/releases/tag/v1.6.599)
-packages Engine `v0.183.395`, Web Console `1.6.237`, optional Bridge `0.2.37`
+[Server `v1.6.600`](https://github.com/PastureStack/server/releases/tag/v1.6.600)
+packages Engine `v0.183.395`, Web Console `1.6.238`, optional Bridge `0.2.37`
 and Compose `0.14.46`. New node registrations use Agent `v1.2.36`.
-This release updates the EC2 host driver to AWS SDK v3 and the bundled
-Docker Machine and Agent Docker CLI to OpenTelemetry Go 1.47.0.
-See the [release note](docs/releases/server-1.6.599.md) and
+The EC2 host wizard loads AWS SDK v3 on demand. The bundled Docker Machine
+and Agent Docker CLI use OpenTelemetry Go 1.47.0.
+See the [release note](docs/releases/server-1.6.600.md) and
 [compatibility contract](COMPATIBILITY.md).
 
 ## Component capabilities
@@ -79,7 +79,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.599
+  ghcr.io/pasturestack/server:v1.6.600
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -87,7 +87,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.599
+    image: ghcr.io/pasturestack/server:v1.6.600
     restart: unless-stopped
     ports:
       - "8080:8080"
