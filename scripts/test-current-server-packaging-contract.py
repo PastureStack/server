@@ -1103,11 +1103,17 @@ class Tests(unittest.TestCase):
         final = FILES[DOCKER].rsplit('FROM ${BASE_IMAGE}', 1)[1]
         # The already-flattened base contributes one real layer too.
         self.assertLessEqual(1 + len(re.findall(r'^(RUN|COPY|ADD)\b', final, re.M)), 32)
-        self.assertEqual(len(re.findall(r'^\s+fetch-server-component ', FILES[DOCKER], re.M)), 18)
+        docker = FILES[DOCKER]
+        helper_start = docker.index('    fetch_release_asset() {')
+        helper_end = docker.index('    web_archive=', helper_start)
+        callers = docker[:helper_start] + docker[helper_end:]
+        fetch_call = r'^\s+(?:fetch-server-component|fetch_release_asset) '
+        self.assertEqual(len(re.findall(fetch_call, callers, re.M)), 18)
         self.assertIn('"${release_url%/}/v${version}/${artifact}" "${artifact}" "${archive_sha}"', FILES[DOCKER])
-        release_stage = FILES[DOCKER].split('FROM ${ARTIFACT_HELPER_IMAGE} AS release_artifacts', 1)[1].split('FROM ${UBUNTU_SECURITY_IMAGE}', 1)[0]
-        self.assertEqual(len(re.findall(r'^\s+fetch-server-component ', release_stage, re.M)), 17)
-        self.assertNotIn('curl -fsSL', release_stage)
+        release_stage = callers.split('FROM ${ARTIFACT_HELPER_IMAGE} AS release_artifacts', 1)[1].split('FROM ${UBUNTU_SECURITY_IMAGE}', 1)[0]
+        self.assertEqual(len(re.findall(fetch_call, release_stage, re.M)), 17)
+        self.assertEqual(len(re.findall(r'^\s+fetch_release_asset ', release_stage, re.M)), 4)
+        self.assertNotIn('curl -fsSL', release_stage + docker[helper_start:helper_end])
         self.assertIn('"catalog-service-${CATALOG_SERVICE_VERSION}-LICENSE.txt" "${CATALOG_SERVICE_LICENSE_SHA256}"', release_stage)
         fetch = (REPO / 'server/artifacts/fetch-server-component.sh').read_text(encoding='utf-8')
         hash_guard = 'printf \'%s  %s\\n\' "$expected" "$output" | sha256sum -c -'
