@@ -27,7 +27,7 @@ class BrowserScanCoverage(unittest.TestCase):
                  'hashes': [{'alg': 'SHA-256', 'content': 'c' * 64}]},
             ]}
         report = {'SchemaVersion': 2, 'CreatedAt': '2026-10-24T05:00:00Z',
-                  'Trivy': {'Version': '0.74.0'}, 'Results': [
+                  'Trivy': {'Version': '0.76.2'}, 'Results': [
             {'Type': 'node-pkg', 'Target': 'Node.js', 'Packages': [
                 {'Name': '@example/library', 'Version': '1.2.3',
                  'Identifier': {'PURL': 'pkg:npm/%40example/library@1.2.3'}}]}]}

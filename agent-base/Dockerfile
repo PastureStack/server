@@ -9,7 +9,15 @@ RUN set -eux; \
     cp vendor.mod go.mod; \
     cp vendor.sum go.sum; \
     export GOTOOLCHAIN=local GOFLAGS=-mod=mod GOPROXY=https://proxy.golang.org GOSUMDB=sum.golang.org; \
-    go get golang.org/x/net@v0.62.0; \
+    go get golang.org/x/net@v0.62.0 \
+        go.opentelemetry.io/otel@v1.47.0 \
+        go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc@v1.47.0 \
+        go.opentelemetry.io/otel/exporters/otlp/otlptrace@v1.47.0 \
+        go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc@v1.47.0 \
+        go.opentelemetry.io/otel/metric@v1.47.0 \
+        go.opentelemetry.io/otel/sdk@v1.47.0 \
+        go.opentelemetry.io/otel/sdk/metric@v1.47.0 \
+        go.opentelemetry.io/otel/trace@v1.47.0; \
     go mod download; \
     go mod verify; \
     export GOPROXY=off; \
@@ -19,6 +27,7 @@ RUN set -eux; \
     go version -m /out/docker > /out/docker-go-version.txt; \
     grep -F 'go1.27.4' /out/docker-go-version.txt; \
     awk '$1=="dep" && $2=="golang.org/x/net" && $3=="v0.62.0" { found=1 } END { exit !found }' /out/docker-go-version.txt; \
+    awk '$1=="dep" && $2 ~ /^go[.]opentelemetry[.]io[/]otel($|[/])/ { if ($3!="v1.47.0" || NF!=4) exit 1; if ($2=="go.opentelemetry.io/otel/sdk") sdk=1; if ($2=="go.opentelemetry.io/otel/trace") trace=1 } END { if (!sdk || !trace) exit 1 }' /out/docker-go-version.txt; \
     sha256sum /out/docker | cut -d' ' -f1 > /out/docker.sha256
 
 FROM scratch AS apt_security_inputs
@@ -122,7 +131,7 @@ ARG VCS_REF
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack node-agent compatibility base image." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v0.3.9" \
+      org.opencontainers.image.version="v0.3.10" \
       org.opencontainers.image.revision="$VCS_REF"
 
 RUN rm -f /usr/bin/pebble
@@ -220,8 +229,11 @@ FROM scratch AS official_glibc
 ADD --checksum=sha256:be83aefc14597fba683031a520f303950a7338b95d74decbe625faa51c49933e https://security.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.43-2ubuntu2.7_amd64.deb /tmp/official-glibc/libc6.deb
 ADD --checksum=sha256:c0393ea4fa3c45cefe0351db369d3a4a459edc8045856f2e3612ca17e77b2797 https://security.ubuntu.com/ubuntu/pool/main/g/glibc/libc-bin_2.43-2ubuntu2.7_amd64.deb /tmp/official-glibc/libc-bin.deb
 ADD --checksum=sha256:408ba056d39651c2489b59522a614276d7a96020c6a401e73cd0da7d771764b0 https://security.ubuntu.com/ubuntu/pool/main/g/glibc/libc-gconv-modules-extra_2.43-2ubuntu2.7_amd64.deb /tmp/official-glibc/libc-gconv-modules-extra.deb
+FROM scratch AS official_brotli
+ADD --checksum=sha256:bedeef1cf3268f90338c411cdb0a45b224d0660fd2240f310f380316c8244606 https://security.ubuntu.com/ubuntu/pool/main/b/brotli/libbrotli1_1.2.0-3ubuntu0.1_amd64.deb /official/libbrotli1.deb
 FROM qualified_backports AS runtime
 RUN --mount=from=official_glibc,source=/tmp/official-glibc,target=/tmp/official-glibc,ro \
+    --mount=from=official_brotli,source=/official,target=/tmp/official-brotli,ro \
     set -eux; \
     for package in libc6 libc-bin libc-gconv-modules-extra; do \
         archive="/tmp/official-glibc/$package.deb"; \
@@ -233,6 +245,17 @@ RUN --mount=from=official_glibc,source=/tmp/official-glibc,target=/tmp/official-
     done; \
     dpkg --path-include='/usr/share/doc/libc6/*' --path-include='/usr/share/man/man1/getconf.1.gz' \
         --path-include='/usr/share/man/man1/tzselect.1.gz' --install /tmp/official-glibc/*.deb; \
+    archive=/tmp/official-brotli/libbrotli1.deb; \
+    test "$(dpkg-deb -f "$archive" Package)" = libbrotli1; \
+    test "$(dpkg-deb -f "$archive" Source)" = brotli; \
+    test "$(dpkg-deb -f "$archive" Architecture)" = amd64; \
+    test "$(dpkg-deb -f "$archive" Version)" = 1.2.0-3ubuntu0.1; \
+    test "$(dpkg-query -W -f='${Version}' libbrotli1)" = 1.2.0-3build1+pasturestack.1; \
+    dpkg --path-include=/usr/share/doc/libbrotli1 '--path-include=/usr/share/doc/libbrotli1/*' \
+        --path-include=/usr/share/lintian/overrides/libbrotli1 --install "$archive"; \
+    test "$(dpkg-query -W -f='${Version}' libbrotli1)" = 1.2.0-3ubuntu0.1; \
+    integrity="$(dpkg --verify libbrotli1)"; \
+    test -z "$integrity"; \
     audit="$(dpkg --audit)"; \
     test -z "$audit"; \
     for package in libc6 libc-bin libc-gconv-modules-extra; do \

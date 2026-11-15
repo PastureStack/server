@@ -13,7 +13,7 @@ printf '%s\n' "$source_sha" >"$evidence/source-revision.txt"
 python3 scripts/test-agent-package-consistency.py
 
 case "${COMPONENT:-}" in
-  base) repository=ghcr.io/pasturestack/node-agent-base; version=v0.3.9 ;;
+  base) repository=ghcr.io/pasturestack/node-agent-base; version=v0.3.10 ;;
   agent) repository=ghcr.io/pasturestack/node-agent; version=v1.2.35 ;;
   *) echo 'Unsupported agent component' >&2; exit 1 ;;
 esac
@@ -164,6 +164,11 @@ docker run --rm --network none --entrypoint cat "$candidate" /usr/bin/docker >"$
 go version -m "$scratch/docker-cli" | tee "$evidence/docker-cli-go-version.txt"
 head -1 "$evidence/docker-cli-go-version.txt" | grep -F 'go1.27.4'
 awk '$1=="dep" && $2=="golang.org/x/net" && $3=="v0.62.0" { found=1 } END { exit !found }' "$evidence/docker-cli-go-version.txt"
+awk '$1=="dep" && $2 ~ /^go[.]opentelemetry[.]io[/]otel($|[/])/ {
+        if ($3!="v1.47.0" || NF!=4) exit 1
+        if ($2=="go.opentelemetry.io/otel/sdk") sdk=1
+        if ($2=="go.opentelemetry.io/otel/trace") trace=1
+    } END { if (!sdk || !trace) exit 1 }' "$evidence/docker-cli-go-version.txt"
 docker run --rm --network none --entrypoint python3 \
   -e PYTHONDONTWRITEBYTECODE=1 -v "$PWD:/source:ro" -w /source "$candidate" \
   scripts/check-agent-python-runtime.py |& tee "$evidence/python-tls-registration.json"
@@ -181,7 +186,7 @@ docker run --rm --entrypoint python3 "$candidate" -c \
   'import json, urllib.request; r=urllib.request.urlopen("https://pypi.org/pypi/pip/26.2.2/json", timeout=30); assert r.status == 200; assert json.load(r)["info"]["version"] == "26.2.2"; print("OFFICIAL_PYPI_TLS_OK")' \
   |& tee "$evidence/public-tls.txt"
 
-trivy=ghcr.io/aquasecurity/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
+trivy=ghcr.io/aquasecurity/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb
 docker pull "$trivy"
 mkdir -p "$scratch/trivy-cache"
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
@@ -197,7 +202,7 @@ else
   qualification_sbom="$evidence/qualified-stage.cdx.json"
   cp "$base_evidence/qualified-stage.cdx.json" "$qualification_sbom"
 fi
-python3 scripts/check-agent-official-glibc.py "$qualification_sbom" "$evidence/image.cdx.json"
+python3 scripts/check-agent-official-packages.py "$qualification_sbom" "$evidence/image.cdx.json"
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
   -v "$scratch/trivy-cache:/root/.cache/trivy" -v "$evidence:/evidence" "$trivy" image --scanners vuln,secret --list-all-pkgs --format json \
   --output /evidence/image-security.json "$candidate"

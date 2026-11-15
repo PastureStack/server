@@ -1,10 +1,14 @@
-"""Verify that only the official glibc package family changed after backport qualification."""
+"""Verify that only the approved Ubuntu security revisions changed after backport qualification."""
 import json
 import sys
 from pathlib import Path
 
-PACKAGES = {"libc6", "libc-bin", "libc-gconv-modules-extra"}
-VERSION = "2.43-2ubuntu2.7"
+PACKAGES = {
+    "libc6": "2.43-2ubuntu2.7",
+    "libc-bin": "2.43-2ubuntu2.7",
+    "libc-gconv-modules-extra": "2.43-2ubuntu2.7",
+    "libbrotli1": "1.2.0-3ubuntu0.1",
+}
 PREFIX = "pkg:deb/ubuntu/"
 
 
@@ -25,13 +29,11 @@ def os_packages(path):
 
 
 def verify(before, after):
-    if not PACKAGES <= before.keys() or before.keys() != after.keys():
+    if not PACKAGES.keys() <= before.keys() or before.keys() != after.keys():
         raise ValueError("Installed Ubuntu package set changed")
     for name, original in before.items():
-        expected = (
-            (VERSION, f"{PREFIX}{name}@{VERSION}?arch=amd64&distro=ubuntu-26.04")
-            if name in PACKAGES else original
-        )
+        version = PACKAGES.get(name)
+        expected = (version, f"{PREFIX}{name}@{version}?arch=amd64&distro=ubuntu-26.04") if version else original
         if after[name] != expected:
             raise ValueError("Unexpected Ubuntu package identity: " + name)
 
@@ -39,4 +41,4 @@ def verify(before, after):
 if __name__ == "__main__":
     before, after = map(Path, sys.argv[1:])
     verify(os_packages(before), os_packages(after))
-    print("OFFICIAL_GLIBC_SBOM_CLOSURE_OK")
+    print("AGENT_OFFICIAL_PACKAGES_SBOM_CLOSURE_OK")
