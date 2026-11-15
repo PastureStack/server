@@ -59,9 +59,9 @@ require_marker agent-base/build-image.sh 'R_BIN="${R_BIN:-}"' AGENT_BASE_BUILD_N
 require_marker agent-base/build-image.sh 'cp "$R_BIN" "$tmpdir/r"' AGENT_BASE_BUILD_NETWORK_HELPER_CONTEXT_COPY_MISSING
 require_marker agent-base/build-image.sh 'cp ../server/bin/update-platform-ssl "$tmpdir/update-platform-ssl"' AGENT_BASE_BUILD_SSL_SCRIPT_CONTEXT_COPY_MISSING
 
-require_marker agent/Dockerfile 'FROM ghcr.io/pasturestack/node-agent-base:v0.3.9@sha256:6ecab4b0506c6825207a52182cad30fc81b7d73f7a44d1e56163519b437da52c' AGENT_DOCKERFILE_BASE_NOT_UPDATED
-require_marker agent/Dockerfile 'org.opencontainers.image.version="v1.2.35"' AGENT_DOCKERFILE_VERSION_NOT_ROLLED_FORWARD
-require_marker agent/Dockerfile 'ENV RANCHER_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.35' AGENT_DOCKERFILE_SELF_IMAGE_NOT_ROLLED_FORWARD
+require_marker agent/Dockerfile 'FROM ghcr.io/pasturestack/node-agent-base:v0.3.10@sha256:7a8c59c9c9351999803029b1289e3172e9291a427712f4215a9d62571eb68515' AGENT_DOCKERFILE_BASE_NOT_UPDATED
+require_marker agent/Dockerfile 'org.opencontainers.image.version="v1.2.36"' AGENT_DOCKERFILE_VERSION_NOT_ROLLED_FORWARD
+require_marker agent/Dockerfile 'ENV RANCHER_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.36' AGENT_DOCKERFILE_SELF_IMAGE_NOT_ROLLED_FORWARD
 require_marker agent/Dockerfile 'io.pasturestack.container.system="node-agent"' AGENT_DOCKERFILE_PASTURESTACK_SYSTEM_LABEL_MISSING
 require_marker agent/Dockerfile 'COPY loglevel /usr/bin/loglevel' AGENT_DOCKERFILE_LOGLEVEL_NOT_CONTEXT_BACKED
 require_marker agent/Dockerfile 'RUN test -s /usr/bin/share-mnt && \' AGENT_DOCKERFILE_BASE_SHARE_MNT_NONEMPTY_CHECK_MISSING
@@ -94,4 +94,4 @@ if [ "$failure_count" -ne 0 ]; then
   exit 1
 fi
 
-printf 'AGENT_BASE_DOWNLOADS_OK base=v0.3.10 agent=v1.2.35 base_share_mnt_nonempty=1 tracked_loglevel=1 docker_cli=29.9.3 python_sha=1 docker_sha=1 remote_legacy_helpers=0\n'
+printf 'AGENT_BASE_DOWNLOADS_OK base=v0.3.10 agent=v1.2.36 base_share_mnt_nonempty=1 tracked_loglevel=1 docker_cli=29.9.3 python_sha=1 docker_sha=1 remote_legacy_helpers=0\n'

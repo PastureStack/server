@@ -37,7 +37,7 @@ findings fail the gate; vendor-unfixed Medium/Low findings remain recorded.
 Publication then pushes that same image, refuses an existing version tag,
 and verifies the anonymous digest readback and original image identity.
 
-The node-agent wrapper pins a published base digest in its Dockerfile. Both `base` and `agent` components use the same
+The node-agent v1.2.36 wrapper pins the published v0.3.10 base digest in its Dockerfile. Both `base` and `agent` components use the same
 qualified runtime-package receipts, native OpenVEX guard, raw/effective scans,
 runtime checks and publication gate. The wrapper binds the base producer run,
 artifact checksum and OCI digest, then verifies its own package inventory and
