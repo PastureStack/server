@@ -263,6 +263,18 @@ jobs:
             "$evidence/brotli-runtime.txt"
           grep -Fx 'PASS: truncated ordinary input rejected' "$evidence/brotli-runtime.txt"
 
+      - name: Verify rsync on the flattened candidate
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          evidence="$RUNNER_TEMP/server-evidence"
+          mkdir -p "$evidence/rsync-backport"
+          docker run --rm --network none --entrypoint /bin/sh "$CANDIDATE_IMAGE" -ec '
+            cd /
+            sha256sum -c /usr/share/pasturestack/security/rsync-backport/runtime.sha256
+            /bin/sh /usr/local/libexec/pasturestack/verify-rsync-runtime.sh
+          ' | tee "$evidence/rsync-backport/qualified-runtime.txt"
+
       - name: Start, restart, and export the candidate
         shell: bash
         run: |
@@ -683,7 +695,7 @@ jobs:
           (cd "$evidence/server-consumer-tools" && sha256sum verify-server-backport-consumer.py \
             ubuntu-backports/bundle/verify-consumer-evidence.py > SHA256SUMS)
           tar -cf "$evidence/ubuntu-backports-evidence.tar" -C "$evidence" \
-            ubuntu-backports bundle-tools ubuntu-backports-validation.json brotli-official server-consumer-tools
+            ubuntu-backports bundle-tools ubuntu-backports-validation.json brotli-official server-consumer-tools rsync-backport
 
           docker run --rm \
             -v "$RUNNER_TEMP/server-rootfs:/rootfs:ro" \
