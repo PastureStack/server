@@ -557,8 +557,8 @@ RUN set -eux; \
 FROM ${UBUNTU_SECURITY_IMAGE} AS rsync_security_package
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /build
-ADD --checksum=sha256:a7e3bf769aec16ba21ca39cba180d6d311dafcbae68346a05f137c5cc26c9ca6 \
-    https://security.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.2_all.deb /tmp/ca.deb
+ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd \
+    https://snapshot.ubuntu.com/ubuntu/20261104T000000Z/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb /tmp/ca.deb
 COPY security/ubuntu-backports/rsync/ /backport/
 RUN <<'SH'
 set -eu
@@ -567,8 +567,12 @@ test "$VERSION_ID" = '26.04'
 test "$(dpkg --print-architecture)" = amd64
 mkdir -p /tmp/ca-bootstrap /etc/ssl/certs
 dpkg-deb --extract /tmp/ca.deb /tmp/ca-bootstrap
-find /tmp/ca-bootstrap/usr/share/ca-certificates -type f -name '*.crt' -exec cat {} + \
-  > /etc/ssl/certs/ca-certificates.crt
+find /tmp/ca-bootstrap/usr/share/ca-certificates -type f -name '*.crt' | LC_ALL=C sort |
+  while IFS= read -r certificate; do sed -e '$a\' "$certificate"; done >/etc/ssl/certs/ca-certificates.crt
+printf '%s\n' 'Acquire::https::CaInfo "/etc/ssl/certs/ca-certificates.crt";' \
+  'Acquire::https::Verify-Peer "true";' 'Acquire::https::Verify-Host "true";' \
+  'Acquire::AllowInsecureRepositories "false";' 'APT::Get::AllowUnauthenticated "false";' \
+  >/etc/apt/apt.conf.d/80pasturestack-rsync
 rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.sources /etc/apt/sources.list.d/*.list
 cat > /etc/apt/sources.list.d/pasturestack-rsync.sources <<'APT'
 Types: deb deb-src
@@ -579,7 +583,7 @@ Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 Snapshot: no
 Check-Valid-Until: no
 APT
-apt-get -o Acquire::Retries=3 update
+apt-get -o Acquire::Retries=3 -o APT::Update::Error-Mode=any update
 apt-get install --no-install-recommends -y build-essential debhelper dpkg-dev fakeroot patch xz-utils
 version='3.4.1+ds1-7ubuntu0.3'
 export DEB_BUILD_OPTIONS='nocheck parallel=2'
