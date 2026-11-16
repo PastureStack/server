@@ -1,6 +1,6 @@
-# Server v1.6.602
+# Server v1.6.602 candidate
 
-## Ubuntu 26.04 rsync
+## Verified component inputs
 
 This release rebuilds the Ubuntu 26.04 rsync package at
 `3.4.1+ds1-7ubuntu0.3+pasturestack.1` with the
