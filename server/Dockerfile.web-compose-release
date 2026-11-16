@@ -553,6 +553,72 @@ RUN set -eux; \
         "${PER_HOST_SUBNET_RELEASE_BASE_URL%/}/v${PER_HOST_SUBNET_VERSION}/per-host-subnet-${PER_HOST_SUBNET_VERSION}-windows-amd64.zip" \
         "per-host-subnet-${PER_HOST_SUBNET_VERSION}-windows-amd64.zip" "${PER_HOST_SUBNET_ARCHIVE_SHA256}" /out/per-host-subnet.zip
 
+# Build the Ubuntu rsync package with the exact upstream bounds-check hunk.
+FROM ${UBUNTU_SECURITY_IMAGE} AS rsync_security_package
+ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /build
+ADD --checksum=sha256:5b6326f1932cfd7be57130561dc78192f09ed9f58bfbe6606ed0c50510c3b6cd \
+    https://archive.ubuntu.com/ubuntu/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.26.04.1_all.deb /tmp/ca.deb
+COPY security/ubuntu-backports/rsync/ /backport/
+RUN <<'SH'
+set -eu
+. /etc/os-release
+test "$VERSION_ID" = '26.04'
+test "$(dpkg --print-architecture)" = amd64
+mkdir -p /tmp/ca-bootstrap /etc/ssl/certs
+dpkg-deb --extract /tmp/ca.deb /tmp/ca-bootstrap
+find /tmp/ca-bootstrap/usr/share/ca-certificates -type f -name '*.crt' -exec cat {} + \
+  > /etc/ssl/certs/ca-certificates.crt
+rm -f /etc/apt/sources.list /etc/apt/sources.list.d/*.sources /etc/apt/sources.list.d/*.list
+cat > /etc/apt/sources.list.d/pasturestack-rsync.sources <<'APT'
+Types: deb deb-src
+URIs: https://snapshot.ubuntu.com/ubuntu/20261023T000000Z
+Suites: resolute resolute-updates resolute-security
+Components: main universe
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+Snapshot: no
+Check-Valid-Until: no
+APT
+apt-get -o Acquire::Retries=3 update
+apt-get install --no-install-recommends -y build-essential debhelper dpkg-dev fakeroot patch xz-utils
+version='3.4.1+ds1-7ubuntu0.3'
+export DEB_BUILD_OPTIONS='nocheck parallel=2'
+apt-get build-dep --no-install-recommends --arch-only -y "rsync=$version"
+apt-get source --download-only "rsync=$version"
+printf '%s  %s\n' \
+  7cd9244dff9c3e2323eef4fc11ae89c87ceafac0f264f0bba015c287c95fa0a5 "rsync_$version.dsc" \
+  bb9e2dda7e79d9639bc04bdafff6bb0b06a606ed915358b574696384215c9e5c rsync_3.4.1+ds1.orig.tar.xz \
+  4e7a250a1cbcbdf47813147b1e969eb112542a5e7f99b74d39d99cb81a345cb4 "rsync_$version.debian.tar.xz" \
+  4edce63aa9547fd4e00c928f69a8174636555f1b35e7fb2a271658199097ca74 /backport/cve-2026-70457.patch | sha256sum -c -
+dpkg-source -x "rsync_$version.dsc" source
+cd source
+export QUILT_PATCHES=debian/patches
+# Build from an applied Ubuntu source tree. dpkg-buildpackage is binary-only.
+patch --fuzz=0 -p1 --batch --forward -i /backport/cve-2026-70457.patch
+custom_version="$version+pasturestack.1"
+{
+  printf 'rsync (%s) resolute; urgency=medium\n\n' "$custom_version"
+  printf '  * Backport the upstream CVE-2026-70457 bounds check from defd7110ac9b.\n\n'
+  printf ' -- PastureStack Maintainers <pasturestack@users.noreply.github.com>  Mon, 16 Nov 2026 00:00:00 +0000\n\n'
+  cat debian/changelog
+} > debian/changelog.new
+mv debian/changelog.new debian/changelog
+dpkg-buildpackage --build=binary -us -uc -j2
+cd /build
+package="rsync_${custom_version}_amd64.deb"
+test "$(dpkg-deb -f "$package" Package)" = rsync
+test "$(dpkg-deb -f "$package" Version)" = "$custom_version"
+test "$(dpkg-deb -f "$package" Architecture)" = amd64
+apt-get install --no-install-recommends -y "./$package"
+sh /backport/verify-rsync-runtime.sh
+mkdir /rsync-out
+install -m 0644 "$package" /rsync-out/rsync.deb
+install -m 0644 /backport/cve-2026-70457.patch /rsync-out/cve-2026-70457.patch
+cd /rsync-out
+sha256sum rsync.deb cve-2026-70457.patch > SHA256SUMS
+sha256sum /usr/bin/rsync > runtime.sha256
+SH
+
 FROM ${UBUNTU_SECURITY_IMAGE} AS runtime_security_packages
 
 ARG PCRE2_PACKAGE_VERSION=10.46-1build1+pasturestack.1
@@ -788,7 +854,7 @@ ARG PER_HOST_SUBNET_VERSION=0.2.6
 ARG PER_HOST_SUBNET_PRODUCER_COMMIT=05c69dba52ab770062e81a9b60b69408cbe58218
 ARG PER_HOST_SUBNET_ARCHIVE_SHA256=a3a7592582c443f4f36b31c54a0a3c87d5961d664e3604b20acb97dec55725be
 ARG PER_HOST_SUBNET_PROVENANCE_SHA256=272ea108e8d938c352cf47a4fa82e0dab3c81b6f3b181d0d12b71e1469f87edd
-ARG SERVER_RELEASE_TAG=v1.6.601
+ARG SERVER_RELEASE_TAG=v1.6.602
 ARG API_EXPLORER_RELEASE_TAG=v1.1.20
 ARG API_EXPLORER_ARTIFACT_SHA256=c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb
 ARG API_EXPLORER_COMMIT=a586f0dc0aa50df579049a8d4bf26f04400fdf75
@@ -1006,6 +1072,21 @@ RUN --mount=from=ubuntu_security_backports,source=/out,target=/opt/pasturestack/
     openssl version | grep -E '^OpenSSL 3\.5\.5 .*\(Library: OpenSSL 3\.5\.5 '; \
     rm -rf /tmp/pasturestack-runtime-security /usr/share/licenses/pasturestack/openssl-3.5.8; \
     rm -f /usr/bin/tar
+
+RUN --mount=from=rsync_security_package,source=/rsync-out,target=/tmp/rsync-security,ro \
+    --mount=type=bind,source=security/ubuntu-backports/rsync/verify-rsync-runtime.sh,target=/tmp/verify-rsync-runtime.sh,ro \
+    set -eu; \
+    cd /tmp/rsync-security; \
+    sha256sum -c SHA256SUMS; \
+    test "$(dpkg-query -W -f='${Version}' rsync)" = 3.4.1+ds1-7ubuntu0.3; \
+    dpkg -i rsync.deb; \
+    sha256sum -c runtime.sha256; \
+    evidence=/usr/share/pasturestack/security/rsync-backport; \
+    install -d "$evidence"; \
+    install -m 0644 runtime.sha256 cve-2026-70457.patch "$evidence/"; \
+    install -D -m 0755 /tmp/verify-rsync-runtime.sh /usr/local/libexec/pasturestack/verify-rsync-runtime.sh; \
+    sh /usr/local/libexec/pasturestack/verify-rsync-runtime.sh > "$evidence/runtime.txt"
+
 
 COPY --from=release_artifacts /out/web-console/ /tmp/pasturestack-web-console/
 RUN rm -rf /tmp/pasturestack-api-ui

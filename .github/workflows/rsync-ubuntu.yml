@@ -1,0 +1,19 @@
+name: Rsync Ubuntu 26.04
+on:
+  pull_request:
+    paths:
+      - 'server/security/ubuntu-backports/rsync/**'
+      - 'server/Dockerfile.web-compose-release'
+      - '.github/workflows/rsync-ubuntu.yml'
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Build and test the Ubuntu rsync package
+        run: |
+          docker buildx build --platform linux/amd64 --target rsync_security_package \
+            --file server/Dockerfile.web-compose-release server
