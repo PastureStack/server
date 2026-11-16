@@ -1,5 +1,19 @@
 # Compatibility Contract
 
+## Server v1.6.602 published
+
+Immutable image `ghcr.io/pasturestack/server:v1.6.602@sha256:4c3ebf550e12e1778d7b0eee71dfa9b2104153966fb76ff3a304abb139098d62`.
+
+Source revision `33edd8deaac3fe5236c5206f7aaaca883a14c3e7`.
+
+Packages Engine **0.183.395**, Web Console **1.6.239**, Host Provisioner
+**0.39.12**, optional Bridge **0.2.37**, and Compose **0.14.46**. New registrations
+use Agent **1.2.36**. The Ubuntu 26.04 rsync package includes the official
+CVE-2026-70457 fix.
+
+See the [release note](docs/releases/server-1.6.602.md) and the
+[publisher checks](https://github.com/PastureStack/server/actions/runs/43907155815).
+
 ## Server v1.6.601 published
 
 Immutable image `ghcr.io/pasturestack/server:v1.6.601@sha256:c512538a5ae41f7c684fd718be2ddbee0bf83e17fb504cb6e33cea5d6788ea1f`.
