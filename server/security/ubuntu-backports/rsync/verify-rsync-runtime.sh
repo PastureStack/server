@@ -4,8 +4,14 @@ set -eu
 expected_version=3.4.1+ds1-7ubuntu0.3+pasturestack.1
 test "$(dpkg-query -W -f='${Version}' rsync)" = "$expected_version"
 test "$(dpkg-query -W -f='${Architecture}' rsync)" = amd64
+# Ubuntu's container dpkg profile excludes docs and manpages.
 integrity="$(dpkg --verify rsync)"
-test -z "$integrity"
+unexpected="$(printf '%s\n' "$integrity" | sed -E \
+  '/^missing[[:space:]]+\/usr\/share\/doc\/rsync\//d; /^missing[[:space:]]+\/usr\/share\/man\/man[15]\/(rrsync|rsync|rsync-ssl|rsyncd\.conf)\.[15]\.gz$/d')"
+if [ -n "$unexpected" ]; then
+  printf '%s\n' "$unexpected" >&2
+  exit 1
+fi
 rsync --version | grep -F 'version 3.4.1 ' >/dev/null
 fixture="$(mktemp -d)"
 trap 'rm -rf "$fixture"' EXIT HUP INT TERM
