@@ -2,8 +2,8 @@
   "@context": "https://openvex.dev/ns/v0.2.0",
   "@id": "https://github.com/PastureStack/server/security/openvex/v1.6.602",
   "author": "PastureStack Security",
-  "timestamp": "2026-11-12T08:08:21Z",
-  "version": 90,
+  "timestamp": "2026-11-20T00:07:31Z",
+  "version": 91,
   "statements": [
     {
       "vulnerability": {
@@ -129,6 +129,20 @@
       "status": "not_affected",
       "justification": "vulnerable_code_not_in_execute_path",
       "impact_statement": "The vulnerable p11-kit RPC server executable is absent and the final runtime exposes no p11-kit RPC Unix socket."
+    },
+    {
+      "action_statement": "Exact official recursion-limit security patches in qualified amd64 packages. CVE-2026-18938 is officially a 32-bit-only trigger; amd64 owning-suite PASS is not 32-bit execution coverage.",
+      "products": [
+        {
+          "@id": "pkg:deb/ubuntu/libp11-kit0@0.26.2-2%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04"
+        }
+      ],
+      "status": "fixed",
+      "vulnerability": {
+        "@id": "https://www.cve.org/CVERecord?id=CVE-2026-13757",
+        "name": "CVE-2026-13757"
+      },
+      "impact_statement": "The existing immutable ubuntu-security-backports v0.1.1 bundle qualifies these exact libp11-kit0 package bytes as fixed for CVE-2026-13757 with upstream commit 0eedd4ddd7c924f9cbb4ac496b3fda699435c3cf. The bundle image digest is sha256:45d6b507b63a18459ae5cf76afd4d9731f8ef43b9c40e4c3dbb01899e1752b19; its libp11-kit0 payload manifest SHA256 is 85e82706689f1c6860bc3aa83e51f77440883790f4a32977e64eaa4236b31a64. The installed libp11-kit.so.0.4.8 SHA256 faaf9102a495426ad38ba0ba30445cca7c9d964193ad190a2aff716381f25438 matches that manifest. This restores the already-qualified exact custom package statement; it does not cover another version or package."
     },
     {
       "vulnerability": {

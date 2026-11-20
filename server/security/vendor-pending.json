@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "release": "v1.6.602",
-  "generatedAt": "2026-11-15T09:50:00+00:00",
+  "generatedAt": "2026-11-20T08:03:15+08:00",
   "policy": {
     "allowedSeverities": [
       "LOW",
@@ -18,42 +18,42 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-102473",
-      "reviewAfter": "2026-11-19",
+      "reviewAfter": "2026-11-27",
       "packages": [
         {
           "name": "dash",
           "installedVersion": "0.5.12-12ubuntu3"
         }
       ],
-      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
-      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-102473.json",
-      "upstreamVendorStatus": "Vulnerable, fix deferred",
-      "vendorEvidenceSha256": "ee3ce5fd986db42e62aff6989b4957bac30ce2a4667d035f1333f5bef171a3f0"
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-102473.json",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute dash: deferred (2026-10-15); no released fixed package",
+      "vendorEvidenceSha256": "5b919c72cfee8c0443c8a32c8da2703ebc760d682d24ff082e6feeba4d03c14f"
     },
     {
       "vulnerabilityId": "CVE-2026-102474",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-102474",
-      "reviewAfter": "2026-11-19",
+      "reviewAfter": "2026-11-27",
       "packages": [
         {
           "name": "dash",
           "installedVersion": "0.5.12-12ubuntu3"
         }
       ],
-      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
-      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-102474.json",
-      "upstreamVendorStatus": "Vulnerable, fix deferred",
-      "vendorEvidenceSha256": "269f45920d570ea9a9c7f4c192082dcb19123b019b1459fe8569b57862c6f86e"
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-102474.json",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute dash: deferred (2026-10-15); no released fixed package",
+      "vendorEvidenceSha256": "79c05ceb61e61676ab042b08a2b7d4ce2c16005279395c0100b0f94935b90eb8"
     },
     {
       "vulnerabilityId": "CVE-2026-107161",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
-      "upstreamVendorStatus": "Vulnerable, fix deferred",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute cyrus-sasl2: deferred (2026-10-14); no released fixed package",
       "source": "https://ubuntu.com/security/CVE-2026-107161",
-      "reviewAfter": "2026-11-19",
+      "reviewAfter": "2026-11-27",
       "severityBasis": "Ubuntu priority Medium and the scanner's vendor severity; upstream CVSS v3 7.5 High is not a fix or a not-affected decision.",
       "packages": [
         {
@@ -65,102 +65,102 @@
           "installedVersion": "2.1.28+dfsg1-9ubuntu3"
         }
       ],
-      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
-      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-107161.json",
-      "vendorEvidenceSha256": "93e0ff1c051b635fd12e912a2a14f23da82369b10d8c3a7f68dc672b3a3cb3d8"
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-107161.json",
+      "vendorEvidenceSha256": "be1f93e988a02a7b2a90fdb3e9e329366c6c2f0cd7234768c5edb11cdfd06b49"
     },
     {
       "vulnerabilityId": "CVE-2026-67693",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-67693",
-      "reviewAfter": "2026-11-19",
+      "reviewAfter": "2026-11-27",
       "packages": [
         {
           "name": "libgnutls30t64",
           "installedVersion": "3.8.12-2ubuntu1.1"
         }
       ],
-      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
-      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-67693.json",
-      "upstreamVendorStatus": "Vulnerable, fix deferred",
-      "vendorEvidenceSha256": "a335090a80ed1933aa9010eff1fd99e9d56453bfc724fe6d618b0c47a49e6950"
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-67693.json",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute gnutls28: deferred (2026-11-16); no released fixed package",
+      "vendorEvidenceSha256": "edd711222018278efca581eccd07131ddb533c8bbcdde63efcaf1e7ad230c975"
     },
     {
       "vulnerabilityId": "CVE-2026-88647",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-88647",
-      "reviewAfter": "2026-11-19",
+      "reviewAfter": "2026-11-27",
       "packages": [
         {
           "name": "libgnutls30t64",
           "installedVersion": "3.8.12-2ubuntu1.1"
         }
       ],
-      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
-      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-88647.json",
-      "upstreamVendorStatus": "Vulnerable, fix deferred",
-      "vendorEvidenceSha256": "c7b645f7a2cac68eea00bf4455389b000d86223dd9e699a7188198e433ddc9d7"
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-88647.json",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute gnutls28: deferred (2026-11-16); no released fixed package",
+      "vendorEvidenceSha256": "7855028ff4d82efe0095440138478bb7db67f53c5d6a4e57befa073399c198f7"
     },
     {
       "vulnerabilityId": "CVE-2026-88648",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
-      "upstreamVendorStatus": "Vulnerable, fix deferred",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute gnutls28: deferred (2026-11-16); no released fixed package",
       "source": "https://ubuntu.com/security/CVE-2026-88648",
-      "reviewAfter": "2026-11-19",
+      "reviewAfter": "2026-11-27",
       "packages": [
         {
           "name": "libgnutls30t64",
           "installedVersion": "3.8.12-2ubuntu1.1"
         }
       ],
-      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
-      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-88648.json",
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-88648.json",
       "notes": "Canonical lists Ubuntu 26.04 gnutls28 as vulnerable with its fix deferred. The official OSV range has no fixed event and the current runtime scan has an empty FixedVersion. Retain the raw finding; do not claim remediation or not_affected.",
-      "vendorEvidenceSha256": "290d33ac8008f4164ec0813ffb4136fdf6ca0c3b788f1b4e71eb46eb9e76f61a"
+      "vendorEvidenceSha256": "88e6fa066075baf81e9f8579994223f36c6fd88cbab763ff375abe50869ab4df"
     },
     {
       "vulnerabilityId": "CVE-2026-95184",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-95184",
-      "reviewAfter": "2026-11-19",
+      "reviewAfter": "2026-11-27",
       "packages": [
         {
           "name": "libgnutls30t64",
           "installedVersion": "3.8.12-2ubuntu1.1"
         }
       ],
-      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
-      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-95184.json",
-      "upstreamVendorStatus": "Vulnerable, fix deferred",
-      "vendorEvidenceSha256": "9387aa81f6b19804fae57e4849a46ba3dbb4e67b6d97a1f32b26693590549758"
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-95184.json",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute gnutls28: deferred (2026-11-16); no released fixed package",
+      "vendorEvidenceSha256": "b220aa48d0a5e382d84b944a17aa5b59ce5b8d353213ed76a841b61f46819a56"
     },
     {
       "vulnerabilityId": "CVE-2026-95210",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-95210",
-      "reviewAfter": "2026-11-19",
+      "reviewAfter": "2026-11-27",
       "packages": [
         {
           "name": "libgnutls30t64",
           "installedVersion": "3.8.12-2ubuntu1.1"
         }
       ],
-      "verifiedAt": "2026-11-05T23:05:14.989623+00:00",
-      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-95210.json",
-      "upstreamVendorStatus": "Vulnerable, fix deferred",
-      "vendorEvidenceSha256": "e223ff15f050bcc5a7cbe914158b646217c57139a8d31ebc81fbe439a6acc382"
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-95210.json",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute gnutls28: deferred (2026-11-16); no released fixed package",
+      "vendorEvidenceSha256": "dbd29818d9a4fe45693afb968399080a9d252d01189766e541c8d519416c140a"
     },
     {
       "vulnerabilityId": "CVE-2026-78408",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-78408",
-      "reviewAfter": "2026-11-19",
+      "reviewAfter": "2026-11-27",
       "packages": [
         {
           "name": "bsdutils",
@@ -195,44 +195,46 @@
           "installedVersion": "2.41.3-3ubuntu2.2"
         }
       ],
-      "verifiedAt": "2026-11-10T04:21:55.365013+00:00",
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
       "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-78408.json",
-      "upstreamVendorStatus": "Ubuntu26.04 Resolute: needed; no released fixed package",
-      "severityBasis": "Ubuntu priority Medium and scanner vendor severity; upstream CVSS3.1 7.9 High remains disclosed."
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute util-linux: needed; no released fixed package",
+      "severityBasis": "Ubuntu priority Medium and scanner vendor severity; upstream CVSS3.1 7.9 High remains disclosed.",
+      "vendorEvidenceSha256": "453bb87d5835968a2537e0eab24f77fd88422b9fc30e0bb9f182548df88c7fa8"
     },
     {
       "vulnerabilityId": "CVE-2026-102633",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-102633",
-      "reviewAfter": "2026-11-19",
+      "reviewAfter": "2026-11-27",
       "packages": [
         {
           "name": "libexpat1",
           "installedVersion": "2.7.4-1ubuntu0.2"
         }
       ],
-      "verifiedAt": "2026-11-10T04:21:55.365013+00:00",
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
       "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-102633.json",
-      "upstreamVendorStatus": "Ubuntu26.04 Resolute: needed; no released fixed package",
-      "severityBasis": "Ubuntu priority Medium and scanner vendor severity; upstream CVSS4.0 8.2 High remains disclosed."
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute expat: needed; no released fixed package",
+      "severityBasis": "Ubuntu priority Medium and scanner vendor severity; upstream CVSS4.0 8.2 High remains disclosed.",
+      "vendorEvidenceSha256": "0989aea8abfc982978ef5af1840dfe0c48763c33e79128058b2eedcabf4563fd"
     },
     {
       "vulnerabilityId": "CVE-2026-93990",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-93990",
-      "reviewAfter": "2026-11-19",
+      "reviewAfter": "2026-11-27",
       "packages": [
         {
           "name": "libexpat1",
           "installedVersion": "2.7.4-1ubuntu0.2"
         }
       ],
-      "verifiedAt": "2026-11-10T11:58:55.771054+00:00",
-      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-93990.json",
-      "vendorEvidenceSha256": "43aa8a8f150ee993e730035c8ccb55881ddaf92dfed4dbc2816d4ed4cfef7f02",
-      "upstreamVendorStatus": "Ubuntu26.04 Resolute: needs evaluation; no released fixed package",
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-93990.json",
+      "vendorEvidenceSha256": "cd880a226c56c8db5a6613efe6b4793684c4371144de615dbb567587b22b9fb0",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute expat: needed; no released fixed package",
       "severityBasis": "Ubuntu priority Medium and native scanner vendor severity; upstream CVSS3 7.5 High remains disclosed. A fix in another Ubuntu release or upstream source is not a released compatible Resolute package."
     },
     {
@@ -240,7 +242,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-9538",
-      "reviewAfter": "2026-11-19",
+      "reviewAfter": "2026-11-27",
       "packages": [
         {
           "name": "libperl5.40",
@@ -259,10 +261,10 @@
           "installedVersion": "5.40.1-7ubuntu0.4"
         }
       ],
-      "verifiedAt": "2026-11-10T11:58:55.771054+00:00",
-      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-9538.json",
-      "vendorEvidenceSha256": "b4fec8678d98b63b45909520b47ebabb19db5586926e78b8c0051a032ac9ab67",
-      "upstreamVendorStatus": "Ubuntu26.04 Resolute: needs evaluation; no released fixed package",
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-9538.json",
+      "vendorEvidenceSha256": "9b7ab6479b1671f9d36239baf22507ec1552de44c85c08115bd70b07619bddce",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute perl: needed; no released fixed package",
       "severityBasis": "Ubuntu priority Medium and native scanner vendor severity; upstream CVSS3 7.5 High remains disclosed. A fix in another Ubuntu release or upstream source is not a released compatible Resolute package."
     },
     {
@@ -270,7 +272,7 @@
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
       "source": "https://ubuntu.com/security/CVE-2026-121876",
-      "reviewAfter": "2026-11-19",
+      "reviewAfter": "2026-11-27",
       "packages": [
         {
           "name": "libsystemd-shared",
@@ -289,10 +291,216 @@
           "installedVersion": "259.5-0ubuntu3.4"
         }
       ],
-      "verifiedAt": "2026-11-15T09:42:00+00:00",
-      "vendorEvidence": "https://raw.githubusercontent.com/canonical/ubuntu-security-notices/main/osv/cve/2026/UBUNTU-CVE-2026-121876.json",
-      "upstreamVendorStatus": "Vulnerable, fix deferred",
-      "vendorEvidenceSha256": "e2f27bf17f02780a725bfce7491bf006b9af973761ef2337a1ac9ec06d4f5b01"
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-121876.json",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute systemd: deferred (2026-11-13); no released fixed package",
+      "vendorEvidenceSha256": "fbcc57cc6d92640ddb1ae5dcbd51d7e752f44658ff808662afe3df5fa2300247"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-105712",
+      "severity": "LOW",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-105712",
+      "reviewAfter": "2026-11-27",
+      "packages": [
+        {
+          "name": "gpgv",
+          "installedVersion": "2.4.8-4ubuntu3.1"
+        }
+      ],
+      "severityBasis": "Ubuntu priority Low and native scanner vendor severity; upstream CVSS3 3.6 remains disclosed. This tracking entry is not a remediation or a not-affected decision.",
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-105712.json",
+      "vendorEvidenceSha256": "2be129dc4fc559e8ac515a10f160cd7661ab5d935f6b5bec68def4f255ebca18",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute gnupg2: needed; no released fixed package"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-107778",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-107778",
+      "reviewAfter": "2026-11-27",
+      "packages": [
+        {
+          "name": "libgssapi-krb5-2",
+          "installedVersion": "1.22.1-2ubuntu4.1"
+        },
+        {
+          "name": "libk5crypto3",
+          "installedVersion": "1.22.1-2ubuntu4.1"
+        },
+        {
+          "name": "libkrb5-3",
+          "installedVersion": "1.22.1-2ubuntu4.1"
+        },
+        {
+          "name": "libkrb5support0",
+          "installedVersion": "1.22.1-2ubuntu4.1"
+        }
+      ],
+      "severityBasis": "Ubuntu priority Medium and native scanner vendor severity; upstream CVSS3 6.5 remains disclosed. This tracking entry is not a remediation or a not-affected decision.",
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-107778.json",
+      "vendorEvidenceSha256": "002547c3d6f7f95e287647c7356ada7ebb10c261dc17d60899bcdfd8a7ff8488",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute krb5: needed; no released fixed package"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-14739",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-14739",
+      "reviewAfter": "2026-11-27",
+      "packages": [
+        {
+          "name": "libdbi-perl",
+          "installedVersion": "1.647-1ubuntu0.26.04.4"
+        }
+      ],
+      "severityBasis": "Ubuntu priority Medium and native scanner vendor severity; upstream CVSS3 9.8 remains disclosed. This tracking entry is not a remediation or a not-affected decision.",
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-14739.json",
+      "vendorEvidenceSha256": "44bd72dacd54d051b9d0f47ea667b0c0f5f66f589ea03cf0eeea22334e9b0745",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute libdbi-perl: needed; no released fixed package"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-48962",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-48962",
+      "reviewAfter": "2026-11-27",
+      "packages": [
+        {
+          "name": "libperl5.40",
+          "installedVersion": "5.40.1-7ubuntu0.4"
+        },
+        {
+          "name": "perl",
+          "installedVersion": "5.40.1-7ubuntu0.4"
+        },
+        {
+          "name": "perl-base",
+          "installedVersion": "5.40.1-7ubuntu0.4"
+        },
+        {
+          "name": "perl-modules-5.40",
+          "installedVersion": "5.40.1-7ubuntu0.4"
+        }
+      ],
+      "severityBasis": "Ubuntu priority Medium and native scanner vendor severity; upstream CVSS3 7.3 remains disclosed. This tracking entry is not a remediation or a not-affected decision.",
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-48962.json",
+      "vendorEvidenceSha256": "206ea995aaad3f584739cbc3b09cb628773b4a43ab4c95ee1c8af405b5fbc572",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute perl: needed; no released fixed package"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-76642",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-76642",
+      "reviewAfter": "2026-11-27",
+      "packages": [
+        {
+          "name": "bsdutils",
+          "installedVersion": "1:2.41.3-3ubuntu2.2"
+        },
+        {
+          "name": "libblkid1",
+          "installedVersion": "2.41.3-3ubuntu2.2"
+        },
+        {
+          "name": "libmount1",
+          "installedVersion": "2.41.3-3ubuntu2.2"
+        },
+        {
+          "name": "libsmartcols1",
+          "installedVersion": "2.41.3-3ubuntu2.2"
+        },
+        {
+          "name": "libuuid1",
+          "installedVersion": "2.41.3-3ubuntu2.2"
+        },
+        {
+          "name": "login",
+          "installedVersion": "1:4.16.0-2+really2.41.3-3ubuntu2.2"
+        },
+        {
+          "name": "mount",
+          "installedVersion": "2.41.3-3ubuntu2.2"
+        },
+        {
+          "name": "util-linux",
+          "installedVersion": "2.41.3-3ubuntu2.2"
+        }
+      ],
+      "severityBasis": "Ubuntu priority Medium and native scanner vendor severity; upstream CVSS3 7.8 remains disclosed. This tracking entry is not a remediation or a not-affected decision.",
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-76642.json",
+      "vendorEvidenceSha256": "df67305a9a86a495be3cfe94ca18fb3b13bd9f851bafcd957995ad77880f6a37",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute util-linux: needed; no released fixed package"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-77214",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-77214",
+      "reviewAfter": "2026-11-27",
+      "packages": [
+        {
+          "name": "libexpat1",
+          "installedVersion": "2.7.4-1ubuntu0.2"
+        }
+      ],
+      "severityBasis": "Ubuntu priority Medium and native scanner vendor severity; upstream CVSS3 8.2 remains disclosed. This tracking entry is not a remediation or a not-affected decision.",
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-77214.json",
+      "vendorEvidenceSha256": "73d115e94c308d3ebaeb3d7a4d75c9326b610c2e4f3f9a6cacd44e48ea044fb2",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute expat: needed; no released fixed package"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-78410",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-78410",
+      "reviewAfter": "2026-11-27",
+      "packages": [
+        {
+          "name": "bsdutils",
+          "installedVersion": "1:2.41.3-3ubuntu2.2"
+        },
+        {
+          "name": "libblkid1",
+          "installedVersion": "2.41.3-3ubuntu2.2"
+        },
+        {
+          "name": "libmount1",
+          "installedVersion": "2.41.3-3ubuntu2.2"
+        },
+        {
+          "name": "libsmartcols1",
+          "installedVersion": "2.41.3-3ubuntu2.2"
+        },
+        {
+          "name": "libuuid1",
+          "installedVersion": "2.41.3-3ubuntu2.2"
+        },
+        {
+          "name": "login",
+          "installedVersion": "1:4.16.0-2+really2.41.3-3ubuntu2.2"
+        },
+        {
+          "name": "mount",
+          "installedVersion": "2.41.3-3ubuntu2.2"
+        },
+        {
+          "name": "util-linux",
+          "installedVersion": "2.41.3-3ubuntu2.2"
+        }
+      ],
+      "severityBasis": "Ubuntu priority Medium and native scanner vendor severity; upstream CVSS3 7.8 remains disclosed. This tracking entry is not a remediation or a not-affected decision.",
+      "verifiedAt": "2026-11-20T08:03:15+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-78410.json",
+      "vendorEvidenceSha256": "25889e8b1887b4fb563849484bd7b31af3804c5800226f48d18c5e86aa3958d1",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute util-linux: needed; no released fixed package"
     }
   ],
   "retiredFindings": [
