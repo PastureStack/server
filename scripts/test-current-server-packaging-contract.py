@@ -652,6 +652,46 @@ def previous_gate(gate=GATE):
 
 
 class Tests(unittest.TestCase):
+    def test_qualified_p11_vex_keeps_versions_and_statuses_separate(self):
+        start = GATE.index('jq -e \'\n  ["CVE-2026-107928"') + len("jq -e '\n")
+        query = GATE[start:GATE.index('\n\' "$runtime_vex"', start)]
+        original = json.loads(FILES[VEX])
+
+        def accepted(document):
+            return subprocess.run(['jq', '-e', query], input=json.dumps(document),
+                                  text=True, capture_output=True).returncode == 0
+
+        self.assertTrue(accepted(original))
+        selected = [item for item in original['statements']
+                    if item['vulnerability']['name'] == 'CVE-2026-13757']
+        self.assertEqual({item['status'] for item in selected}, {'fixed', 'not_affected'})
+        fixed = next(item for item in selected if item['status'] == 'fixed')
+        legacy = next(item for item in selected if item['status'] == 'not_affected')
+        self.assertEqual(len(fixed['products']), 1)
+        for mutation in ('missing_fixed', 'broadened_product', 'wrong_version',
+                         'wrong_status', 'duplicate_product', 'legacy_custom_overlap'):
+            document = json.loads(json.dumps(original))
+            current = next(item for item in document['statements']
+                           if item['vulnerability']['name'] == 'CVE-2026-13757'
+                           and item['status'] == 'fixed')
+            if mutation == 'missing_fixed':
+                document['statements'].remove(current)
+            elif mutation == 'broadened_product':
+                current['products'].append({'@id': fixed['products'][0]['@id'].replace('/libp11-kit0@', '/p11-kit@')})
+            elif mutation == 'wrong_version':
+                current['products'] = legacy['products']
+            elif mutation == 'wrong_status':
+                current['status'] = 'not_affected'
+            elif mutation == 'duplicate_product':
+                current['products'].append(current['products'][0])
+            else:
+                prior = next(item for item in document['statements']
+                             if item['vulnerability']['name'] == 'CVE-2026-13757'
+                             and item['status'] == 'not_affected')
+                prior['products'] = fixed['products']
+            with self.subTest(mutation=mutation):
+                self.assertFalse(accepted(document))
+
     def test_required_snapshot_index_failure_stops_before_install(self):
         source = (REPO / 'server/scripts/download-ubuntu-security-updates.sh').read_text(encoding='utf-8')
         update = next(line for line in source.splitlines() if line.startswith('apt_security update'))

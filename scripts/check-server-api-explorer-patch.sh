@@ -2319,7 +2319,7 @@ jq -e '
   ["CVE-2026-107928","CVE-2026-107929","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"] as $curl_fixed_cves
   |   .["@context"] == "https://openvex.dev/ns/v0.2.0"
   and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.602"
-  and (.statements | length) == 58
+  and (.statements | length) == 59
   and ([.statements[] | select(.vulnerability.name == "CVE-2026-82560")] | length) == 1
   and any(.statements[];
       .vulnerability.name == "CVE-2026-82560" and .status == "fixed"
@@ -2330,9 +2330,22 @@ jq -e '
           "pkg:deb/ubuntu/perl-modules-5.40@5.40.1-7ubuntu0.4?arch=all&distro=ubuntu-26.04",
           "pkg:deb/ubuntu/perl@5.40.1-7ubuntu0.4?arch=amd64&distro=ubuntu-26.04"
       ])
-  and ([.statements[].vulnerability.name] | length == (unique | length))
+  and ([.statements[] | .vulnerability.name as $cve | .products[] | [$cve, ."@id"]]
+       | length == (unique | length))
+  and ([.statements[] | select(.vulnerability.name == "CVE-2026-13757")] | length) == 2
+  and any(.statements[];
+      .vulnerability.name == "CVE-2026-13757" and .status == "fixed"
+      and (has("justification") | not)
+      and [.products[]."@id"] == ["pkg:deb/ubuntu/libp11-kit0@0.26.2-2%2Bpasturestack.1?arch=amd64&distro=ubuntu-26.04"]
+      and (.impact_statement | contains("45d6b507b63a18459ae5cf76afd4d9731f8ef43b9c40e4c3dbb01899e1752b19")
+           and contains("85e82706689f1c6860bc3aa83e51f77440883790f4a32977e64eaa4236b31a64")
+           and contains("faaf9102a495426ad38ba0ba30445cca7c9d964193ad190a2aff716381f25438")))
+  and any(.statements[];
+      .vulnerability.name == "CVE-2026-13757" and .status == "not_affected"
+      and [.products[]."@id"] == ["pkg:deb/ubuntu/libp11-kit0@0.26.2-2?arch=amd64&distro=ubuntu-26.04"]
+      and .justification == "vulnerable_code_not_in_execute_path")
   and ([.statements[] | select(.status == "fixed") | .vulnerability.name] | sort)
-      == ["CVE-2024-52005","CVE-2026-103111","CVE-2026-107928","CVE-2026-107929","CVE-2026-109518","CVE-2026-12087","CVE-2026-13221","CVE-2026-18798","CVE-2026-27171","CVE-2026-56391","CVE-2026-57432","CVE-2026-57433","CVE-2026-75803","CVE-2026-82560","CVE-2026-85091","CVE-2026-86145","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-89156","CVE-2026-89157","CVE-2026-89158","CVE-2026-89160","CVE-2026-89161","CVE-2026-89162","CVE-2026-8932","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"]
+      == ["CVE-2024-52005","CVE-2026-103111","CVE-2026-107928","CVE-2026-107929","CVE-2026-109518","CVE-2026-12087","CVE-2026-13221","CVE-2026-13757","CVE-2026-18798","CVE-2026-27171","CVE-2026-56391","CVE-2026-57432","CVE-2026-57433","CVE-2026-75803","CVE-2026-82560","CVE-2026-85091","CVE-2026-86145","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-89156","CVE-2026-89157","CVE-2026-89158","CVE-2026-89160","CVE-2026-89161","CVE-2026-89162","CVE-2026-8932","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"]
   and ([.statements[] | select(.status == "not_affected") | .vulnerability.name] | sort)
       == ["CVE-2024-2236","CVE-2024-56433","CVE-2025-1352","CVE-2025-1376","CVE-2025-66382","CVE-2026-13757","CVE-2026-18374","CVE-2026-18477","CVE-2026-18508","CVE-2026-27456","CVE-2026-3184","CVE-2026-40228","CVE-2026-53910","CVE-2026-54371","CVE-2026-56392","CVE-2026-56855","CVE-2026-57062","CVE-2026-78662","GO-2026-5932"]
   and ([.statements[] | select(.status == "under_investigation") | .vulnerability.name] | sort)
