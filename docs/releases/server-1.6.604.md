@@ -1,11 +1,10 @@
-# Server v1.6.604 candidate
+# Server v1.6.604
 
-## Candidate boundary
+Published image: `ghcr.io/pasturestack/server:v1.6.604@sha256:50db275a49f4e41e605f8e153498fc04f2bbf34e6649fd8a8901f6c65b6b354f`.
 
-This source candidate prepares the legacy Container Crontab Catalog migration
-and a new managed load-balancer default. Server build, publication and affected
-deployment workflows remain pending. The published installation target remains
-v1.6.603 until the release workflow produces the new immutable image.
+Source commit: `981a125b571d8b8461fa39ce35f44181e5ca644b`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
@@ -98,6 +97,46 @@ fresh-volume startup and restart gates. Exact Catalog readiness includes the
 historical and current compatibility revisions and their legacy aliases.
 Component publication does not establish Server deployment or workload
 lifecycle acceptance.
+
+## Isolated existing-installation acceptance
+
+The published image passed first startup and restart on an isolated existing
+installation. Each phase checked all three projects, twelve existing
+infrastructure Stacks and 48 exact Catalog API reads against the release pin.
+This inventory includes projects with no Catalog Stacks; their absence is not
+reported as an executed Stack lifecycle.
+
+The Container Crontab fixture completed upgrade, rollback, another upgrade and
+finish across five observed states. The service identity, metrics/debug options,
+environment, answers, labels and Docker socket mount were retained. Three
+observed scheduler handovers were stop-first. A continuous 83.85-second event
+capture recorded sixteen scheduled restarts, one per five-second bucket, with
+no duplicate or missing observed buckets. Stop-first maintenance retains the
+scheduler's existing timer pause and backfill semantics.
+
+This metadata-migration fixture used the maintained v0.6.1 scheduler as its old
+runtime before v0.6.2. The historical revision 3 compose files were verified
+byte-for-byte against their exact Git blobs separately; the result does not
+claim execution of the unchanged historical Rancher v0.5.0 binary.
+
+The dedicated LB fixture completed the same five-state upgrade, rollback and
+finish sequence. Its fifteen HTTP, TLS 1.2 and TLS 1.3 probes returned HTTP 200;
+HTTPS used the test CA and hostname verification with verify result zero.
+Actual runtime reads changed HAProxy 3.4.7 to 3.4.8-1b15b69 and back on rollback,
+retaining AWS-LC 5.14.0, routing rules, certificates and a healthy backend.
+This acceptance was isolated QA; no production site was modified.
+
+The three temporary fixture Stacks and their certificate/CA were removed
+normally. After cleanup, the twelve checked infrastructure Stacks were active
+and healthy, all three Hosts/Agents were active, and the complete original Stack
+state/health inventory still matched its baseline. The published Server
+returned HTTP 200 with `pong`.
+
+The [published security summary](https://github.com/PastureStack/server/releases/download/v1.6.604/security-summary.txt)
+retains 90 raw scanner findings and 58 vendor-pending findings. Its qualified
+gate reports no untracked, critical/high or fixed-available findings; it retains
+`browser_scan_coverage=incomplete`. These results do not establish complete
+browser coverage or an absence of all raw findings.
 
 Keep the previous Server container/image and all persistent volumes. Server
 rollback does not reverse completed Stack upgrades; retain each Stack or

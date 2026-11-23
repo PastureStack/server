@@ -13,32 +13,26 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server v1.6.603](https://github.com/PastureStack/server/releases/tag/v1.6.603)
+[Server v1.6.604](https://github.com/PastureStack/server/releases/tag/v1.6.604)
 packages Engine `v0.183.395`, Web Console `1.6.239`, optional Bridge `0.2.37`,
 and Compose `0.14.46`. New node registrations use Agent `v1.2.36`.
 Host Provisioner `v0.39.12` retires verified legacy registrations on upgrade.
 
-Catalog Service `v0.20.19` loads the verified default Catalog bundled in the
-image. Matching default sources recover an empty cache or older index without
-GitHub access or a manual source import. Custom Catalog sources retain their
-configured URL, branch, pin and access policy.
-See the [release note](docs/releases/server-1.6.603.md),
-[upgrade guide](docs/upgrades/README.md#bundled-default-catalog) and
-[compatibility contract](COMPATIBILITY.md).
+Catalog Service `v0.20.20` loads the verified default Catalog bundled in the
+image. It exposes the read-only legacy Container Crontab revision 3/4 path for
+in-place upgrades while retaining the service key, metadata checks and settings.
+New load balancers use Load Balancer Service `v0.9.35` with HAProxy `3.4.8`.
+Matching default sources recover an empty cache or older index without GitHub
+access or a manual source import. Custom sources retain their configured URL,
+branch, pin and access policy.
 
-## Next source candidate
-
-Server `v1.6.604` prepares an in-place migration for existing
-`library:infra*container-crontab` Stacks and updates the managed load-balancer
-default. Its [candidate release note](docs/releases/server-1.6.604.md) records
-the component, validation and rollback boundaries. Publication and affected
-deployment acceptance are pending.
-
-A Server image update preserves an explicitly configured Catalog pin. Existing
-installations that retain `CATTLE_CATALOG_URL` must select the reviewed v1.6.604
-pin to load the new compatibility revisions; see the
-[Catalog pin upgrade steps](docs/upgrades/README.md#legacy-container-crontab-migration).
-A clean installation uses the new image's bundled defaults automatically.
+An image update preserves an explicit operator Catalog pin. Installations that
+retain `CATTLE_CATALOG_URL` must select this release's reviewed pin to load the
+new compatibility revisions. Clean installations use the new bundled defaults.
+See the [release note](docs/releases/server-1.6.604.md),
+[Catalog pin and lifecycle upgrade steps](docs/upgrades/README.md#legacy-container-crontab-migration)
+and [compatibility contract](COMPATIBILITY.md). Workload deployment acceptance
+remains separate from the publication checks.
 
 ## Component capabilities
 
@@ -100,7 +94,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.603
+  ghcr.io/pasturestack/server:v1.6.604
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -108,7 +102,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.603
+    image: ghcr.io/pasturestack/server:v1.6.604
     restart: unless-stopped
     ports:
       - "8080:8080"

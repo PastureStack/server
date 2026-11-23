@@ -7,6 +7,8 @@ original evidence and rollback limits.
 
 ## Historical contracts
 
+- [Server v1.6.603](releases/server-1.6.603.md) — previous published release and scoped QA record.
+
 - [Server v1.6.516](releases/server-1.6.516.md) — repair and acceptance record.
 - [Server v1.6.514](releases/server-1.6.514.md) — API template ID migration contract.
 - [Server v1.6.497](releases/server-1.6.497.md) — published immutable release and original QA record.

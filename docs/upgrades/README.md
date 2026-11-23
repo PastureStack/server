@@ -2,7 +2,7 @@
 
 ## Bundled default Catalog
 
-Server v1.6.604 candidate includes the complete default Catalog Git source at its
+Server v1.6.604 includes the complete default Catalog Git source at its
 pinned commit and Catalog Service v0.20.20. On startup and refresh, the service verifies
 the bundle SHA-256, complete Git objects and exact pinned commit before indexing
 it. This applies only when the configured source URL, branch and pinned commit
@@ -33,7 +33,7 @@ rollback points until their affected networking and health checks pass.
 
 ## Legacy Container Crontab migration
 
-The v1.6.604 source candidate provides a read-only compatibility path for
+Server v1.6.604 provides a read-only compatibility path for
 `catalog://library:infra*container-crontab:3` to revision `4`. Verify that both
 exact versions are readable before upgrading. The hidden compatibility template
 retains the existing `container-crontab` service key, the `metrics` and
