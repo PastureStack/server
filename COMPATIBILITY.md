@@ -1,17 +1,29 @@
 # Compatibility Contract
 
-## Server v1.6.604 candidate
+## Server v1.6.604 published
 
-The legacy read-only `library:infra*container-crontab` alias preserves the
-namespace and exposes exact historical revision 3 and compatibility revision 4.
-Normal Stack upgrade retains the `container-crontab` service key, `metrics` and
-`debug` questions, metadata service-state checks, and stop-first activation. Finish and rollback retain
-their existing native lifecycle. New installations use `container-schedule:4`.
-Workload cron labels and `TZ` values are preserved; `cron.timezone` remains a
-label without newly introduced timezone semantics.
+Immutable image `ghcr.io/pasturestack/server:v1.6.604@sha256:50db275a49f4e41e605f8e153498fc04f2bbf34e6649fd8a8901f6c65b6b354f`.
+Producer `981a125b571d8b8461fa39ce35f44181e5ca644b`.
+[Publication and required checks](https://github.com/PastureStack/server/actions/runs/45137685605)
+passed, including fresh-volume startup and restart with eighteen exact Catalog
+API reads per phase. Deployment and workload lifecycle acceptance are separate.
+Isolated existing-installation acceptance additionally verified 48 exact Catalog
+reads per first-start/restart phase, the Cron and LB upgrade/rollback/finish
+lifecycles, strict TLS, and preservation of the original Stack inventory after
+fixture cleanup. This does not claim production deployment.
 
-Publication and affected deployment acceptance are pending. See the
-[candidate release note](docs/releases/server-1.6.604.md).
+Catalog Service **0.20.20** and the complete verified Catalog bundle expose the
+read-only `library:infra*container-crontab` alias with namespace-preserving exact
+revisions 3 and 4. Normal Stack upgrade retains the service key, metrics/debug
+questions, metadata service-state checks and stop-first activation. Finish and
+rollback retain their native lifecycle; new installations use
+`container-schedule:4`.
+
+The default new load balancer is **0.9.35**, using HAProxy **3.4.8**. Existing
+operator pins and settings retain precedence. Verify both effective LB image
+and image UUID before advancing existing services through their native upgrade.
+See the [release note](docs/releases/server-1.6.604.md) and
+[upgrade guide](docs/upgrades/README.md).
 
 ## Server v1.6.603 published
 
