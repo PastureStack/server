@@ -1,13 +1,17 @@
-# Server v1.6.603 candidate
+# Server v1.6.603
 
-## Candidate boundary
+## Published artifact
 
-Prepared source only; no Server image or release has been published.
+Immutable image: `ghcr.io/pasturestack/server:v1.6.603@sha256:bfcbfe9b9494bf7692fcd7ff68aa5dcdf3d342735986d9ed6fda3c6eb640c8f0`.
+Image producer: `82cf63ff2c6ec974d91dd4f7aee8d342593b6fd1`.
+[Publication and required runtime/security checks](https://github.com/PastureStack/server/actions/runs/45106191247).
 
-Server build, publication, deployment and affected native/UI workflows remain
-pending. The released image digest and source revision will be supplied by the
-publication workflow. The earlier v1.6.602 manual recovery results do not prove
-this product change or a production deployment.
+The published image passed fresh-volume MySQL startup and restart with external
+Git access unavailable. On an existing isolated installation, an older index
+and empty desired-pin cache recovered automatically from this image's bundle;
+no operator cache import, refresh call or runtime patch repaired the new image.
+The same offline instance passed a further real restart before normal runtime
+overrides were restored.
 
 ## Verified component inputs
 
@@ -43,3 +47,28 @@ unchanged from v1.6.602. Existing runtime overrides and persistent volumes remai
 supported. No production site, HAProxy or firewall change is part of this release.
 
 See the [Catalog upgrade and rollback guide](../upgrades/README.md#bundled-default-catalog).
+
+## Affected acceptance and boundaries
+
+- Catalog component tests, race checks, reproducible build and security checks passed.
+- The publication first-start and restart checks read the pinned commit and eight
+  exact template/templateversion APIs. Existing-installation checks read the
+  same global Catalog in two project contexts: sixteen exact API reads per phase.
+- Four existing system Stacks completed twenty-four upgrade, finish and rollback
+  actions across twenty observed phases. Named launch configurations and the
+  eleven current/previous runtime images remained consistent with the Catalog.
+- Three mounted data fixtures and twelve workload volumes were preserved.
+  A disposable service verified scheduling, DNS, direct HTTP and a host port;
+  its resources were removed normally. Three Hosts/Agents and eight system
+  Stacks were active/healthy at final readback.
+- The current scan newly identifies CVE-2026-107708 in four exact Ubuntu Kerberos
+  libraries. Canonical has no published Resolute fix; raw findings remain and
+  the vendor-pending record requires review by 2026-11-27. This is tracking,
+  not remediation or a not-affected statement. Existing severity/fix gates remain.
+- Unchanged LB, browser-language, cross-host encryption, AWS and KVM evidence
+  was not rerun or promoted. No production system was accessed or modified.
+
+Keep the previous Server container/image and all existing persistent volumes.
+Server rollback does not reverse completed Stack upgrades; use each retained
+Stack rollback point before finishing, or restore a matching backup when needed.
+Older Server releases regain their original external-Git dependency.

@@ -1,6 +1,6 @@
 # Compatibility Contract
 
-## Server v1.6.603 prepared, not published
+## Server v1.6.603 published
 
 Catalog Service **0.20.19** natively bootstraps the exact bundled default Catalog
 before serving requests. Its source policy, pinned commit and required template
@@ -9,8 +9,12 @@ An older index or a missing required revision is rebuilt from the verified sourc
 without GitHub access. Failed verification preserves the previous readable index.
 
 The Engine, Web Console, Agent, workload images, persistent volumes and runtime
-settings retain the v1.6.602 interfaces. Publication and 8080 deployment remain
-pending. See the [release note](docs/releases/server-1.6.603.md).
+settings retain the v1.6.602 interfaces.
+Immutable image `ghcr.io/pasturestack/server:v1.6.603@sha256:bfcbfe9b9494bf7692fcd7ff68aa5dcdf3d342735986d9ed6fda3c6eb640c8f0`.
+Producer `82cf63ff2c6ec974d91dd4f7aee8d342593b6fd1`.
+Isolated QA verified automatic offline index recovery,
+restart, four existing system-Stack upgrade/finish/rollback lifecycles and retained
+data. See the [release note](docs/releases/server-1.6.603.md).
 
 ## Server v1.6.602 published
 
