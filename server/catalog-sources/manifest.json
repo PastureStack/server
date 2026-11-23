@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "url": "https://github.com/PastureStack/catalog-templates.git",
+      "branch": "main",
+      "pinnedCommit": "6e7b935b6f08e711e1884ef8369cd9dcd110901f",
+      "bundle": "catalog-templates.bundle",
+      "sha256": "601c60291ad0f1d9a548c6d10027e5c01b7fc0182a88481800c79778cdce1181",
+      "requiredTemplates": [
+        {
+          "base": "infra",
+          "name": "healthcheck",
+          "revision": 7
+        },
+        {
+          "base": "infra",
+          "name": "ipsec-overlay",
+          "revision": 17
+        },
+        {
+          "base": "infra",
+          "name": "network-services",
+          "revision": 16
+        },
+        {
+          "base": "infra",
+          "name": "resource-scheduler",
+          "revision": 10
+        }
+      ]
+    }
+  ]
+}

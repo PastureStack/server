@@ -40,10 +40,6 @@ require_marker server/patches/websocket-proxy-wrapper.sh 'catalog-service|ranche
 require_marker server/patches/websocket-proxy-wrapper.sh 'real="${real_dir}/catalog-service.real"' SERVER_CATALOG_REAL_MAPPING_MISSING
 require_marker server/patches/websocket-proxy-wrapper.sh 'authentication-service|rancher-auth-service)' SERVER_AUTH_WRAPPER_MAPPING_MISSING
 require_marker server/patches/websocket-proxy-wrapper.sh 'real="${real_dir}/authentication-service.real"' SERVER_AUTH_REAL_MAPPING_MISSING
-require_marker server/patches/websocket-proxy-wrapper.sh 'attempts="${PASTURESTACK_CATALOG_BOOTSTRAP_ATTEMPTS:-60}"' SERVER_CATALOG_BOOTSTRAP_ATTEMPTS_MISSING
-require_marker server/patches/websocket-proxy-wrapper.sh 'endpoint="${PASTURESTACK_CATALOG_BOOTSTRAP_URL:-http://127.0.0.1:8088/v1-catalog/templates}"' SERVER_CATALOG_BOOTSTRAP_ENDPOINT_MISSING
-require_marker server/patches/websocket-proxy-wrapper.sh '"${endpoint}?action=refresh"' SERVER_CATALOG_BOOTSTRAP_REFRESH_MISSING
-require_marker server/patches/websocket-proxy-wrapper.sh 'PastureStack Catalog bootstrap verified a non-empty collection.' SERVER_CATALOG_BOOTSTRAP_SUCCESS_MARKER_MISSING
 require_marker server/patches/websocket-proxy-wrapper.sh 'console_broker="${PASTURESTACK_CONSOLE_BROKER_BIN:-/usr/bin/pasturestack-console-broker}"' SERVER_WEBSOCKET_PROXY_BROKER_EXECUTABLE_TRIGGER_MISSING
 require_marker server/patches/websocket-proxy-wrapper.sh 'ready_connect_timeout="${RC16_CATTLE_READY_CONNECT_TIMEOUT:-2}"' SERVER_WEBSOCKET_PROXY_READY_CONNECT_TIMEOUT_MISSING
 require_marker server/patches/websocket-proxy-wrapper.sh 'ready_max_time="${RC16_CATTLE_READY_CURL_TIMEOUT:-5}"' SERVER_WEBSOCKET_PROXY_READY_MAX_TIME_MISSING
@@ -132,56 +128,27 @@ if grep -E -- '(^| )--tls-listen-address(=| |$)' "$proxy_output" >/dev/null; the
   failure_count=$((failure_count + 1))
 fi
 
-cat >"$sample_dir/catalog-service.real" <<'EOF'
-#!/usr/bin/env bash
-sleep 1
-printf 'REAL_NAME=%s\n' "${0##*/}"
-printf 'ARGS=%s\n' "$*"
-EOF
-chmod +x "$sample_dir/catalog-service.real"
-
+# Native Catalog startup must run exactly once without a shell-owned refresh.
 cat >"$sample_dir/mock-curl" <<'EOF'
 #!/usr/bin/env bash
-set -euo pipefail
-
-state_file=${RC16_CATALOG_TEST_STATE:?}
-case " $* " in
-  *" -X POST "*)
-    printf 'refreshed\n' >"$state_file"
-    exit 0
-    ;;
-esac
-
-if [ -s "$state_file" ]; then
-  printf '{"data":[{"id":"pasturestack:infra*sample:1"}]}\n'
-else
-  printf '{"data":[]}\n'
-fi
+printf 'unexpected shell Catalog network request\n' >>"${RC16_CATALOG_TEST_STATE:?}"
+exit 97
 EOF
 chmod +x "$sample_dir/mock-curl"
-
-catalog_output="$sample_dir/output-catalog-bootstrap"
-catalog_error="$sample_dir/error-catalog-bootstrap"
-catalog_state="$sample_dir/catalog-bootstrap-state"
+catalog_output="$sample_dir/output-catalog-native"
+catalog_error="$sample_dir/error-catalog-native"
+catalog_state="$sample_dir/catalog-shell-network"
 RC16_WRAPPER_REAL_DIR="$sample_dir" \
   RC16_CURL_BIN="$sample_dir/mock-curl" \
   RC16_CATALOG_TEST_STATE="$catalog_state" \
-  PASTURESTACK_CATALOG_BOOTSTRAP_ATTEMPTS=5 \
-  PASTURESTACK_CATALOG_BOOTSTRAP_DELAY_SECONDS=0 \
-  "$sample_dir/catalog-service" alpha beta >"$catalog_output" 2>"$catalog_error"
-
-if ! grep -Fx 'refreshed' "$catalog_state" >/dev/null; then
-  printf 'SERVER_CATALOG_BOOTSTRAP_REFRESH_NOT_TRIGGERED\n' >&2
+  CATALOG_SERVICE_BUNDLED_SOURCES=/image/catalog/manifest.json \
+  "$sample_dir/catalog-service" --config repo.json >"$catalog_output" 2>"$catalog_error"
+if [[ -e "$catalog_state" ]] || grep -Fq 'bootstrap verified' "$catalog_error"; then
+  printf 'SERVER_CATALOG_SHELL_READINESS_OR_REFRESH_REINTRODUCED\n' >&2
   failure_count=$((failure_count + 1))
 fi
-
-if ! grep -F 'PastureStack Catalog bootstrap verified a non-empty collection.' "$catalog_error" >/dev/null; then
-  printf 'SERVER_CATALOG_BOOTSTRAP_NON_EMPTY_NOT_VERIFIED\n' >&2
-  failure_count=$((failure_count + 1))
-fi
-
-if ! grep -F 'REAL_NAME=catalog-service.real' "$catalog_output" >/dev/null; then
-  printf 'SERVER_CATALOG_BOOTSTRAP_REAL_NOT_EXECUTED\n' >&2
+if [[ "$(grep -Fc 'REAL_NAME=catalog-service.real' "$catalog_output")" -ne 1 ]]; then
+  printf 'SERVER_CATALOG_NATIVE_NOT_EXECUTED_EXACTLY_ONCE\n' >&2
   failure_count=$((failure_count + 1))
 fi
 
@@ -190,4 +157,4 @@ if [ "$failure_count" -ne 0 ]; then
   exit 1
 fi
 
-printf 'SERVER_WEBSOCKET_PROXY_WRAPPER_OK bounded_ready_curl=1 catalog_bootstrap_retry=1 real_dir_override=1 canonical_and_legacy_exec_smoke=1\n'
+printf 'SERVER_WEBSOCKET_PROXY_WRAPPER_OK bounded_ready_curl=1 catalog_native_owner=1 real_dir_override=1 canonical_and_legacy_exec_smoke=1\n'

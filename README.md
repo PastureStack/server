@@ -9,14 +9,22 @@ Rancher 1.6 ecosystem. It is not affiliated with Rancher Labs or SUSE.
 This fork of [`rancher/rancher`](https://github.com/rancher/rancher) preserves
 upstream history, authorship, licenses, and notices.
 
-## Current release
+<a id="current-release"></a>
 
-[Server `v1.6.602`](https://github.com/PastureStack/server/releases/tag/v1.6.602)
-packages Engine `v0.183.395`, Web Console `1.6.239`, optional Bridge `0.2.37`,
+## Current source candidate
+
+Server `v1.6.603` is a prepared source candidate, not a published image.
+This candidate is not yet available from the registry. The latest published
+[Server v1.6.602](https://github.com/PastureStack/server/releases/tag/v1.6.602)
+remains available for installation.
+
+The candidate packages Engine `v0.183.395`, Web Console `1.6.239`, optional Bridge `0.2.37`,
 and Compose `0.14.46`. New node registrations use Agent `v1.2.36`.
 Host Provisioner `v0.39.12` retires verified legacy registrations on upgrade.
-Includes the Ubuntu 26.04 rsync backport for CVE-2026-70457.
-See the [release note](docs/releases/server-1.6.602.md) and
+Catalog Service `v0.20.19` loads the bundled, verified default Catalog without
+requiring GitHub access, including recovery of an older local index.
+See the [candidate note](docs/releases/server-1.6.603.md),
+[published release note](docs/releases/server-1.6.602.md) and
 [compatibility contract](COMPATIBILITY.md).
 
 ## Component capabilities
@@ -72,14 +80,16 @@ supported operations, audit records and rollback.
 
 ## Quick start
 
-These examples use the published numeric version tag. Keep all three named volumes.
+These examples use a numeric version tag. Keep all three named volumes.
+The commands below describe the candidate; run them only after its official release.
+This candidate is not yet available from GHCR.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.602
+  ghcr.io/pasturestack/server:v1.6.603
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -87,7 +97,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.602
+    image: ghcr.io/pasturestack/server:v1.6.603
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -129,6 +139,12 @@ MariaDB environment variables are in [performance settings](docs/performance/REA
 6. Before using the environment, check that a managed test workload can resolve
    internal service names and public DNS names, reach its required external
    endpoints, and report healthy through its configured health check.
+
+The default Catalog source is included in the image at its pinned commit.
+GitHub access is not required to identify or select those bundled template
+revisions. Custom Catalogs and image pulls still require access to their own
+sources. See [Catalog recovery](docs/upgrades/README.md#bundled-default-catalog)
+for the integrity checks and the boundary for explicit source overrides.
 
 ## Upgrade and rollback
 
