@@ -69,50 +69,9 @@ fi
 
 case "$name" in
   catalog-service|rancher-catalog-service)
-    # The control-platform process can ask the Catalog Service to refresh as soon
-    # as port 8088 opens.  On a cold restart that request may race the initial
-    # repository setup and leave the in-memory collection empty until somebody
-    # refreshes it manually.  Run a bounded bootstrap worker alongside the real
-    # service so an empty collection is repaired automatically.
-    (
-      attempts="${PASTURESTACK_CATALOG_BOOTSTRAP_ATTEMPTS:-60}"
-      delay="${PASTURESTACK_CATALOG_BOOTSTRAP_DELAY_SECONDS:-2}"
-      connect_timeout="${PASTURESTACK_CATALOG_BOOTSTRAP_CONNECT_TIMEOUT:-2}"
-      request_timeout="${PASTURESTACK_CATALOG_BOOTSTRAP_REQUEST_TIMEOUT:-30}"
-      endpoint="${PASTURESTACK_CATALOG_BOOTSTRAP_URL:-http://127.0.0.1:8088/v1-catalog/templates}"
-      curl_bin="${RC16_CURL_BIN:-curl}"
-      i=0
-
-      while [ "$i" -lt "$attempts" ]; do
-        body="$("$curl_bin" -fsS \
-          --connect-timeout "$connect_timeout" \
-          --max-time "$request_timeout" \
-          "$endpoint" 2>/dev/null || true)"
-
-        if [ -n "$body" ]; then
-          case "$body" in
-            *'"data":[]'*)
-              "$curl_bin" -fsS -o /dev/null -X POST \
-                --connect-timeout "$connect_timeout" \
-                --max-time "$request_timeout" \
-                "${endpoint}?action=refresh" 2>/dev/null || true
-              ;;
-            *'"data":['*)
-              printf 'PastureStack Catalog bootstrap verified a non-empty collection.\n' >&2
-              exit 0
-              ;;
-          esac
-        fi
-
-        i=$((i + 1))
-        sleep "$delay"
-      done
-
-      if [ "$attempts" -gt 0 ]; then
-        printf 'PastureStack Catalog bootstrap did not obtain a non-empty collection after %s attempts.\n' \
-          "$attempts" >&2
-      fi
-    ) &
+    # Catalog Service owns verified bundled sources, refresh serialization and
+    # readiness. Do not infer readiness from a non-empty template collection or
+    # send concurrent refresh requests from a shell worker.
     exec "$real" "$@"
     ;;
   authentication-service|rancher-auth-service)

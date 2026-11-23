@@ -1,5 +1,32 @@
 # Upgrade and persisted-coordinate migration
 
+## Bundled default Catalog
+
+Server v1.6.603 includes the complete default Catalog Git source at its pinned
+commit and Catalog Service v0.20.19. On startup and refresh, the service verifies
+the bundle SHA-256, complete Git objects and exact pinned commit before indexing
+it. This applies only when the configured source URL, branch and pinned commit
+match the bundled manifest. Explicit custom sources retain their source policy
+and network requirements; the service does not change a custom source or pin.
+
+For the bundled source, an empty cache, stale index, missing required revision or
+modified cache is recovered from the image's verified source. A bad bundle or
+unparseable source preserves the existing index and reports a diagnostic error.
+Refresh operations are serialized, and external Git commands have a deadline.
+The native health check requires the pinned commit and all four required system
+template revisions; a nonempty list or healthy workload alone is insufficient.
+
+After an image upgrade, verify the effective `catalog.url` source, its Catalog
+API `commit`, and both template and exact templateversion APIs for each deployed
+Stack `externalId`. They must agree. Once resolved, use the existing two-phase
+upgrade below. Recovering the index does not recreate healthy Stack containers
+or change their saved configuration. Image registries still need to be reachable.
+
+Keep the previous Server image and existing volumes for rollback. Returning to a
+release without bundled-source support restores that release's dependency on
+remote Git access; it does not undo completed Stack upgrades. Keep their own
+rollback points until their affected networking and health checks pass.
+
 ## Catalog infrastructure-stack upgrades
 
 An available update is a Catalog candidate, not an upgrade already in progress.

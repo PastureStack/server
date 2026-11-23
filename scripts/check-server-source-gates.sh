@@ -23,6 +23,9 @@ run_gate() {
 }
 
 run_gate version_defaults scripts/check-server-ui-artifact-version.sh
+run_gate bundled_catalog_source python3 scripts/package-catalog-source.py --verify
+run_gate bundled_catalog_source_fixtures python3 scripts/test-bundled-catalog-source.py
+run_gate catalog_exact_readiness python3 scripts/test-default-catalog-readiness.py
 run_gate catalog_first_party_localization scripts/check-server-catalog-first-party-localization-patch.sh
 run_gate catalog_card_brand scripts/check-server-catalog-card-brand-patch.sh
 run_gate dockerfile_artifact_downloads scripts/check-server-dockerfile-artifact-downloads.sh

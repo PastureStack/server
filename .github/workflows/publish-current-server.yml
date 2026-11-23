@@ -310,6 +310,8 @@ jobs:
             --restart no \
             -p 127.0.0.1:18082:8080 \
             -e PROXY_PLATFORM_PUBLIC_ORIGIN=https://stack.example.test \
+            -e HTTPS_PROXY=http://127.0.0.1:9 -e HTTP_PROXY=http://127.0.0.1:9 \
+            -e NO_PROXY=127.0.0.1,localhost \
             -e "JAVA_OPTS=${candidate_java_opts} -Dapi.ai.bridge.enabled=true -Dapi.ai.service.upgrade.enabled=true -Dapi.ai.resource.change.enabled=true" \
             -v "$CATTLE_VOLUME:/var/lib/cattle" \
             -v "$MYSQL_VOLUME:/var/lib/mysql" \
@@ -417,16 +419,11 @@ jobs:
           }
 
           first_attempts="$(wait_for_pong)"
-          for catalog_attempts in $(seq 1 90); do
-            docker logs "$CANDIDATE_NAME" >"$evidence/candidate.log" 2>&1
-            if grep -Fq 'PastureStack Catalog bootstrap verified a non-empty collection.' \
-              "$evidence/candidate.log"; then
-              break
-            fi
-            sleep 2
-          done
-          grep -Fq 'PastureStack Catalog bootstrap verified a non-empty collection.' \
-            "$evidence/candidate.log"
+          python3 source/scripts/verify-default-catalog.py \
+            --container "$CANDIDATE_NAME" \
+            --manifest source/server/catalog-sources/manifest.json --version "$RELEASE_TAG" \
+            | tee "$evidence/catalog-first-start.txt"
+          docker logs "$CANDIDATE_NAME" >"$evidence/candidate.log" 2>&1
           if grep -Fq "mysql_native_password': this user requires mysql native password authentication" "$evidence/candidate.log"; then echo 'Candidate database authentication failed' >&2; exit 1; fi
           docker inspect "$CANDIDATE_NAME" --format '{{range .Config.Env}}{{println .}}{{end}}' |
             grep -Fx "CATTLE_RANCHER_SERVER_VERSION=$RELEASE_TAG" >/dev/null
@@ -437,6 +434,10 @@ jobs:
 
           docker restart "$CANDIDATE_NAME" >/dev/null
           restart_attempts="$(wait_for_pong)"
+          python3 source/scripts/verify-default-catalog.py \
+            --container "$CANDIDATE_NAME" \
+            --manifest source/server/catalog-sources/manifest.json --version "$RELEASE_TAG" \
+            | tee "$evidence/catalog-restart.txt"
           assert_public_proxy_contract after-restart
           restart_contract_attempts="$public_proxy_contract_attempts"
           test "$(docker inspect "$CANDIDATE_NAME" --format '{{.State.Running}}')" = true
