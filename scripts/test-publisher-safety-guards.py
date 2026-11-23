@@ -15,6 +15,22 @@ COMMONS_IO_FIXTURE_BYTES = b'fixture Commons IO bytes; not a Java runtime accept
 
 
 class PublisherSafetyGuards(unittest.TestCase):
+    def test_smoke_summary_runs_with_only_current_native_verifier_inputs(self):
+        source = WORKFLOW.read_text()
+        start = source.index("          printf 'SERVER_CANDIDATE_SMOKE_OK")
+        end = source.index('\n\n', start)
+        command = textwrap.dedent(source[start:end])
+        with tempfile.TemporaryDirectory() as temporary:
+            script = ('set -euo pipefail; evidence="$1"; RELEASE_TAG=v1.6.603; '
+                      'first_attempts=2; restart_attempts=3; '
+                      'first_contract_attempts=1; restart_contract_attempts=1; ' + command)
+            result = subprocess.run(['bash', '-c', script, 'summary-fixture', temporary],
+                                    capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout, (Path(temporary) / 'candidate-smoke.txt').read_text())
+            self.assertIn('catalog_exact_api_reads_per_phase=8', result.stdout)
+            self.assertIn('restart_attempts=3', result.stdout)
+
     def test_scanner_readback_follows_the_configured_digest(self):
         source = WORKFLOW.read_text()
         scanner = self.guard('TRIVY_IMAGE: ').split(': ', 1)[1]
