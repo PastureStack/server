@@ -491,10 +491,17 @@ RUN set -eux; \
     verify-machine-driver-bundle "${MACHINE_DRIVER_BUNDLE_VERSION}" "${MACHINE_DRIVER_BUNDLE_COMMIT}" /out/machine-driver-bundle.tar.xz "${MACHINE_DRIVER_BINARY_SHA256}" "${PACKET_DRIVER_BINARY_SHA256}" /out/machine-driver-bundle
 
 # Assemble verified products in the build stage; retain component-specific legal
-# directories and .real targets so runtime wrappers remain unchanged. Two COPYs
+# directories and .real targets. Install launchers from current source, rather
+# than inheriting a stale copy from the foundation image. The two final COPYs
 # replace per-component layers without flattening the multi-stage build.
+COPY patches/websocket-proxy-wrapper.sh /out/service-launcher.sh
 RUN set -eux; \
     mkdir -p /out/runtime-bin /out/runtime-licenses; \
+    for launcher in websocket-proxy catalog-service rancher-catalog-service \
+        authentication-service rancher-auth-service compose-executor \
+        rancher-compose-executor host-provisioner go-machine-service; do \
+        install -m 0755 /out/service-launcher.sh "/out/runtime-bin/${launcher}"; \
+    done; \
     install -m 0755 /out/catalog-service/catalog-service /out/runtime-bin/catalog-service.real; \
     install -m 0755 /out/catalog-service/catalog-service-sqlite /out/runtime-bin/catalog-service-sqlite; \
     install -m 0755 /out/authentication-service/authentication-service /out/runtime-bin/authentication-service.real; \
@@ -522,7 +529,7 @@ RUN set -eux; \
         /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt \
         /out/vsphere-cli-bundle/vsphere-cli-bundle-THIRD-PARTY-NOTICES.txt \
         /out/runtime-licenses/vsphere-cli-bundle/; \
-    test "$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 12; \
+    test "$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 21; \
     test "$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 8; \
     test -z "$(find /out/runtime-bin /out/runtime-licenses -type l -print -quit)"
 

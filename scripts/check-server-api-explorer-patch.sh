@@ -878,7 +878,7 @@ for incremental_layout_marker in \
     '/out/runtime-licenses/vsphere-cli-bundle/' \
     'COPY --from=release_artifacts --chmod=0755 /out/runtime-bin/ /usr/bin/' \
     'COPY --from=release_artifacts /out/runtime-licenses/ /usr/share/licenses/pasturestack/' \
-    'test "$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 12;' \
+    'test "$(find /out/runtime-bin -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 21;' \
     'test "$(find /out/runtime-licenses -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 8;' \
     'test -z "$(find /out/runtime-bin /out/runtime-licenses -type l -print -quit)"'; do
     require_marker "$release_dockerfile" "$incremental_layout_marker" \
@@ -2272,7 +2272,7 @@ require_marker "$build_script" \
     'wrappers_pinned=1' \
     SERVER_WRAPPER_REGRESSION_GATE_MISSING
 require_marker "$build_script" \
-    'launcher_wrapper_sha256=57b6422dc4a51d4c5448306a4efad182517ed1622bba1257df3c270c5c23ee47' \
+    'launcher_wrapper_sha256=$(sha256sum server/patches/websocket-proxy-wrapper.sh' \
     SERVER_WRAPPER_HASH_GATE_MISSING
 require_marker "$build_script" \
     'audit_log_filters=1' \
