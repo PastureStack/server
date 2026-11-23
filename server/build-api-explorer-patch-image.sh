@@ -633,12 +633,17 @@ docker run --rm \
 '
 
 wrapper_paths=(
+    /usr/bin/websocket-proxy
     /usr/bin/authentication-service
+    /usr/bin/rancher-auth-service
     /usr/bin/catalog-service
+    /usr/bin/rancher-catalog-service
     /usr/bin/compose-executor
+    /usr/bin/rancher-compose-executor
     /usr/bin/host-provisioner
+    /usr/bin/go-machine-service
 )
-launcher_wrapper_sha256=57b6422dc4a51d4c5448306a4efad182517ed1622bba1257df3c270c5c23ee47
+launcher_wrapper_sha256=$(sha256sum server/patches/websocket-proxy-wrapper.sh | awk '{print $1}')
 image_wrappers=$(docker run --rm --entrypoint sha256sum "$image" \
     "${wrapper_paths[@]}")
 expected_image_wrappers=$(
@@ -651,6 +656,7 @@ if [[ "$image_wrappers" != "$expected_image_wrappers" ]]; then
         "$launcher_wrapper_sha256" "$image_wrappers" >&2
     exit 1
 fi
+docker run --rm --entrypoint sh "$image" -ec 'for path do test -x "$path"; done' sh "${wrapper_paths[@]}"
 
 websocket_wrapper_sha256=$(sha256sum server/patches/websocket-proxy-wrapper.sh | awk '{print $1}')
 test "$(docker run --rm --entrypoint sha256sum "$image" /usr/bin/websocket-proxy)" = \
