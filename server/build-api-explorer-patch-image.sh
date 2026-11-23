@@ -14,7 +14,7 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.603}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.604}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
@@ -74,11 +74,11 @@ web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-ac9bcf33acfc74d7a40a25dfeef10
 web_console_runtime_sbom_artifact=${WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT:-web-console-${web_console_release_tag}-runtime.cdx.json}
 web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-1bb6d0ae88b7ba0832fc9e440d8de5cd716d9ee9207efee9d61b04a79f18259e}
 catalog_service_release_base_url=${CATALOG_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/catalog-service/releases/download}
-catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.19}
-catalog_service_commit=${CATALOG_SERVICE_COMMIT:-151d62fff93deaca9b2486b0b071df6772d1a27b}
-catalog_service_archive_sha256=${CATALOG_SERVICE_ARCHIVE_SHA256:-dc46d200cfe8f454b234ca36c04043beeaa3cc48eac921f85118ee9c8db5e0c2}
-catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-4dc152e56630c845bfe9638aa06f3f28ae74da89342a5f8354847e9888cea5a9}
-catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-7b82205cffde1989d033e9a1d9dd6a05138a5cef1d5107440ce24e118e00bac1}
+catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.20}
+catalog_service_commit=${CATALOG_SERVICE_COMMIT:-bced4b96b0c6a0fe7d3db044f5c30a5b33d01172}
+catalog_service_archive_sha256=${CATALOG_SERVICE_ARCHIVE_SHA256:-6bce527300205aeb0d589b67f4b38e037be3bdb8e6da5ea04f7357d287eedf6d}
+catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-acf89922925f62ce2ae9333636568f50c7fa6a2dee8b843e68dd8be43d8342b4}
+catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-c7e6c53d2382d7955edaf8b77869d6df3aa9e7cab2b7bf7646080791b3169e16}
 catalog_service_license_sha256=${CATALOG_SERVICE_LICENSE_SHA256:-0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594}
 authentication_service_release_base_url=${AUTHENTICATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/authentication-service/releases/download}
 authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.47}
@@ -134,7 +134,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-c33
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-48e22a6654c058cef7126dfa7c39da4c98a92bb939d37f09536d992f507f92ca}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.603}
+image=${IMAGE:-pasturestack-validation/server:v1.6.604}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -412,8 +412,8 @@ for marker in \
     CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}" \
     DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.36 \
     DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.36 \
-    DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.34 \
-    DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.34 \
+    DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.35 \
+    DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.35 \
     RC16_GO_AGENT_VERSION="${node_agent_version}" \
     RC16_PER_HOST_SUBNET_VERSION="${per_host_subnet_version}" \
     PASTURESTACK_PER_HOST_SUBNET_PRODUCER_COMMIT="${per_host_subnet_producer_commit}" \
@@ -508,18 +508,18 @@ for marker in \
     PASTURESTACK_MACHINE_DRIVER_BINARY_SHA256="${machine_driver_binary_sha256}" \
     PASTURESTACK_PACKET_DRIVER_BINARY_SHA256="${packet_driver_binary_sha256}" \
     PASTURESTACK_DOCKER_SUPPORT_POLICY=2026-08-28 \
-    PASTURESTACK_CATALOG_COMMIT=6e7b935b6f08e711e1884ef8369cd9dcd110901f \
-    'DEFAULT_CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"6e7b935b6f08e711e1884ef8369cd9dcd110901f"}}}' \
-    'CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"6e7b935b6f08e711e1884ef8369cd9dcd110901f"}}}'; do
+    PASTURESTACK_CATALOG_COMMIT=8c1c28318580d5ec18c14a13b224ce0e02e40bf8 \
+    'DEFAULT_CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"8c1c28318580d5ec18c14a13b224ce0e02e40bf8"}}}' \
+    'CATTLE_CATALOG_URL={"catalogs":{"pasturestack":{"url":"https://github.com/PastureStack/catalog-templates.git","branch":"main","pinnedCommit":"8c1c28318580d5ec18c14a13b224ce0e02e40bf8"}}}'; do
     test "$(grep -Fxc "$marker" <<<"$image_environment")" = 1
 done
 
 docker run --rm --network none --entrypoint sh "$image" -eu -c '
     . /usr/share/cattle/env_vars
     test -z "${CATTLE_LB_INSTANCE_IMAGE:-}${CATTLE_LB_INSTANCE_IMAGE_UUID:-}${RC16_LB_INSTANCE_IMAGE:-}${RC16_LB_INSTANCE_IMAGE_UUID:-}"
-    test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE" = ghcr.io/pasturestack/load-balancer-service:v0.9.34
-    test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID" = docker:ghcr.io/pasturestack/load-balancer-service:v0.9.34
-    test "$(grep -Fxc "  image: ghcr.io/pasturestack/load-balancer-service:v0.9.34" /usr/share/cattle/compose/docker-compose.yml)" = 2
+    test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE" = ghcr.io/pasturestack/load-balancer-service:v0.9.35
+    test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID" = docker:ghcr.io/pasturestack/load-balancer-service:v0.9.35
+    test "$(grep -Fxc "  image: ghcr.io/pasturestack/load-balancer-service:v0.9.35" /usr/share/cattle/compose/docker-compose.yml)" = 2
 '
 
 docker run --rm --entrypoint bash "$image" -lc '

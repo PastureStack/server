@@ -487,8 +487,12 @@ jobs:
               "$evidence/host-api-${HOST_API_VERSION}.tar.gz" |
               tee "$evidence/host-api-package-check.txt"
           fi
-          printf 'SERVER_CANDIDATE_SMOKE_OK release=%s first_attempts=%s restart_attempts=%s catalog_exact_api_reads_per_phase=8 first_contract_attempts=%s restart_contract_attempts=%s http=200 body=pong public_origin=https://stack.example.test private_api_cache=no-store\n' \
-            "$RELEASE_TAG" "$first_attempts" "$restart_attempts" \
+          catalog_api_reads="$(sed -n 's/^CATALOG_RELEASE_READY_OK commit=[0-9a-f]\{40\} exact_api_reads=\([1-9][0-9]*\)$/\1/p' "$evidence/catalog-first-start.txt")"
+          restart_catalog_api_reads="$(sed -n 's/^CATALOG_RELEASE_READY_OK commit=[0-9a-f]\{40\} exact_api_reads=\([1-9][0-9]*\)$/\1/p' "$evidence/catalog-restart.txt")"
+          [[ "$catalog_api_reads" =~ ^[1-9][0-9]*$ ]]
+          test "$catalog_api_reads" = "$restart_catalog_api_reads"
+          printf 'SERVER_CANDIDATE_SMOKE_OK release=%s first_attempts=%s restart_attempts=%s catalog_exact_api_reads_per_phase=%s first_contract_attempts=%s restart_contract_attempts=%s http=200 body=pong public_origin=https://stack.example.test private_api_cache=no-store\n' \
+            "$RELEASE_TAG" "$first_attempts" "$restart_attempts" "$catalog_api_reads" \
             "$first_contract_attempts" "$restart_contract_attempts" |
             tee "$evidence/candidate-smoke.txt"
 

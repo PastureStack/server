@@ -2,8 +2,8 @@
 
 ## Bundled default Catalog
 
-Server v1.6.603 includes the complete default Catalog Git source at its pinned
-commit and Catalog Service v0.20.19. On startup and refresh, the service verifies
+Server v1.6.604 candidate includes the complete default Catalog Git source at its
+pinned commit and Catalog Service v0.20.20. On startup and refresh, the service verifies
 the bundle SHA-256, complete Git objects and exact pinned commit before indexing
 it. This applies only when the configured source URL, branch and pinned commit
 match the bundled manifest. Explicit custom sources retain their source policy
@@ -13,19 +13,90 @@ For the bundled source, an empty cache, stale index, missing required revision o
 modified cache is recovered from the image's verified source. A bad bundle or
 unparseable source preserves the existing index and reports a diagnostic error.
 Refresh operations are serialized, and external Git commands have a deadline.
-The native health check requires the pinned commit and all four required system
-template revisions; a nonempty list or healthy workload alone is insufficient.
+The native health check requires the pinned commit and all seven required
+template revisions, including both historical and current Container Crontab
+revisions. Release readiness also verifies their read-only library aliases;
+a nonempty list or healthy workload alone is insufficient.
 
 After an image upgrade, verify the effective `catalog.url` source, its Catalog
 API `commit`, and both template and exact templateversion APIs for each deployed
 Stack `externalId`. They must agree. Once resolved, use the existing two-phase
 upgrade below. Recovering the index does not recreate healthy Stack containers
 or change their saved configuration. Image registries still need to be reachable.
+Read the Setting's resolved `activeValue` and `source`: a stored `value` can be
+older while an environment override supplies the effective Catalog source.
 
 Keep the previous Server image and existing volumes for rollback. Returning to a
 release without bundled-source support restores that release's dependency on
 remote Git access; it does not undo completed Stack upgrades. Keep their own
 rollback points until their affected networking and health checks pass.
+
+## Legacy Container Crontab migration
+
+The v1.6.604 source candidate provides a read-only compatibility path for
+`catalog://library:infra*container-crontab:3` to revision `4`. Verify that both
+exact versions are readable before upgrading. The hidden compatibility template
+retains the existing `container-crontab` service key, the `metrics` and
+`debug` settings, and service-state checks through `--metadata-mode`; a new
+installation uses `container-schedule:4` instead.
+
+A clean installation using the new image defaults automatically selects the
+matching bundled source. Updating an existing Server image does not override an
+explicit Catalog source or pin. In particular, retaining the previous
+`CATTLE_CATALOG_URL` environment value also retains its old `pinnedCommit` and
+does not select the new compatibility revisions.
+
+Before the Stack upgrade:
+
+1. Read the effective `catalog.url` and the Compose/container Catalog overrides,
+   including `CATTLE_CATALOG_URL` and any `RC16_CATALOG_URL`. Keep deliberate
+   custom sources and pins unchanged.
+2. For the built-in PastureStack source being advanced to this release, update
+   only its `pinnedCommit` to the reviewed commit recorded in the v1.6.604
+   release note. Preserve the source name, URL, branch, all other Catalog entries
+   and unrelated environment values. Recreate the Server with the same volumes
+   and retained rollback container/image.
+3. Verify the effective source and Catalog API `commit` match the selected pin,
+   then read both exact `library:infra*container-crontab:3` and `:4` identities.
+   Continue only when both are available under the retained library namespace.
+
+The Server does not run a worker or write the database to replace an operator's
+Catalog pin. Matching the new built-in pin to the bundled manifest is an
+explicit deployment configuration update.
+
+Use the existing Stack **Upgrade**, verify the replacement scheduler and jobs,
+then choose **Finish Upgrade** or **Rollback**. The compatibility strategy stops
+the previous scheduler before starting its replacement. Do not create a second
+canonical scheduler on the same Host during this migration: the component does
+not provide cross-process leader election.
+
+Preserve the workload's `cron.schedule`, `cron.action`, `cron.restart_timeout`,
+custom labels and `TZ` values. `cron.timezone` is retained as a label; the
+compatibility migration does not introduce new timezone-label behavior.
+Keep the previous scheduler configuration until actual scheduled execution and
+the retained settings pass. Finishing consumes the native rollback point.
+
+## Managed load-balancer image settings
+
+Server v1.6.604 selects Load Balancer Service v0.9.35 for new load balancers.
+An explicit database or environment setting retains precedence over that image
+default. Read the effective `activeValue` and `source` of both settings:
+
+| Setting | Selected v1.6.604 component |
+| --- | --- |
+| `lb.instance.image` | `ghcr.io/pasturestack/load-balancer-service:v0.9.35` |
+| `lb.instance.image.uuid` | `docker:ghcr.io/pasturestack/load-balancer-service:v0.9.35` |
+
+The image and image UUID must identify the same selected component. If an
+existing database setting is intentionally being advanced, explicitly update
+both keys through the standard settings interface or Setting API and read back
+their effective values and sources. Updating only `lb.instance.image` can leave
+an older UUID active. Keep deliberate custom image selections unchanged.
+
+This setting change controls new creation; existing load-balancer services need
+their normal service upgrade, HTTP and certificate-verified HTTPS acceptance,
+then **Finish Upgrade** or **Rollback**. The Server does not force database
+setting changes when its image is replaced.
 
 ## Catalog infrastructure-stack upgrades
 

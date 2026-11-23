@@ -17,13 +17,17 @@ def verify_source(source, catalog_name, platform_version, read):
     count = 0
     for required in source['requiredTemplates']:
         folder = (required['base'] + '*' if required.get('base') else '') + required['name']
-        template_id = catalog_name + ':' + folder
-        version_id = template_id + ':' + str(required['revision'])
-        for kind, identity in (('templates', template_id), ('templateversions', version_id)):
-            body = read('/v1-catalog/' + kind + '/' + identity + '?rancherVersion=' + platform_version)
-            if body.get('id') != identity:
-                raise RuntimeError('Catalog exact API response identity mismatch')
-            count += 1
+        # Existing Stack externalIds retain library:infra*container-crontab.
+        # A canonical-only read cannot prove the read-only legacy alias works.
+        namespaces = (catalog_name, 'library') if folder == 'infra*container-crontab' else (catalog_name,)
+        for namespace in namespaces:
+            template_id = namespace + ':' + folder
+            version_id = template_id + ':' + str(required['revision'])
+            for kind, identity in (('templates', template_id), ('templateversions', version_id)):
+                body = read('/v1-catalog/' + kind + '/' + identity + '?rancherVersion=' + platform_version)
+                if body.get('id') != identity:
+                    raise RuntimeError('Catalog exact API response identity mismatch')
+                count += 1
     if not count:
         raise RuntimeError('Release manifest declares no required Catalog versions')
     return count
