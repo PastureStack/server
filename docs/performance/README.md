@@ -8,11 +8,9 @@ The following example is appropriate as a starting point for a dedicated
 16-vCPU host with about 32 GiB of RAM. It is not a universal performance
 profile; measure the real workload before increasing it further.
 
-The example describes the Server `v1.6.603` candidate; run it only after its official
-release and image have been published and read back. This candidate
-is not yet available from GHCR. Deployment and workload acceptance remain
-environment-specific. See the [candidate note](../releases/server-1.6.603.md) and the
-[current release](../../README.md#current-release) for components.
+The example uses the published Server `v1.6.603`. Deployment and workload
+acceptance remain environment-specific. See the [release note](../releases/server-1.6.603.md)
+and the [current release](../../README.md#current-release) for components.
 Preserve existing runtime overrides and all three named volumes during an
 upgrade or restart.
 

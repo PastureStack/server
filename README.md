@@ -11,20 +11,19 @@ upstream history, authorship, licenses, and notices.
 
 <a id="current-release"></a>
 
-## Current source candidate
+## Current release
 
-Server `v1.6.603` is a prepared source candidate, not a published image.
-This candidate is not yet available from the registry. The latest published
-[Server v1.6.602](https://github.com/PastureStack/server/releases/tag/v1.6.602)
-remains available for installation.
-
-The candidate packages Engine `v0.183.395`, Web Console `1.6.239`, optional Bridge `0.2.37`,
+[Server v1.6.603](https://github.com/PastureStack/server/releases/tag/v1.6.603)
+packages Engine `v0.183.395`, Web Console `1.6.239`, optional Bridge `0.2.37`,
 and Compose `0.14.46`. New node registrations use Agent `v1.2.36`.
 Host Provisioner `v0.39.12` retires verified legacy registrations on upgrade.
-Catalog Service `v0.20.19` loads the bundled, verified default Catalog without
-requiring GitHub access, including recovery of an older local index.
-See the [candidate note](docs/releases/server-1.6.603.md),
-[published release note](docs/releases/server-1.6.602.md) and
+
+Catalog Service `v0.20.19` loads the verified default Catalog bundled in the
+image. Matching default sources recover an empty cache or older index without
+GitHub access or a manual source import. Custom Catalog sources retain their
+configured URL, branch, pin and access policy.
+See the [release note](docs/releases/server-1.6.603.md),
+[upgrade guide](docs/upgrades/README.md#bundled-default-catalog) and
 [compatibility contract](COMPATIBILITY.md).
 
 ## Component capabilities
@@ -81,8 +80,6 @@ supported operations, audit records and rollback.
 ## Quick start
 
 These examples use a numeric version tag. Keep all three named volumes.
-The commands below describe the candidate; run them only after its official release.
-This candidate is not yet available from GHCR.
 
 ```sh
 docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
