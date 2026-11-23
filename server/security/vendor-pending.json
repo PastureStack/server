@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "release": "v1.6.603",
-  "generatedAt": "2026-11-20T08:03:15+08:00",
+  "generatedAt": "2026-11-23T11:25:38+08:00",
   "policy": {
     "allowedSeverities": [
       "LOW",
@@ -313,6 +313,36 @@
       "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-105712.json",
       "vendorEvidenceSha256": "2be129dc4fc559e8ac515a10f160cd7661ab5d935f6b5bec68def4f255ebca18",
       "upstreamVendorStatus": "Ubuntu 26.04 Resolute gnupg2: needed; no released fixed package"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-107708",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-107708",
+      "reviewAfter": "2026-11-27",
+      "packages": [
+        {
+          "name": "libgssapi-krb5-2",
+          "installedVersion": "1.22.1-2ubuntu4.1"
+        },
+        {
+          "name": "libk5crypto3",
+          "installedVersion": "1.22.1-2ubuntu4.1"
+        },
+        {
+          "name": "libkrb5-3",
+          "installedVersion": "1.22.1-2ubuntu4.1"
+        },
+        {
+          "name": "libkrb5support0",
+          "installedVersion": "1.22.1-2ubuntu4.1"
+        }
+      ],
+      "verifiedAt": "2026-11-23T11:25:38+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-107708.json",
+      "vendorEvidenceSha256": "44f512e9c74e41998bc20867edb1340097133e971fe1ffa290feb9a19ee1ace8",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute krb5: needed; no released fixed package",
+      "notes": "Canonical lists Resolute as vulnerable (needed), with no associated USN notices. The official published source listing https://api.launchpad.net/1.0/ubuntu/+archive/primary?ws.op=getPublishedSources&source_name=krb5&exact_match=true&distro_series=https%3A%2F%2Fapi.launchpad.net%2F1.0%2Fubuntu%2Fresolute&status=Published has 1.22.1-2ubuntu4.1 in Updates/Security and 1.22.1-2ubuntu4 in Release, with no newer published Resolute package. The current merged-rootfs scan reports these four exact Medium occurrences with empty FixedVersion. Upstream patches are not a released compatible Ubuntu fix. Retain the raw findings and needs-evaluation status; this is not remediation, not_affected, or risk acceptance. Recheck by 2026-11-27, or sooner when Canonical publishes a fix/USN or the scanner supplies FixedVersion."
     },
     {
       "vulnerabilityId": "CVE-2026-107778",
