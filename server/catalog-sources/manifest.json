@@ -4,9 +4,9 @@
     {
       "url": "https://github.com/PastureStack/catalog-templates.git",
       "branch": "main",
-      "pinnedCommit": "6e7b935b6f08e711e1884ef8369cd9dcd110901f",
+      "pinnedCommit": "8c1c28318580d5ec18c14a13b224ce0e02e40bf8",
       "bundle": "catalog-templates.bundle",
-      "sha256": "601c60291ad0f1d9a548c6d10027e5c01b7fc0182a88481800c79778cdce1181",
+      "sha256": "d9a678ef2c1dfd08a599b799cad57ac77cfc9b0f65a158ff1162702b571dccf5",
       "requiredTemplates": [
         {
           "base": "infra",
@@ -27,6 +27,21 @@
           "base": "infra",
           "name": "resource-scheduler",
           "revision": 10
+        },
+        {
+          "base": "infra",
+          "name": "container-crontab",
+          "revision": 3
+        },
+        {
+          "base": "infra",
+          "name": "container-crontab",
+          "revision": 4
+        },
+        {
+          "base": "infra",
+          "name": "container-schedule",
+          "revision": 4
         }
       ]
     }

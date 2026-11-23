@@ -166,12 +166,15 @@ class BundledCatalogSourceTests(unittest.TestCase):
 
     def test_tracked_release_assets_are_self_contained_and_exact(self):
         source = PACKAGE.verify_package(REPO / 'server' / 'catalog-sources')
-        self.assertEqual(source['pinnedCommit'], '6e7b935b6f08e711e1884ef8369cd9dcd110901f')
+        self.assertEqual(source['pinnedCommit'], '8c1c28318580d5ec18c14a13b224ce0e02e40bf8')
         self.assertEqual(source['requiredTemplates'], [
             {'base': 'infra', 'name': 'healthcheck', 'revision': 7},
             {'base': 'infra', 'name': 'ipsec-overlay', 'revision': 17},
             {'base': 'infra', 'name': 'network-services', 'revision': 16},
             {'base': 'infra', 'name': 'resource-scheduler', 'revision': 10},
+            {'base': 'infra', 'name': 'container-crontab', 'revision': 3},
+            {'base': 'infra', 'name': 'container-crontab', 'revision': 4},
+            {'base': 'infra', 'name': 'container-schedule', 'revision': 4},
         ])
 
     def test_verify_cli_works_from_unrelated_directory_and_leaves_assets_unchanged(self):
@@ -252,7 +255,10 @@ class BundledCatalogSourceTests(unittest.TestCase):
     def test_rejects_missing_required_source_files_despite_valid_hash_and_pin(self):
         for missing in ('infra-templates/healthcheck/config.yml',
                         'infra-templates/healthcheck/7/rancher-compose.yml',
-                        'infra-templates/healthcheck/7/docker-compose.yml', PACKAGE.LICENSE_PATH):
+                        'infra-templates/healthcheck/7/docker-compose.yml',
+                        'infra-templates/container-crontab/3/docker-compose.yml',
+                        'infra-templates/container-crontab/4/rancher-compose.yml',
+                        'infra-templates/container-schedule/4/docker-compose.yml', PACKAGE.LICENSE_PATH):
             with self.subTest(missing=missing), tempfile.TemporaryDirectory(prefix='catalog-incomplete-') as temporary:
                 root = Path(temporary)
                 bare, pin, _ = fixture_repository(root, missing=missing)

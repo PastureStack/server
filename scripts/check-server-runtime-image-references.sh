@@ -7,7 +7,7 @@ cd "$repo_root"
 approved_registry=ghcr.io/pasturestack
 approved_agent="${approved_registry}/node-agent:v1.2.31"
 current_agent="${approved_registry}/node-agent:v1.2.36"
-approved_balancer="${approved_registry}/load-balancer-service:v0.9.34"
+approved_balancer="${approved_registry}/load-balancer-service:v0.9.35"
 # Historical recipes and opt-in migration tools keep their reviewed coordinates.
 historical_balancer="${approved_registry}/load-balancer-service:v0.9.27"
 

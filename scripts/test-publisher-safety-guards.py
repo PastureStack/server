@@ -21,15 +21,32 @@ class PublisherSafetyGuards(unittest.TestCase):
         end = source.index('\n\n', start)
         command = textwrap.dedent(source[start:end])
         with tempfile.TemporaryDirectory() as temporary:
-            script = ('set -euo pipefail; evidence="$1"; RELEASE_TAG=v1.6.603; '
+            script = ('set -euo pipefail; evidence="$1"; RELEASE_TAG=v1.6.604; '
                       'first_attempts=2; restart_attempts=3; '
-                      'first_contract_attempts=1; restart_contract_attempts=1; ' + command)
+                      'catalog_api_reads=17; first_contract_attempts=1; restart_contract_attempts=1; ' + command)
             result = subprocess.run(['bash', '-c', script, 'summary-fixture', temporary],
                                     capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(result.stdout, (Path(temporary) / 'candidate-smoke.txt').read_text())
-            self.assertIn('catalog_exact_api_reads_per_phase=8', result.stdout)
+            self.assertIn('catalog_exact_api_reads_per_phase=17', result.stdout)
             self.assertIn('restart_attempts=3', result.stdout)
+
+    def test_catalog_smoke_count_requires_both_native_readiness_receipts(self):
+        source = WORKFLOW.read_text()
+        start = source.index('          catalog_api_reads=')
+        end = source.index("          printf 'SERVER_CANDIDATE_SMOKE_OK", start)
+        command = textwrap.dedent(source[start:end])
+        valid = 'CATALOG_RELEASE_READY_OK commit=' + 'a' * 40 + ' exact_api_reads=18\n'
+        for first, restart, status in ((valid, valid, 0), ('', valid, 1),
+                                        (valid, valid.replace('=18', '=16'), 1),
+                                        (valid.replace('=18', '=0'), valid, 1)):
+            with self.subTest(first=first, restart=restart), tempfile.TemporaryDirectory() as temporary:
+                evidence = Path(temporary)
+                (evidence / 'catalog-first-start.txt').write_text(first)
+                (evidence / 'catalog-restart.txt').write_text(restart)
+                result = subprocess.run(['bash', '-c', 'set -euo pipefail; evidence="$1"; ' + command,
+                                         'catalog-count-fixture', temporary], capture_output=True, text=True)
+                self.assertEqual(result.returncode, status, result.stderr)
 
     def test_scanner_readback_follows_the_configured_digest(self):
         source = WORKFLOW.read_text()

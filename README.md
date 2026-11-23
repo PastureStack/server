@@ -26,6 +26,20 @@ See the [release note](docs/releases/server-1.6.603.md),
 [upgrade guide](docs/upgrades/README.md#bundled-default-catalog) and
 [compatibility contract](COMPATIBILITY.md).
 
+## Next source candidate
+
+Server `v1.6.604` prepares an in-place migration for existing
+`library:infra*container-crontab` Stacks and updates the managed load-balancer
+default. Its [candidate release note](docs/releases/server-1.6.604.md) records
+the component, validation and rollback boundaries. Publication and affected
+deployment acceptance are pending.
+
+A Server image update preserves an explicitly configured Catalog pin. Existing
+installations that retain `CATTLE_CATALOG_URL` must select the reviewed v1.6.604
+pin to load the new compatibility revisions; see the
+[Catalog pin upgrade steps](docs/upgrades/README.md#legacy-container-crontab-migration).
+A clean installation uses the new image's bundled defaults automatically.
+
 ## Component capabilities
 
 Browser users can select an environment by name and review switching context or

@@ -9,6 +9,9 @@ operator deployment and business-workflow acceptance are recorded separately.
 - [Current Server v1.6.603](releases/server-1.6.603.md) — Engine `0.183.395` /
   Web Console `1.6.239` / optional Bridge `0.2.37`.
 
+- [Server v1.6.604 candidate](releases/server-1.6.604.md) — legacy Container
+  Crontab migration and managed load-balancer update; publication pending.
+
 - [Release archive](RELEASE-ARCHIVE.md) — historical published and candidate notes retain
   their original evidence, acceptance limits and rollback context; these are not
   the current installation guide.

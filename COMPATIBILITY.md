@@ -1,5 +1,18 @@
 # Compatibility Contract
 
+## Server v1.6.604 candidate
+
+The legacy read-only `library:infra*container-crontab` alias preserves the
+namespace and exposes exact historical revision 3 and compatibility revision 4.
+Normal Stack upgrade retains the `container-crontab` service key, `metrics` and
+`debug` questions, metadata service-state checks, and stop-first activation. Finish and rollback retain
+their existing native lifecycle. New installations use `container-schedule:4`.
+Workload cron labels and `TZ` values are preserved; `cron.timezone` remains a
+label without newly introduced timezone semantics.
+
+Publication and affected deployment acceptance are pending. See the
+[candidate release note](docs/releases/server-1.6.604.md).
+
 ## Server v1.6.603 published
 
 Catalog Service **0.20.19** natively bootstraps the exact bundled default Catalog

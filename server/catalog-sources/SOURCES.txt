@@ -1,12 +1,12 @@
 Bundled PastureStack Catalog source
 Source URL: https://github.com/PastureStack/catalog-templates.git
 Source branch: main
-Source commit: 6e7b935b6f08e711e1884ef8369cd9dcd110901f
+Source commit: 8c1c28318580d5ec18c14a13b224ce0e02e40bf8
 Bundle: catalog-templates.bundle
-Bundle SHA-256: 601c60291ad0f1d9a548c6d10027e5c01b7fc0182a88481800c79778cdce1181
+Bundle SHA-256: d9a678ef2c1dfd08a599b799cad57ac77cfc9b0f65a158ff1162702b571dccf5
 Bundle ref: refs/heads/pasturestack-catalog
 License: MIT
-License source: https://github.com/PastureStack/catalog-templates/blob/6e7b935b6f08e711e1884ef8369cd9dcd110901f/LICENSES/MIT.txt
+License source: https://github.com/PastureStack/catalog-templates/blob/8c1c28318580d5ec18c14a13b224ce0e02e40bf8/LICENSES/MIT.txt
 License file: LICENSES/MIT.txt
 
 The bundle contains only this ref and its complete reachable Git history.

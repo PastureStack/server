@@ -21,7 +21,7 @@ import tempfile
 
 SOURCE_URL = 'https://github.com/PastureStack/catalog-templates.git'
 SOURCE_BRANCH = 'main'
-SOURCE_PIN = '6e7b935b6f08e711e1884ef8369cd9dcd110901f'
+SOURCE_PIN = '8c1c28318580d5ec18c14a13b224ce0e02e40bf8'
 BUNDLE_NAME = 'catalog-templates.bundle'
 BUNDLE_REF = 'refs/heads/pasturestack-catalog'
 LICENSE_PATH = 'LICENSES/MIT.txt'
@@ -30,6 +30,9 @@ REQUIRED_TEMPLATES = [
     {'base': 'infra', 'name': 'ipsec-overlay', 'revision': 17},
     {'base': 'infra', 'name': 'network-services', 'revision': 16},
     {'base': 'infra', 'name': 'resource-scheduler', 'revision': 10},
+    {'base': 'infra', 'name': 'container-crontab', 'revision': 3},
+    {'base': 'infra', 'name': 'container-crontab', 'revision': 4},
+    {'base': 'infra', 'name': 'container-schedule', 'revision': 4},
 ]
 DEFAULT_OUTPUT = Path(__file__).resolve().parents[1] / 'server' / 'catalog-sources'
 RELEASE_DOCKERFILE = DEFAULT_OUTPUT.parent / 'Dockerfile.web-compose-release'

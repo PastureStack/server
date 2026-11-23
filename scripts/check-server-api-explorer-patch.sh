@@ -573,7 +573,7 @@ python3 scripts/test-web-console-sbom.py
 python3 server/security/test_web_console_sbom_scan.py
 
 require_marker "$release_dockerfile" \
-    'ARG SERVER_RELEASE_TAG=v1.6.603' \
+    'ARG SERVER_RELEASE_TAG=v1.6.604' \
     SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"' \
@@ -673,34 +673,34 @@ require_marker "$build_script" \
     'web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-1bb6d0ae88b7ba0832fc9e440d8de5cd716d9ee9207efee9d61b04a79f18259e}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_SBOM_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_VERSION=0.20.19' \
+    'ARG CATALOG_SERVICE_VERSION=0.20.20' \
     SERVER_INCREMENTAL_CATALOG_VERSION_MISSING
 require_marker "$build_script" \
-    'catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.19}' \
+    'catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.20}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_COMMIT=151d62fff93deaca9b2486b0b071df6772d1a27b' \
+    'ARG CATALOG_SERVICE_COMMIT=bced4b96b0c6a0fe7d3db044f5c30a5b33d01172' \
     SERVER_INCREMENTAL_CATALOG_COMMIT_MISSING
 require_marker "$build_script" \
-    'catalog_service_commit=${CATALOG_SERVICE_COMMIT:-151d62fff93deaca9b2486b0b071df6772d1a27b}' \
+    'catalog_service_commit=${CATALOG_SERVICE_COMMIT:-bced4b96b0c6a0fe7d3db044f5c30a5b33d01172}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_COMMIT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_ARCHIVE_SHA256=dc46d200cfe8f454b234ca36c04043beeaa3cc48eac921f85118ee9c8db5e0c2' \
+    'ARG CATALOG_SERVICE_ARCHIVE_SHA256=6bce527300205aeb0d589b67f4b38e037be3bdb8e6da5ea04f7357d287eedf6d' \
     SERVER_INCREMENTAL_CATALOG_ARCHIVE_SHA256_MISSING
 require_marker "$build_script" \
-    'catalog_service_archive_sha256=${CATALOG_SERVICE_ARCHIVE_SHA256:-dc46d200cfe8f454b234ca36c04043beeaa3cc48eac921f85118ee9c8db5e0c2}' \
+    'catalog_service_archive_sha256=${CATALOG_SERVICE_ARCHIVE_SHA256:-6bce527300205aeb0d589b67f4b38e037be3bdb8e6da5ea04f7357d287eedf6d}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_ARCHIVE_SHA256_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_BINARY_SHA256=4dc152e56630c845bfe9638aa06f3f28ae74da89342a5f8354847e9888cea5a9' \
+    'ARG CATALOG_SERVICE_BINARY_SHA256=acf89922925f62ce2ae9333636568f50c7fa6a2dee8b843e68dd8be43d8342b4' \
     SERVER_INCREMENTAL_CATALOG_BINARY_SHA256_MISSING
 require_marker "$build_script" \
-    'catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-4dc152e56630c845bfe9638aa06f3f28ae74da89342a5f8354847e9888cea5a9}' \
+    'catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-acf89922925f62ce2ae9333636568f50c7fa6a2dee8b843e68dd8be43d8342b4}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_BINARY_SHA256_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=7b82205cffde1989d033e9a1d9dd6a05138a5cef1d5107440ce24e118e00bac1' \
+    'ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=c7e6c53d2382d7955edaf8b77869d6df3aa9e7cab2b7bf7646080791b3169e16' \
     SERVER_INCREMENTAL_CATALOG_SQLITE_BINARY_SHA256_MISSING
 require_marker "$build_script" \
-    'catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-7b82205cffde1989d033e9a1d9dd6a05138a5cef1d5107440ce24e118e00bac1}' \
+    'catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-c7e6c53d2382d7955edaf8b77869d6df3aa9e7cab2b7bf7646080791b3169e16}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_SQLITE_BINARY_SHA256_MISSING
 require_marker "$release_dockerfile" \
     'ARG CATALOG_SERVICE_LICENSE_SHA256=0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594' \
@@ -1141,10 +1141,10 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.603}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.604}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.603}' \
+    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.604}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING
 require_marker "$build_script" \
     'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"' \
@@ -1364,21 +1364,21 @@ require_marker "$dockerfile" \
 # These checks own the current assembly; the historical patch recipe above
 # remains pinned to the original 1.1.18 artifact.
 for current_lb_default_marker in \
-    'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.34' \
-    'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.34' \
+    'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.35' \
+    'ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.35' \
     'COPY artifacts/compose/ /usr/share/cattle/compose/'; do
     require_marker "$release_dockerfile" "$current_lb_default_marker" SERVER_CURRENT_LB_DEFAULT_MISSING
 done
 for current_lb_runtime_marker in \
-    'DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.34' \
-    'DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.34' \
+    'DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.35' \
+    'DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.35' \
     'test -z "${CATTLE_LB_INSTANCE_IMAGE:-}${CATTLE_LB_INSTANCE_IMAGE_UUID:-}${RC16_LB_INSTANCE_IMAGE:-}${RC16_LB_INSTANCE_IMAGE_UUID:-}"' \
-    'test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE" = ghcr.io/pasturestack/load-balancer-service:v0.9.34' \
-    'test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID" = docker:ghcr.io/pasturestack/load-balancer-service:v0.9.34' \
-    'test "$(grep -Fxc "  image: ghcr.io/pasturestack/load-balancer-service:v0.9.34" /usr/share/cattle/compose/docker-compose.yml)" = 2'; do
+    'test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE" = ghcr.io/pasturestack/load-balancer-service:v0.9.35' \
+    'test "$DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID" = docker:ghcr.io/pasturestack/load-balancer-service:v0.9.35' \
+    'test "$(grep -Fxc "  image: ghcr.io/pasturestack/load-balancer-service:v0.9.35" /usr/share/cattle/compose/docker-compose.yml)" = 2'; do
     require_marker "$build_script" "$current_lb_runtime_marker" SERVER_CURRENT_LB_RUNTIME_GATE_MISSING
 done
-if [ "$(grep -Fxc '  image: ghcr.io/pasturestack/load-balancer-service:v0.9.34' server/artifacts/compose/docker-compose.yml)" -ne 2 ]; then
+if [ "$(grep -Fxc '  image: ghcr.io/pasturestack/load-balancer-service:v0.9.35' server/artifacts/compose/docker-compose.yml)" -ne 2 ]; then
     echo SERVER_CURRENT_LB_COMPOSE_REFERENCE_MISMATCH >&2
     exit 1
 fi
@@ -1607,13 +1607,13 @@ require_marker "$build_script" \
     'grep -F "pasturestack-catalog-pinned-commit"' \
     SERVER_CATALOG_PINNED_COMMIT_IMAGE_GATE_MISSING
 require_marker "$release_dockerfile" \
-    'ENV PASTURESTACK_CATALOG_COMMIT=6e7b935b6f08e711e1884ef8369cd9dcd110901f' \
+    'ENV PASTURESTACK_CATALOG_COMMIT=8c1c28318580d5ec18c14a13b224ce0e02e40bf8' \
     SERVER_CATALOG_VERSION_LABEL_COMMIT_MISSING
 require_marker "$release_dockerfile" \
-    '"pinnedCommit":"6e7b935b6f08e711e1884ef8369cd9dcd110901f"' \
+    '"pinnedCommit":"8c1c28318580d5ec18c14a13b224ce0e02e40bf8"' \
     SERVER_CATALOG_VERSION_LABEL_URL_MISSING
 require_marker "$build_script" \
-    'PASTURESTACK_CATALOG_COMMIT=6e7b935b6f08e711e1884ef8369cd9dcd110901f' \
+    'PASTURESTACK_CATALOG_COMMIT=8c1c28318580d5ec18c14a13b224ce0e02e40bf8' \
     SERVER_CATALOG_VERSION_LABEL_IMAGE_GATE_MISSING
 for previous_release_marker in \
     '# Server v1.6.462' \
@@ -1701,10 +1701,10 @@ fi
 if grep -Fxq '## Current source candidate' README.md; then
     for candidate_readme_marker in \
         '<a id="current-release"></a>' \
-        'Server `v1.6.603` is a prepared source candidate, not a published image.' \
+        'Server `v1.6.604` is a prepared source candidate, not a published image.' \
         'run them only after its official release' \
         'This candidate is not yet available' \
-        'ghcr.io/pasturestack/server:v1.6.603'; do
+        'ghcr.io/pasturestack/server:v1.6.604'; do
         require_marker README.md "$candidate_readme_marker" \
             SERVER_CURRENT_CANDIDATE_README_MISSING
     done
@@ -2318,7 +2318,7 @@ done
 jq -e '
   ["CVE-2026-107928","CVE-2026-107929","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"] as $curl_fixed_cves
   |   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.603"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.604"
   and (.statements | length) == 59
   and ([.statements[] | select(.vulnerability.name == "CVE-2026-82560")] | length) == 1
   and any(.statements[];
@@ -2391,7 +2391,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.603 >/dev/null
+    "$vendor_pending_fixture" v1.6.604 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -2495,4 +2495,4 @@ require_marker server/artifacts/fetch-server-component.sh 'Component response mu
 # Execute the shared archive verifier controls before starting an image build.
 python3 -B "$repo_root/scripts/test-engine-archive-contract.py"
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.603 base=v1.6.460 engine=0.183.395 web_console=1.6.239 catalog_service=0.20.19 webhook_automation_service=0.10.6 authentication_service=0.4.47 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.604 base=v1.6.460 engine=0.183.395 web_console=1.6.239 catalog_service=0.20.20 webhook_automation_service=0.10.6 authentication_service=0.4.47 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
