@@ -14,7 +14,7 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.602}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.603}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
@@ -74,11 +74,11 @@ web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-ac9bcf33acfc74d7a40a25dfeef10
 web_console_runtime_sbom_artifact=${WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT:-web-console-${web_console_release_tag}-runtime.cdx.json}
 web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-1bb6d0ae88b7ba0832fc9e440d8de5cd716d9ee9207efee9d61b04a79f18259e}
 catalog_service_release_base_url=${CATALOG_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/catalog-service/releases/download}
-catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.18}
-catalog_service_commit=${CATALOG_SERVICE_COMMIT:-193234b5c44d29638b4a546dfaa4f07eeb2fd56b}
-catalog_service_archive_sha256=${CATALOG_SERVICE_ARCHIVE_SHA256:-91dd703a07a49f6491d383ba8bec894f359b24ac091fc576a05ab8b480072b1a}
-catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-fe5a4c2a9aaaf64bd3f7f4a64697af84169a44ddba00ae054b5a6a10d8b1596b}
-catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-6f79e877dd76603d8a40bcc2b89619deb5be7d2c23c89a69a1b2372c7b3fcd43}
+catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.19}
+catalog_service_commit=${CATALOG_SERVICE_COMMIT:-151d62fff93deaca9b2486b0b071df6772d1a27b}
+catalog_service_archive_sha256=${CATALOG_SERVICE_ARCHIVE_SHA256:-dc46d200cfe8f454b234ca36c04043beeaa3cc48eac921f85118ee9c8db5e0c2}
+catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-4dc152e56630c845bfe9638aa06f3f28ae74da89342a5f8354847e9888cea5a9}
+catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-7b82205cffde1989d033e9a1d9dd6a05138a5cef1d5107440ce24e118e00bac1}
 catalog_service_license_sha256=${CATALOG_SERVICE_LICENSE_SHA256:-0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594}
 authentication_service_release_base_url=${AUTHENTICATION_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/authentication-service/releases/download}
 authentication_service_version=${AUTHENTICATION_SERVICE_VERSION:-0.4.47}
@@ -134,7 +134,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-c33
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-48e22a6654c058cef7126dfa7c39da4c98a92bb939d37f09536d992f507f92ca}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.602}
+image=${IMAGE:-pasturestack-validation/server:v1.6.603}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]

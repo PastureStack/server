@@ -573,7 +573,7 @@ python3 scripts/test-web-console-sbom.py
 python3 server/security/test_web_console_sbom_scan.py
 
 require_marker "$release_dockerfile" \
-    'ARG SERVER_RELEASE_TAG=v1.6.602' \
+    'ARG SERVER_RELEASE_TAG=v1.6.603' \
     SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"' \
@@ -673,34 +673,34 @@ require_marker "$build_script" \
     'web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-1bb6d0ae88b7ba0832fc9e440d8de5cd716d9ee9207efee9d61b04a79f18259e}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_SBOM_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_VERSION=0.20.18' \
+    'ARG CATALOG_SERVICE_VERSION=0.20.19' \
     SERVER_INCREMENTAL_CATALOG_VERSION_MISSING
 require_marker "$build_script" \
-    'catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.18}' \
+    'catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.19}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_COMMIT=193234b5c44d29638b4a546dfaa4f07eeb2fd56b' \
+    'ARG CATALOG_SERVICE_COMMIT=151d62fff93deaca9b2486b0b071df6772d1a27b' \
     SERVER_INCREMENTAL_CATALOG_COMMIT_MISSING
 require_marker "$build_script" \
-    'catalog_service_commit=${CATALOG_SERVICE_COMMIT:-193234b5c44d29638b4a546dfaa4f07eeb2fd56b}' \
+    'catalog_service_commit=${CATALOG_SERVICE_COMMIT:-151d62fff93deaca9b2486b0b071df6772d1a27b}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_COMMIT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_ARCHIVE_SHA256=91dd703a07a49f6491d383ba8bec894f359b24ac091fc576a05ab8b480072b1a' \
+    'ARG CATALOG_SERVICE_ARCHIVE_SHA256=dc46d200cfe8f454b234ca36c04043beeaa3cc48eac921f85118ee9c8db5e0c2' \
     SERVER_INCREMENTAL_CATALOG_ARCHIVE_SHA256_MISSING
 require_marker "$build_script" \
-    'catalog_service_archive_sha256=${CATALOG_SERVICE_ARCHIVE_SHA256:-91dd703a07a49f6491d383ba8bec894f359b24ac091fc576a05ab8b480072b1a}' \
+    'catalog_service_archive_sha256=${CATALOG_SERVICE_ARCHIVE_SHA256:-dc46d200cfe8f454b234ca36c04043beeaa3cc48eac921f85118ee9c8db5e0c2}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_ARCHIVE_SHA256_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_BINARY_SHA256=fe5a4c2a9aaaf64bd3f7f4a64697af84169a44ddba00ae054b5a6a10d8b1596b' \
+    'ARG CATALOG_SERVICE_BINARY_SHA256=4dc152e56630c845bfe9638aa06f3f28ae74da89342a5f8354847e9888cea5a9' \
     SERVER_INCREMENTAL_CATALOG_BINARY_SHA256_MISSING
 require_marker "$build_script" \
-    'catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-fe5a4c2a9aaaf64bd3f7f4a64697af84169a44ddba00ae054b5a6a10d8b1596b}' \
+    'catalog_service_binary_sha256=${CATALOG_SERVICE_BINARY_SHA256:-4dc152e56630c845bfe9638aa06f3f28ae74da89342a5f8354847e9888cea5a9}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_BINARY_SHA256_MISSING
 require_marker "$release_dockerfile" \
-    'ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=6f79e877dd76603d8a40bcc2b89619deb5be7d2c23c89a69a1b2372c7b3fcd43' \
+    'ARG CATALOG_SERVICE_SQLITE_BINARY_SHA256=7b82205cffde1989d033e9a1d9dd6a05138a5cef1d5107440ce24e118e00bac1' \
     SERVER_INCREMENTAL_CATALOG_SQLITE_BINARY_SHA256_MISSING
 require_marker "$build_script" \
-    'catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-6f79e877dd76603d8a40bcc2b89619deb5be7d2c23c89a69a1b2372c7b3fcd43}' \
+    'catalog_service_sqlite_binary_sha256=${CATALOG_SERVICE_SQLITE_BINARY_SHA256:-7b82205cffde1989d033e9a1d9dd6a05138a5cef1d5107440ce24e118e00bac1}' \
     SERVER_INCREMENTAL_CATALOG_BUILD_SQLITE_BINARY_SHA256_MISSING
 require_marker "$release_dockerfile" \
     'ARG CATALOG_SERVICE_LICENSE_SHA256=0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594' \
@@ -1141,10 +1141,10 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.602}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.603}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.602}' \
+    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.603}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING
 require_marker "$build_script" \
     'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"' \
@@ -1701,10 +1701,10 @@ fi
 if grep -Fxq '## Current source candidate' README.md; then
     for candidate_readme_marker in \
         '<a id="current-release"></a>' \
-        'Server `v1.6.602` is a prepared source candidate, not a published image.' \
+        'Server `v1.6.603` is a prepared source candidate, not a published image.' \
         'run them only after its official release' \
         'This candidate is not yet available' \
-        'ghcr.io/pasturestack/server:v1.6.602'; do
+        'ghcr.io/pasturestack/server:v1.6.603'; do
         require_marker README.md "$candidate_readme_marker" \
             SERVER_CURRENT_CANDIDATE_README_MISSING
     done
@@ -2318,7 +2318,7 @@ done
 jq -e '
   ["CVE-2026-107928","CVE-2026-107929","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"] as $curl_fixed_cves
   |   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.602"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.603"
   and (.statements | length) == 59
   and ([.statements[] | select(.vulnerability.name == "CVE-2026-82560")] | length) == 1
   and any(.statements[];
@@ -2391,7 +2391,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.602 >/dev/null
+    "$vendor_pending_fixture" v1.6.603 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -2495,4 +2495,4 @@ require_marker server/artifacts/fetch-server-component.sh 'Component response mu
 # Execute the shared archive verifier controls before starting an image build.
 python3 -B "$repo_root/scripts/test-engine-archive-contract.py"
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.602 base=v1.6.460 engine=0.183.395 web_console=1.6.239 catalog_service=0.20.18 webhook_automation_service=0.10.6 authentication_service=0.4.47 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.603 base=v1.6.460 engine=0.183.395 web_console=1.6.239 catalog_service=0.20.19 webhook_automation_service=0.10.6 authentication_service=0.4.47 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
