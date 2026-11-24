@@ -8,18 +8,22 @@ pending. The Web Console input below is already officially published.
 
 ## Verified component inputs
 
-Web Console [1.6.240](https://github.com/PastureStack/web-console/releases/tag/1.6.240)
-is published immutably from `5064c9bb321f7e5553b0f2dbadeef9c2f3808b42` by
-[exact-main producer 45305873761](https://github.com/PastureStack/web-console/actions/runs/45305873761).
+Web Console [1.6.241](https://github.com/PastureStack/web-console/releases/tag/1.6.241)
+is published immutably from `731f79004714150786b6e5e12d06683927a9d14e` by
+[exact-main producer 45311119062](https://github.com/PastureStack/web-console/actions/runs/45311119062).
 Its archive SHA-256 is
-`51e7415bd2db0486c87018577a4adb2983bb5d3f8b84115d010ec8c65ddc496a`;
+`ef9cc7c4b8828307c695d6d91d54356f0086bde354b0ec24d0b7f2a1d36b3ab8`;
 the runtime SBOM SHA-256 is
-`16c89bc7d7be37b9e3364c524888209990e32db1c7779f9f92e3eee78b8a0d1b`;
+`35e7d656ca97e100a03eeea7eb6af9ad7c2e4adb6ecd78e553eb4305f8d1a08c`;
 the dependency lock SHA-256 is
-`53b08b5e041cfff204b94cdd0513a4b45235979db49f2643d4fef4e3464a66a8`.
+`78113228da4436f01ad6c0f4561823dc76d1add75d0991bc2e1317622d63a9ff`.
 The producer verified two matching builds and its SBOM/provenance attestations.
-The Web CI suite passed 1164 tests, including twelve load-balancer save
-regressions. These results do not establish an executed Server browser workflow.
+The archive retains the existing `enabled` WebMCP ceiling with initial mode
+`off`; the complete Server archive/SBOM identity verifier passed this profile
+before consumption. Browser inventory coverage remains `incomplete`.
+The unchanged Web application source retains the 1164-test qualification,
+including twelve load-balancer save regressions. These source and artifact
+results do not establish an executed Server browser workflow.
 
 Engine v0.183.395, Catalog Service v0.20.20, Load Balancer Service v0.9.35,
 Compose Executor 0.14.46 and the new-registration Agent v1.2.36 retain their

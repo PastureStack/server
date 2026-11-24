@@ -87,7 +87,7 @@ cat "$MOCK_BODY"
         end = docker.index('    web_archive=', start)
         fetch = docker[start:end].replace('\\\n', ' ')
         primary = 'https://api.github.com/repos/PastureStack/web-console/releases/assets/123'
-        alternate = 'https://github.com/PastureStack/web-console/releases/download/1.6.240/fixture.bin'
+        alternate = 'https://github.com/PastureStack/web-console/releases/download/1.6.241/fixture.bin'
         for mode, error, fallback in (('remote', 22, True), ('remote', 1, False),
                                       ('local', 22, False), ('remote', 0, False)):
             with self.subTest(mode=mode, error=error):
@@ -122,8 +122,8 @@ PRIMARY=$3 FETCH_STATUS=$4
         for source in (docker, build):
             self.assertIn(api+'PastureStack/orchestration-engine/releases/assets/733683735', source)
             self.assertIn(api+'PastureStack/compose-cli/releases/assets/741756962', source)
-            self.assertIn(api+'PastureStack/web-console/releases/assets/785271974', source)
-            self.assertIn(api+'PastureStack/web-console/releases/assets/785271952', source)
+            self.assertIn(api+'PastureStack/web-console/releases/assets/785372449', source)
+            self.assertIn(api+'PastureStack/web-console/releases/assets/785372423', source)
             self.assertIn('WEB_CONSOLE_ASSET_API_URL', source)
             self.assertIn('WEB_CONSOLE_SBOM_ASSET_API_URL', source)
         self.assertIn('"${WEB_CONSOLE_ASSET_API_URL}"', docker)

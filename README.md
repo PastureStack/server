@@ -36,7 +36,7 @@ remains separate from the publication checks.
 
 ## Next source candidate
 
-Server `v1.6.605` prepares Web Console `1.6.240` with the native load-balancer
+Server `v1.6.605` prepares Web Console `1.6.241` with the native load-balancer
 upgrade action so rollback retains the previous launch configuration. Its
 [candidate note](docs/releases/server-1.6.605.md) records the component and
 acceptance boundaries. Publication and affected UI acceptance are pending.
