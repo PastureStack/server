@@ -20,8 +20,7 @@ Host Provisioner `v0.39.12` retires verified legacy registrations on upgrade.
 
 Managed load-balancer image candidates are shared by Stack rows and service details.
 Custom image choices and digest pins are preserved. Native image upgrades retain
-the previous primary and
-secondary launch configurations for native image rollback. Separately saved
+the previous primary and secondary launch configurations for native image rollback. Separately saved
 service-level metadata keeps its existing semantics; see the
 [rollback boundary](docs/upgrades/README.md#native-load-balancer-upgrade-and-rollback).
 
