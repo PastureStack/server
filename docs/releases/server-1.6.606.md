@@ -1,13 +1,10 @@
-# Server v1.6.606 candidate
+# Server v1.6.606
 
-This release packages Web Console 1.6.242, whose managed LB update entries use
-parsed image identities and the same candidate in Stack rows, service details
-and direct image-update URLs. It preserves custom repositories/tags, digest pins
-and digest-only selections, and requires the resource's native upgrade action.
-The existing native image-only upgrade and previous-launch-config rollback
-behavior remain unchanged.
+Published image: `ghcr.io/pasturestack/server:v1.6.606@sha256:5046b87cfb1d24634e3f792e2dba45ccd15efa6c8753a13d2ae46feccfcc3c80`.
 
-Prepared source only; no Server image or release has been published.
+Source commit: `99c8c13f7888c517c0715276c22e1d25923aa378`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 

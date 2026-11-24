@@ -1,6 +1,12 @@
 # Compatibility Contract
 
-## Server v1.6.606 component update
+## Server v1.6.606 published
+
+Immutable image `ghcr.io/pasturestack/server:v1.6.606@sha256:5046b87cfb1d24634e3f792e2dba45ccd15efa6c8753a13d2ae46feccfcc3c80`.
+Producer `99c8c13f7888c517c0715276c22e1d25923aa378`.
+[The publication workflow](https://github.com/PastureStack/server/actions/runs/45351936732)
+passed all required source, security, native startup and restart checks.
+Deployment-specific browser acceptance remains separate.
 
 Web Console **1.6.242** shares a parsed-image update candidate between Stack
 rows, service details and direct update URLs. It requires the native resource
