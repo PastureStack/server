@@ -100,7 +100,7 @@ setting changes when its image is replaced.
 
 ### Native load-balancer upgrade and rollback
 
-Server v1.6.605 prepares Web Console 1.6.240 with a corrected load-balancer
+Server v1.6.605 prepares Web Console 1.6.241 with a corrected load-balancer
 upgrade path; see its [candidate note](../releases/server-1.6.605.md) for
 publication and acceptance status. The UI submits the replacement configuration
 through the native service upgrade action, preserving the active launch
