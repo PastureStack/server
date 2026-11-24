@@ -34,6 +34,15 @@ See the [release note](docs/releases/server-1.6.604.md),
 and [compatibility contract](COMPATIBILITY.md). Workload deployment acceptance
 remains separate from the publication checks.
 
+## Next source candidate
+
+Server `v1.6.605` prepares Web Console `1.6.240` with the native load-balancer
+upgrade action so rollback retains the previous launch configuration. Its
+[candidate note](docs/releases/server-1.6.605.md) records the component and
+acceptance boundaries. Publication and affected UI acceptance are pending.
+Catalog Service `v0.20.20`, Load Balancer Service `v0.9.35` and Engine
+`v0.183.395` retain their existing identities.
+
 ## Component capabilities
 
 Browser users can select an environment by name and review switching context or

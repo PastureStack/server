@@ -98,6 +98,22 @@ their normal service upgrade, HTTP and certificate-verified HTTPS acceptance,
 then **Finish Upgrade** or **Rollback**. The Server does not force database
 setting changes when its image is replaced.
 
+### Native load-balancer upgrade and rollback
+
+Server v1.6.605 prepares Web Console 1.6.240 with a corrected load-balancer
+upgrade path; see its [candidate note](../releases/server-1.6.605.md) for
+publication and acceptance status. The UI submits the replacement configuration
+through the native service upgrade action, preserving the active launch
+configuration until **Finish Upgrade** or **Rollback**. Do not save the
+replacement image onto the active service before starting the upgrade.
+
+Before finishing, verify the actual replacement image and HAProxy version,
+HTTP routing, certificate-verified HTTPS, rules, certificates and backend
+health. A rollback must restore the previous image and retained configuration
+in both the service and its actual containers. Finishing consumes that rollback
+point. The corrected path does not recreate a previous launch configuration
+that an earlier UI operation already overwrote.
+
 ## Catalog infrastructure-stack upgrades
 
 An available update is a Catalog candidate, not an upgrade already in progress.
