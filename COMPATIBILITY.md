@@ -1,5 +1,13 @@
 # Compatibility Contract
 
+## Server v1.6.605 prepared, not published
+
+Prepares Web Console **1.6.240** for native load-balancer upgrade and rollback.
+Catalog Service **0.20.20**, Load Balancer Service **0.9.35**, Engine
+**0.183.395**, persistent data and explicit operator settings retain their
+existing contracts. No Server image identity or deployment acceptance is claimed.
+See the [candidate note](docs/releases/server-1.6.605.md).
+
 ## Server v1.6.604 published
 
 Immutable image `ghcr.io/pasturestack/server:v1.6.604@sha256:50db275a49f4e41e605f8e153498fc04f2bbf34e6649fd8a8901f6c65b6b354f`.
