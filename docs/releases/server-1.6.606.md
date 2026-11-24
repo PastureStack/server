@@ -1,4 +1,4 @@
-# Server v1.6.606
+# Server v1.6.606 candidate
 
 This release packages Web Console 1.6.242, whose managed LB update entries use
 parsed image identities and the same candidate in Stack rows, service details
@@ -6,6 +6,8 @@ and direct image-update URLs. It preserves custom repositories/tags, digest pins
 and digest-only selections, and requires the resource's native upgrade action.
 The existing native image-only upgrade and previous-launch-config rollback
 behavior remain unchanged.
+
+Prepared source only; no Server image or release has been published.
 
 ## Verified component inputs
 
