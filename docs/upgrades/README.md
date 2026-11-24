@@ -78,20 +78,38 @@ the retained settings pass. Finishing consumes the native rollback point.
 
 ## Managed load-balancer image settings
 
-Server v1.6.605 selects Load Balancer Service v0.9.35 for new load balancers.
-An explicit database or environment setting retains precedence over that image
-default. Read the effective `activeValue` and `source` of both settings:
+Server v1.6.606 selects Load Balancer Service v0.9.35 for new load balancers.
+Read settings with an authorized administrator, using the console's API View
+or the same authenticated Settings API. Keep each request's status and the
+fields actually returned (`value`, `activeValue`, `inDb`, and optional `source`).
 
-| Setting | Selected v1.6.605 component |
+| Setting | Selected component |
 | --- | --- |
 | `lb.instance.image` | `ghcr.io/pasturestack/load-balancer-service:v0.9.35` |
 | `lb.instance.image.uuid` | `docker:ghcr.io/pasturestack/load-balancer-service:v0.9.35` |
 
-The image and image UUID must identify the same selected component. If an
-existing database setting is intentionally being advanced, explicitly update
-both keys through the standard settings interface or Setting API and read back
-their effective values and sources. Updating only `lb.instance.image` can leave
-an older UUID active. Keep deliberate custom image selections unchanged.
+`lb.instance.image` is in the public-setting allowlist. The internal image UUID
+requires a policy allowed to list all settings; a System Service or scoped API
+key need not have that policy. Its 404 or omission from a collection does not
+prove that the internal value is missing or incorrect. A missing `source` field
+is unknown, not a database diagnosis. Do not add a database row, relax the
+allowlist or change permissions merely to make that read return 200.
+
+The image and image UUID must resolve to the same selected component. Check
+explicit overrides separately from the image's `DEFAULT_CATTLE_*` values and
+the Engine's derived `docker:${lb.instance.image}` default. When defaults
+already resolve correctly and `inDb` is false, leave them inherited; no new
+database setting is needed. If a deliberately retained override is being
+advanced, preserve its original value/source and use the existing authorized
+Setting API `PUT` on its self link with `{"value":"..."}`. Read back the
+effective values afterward. An independent older UUID override must be handled
+explicitly; changing only the public image value does not remove it. Keep
+deliberate custom image selections unchanged.
+
+Two separate setting updates are not an atomic transaction. If a required
+second update fails, restore the first through the same supported interface
+and verify the previous effective pair. Updating a setting and upgrading an
+already running service are separate operations; do not use direct SQL.
 
 This setting change controls new creation; existing load-balancer services need
 their normal service upgrade, HTTP and certificate-verified HTTPS acceptance,
@@ -100,7 +118,7 @@ setting changes when its image is replaced.
 
 ### Native load-balancer upgrade and rollback
 
-Server v1.6.605 packages Web Console 1.6.241 with the native load-balancer
+Server v1.6.606 packages Web Console 1.6.242 with the native load-balancer
 image-upgrade path. The UI submits the complete primary and secondary launch
 configurations through the service upgrade action, retaining their previous
 values until **Finish Upgrade** or **Rollback**. It does not first save the
@@ -118,7 +136,12 @@ health. Image rollback restores the retained primary/secondary launch
 configurations and previous image. **Finish Upgrade** consumes that rollback
 point. The corrected path does not recreate a previous launch configuration
 that an earlier UI operation already overwrote.
-See the [release note](../releases/server-1.6.605.md) for the exact publication
+Both Stack rows and service details expose the same explicit image candidate,
+including the old and new tags. The managed update entry preserves custom
+repositories/tags and explicit digest pins; a tag string alone cannot establish
+a digest identity. Ordinary editing does not select a different image. The
+direct image-update URL rechecks the resource action and candidate as well.
+See the [release note](../releases/server-1.6.606.md) for the exact publication
 identity and scoped acceptance status.
 
 ## Catalog infrastructure-stack upgrades

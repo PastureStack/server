@@ -1,5 +1,26 @@
 # Compatibility Contract
 
+## Server v1.6.606 component update
+
+Web Console **1.6.242** shares a parsed-image update candidate between Stack
+rows, service details and direct update URLs. It requires the native resource
+action, preserves custom repositories/tags and digest pins, and does not use
+substring inclusion as image identity. The native image-only action and
+primary/secondary rollback configuration from 1.6.241 are retained.
+
+The Settings API is permission-filtered. `lb.instance.image` is public;
+`lb.instance.image.uuid` requires the corresponding administrator policy.
+An internal-setting 404 from a less privileged key is not a failed runtime
+value. Missing source metadata remains unknown. Existing defaults need no
+database row; authorized changes use the existing Setting API and effective
+readback. See the [settings procedure](docs/upgrades/README.md#managed-load-balancer-image-settings).
+
+Source tests and release Catalog reads do not establish workload UI acceptance.
+In particular, the earlier maintained-runtime Cron fixture does not qualify
+original v0.5.0 execution. The [release note](docs/releases/server-1.6.606.md)
+keeps those scopes explicit. Engine, Catalog, scheduler and LB binary identities
+are unchanged by this UI patch.
+
 ## Server v1.6.605 published
 
 Immutable image `ghcr.io/pasturestack/server:v1.6.605@sha256:b8ee185b9479e43b746b97d178aef883e3e5b26b4ecde811bbbc35fa86523266`.
