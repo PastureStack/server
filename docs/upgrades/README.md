@@ -76,6 +76,16 @@ compatibility migration does not introduce new timezone-label behavior.
 Keep the previous scheduler configuration until actual scheduled execution and
 the retained settings pass. Finishing consumes the native rollback point.
 
+The original `rancher/container-crontab:v0.5.0` template fixes its Docker API
+version at `1.24`. An unmodified historical-runtime test therefore needs a
+compatible legacy test baseline; Docker 29's default minimum API `1.40` rejects
+that old client. Do not lower a production daemon's API minimum merely to make
+a test pass. Record the actual source binary and test environment, retain the
+original settings during rollback, and verify the maintained target against the
+host's normal API configuration. A maintained `0.6.1` source fixture is not
+evidence of original `0.5.0` behavior. Timer pauses during stop-first handover
+are not a promise to replay missed historical ticks.
+
 ## Managed load-balancer image settings
 
 Server v1.6.606 selects Load Balancer Service v0.9.35 for new load balancers.
