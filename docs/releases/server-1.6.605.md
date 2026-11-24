@@ -27,6 +27,23 @@ v1.6.604 component identities. The complete default Catalog remains pinned to
 `8c1c28318580d5ec18c14a13b224ce0e02e40bf8`; no template, scheduler or
 load-balancer runtime image changes are introduced by this Server patch.
 
+## Rebuildable Ubuntu security inputs
+
+The disposable build stage downloads its existing security package versions
+from the official `20261123T000000Z` Ubuntu snapshot. This avoids depending on
+the live index retaining an older exact version. APT still authenticates the
+signed index and enforces HTTPS peer/host verification, exact versions,
+SHA-256, and package architecture; date and validity checks remain enabled.
+The selected snapshot InRelease files have no `Valid-Until` field, so this
+change does not introduce a short-lived expiry or disable time validation.
+
+All 24 selected package/version/architecture/SHA-256 identities match the
+signed-download manifest retained by the immutable v1.6.604 image. Its
+manifest SHA-256 is
+`f62b729812334de169b421075048027e32ffa1f24f57300d521f2039d19eeb71`.
+The version lock bytes and network-free runtime installer are unchanged;
+this build-source correction does not advance the runtime package set.
+
 ## Managed load-balancer upgrade and rollback
 
 The Web Console change submits the complete selected primary and secondary

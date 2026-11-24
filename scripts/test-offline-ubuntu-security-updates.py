@@ -54,7 +54,7 @@ elif name == 'apt-get':
     digest=hashlib.sha256(source.read_bytes()).hexdigest()
     if os.environ.get('FIXTURE_BAD_HASH'): digest='0'*64
     if '--print-uris' in args:
-        origin='https://archive.ubuntu.com/ubuntu/'
+        origin=os.environ.get('FIXTURE_URI', 'https://snapshot.ubuntu.com/ubuntu/20261123T000000Z/')
         if os.environ.get('FIXTURE_BAD_URI'): origin='http://untrusted.invalid/'
         kind='SHA256'
         if 'Acquire::ForceHash=sha256' not in args:
@@ -214,6 +214,15 @@ class OfflineSecurityUpdates(unittest.TestCase):
 
     def test_downloader_rejects_non_snapshot_or_plain_http_uri(self):
         self.assertNotEqual(0, self.download(FIXTURE_BAD_URI='1').returncode)
+
+    def test_downloader_rejects_live_archive_instead_of_reviewed_snapshot(self):
+        self.assertNotEqual(0, self.download(FIXTURE_URI='https://archive.ubuntu.com/ubuntu/').returncode)
+
+    def test_downloader_rejects_different_snapshot(self):
+        self.assertNotEqual(0, self.download(FIXTURE_URI='https://snapshot.ubuntu.com/ubuntu/20261124T000000Z/').returncode)
+
+    def test_downloader_rejects_snapshot_over_plain_http(self):
+        self.assertNotEqual(0, self.download(FIXTURE_URI='http://snapshot.ubuntu.com/ubuntu/20261123T000000Z/').returncode)
 
     def test_production_wiring_and_ldd_guards_are_fail_closed(self):
         recipe = RECIPE.read_text().replace('\\\n', ' ')
