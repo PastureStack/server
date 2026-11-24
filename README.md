@@ -13,14 +13,13 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server v1.6.606](https://github.com/PastureStack/server/releases/tag/v1.6.606)
-packages Engine `v0.183.395`, Web Console `1.6.242`, optional Bridge `0.2.37`,
+[Server v1.6.605](https://github.com/PastureStack/server/releases/tag/v1.6.605)
+packages Engine `v0.183.395`, Web Console `1.6.241`, optional Bridge `0.2.37`,
 and Compose `0.14.46`. New node registrations use Agent `v1.2.36`.
 Host Provisioner `v0.39.12` retires verified legacy registrations on upgrade.
 
-Managed load-balancer image candidates are shared by Stack rows and service details.
-Custom image choices and digest pins are preserved. Native image upgrades retain
-the previous primary and secondary launch configurations for native image rollback. Separately saved
+Managed load-balancer image upgrades preserve the previous primary and
+secondary launch configurations for native image rollback. Separately saved
 service-level metadata keeps its existing semantics; see the
 [rollback boundary](docs/upgrades/README.md#native-load-balancer-upgrade-and-rollback).
 
@@ -100,7 +99,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.606
+  ghcr.io/pasturestack/server:v1.6.605
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -108,7 +107,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.606
+    image: ghcr.io/pasturestack/server:v1.6.605
     restart: unless-stopped
     ports:
       - "8080:8080"
