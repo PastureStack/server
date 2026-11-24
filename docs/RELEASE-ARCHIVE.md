@@ -7,6 +7,8 @@ original evidence and rollback limits.
 
 ## Historical contracts
 
+- [Server v1.6.604](releases/server-1.6.604.md) — previous published release and scoped Cron/API acceptance.
+
 - [Server v1.6.603](releases/server-1.6.603.md) — previous published release and scoped QA record.
 
 - [Server v1.6.516](releases/server-1.6.516.md) — repair and acceptance record.

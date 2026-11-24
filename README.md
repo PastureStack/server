@@ -13,10 +13,15 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server v1.6.604](https://github.com/PastureStack/server/releases/tag/v1.6.604)
-packages Engine `v0.183.395`, Web Console `1.6.239`, optional Bridge `0.2.37`,
+[Server v1.6.605](https://github.com/PastureStack/server/releases/tag/v1.6.605)
+packages Engine `v0.183.395`, Web Console `1.6.241`, optional Bridge `0.2.37`,
 and Compose `0.14.46`. New node registrations use Agent `v1.2.36`.
 Host Provisioner `v0.39.12` retires verified legacy registrations on upgrade.
+
+Managed load-balancer image upgrades preserve the previous primary and
+secondary launch configurations for native image rollback. Separately saved
+service-level metadata keeps its existing semantics; see the
+[rollback boundary](docs/upgrades/README.md#native-load-balancer-upgrade-and-rollback).
 
 Catalog Service `v0.20.20` loads the verified default Catalog bundled in the
 image. It exposes the read-only legacy Container Crontab revision 3/4 path for
@@ -28,20 +33,11 @@ branch, pin and access policy.
 
 An image update preserves an explicit operator Catalog pin. Installations that
 retain `CATTLE_CATALOG_URL` must select this release's reviewed pin to load the
-new compatibility revisions. Clean installations use the new bundled defaults.
-See the [release note](docs/releases/server-1.6.604.md),
+these compatibility revisions. Clean installations use the new bundled defaults.
+See the [release note](docs/releases/server-1.6.605.md),
 [Catalog pin and lifecycle upgrade steps](docs/upgrades/README.md#legacy-container-crontab-migration)
 and [compatibility contract](COMPATIBILITY.md). Workload deployment acceptance
 remains separate from the publication checks.
-
-## Next source candidate
-
-Server `v1.6.605` prepares Web Console `1.6.241` with the native load-balancer
-upgrade action so rollback retains the previous launch configuration. Its
-[candidate note](docs/releases/server-1.6.605.md) records the component and
-acceptance boundaries. Publication and affected UI acceptance are pending.
-Catalog Service `v0.20.20`, Load Balancer Service `v0.9.35` and Engine
-`v0.183.395` retain their existing identities.
 
 ## Component capabilities
 
@@ -103,7 +99,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.604
+  ghcr.io/pasturestack/server:v1.6.605
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -111,7 +107,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.604
+    image: ghcr.io/pasturestack/server:v1.6.605
     restart: unless-stopped
     ports:
       - "8080:8080"

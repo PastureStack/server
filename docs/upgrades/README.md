@@ -2,7 +2,7 @@
 
 ## Bundled default Catalog
 
-Server v1.6.604 includes the complete default Catalog Git source at its
+Server v1.6.605 includes the complete default Catalog Git source at its
 pinned commit and Catalog Service v0.20.20. On startup and refresh, the service verifies
 the bundle SHA-256, complete Git objects and exact pinned commit before indexing
 it. This applies only when the configured source URL, branch and pinned commit
@@ -33,7 +33,7 @@ rollback points until their affected networking and health checks pass.
 
 ## Legacy Container Crontab migration
 
-Server v1.6.604 provides a read-only compatibility path for
+Server v1.6.605 provides a read-only compatibility path for
 `catalog://library:infra*container-crontab:3` to revision `4`. Verify that both
 exact versions are readable before upgrading. The hidden compatibility template
 retains the existing `container-crontab` service key, the `metrics` and
@@ -52,7 +52,7 @@ Before the Stack upgrade:
    including `CATTLE_CATALOG_URL` and any `RC16_CATALOG_URL`. Keep deliberate
    custom sources and pins unchanged.
 2. For the built-in PastureStack source being advanced to this release, update
-   only its `pinnedCommit` to the reviewed commit recorded in the v1.6.604
+   only its `pinnedCommit` to the reviewed commit recorded in the v1.6.605
    release note. Preserve the source name, URL, branch, all other Catalog entries
    and unrelated environment values. Recreate the Server with the same volumes
    and retained rollback container/image.
@@ -78,11 +78,11 @@ the retained settings pass. Finishing consumes the native rollback point.
 
 ## Managed load-balancer image settings
 
-Server v1.6.604 selects Load Balancer Service v0.9.35 for new load balancers.
+Server v1.6.605 selects Load Balancer Service v0.9.35 for new load balancers.
 An explicit database or environment setting retains precedence over that image
 default. Read the effective `activeValue` and `source` of both settings:
 
-| Setting | Selected v1.6.604 component |
+| Setting | Selected v1.6.605 component |
 | --- | --- |
 | `lb.instance.image` | `ghcr.io/pasturestack/load-balancer-service:v0.9.35` |
 | `lb.instance.image.uuid` | `docker:ghcr.io/pasturestack/load-balancer-service:v0.9.35` |
@@ -100,19 +100,26 @@ setting changes when its image is replaced.
 
 ### Native load-balancer upgrade and rollback
 
-Server v1.6.605 prepares Web Console 1.6.241 with a corrected load-balancer
-upgrade path; see its [candidate note](../releases/server-1.6.605.md) for
-publication and acceptance status. The UI submits the replacement configuration
-through the native service upgrade action, preserving the active launch
-configuration until **Finish Upgrade** or **Rollback**. Do not save the
-replacement image onto the active service before starting the upgrade.
+Server v1.6.605 packages Web Console 1.6.241 with the native load-balancer
+image-upgrade path. The UI submits the complete primary and secondary launch
+configurations through the service upgrade action, retaining their previous
+values until **Finish Upgrade** or **Rollback**. It does not first save the
+replacement image onto the active service.
+
+Actual edits to service-level name, description, scale or the complete
+`lbConfig` are saved separately before the image upgrade. Those fields retain
+their existing metadata semantics; native image rollback does not promise to
+roll them back transactionally. In particular, this fix does not establish
+transactional rollback of changed port rules or certificates.
 
 Before finishing, verify the actual replacement image and HAProxy version,
 HTTP routing, certificate-verified HTTPS, rules, certificates and backend
-health. A rollback must restore the previous image and retained configuration
-in both the service and its actual containers. Finishing consumes that rollback
+health. Image rollback restores the retained primary/secondary launch
+configurations and previous image. **Finish Upgrade** consumes that rollback
 point. The corrected path does not recreate a previous launch configuration
 that an earlier UI operation already overwrote.
+See the [release note](../releases/server-1.6.605.md) for the exact publication
+identity and scoped acceptance status.
 
 ## Catalog infrastructure-stack upgrades
 
