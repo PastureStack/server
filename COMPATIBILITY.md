@@ -1,12 +1,31 @@
 # Compatibility Contract
 
-## Server v1.6.605 prepared, not published
+## Server v1.6.605 published
 
-Prepares Web Console **1.6.241** for native load-balancer upgrade and rollback.
+Immutable image `ghcr.io/pasturestack/server:v1.6.605@sha256:b8ee185b9479e43b746b97d178aef883e3e5b26b4ecde811bbbc35fa86523266`.
+Producer `339b425bb851fc621dd4988d0df57be6d8d61944`.
+[Publication and required checks](https://github.com/PastureStack/server/actions/runs/45314344841)
+passed, including native runtime checks and fresh-volume startup/restart with
+eighteen exact Catalog API reads per phase.
+
+Web Console **1.6.241** preserves the prior primary and secondary launch
+configurations for native load-balancer image rollback. Separately saved
+service-level name, description, scale and `lbConfig` edits retain their
+existing metadata semantics; image rollback does not make them transactional.
+The existing WebMCP build ceiling remains `enabled` with initial mode `off`.
+
 Catalog Service **0.20.20**, Load Balancer Service **0.9.35**, Engine
-**0.183.395**, persistent data and explicit operator settings retain their
-existing contracts. No Server image identity or deployment acceptance is claimed.
-See the [candidate note](docs/releases/server-1.6.605.md).
+**0.183.395** and the existing package versions retain their identities.
+The Ubuntu build downloader uses a fixed signed official snapshot whose 24
+selected package identities match v1.6.604; the runtime installer is unchanged.
+Isolated existing-installation acceptance passed startup/restart and a
+continuous seven-phase LB UI sequence: image-only upgrade, actual prior-image
+rollback, then description edit, upgrade, finish and refresh. All eighteen HTTP
+and certificate-verified TLS 1.2/1.3 probes passed. Normal fixture cleanup
+restored the original Stack/service inventory and retained protected images,
+volumes and the previous Server rollback point. No production site was modified.
+See the [release note](docs/releases/server-1.6.605.md) and
+[upgrade guide](docs/upgrades/README.md).
 
 ## Server v1.6.604 published
 

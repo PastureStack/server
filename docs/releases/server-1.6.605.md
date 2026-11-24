@@ -1,10 +1,10 @@
-# Server v1.6.605 candidate
+# Server v1.6.605
 
-## Candidate boundary
+Published image: `ghcr.io/pasturestack/server:v1.6.605@sha256:b8ee185b9479e43b746b97d178aef883e3e5b26b4ecde811bbbc35fa86523266`.
 
-Prepared source only; no Server image or release has been published.
-Server build, publication, deployment and affected native/UI workflows remain
-pending. The Web Console input below is already officially published.
+Source commit: `339b425bb851fc621dd4988d0df57be6d8d61944`.
+
+The release workflow passed its source, security, startup and restart checks before publishing this image. Deployment-specific acceptance is separate and is not claimed by these build results.
 
 ## Verified component inputs
 
@@ -50,27 +50,30 @@ this build-source correction does not advance the runtime package set.
 
 ## Managed load-balancer upgrade and rollback
 
-The Web Console change submits the complete selected primary and secondary
-launch configurations through the native service upgrade action. It preserves the active launch configuration as
-the previous configuration until the operator chooses **Finish Upgrade** or
-**Rollback**. Saving the replacement image to the service before starting its
-upgrade would overwrite that rollback state; image-only upgrades no longer
-perform that save. Actual name, description, scale and complete load-balancer
-configuration edits use an allowlisted partial save without launch configurations
-or public endpoints.
+The Web Console submits the complete selected primary and secondary launch
+configurations through the native service upgrade action. Their previous
+values form the native image rollback point until **Finish Upgrade** or
+**Rollback**. Image-only upgrades do not first save the replacement image onto
+the active service.
 
-Keep the upgraded load balancer unconfirmed until the replacement containers,
-actual HAProxy version, HTTP routing, and certificate-verified HTTPS pass.
-Rollback must restore the retained previous image and configuration; inspect
-both the service and its actual containers. **Finish Upgrade** consumes the
-native rollback point.
+Actual name, description, scale and complete `lbConfig` edits use an
+allowlisted partial service save before the image upgrade, without saving
+launch configurations or public endpoints. These separately saved
+service-level fields retain their existing metadata semantics. This patch
+does not make changed port rules, certificates or other service metadata
+transactional with native image rollback.
 
-This behavior applies to a new upgrade submitted with the corrected Web
-Console. It does not reconstruct a previous launch configuration already
-overwritten by an earlier UI operation. Existing operator pins and the
-`lb.instance.image` / `lb.instance.image.uuid` settings retain precedence.
-See the [upgrade guide](../upgrades/README.md#managed-load-balancer-image-settings)
-for selecting the managed component and retaining its rollback point.
+Keep the upgraded load balancer unconfirmed until the actual replacement
+image, HAProxy version, HTTP routing and certificate-verified HTTPS pass.
+Image rollback must restore the retained previous primary/secondary launch
+configurations and image in the service and its actual containers.
+**Finish Upgrade** consumes the native rollback point.
+
+The corrected path applies to a new upgrade submitted with this Web Console.
+It does not reconstruct previous launch configurations already overwritten by
+an earlier UI operation. Existing operator pins and the `lb.instance.image` /
+`lb.instance.image.uuid` settings retain precedence.
+See the [upgrade guide](../upgrades/README.md#managed-load-balancer-image-settings).
 
 ## Validation and rollback boundary
 
@@ -83,3 +86,51 @@ recorded artifacts and does not claim this corrected UI sequence has run.
 Retain the previous Server container/image and persistent volumes. Server
 rollback does not reverse a completed service upgrade; keep the service's own
 rollback point until the affected behavior has passed.
+
+## Published security evidence
+
+The [published security summary](https://github.com/PastureStack/server/releases/download/v1.6.605/security-summary.txt)
+retains 90 raw scanner findings and 58 vendor-pending findings. Its qualified
+gate reports no untracked, critical/high, fixed-available or secret findings.
+Browser scan coverage remains `incomplete`; this is not a claim of complete
+browser coverage or an absence of all raw findings.
+
+## Isolated load-balancer UI acceptance
+
+The published image passed startup and an explicit restart on an isolated
+existing installation. Host configuration, environment, mounts and AppArmor
+were preserved, and the previous Server remained stopped and available for
+rollback. The new runtime's complete 24-package signed-download manifest is
+byte-for-byte identical to v1.6.604, with the manifest SHA-256 recorded above.
+
+Minimal post-restart dependency readbacks retained both effective LB defaults
+at v0.9.35, the same Catalog commit and readable exact legacy Container Crontab
+revisions 3 and 4. These are readbacks, not repeated Catalog or Cron lifecycles.
+
+One continuous seven-phase UI evidence chain, tied to seven observed browser
+actions and the same service, passed. Its actual baseline was Load Balancer
+Service v0.9.34 with HAProxy 3.4.7-8872a26. An image-only UI upgrade selected
+v0.9.35 with HAProxy 3.4.8-1b15b69 while retaining v0.9.34 as the previous
+launch configuration. UI rollback restored v0.9.34 and HAProxy 3.4.7 in both
+the native API and actual running container.
+
+The second round edited the description through the UI, upgraded to v0.9.35,
+finished the upgrade, then refreshed the page. The description remained saved,
+the API was healthy, and the finished container identity remained the same
+after refresh. Ports, rules and certificates were unchanged throughout this
+fixture. This acceptance covers native image rollback and separately saved
+description metadata; it does not establish transactional rollback of changed
+port rules, certificates or other service metadata.
+
+All six observed runtime phases passed HTTP, certificate-verified TLS 1.2 and
+TLS 1.3: eighteen probes returned success. No browser errors were recorded.
+The accepted visible 1035-pixel viewport had no document overflow; visual
+acceptance is limited to that visible view.
+
+The temporary fixture Stack, its two services, certificate and test CA were
+removed normally, leaving no fixture-owned Docker containers. The original
+Stack/service inventory matched its baseline, all three Hosts and their
+Agents were active, and protected images, volumes and the previous Server
+rollback point were retained. This was isolated QA; no production site was
+accessed or modified. Existing Catalog and Cron lifecycle evidence keeps its
+original scope and was not replayed by this LB UI acceptance.
