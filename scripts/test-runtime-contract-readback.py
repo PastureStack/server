@@ -10,7 +10,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = (ROOT / 'server/build-api-explorer-patch-image.sh').read_text()
-CURRENT_COMMIT = '5ad80b6851b3162bf89522ea9f45c4975fbb2c47'
+CURRENT_COMMIT = 'f84aad3e40f4a364aab42273e46767f756fb551f'
 START = BUILD.index('docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=')
 HEADER, BLOCK = BUILD[START:].split("-lc '\n", 1)
 LINES = BLOCK.splitlines()
@@ -20,7 +20,7 @@ IDENTITY = [line.strip() for line in LINES
             if 'grep -F ' in line and '"${api_dir}/version.json"' in line]
 
 
-def run_identity(metadata, commit=CURRENT_COMMIT, tag='v1.1.21', missing=()):
+def run_identity(metadata, commit=CURRENT_COMMIT, tag='v1.1.22', missing=()):
     """Use the actual production grep/trap lines against temporary JSON bytes."""
     with tempfile.TemporaryDirectory() as temp:
         (Path(temp) / 'version.json').write_bytes(metadata)
@@ -35,7 +35,7 @@ def run_identity(metadata, commit=CURRENT_COMMIT, tag='v1.1.21', missing=()):
                               env=env, capture_output=True, text=True, timeout=10)
 
 
-def identity(version='1.1.21', commit='5ad80b6'):
+def identity(version='1.1.22', commit='f84aad3'):
     return (json.dumps({'version': version, 'commit': commit}, indent=2) + '\n').encode()
 
 
@@ -108,8 +108,8 @@ class RuntimeContractReadback(unittest.TestCase):
         self.assertEqual(result.stdout + result.stderr, '')
 
     def test_other_matching_commit_and_version_are_not_hardcoded(self):
-        result = run_identity(identity('1.1.21', '0123456'),
-                              commit='0123456789abcdef0123456789abcdef01234567', tag='v1.1.21')
+        result = run_identity(identity('1.1.22', '0123456'),
+                              commit='0123456789abcdef0123456789abcdef01234567', tag='v1.1.22')
         self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_stale_version_is_rejected(self):

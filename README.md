@@ -13,8 +13,8 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server v1.6.606](https://github.com/PastureStack/server/releases/tag/v1.6.606)
-packages Engine `v0.183.395`, Web Console `1.6.242`, optional Bridge `0.2.37`,
+[Server v1.6.607](https://github.com/PastureStack/server/releases/tag/v1.6.607)
+packages Engine `v0.183.395`, Web Console `1.6.243`, optional Bridge `0.2.37`,
 and Compose `0.14.46`. New node registrations use Agent `v1.2.36`.
 Host Provisioner `v0.39.12` retires verified legacy registrations on upgrade.
 
@@ -35,7 +35,7 @@ branch, pin and access policy.
 An image update preserves an explicit operator Catalog pin. Installations that
 retain `CATTLE_CATALOG_URL` must select this release's reviewed pin to load
 these compatibility revisions. Clean installations use the new bundled defaults.
-See the [release note](docs/releases/server-1.6.606.md),
+See the [release note](docs/releases/server-1.6.607.md),
 [Catalog pin and lifecycle upgrade steps](docs/upgrades/README.md#legacy-container-crontab-migration)
 and [compatibility contract](COMPATIBILITY.md). Workload deployment acceptance
 remains separate from the publication checks.
@@ -100,7 +100,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.606
+  ghcr.io/pasturestack/server:v1.6.607
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -108,7 +108,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.606
+    image: ghcr.io/pasturestack/server:v1.6.607
     restart: unless-stopped
     ports:
       - "8080:8080"

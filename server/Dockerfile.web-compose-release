@@ -58,10 +58,10 @@ COPY --from=component_input / /tmp/pasturestack-component-input/
 ARG COMPONENT_ARTIFACT_MODE=remote
 ARG PASTURESTACK_ALLOW_LOOPBACK_ARTIFACTS=0
 ARG API_EXPLORER_RELEASE_BASE_URL=https://github.com/PastureStack/api-explorer/releases/download
-ARG API_EXPLORER_RELEASE_TAG=v1.1.21
-ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.21.tar.gz
-ARG API_EXPLORER_ARTIFACT_SHA256=32f1e104434347e58a4ed6935741ab8c7d96c91c0b1a9b112bb792a3bc5ecafd
-ARG API_EXPLORER_COMMIT=5ad80b6851b3162bf89522ea9f45c4975fbb2c47
+ARG API_EXPLORER_RELEASE_TAG=v1.1.22
+ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.22.tar.gz
+ARG API_EXPLORER_ARTIFACT_SHA256=31564c3409313b7f5ce95486f6445f099646957f7c984de3f045245884e5c5f0
+ARG API_EXPLORER_COMMIT=f84aad3e40f4a364aab42273e46767f756fb551f
 ARG HOST_API_VERSION=0.38.11
 ARG HOST_API_PACKAGE_MODE=producer
 ARG HOST_API_RELEASE_BASE_URL=https://github.com/PastureStack/host-api/releases/download
@@ -466,9 +466,9 @@ RUN set -eux; \
         /out/vsphere-cli-bundle/vsphere-cli-bundle-SOURCES.txt >/dev/null
 
 RUN set -eux; \
-    test "${API_EXPLORER_RELEASE_TAG}" = v1.1.21; \
+    test "${API_EXPLORER_RELEASE_TAG}" = v1.1.22; \
     fetch-server-component "${COMPONENT_ARTIFACT_MODE}" "${API_EXPLORER_RELEASE_BASE_URL%/}/${API_EXPLORER_RELEASE_TAG}/${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT_SHA256}" /tmp/api-explorer.tar.gz; \
-    prepare-api-explorer /tmp/api-explorer.tar.gz 1.1.21 "${API_EXPLORER_COMMIT}" /out/api-explorer; \
+    prepare-api-explorer /tmp/api-explorer.tar.gz 1.1.22 "${API_EXPLORER_COMMIT}" /out/api-explorer; \
     cd /out/api-explorer; \
     find . -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum > /out/api-explorer.sha256; \
     rm -f /tmp/api-explorer.tar.gz
@@ -873,10 +873,10 @@ ARG PER_HOST_SUBNET_VERSION=0.2.6
 ARG PER_HOST_SUBNET_PRODUCER_COMMIT=05c69dba52ab770062e81a9b60b69408cbe58218
 ARG PER_HOST_SUBNET_ARCHIVE_SHA256=a3a7592582c443f4f36b31c54a0a3c87d5961d664e3604b20acb97dec55725be
 ARG PER_HOST_SUBNET_PROVENANCE_SHA256=272ea108e8d938c352cf47a4fa82e0dab3c81b6f3b181d0d12b71e1469f87edd
-ARG SERVER_RELEASE_TAG=v1.6.607
-ARG API_EXPLORER_RELEASE_TAG=v1.1.21
-ARG API_EXPLORER_ARTIFACT_SHA256=32f1e104434347e58a4ed6935741ab8c7d96c91c0b1a9b112bb792a3bc5ecafd
-ARG API_EXPLORER_COMMIT=5ad80b6851b3162bf89522ea9f45c4975fbb2c47
+ARG SERVER_RELEASE_TAG=v1.6.608
+ARG API_EXPLORER_RELEASE_TAG=v1.1.22
+ARG API_EXPLORER_ARTIFACT_SHA256=31564c3409313b7f5ce95486f6445f099646957f7c984de3f045245884e5c5f0
+ARG API_EXPLORER_COMMIT=f84aad3e40f4a364aab42273e46767f756fb551f
 ARG ORCHESTRATION_ENGINE_RELEASE_TAG=v0.183.395
 ARG ORCHESTRATION_ENGINE_VERSION=0.183.395
 ARG ENGINE_READONLY_SCHEMA_SHA256=7f274219e8dd9c6d750a408a6edec1448b564f4b16ba2204c425c5b45cec2233
@@ -1249,7 +1249,7 @@ RUN set -eux; \
     (cd api-ui && sha256sum -c /tmp/pasturestack-api-ui.sha256); \
     rm -f /tmp/pasturestack-api-ui.sha256; \
     sed -i '/^export \(DEFAULT_\)\?CATTLE_API_UI_VERSION=/d' /usr/share/cattle/env_vars; \
-    printf 'export DEFAULT_CATTLE_API_UI_VERSION=1.1.21\nexport CATTLE_API_UI_VERSION=1.1.21\n' >> /usr/share/cattle/env_vars; \
+    printf 'export DEFAULT_CATTLE_API_UI_VERSION=1.1.22\nexport CATTLE_API_UI_VERSION=1.1.22\n' >> /usr/share/cattle/env_vars; \
     test "$(readlink -f /usr/share/cattle/war)" = "${new_web_root}"; \
     unzip -p "${resources_jar}" db/core-124.xml | \
         grep -F 'pasturestack-catalog-pinned-commit' >/dev/null; \
@@ -1465,8 +1465,8 @@ ENV DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.36
 ENV DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.36
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE=ghcr.io/pasturestack/load-balancer-service:v0.9.35
 ENV DEFAULT_CATTLE_LB_INSTANCE_IMAGE_UUID=docker:ghcr.io/pasturestack/load-balancer-service:v0.9.35
-ENV CATTLE_API_UI_VERSION=1.1.21
-ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.21
+ENV CATTLE_API_UI_VERSION=1.1.22
+ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.22
 ENV PASTURESTACK_API_EXPLORER_COMMIT=${API_EXPLORER_COMMIT}
 ENV PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256=${API_EXPLORER_ARTIFACT_SHA256}
 ENV RC16_HOST_API_VERSION=${HOST_API_VERSION}

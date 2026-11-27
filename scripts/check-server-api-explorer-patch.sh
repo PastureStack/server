@@ -573,7 +573,7 @@ python3 scripts/test-web-console-sbom.py
 python3 server/security/test_web_console_sbom_scan.py
 
 require_marker "$release_dockerfile" \
-    'ARG SERVER_RELEASE_TAG=v1.6.607' \
+    'ARG SERVER_RELEASE_TAG=v1.6.608' \
     SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING
 require_marker "$release_dockerfile" \
     'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"' \
@@ -1141,10 +1141,10 @@ require_marker "$build_script" \
     '--file server/Dockerfile.web-compose-release' \
     SERVER_INCREMENTAL_RELEASE_BUILD_PATH_MISSING
 require_marker "$build_script" \
-    'image=${IMAGE:-pasturestack-validation/server:v1.6.607}' \
+    'image=${IMAGE:-pasturestack-validation/server:v1.6.608}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.607}' \
+    'server_release_tag=${SERVER_RELEASE_TAG:-v1.6.608}' \
     SERVER_INCREMENTAL_RELEASE_BUILD_DEFAULT_MISSING
 require_marker "$build_script" \
     'CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}"' \
@@ -1383,19 +1383,19 @@ if [ "$(grep -Fxc '  image: ghcr.io/pasturestack/load-balancer-service:v0.9.35' 
     exit 1
 fi
 for api_explorer_release_marker in \
-    'ARG API_EXPLORER_RELEASE_TAG=v1.1.21' \
-    'ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.21.tar.gz' \
-    'ARG API_EXPLORER_ARTIFACT_SHA256=32f1e104434347e58a4ed6935741ab8c7d96c91c0b1a9b112bb792a3bc5ecafd' \
-    'ARG API_EXPLORER_COMMIT=5ad80b6851b3162bf89522ea9f45c4975fbb2c47' \
+    'ARG API_EXPLORER_RELEASE_TAG=v1.1.22' \
+    'ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.22.tar.gz' \
+    'ARG API_EXPLORER_ARTIFACT_SHA256=31564c3409313b7f5ce95486f6445f099646957f7c984de3f045245884e5c5f0' \
+    'ARG API_EXPLORER_COMMIT=f84aad3e40f4a364aab42273e46767f756fb551f' \
     'COPY --chmod=0755 artifacts/prepare-api-explorer.sh /usr/local/bin/prepare-api-explorer' \
     'fetch-server-component "${COMPONENT_ARTIFACT_MODE}" "${API_EXPLORER_RELEASE_BASE_URL%/}/${API_EXPLORER_RELEASE_TAG}/${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT_SHA256}" /tmp/api-explorer.tar.gz;' \
-    'prepare-api-explorer /tmp/api-explorer.tar.gz 1.1.21 "${API_EXPLORER_COMMIT}" /out/api-explorer;' \
+    'prepare-api-explorer /tmp/api-explorer.tar.gz 1.1.22 "${API_EXPLORER_COMMIT}" /out/api-explorer;' \
     'COPY --from=release_artifacts /out/api-explorer/ /tmp/pasturestack-api-ui/' \
     'COPY --from=release_artifacts /out/api-explorer.sha256 /tmp/pasturestack-api-ui.sha256' \
     'mv /tmp/pasturestack-api-ui api-ui;' \
     '(cd api-ui && sha256sum -c /tmp/pasturestack-api-ui.sha256);' \
-    'ENV CATTLE_API_UI_VERSION=1.1.21' \
-    'ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.21' \
+    'ENV CATTLE_API_UI_VERSION=1.1.22' \
+    'ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.22' \
     'ENV PASTURESTACK_API_EXPLORER_COMMIT=${API_EXPLORER_COMMIT}' \
     'ENV PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256=${API_EXPLORER_ARTIFACT_SHA256}'; do
     require_marker "$release_dockerfile" "$api_explorer_release_marker" SERVER_CURRENT_API_EXPLORER_FLOW_MISSING
@@ -1701,10 +1701,10 @@ fi
 if grep -Fxq '## Current source candidate' README.md; then
     for candidate_readme_marker in \
         '<a id="current-release"></a>' \
-        'Server `v1.6.607` is a prepared source candidate, not a published image.' \
+        'Server `v1.6.608` is a prepared source candidate, not a published image.' \
         'run them only after its official release' \
         'This candidate is not yet available' \
-        'ghcr.io/pasturestack/server:v1.6.607'; do
+        'ghcr.io/pasturestack/server:v1.6.608'; do
         require_marker README.md "$candidate_readme_marker" \
             SERVER_CURRENT_CANDIDATE_README_MISSING
     done
@@ -2332,7 +2332,7 @@ done
 jq -e '
   ["CVE-2026-107928","CVE-2026-107929","CVE-2026-86409","CVE-2026-86410","CVE-2026-86412","CVE-2026-86414","CVE-2026-87862","CVE-2026-87863","CVE-2026-87864","CVE-2026-87865","CVE-2026-92386","CVE-2026-92387","CVE-2026-92388","CVE-2026-92389","CVE-2026-92390","CVE-2026-92391","CVE-2026-92392","CVE-2026-94266"] as $curl_fixed_cves
   |   .["@context"] == "https://openvex.dev/ns/v0.2.0"
-  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.607"
+  and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.608"
   and (.statements | length) == 59
   and ([.statements[] | select(.vulnerability.name == "CVE-2026-82560")] | length) == 1
   and any(.statements[];
@@ -2405,7 +2405,7 @@ jq -r '
   | @tsv
 ' "$runtime_vendor_pending" | LC_ALL=C sort -u >"$vendor_pending_fixture"
 bash "$vendor_pending_validator" "$runtime_vendor_pending" \
-    "$vendor_pending_fixture" v1.6.607 >/dev/null
+    "$vendor_pending_fixture" v1.6.608 >/dev/null
 bash scripts/test-vendor-pending-findings.sh >/dev/null
 rm -f "$vendor_pending_fixture"
 trap - EXIT
@@ -2509,4 +2509,4 @@ require_marker server/artifacts/fetch-server-component.sh 'Component response mu
 # Execute the shared archive verifier controls before starting an image build.
 python3 -B "$repo_root/scripts/test-engine-archive-contract.py"
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.607 base=v1.6.460 engine=0.183.395 web_console=1.6.243 catalog_service=0.20.20 webhook_automation_service=0.10.6 authentication_service=0.4.47 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.608 base=v1.6.460 engine=0.183.395 web_console=1.6.243 catalog_service=0.20.20 webhook_automation_service=0.10.6 authentication_service=0.4.47 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
