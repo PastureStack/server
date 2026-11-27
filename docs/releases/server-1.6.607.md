@@ -1,4 +1,4 @@
-# Server v1.6.607 published
+# Server v1.6.607
 
 ## Published identity
 
