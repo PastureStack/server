@@ -10,7 +10,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = (ROOT / 'server/build-api-explorer-patch-image.sh').read_text()
-CURRENT_COMMIT = 'a586f0dc0aa50df579049a8d4bf26f04400fdf75'
+CURRENT_COMMIT = '5ad80b6851b3162bf89522ea9f45c4975fbb2c47'
 START = BUILD.index('docker run --rm --env "ORCHESTRATION_ENGINE_VERSION=')
 HEADER, BLOCK = BUILD[START:].split("-lc '\n", 1)
 LINES = BLOCK.splitlines()
@@ -20,7 +20,7 @@ IDENTITY = [line.strip() for line in LINES
             if 'grep -F ' in line and '"${api_dir}/version.json"' in line]
 
 
-def run_identity(metadata, commit=CURRENT_COMMIT, tag='v1.1.20', missing=()):
+def run_identity(metadata, commit=CURRENT_COMMIT, tag='v1.1.21', missing=()):
     """Use the actual production grep/trap lines against temporary JSON bytes."""
     with tempfile.TemporaryDirectory() as temp:
         (Path(temp) / 'version.json').write_bytes(metadata)
@@ -35,7 +35,7 @@ def run_identity(metadata, commit=CURRENT_COMMIT, tag='v1.1.20', missing=()):
                               env=env, capture_output=True, text=True, timeout=10)
 
 
-def identity(version='1.1.20', commit='a586f0d'):
+def identity(version='1.1.21', commit='5ad80b6'):
     return (json.dumps({'version': version, 'commit': commit}, indent=2) + '\n').encode()
 
 
