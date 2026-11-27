@@ -1,9 +1,12 @@
-# Server v1.6.608 candidate
+# Server v1.6.608
 
-## Candidate boundary
+## Published identity
 
-API Explorer 1.1.22 is published. Server build, publication, deployment and
-affected native/UI workflows remain pending for this candidate.
+Image `ghcr.io/pasturestack/server:v1.6.608@sha256:40b5e3c43a5a05453d11eea16086201fc80f9ae496ddf0fb5e79fa84860dcad7`.
+Producer `ba81e2c04c0fbc3c2ffbba8e6a51eed892cb80da`. The exact publication workflow passed required checks.
+The isolated existing installation completed deployment and one real restart;
+each observed startup was at least 180 seconds old with 60 seconds of continuous
+readiness. Production was not accessed or modified.
 
 ## Verified component inputs
 
@@ -24,7 +27,12 @@ This patch changes no backend authorization, OIDC, firewall or workload settings
 
 ## Acceptance boundaries
 
-Publication and deployment require their own exact-image checks. Existing
+The deployed browser loaded JavaScript/CSS matching the published Explorer
+archive. Both supported locales at 1440, 802, 390 and 320 pixels passed expansion,
+preview and cancel with no writes, overflow, browser errors or API failures.
+The deployed Server restart and three existing Hosts passed; original mounts,
+environment overrides, AppArmor and actual restart policy were preserved.
+The previous Server container/image and verified database backup remain retained. Existing
 unchanged Cron, Catalog history and scoped LB UI evidence retains its original
 scope. An empty secondary list does not qualify non-empty secondary behavior;
 arbitrary historical downgrades and all module collectors remain unqualified.
