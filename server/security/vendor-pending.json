@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "release": "v1.6.607",
-  "generatedAt": "2026-11-23T11:25:38+08:00",
+  "generatedAt": "2026-11-27T22:18:53.782734+08:00",
   "policy": {
     "allowedSeverities": [
       "LOW",
@@ -202,42 +202,6 @@
       "vendorEvidenceSha256": "453bb87d5835968a2537e0eab24f77fd88422b9fc30e0bb9f182548df88c7fa8"
     },
     {
-      "vulnerabilityId": "CVE-2026-102633",
-      "severity": "MEDIUM",
-      "vendorStatus": "needs-evaluation",
-      "source": "https://ubuntu.com/security/CVE-2026-102633",
-      "reviewAfter": "2026-11-27",
-      "packages": [
-        {
-          "name": "libexpat1",
-          "installedVersion": "2.7.4-1ubuntu0.2"
-        }
-      ],
-      "verifiedAt": "2026-11-20T08:03:15+08:00",
-      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-102633.json",
-      "upstreamVendorStatus": "Ubuntu 26.04 Resolute expat: needed; no released fixed package",
-      "severityBasis": "Ubuntu priority Medium and scanner vendor severity; upstream CVSS4.0 8.2 High remains disclosed.",
-      "vendorEvidenceSha256": "0989aea8abfc982978ef5af1840dfe0c48763c33e79128058b2eedcabf4563fd"
-    },
-    {
-      "vulnerabilityId": "CVE-2026-93990",
-      "severity": "MEDIUM",
-      "vendorStatus": "needs-evaluation",
-      "source": "https://ubuntu.com/security/CVE-2026-93990",
-      "reviewAfter": "2026-11-27",
-      "packages": [
-        {
-          "name": "libexpat1",
-          "installedVersion": "2.7.4-1ubuntu0.2"
-        }
-      ],
-      "verifiedAt": "2026-11-20T08:03:15+08:00",
-      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-93990.json",
-      "vendorEvidenceSha256": "cd880a226c56c8db5a6613efe6b4793684c4371144de615dbb567587b22b9fb0",
-      "upstreamVendorStatus": "Ubuntu 26.04 Resolute expat: needed; no released fixed package",
-      "severityBasis": "Ubuntu priority Medium and native scanner vendor severity; upstream CVSS3 7.5 High remains disclosed. A fix in another Ubuntu release or upstream source is not a released compatible Resolute package."
-    },
-    {
       "vulnerabilityId": "CVE-2026-9538",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
@@ -313,66 +277,6 @@
       "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-105712.json",
       "vendorEvidenceSha256": "2be129dc4fc559e8ac515a10f160cd7661ab5d935f6b5bec68def4f255ebca18",
       "upstreamVendorStatus": "Ubuntu 26.04 Resolute gnupg2: needed; no released fixed package"
-    },
-    {
-      "vulnerabilityId": "CVE-2026-107708",
-      "severity": "MEDIUM",
-      "vendorStatus": "needs-evaluation",
-      "source": "https://ubuntu.com/security/CVE-2026-107708",
-      "reviewAfter": "2026-11-27",
-      "packages": [
-        {
-          "name": "libgssapi-krb5-2",
-          "installedVersion": "1.22.1-2ubuntu4.1"
-        },
-        {
-          "name": "libk5crypto3",
-          "installedVersion": "1.22.1-2ubuntu4.1"
-        },
-        {
-          "name": "libkrb5-3",
-          "installedVersion": "1.22.1-2ubuntu4.1"
-        },
-        {
-          "name": "libkrb5support0",
-          "installedVersion": "1.22.1-2ubuntu4.1"
-        }
-      ],
-      "verifiedAt": "2026-11-23T11:25:38+08:00",
-      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-107708.json",
-      "vendorEvidenceSha256": "44f512e9c74e41998bc20867edb1340097133e971fe1ffa290feb9a19ee1ace8",
-      "upstreamVendorStatus": "Ubuntu 26.04 Resolute krb5: needed; no released fixed package",
-      "notes": "Canonical lists Resolute as vulnerable (needed), with no associated USN notices. The official published source listing https://api.launchpad.net/1.0/ubuntu/+archive/primary?ws.op=getPublishedSources&source_name=krb5&exact_match=true&distro_series=https%3A%2F%2Fapi.launchpad.net%2F1.0%2Fubuntu%2Fresolute&status=Published has 1.22.1-2ubuntu4.1 in Updates/Security and 1.22.1-2ubuntu4 in Release, with no newer published Resolute package. The current merged-rootfs scan reports these four exact Medium occurrences with empty FixedVersion. Upstream patches are not a released compatible Ubuntu fix. Retain the raw findings and needs-evaluation status; this is not remediation, not_affected, or risk acceptance. Recheck by 2026-11-27, or sooner when Canonical publishes a fix/USN or the scanner supplies FixedVersion."
-    },
-    {
-      "vulnerabilityId": "CVE-2026-107778",
-      "severity": "MEDIUM",
-      "vendorStatus": "needs-evaluation",
-      "source": "https://ubuntu.com/security/CVE-2026-107778",
-      "reviewAfter": "2026-11-27",
-      "packages": [
-        {
-          "name": "libgssapi-krb5-2",
-          "installedVersion": "1.22.1-2ubuntu4.1"
-        },
-        {
-          "name": "libk5crypto3",
-          "installedVersion": "1.22.1-2ubuntu4.1"
-        },
-        {
-          "name": "libkrb5-3",
-          "installedVersion": "1.22.1-2ubuntu4.1"
-        },
-        {
-          "name": "libkrb5support0",
-          "installedVersion": "1.22.1-2ubuntu4.1"
-        }
-      ],
-      "severityBasis": "Ubuntu priority Medium and native scanner vendor severity; upstream CVSS3 6.5 remains disclosed. This tracking entry is not a remediation or a not-affected decision.",
-      "verifiedAt": "2026-11-20T08:03:15+08:00",
-      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-107778.json",
-      "vendorEvidenceSha256": "002547c3d6f7f95e287647c7356ada7ebb10c261dc17d60899bcdfd8a7ff8488",
-      "upstreamVendorStatus": "Ubuntu 26.04 Resolute krb5: needed; no released fixed package"
     },
     {
       "vulnerabilityId": "CVE-2026-14739",
@@ -469,24 +373,6 @@
       "upstreamVendorStatus": "Ubuntu 26.04 Resolute util-linux: needed; no released fixed package"
     },
     {
-      "vulnerabilityId": "CVE-2026-77214",
-      "severity": "MEDIUM",
-      "vendorStatus": "needs-evaluation",
-      "source": "https://ubuntu.com/security/CVE-2026-77214",
-      "reviewAfter": "2026-11-27",
-      "packages": [
-        {
-          "name": "libexpat1",
-          "installedVersion": "2.7.4-1ubuntu0.2"
-        }
-      ],
-      "severityBasis": "Ubuntu priority Medium and native scanner vendor severity; upstream CVSS3 8.2 remains disclosed. This tracking entry is not a remediation or a not-affected decision.",
-      "verifiedAt": "2026-11-20T08:03:15+08:00",
-      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-77214.json",
-      "vendorEvidenceSha256": "73d115e94c308d3ebaeb3d7a4d75c9326b610c2e4f3f9a6cacd44e48ea044fb2",
-      "upstreamVendorStatus": "Ubuntu 26.04 Resolute expat: needed; no released fixed package"
-    },
-    {
       "vulnerabilityId": "CVE-2026-78410",
       "severity": "MEDIUM",
       "vendorStatus": "needs-evaluation",
@@ -531,6 +417,80 @@
       "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-78410.json",
       "vendorEvidenceSha256": "25889e8b1887b4fb563849484bd7b31af3804c5800226f48d18c5e86aa3958d1",
       "upstreamVendorStatus": "Ubuntu 26.04 Resolute util-linux: needed; no released fixed package"
+    },
+    {
+      "vulnerabilityId": "CVE-2026-107493",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-107493",
+      "reviewAfter": "2026-11-30",
+      "verifiedAt": "2026-11-27T22:16:21.164060+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-107493.json",
+      "vendorEvidenceSha256": "2eb006e170fa722cf5525b56525f29c934d53e1701801435f8f666ed923ef95f",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute openssl: needed; no released compatible fixed package",
+      "severityBasis": "Keep the raw Ubuntu/scanner Medium severity. Upstream CVSS High, where present, remains disclosed; this is not remediation or a not-affected decision.",
+      "packages": [
+        {
+          "name": "libssl3t64",
+          "installedVersion": "3.5.5-1ubuntu3.7"
+        },
+        {
+          "name": "openssl",
+          "installedVersion": "3.5.5-1ubuntu3.7"
+        },
+        {
+          "name": "openssl-provider-legacy",
+          "installedVersion": "3.5.5-1ubuntu3.7"
+        }
+      ]
+    },
+    {
+      "vulnerabilityId": "CVE-2026-14740",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-14740",
+      "reviewAfter": "2026-11-30",
+      "verifiedAt": "2026-11-27T22:16:21.172072+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-14740.json",
+      "vendorEvidenceSha256": "35be88fdac9883cd4aa1f170c83dace9f78813857cb51f9ca313bf8f4277da6a",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute libdbi-perl: needed; no released compatible fixed package",
+      "severityBasis": "Keep the raw Ubuntu/scanner Medium severity. Upstream CVSS High, where present, remains disclosed; this is not remediation or a not-affected decision.",
+      "packages": [
+        {
+          "name": "libdbi-perl",
+          "installedVersion": "1.647-1ubuntu0.26.04.4"
+        }
+      ]
+    },
+    {
+      "vulnerabilityId": "CVE-2026-48959",
+      "severity": "MEDIUM",
+      "vendorStatus": "needs-evaluation",
+      "source": "https://ubuntu.com/security/CVE-2026-48959",
+      "reviewAfter": "2026-11-30",
+      "verifiedAt": "2026-11-27T22:16:21.185060+08:00",
+      "vendorEvidence": "https://ubuntu.com/security/cves/CVE-2026-48959.json",
+      "vendorEvidenceSha256": "b6f3a4449dd482c00963c059dee26daeb1e120024380c74bccae263a16945519",
+      "upstreamVendorStatus": "Ubuntu 26.04 Resolute perl: needed; no released compatible fixed package",
+      "severityBasis": "Keep the raw Ubuntu/scanner Medium severity. Upstream CVSS High, where present, remains disclosed; this is not remediation or a not-affected decision.",
+      "packages": [
+        {
+          "name": "libperl5.40",
+          "installedVersion": "5.40.1-7ubuntu0.4"
+        },
+        {
+          "name": "perl",
+          "installedVersion": "5.40.1-7ubuntu0.4"
+        },
+        {
+          "name": "perl-base",
+          "installedVersion": "5.40.1-7ubuntu0.4"
+        },
+        {
+          "name": "perl-modules-5.40",
+          "installedVersion": "5.40.1-7ubuntu0.4"
+        }
+      ]
     }
   ],
   "retiredFindings": [

@@ -1017,7 +1017,10 @@ EOF
     version_at_least util-linux 2.41.3-3ubuntu2.2
     version_at_least git 1:2.53.0-1ubuntu1
     version_at_least git-man 1:2.53.0-1ubuntu1
-    version_at_least libexpat1 2.7.4-1ubuntu0.2
+    version_at_least libexpat1 2.7.4-1ubuntu0.3
+    for package in libgssapi-krb5-2 libk5crypto3 libkrb5-3 libkrb5support0; do
+        version_at_least "$package" 1.22.1-2ubuntu4.3
+    done
     package_is_installed coreutils-from-gnu
     require_package_absent coreutils-from-uutils
     require_package_absent rust-coreutils

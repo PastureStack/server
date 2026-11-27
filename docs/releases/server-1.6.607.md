@@ -36,6 +36,20 @@ Local real Edge rendering covered both explorer locales at 1440, 802, 390 and
 fields and permission errors. These isolated fixtures are not deployed-QA or
 production evidence. Unrelated existing PASS results retain their original scope.
 
+## Official Ubuntu security updates
+
+The first candidate was held by the unchanged security gate because Canonical
+released fixes for 29 Expat/Kerberos CVEs after the previous Server release.
+The revised candidate installs the five existing binary packages at their
+official patched versions, using a separately signed 2026-11-27 snapshot and
+offline package-set-preserving installation. Previous exact locks retain their
+reviewed snapshots. The Expat runtime-surface removal remains enforced.
+See [package identities and validation](../security/ubuntu-20261127.md).
+
+Three additional no-fix Medium findings retain exact tracking and current
+Canonical evidence; no High/Critical or fixable-finding exception is introduced.
+Fresh artifact scanning, publication and deployed acceptance remain required.
+
 ## Upgrade and recovery
 
 Preserve all three named volumes, the Docker socket mount, environment overrides,

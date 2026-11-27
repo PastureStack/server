@@ -221,6 +221,17 @@ class OfflineSecurityUpdates(unittest.TestCase):
     def test_downloader_rejects_different_snapshot(self):
         self.assertNotEqual(0, self.download(FIXTURE_URI='https://snapshot.ubuntu.com/ubuntu/20261124T000000Z/').returncode)
 
+    def test_declared_supplemental_snapshot_keeps_signed_hash_contract(self):
+        result = self.download(PASTURESTACK_SECURITY_SNAPSHOT='20261127T000000Z',
+                               FIXTURE_URI='https://snapshot.ubuntu.com/ubuntu/20261127T000000Z/')
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertEqual(self.manifest.read_text(), (self.root / 'downloaded/manifest.tsv').read_text())
+
+    def test_snapshot_input_cannot_change_host_or_inject_source_fields(self):
+        for value in ('https://other.invalid/', '../20261127T000000Z', '20261127T000000Z\nTrusted: yes'):
+            with self.subTest(value=value):
+                self.assertNotEqual(0, self.download(PASTURESTACK_SECURITY_SNAPSHOT=value).returncode)
+
     def test_downloader_rejects_snapshot_over_plain_http(self):
         self.assertNotEqual(0, self.download(FIXTURE_URI='http://snapshot.ubuntu.com/ubuntu/20261123T000000Z/').returncode)
 
