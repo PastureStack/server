@@ -535,7 +535,7 @@ require_marker "$release_dockerfile" \
     SERVER_INCREMENTAL_RELEASE_BASE_MISSING
 for web_sbom_release_marker in \
     'COPY --chmod=0755 artifacts/verify-web-console-sbom.py /usr/local/bin/verify-web-console-sbom' \
-    'ARG WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT=web-console-1.6.242-runtime.cdx.json' \
+    'ARG WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT=web-console-1.6.243-runtime.cdx.json' \
     '"${WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT}" "${WEB_CONSOLE_RUNTIME_SBOM_SHA256}" "${web_sbom}";' \
     '--lock-sha256 "${WEB_CONSOLE_LOCK_SHA256}" --archive "${web_archive}"' \
     '--webmcp-ceiling enabled;' \
@@ -631,22 +631,22 @@ require_marker "$publish_workflow" \
     'bash source/server/artifacts/verify-host-api-package.sh' \
     SERVER_HOST_API_PRODUCER_RELEASE_CHECK_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.242' \
+    'ARG WEB_CONSOLE_RELEASE_TAG=1.6.243' \
     SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.242.tar.gz' \
+    'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.243.tar.gz' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_ARTIFACT_SHA256=61545513d850cc5a69b110d49b51c087a6e1327a95c4d83548839e9144351f21' \
+    'ARG WEB_CONSOLE_ARTIFACT_SHA256=6ffdfb01d370b991a2b21350faff5172e134a5aa818d7f120166713469a36135' \
     SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_COMMIT=948fa3833797ebdac75d8eb89026b354613f23de' \
+    'ARG WEB_CONSOLE_COMMIT=af9b70dc1ecf4365ceb58c406821b6620c0c9482' \
     SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_LOCK_SHA256=4d30635e6f84d10dfeb83b301c5159ccbe20608660b34a70e307712d08da3eda' \
+    'ARG WEB_CONSOLE_LOCK_SHA256=a2161de9b86551ccd81fc0d3c0eaf0b9bf2b753c33bedff2b8cb6a29fde4be69' \
     SERVER_INCREMENTAL_WEB_CONSOLE_LOCK_HASH_MISSING
 require_marker "$release_dockerfile" \
-    'ARG WEB_CONSOLE_RUNTIME_SBOM_SHA256=00d5cd731e71595a32d80a541ed2977eabdfddee1e9d40106c3dde09ae916cb7' \
+    'ARG WEB_CONSOLE_RUNTIME_SBOM_SHA256=eefb19e915e5235815b58c441707dcd82dd31e148ca05f33a0099724003d6d6c' \
     SERVER_INCREMENTAL_WEB_CONSOLE_SBOM_HASH_MISSING
 require_marker "$release_dockerfile" \
     "grep -aF 'hostsPage.permissionDenied'" \
@@ -655,22 +655,22 @@ require_marker "$release_dockerfile" \
     '"hostsPage.permissionDenied":"您沒有權限在此環境中新增主機。"' \
     SERVER_INCREMENTAL_WEB_CONSOLE_ZH_TW_PERMISSION_MESSAGE_MISSING
 require_marker "$build_script" \
-    'web_console_commit=${WEB_CONSOLE_COMMIT:-948fa3833797ebdac75d8eb89026b354613f23de}' \
+    'web_console_commit=${WEB_CONSOLE_COMMIT:-af9b70dc1ecf4365ceb58c406821b6620c0c9482}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING
 require_marker "$build_script" \
-    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.242}' \
+    'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.243}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING
 require_marker "$build_script" \
-    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.242.tar.gz}' \
+    'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.243.tar.gz}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING
 require_marker "$build_script" \
-    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-61545513d850cc5a69b110d49b51c087a6e1327a95c4d83548839e9144351f21}' \
+    'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-6ffdfb01d370b991a2b21350faff5172e134a5aa818d7f120166713469a36135}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING
 require_marker "$build_script" \
-    'web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-4d30635e6f84d10dfeb83b301c5159ccbe20608660b34a70e307712d08da3eda}' \
+    'web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-a2161de9b86551ccd81fc0d3c0eaf0b9bf2b753c33bedff2b8cb6a29fde4be69}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_LOCK_HASH_MISSING
 require_marker "$build_script" \
-    'web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-00d5cd731e71595a32d80a541ed2977eabdfddee1e9d40106c3dde09ae916cb7}' \
+    'web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-eefb19e915e5235815b58c441707dcd82dd31e148ca05f33a0099724003d6d6c}' \
     SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_SBOM_HASH_MISSING
 require_marker "$release_dockerfile" \
     'ARG CATALOG_SERVICE_VERSION=0.20.20' \
@@ -2483,8 +2483,8 @@ done
 for native_asset_marker in \
     'ARG ORCHESTRATION_ENGINE_ASSET_API_URL=https://api.github.com/repos/PastureStack/orchestration-engine/releases/assets/733683735' \
     'ARG COMPOSE_EXECUTOR_ASSET_API_URL=https://api.github.com/repos/PastureStack/compose-cli/releases/assets/741756962' \
-    'ARG WEB_CONSOLE_ASSET_API_URL=https://api.github.com/repos/PastureStack/web-console/releases/assets/786154046' \
-    'ARG WEB_CONSOLE_SBOM_ASSET_API_URL=https://api.github.com/repos/PastureStack/web-console/releases/assets/786154048'; do
+    'ARG WEB_CONSOLE_ASSET_API_URL=https://api.github.com/repos/PastureStack/web-console/releases/assets/800628805' \
+    'ARG WEB_CONSOLE_SBOM_ASSET_API_URL=https://api.github.com/repos/PastureStack/web-console/releases/assets/800628808'; do
     require_marker "$release_dockerfile" "$native_asset_marker" SERVER_OFFICIAL_ASSET_API_COORDINATE_MISSING
 done
 require_marker server/artifacts/fetch-server-component.sh "--header 'Accept: application/octet-stream' --header 'Range: bytes=0-'" SERVER_OFFICIAL_ASSET_API_HEADERS_MISSING
@@ -2495,4 +2495,4 @@ require_marker server/artifacts/fetch-server-component.sh 'Component response mu
 # Execute the shared archive verifier controls before starting an image build.
 python3 -B "$repo_root/scripts/test-engine-archive-contract.py"
 
-printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.607 base=v1.6.460 engine=0.183.395 web_console=1.6.242 catalog_service=0.20.20 webhook_automation_service=0.10.6 authentication_service=0.4.47 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
+printf 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.607 base=v1.6.460 engine=0.183.395 web_console=1.6.243 catalog_service=0.20.20 webhook_automation_service=0.10.6 authentication_service=0.4.47 curl=8.18.0-1ubuntu2.8 freemarker=2.3.35 artifact_scan=required vendor_pending=exact-set role_matrix=qa-required locale_layout=qa-required\n'
