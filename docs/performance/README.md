@@ -8,7 +8,7 @@ The following example is appropriate as a starting point for a dedicated
 16-vCPU host with about 32 GiB of RAM. It is not a universal performance
 profile; measure the real workload before increasing it further.
 
-The example uses the published Server `v1.6.607`. Deployment and workload
+The example uses the published Server `v1.6.608`. Deployment and workload
 acceptance remain environment-specific. See the [release note](../releases/server-1.6.606.md)
 and the [current release](../../README.md#current-release) for components.
 Preserve existing runtime overrides and all three named volumes during an
@@ -20,7 +20,7 @@ evidence is not a performance benchmark; measure the actual workload.
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.607
+    image: ghcr.io/pasturestack/server:v1.6.608
     restart: unless-stopped
     ports:
       - "8080:8080"

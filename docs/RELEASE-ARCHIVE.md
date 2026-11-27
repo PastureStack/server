@@ -7,6 +7,7 @@ original evidence and rollback limits.
 
 ## Historical contracts
 
+- [Server v1.6.607](releases/server-1.6.607.md) — previous published request-dialog, native LB and official Ubuntu micro-update release.
 - [Server v1.6.606](releases/server-1.6.606.md) — previous published UI compatibility release.
 - [Server v1.6.605](releases/server-1.6.605.md) — published Catalog and LB compatibility release.
 

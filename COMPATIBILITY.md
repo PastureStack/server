@@ -1,5 +1,26 @@
 # Compatibility Contract
 
+## Server v1.6.608 published
+
+Immutable image `ghcr.io/pasturestack/server:v1.6.608@sha256:40b5e3c43a5a05453d11eea16086201fc80f9ae496ddf0fb5e79fa84860dcad7`.
+Producer `ba81e2c04c0fbc3c2ffbba8e6a51eed892cb80da`.
+[Publication](https://github.com/PastureStack/server/actions/runs/46028599606)
+passed required checks, final-image security scanning and clean-volume startup/restart.
+API Explorer **1.1.22** supplies the shared responsive request dialog. Web Console
+**1.6.243**, Engine **0.183.395**, Catalog **0.20.20**, Agent **1.2.36** and managed
+LB **0.9.35** retain their reviewed identities.
+
+Isolated existing-installation acceptance verified the exact published Explorer
+JavaScript/CSS at four widths in both supported locales. Expansion, preview and
+cancel passed without writes, browser errors or API errors. A real Server restart
+and all three existing Hosts passed with operator configuration and rollback
+images retained. No production access or deployment is claimed.
+
+The original Cron, historical selectors and scoped LB lifecycle results below
+remain separately versioned evidence. Non-empty LB secondary configurations,
+all module collectors and arbitrary in-place downgrades remain unqualified.
+See the [release note](docs/releases/server-1.6.608.md).
+
 ## Server v1.6.607 published
 
 Immutable image `ghcr.io/pasturestack/server:v1.6.607@sha256:970746b4d90bed79445496b3cfa02dabb1b0028579d8570b2ffc558c2b34e09a`.
