@@ -98,7 +98,7 @@ class ExplorerIntegration(unittest.TestCase):
         self.assertIn('SERVER_API_EXPLORER_PRODUCT_OK version=' + VERSION, result.stdout)
 
     def test_invalid_requested_version_is_rejected(self):
-        for version in ('', '../1.1.21', 'latest', VERSION + '-unverified'):
+        for version in ('', '../1.1.22', 'latest', VERSION + '-unverified'):
             with self.subTest(version=version):
                 self.assertNotEqual(0, self.run_product(expected_version=version).returncode)
 
@@ -147,8 +147,8 @@ class ExplorerIntegration(unittest.TestCase):
             with self.assertRaises(AssertionError):
                 PACKAGING.verify_incremental_contract(files)
         for old, new in (
-            ('api-explorer-1.1.21.tar.gz', 'api-explorer-1.1.19.tar.gz'),
-            ('32f1e104434347e58a4ed6935741ab8c7d96c91c0b1a9b112bb792a3bc5ecafd', 'd1602ab6033512f0b86dc8ceafee2061364ce2fc5da2a9b7119f900d9e0f3c25'),
+            ('api-explorer-1.1.22.tar.gz', 'api-explorer-1.1.19.tar.gz'),
+            ('31564c3409313b7f5ce95486f6445f099646957f7c984de3f045245884e5c5f0', 'd1602ab6033512f0b86dc8ceafee2061364ce2fc5da2a9b7119f900d9e0f3c25'),
         ):
             files = dict(PACKAGING.FILES)
             self.assertIn(old, files[PACKAGING.DOCKER], 'mutation must change the current recipe')

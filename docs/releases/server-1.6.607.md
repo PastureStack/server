@@ -1,8 +1,12 @@
-# Server v1.6.607 candidate
+# Server v1.6.607 published
 
-## Candidate boundary
+## Published identity
 
-API Explorer 1.1.21 is published and verified. This Server source candidate is not yet a published image. Server build, publication, deployment and affected native/UI workflows remain pending.
+Image `ghcr.io/pasturestack/server:v1.6.607@sha256:970746b4d90bed79445496b3cfa02dabb1b0028579d8570b2ffc558c2b34e09a`.
+Producer `50bd4d024d8fd6d004e7e983f33d4bfb1687d2a8`.
+[Publication](https://github.com/PastureStack/server/actions/runs/46016767923)
+passed. Isolated deployment, actual restart and affected UI checks passed with
+the explicit scopes below. Production was not accessed.
 
 ## Verified component inputs
 
@@ -48,7 +52,19 @@ See [package identities and validation](../security/ubuntu-20261127.md).
 
 Three additional no-fix Medium findings retain exact tracking and current
 Canonical evidence; no High/Critical or fixable-finding exception is introduced.
-Fresh artifact scanning, publication and deployed acceptance remain required.
+The revised final merged-runtime scan passed before publication. The five
+patched package versions, native links and verified TLS were read back from
+the deployed image. Raw findings and no-fix tracking retain their boundaries.
+
+## Subsequent isolated acceptance
+
+Four Explorer viewport widths verified shipped assets, expansion, preview and
+cancel with no writes, browser errors or HTTP failures. Native LB UI actions
+were upgrade, rollback, upgrade and finish, with HTTP/strict TLS/TCP/sticky
+checks through refresh. No service PUT occurred. The secondary fixture was
+empty, so non-empty secondary preservation remains unqualified. Original Cron
+0.5.0 migration and 22-template historical UI selection are separately scoped
+1.6.606 results. Three existing Hosts remained active.
 
 ## Upgrade and recovery
 

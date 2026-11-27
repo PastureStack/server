@@ -14,7 +14,7 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.607}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.608}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
@@ -59,10 +59,10 @@ done
 case "$per_host_subnet_release_base_url" in https://*) ;; *) exit 1 ;; esac
 component_artifact_mode=remote
 api_explorer_release_base_url=${API_EXPLORER_RELEASE_BASE_URL:-https://github.com/PastureStack/api-explorer/releases/download}
-api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.21}
-api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.21.tar.gz}
-api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-32f1e104434347e58a4ed6935741ab8c7d96c91c0b1a9b112bb792a3bc5ecafd}
-api_explorer_commit=${API_EXPLORER_COMMIT:-5ad80b6851b3162bf89522ea9f45c4975fbb2c47}
+api_explorer_release_tag=${API_EXPLORER_RELEASE_TAG:-v1.1.22}
+api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.22.tar.gz}
+api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-31564c3409313b7f5ce95486f6445f099646957f7c984de3f045245884e5c5f0}
+api_explorer_commit=${API_EXPLORER_COMMIT:-f84aad3e40f4a364aab42273e46767f756fb551f}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
 web_console_asset_api_url=${WEB_CONSOLE_ASSET_API_URL:-https://api.github.com/repos/PastureStack/web-console/releases/assets/800628805}
 web_console_sbom_asset_api_url=${WEB_CONSOLE_SBOM_ASSET_API_URL:-https://api.github.com/repos/PastureStack/web-console/releases/assets/800628808}
@@ -134,7 +134,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-c33
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-48e22a6654c058cef7126dfa7c39da4c98a92bb939d37f09536d992f507f92ca}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.607}
+image=${IMAGE:-pasturestack-validation/server:v1.6.608}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -408,7 +408,7 @@ for marker in \
     CATTLE_RANCHER_SERVER_VERSION="${server_release_tag}" \
     CATTLE_RANCHER_CLI_VERSION=v0.6.20 \
     PASTURESTACK_CLI_RELEASE_BASE_URL=https://github.com/PastureStack/cli/releases/download \
-    CATTLE_API_UI_VERSION=1.1.21 \
+    CATTLE_API_UI_VERSION=1.1.22 \
     CATTLE_CATTLE_VERSION="${orchestration_engine_release_tag}" \
     DEFAULT_CATTLE_AGENT_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.36 \
     DEFAULT_CATTLE_BOOTSTRAP_REQUIRED_IMAGE=ghcr.io/pasturestack/node-agent:v1.2.36 \
@@ -457,7 +457,7 @@ for marker in \
     PASTURESTACK_GPG_VERIFIER=removed \
     PASTURESTACK_CONTAINER_SOURCE_BUILD_MODE=removed \
     PASTURESTACK_CONSOLE_BROKER_GO_VERSION=1.27.4 \
-    PASTURESTACK_API_EXPLORER_PACKAGE=1.1.21 \
+    PASTURESTACK_API_EXPLORER_PACKAGE=1.1.22 \
     PASTURESTACK_API_EXPLORER_COMMIT="${api_explorer_commit}" \
     PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256="${api_explorer_artifact_sha256}" \
     PASTURESTACK_WEB_CONSOLE_PACKAGE="${web_console_release_tag}" \

@@ -1,5 +1,26 @@
 # Compatibility Contract
 
+## Server v1.6.607 published
+
+Immutable image `ghcr.io/pasturestack/server:v1.6.607@sha256:970746b4d90bed79445496b3cfa02dabb1b0028579d8570b2ffc558c2b34e09a`.
+Producer `50bd4d024d8fd6d004e7e983f33d4bfb1687d2a8`.
+[Publication](https://github.com/PastureStack/server/actions/runs/46016767923)
+passed required source/security, clean-volume startup and restart checks.
+Explorer **1.1.21** fixes dialog overflow and exact password values; Web **1.6.243**
+avoids a metadata PUT from an untouched sticky-policy name. Engine **0.183.395**,
+Catalog **0.20.20**, Agent **1.2.36** and managed LB **0.9.35** are unchanged.
+
+Isolated existing-installation deployment and a real Server restart passed.
+Four viewport widths verified the exact Explorer assets, preview and cancel.
+The native LB browser sequence passed upgrade/rollback followed by a separate
+upgrade/finish/refresh, with no service PUT, correct primary configuration,
+HAProxy 3.4.8, verified TLS 1.2/1.3, TCP forwarding and sticky cookies.
+The fixture's secondary list was empty and does not qualify non-empty secondary
+preservation. Original Cron 0.5.0 browser migration and all 22 historical Catalog
+selectors retain separate 1.6.606 evidence; arbitrary downgrades and remaining
+module collectors are unqualified. No production deployment is claimed.
+See the [release note](docs/releases/server-1.6.607.md).
+
 ## Server v1.6.606 published
 
 Immutable image `ghcr.io/pasturestack/server:v1.6.606@sha256:5046b87cfb1d24634e3f792e2dba45ccd15efa6c8753a13d2ae46feccfcc3c80`.

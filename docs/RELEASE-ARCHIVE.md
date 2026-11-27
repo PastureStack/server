@@ -7,6 +7,9 @@ original evidence and rollback limits.
 
 ## Historical contracts
 
+- [Server v1.6.606](releases/server-1.6.606.md) — previous published UI compatibility release.
+- [Server v1.6.605](releases/server-1.6.605.md) — published Catalog and LB compatibility release.
+
 - [Server v1.6.604](releases/server-1.6.604.md) — previous published release and scoped Cron/API acceptance.
 
 - [Server v1.6.603](releases/server-1.6.603.md) — previous published release and scoped QA record.
