@@ -955,8 +955,7 @@ ARG MACHINE_DRIVER_BINARY_SHA256=3d78d962b6aa7f4d5bc1b63a9db703710eed4084bd354b2
 ARG PACKET_DRIVER_BINARY_SHA256=0f1bf952c603f05c18970ea46be3fc2481544d0f78015aa98339dee1bbbe8764
 
 COPY --from=runtime_security_packages /out/ /tmp/pasturestack-runtime-security/
-COPY scripts/install-ubuntu-security-updates.sh security/ubuntu-security-packages.lock security/ubuntu-perl-security.lock artifacts/verify-pcre2-runtime.sh artifacts/verify-brotli-runtime.sh /tmp/pasturestack-security-input/
-COPY security/ubuntu-20261127-security.lock /tmp/pasturestack-security-input/
+COPY scripts/install-ubuntu-security-updates.sh security/ubuntu-security-packages.lock security/ubuntu-perl-security.lock security/ubuntu-20261127-security.lock artifacts/verify-pcre2-runtime.sh artifacts/verify-brotli-runtime.sh /tmp/pasturestack-security-input/
 # Keep the official zlib backport active: ldconfig otherwise prefers the old
 # upstream 1.3.2 library, which is affected by USN-8954-1 / CVE-2026-85091.
 # Retain the base image's removed, unused Git DAV/Expat surface after updating.
