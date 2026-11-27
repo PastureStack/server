@@ -1,0 +1,7 @@
+# Official Ubuntu 26.04 security updates; USN-9196-1 and USN-9202-1.
+# Supplemental snapshot preserves the older exact package lock and its archive.
+libexpat1=2.7.4-1ubuntu0.3
+libgssapi-krb5-2=1.22.1-2ubuntu4.3
+libk5crypto3=1.22.1-2ubuntu4.3
+libkrb5-3=1.22.1-2ubuntu4.3
+libkrb5support0=1.22.1-2ubuntu4.3

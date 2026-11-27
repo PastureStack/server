@@ -1901,6 +1901,20 @@ for signed_package_marker in \
         SERVER_SIGNED_PACKAGE_SECURITY_SOURCE_MISSING
 done
 python3 scripts/test-official-apt-bootstrap.py
+for supplemental_pin in \
+    'libexpat1=2.7.4-1ubuntu0.3' \
+    'libgssapi-krb5-2=1.22.1-2ubuntu4.3' \
+    'libk5crypto3=1.22.1-2ubuntu4.3' \
+    'libkrb5-3=1.22.1-2ubuntu4.3' \
+    'libkrb5support0=1.22.1-2ubuntu4.3'; do
+    require_marker server/security/ubuntu-20261127-security.lock "$supplemental_pin" \
+        SERVER_OFFICIAL_SUPPLEMENTAL_SECURITY_PIN_MISSING
+done
+require_marker "$release_dockerfile" 'PASTURESTACK_SECURITY_SNAPSHOT=20261127T000000Z' \
+    SERVER_OFFICIAL_SUPPLEMENTAL_SECURITY_SNAPSHOT_MISSING
+require_marker "$release_dockerfile" '/tmp/pasturestack-runtime-security/supplemental-security-updates' \
+    SERVER_OFFICIAL_SUPPLEMENTAL_SECURITY_INSTALL_MISSING
+python3 scripts/test-offline-ubuntu-security-updates.py
 
 for release_curl_official_deb_marker in \
     'ADD --checksum=sha256:2c418a61d7165d0cde01d9cb05ae025cc41fc75ef6d3f095996bd045ba0945dc' \
