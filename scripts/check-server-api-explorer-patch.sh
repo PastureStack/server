@@ -1383,19 +1383,19 @@ if [ "$(grep -Fxc '  image: ghcr.io/pasturestack/load-balancer-service:v0.9.35' 
     exit 1
 fi
 for api_explorer_release_marker in \
-    'ARG API_EXPLORER_RELEASE_TAG=v1.1.20' \
-    'ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.20.tar.gz' \
-    'ARG API_EXPLORER_ARTIFACT_SHA256=c989ee12a518f6d9d2b23b1f17f48d781aacf6ec31fb65291dd7de9b1661badb' \
-    'ARG API_EXPLORER_COMMIT=a586f0dc0aa50df579049a8d4bf26f04400fdf75' \
+    'ARG API_EXPLORER_RELEASE_TAG=v1.1.21' \
+    'ARG API_EXPLORER_ARTIFACT=api-explorer-1.1.21.tar.gz' \
+    'ARG API_EXPLORER_ARTIFACT_SHA256=32f1e104434347e58a4ed6935741ab8c7d96c91c0b1a9b112bb792a3bc5ecafd' \
+    'ARG API_EXPLORER_COMMIT=5ad80b6851b3162bf89522ea9f45c4975fbb2c47' \
     'COPY --chmod=0755 artifacts/prepare-api-explorer.sh /usr/local/bin/prepare-api-explorer' \
     'fetch-server-component "${COMPONENT_ARTIFACT_MODE}" "${API_EXPLORER_RELEASE_BASE_URL%/}/${API_EXPLORER_RELEASE_TAG}/${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT}" "${API_EXPLORER_ARTIFACT_SHA256}" /tmp/api-explorer.tar.gz;' \
-    'prepare-api-explorer /tmp/api-explorer.tar.gz 1.1.20 "${API_EXPLORER_COMMIT}" /out/api-explorer;' \
+    'prepare-api-explorer /tmp/api-explorer.tar.gz 1.1.21 "${API_EXPLORER_COMMIT}" /out/api-explorer;' \
     'COPY --from=release_artifacts /out/api-explorer/ /tmp/pasturestack-api-ui/' \
     'COPY --from=release_artifacts /out/api-explorer.sha256 /tmp/pasturestack-api-ui.sha256' \
     'mv /tmp/pasturestack-api-ui api-ui;' \
     '(cd api-ui && sha256sum -c /tmp/pasturestack-api-ui.sha256);' \
-    'ENV CATTLE_API_UI_VERSION=1.1.20' \
-    'ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.20' \
+    'ENV CATTLE_API_UI_VERSION=1.1.21' \
+    'ENV PASTURESTACK_API_EXPLORER_PACKAGE=1.1.21' \
     'ENV PASTURESTACK_API_EXPLORER_COMMIT=${API_EXPLORER_COMMIT}' \
     'ENV PASTURESTACK_API_EXPLORER_ARTIFACT_SHA256=${API_EXPLORER_ARTIFACT_SHA256}'; do
     require_marker "$release_dockerfile" "$api_explorer_release_marker" SERVER_CURRENT_API_EXPLORER_FLOW_MISSING
