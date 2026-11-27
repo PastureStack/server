@@ -35,7 +35,7 @@ branch, pin and access policy.
 An image update preserves an explicit operator Catalog pin. Installations that
 retain `CATTLE_CATALOG_URL` must select this release's reviewed pin to load
 these compatibility revisions. Clean installations use the new bundled defaults.
-See the [release note](docs/releases/server-1.6.606.md),
+See the [release note](docs/releases/server-1.6.607.md),
 [Catalog pin and lifecycle upgrade steps](docs/upgrades/README.md#legacy-container-crontab-migration)
 and [compatibility contract](COMPATIBILITY.md). Workload deployment acceptance
 remains separate from the publication checks.
