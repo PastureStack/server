@@ -122,8 +122,8 @@ PRIMARY=$3 FETCH_STATUS=$4
         for source in (docker, build):
             self.assertIn(api+'PastureStack/orchestration-engine/releases/assets/733683735', source)
             self.assertIn(api+'PastureStack/compose-cli/releases/assets/741756962', source)
-            self.assertIn(api+'PastureStack/web-console/releases/assets/800628805', source)
-            self.assertIn(api+'PastureStack/web-console/releases/assets/800628808', source)
+            self.assertIn(api+'PastureStack/web-console/releases/assets/802641170', source)
+            self.assertIn(api+'PastureStack/web-console/releases/assets/802641167', source)
             self.assertIn('WEB_CONSOLE_ASSET_API_URL', source)
             self.assertIn('WEB_CONSOLE_SBOM_ASSET_API_URL', source)
         self.assertIn('"${WEB_CONSOLE_ASSET_API_URL}"', docker)
