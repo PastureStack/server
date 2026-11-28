@@ -1,0 +1,106 @@
+[
+  {
+    "image": "ghcr.io/pasturestack/internal-dns:v0.17.16",
+    "digest": "sha256:ae7ea6c6454d14a0060402654ab89bdad4930f95a06ae672d14b36fef4a87351",
+    "platformDigest": "sha256:ae7ea6c6454d14a0060402654ab89bdad4930f95a06ae672d14b36fef4a87351",
+    "configDigest": "sha256:d287aeea3d30a41cacfd46053094eaa80995b7548cece1b2e9748a0b6cc57b77",
+    "source": null,
+    "sourceRepo": "https://github.com/PastureStack/internal-dns"
+  },
+  {
+    "image": "ghcr.io/pasturestack/ipsec-vxlan-overlay-network:v0.14.44",
+    "digest": "sha256:9c0bb9075e1eb97e4e16e0da119104ec0c8c0d01de38408c7e8a9262af90de91",
+    "platformDigest": "sha256:9c0bb9075e1eb97e4e16e0da119104ec0c8c0d01de38408c7e8a9262af90de91",
+    "configDigest": "sha256:cc5bd78ae4ae2124aa70842adf264cf68cebc398126588cfe80d4210b5c86442",
+    "source": "7b7f8721a0238a583134af247a72d23e82f43152",
+    "sourceRepo": "https://github.com/PastureStack/ipsec-vxlan-overlay-network"
+  },
+  {
+    "image": "ghcr.io/pasturestack/metadata-healthcheck:v0.3.22",
+    "digest": "sha256:818a31a7876cb13ea15689f7394a470b30272ee338f387d7313498a92a0cfa8d",
+    "platformDigest": "sha256:818a31a7876cb13ea15689f7394a470b30272ee338f387d7313498a92a0cfa8d",
+    "configDigest": "sha256:50372f82d6d10acdf7acfd8d4c3028d031b7358dcf4896e07a101b1ba9d5e8cf",
+    "source": "156b5f6c8cb62cc39614c0d4c8b85a12ed16c79f",
+    "sourceRepo": "https://github.com/PastureStack/metadata-healthcheck"
+  },
+  {
+    "image": "ghcr.io/pasturestack/metadata-service:v0.10.8",
+    "digest": "sha256:460e69e2b56b6e8f662c9b5f781788333737bc7623cfa8de7c67c1bb64c7471a",
+    "platformDigest": "sha256:460e69e2b56b6e8f662c9b5f781788333737bc7623cfa8de7c67c1bb64c7471a",
+    "configDigest": "sha256:5f1aa1dc1bd53b664fe3b17dbe2c487b7e21a31f3b4ddeec29ed695616e9c8a2",
+    "source": "73a897758873a6745fce74e4a9b04b297547070d",
+    "sourceRepo": "https://github.com/PastureStack/metadata-service"
+  },
+  {
+    "image": "ghcr.io/pasturestack/network-diagnostics-agent:v0.2.1",
+    "digest": "sha256:974a045632eb3010eb315ada26aa820b59b5527bcd237487cf036702b66a01f1",
+    "platformDigest": "sha256:974a045632eb3010eb315ada26aa820b59b5527bcd237487cf036702b66a01f1",
+    "configDigest": "sha256:159998e8aa1b4aa182c7a5ff6b6f5c7ff600d33f9fc3dfe7150f413e0b1b4c4d",
+    "source": null,
+    "sourceRepo": "https://github.com/PastureStack/network-diagnostics-agent"
+  },
+  {
+    "image": "ghcr.io/pasturestack/network-diagnostics-service:v0.2.1",
+    "digest": "sha256:7ba5dbb413aadfa289589f18bbfd11ac4ecad3e79bc04a14c86b2d32029b4b49",
+    "platformDigest": "sha256:7ba5dbb413aadfa289589f18bbfd11ac4ecad3e79bc04a14c86b2d32029b4b49",
+    "configDigest": "sha256:76390fe8dc1b33727d9d4dd6867c8c488fb99bf4d98c49fccf898f3b0299b4c2",
+    "source": null,
+    "sourceRepo": "https://github.com/PastureStack/network-diagnostics-service"
+  },
+  {
+    "image": "ghcr.io/pasturestack/network-plugin-manager:v0.8.25",
+    "digest": "sha256:9a66894138dc6dded756c5e4b80e6d235698d911031641f6c45763ad9b32d94e",
+    "platformDigest": "sha256:9a66894138dc6dded756c5e4b80e6d235698d911031641f6c45763ad9b32d94e",
+    "configDigest": "sha256:32938a904d926f3059bd578fb0286ce3a25224af45ba602ac8a0669797148e6c",
+    "source": "461182e1fcd09527509359f5c551704303689c04",
+    "sourceRepo": "https://github.com/PastureStack/network-plugin-manager"
+  },
+  {
+    "image": "ghcr.io/pasturestack/network-policy-manager:v0.3.4",
+    "digest": "sha256:fe1404a878576aa7b3fdf5cabc3fe89e6278cec0180624363a3e97544a75efcf",
+    "platformDigest": "sha256:fe1404a878576aa7b3fdf5cabc3fe89e6278cec0180624363a3e97544a75efcf",
+    "configDigest": "sha256:b14414229ac18aafaf3ca34b6f8d7aacdeea7356e4b12dbef4571b3f701af5f2",
+    "source": "882dae01e715bb1ddce9bd4204cb9f1c022bb6be",
+    "sourceRepo": "https://github.com/PastureStack/network-policy-manager"
+  },
+  {
+    "image": "ghcr.io/pasturestack/nfs-storage-driver:v0.11.1",
+    "digest": "sha256:5b2a9f7d5a65c824ef00c134553b6fb8cb440b5da0cd91c837a0c1844590ec13",
+    "platformDigest": "sha256:5b2a9f7d5a65c824ef00c134553b6fb8cb440b5da0cd91c837a0c1844590ec13",
+    "configDigest": "sha256:b1c733db16877e58c25ffc1de8d8141dcef6b48d23dcd04a1b0d45d6d568e88c",
+    "source": null,
+    "sourceRepo": "https://github.com/PastureStack/storage-plugins"
+  },
+  {
+    "image": "ghcr.io/pasturestack/resource-scheduler:v0.8.24",
+    "digest": "sha256:a67d2e90c6eaf4f1c33f31a26b3f29a4762a473b7655a63a8ba957bf6cb269d0",
+    "platformDigest": "sha256:a67d2e90c6eaf4f1c33f31a26b3f29a4762a473b7655a63a8ba957bf6cb269d0",
+    "configDigest": "sha256:d20139a835199aaedf81eb20e8d74ef02a5772a2c6feb2477f7ded9c46bfaee0",
+    "source": "fc2ad06968fae82e3c2090d7e06cb07016d70371",
+    "sourceRepo": "https://github.com/PastureStack/resource-scheduler"
+  },
+  {
+    "image": "ghcr.io/pasturestack/secrets-flexvolume-plugin:v0.2.3",
+    "digest": "sha256:524b7c36b4fce087c78421097388ca1718423f4fd6bc0529ccec9b35933a4b5a",
+    "platformDigest": "sha256:524b7c36b4fce087c78421097388ca1718423f4fd6bc0529ccec9b35933a4b5a",
+    "configDigest": "sha256:e7e8deb7b1b737821911312f681ce83b3ee222bcf8a2bb0aa0bc5cebcd045b67",
+    "source": "3b0bf03b28db9656cd8699951ef5db6cdf5d904a",
+    "sourceRepo": "https://github.com/PastureStack/secrets-flexvolume-plugin"
+  },
+  {
+    "image": "ghcr.io/pasturestack/load-balancer-service:v0.9.35",
+    "digest": "sha256:9211b842f13e609950f495cac1717383fcbf647c471972f7a1836c13ee4c936b",
+    "platformDigest": "sha256:9211b842f13e609950f495cac1717383fcbf647c471972f7a1836c13ee4c936b",
+    "configDigest": "sha256:c308a253e3a2e444228075f64bb9c437dcbaae1fe026287a1e0eb59c3eefbb58",
+    "source": "9ea5bbf51cb54275331d37b1e241d78875a19ab8",
+    "sourceRepo": "https://github.com/PastureStack/load-balancer-controller"
+  },
+  {
+    "image": "ghcr.io/pasturestack/node-agent:v1.2.36",
+    "digest": "sha256:28dbce92c877a788c9cf99d4064ddab02f2c611a50bb287e85cb1eaa6eafb682",
+    "platformDigest": "sha256:28dbce92c877a788c9cf99d4064ddab02f2c611a50bb287e85cb1eaa6eafb682",
+    "configDigest": "sha256:f8ff4dcfba667308db89e3a27041e76450f31a209daa1c55adef509712ee8234",
+    "source": "0f66d6af2648fb2a4e21fcaf43a10c4f3878242a",
+    "sourceRepo": "https://github.com/PastureStack/server"
+  }
+]
