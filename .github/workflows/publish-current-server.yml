@@ -161,6 +161,8 @@ jobs:
           docker export --output "$rootfs_tar" "$extract_name"
           test -f "$rootfs_tar"
           test ! -L "$rootfs_tar"
+          printf 'SERVER_ROOTFS_EXPORT_BYTES=%s\n' "$(stat --format=%s "$rootfs_tar")" |
+            tee -a "$RUNNER_TEMP/server-evidence/build.log"
           docker image inspect "$LAYERED_CANDIDATE_IMAGE" |
             python3 source/scripts/flatten-server-image.py changes >"$changes_file"
           mapfile -d '' -t flatten_changes <"$changes_file"
