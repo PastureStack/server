@@ -38,16 +38,16 @@ LB_RUNTIME_MARKERS = [
 PUBLISHED_508 = 'Server `v1.6.508` 已正式發布，封裝 Web Console `1.6.171`。'
 STALE_508_CANDIDATE = 'Server `v1.6.508` candidate packages Web Console `1.6.171`'
 COMPATIBILITY_CODE = 'SERVER_CREATE_RESPONSE_ORDER_COMPATIBILITY_MISSING'
-WEB_SHA = '9d4c83a86ca92209bf8dc50e37df4a539f775e37ad87d9d553963aec53bf2d77'
-WEB_SOURCE = 'ccd1fb7bccfc9e4d5b17c03f0812272ab5ed638d'
-WEB_SBOM_SHA = 'cacb8d344509e3de6def78a2fb7c26e54df5c92656c95c5e32ee73c085f6cd89'
-WEB_LOCK_SHA = '940d9c70791143bde79e90deef4ceca315bc41408a804fd82488ad601893b917'
+WEB_SHA = '7321147b6fe1fbdbb211f440f096ec2a65e34c9dfe7167f7ba9d006d84020fe2'
+WEB_SOURCE = 'bb38b4452aa0df9621ed6e49cd6008437a63afac'
+WEB_SBOM_SHA = 'f7037666cccd56521d2ad0cfedc3496ceec327081b99d7bf4bb5356463dc7389'
+WEB_LOCK_SHA = 'a1fe70579d7735e5321a4561a1df8f1a899ad60e86a2389c3f5df165f85cf259'
 CATALOG_COMMIT = '8c1c28318580d5ec18c14a13b224ce0e02e40bf8'
 ENGINE_SHA = '0c446a67b9a11fb9018045be0b114b328365e4c3da314d1db6e4e4421d07fcfa'
 ENGINE_SOURCE = '9611a0abde9b8e13a21182b544b98cdac92b7c6a'
 OLD_COORDINATES = {
     'v1.6.609': 'v1.6.521',
-    '1.6.244': '1.6.181',
+    '1.6.245': '1.6.181',
     WEB_SHA: '9199681f2c4311f3fbe8727fcf0f6fa136c9bafe9fbe9d13878c55df442a7a03',
     WEB_SOURCE: '7f2bdad0c90a3241693c2ddd4475202ababba550',
     CATALOG_COMMIT: '7670ffd81d5f0b5570197fb03c7e55b46da45bf3',
@@ -73,15 +73,15 @@ EXPECTED = {
     'SERVER_INCREMENTAL_RELEASE_DEFAULT_MISSING': (DOCKER, 'ARG SERVER_RELEASE_TAG=v1.6.609'),
     'SERVER_INCREMENTAL_RELEASE_VERSION_MISSING': (DOCKER, 'org.opencontainers.image.version="${SERVER_RELEASE_TAG}"'),
     'SERVER_INCREMENTAL_RELEASE_RUNTIME_VERSION_MISSING': (DOCKER, 'ENV CATTLE_RANCHER_SERVER_VERSION=${SERVER_RELEASE_TAG}'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RELEASE_TAG=1.6.244'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.244.tar.gz'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_VERSION_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RELEASE_TAG=1.6.245'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_ARTIFACT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT=web-console-1.6.245.tar.gz'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_HASH_MISSING': (DOCKER, 'ARG WEB_CONSOLE_ARTIFACT_SHA256=' + WEB_SHA),
     'SERVER_INCREMENTAL_WEB_CONSOLE_COMMIT_MISSING': (DOCKER, 'ARG WEB_CONSOLE_COMMIT=' + WEB_SOURCE),
     'SERVER_INCREMENTAL_WEB_CONSOLE_LOCK_HASH_MISSING': (DOCKER, 'ARG WEB_CONSOLE_LOCK_SHA256=' + WEB_LOCK_SHA),
     'SERVER_INCREMENTAL_WEB_CONSOLE_SBOM_HASH_MISSING': (DOCKER, 'ARG WEB_CONSOLE_RUNTIME_SBOM_SHA256=' + WEB_SBOM_SHA),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_COMMIT_MISSING': (BUILD, 'web_console_commit=${WEB_CONSOLE_COMMIT:-' + WEB_SOURCE + '}'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING': (BUILD, 'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.244}'),
-    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING': (BUILD, 'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.244.tar.gz}'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_VERSION_MISSING': (BUILD, 'web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.245}'),
+    'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_ARTIFACT_MISSING': (BUILD, 'web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.245.tar.gz}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_HASH_MISSING': (BUILD, 'web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-' + WEB_SHA + '}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_LOCK_HASH_MISSING': (BUILD, 'web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-' + WEB_LOCK_SHA + '}'),
     'SERVER_INCREMENTAL_WEB_CONSOLE_BUILD_SBOM_HASH_MISSING': (BUILD, 'web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-' + WEB_SBOM_SHA + '}'),
@@ -621,7 +621,7 @@ def verify(files, gate=GATE):
         raise AssertionError('CURRENT_VEX_RELEASE_MISMATCH')
     if json.loads(files[VENDOR]).get('release') != 'v1.6.609':
         raise AssertionError('CURRENT_VENDOR_RELEASE_MISMATCH')
-    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.609 base=v1.6.460 engine=0.183.395 web_console=1.6.244 catalog_service=0.20.20 ' not in gate:
+    if 'SERVER_API_EXPLORER_PATCH_OK release=v1.6.609 base=v1.6.460 engine=0.183.395 web_console=1.6.245 catalog_service=0.20.20 ' not in gate:
         raise AssertionError('CURRENT_SUMMARY_MISMATCH')
     verify_incremental_contract(files, gate)
     verify_load_balancer_contract(files, gate)
@@ -640,7 +640,7 @@ def previous_gate(gate=GATE):
             'and .["@id"] == "https://github.com/PastureStack/server/security/openvex/v1.6.521"',
         '"$vendor_pending_fixture" v1.6.609 >/dev/null':
             '"$vendor_pending_fixture" v1.6.521 >/dev/null',
-        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.609 base=v1.6.460 engine=0.183.395 web_console=1.6.244 catalog_service=0.20.20 ':
+        'SERVER_API_EXPLORER_PATCH_OK release=v1.6.609 base=v1.6.460 engine=0.183.395 web_console=1.6.245 catalog_service=0.20.20 ':
             'SERVER_API_EXPLORER_PATCH_OK release=v1.6.521 base=v1.6.460 engine=0.183.340 web_console=1.6.181 catalog_service=0.20.12 ',
     })
     for marker, stale_marker in replacements.items():
@@ -1381,7 +1381,7 @@ class Tests(unittest.TestCase):
 
     def test_previous_server566_engine367_web206_component_pins_cannot_mix(self):
         previous = {
-            'v1.6.609': 'v1.6.566', '1.6.244': '1.6.206', '0.183.395': '0.183.367',
+            'v1.6.609': 'v1.6.566', '1.6.245': '1.6.206', '0.183.395': '0.183.367',
             ENGINE_SHA: '4435aec3508fafeb1b1d88f455b7cef815c026957820b9127a391728130aa86c',
             ENGINE_SOURCE: '7cdacb4aad8cfbee3db239bb602a6a047da31fcf',
             WEB_SHA: 'c385bd89cb9458650259a9fc46baa5a46e60dd6a67fd116a3ed13bcf372a2075',
