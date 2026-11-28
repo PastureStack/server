@@ -1,6 +1,8 @@
 name: Resolve reviewed Buildx security inputs
 on:
   workflow_dispatch:
+  push:
+    branches: ['verification/buildx-inputs-20261129']
 permissions:
   contents: read
 jobs:
