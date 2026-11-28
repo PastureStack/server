@@ -1,0 +1,47 @@
+#!/bin/bash
+set -euo pipefail
+
+# Unmodified official source; only the reviewed fixed module/dependency closure changes.
+source_commit=0dbe87f36ed472fe36b6796c3f70b4210a731fc5
+source_sha=c5c810b083ed3725f7d4299ba01505b5891d164cf81c3398ea4c3b27a3b71149
+original_mod_sha=a93029abb94e88ddaa532ddeaab4802259a1025408f1eac417a9886e140067ef
+updated_mod_sha=df111e2b1a93c59d54dcdb60ea0b7d0e87f6b7af169c3eb6b571c880e403bfdc
+version=v0.38.1-pasturestack.3
+source_dir=/tmp/pasturestack-buildx-source
+export GOMODCACHE=/tmp/pasturestack-buildx-mod GOCACHE=/tmp/pasturestack-buildx-cache
+export GOFLAGS=-mod=mod GOWORK=off GOTOOLCHAIN=local CGO_ENABLED=0
+export GOPROXY=https://proxy.golang.org GOSUMDB=sum.golang.org
+export GOOS=linux GOARCH="${DAPPER_HOST_ARCH:?}"
+case "$GOARCH" in amd64|arm64) ;; *) exit 1 ;; esac
+test "$(go env GOVERSION)" = go1.27.4
+test ! -e "$source_dir"
+curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
+    --retry 5 --retry-all-errors -o /tmp/pasturestack-buildx.tar.gz \
+    "https://codeload.github.com/docker/buildx/tar.gz/${source_commit}"
+echo "$source_sha  /tmp/pasturestack-buildx.tar.gz" | sha256sum -c -
+mkdir -p "$source_dir" /usr/local/lib/docker/cli-plugins /licenses
+tar -xzf /tmp/pasturestack-buildx.tar.gz --strip-components=1 -C "$source_dir"
+cd "$source_dir"
+echo "$original_mod_sha  go.mod" | sha256sum -c -
+go list -m all > /licenses/BUILDX-MODULES-before.txt
+go get golang.org/x/net@v0.62.0 github.com/moby/go-archive@v0.3.0
+go get github.com/klauspost/compress@v1.20.2
+go get go.opentelemetry.io/otel@v1.47.0 \
+    go.opentelemetry.io/otel/metric@v1.47.0 \
+    go.opentelemetry.io/otel/trace@v1.47.0 \
+    go.opentelemetry.io/otel/sdk@v1.47.0 \
+    go.opentelemetry.io/otel/sdk/metric@v1.47.0
+echo "$updated_mod_sha  go.mod" | sha256sum -c -
+mkdir -p /work/evidence
+cp go.mod /work/evidence/before.go.mod
+go list -m all > /work/evidence/before.modules
+go get github.com/containerd/containerd/v2@v2.4.2 golang.org/x/net@v0.63.0
+test "$(go list -m -f '{{.Version}}' github.com/containerd/containerd/v2)" = v2.4.2
+test "$(go list -m -f '{{.Version}}' golang.org/x/net)" = v0.63.0
+go mod download
+go mod verify
+go list -m all > /work/evidence/after.modules
+cp go.mod /work/evidence/after.go.mod
+cp go.sum /work/evidence/after.go.sum
+go version > /work/evidence/compiler.txt
+(cd /work/evidence && sha256sum before.go.mod after.go.mod after.go.sum before.modules after.modules > SHA256SUMS)

@@ -1,0 +1,33 @@
+name: Resolve reviewed Buildx security inputs
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  resolve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Resolve exact updated input closure only
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          sha256sum scripts/resolve-node-buildx-inputs > evidence/derivation-script.sha256
+          docker run --rm -e DAPPER_HOST_ARCH=amd64 -v "$PWD:/work" -w /work golang:1.27.4-bookworm@sha256:4fa7c968ba93f1635670522dbb01a2c78150443e1385746924566079f36570ea bash scripts/resolve-node-buildx-inputs
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          p=Path('evidence');before=(p/'before.go.mod').read_bytes();after=(p/'after.go.mod').read_bytes()
+          assert hashlib.sha256(before).hexdigest()=='df111e2b1a93c59d54dcdb60ea0b7d0e87f6b7af169c3eb6b571c880e403bfdc'
+          (p/'resolution.json').write_text(json.dumps({'accepted':False,'inputDerivationOnly':True,'productBuildScanAndNativeChecksStillRequired':True,'beforeGoModSha256':hashlib.sha256(before).hexdigest(),'afterGoModSha256':hashlib.sha256(after).hexdigest(),'beforeModulesSha256':hashlib.sha256((p/'before.modules').read_bytes()).hexdigest(),'afterModulesSha256':hashlib.sha256((p/'after.modules').read_bytes()).hexdigest()},indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: reviewed-buildx-inputs
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: error
