@@ -2,18 +2,19 @@
 
 ## Candidate boundary
 
-Web Console 1.6.244 is published. Exact Server publication, deployment and the
+Web Console 1.6.245 is published. Exact Server publication, deployment and the
 nonempty-secondary browser lifecycle remain required for this candidate.
 
 ## Verified component inputs
 
-Web Console **1.6.244**, producer `ccd1fb7bccfc9e4d5b17c03f0812272ab5ed638d`.
-Archive SHA-256: `9d4c83a86ca92209bf8dc50e37df4a539f775e37ad87d9d553963aec53bf2d77`.
+Web Console **1.6.245**, producer `bb38b4452aa0df9621ed6e49cd6008437a63afac`.
+Archive SHA-256: `7321147b6fe1fbdbb211f440f096ec2a65e34c9dfe7167f7ba9d006d84020fe2`.
 The LB editor waits for user, scale and scheduling label sections before merging
 them into the shared launch configuration. This preserves existing labels while
-child editors initialize; intentional label removal remains supported.
+child editors initialize; intentional label removal remains supported. System
+labels without an LB-form control are retained; editable labels remain removable.
 
-The focused 20-case validation, required CodeQL, original artifact provenance,
+The focused 21-case validation, required CodeQL, original artifact provenance,
 runtime SBOM attestation and two reproducible builds passed before publication.
 Native secondary authorization and direct-field visibility are unchanged.
 
