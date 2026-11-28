@@ -131,7 +131,7 @@ ARG VCS_REF
 LABEL org.opencontainers.image.source="https://github.com/PastureStack/server" \
       org.opencontainers.image.description="PastureStack node-agent compatibility base image." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="v0.3.10" \
+      org.opencontainers.image.version="v0.3.11" \
       org.opencontainers.image.revision="$VCS_REF"
 
 RUN rm -f /usr/bin/pebble
@@ -231,6 +231,14 @@ ADD --checksum=sha256:c0393ea4fa3c45cefe0351db369d3a4a459edc8045856f2e3612ca17e7
 ADD --checksum=sha256:408ba056d39651c2489b59522a614276d7a96020c6a401e73cd0da7d771764b0 https://security.ubuntu.com/ubuntu/pool/main/g/glibc/libc-gconv-modules-extra_2.43-2ubuntu2.7_amd64.deb /tmp/official-glibc/libc-gconv-modules-extra.deb
 FROM scratch AS official_brotli
 ADD --checksum=sha256:bedeef1cf3268f90338c411cdb0a45b224d0660fd2240f310f380316c8244606 https://security.ubuntu.com/ubuntu/pool/main/b/brotli/libbrotli1_1.2.0-3ubuntu0.1_amd64.deb /official/libbrotli1.deb
+FROM scratch AS official_runtime_micro_updates
+ADD --checksum=sha256:9204c4d870591e984903b3ebb78c5b1bcd684f3722acc014d5b59df4cf78b55e https://security.ubuntu.com/ubuntu/pool/main/e/expat/libexpat1_2.7.4-1ubuntu0.3_amd64.deb /official/libexpat1.deb
+ADD --checksum=sha256:7642d15f6b5271aad1d5cdb808a7de789ebdebf00d089a661fed5646525926ca https://security.ubuntu.com/ubuntu/pool/main/k/krb5/libgssapi-krb5-2_1.22.1-2ubuntu4.3_amd64.deb /official/libgssapi-krb5-2.deb
+ADD --checksum=sha256:97e66520676a212fb6a3f0a9c3b1a8af998e056d99147b4c58e64d922653e745 https://security.ubuntu.com/ubuntu/pool/main/k/krb5/libk5crypto3_1.22.1-2ubuntu4.3_amd64.deb /official/libk5crypto3.deb
+ADD --checksum=sha256:afbdb83f74296168ff6305ca27b00f7fc5c37f9a3c78eea040d2b8aa38ae73cd https://security.ubuntu.com/ubuntu/pool/main/k/krb5/libkrb5-3_1.22.1-2ubuntu4.3_amd64.deb /official/libkrb5-3.deb
+ADD --checksum=sha256:927163c6408e694844f42e570130bbeef18f428c4ed146fd0f6da4f2abcae7f3 https://security.ubuntu.com/ubuntu/pool/main/k/krb5/libkrb5support0_1.22.1-2ubuntu4.3_amd64.deb /official/libkrb5support0.deb
+ADD --checksum=sha256:3b52f9100f16c133a837fc33be9010f6e9061f7af043b2b55ed3d755a4a87430 https://security.ubuntu.com/ubuntu/pool/main/libp/libpcap/libpcap0.8t64_1.10.6-1ubuntu1.2_amd64.deb /official/libpcap0.8t64.deb
+
 FROM qualified_backports AS runtime
 RUN --mount=from=official_glibc,source=/tmp/official-glibc,target=/tmp/official-glibc,ro \
     --mount=from=official_brotli,source=/official,target=/tmp/official-brotli,ro \
@@ -263,6 +271,33 @@ RUN --mount=from=official_glibc,source=/tmp/official-glibc,target=/tmp/official-
         test -z "$integrity"; \
     done; \
     getent hosts localhost >/dev/null; \
+    rm -f /var/cache/ldconfig/aux-cache /var/log/dpkg.log; \
+    dpkg-query -W -f='${binary:Package}\t${Version}\n' | LC_ALL=C sort > /usr/share/pasturestack/ubuntu-security-packages.tsv
+
+# Official same-series updates, after the qualified legacy backport stage.
+RUN --mount=from=official_runtime_micro_updates,source=/official,target=/tmp/pasturestack-runtime-micro,ro \
+    set -eux; \
+    test "$(dpkg-deb -f /tmp/pasturestack-runtime-micro/libexpat1.deb Package)" = libexpat1; \
+    test "$(dpkg-deb -f /tmp/pasturestack-runtime-micro/libexpat1.deb Version)" = 2.7.4-1ubuntu0.3; \
+    test "$(dpkg-deb -f /tmp/pasturestack-runtime-micro/libgssapi-krb5-2.deb Package)" = libgssapi-krb5-2; \
+    test "$(dpkg-deb -f /tmp/pasturestack-runtime-micro/libgssapi-krb5-2.deb Version)" = 1.22.1-2ubuntu4.3; \
+    test "$(dpkg-deb -f /tmp/pasturestack-runtime-micro/libk5crypto3.deb Package)" = libk5crypto3; \
+    test "$(dpkg-deb -f /tmp/pasturestack-runtime-micro/libk5crypto3.deb Version)" = 1.22.1-2ubuntu4.3; \
+    test "$(dpkg-deb -f /tmp/pasturestack-runtime-micro/libkrb5-3.deb Package)" = libkrb5-3; \
+    test "$(dpkg-deb -f /tmp/pasturestack-runtime-micro/libkrb5-3.deb Version)" = 1.22.1-2ubuntu4.3; \
+    test "$(dpkg-deb -f /tmp/pasturestack-runtime-micro/libkrb5support0.deb Package)" = libkrb5support0; \
+    test "$(dpkg-deb -f /tmp/pasturestack-runtime-micro/libkrb5support0.deb Version)" = 1.22.1-2ubuntu4.3; \
+    test "$(dpkg-deb -f /tmp/pasturestack-runtime-micro/libpcap0.8t64.deb Package)" = libpcap0.8t64; \
+    test "$(dpkg-deb -f /tmp/pasturestack-runtime-micro/libpcap0.8t64.deb Version)" = 1.10.6-1ubuntu1.2; \
+    dpkg --install /tmp/pasturestack-runtime-micro/*.deb; \
+    test "$(dpkg-query -W -f='${Version}' libexpat1)" = 2.7.4-1ubuntu0.3; \
+    test "$(dpkg-query -W -f='${Version}' libgssapi-krb5-2)" = 1.22.1-2ubuntu4.3; \
+    test "$(dpkg-query -W -f='${Version}' libk5crypto3)" = 1.22.1-2ubuntu4.3; \
+    test "$(dpkg-query -W -f='${Version}' libkrb5-3)" = 1.22.1-2ubuntu4.3; \
+    test "$(dpkg-query -W -f='${Version}' libkrb5support0)" = 1.22.1-2ubuntu4.3; \
+    test "$(dpkg-query -W -f='${Version}' libpcap0.8t64)" = 1.10.6-1ubuntu1.2; \
+    test -z "$(dpkg --verify libexpat1 libgssapi-krb5-2 libk5crypto3 libkrb5-3 libkrb5support0 libpcap0.8t64)"; \
+    test -z "$(dpkg --audit)"; \
     rm -f /var/cache/ldconfig/aux-cache /var/log/dpkg.log; \
     dpkg-query -W -f='${binary:Package}\t${Version}\n' | LC_ALL=C sort > /usr/share/pasturestack/ubuntu-security-packages.tsv
 

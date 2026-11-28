@@ -8,6 +8,12 @@ PACKAGES = {
     "libc-bin": "2.43-2ubuntu2.7",
     "libc-gconv-modules-extra": "2.43-2ubuntu2.7",
     "libbrotli1": "1.2.0-3ubuntu0.1",
+    "libexpat1": "2.7.4-1ubuntu0.3",
+    "libgssapi-krb5-2": "1.22.1-2ubuntu4.3",
+    "libk5crypto3": "1.22.1-2ubuntu4.3",
+    "libkrb5-3": "1.22.1-2ubuntu4.3",
+    "libkrb5support0": "1.22.1-2ubuntu4.3",
+    "libpcap0.8t64": "1.10.6-1ubuntu1.2",
 }
 PREFIX = "pkg:deb/ubuntu/"
 
