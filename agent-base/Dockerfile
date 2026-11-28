@@ -289,7 +289,7 @@ RUN --mount=from=official_runtime_micro_updates,source=/official,target=/tmp/pas
     test "$(dpkg-deb -f /tmp/pasturestack-runtime-micro/libkrb5support0.deb Version)" = 1.22.1-2ubuntu4.3; \
     test "$(dpkg-deb -f /tmp/pasturestack-runtime-micro/libpcap0.8t64.deb Package)" = libpcap0.8t64; \
     test "$(dpkg-deb -f /tmp/pasturestack-runtime-micro/libpcap0.8t64.deb Version)" = 1.10.6-1ubuntu1.2; \
-    dpkg --install /tmp/pasturestack-runtime-micro/*.deb; \
+    dpkg --path-include='/usr/share/doc/*' --path-include='/usr/share/man/*' --install /tmp/pasturestack-runtime-micro/*.deb; \
     test "$(dpkg-query -W -f='${Version}' libexpat1)" = 2.7.4-1ubuntu0.3; \
     test "$(dpkg-query -W -f='${Version}' libgssapi-krb5-2)" = 1.22.1-2ubuntu4.3; \
     test "$(dpkg-query -W -f='${Version}' libk5crypto3)" = 1.22.1-2ubuntu4.3; \
