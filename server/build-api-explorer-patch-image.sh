@@ -14,7 +14,7 @@ if [[ -n "$(git status --porcelain --untracked-files=normal)" ]]; then
 fi
 
 revision=${PASTURESTACK_SERVER_REVISION:-$(git rev-parse HEAD)}
-server_release_tag=${SERVER_RELEASE_TAG:-v1.6.608}
+server_release_tag=${SERVER_RELEASE_TAG:-v1.6.609}
 source_date_epoch=${SOURCE_DATE_EPOCH:-$(git show -s --format=%ct HEAD)}
 base_image=${BASE_IMAGE:-ghcr.io/pasturestack/server:v1.6.460@sha256:c855af8aea232dacc5bb6df68e2271d482c68b53c43ab0c108ec19118f5ab403}
 orchestration_engine_release_base_url=${ORCHESTRATION_ENGINE_RELEASE_BASE_URL:-https://github.com/PastureStack/orchestration-engine/releases/download}
@@ -64,15 +64,15 @@ api_explorer_artifact=${API_EXPLORER_ARTIFACT:-api-explorer-1.1.22.tar.gz}
 api_explorer_artifact_sha256=${API_EXPLORER_ARTIFACT_SHA256:-31564c3409313b7f5ce95486f6445f099646957f7c984de3f045245884e5c5f0}
 api_explorer_commit=${API_EXPLORER_COMMIT:-f84aad3e40f4a364aab42273e46767f756fb551f}
 web_console_release_base_url=${WEB_CONSOLE_RELEASE_BASE_URL:-https://github.com/PastureStack/web-console/releases/download}
-web_console_asset_api_url=${WEB_CONSOLE_ASSET_API_URL:-https://api.github.com/repos/PastureStack/web-console/releases/assets/800628805}
-web_console_sbom_asset_api_url=${WEB_CONSOLE_SBOM_ASSET_API_URL:-https://api.github.com/repos/PastureStack/web-console/releases/assets/800628808}
-web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.243}
-web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.243.tar.gz}
-web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-6ffdfb01d370b991a2b21350faff5172e134a5aa818d7f120166713469a36135}
-web_console_commit=${WEB_CONSOLE_COMMIT:-af9b70dc1ecf4365ceb58c406821b6620c0c9482}
-web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-a2161de9b86551ccd81fc0d3c0eaf0b9bf2b753c33bedff2b8cb6a29fde4be69}
+web_console_asset_api_url=${WEB_CONSOLE_ASSET_API_URL:-https://api.github.com/repos/PastureStack/web-console/releases/assets/802641170}
+web_console_sbom_asset_api_url=${WEB_CONSOLE_SBOM_ASSET_API_URL:-https://api.github.com/repos/PastureStack/web-console/releases/assets/802641167}
+web_console_release_tag=${WEB_CONSOLE_RELEASE_TAG:-1.6.244}
+web_console_artifact=${WEB_CONSOLE_ARTIFACT:-web-console-1.6.244.tar.gz}
+web_console_artifact_sha256=${WEB_CONSOLE_ARTIFACT_SHA256:-9d4c83a86ca92209bf8dc50e37df4a539f775e37ad87d9d553963aec53bf2d77}
+web_console_commit=${WEB_CONSOLE_COMMIT:-ccd1fb7bccfc9e4d5b17c03f0812272ab5ed638d}
+web_console_lock_sha256=${WEB_CONSOLE_LOCK_SHA256:-940d9c70791143bde79e90deef4ceca315bc41408a804fd82488ad601893b917}
 web_console_runtime_sbom_artifact=${WEB_CONSOLE_RUNTIME_SBOM_ARTIFACT:-web-console-${web_console_release_tag}-runtime.cdx.json}
-web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-eefb19e915e5235815b58c441707dcd82dd31e148ca05f33a0099724003d6d6c}
+web_console_runtime_sbom_sha256=${WEB_CONSOLE_RUNTIME_SBOM_SHA256:-cacb8d344509e3de6def78a2fb7c26e54df5c92656c95c5e32ee73c085f6cd89}
 catalog_service_release_base_url=${CATALOG_SERVICE_RELEASE_BASE_URL:-https://github.com/PastureStack/catalog-service/releases/download}
 catalog_service_version=${CATALOG_SERVICE_VERSION:-0.20.20}
 catalog_service_commit=${CATALOG_SERVICE_COMMIT:-bced4b96b0c6a0fe7d3db044f5c30a5b33d01172}
@@ -134,7 +134,7 @@ usage_telemetry_agent_archive_sha256=${USAGE_TELEMETRY_AGENT_ARCHIVE_SHA256:-c33
 usage_telemetry_agent_binary_sha256=${USAGE_TELEMETRY_AGENT_BINARY_SHA256:-48e22a6654c058cef7126dfa7c39da4c98a92bb939d37f09536d992f507f92ca}
 supported_docker_range='~v1.12.3 || ~v1.13.0 || ~v17.03.0 || ~v17.06.0 || ~v17.09.0 || ~v17.12.0 || ~v18.03.0 || ~v18.06.0 || ~v18.09.0 || ~v19.03.2 || v24.0.9 || >=v29.4.1 <=v29.7.2 || v29.8.0'
 newest_docker_version=v29.8.0
-image=${IMAGE:-pasturestack-validation/server:v1.6.608}
+image=${IMAGE:-pasturestack-validation/server:v1.6.609}
 build_options=()
 
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
