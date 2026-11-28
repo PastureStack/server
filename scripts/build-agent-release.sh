@@ -13,7 +13,7 @@ printf '%s\n' "$source_sha" >"$evidence/source-revision.txt"
 python3 scripts/test-agent-package-consistency.py
 
 case "${COMPONENT:-}" in
-  base) repository=ghcr.io/pasturestack/node-agent-base; version=v0.3.10 ;;
+  base) repository=ghcr.io/pasturestack/node-agent-base; version=v0.3.11 ;;
   agent) repository=ghcr.io/pasturestack/node-agent; version=v1.2.36 ;;
   *) echo 'Unsupported agent component' >&2; exit 1 ;;
 esac
