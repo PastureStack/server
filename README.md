@@ -13,8 +13,8 @@ upstream history, authorship, licenses, and notices.
 
 ## Current release
 
-[Server v1.6.608](https://github.com/PastureStack/server/releases/tag/v1.6.608)
-packages Engine `v0.183.395`, Web Console `1.6.243`, optional Bridge `0.2.37`,
+[Server v1.6.609](https://github.com/PastureStack/server/releases/tag/v1.6.609)
+packages Engine `v0.183.395`, Web Console `1.6.246`, optional Bridge `0.2.37`,
 and Compose `0.14.46`. New node registrations use Agent `v1.2.36`.
 Host Provisioner `v0.39.12` retires verified legacy registrations on upgrade.
 
@@ -25,7 +25,11 @@ Chinese are supported; request semantics and API field identities are preserved.
 Managed load-balancer image candidates use parsed image identity in Stack rows
 and service details, preserving custom images and digest pins. Native image
 upgrades preserve the previous primary and secondary launch configurations. Separately saved
-service-level metadata keeps its existing semantics; see the
+service-level metadata keeps its existing semantics. The LB editor retains
+existing labels during initialization and settings owned by other controls.
+A deployed nonempty dependent-sidekick case passed independent rollback and
+finish transactions with mounted data preserved; this does not qualify every
+secondary topology. See the
 [rollback boundary](docs/upgrades/README.md#native-load-balancer-upgrade-and-rollback).
 
 Catalog Service `v0.20.20` loads the verified default Catalog bundled in the
@@ -39,7 +43,7 @@ branch, pin and access policy.
 An image update preserves an explicit operator Catalog pin. Installations that
 retain `CATTLE_CATALOG_URL` must select this release's reviewed pin to load
 these compatibility revisions. Clean installations use the new bundled defaults.
-See the [release note](docs/releases/server-1.6.608.md),
+See the [release note](docs/releases/server-1.6.609.md),
 [Catalog pin and lifecycle upgrade steps](docs/upgrades/README.md#legacy-container-crontab-migration)
 and [compatibility contract](COMPATIBILITY.md). Workload deployment acceptance
 remains separate from the publication checks.
@@ -104,7 +108,7 @@ docker run -d --name pasturestack-server --restart unless-stopped -p 8080:8080 \
   -v pasturestack-cattle:/var/lib/cattle \
   -v pasturestack-mysql:/var/lib/mysql \
   -v pasturestack-mysqllog:/var/log/mysql \
-  ghcr.io/pasturestack/server:v1.6.608
+  ghcr.io/pasturestack/server:v1.6.609
 ```
 
 For HTTPS termination at a reverse proxy, set the exact public origin:
@@ -112,7 +116,7 @@ For HTTPS termination at a reverse proxy, set the exact public origin:
 ```yaml
 services:
   pasturestack-server:
-    image: ghcr.io/pasturestack/server:v1.6.608
+    image: ghcr.io/pasturestack/server:v1.6.609
     restart: unless-stopped
     ports:
       - "8080:8080"

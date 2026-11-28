@@ -1,5 +1,30 @@
 # Compatibility Contract
 
+## Server v1.6.609 published
+
+Immutable image `ghcr.io/pasturestack/server:v1.6.609@sha256:ac237e999c735e93ad309f7bc57f346b0063cf5fe62e0930e6ff1bbd34f6641c`.
+Producer `d10ae647a6f0cb7384c114463993bafb4d77d411`. Web Console **1.6.246** preserves existing LB labels
+during child-editor initialization and settings without controls in this form.
+Other component pins retain their reviewed identities.
+
+Isolated deployed Edge acceptance completed six phases: old active baseline,
+upgrade, rollback, a separate upgrade, finish and refresh. All phases exported
+and ran one real dependent sidekick, sharing the current primary's network
+namespace. Previous secondary configurations, primary and secondary mounted
+data, environment, labels, command and mount modes remained intact. Four native
+actions returned 202; there were no service PUTs, browser errors or API failures.
+The refreshed browser DOM completed with its loading overlay hidden and no writes.
+HTTP and certificate-verified TLS 1.2/1.3 passed; upgraded runtime was HAProxy
+3.4.8. The exact published browser assets were verified. Twenty-one focused
+source tests and twelve mechanical negative controls passed.
+
+One actual Server restart, all three existing Hosts, unrelated Stack states,
+existing volumes and rollback images were preserved. Earlier API Explorer,
+Cron, historical selectors, TCP and sticky-session PASS evidence remains at its
+original version and scope. This case does not qualify every secondary topology,
+all system-module collectors or arbitrary downgrades. No production access is
+claimed. See the [release note](docs/releases/server-1.6.609.md).
+
 ## Server v1.6.608 published
 
 Immutable image `ghcr.io/pasturestack/server:v1.6.608@sha256:40b5e3c43a5a05453d11eea16086201fc80f9ae496ddf0fb5e79fa84860dcad7`.
