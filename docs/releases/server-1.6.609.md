@@ -5,7 +5,7 @@
 Web Console 1.6.244 is published. Exact Server publication, deployment and the
 nonempty-secondary browser lifecycle remain required for this candidate.
 
-## Verified component input
+## Verified component inputs
 
 Web Console **1.6.244**, producer `ccd1fb7bccfc9e4d5b17c03f0812272ab5ed638d`.
 Archive SHA-256: `9d4c83a86ca92209bf8dc50e37df4a539f775e37ad87d9d553963aec53bf2d77`.
