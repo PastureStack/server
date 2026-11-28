@@ -14,7 +14,7 @@ python3 scripts/test-agent-package-consistency.py
 
 case "${COMPONENT:-}" in
   base) repository=ghcr.io/pasturestack/node-agent-base; version=v0.3.11 ;;
-  agent) repository=ghcr.io/pasturestack/node-agent; version=v1.2.36 ;;
+  agent) repository=ghcr.io/pasturestack/node-agent; version=v1.2.37 ;;
   *) echo 'Unsupported agent component' >&2; exit 1 ;;
 esac
 [[ "${PUBLISH:-false}" = true || "${PUBLISH:-false}" = false ]]
@@ -83,8 +83,8 @@ else
   source agent/base-evidence.env
   [[ "$AGENT_BASE_RUN" =~ ^[0-9]+$ && "$AGENT_BASE_REVISION" =~ ^[0-9a-f]{40}$ ]]
   [[ "$AGENT_BASE_DIGEST" =~ ^sha256:[0-9a-f]{64}$ && "$AGENT_BASE_RECEIPT_SHA256" =~ ^[0-9a-f]{64}$ ]]
-  grep -Fx "FROM ghcr.io/pasturestack/node-agent-base:v0.3.10@$AGENT_BASE_DIGEST" agent/Dockerfile
-  grep -Fq 'org.opencontainers.image.version="v1.2.36"' agent/Dockerfile
+  grep -Fx "FROM ghcr.io/pasturestack/node-agent-base:v0.3.11@$AGENT_BASE_DIGEST" agent/Dockerfile
+  grep -Fq 'org.opencontainers.image.version="v1.2.37"' agent/Dockerfile
   gh api "repos/PastureStack/server/actions/runs/$AGENT_BASE_RUN" \
     --jq '[.head_sha,.conclusion,.path] | @tsv' \
     | grep -Fx "$(printf '%s\tsuccess\t.github/workflows/publish-node-agent.yml' "$AGENT_BASE_REVISION")"
@@ -94,7 +94,7 @@ else
   printf '%s  %s\n' "$AGENT_BASE_RECEIPT_SHA256" "$base_evidence/SHA256SUMS" | sha256sum --check --strict
   (cd "$base_evidence"; sha256sum --check --strict SHA256SUMS)
   grep -Fx "repository=ghcr.io/pasturestack/node-agent-base" "$base_evidence/published.txt"
-  grep -Fx "version=v0.3.10" "$base_evidence/published.txt"
+  grep -Fx "version=v0.3.11" "$base_evidence/published.txt"
   grep -Fx "source=$AGENT_BASE_REVISION" "$base_evidence/published.txt"
   grep -Fx "digest=$AGENT_BASE_DIGEST" "$base_evidence/published.txt"
   IMAGE="$candidate" bash agent/build-image.sh |& tee "$evidence/build.log"
